@@ -351,16 +351,27 @@ example (value : Fin ((2 : Nat) ^ 248)) :
       bits_248_fit_nine_radix_2013265921_limbs value).toNat = value.1 :=
   Limbs.toNat_ofBounded _ _ _
 
-#print axioms denoteInt_eq_natCast
-#print axioms denoteNat_lt_pow
-#print axioms denoteNat_digitsLE
-#print axioms denoteInt_digitsLE
-#print axioms digitsLE_denoteNat
-#print axioms denoteNat_injective
-#print axioms denoteInt_injective
-#print axioms Limbs.toFin_ofFin
-#print axioms Limbs.ofFin_toFin
-#print axioms Limbs.toNat_ofBounded
-#print axioms bits_248_fit_nine_radix_2013265921_limbs
+/-- info: 'Minidregg.Theory.Bignum.denoteInt_eq_natCast' depends on axioms: [propext] -/
+#guard_msgs (whitespace := lax) in #print axioms denoteInt_eq_natCast
+/-- info: 'Minidregg.Theory.Bignum.denoteNat_lt_pow' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms denoteNat_lt_pow
+/-- info: 'Minidregg.Theory.Bignum.denoteNat_digitsLE' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms denoteNat_digitsLE
+/-- info: 'Minidregg.Theory.Bignum.denoteInt_digitsLE' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms denoteInt_digitsLE
+/-- info: 'Minidregg.Theory.Bignum.digitsLE_denoteNat' depends on axioms: [propext] -/
+#guard_msgs (whitespace := lax) in #print axioms digitsLE_denoteNat
+/-- info: 'Minidregg.Theory.Bignum.denoteNat_injective' depends on axioms: [propext] -/
+#guard_msgs (whitespace := lax) in #print axioms denoteNat_injective
+/-- info: 'Minidregg.Theory.Bignum.denoteInt_injective' depends on axioms: [propext] -/
+#guard_msgs (whitespace := lax) in #print axioms denoteInt_injective
+/-- info: 'Minidregg.Theory.Bignum.Limbs.toFin_ofFin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Limbs.toFin_ofFin
+/-- info: 'Minidregg.Theory.Bignum.Limbs.ofFin_toFin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Limbs.ofFin_toFin
+/-- info: 'Minidregg.Theory.Bignum.Limbs.toNat_ofBounded' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Limbs.toNat_ofBounded
+/-- info: 'Minidregg.Theory.Bignum.bits_248_fit_nine_radix_2013265921_limbs' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms bits_248_fit_nine_radix_2013265921_limbs
 
 end Minidregg.Theory.Bignum
