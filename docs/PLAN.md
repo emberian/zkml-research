@@ -99,6 +99,24 @@ accumulator does not.** **[mine]** So block-float bf16 fits the field the
 quantized path is forced out of — and it does so by matching what the silicon
 physically does, not by deviating from it.
 
+## 4b. The exp table is rank-1, and that is a theorem
+
+eprint 2026/1390 Proposition 3: per-proof table cost is `Θ̃(ρ·2^{r/2})` where ρ is
+the table's **bipartition rank**. Generic tables are full-rank (Prop. 4) and do
+not decompose. But **exp does, exactly** — verbatim: *"an addition theorem gives
+an outer product, ρ = 1 (checked: the r=16 exp table has σ₂/σ₁ = 1.6×10⁻¹⁵;
+**this is the deployed hi/lo split**)."* **[measured]**
+
+Because `exp(a+b) = exp(a)·exp(b)`, the 2^16 table factors into **two 2^8
+tables**. So the headline is better than "one 65,536-row table": for exp it is
+two 256-row tables and a multiply, and the paper certifies that as the rank-1
+optimum. **[measured]**
+
+⚠ Correction to an earlier relay: the holonomic/ODE construction is **not** a
+general win at our operating point — measured 0.56× for erf but **1.28× worse**
+for native `1/√x`; the 126× only appears past r > 28, which we never reach.
+Worth a spike for GELU/erf only; keep mantissa-indexed lookup for rsqrt.
+
 ## 5. Why bit-exact, not error-tolerant
 
 I spent the morning enthusiastic about approximate proving. Two findings killed
@@ -115,6 +133,19 @@ it:
   outputting z.** In zkML the network is *adversary-constructed then committed*,
   and F′ passes every black-box audit because it computes the same function.
   **[measured]**
+
+**And the windows in deployed systems are wide enough to matter.** Every
+fidelity-carrying system hands the prover an acceptance window on *every*
+element: ZIP **δ = 9×10⁻³ relative**, zkLLM **ε ≈ 10⁻² row-sum band**, Spain a
+per-op ε. Zamir's construction at R≈20, δ≈10⁻³, g=2, k=20 needs a trigger weight
+of **M ≈ 0.15** — an utterly ordinary weight — with amplification g^{k−2} = 2¹⁸.
+**Tolerances at fp16 rounding scale suffice for arbitrary output steering.**
+**[measured]**
+
+Our design has **zero per-element window**: `q = (T_hi[a]·T_lo[b] + 2^29) >> 30`
+is an exact integer relation plus two table-membership assertions, and the only
+slack is one scalar acting as a uniform rescale. That is the single property
+Theorem 1 cannot touch.
 
 So: **every bit of tolerance granted the prover is a bit the adversary can
 steer.** Being bit-exact against a *published deterministic block-float spec* is
@@ -208,6 +239,21 @@ generated from a reference and their properties proved.
 (`SumcheckProver::new(ProductPolynomial, sum)` is literally the shape), measured
 at 0.18–0.33% overhead vs 6.2× for generic GKR-over-a-multiplication-circuit.
 Do it — but knowing it is worth ~5%.
+
+**Phase 0 must also measure two things nobody reports.**
+
+- **Domain-escape rate.** zkAgent measures per-token overflow — activation
+  leaves the calibrated table domain and the proof *aborts* — at 0.21% (GPT-2),
+  0.94% (LLaMA-2-13B), **4.16% (C4)**. Over a 512-token transcript that is an
+  abort probability of **0.66 to ~1**. **[measured]** Mitigation: out-of-domain
+  must be a **proved affine tail** (GELU/SiLU are asymptotically affine), never
+  a clip. exp's domain [−88,0] is safe — that is an underflow boundary, not a
+  clip. Instrument overflow rate as a first-class metric; only zkAgent reports it.
+- **Whether bf16 actually buys what I think.** There is **no measured per-op
+  constraint count for bf16/fp16 anywhere**, and extrapolation from ZKLP
+  suggests bf16 buys only **~20%** over fp32 for *IEEE arithmetic*. Our claim is
+  a different one — exact tables and non-rounding products, not cheaper float
+  ops — but the absence of any measurement is exactly why Phase 0 exists.
 
 **Deliberately not doing:** IEEE-754 bit-exactness (nobody wins, and the
 headline 8854-gate figure is an unbenchmarked strawman propagated by citation);
