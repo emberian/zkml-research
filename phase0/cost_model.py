@@ -152,25 +152,43 @@ def bf16_renorm_dynamic(accum_window_bits, k, sig_bits=8):
     a per-element bf16 value therefore requires finding THIS element's leading
     one, which is DATA-DEPENDENT.
 
-    The dilemma has three horns and every one of them costs something:
+    The dilemma has three horns. RESOLVED AGAINST THE STATIC READING by the
+    literature; the dynamic branch is the real one.
 
-      1. Keep the output in block float (shared output exponent). Then the
-         table is indexed by a FIXED-POINT MANTISSA -- which is the quantized
-         design, and the bf16 exact-table thesis evaporates.
+      1. Keep the output in block float (shared output exponent). NOT
+         AVAILABLE. Block floating point amortizes exponent STORAGE, not
+         rounding: arXiv 2502.00026 Eq. 1 has the alignment shift
+         d_ij = e_i - s_j depending on THE ELEMENT'S OWN exponent e_i, and
+         arXiv 2510.25602 Eq. 3 rounds per element into the representable set.
+         There is no shared-shift escape. And a table indexed by a fixed-point
+         mantissa IS the quantized design anyway.
 
-      2. Normalize per element from an integer accumulator. Pay for a variable
-         shift: this function.
+      2. Normalize per element from an integer accumulator. THE REAL DESIGN:
+         keeps matmul-by-sumcheck (integer accumulation IS associative) and
+         pays a data-dependent shift per output element. Priced here.
 
       3. Accumulate in genuine IEEE fp32, whose bit pattern truncates to bf16
-         by a STATIC 32 = 16+16 split, so renormalization really is two
-         columns and a range check. But an fp32 accumulator means proving a
-         SEQUENCE OF ROUNDED FLOAT ADDS, and matmul-by-sumcheck proves a
-         linear form over FIELD elements, not that. Horn 3 buys a cheap
-         renormalization by making matmul expensive -- and matmul being 5.3%
-         is the premise the whole plan rests on.
+         by a STATIC 32 = 16+16 split. But float addition is NOT ASSOCIATIVE,
+         so sumcheck/Freivalds does not apply (arXiv 2606.05433 sec B.2) and
+         exact FP GEMM is O(mnd) -- that paper puts ONE Llama-3.1-405B
+         Q-projection at ~5e13 constraints. Horn 3 buys a cheap
+         renormalization by destroying the 5.3% matmul premise.
 
-    Horns 1 and 3 each dissolve a different premise of the thesis. Horn 2 is
-    the one that keeps both premises, and it is the one priced here.
+    CALIBRATION, and it says this pricing is OPTIMISTIC. Hao et al. USENIX'24
+    Table 1 (read at source, amortized, 1 Gbps) puts the leading-one primitive
+    Msnzb at 30.224 us / 0.508 KB against the CONSTANT-shift PosTrunc at
+    8.951 us / 0.159 KB -- 3.4x runtime and 3.2x communication for making a
+    shift data-dependent. This function charges about 2x. Different substrate
+    (interactive 2PC over a 61-bit Mersenne field), so indicative rather than
+    transferable, but it points the same way and further than we charge.
+
+    And DeepProve pays the CHEAP side: its requantization shift is a
+    per-tensor CONSTANT fixed at preprocessing, with no leading-one search at
+    all. In the one place its rescale IS data-dependent -- RMSNorm -- it
+    reinvents block float on the spot (Appendix C: s1/(d_j*s2) = 2^-l_j*eps_j
+    with a shared maximum shift r := max_j l_j + f). Requantization and float
+    renormalization are not merely comparable; they are the same operation,
+    and float is the more expensive setting of it.
 
     Priced here: the static chunks, PLUS a committed exponent column, PLUS a
     lookup resolving 2^e, PLUS a boundary-chunk lookup that enforces
