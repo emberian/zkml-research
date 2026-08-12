@@ -1,5 +1,12 @@
 # Plan: open verifiable inference on block-float bf16
 
+> ⚠ **SUPERSEDED IN PART — read `docs/PHASE0-RESULT.md` first.** Phase 0 ran and
+> returned **negative**. The speedup is **~1.4×, not ~4×**: requantization is not
+> absent but per-element-ified, and the 75% figure double-counts operations
+> DeepProve already implements as fused tables. §1's framing, §2's central claim
+> and §4b are cut. **§5 — the soundness argument for bit-exactness — never
+> depended on the cost claim and is now the centre of the project.**
+
 2026-08-11. Written after six research lanes. Every number below is marked
 **[measured]** (from a paper's own tables), **[verified]** (computed here), or
 **[mine]** (inference). The plan changed twice during the research and this is
