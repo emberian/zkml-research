@@ -143,6 +143,46 @@ def deepprove_requant(q, f, accum_bits, s_clamp, k, signed=True):
     return cols, lookups, t
 
 
+def bf16_renorm_dynamic(accum_window_bits, k, sig_bits=8):
+    """THE ASSUMPTION MOST LIKELY TO BE WRONG, PRICED.
+
+    `bf16_renorm` below assumes the renormalizing shift is STATIC because the
+    block exponent is shared. But bf16 is NOT a block format -- it carries a
+    PER-ELEMENT exponent. Converting a block-float fixed-point accumulator into
+    a per-element bf16 value therefore requires finding THIS element's leading
+    one, which is DATA-DEPENDENT.
+
+    The dilemma has three horns and every one of them costs something:
+
+      1. Keep the output in block float (shared output exponent). Then the
+         table is indexed by a FIXED-POINT MANTISSA -- which is the quantized
+         design, and the bf16 exact-table thesis evaporates.
+
+      2. Normalize per element from an integer accumulator. Pay for a variable
+         shift: this function.
+
+      3. Accumulate in genuine IEEE fp32, whose bit pattern truncates to bf16
+         by a STATIC 32 = 16+16 split, so renormalization really is two
+         columns and a range check. But an fp32 accumulator means proving a
+         SEQUENCE OF ROUNDED FLOAT ADDS, and matmul-by-sumcheck proves a
+         linear form over FIELD elements, not that. Horn 3 buys a cheap
+         renormalization by making matmul expensive -- and matmul being 5.3%
+         is the premise the whole plan rests on.
+
+    Horns 1 and 3 each dissolve a different premise of the thesis. Horn 2 is
+    the one that keeps both premises, and it is the one priced here.
+
+    Priced here: the static chunks, PLUS a committed exponent column, PLUS a
+    lookup resolving 2^e, PLUS a boundary-chunk lookup that enforces
+    rem < 2^e for variable e (a fixed-width chunked comparison cannot do it).
+    """
+    shift = accum_window_bits - sig_bits
+    t = -(-shift // k)
+    cols = 1 + t + 1        # Out, chunks, and the per-element exponent
+    lookups = t + 2         # chunks, the 2^e resolution, the boundary chunk
+    return cols, lookups, t
+
+
 def bf16_renorm(accum_window_bits, k, sig_bits=8):
     """The bf16 path's honest analogue of requantization.
 
@@ -214,9 +254,14 @@ def price(model, path, params):
         cols, lk, t = deepprove_requant(
             q, params["f"], params["accum_bits"], params["s_clamp"], params["k"])
         table_rows, n_tables = 1 << max(q, params["k"]), params["n_tables"]
-    else:
+    elif path == "bf16":
         cols, lk, t = bf16_renorm(params["accum_window"], params["k"])
         table_rows, n_tables = 1 << 16, params["n_tables"]
+    elif path == "bf16_dynamic":
+        cols, lk, t = bf16_renorm_dynamic(params["accum_window"], params["k"])
+        table_rows, n_tables = 1 << 16, params["n_tables"]
+    else:
+        raise ValueError(path)
 
     batch = params.get("batch", 1)
     per_elem = cols + BASE_PER_LOOKUP_ROW * lk / batch
@@ -342,6 +387,38 @@ def main():
     print(f"  median speedup over the sweep: {med:.2f}x")
     n_under2 = sum(1 for r in rows if r[0] < 2.0)
     print(f"  parameter points below 2x: {n_under2} of {len(rows)}")
+    print()
+
+    print("=" * 86)
+    print("THE LOAD-BEARING ASSUMPTION: is the renormalizing shift STATIC?")
+    print("=" * 86)
+    print("  bf16 carries a PER-ELEMENT exponent, so converting a block-float")
+    print("  accumulator to bf16 needs THIS element's leading one -- data-dependent.")
+    print("  Price the dynamic version and see whether the verdict survives.")
+    print()
+    print(f"  {'':34s} {'cols':>6s} {'lk':>4s} {'commit':>8s} {'piop':>7s} {'SPEEDUP':>9s}")
+    bdyn = price(m, "bf16_dynamic", bp)
+    cwd, pwd_, spd = blended_ratio(qr, bdyn)
+    print(f"  {'static shift (assumed above)':34s} {br['per_elem_cols']:>6d} "
+          f"{br['per_elem_lookups']:>4d} {cw:>7.2f}x {pw:>6.2f}x {sp:>8.2f}x")
+    print(f"  {'dynamic per-element normalization':34s} {bdyn['per_elem_cols']:>6d} "
+          f"{bdyn['per_elem_lookups']:>4d} {cwd:>7.2f}x {pwd_:>6.2f}x {spd:>8.2f}x")
+    print()
+    dyn_rows = []
+    for k, f, s_clamp, q in itertools.product((8, 12, 16), (8, 16, 24), (1, 2, 4), (8, 12)):
+        qp3 = dict(qp, f=f, s_clamp=s_clamp, q=q, k=k, accum_bits=q + q + 10)
+        bp3 = dict(bp, k=k)
+        _, _, s3 = blended_ratio(price(m, "quantized", qp3),
+                                 price(m, "bf16_dynamic", bp3))
+        dyn_rows.append(s3)
+    print(f"  dynamic-normalization sweep: {min(dyn_rows):.2f}x .. {max(dyn_rows):.2f}x, "
+          f"median {sorted(dyn_rows)[len(dyn_rows)//2]:.2f}x, "
+          f"{sum(1 for r in dyn_rows if r < 2.0)} of {len(dyn_rows)} below 2x")
+    print()
+    print("  If normalization is dynamic, the honest range straddles 2x and the")
+    print("  thesis is not safe. Resolving static-vs-dynamic is the highest-value")
+    print("  next measurement, and it is a SPEC question (what does the block-float")
+    print("  spec say the output format is), not a prover question.")
     print()
 
     print("=" * 86)

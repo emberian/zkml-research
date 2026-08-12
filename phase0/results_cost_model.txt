@@ -96,6 +96,24 @@ design parameter for BOTH paths, so it is held EQUAL and swept.
   parameter points below 2x: 17 of 54
 
 ======================================================================================
+THE LOAD-BEARING ASSUMPTION: is the renormalizing shift STATIC?
+======================================================================================
+  bf16 carries a PER-ELEMENT exponent, so converting a block-float
+  accumulator to bf16 needs THIS element's leading one -- data-dependent.
+  Price the dynamic version and see whether the verdict survives.
+
+                                       cols   lk   commit    piop   SPEEDUP
+  static shift (assumed above)            3    2    3.09x   3.00x     2.63x
+  dynamic per-element normalization       4    4    1.70x   1.50x     1.54x
+
+  dynamic-normalization sweep: 0.85x .. 1.99x, median 1.42x, 54 of 54 below 2x
+
+  If normalization is dynamic, the honest range straddles 2x and the
+  thesis is not safe. Resolving static-vs-dynamic is the highest-value
+  next measurement, and it is a SPEC question (what does the block-float
+  spec say the output format is), not a prover question.
+
+======================================================================================
 ABLATION -- where does the bf16 advantage actually come from?
 ======================================================================================
   Turn off one structural difference at a time, at the baseline point.
