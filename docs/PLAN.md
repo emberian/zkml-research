@@ -23,7 +23,16 @@ DeepProve Table 7, GPT-2 seq 512, BaseFold, 24-core EPYC — **[measured]**:
 | **EinSum — every matmul in the model** | **5.3%** |
 | **nonlinear subtotal** | **75.1%** (Gemma 3: 66.9%) |
 
-Independently confirmed on a different backend: **zkGPT** (USENIX Sec'25, GKR +
+**Independently corroborated a second time, by a group that did not notice.**
+OpenLLM (eprint 2026/1578, Zhejiang/CAS/Antgroup) never cites DeepProve and
+never reports requantization's share — but their own Table VII gives one
+`Requan` at 1024×1024 as **2.935 s** against GELU 10.045 s (**29.2%**), Softmax
+11.556 s (**25.4%**), Norm 9.306 s (**31.5%**), and their protocol figures call
+it **3–9 times per operator**. Different codebase, different field (M61),
+different PCS, same 25–34%. **[measured]** That is the strongest form of
+evidence for §1 — a number reproduced by people who were not looking for it.
+
+Also confirmed on a different backend: **zkGPT** (USENIX Sec'25, GKR +
 Lasso), GPT-2, 16-core — all matmuls **1.5 s of 21.8 s = 6.9%**; lookups alone
 **55.5%**. **[measured]**
 
@@ -112,6 +121,14 @@ tables**. So the headline is better than "one 65,536-row table": for exp it is
 two 256-row tables and a multiply, and the paper certifies that as the rank-1
 optimum. **[measured]**
 
+⚠ **Prior art, and our claim must be narrowed accordingly.** OpenLLM Fig. 7
+already uses multiplicative digit factorization for exp — decompose into 12-bit
+digits, per-digit table, recombine by ProdCheck. **The factorization is not
+ours.** What is ours is **exactness**: their table entries carry a `⌊·⌉`, so
+error is introduced per digit and compounds through the product, whereas a bf16
+hi/lo split is the complete graph of the function with no rounding anywhere.
+Claim exactness, never factorization.
+
 ⚠ Correction to an earlier relay: the holonomic/ODE construction is **not** a
 general win at our operating point — measured 0.56× for erf but **1.28× worse**
 for native `1/√x`; the 126× only appears past r > 28, which we never reach.
@@ -184,6 +201,12 @@ standard answer is *a wider small field*, not a curve. Its reported VGG-16
 Polyhedra's own blog says 6.3 s for the same VGG-16 figure — treat both as soft.
 **[measured, with the provenance caveat]**
 
+**And a third group measured the substrate question our way.** OpenLLM
+benchmarked all three PCS on identical hardware: **FRI-M61 is 3.8–5.7× faster on
+prover than KZG-BN254 and ~1000× faster on verify** (GELU 1024²: 10.045 s /
+4.170 ms vs 57.496 s / 22.501 ms; Softmax verify 5.112 ms vs 13,948 ms for IPA).
+**[measured]**
+
 So DeepProve's exit to BN254 is one team's trade for proof size, not the
 field's verdict. And DeepProve's own A/B argues *for* the hash-based path they
 left: BaseFold
@@ -254,6 +277,14 @@ Do it — but knowing it is worth ~5%.
   suggests bf16 buys only **~20%** over fp32 for *IEEE arithmetic*. Our claim is
   a different one — exact tables and non-rounding products, not cheaper float
   ops — but the absence of any measurement is exactly why Phase 0 exists.
+
+**A collaboration opening worth taking.** OpenLLM's requantization numbers are
+the strongest independent evidence for our central premise and they did not draw
+the conclusion. Leading with that observation is a genuine gift and costs us
+nothing. The group holds deep knowledge of both systems we benchmark against —
+Xuanming Liu (`hinsliu@zju.edu.cn`) is a co-author of *both* OpenLLM and zkGPT.
+Their artifact is already gone (anonymous repo, HTTP 410, no licence, no
+mirror), so an open comparison would be informative to them too.
 
 **Deliberately not doing:** IEEE-754 bit-exactness (nobody wins, and the
 headline 8854-gate figure is an unbenchmarked strawman propagated by citation);
