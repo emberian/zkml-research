@@ -164,6 +164,25 @@ is an exact integer relation plus two table-membership assertions, and the only
 slack is one scalar acting as a uniform rescale. That is the single property
 Theorem 1 cannot touch.
 
+**And the repair route provably does not exist.** This is the strongest sentence
+available to us and it is not ours. Bitan, DeStefano, Goldwasser, Ishai, Kalai
+and Thaler, §5 p.23 of the March 2026 revision, on extending approximate
+sum-check to GKR/Spartan — verbatim:
+
+> "Proving soundness in both cases seems to require an approximate multivariate
+> Schwartz-Zippel style lemma… **Unfortunately, no useful approximate
+> multivariate Schwartz-Zippel lemma exists**: unlike the univariate case where
+> Remez inequalities tightly control sublevel sets, a multivariate polynomial can
+> be small on a large-measure set while large elsewhere [SVZ25, §1.2]."
+
+Slote–Volberg–Zhang (*Discrete Analysis* 2025:4) §1.2 confirms it is not a gap
+in the state of the art: *"there is no hope for such an inequality phrased in
+terms of µ(E) for any positive-measure E"*, with `f_n(x) = 1 − Σx_j²` on the
+unit ball as the counterexample. **[measured]**
+
+So no layerwise-approximate zkML scheme can be repaired by better analysis. The
+obstruction is analytic and it is the twin of Zamir's construction.
+
 So: **every bit of tolerance granted the prover is a bit the adversary can
 steer.** Being bit-exact against a *published deterministic block-float spec* is
 not a fidelity preference — it is what makes the construction Zamir-immune,
@@ -290,6 +309,31 @@ mirror), so an open comparison would be informative to them too.
 headline 8854-gate figure is an unbenchmarked strawman propagated by citation);
 error-tolerant proving (§5); racing anyone on throughput before §8 Phase 0
 lands.
+
+**And approximate sum-check is not our accumulation fallback.** I proposed it as
+one this morning. Three independent kills, any one sufficient **[measured]**:
+
+1. **Wrong field.** The κ contraction function — the entire technical content —
+   comes from *archimedean* Remez inequalities, needing an archimedean absolute
+   value, FTA + continuity for the "at most d arcs" sublevel-set step, and
+   arc-length measure. The paper's only finite-field instantiation (§3.2, p.17)
+   is the degenerate `δ=0` case, which *is* classical sum-check. Not
+   BabyBear/M31/Goldilocks.
+2. **No PCS exists.** §7, p.25, verbatim: *"realizing full SNARKs will require
+   identifying polynomial commitment schemes that maintain soundness under
+   approximation."* It is a PIOP, not a proof system — and hash-based PCS
+   soundness is code-based, which this paper explicitly discards (§6, p.25).
+3. **It loses to exact accumulation on its own terms.** Our full-dynamic-range
+   exact accumulator is ~280 bits, integer, order-independent, composable. For
+   N=2^20, d=2 approximate sum-check needs ~254 bits of *floating-point* working
+   precision for **40 bits of interactive** soundness — and **~4,040 bits
+   non-interactively at λ=100**. Roughly **14× more precision than exact
+   accumulation to prove the same inner product**, with a weaker guarantee and
+   no commitment layer.
+
+⚠ **Trap:** §6's precision-comparison table is derived under *interactive*
+soundness while the approaches it compares against are non-interactive-ready.
+Quoting those figures for a SNARK quotes the wrong number.
 
 ## 9. Numbers to beat
 
