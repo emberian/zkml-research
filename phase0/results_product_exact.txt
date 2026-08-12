@@ -1,0 +1,50 @@
+================================================================
+EXHAUSTIVE bf16 x bf16 -> fp32 ROUNDING CENSUS
+================================================================
+ordered pairs enumerated : 4294967296
+expected (2^32)          : 4294967296
+wall clock               : 390.86ms  (12 threads)
+
+STRUCTURAL CHECK (significand width)
+  8-bit x 8-bit significand pairs enumerated : 65025
+  max bits in the integer product            : 16
+  fp32 significand bits available            : 24
+  significand argument holds                 : true
+
+CENSUS OVER ALL 2^32 ORDERED PAIRS
+  exact (no rounding)          3271328768   76.16656%
+  overflow to +/-inf            537754624   12.52058%
+  underflow to zero             353721424    8.23572%
+  inexact (fp32 subnormal)       98673584    2.29742%
+  inexact (fp32 NORMAL)                 0    0.00000%   <-- must be 0
+  non-finite operand             33488896    0.77972%
+
+  ROUNDING EVENTS among finite-operand pairs : 990149632 / 4261478400  = 23.23489%
+  max relative error (finite results)        : 1.000000e0
+
+FIRST WITNESSES
+  overflow : bf16 0x3f81 (1.0078125e0) * 0x7f7f (3.3895314e38) = 3.416012103230063e38 -> inf
+  underflow: bf16 0x0001 (9.1835e-41) * 0x0001 (9.1835e-41) = 8.433758354584419e-81 -> 0
+  subnormal: bf16 0x0001 * 0x3701 = 7.061230542886774e-46 -> 1e-45  (rel err 9.845e-1)
+  normal-range inexact: NONE (significand argument intact)
+
+VERDICT
+  The SIGNIFICAND claim is exhaustively TRUE: whenever the product
+  lands in fp32's normal range it is represented exactly.
+  The UNQUALIFIED claim 'never rounds' is FALSE: 990149632 of 4261478400 finite-operand
+  pairs round. All failures are EXPONENT-RANGE, not significand.
+  bf16 shares fp32's 8-bit exponent field, so a bf16 product has
+  twice fp32's dynamic range and cannot always land in it.
+
+RANGE HYPOTHESIS -- the claim, correctly qualified
+  hypothesis: both operands normal/subnormal and nonzero, and the
+              unbiased exponents satisfy -126 <= ex + ey <= 126
+  pairs satisfying it        : 3179217920
+  of those, EXACT            : 3179217920
+  fraction exact             : 100.0000000000%
+
+  So the correct statement is: bf16 x bf16 -> fp32 is EXACT whenever
+  the exponent sum stays in fp32's normal range, and that condition is
+  STATIC per block in a block-float design -- it is discharged once per
+  block, not sampled per element. The unqualified 'never rounds' is
+  false; the qualified version is exhaustively true.
