@@ -1,0 +1,151 @@
+======================================================================================
+PHASE 0 COST MODEL -- bf16 exact tables vs DeepProve fused requantization
+======================================================================================
+model GPT-2  seq 512  d_model 768  d_ff 3072 layers 12  heads 12
+  matmul output elements                 : 117,964,800
+  softmax elements                       : 37,748,736
+  norm elements                          : 9,437,184
+  GELU elements (MERGED into the FF-up requant, cost 0 extra)
+                                         : 18,874,368
+  -> renormalization SITES (no double count): 165,150,720
+  -> per-row reductions (recip / rsqrt)     : 86,016
+
+SUBSTRATE (measured from the pinned Plonky3 p3-lookup)
+  aux columns per LogUp lookup       : 1 (extension field)
+  BabyBear extension degree          : 4
+  base field elements per lookup-row : 4
+  base field elements per table row  : 5 (multiplicity + aux)
+
+BASELINE POINT
+  quantized: q=12 f=16 accum=34b s_clamp=2  ->  t=4 chunks
+  bf16     : accumulator window 26b, 16-bit chunks ->  t'=2 chunks
+
+                                      quantized               bf16     ratio
+  committed cols / elem                      10                  3      3.33x
+  lookups / elem                              6                  2      3.00x
+  table rows                              4,096             65,536
+  table term (elements)                  61,440            983,040
+  table term as % of total              0.0011%            0.0541%
+  COMMITTED ELEMENTS              5,615,616,000      1,818,071,040      3.09x
+  PIOP fraction-rows                991,002,624        330,584,064      3.00x
+
+  BLENDED PROVER SPEEDUP (Table 7 weights, 7.9% held unchanged): 2.63x
+
+======================================================================================
+SENSITIVITY -- f and s_clamp are NOT STATED by DeepProve; k is a free
+design parameter for BOTH paths, so it is held EQUAL and swept.
+======================================================================================
+    k    f   s   q |   t  q cols  q lk |  t2  bf cols  bf lk |  commit   piop  SPEEDUP
+    8    8   1   8 |   4       8     5 |   3        4      3 |   1.75x  1.67x    1.62x
+    8    8   1  12 |   4       8     5 |   3        4      3 |   1.75x  1.67x    1.62x
+    8    8   2   8 |   4      10     6 |   3        4      3 |   2.12x  2.00x    1.91x
+    8    8   2  12 |   4      10     6 |   3        4      3 |   2.12x  2.00x    1.91x
+    8    8   4   8 |   4      14     8 |   3        4      3 |   2.87x  2.67x    2.44x
+    8    8   4  12 |   4      14     8 |   3        4      3 |   2.87x  2.67x    2.44x
+    8   16   1   8 |   5       9     6 |   3        4      3 |   2.06x  2.00x    1.88x
+    8   16   1  12 |   5       9     6 |   3        4      3 |   2.06x  2.00x    1.88x
+    8   16   2   8 |   5      11     7 |   3        4      3 |   2.44x  2.33x    2.16x
+    8   16   2  12 |   5      11     7 |   3        4      3 |   2.44x  2.33x    2.16x
+    8   16   4   8 |   5      15     9 |   3        4      3 |   3.19x  3.00x    2.67x
+    8   16   4  12 |   5      15     9 |   3        4      3 |   3.19x  3.00x    2.67x
+    8   24   1   8 |   6      10     7 |   3        4      3 |   2.37x  2.33x    2.13x
+    8   24   1  12 |   6      10     7 |   3        4      3 |   2.37x  2.33x    2.13x
+    8   24   2   8 |   6      12     8 |   3        4      3 |   2.75x  2.67x    2.39x
+    8   24   2  12 |   6      12     8 |   3        4      3 |   2.75x  2.67x    2.39x
+    8   24   4   8 |   6      16    10 |   3        4      3 |   3.50x  3.33x    2.88x
+    8   24   4  12 |   6      16    10 |   3        4      3 |   3.50x  3.33x    2.88x
+   12    8   1   8 |   3       7     4 |   2        3      2 |   2.09x  2.00x    1.90x
+   12    8   1  12 |   3       7     4 |   2        3      2 |   2.09x  2.00x    1.90x
+   12    8   2   8 |   3       9     5 |   2        3      2 |   2.63x  2.50x    2.29x
+   12    8   2  12 |   3       9     5 |   2        3      2 |   2.63x  2.50x    2.29x
+   12    8   4   8 |   3      13     7 |   2        3      2 |   3.72x  3.50x    3.01x
+   12    8   4  12 |   3      13     7 |   2        3      2 |   3.72x  3.50x    3.01x
+   12   16   1   8 |   3       7     4 |   2        3      2 |   2.09x  2.00x    1.90x
+   12   16   1  12 |   4       8     5 |   2        3      2 |   2.54x  2.50x    2.25x
+   12   16   2   8 |   3       9     5 |   2        3      2 |   2.63x  2.50x    2.29x
+   12   16   2  12 |   4      10     6 |   2        3      2 |   3.09x  3.00x    2.63x
+   12   16   4   8 |   3      13     7 |   2        3      2 |   3.72x  3.50x    3.01x
+   12   16   4  12 |   4      14     8 |   2        3      2 |   4.18x  4.00x    3.30x
+   12   24   1   8 |   4       8     5 |   2        3      2 |   2.54x  2.50x    2.25x
+   12   24   1  12 |   4       8     5 |   2        3      2 |   2.54x  2.50x    2.25x
+   12   24   2   8 |   4      10     6 |   2        3      2 |   3.09x  3.00x    2.63x
+   12   24   2  12 |   4      10     6 |   2        3      2 |   3.09x  3.00x    2.63x
+   12   24   4   8 |   4      14     8 |   2        3      2 |   4.18x  4.00x    3.30x
+   12   24   4  12 |   4      14     8 |   2        3      2 |   4.18x  4.00x    3.30x
+   16    8   1   8 |   2       6     3 |   2        3      2 |   1.64x  1.50x    1.51x
+   16    8   1  12 |   2       6     3 |   2        3      2 |   1.64x  1.50x    1.51x
+   16    8   2   8 |   2       8     4 |   2        3      2 |   2.18x  2.00x    1.94x
+   16    8   2  12 |   2       8     4 |   2        3      2 |   2.18x  2.00x    1.94x
+   16    8   4   8 |   2      12     6 |   2        3      2 |   3.27x  3.00x    2.70x
+   16    8   4  12 |   2      12     6 |   2        3      2 |   3.27x  3.00x    2.70x
+   16   16   1   8 |   3       7     4 |   2        3      2 |   2.09x  2.00x    1.90x
+   16   16   1  12 |   3       7     4 |   2        3      2 |   2.09x  2.00x    1.90x
+   16   16   2   8 |   3       9     5 |   2        3      2 |   2.64x  2.50x    2.29x
+   16   16   2  12 |   3       9     5 |   2        3      2 |   2.64x  2.50x    2.29x
+   16   16   4   8 |   3      13     7 |   2        3      2 |   3.73x  3.50x    3.01x
+   16   16   4  12 |   3      13     7 |   2        3      2 |   3.73x  3.50x    3.01x
+   16   24   1   8 |   3       7     4 |   2        3      2 |   2.09x  2.00x    1.90x
+   16   24   1  12 |   3       7     4 |   2        3      2 |   2.09x  2.00x    1.90x
+   16   24   2   8 |   3       9     5 |   2        3      2 |   2.64x  2.50x    2.29x
+   16   24   2  12 |   3       9     5 |   2        3      2 |   2.64x  2.50x    2.29x
+   16   24   4   8 |   3      13     7 |   2        3      2 |   3.73x  3.50x    3.01x
+   16   24   4  12 |   3      13     7 |   2        3      2 |   3.73x  3.50x    3.01x
+
+  speedup range: 1.51x (k=16 f=8 s=1 q=8) .. 3.30x (k=12 f=24 s=4 q=12)
+  median speedup over the sweep: 2.29x
+  parameter points below 2x: 17 of 54
+
+======================================================================================
+ABLATION -- where does the bf16 advantage actually come from?
+======================================================================================
+  Turn off one structural difference at a time, at the baseline point.
+  baseline                                         2.63x
+  ...if int-q had a saturation value (no clamping)  1.85x   (clamping is worth +0.77x)
+  ...if the scale were a power of two (f = 0)       1.94x   (the multiplier is worth +0.69x)
+  ...both                                           1.05x
+
+  Whatever survives (c) is the pure accumulator-width effect: a
+  block-float 26-bit window vs a 34-bit int-12 accumulator.
+
+======================================================================================
+THE OPTIMISTIC BOUND -- what the plan ASSUMES (renormalization is free)
+======================================================================================
+  If the bf16 path really paid NOTHING to get from a matmul accumulator
+  back to a bf16 table index -- the plan's 'requantization is ABSENT' --
+  then bf16 costs 1 committed column + 1 lookup per element and nothing
+  else. Price that too, so the gap between the two readings is visible.
+  committed elements : 826,736,640   vs quantized 5,615,616,000   ratio 6.79x
+  PIOP fraction-rows : 165,347,328   vs quantized 991,002,624   ratio 5.99x
+  BLENDED SPEEDUP (ideal, renorm free, requant elems vanish) : 4.51x
+
+  The gap between this and the honest number is the price of the
+  assumption that renormalization is free. It is not free: a block-float
+  accumulator must be normalized and rounded to index a bf16 table, and
+  that step has exactly the requantization shape.
+
+======================================================================================
+WHEN WOULD THE RANK-1 exp SPLIT ACTUALLY BUY ANYTHING?
+======================================================================================
+  eprint 2026/1390 Prop 3 governs the PER-PROOF table term only, and
+  Corollary 3 says the per-lookup term is Omega(m) regardless. So the
+  rank-1 split can only matter when the table term is a real share of
+  the proof. Find the break-even.
+
+  one dense 2^16 table costs        : 327,680 committed elements
+  one bf16 element costs            : 11 committed elements
+  elements per proof for the table
+    to be 50% of the proof          : 29,789
+    to be 10% of the proof          : 268,101
+    to be  1% of the proof          : 2,949,120
+  actual elements in a GPT-2 seq-512 proof : 165,150,720
+  -> table term is 0.0541% of the proof
+
+  if the proof is split into     1 chunks ( 165,150,720 elems each): table term  0.054%
+  if the proof is split into    12 chunks (  13,762,560 elems each): table term  0.645%
+  if the proof is split into   144 chunks (   1,146,880 elems each): table term  7.229%
+  if the proof is split into  1728 chunks (      95,573 elems each): table term 48.322%
+
+  Reading: rank-1 would divide the table term by ~256. At the measured
+  operating point that term is a fraction of a percent, so the certified
+  rank-1 optimum is worth a fraction of a percent. It only becomes
+  interesting for proofs of a few tens of thousands of elements.

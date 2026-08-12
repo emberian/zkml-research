@@ -1,0 +1,16 @@
+[package]
+name = "bf16-product-exact"
+version = "0.1.0"
+edition = "2021"
+
+# No dependencies on purpose. This is a measurement harness; it authors no AIR
+# and links no proof system.
+
+[[bin]]
+name = "bf16-product-exact"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

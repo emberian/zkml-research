@@ -1,0 +1,96 @@
+/Users/ember/dev/zkml-research/phase0/bf16_tables.py:123: RuntimeWarning: invalid value encountered in cast
+  x64 = bf16_to_f32(ALL_BITS).astype(np.float64)
+/Users/ember/dev/zkml-research/phase0/bf16_tables.py:57: RuntimeWarning: overflow encountered in cast
+  return f32_to_bf16(np.asarray(x, dtype=np.float64).astype(np.float32))
+/Users/ember/dev/zkml-research/phase0/bf16_tables.py:173: RuntimeWarning: invalid value encountered in cast
+  xin = bf16_to_f32(ALL_BITS).astype(np.float64)
+==============================================================================
+A. bf16 CENSUS
+==============================================================================
+  total_patterns                   65536
+  nan                              254
+  inf                              2
+  zero                             2
+  subnormal                        254
+  normal                           65024
+  finite                           65280
+  distinct_finite_values           65279
+  max_finite                       3.3895313892515355e+38
+  min_positive_normal              1.1754943508222875e-38
+  min_positive_subnormal           9.183549615799121e-41
+
+==============================================================================
+B. COMPLETE TABLES + DOMAIN ESCAPE
+==============================================================================
+  fn          rows  no-entry  nan-out  (from nan in)  inf-out  zero-out   finite
+  exp        65536         0      254            254    15567     15559    34156
+  gelu       65536         0      255            254        1     15998    49282
+  silu       65536         0      255            254        1     15553    49727
+  rsqrt      65536         0    32894            254        2         1    32639
+  recip      65536         0      254            254       66         2    65214
+  tanh       65536         0      254            254        0         2    65280
+
+  exp underflow boundary:
+    largest_input_underflowing_to_zero               -93.0
+    smallest_input_overflowing_to_inf                89.0
+    min_positive_bf16_subnormal                      9.183549615799121e-41
+    underflow_is_correct_rounding_not_a_clip         True
+    count_underflow_to_zero                          15558
+    count_overflow_to_inf                            15566
+    softmax_operating_range_note                     after max-subtraction every softmax argument is <= 0, so the overflow half is unreachable in a softmax node
+
+==============================================================================
+C. BIPARTITION RANK (eprint 2026/1390 Prop 3), ADVERSARIAL
+==============================================================================
+
+  POSITIVE CONTROL -- fixed-point-indexed exp on [-88, 0], r=16
+  (the paper's own construction; expect rho = 1, s2/s1 ~ 1e-15)
+    cut a= 1 shape=(2, 32768)  rank<=(2)  numerical_rank=1  s2/s1=0.000e+00
+    cut a= 4 shape=(16, 4096)  rank<=(16)  numerical_rank=1  s2/s1=2.776e-17
+    cut a= 8 shape=(256, 256)  rank<=(256)  numerical_rank=1  s2/s1=1.157e-15
+    cut a=12 shape=(4096, 16)  rank<=(16)  numerical_rank=1  s2/s1=1.447e-16
+    cut a=15 shape=(32768, 2)  rank<=(2)  numerical_rank=1  s2/s1=1.850e-15
+
+  THE ACTUAL DESIGN -- bf16-INDEXED tables.
+  The prover commits FIELD ELEMENTS, so the table entry is the OUTPUT'S
+  bf16 BIT PATTERN (an integer in [0,2^16)), not a real number. That
+  table is total and finite -- no substitution, no artifact.
+  Prop 3's premise (value additive across the bit cut) does NOT hold for
+  a bf16 address: value = (-1)^s * 2^(e-127) * (1 + m/128).
+
+    fn      cut          shape  maxrank  num_rank  exact_rank/F_p      s2/s1
+    exp       4     (16, 4096)       16         6               -  8.420e-02
+    exp       8     (256, 256)      256        18              18  5.368e-02
+    exp      12     (4096, 16)       16        16               -  6.235e-03
+    gelu      4     (16, 4096)       16         9               -  3.541e-02
+    gelu      8     (256, 256)      256        18              18  3.936e-03
+    gelu     12     (4096, 16)       16        16               -  2.556e-03
+    silu      4     (16, 4096)       16         9               -  4.850e-02
+    silu      8     (256, 256)      256        18              18  8.734e-03
+    silu     12     (4096, 16)       16        16               -  5.551e-04
+    rsqrt     4     (16, 4096)       16         5               -  3.980e-02
+    rsqrt     8     (256, 256)      256         5               5  2.964e-02
+    rsqrt    12     (4096, 16)       16        16               -  6.815e-03
+
+  Numerical rank over R and EXACT rank over BabyBear agree at cut 8,
+  which is the cross-check that the measurement is sound.
+  rho(bf16 exp) = 18, not 1. The rank-1 exp result does NOT transfer to
+  a bf16 address. rho is low only because most hi values saturate (|x|
+  astronomically large or small), which is degeneracy, not an addition
+  theorem -- and degeneracy does not give the clean 2 x 2^8 factorization.
+
+==============================================================================
+D. DOES rho=1 SURVIVE THE ROUNDING? (exact integer test, no floats)
+==============================================================================
+  rho=1 is a property of the REAL-valued exp. The prover does not commit
+  reals; it commits the ROUNDED output. Measure the exact rank over
+  BabyBear of the table the prover ACTUALLY commits, in both indexings.
+
+  fixed-point exp, REAL values (paper's object)        numerical rank   1   (real-valued: exact F_p rank not applicable)
+  fixed-point exp, ROUNDED to bf16 (committed object)  EXACT rank over F_p: 253
+  bf16-indexed exp, ROUNDED to bf16 (committed object) EXACT rank over F_p:  18
+
+  An explicit rank-1 refutation needs one nonzero 2x2 minor. Exact
+  integer arithmetic on the committed table:
+    fixed-point exp (rounded)    minor(rows 0,1; cols 0,18) = -54 != 0  => rank >= 2, NOT rank-1
+    bf16-indexed exp             minor(rows 0,188; cols 0,35) = -16256 != 0  => rank >= 2, NOT rank-1
