@@ -133,7 +133,7 @@ per-element window for Zamir. And because the checkpoint IS the evaluated
 model, zero semantic gap.
 
 **Tier 1 — block-native, power-of-two scales, no BF16 original exists:**
-- **DeepSeek-V4-Flash/Pro** — the strongest case in existence: every weight
+- **⚠ **DeepSeek-V4 DOES NOT EXIST** (HTTP 404 with credentials, verified by the registry lane). DeepSeek-V4-Flash/Pro** — the strongest case in existence: every weight
   power-of-two block-scaled (experts FP4-E2M1 block-32 E8M0; the rest FP8
   E4M3 at 128×128 E8M0). There is no unscaled path to defer to.
 - **gpt-oss-120b/20b** — MXFP4 block-32 E8M0 on the MoE experts = 98.1% of

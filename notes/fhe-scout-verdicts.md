@@ -67,7 +67,7 @@ a Lean hash metatheory. Filed as a research target, not a claim.
 ## Transciphering, honestly (partial coverage)
 
 No 20-bit-p parameter set exists in the SoK tables (all 25–33-bit); our
-gcd(t−1,3)=3 blocks cube-map ciphers at deployed t; and the prize is small —
+⚠ **SUPERSEDED — the wrong obstruction.** x⁵ IS a permutation at deployed t (t−1 = 2¹⁴·3²·7, gcd(t−1,5)=1); the real wall is the 269-bit noise consumption. Depth law: `Pasta-r: pt-ct 2r, ct-ct (r−1)+⌈log₂d⌉`. Original: gcd(t−1,3)=3 blocks cube-map ciphers at deployed t; and the prize is small —
 our expansion is 10.9–27× at 109 KB/ct. Pirouette beats transciphering at
 its own game anyway (but needs client-held sk — true for inference, not the
 collective-key deployment). Homomorphic-decryption depth verdict: NOT

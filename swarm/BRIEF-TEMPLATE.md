@@ -59,3 +59,24 @@ build it in Lean, in Selvage.
   continue. Silent lane death costs more than partial results.
 - Under-claiming is correct. The report gates decisions; err toward breaking
   your own findings.
+
+## 9. ⚑ THE HANDOFF RULE (added 2026-08-13, paid for by a transcript audit)
+
+A transcript-mining lane found that **every high-value loss in this project
+had the same mechanism: a lane produced the result and the DELIVERY CHANNEL
+failed** — credits exhausted mid-write-up, `SendMessage` rejected as "prompt
+too long", or a consolidation pass that kept the verdict and dropped the
+model. The recording discipline is excellent; **the handoff between a lane
+finishing and a note existing has none.**
+
+Therefore, every lane:
+1. **Writes its note FIRST, incrementally, not at the end.** Create the
+   notes file early and append as findings land. A note that exists at 40%
+   completeness beats a perfect report that dies at 95%.
+2. **Leaves a pointer for every on-disk artifact it creates** — scripts,
+   Lean files, test files, cloned repos — in that note. Finished work with
+   no pointer is deleted work. (Recovered examples: `~/src/ring-ro-hash/
+   design_*.py`, `minidregg/Theory/IntegerFingerprint.lean`, two claude.ai
+   decision memos whose URLs appear nowhere in the repo.)
+3. **Never reports a number only in prose to the orchestrator.** If it was
+   computed, it goes in a file.
