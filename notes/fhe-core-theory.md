@@ -12,9 +12,10 @@ metatheory/Bfv. Corrects the vFHE agenda's missing-piece list.
   and no worst-case-to-average-case reduction supports the instance at σ≈3.16
   (though CBD = normal-form LWE dissolves the ternary-secret objection for the
   single-party path via ACPS).
-- **r_t(q) = 0.82·t — costing ~7 bits — ⚠⚠ CLOSED NO-OP 2026-08-13 (measured):
-  the KPZ fix is ALREADY IN FORCE in the deployed library. There is nothing to
-  implement and no depth to recover.** The chain of supersessions, in order:
+- **The KPZ fix is a NO-OP — CLOSED 2026-08-13, measured.** It is already in
+  force in the deployed library; there is nothing to implement and no depth to
+  recover. *(The dead claim it replaces: "r_t(q) = 0.82·t, costing ~7 bits" —
+  a recoverable loss.)* The chain of supersessions, in order:
   (i) it was called a parameter bug wanting a Q≡1(mod t) re-genesis; (ii)
   corrected to an ENCODING bug per KPZ 2021/204's first modification — encrypt
   as `a·s + e + ⌊(Q/t)·m⌉` instead of pre-rounding Δ=⌊Q/t⌋; (iii) **now

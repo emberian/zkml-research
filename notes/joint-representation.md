@@ -1,5 +1,18 @@
 # The joint representation problem — the rock nobody turned over
 
+> ⚠ **"Comfortable" is a statement about number theory, not about cost, and the
+> cost was measured after this was written.** H2 is closed: **a single ~109-bit
+> joint prime is a net loss** (1.2–2.2× worse FHE, 1.1–1.5× worse proving
+> against a SIMD prover, hardening to 3.85× worse on the limb lane's
+> independent derivation); **a single 61-bit joint prime wins on both sides**,
+> but costs 48 bits of noise budget = **exactly one depth level**. The deciding
+> variable is **the machine word**, not the number of primes.
+> `notes/h2-verdict.md`, `docs/VERDICTS.md` §3.
+> So the 96–130-bit search band below is the *wrong* band to be comfortable in;
+> the live design point is ~61 bits, and whether it survives its 2.4-bit margin
+> is **H1, open** (VERDICTS §7.2). The framing — that nobody has posed the joint
+> optimization, and that we hold both halves — is what stands.
+
 2026-08-13. Computed here, not sourced. The single-prime idea generalizes
 into something bigger, and a first search says the constraint space is
 *comfortable*, not tight.

@@ -1,5 +1,22 @@
 # Float in ZK: three regimes, and where our bf16 finding actually sits
 
+> **Two things below were overtaken, both after this was written. Read them
+> first.**
+> 1. ⚠ **The 8854-gate / ~9000-fold figure in Regime 1 is an unbenchmarked
+>    strawman.** Nobody ever implemented it; it propagates Garg → ZKLP → ZIP by
+>    citation, and ZKLP reports Garg's own costs as 108/25 where Garg's Table 1
+>    says 89/35. **It is not "the number to beat."** Traced in
+>    `docs/the-position.md` Correction 1, which supersedes this note's framing.
+> 2. ⚠ **bf16 is not the format.** Phase 0 measured the speedup at **1.4×, not
+>    4×** (`docs/PHASE0-RESULT.md`), and bf16 turned out not to be a block
+>    format at all — it carries a per-element exponent. The live arithmetization
+>    is **MXFP4-specific** (`docs/mx-formats.md`, `docs/VERDICTS.md` §5).
+>
+> **What survives and is why this file is still here**: the three-regime map
+> itself, the Regime 3 (approximation-as-first-class) reading, the two computed
+> bf16 facts, and the Addendum's Regimes 4–5. Those are measurements and
+> readings, not the framing.
+
 2026-08-11. Sourced from two papers ember unblocked. This revises the framing of
 `docs/bf16-exact-arithmetization.md` — that note's two computed facts stand, but
 the literature has more of the answer than I assumed, and one paper is close to
@@ -16,7 +33,11 @@ concrete figure, quoted: converting multiplication over IEEE 32-bit floats
 (w = 24) gives a binary circuit of **8854 gates**, and prover running time
 "increases roughly 9000-fold."
 
-That is the number to beat, and it is why everyone quantizes.
+~~That is the number to beat, and it is why everyone quantizes.~~
+⚠ **No: it was never benchmarked.** The figure propagates by citation and was
+never implemented by anyone, so it is a strawman baseline and not the number to
+beat (`docs/the-position.md` Correction 1). Quoted here because the *regime*
+distinction it illustrates is still the right map.
 
 ## Regime 2 — relative-error semantics (Garg et al.'s move)
 
