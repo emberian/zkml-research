@@ -64,10 +64,18 @@ twice, under two filenames.**
 
 - **Corpus**: `~/paperbin`, 1,528 files / 1,218 PDFs / 1.4 GB, plus 463
   pre-existing `.txt` extracts.
-- **Instrument**: I ran `pdftotext` over **all 1,218 PDFs** into a scratchpad
-  `ptxt/` tree, so the grep was **full text**, not first-2-pages. That closes
-  instrument-blindness (mechanism #2, `notes/the-absence-problem.md`). ⚑ **This
-  should be a standing artifact, not a per-lane rebuild.**
+- **Instrument**: I ran `pdftotext` over **all 1,218 PDFs**, so the grep was
+  **full text**, not first-2-pages. That closes instrument-blindness (mechanism
+  #2, `notes/the-absence-problem.md`). ⚑ **This should be a standing artifact,
+  not a per-lane rebuild** — it took ~2 min and it is the single fix for four
+  absence-claim failures in a week. Rebuild:
+  ```sh
+  cd ~/paperbin && mkdir -p ~/paperbin-txt
+  ls *.pdf */*.pdf | while read f; do
+    o=~/paperbin-txt/$(echo "$f" | tr / _ | sed 's/\.pdf$/.txt/')
+    [ -s "$o" ] || pdftotext -q "$f" "$o"
+  done
+  ```
 - **Non-eprint venues**: ECCC, FOCS/STOC/ITCS/CCC (the `cc-*` shelf in paperbin),
   Thaler's book, plus three web lanes.
 
@@ -83,7 +91,8 @@ that answers §2 outright. **We have the library. We did not read it.**
 
 ### 1.2 ⚑ The name: virtual polynomials
 
-Thaler 2025/2041 §5.2, in our copy at `ptxt/sumcheck-is-all-you-need-thaler-survey-2025-2041.txt:861`: [READ]
+Thaler 2025/2041 §5.2, in our copy
+`~/paperbin/sumcheck-is-all-you-need-thaler-survey-2025-2041.pdf` (extract line 861): [READ]
 
 > "**Reducing commitment costs via virtual polynomials.** The idea of a virtual
 > polynomial is to avoid committing to a polynomial or vector `a` directly, instead
@@ -109,7 +118,7 @@ Same survey, abstract and §1: [READ]
 
 ### 1.3 ⚑ The refutation inside the agreement: not zero
 
-Thaler 2025/2041 §1, `…2041.txt:50`, immediately after that lesson: [READ]
+Thaler 2025/2041 §1, same file (extract line 50), immediately after that lesson: [READ]
 
 > "commit to as little data as possible. **Not zero—there's a sweet spot.** This is
 > for two reasons. First, without any cryptography […] it's impossible (under
@@ -286,6 +295,17 @@ Recording their statements anyway, because they will be reached for:
   PCP evades it.** Interaction buys exactly the succinctness FS rules out for
   static proof strings. **The barrier is against NON-INTERACTIVE proofs.** [2ND-HAND]
 
+⚠ **Ron-Zewi–Rothblum straddles the two axes and I want to be precise about which
+half I am using.** Their general phrasing — *"communication scales with the
+**verification complexity** of R rather than the **witness length**"* — is **axis
+C**, because verification complexity can exceed witness length for purely
+*computational* reasons (matmul: witness 2n², verification n³). Their worked
+example, 3-Colorability with witness Θ(|V|) and IOP length Θ(|E|), is **axis B**.
+**I use the general statement, not the example.** ⓘ And matmul does satisfy their
+side condition: checking `C = AB` with read-many access to the witness is poly-time
+and low-space, so RZR Thm 2 applies and gives `(1+γ)·2n²` — consistent with Thaler
+Thm 3's `n² + O(log n)`. [MINE — the applicability check; not stated by RZR]
+
 ### 2.2 The quantity, and the floor that is trivial
 
 **Definition [MINE, standard-adjacent].** For relation R and a commit-and-prove
@@ -327,7 +347,7 @@ And their Remark 1.2 names the AIR: [READ]
 
 ### 2.3 ⚑ The price — the part that is ours
 
-`scratchpad/xr.py`, using **only** the constants in `paper/scripts/prover_floor.py`
+`paper/scripts/boundary_exchange_rate.py`, using **only** the constants in `paper/scripts/prover_floor.py`
 (themselves MEASURED, sources in that file): mult-equivalents per committed base
 felt, w=48, h=2²⁰. [MEASURED]
 
@@ -355,7 +375,7 @@ spot, in our constants.** The survey states the tension qualitatively; nobody
 prices it, because the theory counts communication and the practice benchmarks
 whole systems. **This is the transferable contribution.**
 
-**Cross-check of the marquee number** (`xr.py`, full cost function, not element
+**Cross-check of the marquee number** (same script, full cost function, not element
 counts):
 
 | n | AIR felts | virtualized felts | AIR cost | virt cost | ratio |
@@ -371,7 +391,8 @@ SELVAGE §2 states "5,461× at n=4096" with **no script behind either** — `rg`
 finds three prose mentions and zero derivations. The `4` is reconstructible as
 four committed cells per multiply-accumulate row (`a_ik`, `b_kj`, product, running
 accumulator): `4n³/3n² = 4n/3`. **It checks out. It was still an unscripted number
-in a marquee position.** `xr.py` should move into `paper/scripts/` if the figure stays.
+in a marquee position** until this lane. It now has one:
+`paper/scripts/boundary_exchange_rate.py`, with its inadequacies named in-file.
 
 ### 2.4 ⚑ Is boundary size a property of the relation or the encoding?
 
