@@ -39,8 +39,23 @@ since "grep paperbin first" is useless if paperbin isn't text-searchable.
    precisely the community most likely to read a matmul claim. Also never
    "succinct PCP" or "certificate complexity" for this.
 4. ⚑ **My use of 2026/1390 as a general Ω(m) commitment floor is WRONG** — it
-   is a **lookup-specific, self-described restricted-model separation.** I have
-   cited it as a general floor repeatedly, including in the prover-floor note.
+   is a **lookup-specific, self-described restricted-model separation**, in the
+   paper's own words *"restricted-model and content-agnostic: rank/degree
+   bounds within a fixed prover class […] not unconditional complexity
+   bounds."* I cited it as a general floor repeatedly. **The general floor we
+   do hold is the `Ω(|w|)` extraction argument, backed by GH98/GVW02**
+   (`notes/boundary-statements.md` §2.5(b)) — a different object with a
+   different proof.
+   **Where the bad citation actually is** (grepped, 2026-08-13, so the next
+   reader fixes sites instead of hunting them): `notes/ml-to-crypto-mappings.md`
+   §A, `notes/speedup-ledger.md` Bin 2 item 1, `notes/moe-router-binding.md`
+   §7, `docs/AGENDA.md` Pillar I, and `notes/archive/PLAN.md` §1 — all now
+   carry the correction. ⚠ **Not `notes/prover-floor.md`**, which this note
+   accused: that file's floor is the `Ω(|w|)` extraction argument and never
+   cites 1390. *A confession is a claim like any other; this one was checked at
+   source and half of it was false.*
+   (Uses of 1390 for its **Proposition 3** — the rank-ρ table-cost result —
+   are fine and stay: `docs/PHASE0-RESULT.md`, `notes/speedup-ledger.md` Bin 1.)
 
 ## What is actually ours: the exchange rate
 

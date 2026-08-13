@@ -16,10 +16,18 @@ field width. An int8 activation committed as 8 bit-columns costs a fraction of
 the same value embedded in a 31-bit field element.
 
 This composes with the one *theorem* the research produced about cost: the
-Ω(m) commitment floor for nonlinearities (2026/1390). **You cannot beat the
-floor in element count — but you can shrink its per-element constant from a
-field element to 8 bits.** The floor is why nonlinearities are 75% of prover
-time; this is the only lever that attacks the floor itself.
+**`Ω(|w|)` commitment floor — the extraction argument, backed by GH98/GVW02**.
+**You cannot beat the floor in element count — but you can shrink its
+per-element constant from a field element to 8 bits.** The floor is why
+nonlinearities are 75% of prover time; this is the only lever that attacks the
+floor itself.
+
+⚠ **Corrected 2026-08-13: this paragraph originally credited the floor to
+eprint 2026/1390. It does not come from there.** 1390 is a *lookup-specific*,
+self-described restricted-model separation and supports no general commitment
+floor (`notes/boundary-statements.md` §2.5(b),
+`notes/virtualization-verdict.md` §4). The lever below is unaffected — it was
+never an argument about which paper proves the floor.
 
 And the punchline: **our own tree is already a binary-tower shop.**
 `Theory.BinaryTower` (the GF(2) tower substrate, "[OB-8-tower] … (Binius

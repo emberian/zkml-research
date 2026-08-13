@@ -81,7 +81,11 @@ spec gives Zamir nothing to hide in.** (`notes/float-in-zk-three-regimes.md`,
 - **Matmul is 5.3% of prover time; nonlinear work is 66–75%, requantization
   alone 25–34%** — DeepProve's tables, independently reproduced by OpenLLM's
   own appendix (a group that never cites DeepProve) and zkGPT [measured].
-  The Ω(m) commitment floor (2026/1390) makes it structural [measured].
+  The `Ω(|w|)` commitment floor makes it structural — the extraction argument
+  (GH98/GVW02), ⚠ **not eprint 2026/1390, which this line originally credited**:
+  1390 is a lookup-specific, self-described restricted-model separation
+  (`notes/virtualization-verdict.md` §4, `notes/boundary-statements.md`
+  §2.5(b)) [verified].
 - Therefore the levers, ranked: **small-value commitment** (the only attack
   on the floor's constant; Thaler's surveyed program, 2–20× measured in
   Jolt; unclaimed for ML) · **exact 2^16 tables** for nonlinearities (no

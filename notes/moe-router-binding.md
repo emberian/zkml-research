@@ -739,8 +739,10 @@ the single highest-value thing to check next.
 - **Data-parallel GKR / Thaler '13** — `moe_infer`'s argsort-then-group-by-expert is
   literally a data-parallel regrouping, so mappings **C** and **D** meet here (O4).
 - **Hollow-LLM (arXiv 2607.28884)** — an unbound router is a second effort gap.
-- **2026/1390** — the Ω(m) nonlinearity commitment floor; the router adds 1,316 rows
-  against the experts' 119,808, so it does not move the floor.
+- **2026/1390** — ⚠ *not* a general Ω(m) commitment floor (a lookup-specific
+  restricted-model separation; `notes/virtualization-verdict.md` §4). The point
+  here survives without it: against the `Ω(|w|)` floor, the router adds 1,316
+  rows to the experts' 119,808, so it does not move the floor.
 
 ---
 
