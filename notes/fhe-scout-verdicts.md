@@ -6,9 +6,14 @@ disk but NO depth verdicts — absence below is not a negative finding.**
 
 ## Evaluate now
 
-1. **KPZ encryption fix** — the r_t(q) 7-bit recovery is one line in
-   encryption, not a re-genesis (correction applied to fhe-core-theory.md).
-   Afternoon experiment: predicted free depth 1→2.
+1. ~~**KPZ encryption fix**~~ — ⚠ **CLOSED AS A NO-OP, 2026-08-13. Do not run
+   this experiment.** fhe.rs already encrypts with KPZ's exact-division
+   encoding (`parameters.rs:418-436`, `plaintext.rs:51-64`), so `r_t(Q)` is
+   structurally absent from our noise path and there is no 7-bit recovery and
+   no free depth level to collect. `notes/kpz-noop-and-the-model-gap.md`,
+   `docs/VERDICTS.md` §3. *The original entry read: "the r_t(q) 7-bit recovery
+   is one line in encryption, not a re-genesis; afternoon experiment,
+   predicted free depth 1→2."*
 2. **eprint 2026/027 (Zama)** — a MEASURED, Apache-2.0, WHIR+BLAKE3
    (hash-based, PQ) SNARG for public-matrix × encrypted-vector — exactly our
    operation. Its structural move: **the ciphertext modulus IS the proof

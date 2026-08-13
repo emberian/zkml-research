@@ -94,9 +94,16 @@ Hierarchy-Builder-style retrofit precedent — a check, not a deadline.
 ## C5. One change that is simultaneously an FHE speedup and a proof simplification
 
 **Pieces**: `fold_add` is linear ⇒ MLE linearity ⇒ **one common-point opening,
-zero sumcheck rounds, zero range checks** (ratio = B, 690× at B=512). Plus the
-side condition (no reduction during accumulation) being met by **lazy
-accumulation, measured at 0.88× — i.e. faster on the FHE side too.**
+zero sumcheck rounds, zero range checks.** Ratio = B — ⚠ **prover-side only**
+(the verifier moves the opposite way: `O(B)` Merkle work against a
+polylogarithmic AIR verifier, and the shared-tree fix collides with per-party
+root binding), and ⚠ **B=512 is not a shape we run** — the node's fold batch is
+**B=4** (`ORDER_COUNT`), so the deployed ratio is **4.2×**, not 690×.
+⚠ The side condition (no reduction during accumulation) is met by lazy
+accumulation, but **not for free**: the 0.88× cited here was the wrong cell
+(it is single-prime-109-bit lazy ÷ RNS-3-limb lazy), and measured in-tree lazy
+is 0.84× at B=256 and **break-even at the deployed B=4**.
+All three corrections: `notes/fold-as-opening.md` §0, `docs/VERDICTS.md` §4.
 
 **Why joining beats either half**: the change the prover wants and the change
 the FHE engine wants **are the same change**. That almost never happens.
