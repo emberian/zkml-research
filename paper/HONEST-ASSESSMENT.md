@@ -64,8 +64,40 @@ exactly 64 bits is a known-awkward Montgomery case; 61 bits leaving spare
 bits may be an implementation detail, not a design principle. One machine,
 one library, one comparison. **A design point cannot rest on that.**
 
-**H4. Is the headroom reachable?** Per the table above: not today, not
-without ~480 GB. Needs either a streaming prover or an honest conditional.
+**H4. Is the headroom reachable? — ⚑ SUBSTANTIALLY RESCUED (ember, and the
+arithmetic backs him).** I reasoned from the benchmark's toy end. Scaling to
+the workload the field actually cares about, calibrated on Zama's own
+measured point (their m=2^17×n=2^8 = 2^25-element matrices sit at ν≈30):
+
+| workload | matrix elements | ν needed | vs Goldilocks 2^31 |
+|---|---|---|---|
+| one 4096² matmul (7B-class layer) | 2^24 | ~29 | fits |
+| one 8192² matmul (70B-class layer) | 2^26 | ~31 | **exactly at the wall** |
+| one 7B forward pass | 2^32.7 | ~38 | **exceeds by 2^6.7** |
+| one 70B forward pass | 2^36 | ~41 | **exceeds by 2^10** |
+| gpt-oss-120b forward (5.1B active) | 2^32.2 | ~37 | exceeds by 2^6.2 |
+
+**A single 70B-class layer matmul already sits exactly at the Goldilocks
+ceiling.** And whole-forward-pass instances exceed it by 2^7–2^10, which is
+not "one doubling" — it is the difference between **~100–1000 chunked
+instances that must be bound together** (Goldilocks) and **one** (p61 at
+2^53). Chunk-binding is accumulation/recursion overhead paid per chunk, so
+the ceiling is a *scaling* constraint: invisible on toy benchmarks,
+dominant exactly when you try to prove real model inference.
+
+**And the memory objection dissolves under the streaming provers we already
+surveyed** (Sparrow measures 1.4× native space): naive ν=32 is ~709 GB, but
+streaming ν=32 is **~48 GB** and ν=34 is ~192 GB. So the honest statement
+is: **with a naive prover memory binds first; with a streaming prover —
+which exists in the literature and is on our own queue — 2-adicity is the
+hard wall, and it is hit by any real model.** That is a much stronger and
+still-honest claim than the "one doubling" framing, and it is the one the
+paper should make.
+
+⚠ Still an ARGUMENT, not a measurement: the ν-calibration is a single-point
+extrapolation from their benchmark, and nobody has run a streaming prover at
+these sizes. H4 moves from "refuted" to "conditional on a stated,
+surveyed-feasible prover property" — which is a real gate, not a fatal one.
 
 **H5. Math prior art.** Lane running. If the family law or the Φ_m(2^b)
 classification is known in math.NT, the contribution shrinks to the
