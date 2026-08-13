@@ -59,10 +59,18 @@ architectures, tables — all publicly committed), one soundness ledger
 
 ## What is demonstrable, in dependency order
 
-1. **The registry** — commitments to every Tier-1 open model, computed by
-   range-streaming without full downloads, published with tooling. Closes
-   the effort-gap attack class nobody else has closed; needs no prover;
-   shippable in days.
+1. **The registry** — ⚠ **SHIPPED BUT MIS-SPECIFIED (2026-08-13, see
+   `registry/WHAT-THIS-IS-NOT.md`)**: what was built is SHA-256 over a
+   canonical manifest, which **no proof system can open** — proving weights
+   against it would mean hashing 14 GB inside a circuit. It is a
+   checkpoint-integrity tool, not an anchor. The real artifact is a
+   **Poseidon2 Merkle commitment over the field-element encoding of the
+   weights**, at a leaf granularity the circuit opens, in the layout the
+   prover reads — which additionally requires FIXING the MXFP4→field
+   encoding. The streaming layer, canonicalization discipline and gate
+   methodology transfer; the commitment does not. It does NOT close the
+   effort gap either — proof-of-learning has been broken since 2023; the
+   registry binds identity and sidesteps effort.
 2. **The audit theorem in Lean** (in flight) — the first machine-checked
    commit-then-audit soundness statement, with the error budget composed
    into one number. This is the theorem that makes tier-2 and tier-3
