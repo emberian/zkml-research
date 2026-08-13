@@ -12,10 +12,15 @@ metatheory/Bfv. Corrects the vFHE agenda's missing-piece list.
   and no worst-case-to-average-case reduction supports the instance at σ≈3.16
   (though CBD = normal-form LWE dissolves the ternary-secret objection for the
   single-party path via ACPS).
-- **r_t(q) = 0.82·t — essentially the worst possible draw**, costing ~7 bits
-  after the first multiplication. Free to eliminate: verified alternate
-  NTT-friendly prime triples with **Q ≡ 1 (mod t)** at the same widths.
-  **A re-genesis, not a cost** — the house doctrine's exact case.
+- **r_t(q) = 0.82·t — costing ~7 bits — ⚠ SUPERSEDED 2026-08-13: this is an
+  ENCODING bug, not a parameter bug.** KPZ 2021/204's own first modification:
+  encrypt as `a·s + e + ⌊(Q/t)·m⌉` (round AFTER scaling) instead of
+  pre-rounding Δ=⌊Q/t⌋, and the r_t(Q) term vanishes — "the noise growth in
+  BFV becomes the same, or actually somewhat better, as in BGV." One line in
+  encryption. No new primes, no re-genesis, no VK rotation. The Q≡1(mod t)
+  re-genesis I recommended was a cost verdict that outlived its premise.
+  Predicted: depth 1→2 free (Fheanor harness confirms deployed BFV at depth 1
+  today).
 
 ## THE INVERSION: rotation is not the missing piece for our workload
 

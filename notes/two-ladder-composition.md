@@ -55,3 +55,25 @@ Next: price it (layer-1 coverage of the GKR-prover evaluation is the new
 term — how much ciphertext work does homomorphic GKR add for 719-style
 proving to cover), and check whether Laminate's noise-provisioning floor
 (+32 bits for base) interacts with the audit-sampling floor I flagged.
+
+
+## ⚠ CORRECTIONS (FHE scout, 2026-08-13)
+
+1. **The composition does NOT close at our deployed parameters.** Laminate's
+   own Appendix E.13: proof generation consumes **2.5 additional levels + 1
+   for packing** — against our ~3 total levels (1 measured today). The
+   two-ladder design wants N=8192 / log q ≈ 218. It remains right in shape;
+   it is not deployable on current fhegg parameters, and saying otherwise
+   would be the honest-label sin.
+2. **The leakage oracle has a published answer I missed**: zero-knowledge
+   **Proofs of Decryption** (eprint 2024/1684, Blind Fractal line;
+   GBFV-optimized; code at ~/src/blind_zkSNARKs). The client can prove what
+   it decrypted without a raw verdict channel. Slots into layer 2.
+3. **Every headline number in the FHE-over-SNARK line is a complexity model
+   over SEAL microbenchmarks** — verified across Phalanx, Laminate, Lasagne,
+   blind-PCS. No end-to-end run exists anywhere. Our "5–67×" basis inherits
+   that and must be quoted as estimated.
+4. Ladder update: **Lasagne (2026/857)** adds a real rung (2^20 gates in
+   6–12 min single-core, 11–23× over Phalanx); lattice-folding vFHE
+   (2026/1127) is 1–2 orders SLOWER with 2× smaller proofs — a size rung,
+   not a time rung.
