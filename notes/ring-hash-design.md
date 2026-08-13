@@ -754,10 +754,17 @@ clean for hash/Merkle-based folding.
 
 ⚑ **And a hazard it raises that bears directly on Escape 3**: *"attacks exist
 [KRS25] for **GKR-based SNARKs if we allow the proven statement to compute the
-Fiat–Shamir hash function itself**."* **Delegating our FS hash to a GKR argument
+Fiat–Shamir hash function itself**."* KRS25 is **Khovratovich, Rothblum,
+Soukhanov, "How to Prove False Statements: Practical Attacks on Fiat–Shamir"**
+(resolved in Symphony's bibliography). **Delegating our FS hash to a GKR argument
 and then Fiat–Shamir-ing that argument is precisely the configuration named
-there.** This must be resolved before Escape 3 is counted as an escape at all —
-flagged for the lane, not yet run down.
+there** — the proven statement computing the FS hash function is the *definition*
+of hash delegation. This must be resolved before Escape 3 counts as an escape at
+all. ⚠ Not yet run down: whether the attack needs the *same* hash to be both
+delegated and used for the outer FS (which a careful two-hash separation would
+avoid), or bites more generally. **Do not quote Keccacheck's or 2026/551's
+constraint counts as an escape without settling this** — a cheaper verifier for
+an unsound configuration is not a win.
 
 #### ⚑ Escape 0, which our own corpus already held: don't be in R_q at all
 
