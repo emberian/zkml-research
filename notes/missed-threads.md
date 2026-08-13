@@ -108,7 +108,9 @@ with every other item.
 - **Hollow-LLM registry** — called "the most defensible thing on this list";
   absent from the plan's phases.
 - **Multilinear vs univariate fork** — the GKR lane said it "decides everything
-  downstream"; still undecided in PLAN.md.
+  downstream"; still undecided in PLAN.md (now `notes/archive/PLAN.md`; the
+  fork is settled in `docs/VERDICTS.md` §4 — materialize-vs-virtualize, with
+  the route in `notes/multilinear-pcs-verdict.md`).
 
 ## The meta-error, named
 

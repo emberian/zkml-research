@@ -1,7 +1,9 @@
 # Phase 0: the thesis does not hold. 1.4×, not 4×.
 
-2026-08-11. Measurement harness at `~/dev/zkml-research/phase0/`. This supersedes
-§1–§4b of `PLAN.md`. Read it before reading the plan.
+2026-08-11. Measurement harness at `~/dev/zkml-research/phase0/`. This is the
+measurement that killed the bf16 4× thesis and with it the plan built on it —
+`PLAN.md` is now `notes/archive/PLAN.md`; the live successors are
+`docs/AGENDA.md` and `docs/FRONTIER-QUEUE.md`.
 
 ## The number
 

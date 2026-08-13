@@ -1,5 +1,11 @@
 # RAM/memory-checking verdicts (first half of the lookup/RAM lane)
 
+> **ARCHIVED — history, not truth. Do not cite this file.**
+> The addendum this note was waiting for arrived, and both halves are
+> integrated in **`notes/lookup-ram-verdicts.md`**, which carries every finding
+> below plus the three-member one-hot law, the per-consumer verdicts, and the
+> home-tree consumer list. This file also stops mid-sentence.
+
 2026-08-13, via peer relay. Repo-verified at Jolt and SP1 HEAD; mirror
 full-texts cited by line. An addendum on RISC Zero/OpenVM/Ceno/Nexus is
 referenced as already-landed but has not reached this session — reconcile

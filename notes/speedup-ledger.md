@@ -1,7 +1,8 @@
 # The speedup ledger — everything found, in one place
 
-2026-08-12. Consolidates the week's positive findings scattered across PLAN.md,
-PHASE0-RESULT, missed-threads, ml-to-crypto-mappings, and mirror-mine. Three
+2026-08-12. Consolidates the week's positive findings scattered across PLAN.md
+(now `notes/archive/PLAN.md`), PHASE0-RESULT, missed-threads,
+ml-to-crypto-mappings, and mirror-mine. Three
 bins: measured speedups sitting in the literature, combinations nobody has
 done, and things that exist on paper only.
 
