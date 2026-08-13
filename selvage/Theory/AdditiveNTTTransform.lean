@@ -56,7 +56,7 @@ novelpoly basis, the additive fold `friFold` with its completeness half
 * **`additiveProximityGap_exact`** — the EXACT-agreement regime of the
   hypothesis, PROVED unconditionally with b = 1 (two challenges on the affine
   line u + λ·v determine both components as low-degree words — any field, no
-  characteristic assumption): the additive analog of Loom's sub-quantization
+  characteristic assumption): the additive analog of Selvage's sub-quantization
   `foldDistancePreserving_of_lt_inv_card`, and the satisfiability witness that
   the [ANTT-proximity] statement shape is inhabited. Hence
   **`additiveFold_distance_exact`**: at δ = 0 the additive fold preserves
@@ -85,7 +85,7 @@ novelpoly basis, the additive fold `friFold` with its completeness half
   form: unless (u, v) already have correlated (1−δ)-agreement with a
   degree-< d pair, all but ≤ b challenges λ leave u + λ·v δ-far from
   degree < d. This is the additive-coset analog of the multiplicative
-  `IsProximityGenerator`/hPG floor (Loom/ReedSolomon, Loom/Proximity) — the
+  `IsProximityGenerator`/hPG floor (Selvage/ReedSolomon, Selvage/Proximity) — the
   SAME BCIKS 2020/654 / WHIR proximity-gap statement, whose proof is
   evaluation-domain-agnostic (BCIKS Thm 1.4 holds for RS codes over ANY set of
   distinct points; the domain structure enters only through the folding
@@ -93,8 +93,8 @@ novelpoly basis, the additive fold `friFold` with its completeness half
   δ = 0 regime is PROVED (`additiveProximityGap_exact`). Macroscopic δ with
   its quantitative (δ, b = err·|F|) profile is the floor, parallel to (and in
   the deployment ultimately unified with) the multiplicative hPG hypothesis;
-  its Loom-side instantiation against Loom/Proximity cannot be stated here
-  (the Theory boundary forbids naming Loom).
+  its Selvage-side instantiation against Selvage/Proximity cannot be stated here
+  (the Theory boundary forbids naming Selvage).
 
 Candidate-independent FIELD MATH — imports Mathlib + Theory only (boundary
 enforced by `scripts/check-import-boundary.sh`).

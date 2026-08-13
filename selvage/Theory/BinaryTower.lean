@@ -46,10 +46,10 @@ Candidate-independent FIELD MATH — imports Mathlib only (boundary enforced by
   over T_k is the Binius code substrate: degree-< d evaluation words at n ≤
   2^(2^k) distinct points form an MDS code of distance n − d + 1. The
   Theory-side injectivity half is proved (`binaryTower_rs_eval_injective`); the
-  REAL residual is the Loom-side wiring — instantiating Loom/ReedSolomon at
+  REAL residual is the Selvage-side wiring — instantiating Selvage/ReedSolomon at
   alphabet `binaryTower k` — which this file CANNOT state (Theory imports
-  Mathlib only; the boundary law forbids naming Loom). That instantiation is
-  the intended bridge and lands on the Loom side.
+  Mathlib only; the boundary law forbids naming Selvage). That instantiation is
+  the intended bridge and lands on the Selvage side.
 -/
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.FieldTheory.Finite.Basic
@@ -202,7 +202,7 @@ theorem binaryTower_one_fanpaar_base :
 two polynomials of degree < n agreeing at n distinct points of T_k are equal.
 This is the abstract, candidate-independent half of the Binius code substrate —
 an RS codeword over T_k (the evaluation table of a low-degree polynomial)
-determines its message polynomial. The Loom-side instantiation is
+determines its message polynomial. The Selvage-side instantiation is
 [BTOWER-rs]. -/
 theorem binaryTower_rs_eval_injective {k n : ℕ} {α : Fin n → binaryTower k}
     (hα : Function.Injective α) {p q : Polynomial (binaryTower k)}
@@ -242,7 +242,7 @@ code — two distinct codewords disagree in MORE than n − d positions (stated
 `n < Nat.card {disagreement positions} + d`). The injectivity consequence is
 already proved
 (`binaryTower_rs_eval_injective`); this full distance statement, and above all
-its Loom-side instantiation (Loom/ReedSolomon at alphabet `binaryTower k`,
+its Selvage-side instantiation (Selvage/ReedSolomon at alphabet `binaryTower k`,
 which the Theory boundary forbids naming here), is the residual bridge. -/
 def TowerRSDistance : Prop :=
   ∀ (k d n : ℕ) (α : Fin n → binaryTower k), Function.Injective α →

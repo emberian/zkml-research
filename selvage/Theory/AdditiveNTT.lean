@@ -80,13 +80,13 @@ scalars — imports Mathlib + Theory only (boundary enforced by
   δ-far from every low-degree word stays (with high probability over the
   challenge λ) far after folding — the proximity-gap / correlated-agreement
   statement over ADDITIVE cosets {x, x+β} instead of multiplicative pairs
-  {x, −x}. Its Loom-side deployment (instantiating Loom/Proximity at the
+  {x, −x}. Its Selvage-side deployment (instantiating Selvage/Proximity at the
   additive domain) CANNOT be stated here (the Theory boundary forbids naming
-  Loom), and its correct quantitative statement (which distortion, which
+  Selvage), and its correct quantitative statement (which distortion, which
   challenge-count bound — Ben-Sasson et al. proximity gaps, Binius) must enter
   statement-first WITH its satisfiability argument from the literature in hand;
   a guessed constant would be a wrong statement proved slowly. Both halves land
-  Loom-side against Loom/ReedSolomon + Loom/Proximity.
+  Selvage-side against Selvage/ReedSolomon + Selvage/Proximity.
 -/
 import Theory.BinaryTowerFanPaar
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
