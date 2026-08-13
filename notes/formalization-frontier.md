@@ -197,3 +197,50 @@ censuses (244 vs 310; load-bearing ones verified individually); ~/paperbin
 needs dedup (~120 new PDFs, duplicates under different names, IoTeX
 numbering reversed in several filenames — authoritative: 2026/858 =
 Threshold Halving, 2026/861 = Action–Orbit).
+
+
+## Final refinements from the full landscape survey
+
+**Two firsts DOWNGRADED, honestly:**
+- **Sumcheck is not a first**: Isabelle AFP has soundness AND completeness
+  (CSF 2024) — the first machine-checked sumcheck happened in 2024. A Lean
+  sumcheck with *RBR knowledge* soundness would still be first-in-kind
+  (ArkLib's is sorried), but the headline is gone.
+- **LogUp is not a first**: StarkWare verified the LogUp protocol inside the
+  S-two development (main files 0-sorry). A standalone IOP-framework LogUp
+  theorem is still open, but must be positioned against 2606.04311 §5.
+
+**The window warning on position #2 (list-decoding-regime CA)**: this is the
+hottest race in the field — the $1M Proximity Prize, IoTeX's days-old
+self-published claims (2026/858 Lean-formalized half-threshold bound;
+2026/861 conditional on a "sparse-worst-case dominance" conjecture —
+unaudited, prize-money context), and **deltastar.computer**, now identified:
+an **agent-swarm formalization campaign** ("Pinning δ*") mining MCA
+thresholds over an ArkLib fork — issue #444 has 1,321 comments — with
+kernel-checked results labeled proven/computational/open. (The companion
+lane found its advertised sorry-free files absent at the fork's HEAD, so
+claims ≠ audited artifacts — but the campaign is real.) **Agent swarms are
+already racing in exactly our zone. The window is months, not years.**
+
+**Confidence-ranked firsts, final form**: 1. sponge indifferentiability in a
+foundational prover (HIGH — only EasyCrypt CCS'19 exists anywhere, nothing
+quantum); 2. list-decoding-regime CA (HIGH, window warning above);
+3. RBR→FS compiler + BCS end-to-end (HIGH — stubs and roadmaps everywhere,
+work nowhere); 4. state-restoration soundness (HIGH — mechanized nowhere);
+5. instantiated FRI bound < 1 at deployment parameters (HIGH — both external
+attempts stop exactly where the difficulty lives); 6. light-client
+soundness (MEDIUM-HIGH — least competition, least external legibility);
+9. ZK simulator/extractor for a hash-based succinct argument (MEDIUM —
+nothing public for STARK/IOP-based ZK).
+
+**The confirmed 2025/1993 posture**: the Garreta–Mohnblatt–Wagner paper
+explicitly frames itself as "a template for formal verification efforts" and
+cites Ethereum's ambition of formally verifying the stack — the ecosystem's
+gravity (Vitalik's July "Lean Ethereum" roadmap: recursive STARK
+verification + PQ + FV as a pillar) points at exactly the compilation layer
+we hold.
+
+**Bottom line, from the survey verbatim**: "your four biggest holdings map
+onto the four biggest verified gaps… both external attempts stop
+conspicuously exactly where your FRI-reality memory says the difficulty
+lives."
