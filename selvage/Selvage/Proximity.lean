@@ -912,6 +912,139 @@ theorem card_eq_two_mul_card (D : FoldingData F dom domSq) :
 
 end FibreCount
 
+/-! ### Folding at most DOUBLES the distance, and the decoded chain is a fold chain
+
+Two facts that cost ZERO error — they are deterministic, consume no proximity gap,
+and hold unconditionally. Together they are ZCF23's Lemma 8 (BaseFold's
+chain-consistency step), and the radius they want, `3δ < d_C`, is
+`RateRegimeSelector`'s `oneThirdUD` band arrived at from the other side.
+
+The direction matters. "`f` is δ-close to `u`, therefore `fold f α` is δ-close to
+`fold u α`" is FALSE as a distance-preservation claim in the useful direction — the
+fold is 2-to-1, so the same disagreement count sits on a domain of half the size and
+the FRACTION can double. `relDist_fold_le` states exactly that doubling and no more,
+and `relDist_fold_le_tight` below attains it with equality. Soundness still argues
+by the contrapositive (`FoldDistancePreserving`); this pair is what turns "each level
+decodes to SOMETHING" into "each level decodes to the FOLD of the level above", which
+is a different obligation and the one that keeps the terminal constant from being the
+extension of nothing in particular. -/
+
+section FoldDoubling
+
+variable [DecidableEq F] [Fintype ι] [Fintype κ]
+variable {dom : ι ↪ F} {domSq : κ ↪ F}
+
+omit [DecidableEq F] [Fintype ι] [Fintype κ] in
+/-- The fold at `k` reads exactly two coordinates: `sec k` and `neg (sec k)`. -/
+theorem fold_congr_of_eq (D : FoldingData F dom domSq) {f u : ι → F} (α : F) (k : κ)
+    (h1 : f (D.sec k) = u (D.sec k))
+    (h2 : f (D.neg (D.sec k)) = u (D.neg (D.sec k))) :
+    fold D f α k = fold D u α k := by
+  simp only [fold, foldEven, foldOdd, h1, h2]
+
+/-- **Folding creates no new disagreements.** Every folded coordinate where the two
+folds differ is charged to a DISTINCT coordinate where the words differ: the charge
+lands in the fibre `{sec k, neg (sec k)}`, and `sq` recovers `k` from it, so the
+charging map is injective. The COUNT does not grow — only the domain shrinks. -/
+theorem hammingDist_fold_le (D : FoldingData F dom domSq) (f u : ι → F) (α : F) :
+    hammingDist (fold D f α) (fold D u α) ≤ hammingDist f u := by
+  classical
+  have hA : hammingDist (fold D f α) (fold D u α)
+      = (Finset.univ.filter fun k => fold D f α k ≠ fold D u α k).card := by
+    simp [hammingDist]
+  have hB : hammingDist f u = (Finset.univ.filter fun i => f i ≠ u i).card := by
+    simp [hammingDist]
+  have hsq : ∀ j : κ,
+      D.sq (if f (D.sec j) = u (D.sec j) then D.neg (D.sec j) else D.sec j) = j := by
+    intro j
+    by_cases h : f (D.sec j) = u (D.sec j)
+    · rw [if_pos h, D.sq_neg, D.sq_sec]
+    · rw [if_neg h, D.sq_sec]
+  rw [hA, hB]
+  refine Finset.card_le_card_of_injOn
+    (fun k => if f (D.sec k) = u (D.sec k) then D.neg (D.sec k) else D.sec k) ?_ ?_
+  · intro k hk
+    have hne : fold D f α k ≠ fold D u α k := (Finset.mem_filter.mp hk).2
+    by_cases h1 : f (D.sec k) = u (D.sec k)
+    · have h2 : f (D.neg (D.sec k)) ≠ u (D.neg (D.sec k)) :=
+        fun h2 => hne (fold_congr_of_eq D α k h1 h2)
+      simpa [if_pos h1] using h2
+    · simpa [if_neg h1] using h1
+  · intro k _ l _ hkl
+    have hkl' : (if f (D.sec k) = u (D.sec k) then D.neg (D.sec k) else D.sec k)
+        = (if f (D.sec l) = u (D.sec l) then D.neg (D.sec l) else D.sec l) := hkl
+    calc k = D.sq (if f (D.sec k) = u (D.sec k) then D.neg (D.sec k) else D.sec k) :=
+          (hsq k).symm
+      _ = D.sq (if f (D.sec l) = u (D.sec l) then D.neg (D.sec l) else D.sec l) := by
+          rw [hkl']
+      _ = l := hsq l
+
+/-- **`relDist_fold_le` — one fold at most DOUBLES the relative distance.** The
+disagreement count does not grow (`hammingDist_fold_le`) while the domain halves
+(`card_eq_two_mul_card`), so the fraction gains a factor of at most `2`. Attained
+with equality — see `relDist_fold_le_tight`. -/
+theorem relDist_fold_le (D : FoldingData F dom domSq) (f u : ι → F) (α : F) :
+    relDist (fold D f α) (fold D u α) ≤ 2 * relDist f u := by
+  classical
+  rcases isEmpty_or_nonempty κ with _ | _
+  · have h0 : Fintype.card κ = 0 := Fintype.card_eq_zero
+    have h0' : Fintype.card ι = 0 := by rw [card_eq_two_mul_card D, h0]
+    simp [relDist, h0']
+  · have hn : (0 : ℝ) < (Fintype.card κ : ℝ) := by exact_mod_cast Fintype.card_pos
+    have hd : (hammingDist (fold D f α) (fold D u α) : ℝ) ≤ (hammingDist f u : ℝ) := by
+      exact_mod_cast hammingDist_fold_le D f u α
+    rw [relDist, relDist, card_eq_two_mul_card D]
+    push_cast
+    rw [show (2 : ℝ) * ((hammingDist f u : ℝ) / (2 * (Fintype.card κ : ℝ)))
+          = (hammingDist f u : ℝ) / (Fintype.card κ : ℝ) by
+        rcases eq_or_ne (Fintype.card κ : ℝ) 0 with h | h
+        · rw [h]; simp
+        · field_simp]
+    exact (div_le_div_iff_of_pos_right hn).mpr hd
+
+/-- **Fold-chain consistency — ZCF23's Lemma 8, and it costs ZERO error.** On an
+accepting transcript the verifier learns only that each level's word is δ-close to
+SOME codeword. This says that at `3δ < d_C` those decoded codewords are forced to
+form a genuine fold chain: the level-below codeword IS the fold of the level-above
+one. Deterministic: no challenge is sampled, no proximity gap is consumed, no error
+term is paid. `relDist_fold_le` puts `fold D v α` within `2δ` of `π'`, `w` is within
+`δ`, both are codewords, and `3δ < d_C` closes the triangle. -/
+theorem fold_chain_consistent [Nonempty κ] (D : FoldingData F dom domSq) {d : ℕ}
+    {dC δ : ℝ}
+    (hdC : ∀ x ∈ reedSolomonCode domSq d, ∀ y ∈ reedSolomonCode domSq d,
+      x ≠ y → dC ≤ relDist x y)
+    {π : ι → F} {v : ι → F} {w : κ → F} (α : F)
+    (hv : v ∈ reedSolomonCode dom (2 * d)) (hw : w ∈ reedSolomonCode domSq d)
+    (hπv : relDist π v ≤ δ) (hπ'w : relDist (fold D π α) w ≤ δ)
+    (h3δ : 3 * δ < dC) :
+    fold D v α = w := by
+  by_contra hne
+  have hfv : fold D v α ∈ reedSolomonCode domSq d := fold_preserves_code D hv α
+  have h1 : dC ≤ relDist (fold D v α) w := hdC _ hfv _ hw hne
+  have h2 : relDist (fold D π α) (fold D v α) ≤ 2 * relDist π v := relDist_fold_le D π v α
+  have h3 : relDist (fold D v α) w
+      ≤ relDist (fold D v α) (fold D π α) + relDist (fold D π α) w :=
+    relDist_triangle _ _ _
+  have h4 : relDist (fold D v α) (fold D π α) = relDist (fold D π α) (fold D v α) :=
+    relDist_comm _ _
+  linarith
+
+/-- The Reed–Solomon instantiation, with the radius written out: at
+`3δ < 1 − (d−1)/|κ|` the decoded chain is a fold chain, UNCONDITIONALLY — no
+proximity-gap hypothesis, no conjecture, no named residual. The band is
+`RateRegimeSelector.oneThirdUD`'s `(1−ρ)/3` reached from the other direction, and a
+hair wider, because `reedSolomonCode_minDist` carries the exact Singleton distance
+`1 − (d−1)/n` rather than the papers' rounded `1 − ρ`. -/
+theorem fold_chain_consistent_RS [Nonempty κ] (D : FoldingData F dom domSq) {d : ℕ}
+    {δ : ℝ} {π : ι → F} {v : ι → F} {w : κ → F} (α : F)
+    (hv : v ∈ reedSolomonCode dom (2 * d)) (hw : w ∈ reedSolomonCode domSq d)
+    (hπv : relDist π v ≤ δ) (hπ'w : relDist (fold D π α) w ≤ δ)
+    (h3δ : 3 * δ < 1 - ((d : ℝ) - 1) / (Fintype.card κ : ℝ)) :
+    fold D v α = w :=
+  fold_chain_consistent D (reedSolomonCode_minDist domSq d) α hv hw hπv hπ'w h3δ
+
+end FoldDoubling
+
 section ProximityGap
 
 variable [DecidableEq F] [Fintype ι] [DecidableEq ι] [Fintype κ]
@@ -1215,6 +1348,68 @@ is tight on this instance (`1/5` acceptance probability, exactly `m·b/|F|`). -/
 example : (acceptSet ldtTower degSched spikeWord).card = 1 := by
   rw [acceptSet_spike, Finset.card_singleton]
 
+/-! ### Keystones for the doubling law and fold-chain consistency -/
+
+/-- **TEETH: the factor `2` in `relDist_fold_le` is ATTAINED, not slack.** The spike
+is `1/4`-far from the zero codeword on the 4-point level-0 domain; its fold at
+`α = 0` is `1/2`-far from the zero codeword on the 2-point level-1 domain. The
+disagreement COUNT is unchanged (1 → 1); it is the domain that halved. So no
+sharpening of the constant is available, and the `(1−ρ)/3` band that
+`fold_chain_consistent` needs is not an artifact of a lossy step. -/
+theorem relDist_fold_le_tight :
+    relDist (fold data0 spikeWord 0) (fold data0 (0 : Fin 4 → ZMod 5) 0)
+      = 2 * relDist spikeWord (0 : Fin 4 → ZMod 5) := by
+  have h1 : hammingDist (fold data0 spikeWord 0)
+      (fold data0 (0 : Fin 4 → ZMod 5) 0) = 1 := by decide
+  have h2 : hammingDist spikeWord (0 : Fin 4 → ZMod 5) = 1 := by decide
+  rw [relDist, relDist, h1, h2]
+  norm_num
+
+/-- A one-position corruption of the line `X`'s codeword: `(1,2,3,0)` against
+`xWord = (1,2,3,4)`. Relative distance exactly `1/4`. -/
+def nearWord : Fin 4 → ZMod 5 := ![1, 2, 3, 0]
+
+theorem nearWord_close : relDist nearWord xWord ≤ 1 / 4 := by
+  have h : hammingDist nearWord xWord = 1 := by decide
+  rw [relDist, h]
+  norm_num
+
+/-- At the challenge `α = 1` the corrupted word folds ONTO a level-1 codeword — the
+constant `1` — so the verifier's level-1 decoding is at distance `0`. -/
+theorem nearWord_fold_eq : fold data0 nearWord 1 = (fun _ => 1 : Fin 2 → ZMod 5) := by
+  decide
+
+/-- **`fold_chain_consistent_RS` FIRES, with every premise inhabited and none of them
+degenerate.** `d = 1` so `d_C = 1 − 0/2 = 1`, and `δ = 1/4` gives `3δ = 3/4 < 1`: the
+band is real, not empty. The verifier sees a level-0 word `1/4`-close to `xWord` and
+a level-1 word `0`-close to the constant `1`; the theorem forces the level-1 codeword
+to BE the fold of `xWord`. (The conclusion is independently computable here — that is
+what makes this a check of the theorem rather than a use of it.) -/
+theorem chain_consistent_fires :
+    fold data0 xWord 1 = (fun _ => 1 : Fin 2 → ZMod 5) := by
+  refine fold_chain_consistent_RS (d := 1) (δ := 1 / 4) (π := nearWord) data0 1
+    xWord_mem ?_ nearWord_close ?_ ?_
+  · exact mem_reedSolomonCode_one_iff.mpr fun _ _ => rfl
+  · rw [nearWord_fold_eq, relDist, hammingDist_self]
+    norm_num
+  · norm_num
+
 end ProximityExample
+
+/-! ## Axiom pins for the doubling / chain-consistency block
+
+(The rest of this file predates the pinning discipline and is unpinned; these are the
+declarations added with it in force.) -/
+
+/-- info: 'Minidregg.Selvage.relDist_fold_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms relDist_fold_le
+/-- info: 'Minidregg.Selvage.fold_chain_consistent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms fold_chain_consistent
+/-- info: 'Minidregg.Selvage.fold_chain_consistent_RS' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms fold_chain_consistent_RS
+/-- info: 'Minidregg.Selvage.ProximityExample.relDist_fold_le_tight' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ProximityExample.relDist_fold_le_tight
+/-- info: 'Minidregg.Selvage.ProximityExample.chain_consistent_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ProximityExample.chain_consistent_fires
 
 end Minidregg.Selvage
