@@ -26,6 +26,38 @@ Prior context: `two-rocks.md` §Rock 2 (the survey and the enabling theorem),
 
 ---
 
+## 0. What this note settles
+
+| question | answer | § |
+|---|---|---|
+| the recorded **#1 weakness** (branch ≤9 vs MDS 65) | **CLOSED at τ=4** — 2 rows/elt/round reach branch 5 = slot-MDS | §1.2 |
+| the composite branch law | **t + |K|**, not the naive t·|K|+1 — refuted by construction at every t tested | §1.4–1.5 |
+| the σ price | **HALVED**: ⌈(s−1)/2⌉, not s−1 — Definition 9 verified to carry two automorphism channels | §2.0 |
+| best σ-Poseidon point | **dense-in-full-rounds, 143.8 rows/elt (5.0×)** at τ=1; **89.8 (8.0×)** at τ=4 | §2.1, §4.1 |
+| second candidate | **gadget-Feistel, 27.4 rows/elt (26×)** — higher ceiling, much less mature, 3 hard caveats | §3 |
+| ⚑ **the τ=1 vs τ=4 fork** | **τ=4**, decided by 2026/1127's **own** challenge-space rationale (‖S‖ = q^τ) | §4.5–4.6 |
+| **delegate instead of building?** | *open — literature lane outstanding* | §5 |
+
+**Three things this lane found that were nobody's recorded position:**
+
+1. ⚑ **τ is the exponent of the folding scheme's challenge space** (‖strong
+   sampling set‖ = q^τ), and 2026/1127 says *"we may choose τ to obtain
+   exponentially-sized strong sampling sets."* **τ=1 collapses it to q = 2^64.**
+   The τ=1 preference was asking the host protocol to give up its challenge
+   space — a systems cost, not a hash-side tradeoff. This decides the fork.
+2. **C1 (`gcd(α, q^τ−1) = 1`) is twice as constraining at τ=4**, and it makes the
+   two candidates want *incompatible* moduli — but a joint modulus exists at
+   **2^64 − 279**, found in seconds. No tradeoff is forced.
+3. **The τ=4 invariant subfield is real** (measured: invariant through 12 rounds
+   with scalar coefficients) and its cure **C6** is the *existing* weakness-#4
+   condition widened one field down — not a new class of requirement.
+
+**The one genuinely open item on the τ=4 branch**: coefficient-grouping degree
+analysis over F_{q^4}. **Not closed, and τ=1 does not avoid needing an analysis
+either** — the round count is underived in both regimes (§4.4).
+
+---
+
 ## 1. The branch-number weakness is CLOSED at τ=4
 
 `ring-hash-cryptanalysis.md` §1 prices the branch deficit as the design's **#1
