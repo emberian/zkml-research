@@ -324,9 +324,59 @@ extension-field S-box needs ~3.2× the partial rounds of τ=1** (RP=70 against 2
 That is a wide margin, and it is the right way to state it, because the round
 count is exactly the quantity the extension-field question could move.
 
-### 4.2 The security half
+### 4.2 A hard constraint nobody had checked: C1 at τ>1
 
-*(pending)*
+The S-box x^α permutes R_q iff it permutes each slot field F_{q^τ}, i.e. iff
+**gcd(α, q^τ − 1) = 1** — condition C1 in `sigma_poseidon.py`, which the
+docstring correctly calls "strictly stronger than the field condition" but which
+had never been evaluated at τ=4 against the moduli actually on the table.
+Evaluated now (`design_tau_tradeoff.py`):
+
+```
+  deployed Frog  (q mod 7 = 2)
+    tau=1/2/4:  gcd(7, q^tau-1) = 1   alpha=7 OK at every tau
+  2^64-59        (q mod 7 = 6)
+    tau=1:      alpha=7 OK
+    tau=2/4:    gcd(7, q^tau-1) = 7   alpha=7 ** ILLEGAL **  (smallest legal: 13, 5 mults)
+```
+
+Two consequences, one benign and one new:
+
+1. **The fork is not blocked at Frog.** q ≡ 2 mod 7, so α=7 survives at τ=4.
+   Good — the τ=4 branch closure is reachable on the deployed ring.
+2. ⚑ **The two candidates want incompatible moduli, and this had not been
+   noticed.** 7 | q^τ−1 iff ord_7(q) | τ; since (Z/7)^* is cyclic of order 6,
+   τ=1 excludes only q ≡ 1 (17% of primes) but **τ=4 excludes q ≡ ±1 (33%)** —
+   C1 is exactly twice as constraining at τ=4. And **2^64−59, the modulus the
+   gadget-Feistel *requires*** (§3, tiny γ), is ≡ 6 mod 7, so 7 | q+1 | q^4−1 and
+   **α=7 is illegal there at τ=4**; σ-Poseidon would need α=13, 5 mults, +25%
+   S-box cost. Meanwhile the deployed Frog modulus is fine for σ-Poseidon at
+   every τ and **fatal for the Feistel** (γ/q = 0.159).
+
+   Neither script had checked C1 against the *other* candidate's modulus.
+
+**And the collision is resolvable — don't file it, it took seconds.** Searching
+for a prime with tiny γ *and* ord_32(q)=4 (so X^16+1 splits into quartics, τ=4)
+*and* gcd(7, q^4−1)=1:
+
+```
+  gamma=   279  q = 18446744073709551337   q mod 32 =  9  q mod 7 = 3   gamma/q = 2^-55.9
+  gamma=   425  q = 18446744073709551191   q mod 32 = 23  q mod 7 = 4   gamma/q = 2^-55.3
+  gamma=   503  q = 18446744073709551113   q mod 32 =  9  q mod 7 = 3   gamma/q = 2^-55.0
+```
+
+**q = 2^64 − 279 serves both candidates**: τ=4 so the §1.2 branch closure
+applies; α=7 stays legal at 4 mults; and γ/q = 2^-55.9, so the Feistel's
+decomposition is unambiguous except with probability ~2^-52 per element —
+grinding one ambiguous coefficient costs ~2^52 against ~2^54 at 2^64−59, **two
+bits worse in exchange for τ=4 and a legal α=7**. ⚠ The exact ROM accounting for
+that residual is the folding scheme's to state and is *not* settled here; what is
+settled is that **no modulus tradeoff is forced** and the two candidates remain
+independently evaluable.
+
+### 4.3 The security half
+
+*(pending — cryptanalysis-literature lane outstanding)*
 
 ---
 
