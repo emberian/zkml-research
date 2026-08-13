@@ -5,7 +5,7 @@ metatheory/Bfv. Corrects the vFHE agenda's missing-piece list.
 
 ## Ground-truth corrections (verified at source)
 
-- **The deployed secret is CBD(10), not ternary** (support ±20, dense) — but
+- **The deployed secret is CBD(20) (variance parameter 10, σ=√10, support ±20) — red-team corrected; earlier labels 'ternary' AND 'CBD(10)' were both misreadings of sample_vec_cbd** (support ±20, dense) — but
   fhegg's threshold shares ARE ternary. Two secret distributions in one tree;
   every noise bound carrying B_key moves ~4.3 bits between them. The "128-bit"
   quote is the lattice estimator's ternary row; 2024's MATZOV model says ~122;
