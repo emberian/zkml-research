@@ -123,7 +123,10 @@ folklore (six literatures; Rinberg et al. did our exact application in Nov
 q = p·(1 − ε_snd) − ε_bind − ε_beacon        E[leakage] ≤ b/q
 ```
 
-No source writes this down [measured, lane-verified]. `ε_beacon` is a
+No source composes these terms [measured — narrowed 2026-08-13: 2026/541
+has its own two-term composition (ε_tst + ε_sep), so the claim is precisely
+"the legs exist separately, nobody composes them, and the two closest works
+each assume one away." Full statement: `notes/audit-theorem-statement.md`]. `ε_beacon` is a
 function of adversary compute, not a constant (grinding papers; Relect/SSLE
 as the transparent-setup selector) [awaiting: concrete ε_beacon table].
 Hard limits stated up front: HLvA steganography means ε_snd > 0 always — the
@@ -136,9 +139,16 @@ amortizes proofs, never the ledger [measured].
 ever been machine-checked (verified across Lean/Isabelle/EasyCrypt/Coq
 ecosystems), and `Loom/LightClientSound.lean` is already structurally the
 commit-then-audit theorem — sharp bound, keystones, kernel-clean. A
-refactor, not a campaign. [awaiting: 2026/541's exact overlap — it
-Merkle-commits traces and audits sampled paths; our claims likely narrow to
-the composition + machine-checking + adaptive bound.]
+refactor, not a campaign. **CLOSED 2026-08-13**: 2026/541 read in full. Overlap: they published our
+architecture (Merkle trace + sampled paths) with a two-term composed bound
+and a 1/N single-path ceiling; ~67,000× faster proving than zkLLM at ~19×
+proof size, against a strictly weaker (statistical, ε_sep-based) soundness
+object. Survives to us: the full q-composition (their FS transport is their
+own named open problem, citing Campanelli–Datta 2024/1645), the machine
+checking, the fully adaptive sequential bound (verbatim — three independent
+absence confirmations), and the two-dimensional burst hypothesis. The
+formal statement, with the supermartingale and the ε_beacon ≤ α·p
+instantiation, is written: `notes/audit-theorem-statement.md`.
 
 The non-prover half already exists **verified** in our trees: the inference
 ledger is a minidregg Hyperdocument event log with durable WAL and idempotent

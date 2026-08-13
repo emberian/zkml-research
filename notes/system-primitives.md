@@ -23,7 +23,18 @@ So the beacon is not infrastructure around the theorem. It is **inside** it. A
 verifiable-inference deployment with a great prover and a predictable audit
 selector has `q ≈ 0` and proves nothing about exfiltration.
 
-## Relect as a candidate
+## Relect as a candidate — ⚠ DEMOTED 2026-08-13
+
+The beacon-grinding lane corrected this section's framing: **SSLE cannot go
+below the α·p last-revealer floor** — the elected party still learns it is
+elected and can withhold, so Pr[G ≥ 2] ≈ α survives. SSLE removes the
+*forking uplift* (the 2025/037 attack strings need advance knowledge of slot
+ownership), which is worth having, but it is not the answer to ε_beacon.
+**The beacons that reach ε_beacon = 0 are those with option-count G = 1: a
+threshold VUF (drand-style, plus BLS unforgeability and liveness caveats) or
+a VDF delay.** Relect belongs in the budget under "kills forking," not
+"answers ε_beacon."
+
 
 **Relect** (eprint 2026/1619, Liang, Liu, Wang, Xie, Yu, Zhang — SJTU / Yale /
 Yale IC3, 2026-08-06). Single Secret Leader Election via FHE under RLWE.

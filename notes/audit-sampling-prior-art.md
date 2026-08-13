@@ -63,8 +63,13 @@ q = p·(1 − ε_snd) − ε_bind − ε_beacon
 binding advantage, `ε_beacon` = advantage in predicting the audit selection given
 everything through the commitment.
 
-**The lane found no source that writes this composition down.** Everyone assumes
-the sampling rate *is* the detection probability. It isn't: the argument
+**No source composes these terms** — ⚠ but the 2026-08-13 lane STRUCK the
+stronger sentence that used to be here ("everyone assumes the sampling rate is
+the detection probability"): eprint 2026/541 composes ε_tst + ε_sep + negl(λ),
+its own two-term budget. The surviving claim is narrower: the legs exist
+separately and the two closest works each assume one away (541 assumes a
+trusted uniform challenge; Rinberg assumes non-manipulable sampling). See
+`audit-theorem-statement.md`. The point stands that: the argument
 system's soundness error multiplies into it, and beacon predictability
 subtracts. If the beacon is a datacenter-local PRNG the adversary can bias,
 `ε_beacon` swamps `p` and the whole regime is vacuous at any audit rate.
