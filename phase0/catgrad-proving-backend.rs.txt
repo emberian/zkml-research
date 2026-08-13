@@ -1,0 +1,729 @@
+//! A **tracing** backend: resolves shapes, allocates wire ids, and records an
+//! ordered op trace. It computes no tensor data and **authors no constraints**.
+//!
+//! This is stage 2 of the three-stage proving shape:
+//!
+//! ```text
+//!   catgrad core::Term
+//!     -> Interpreter<ProvingBackend>   [THIS FILE: a STAGER. No constraints.]
+//!     -> resolved op trace (op, dtype, concrete shapes, wire ids, branches)
+//!     -> Lean: per-op constraint semantics + descriptor emission
+//!     -> prover
+//! ```
+//!
+//! House law: constraint semantics are authored in Lean, never in Rust. If you
+//! find yourself adding an `assert_zero` here, you are in the wrong file.
+
+use super::super::types::*;
+use crate::category::core::{Dtype, Shape};
+use crate::interpreter::backend::{Backend, BackendError, BackendTensorOps};
+use std::cell::RefCell;
+use std::rc::Rc;
+
+/// Identifier for a tensor-valued edge in the trace.
+pub type WireId = u32;
+
+/// A traced tensor carries no data: only its resolved shape and its wire id.
+#[derive(Clone, Debug)]
+pub struct TracedTensor {
+    pub shape: Shape,
+    pub wire: WireId,
+}
+
+impl BackendTensorOps for TracedTensor {
+    fn shape(&self) -> Shape {
+        self.shape.clone()
+    }
+}
+
+/// A statically-known operand recorded alongside an op.
+#[derive(Clone, Debug)]
+pub enum Attr {
+    Nat(usize),
+    Shape(Shape),
+    Dtype(Dtype),
+    /// Placeholder stand-in for a real commitment. The production design
+    /// replaces this with a Merkle/Poseidon2 commitment over the tensor.
+    Digest(u64),
+    Len(usize),
+}
+
+/// One recorded operation. Sources (constants, parameters, `arange`) appear
+/// here too, with an empty `inputs` list.
+#[derive(Clone, Debug)]
+pub struct TraceOp {
+    pub index: u32,
+    pub op: &'static str,
+    pub dtype: Dtype,
+    pub inputs: Vec<WireId>,
+    pub input_shapes: Vec<Shape>,
+    pub outputs: Vec<WireId>,
+    pub output_shapes: Vec<Shape>,
+    pub attrs: Vec<(&'static str, Attr)>,
+}
+
+/// The recorded trace.
+#[derive(Debug, Default)]
+pub struct Trace {
+    pub ops: Vec<TraceOp>,
+    next_wire: WireId,
+    /// Number of times a data-dependent branch was demanded. Must be 0 for a
+    /// statically-resolvable model.
+    pub branch_demands: u32,
+}
+
+/// A cloneable handle onto a shared trace.
+#[derive(Clone, Debug, Default)]
+pub struct ProvingBackend {
+    inner: Rc<RefCell<Trace>>,
+}
+
+impl ProvingBackend {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Consume the handle and return the recorded trace.
+    pub fn into_trace(self) -> Trace {
+        Rc::try_unwrap(self.inner)
+            .expect("trace still borrowed elsewhere")
+            .into_inner()
+    }
+
+    fn fresh(&self, shape: Shape) -> TracedTensor {
+        let mut t = self.inner.borrow_mut();
+        let wire = t.next_wire;
+        t.next_wire += 1;
+        TracedTensor { shape, wire }
+    }
+
+    fn record(
+        &self,
+        op: &'static str,
+        dtype: Dtype,
+        inputs: &[&TracedTensor],
+        outputs: &[&TracedTensor],
+        attrs: Vec<(&'static str, Attr)>,
+    ) {
+        let mut t = self.inner.borrow_mut();
+        let index = t.ops.len() as u32;
+        t.ops.push(TraceOp {
+            index,
+            op,
+            dtype,
+            inputs: inputs.iter().map(|x| x.wire).collect(),
+            input_shapes: inputs.iter().map(|x| x.shape.clone()).collect(),
+            outputs: outputs.iter().map(|x| x.wire).collect(),
+            output_shapes: outputs.iter().map(|x| x.shape.clone()).collect(),
+            attrs,
+        });
+    }
+
+    /// Record a source op (no inputs) producing a fresh wire.
+    fn source(
+        &self,
+        op: &'static str,
+        dtype: Dtype,
+        shape: Shape,
+        attrs: Vec<(&'static str, Attr)>,
+    ) -> TaggedTensor<Self> {
+        let out = self.fresh(shape);
+        self.record(op, dtype, &[], &[&out], attrs);
+        retag(out, dtype)
+    }
+
+    /// Elementwise binary op: shapes must match exactly (no implicit broadcast).
+    fn binary(&self, op: &'static str, args: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        let (xs, dtype) = split2(args);
+        let [a, b] = xs;
+        if a.shape != b.shape {
+            panic!("{op}: shape mismatch: {:?} vs {:?}", a.shape, b.shape);
+        }
+        let out = self.fresh(a.shape.clone());
+        self.record(op, dtype, &[&a, &b], &[&out], vec![]);
+        retag(out, dtype)
+    }
+
+    /// Elementwise unary op: shape preserved.
+    fn unary(&self, op: &'static str, x: TaggedTensor<Self>) -> TaggedTensor<Self> {
+        let (a, dtype) = split1(x);
+        let out = self.fresh(a.shape.clone());
+        self.record(op, dtype, &[&a], &[&out], vec![]);
+        retag(out, dtype)
+    }
+
+    /// Shape-only reshaping op: records the target shape as an attribute.
+    fn reshaping(
+        &self,
+        op: &'static str,
+        x: TaggedTensor<Self>,
+        shape: Shape,
+        attrs: Vec<(&'static str, Attr)>,
+    ) -> TaggedTensor<Self> {
+        let (a, dtype) = split1(x);
+        let out = self.fresh(shape);
+        self.record(op, dtype, &[&a], &[&out], attrs);
+        retag(out, dtype)
+    }
+
+    /// Reduction over the last dimension, rank-preserving (extent -> 1).
+    fn reduce(&self, op: &'static str, x: TaggedTensor<Self>, out_dtype: Dtype) -> TaggedTensor<Self> {
+        let (a, dtype) = split1(x);
+        let mut shape = a.shape.clone();
+        let reduced = if shape.0.is_empty() {
+            0
+        } else {
+            let last = shape.0.len() - 1;
+            let n = shape.0[last];
+            shape.0[last] = 1;
+            n
+        };
+        let out = self.fresh(shape);
+        self.record(
+            op,
+            dtype,
+            &[&a],
+            &[&out],
+            vec![("extent", Attr::Nat(reduced))],
+        );
+        retag(out, out_dtype)
+    }
+
+    fn matmul_shape(a: &Shape, b: &Shape) -> (Shape, usize) {
+        let (l, r) = (&a.0, &b.0);
+        if l.len() < 2 || r.len() < 2 {
+            panic!("matmul: both operands must have at least 2 dimensions");
+        }
+        let (lb, rb) = (&l[..l.len() - 2], &r[..r.len() - 2]);
+        let (m, lk) = (l[l.len() - 2], l[l.len() - 1]);
+        let (rk, n) = (r[r.len() - 2], r[r.len() - 1]);
+        if lk != rk {
+            panic!("matmul: inner dimensions must match");
+        }
+        if lb != rb {
+            panic!("matmul: batch dimensions must match");
+        }
+        let mut out = lb.to_vec();
+        out.push(m);
+        out.push(n);
+        (Shape(out), lk)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Tag plumbing
+
+fn retag<B: Backend<BackendTensor = TracedTensor>>(x: TracedTensor, d: Dtype) -> TaggedTensor<B> {
+    match d {
+        Dtype::F32 => TaggedTensorTuple::F32([x]),
+        Dtype::F16 => TaggedTensorTuple::F16([x]),
+        Dtype::BF16 => TaggedTensorTuple::BF16([x]),
+        Dtype::F8 => TaggedTensorTuple::FP8([x]),
+        Dtype::U32 => TaggedTensorTuple::U32([x]),
+    }
+}
+
+fn split1<B: Backend<BackendTensor = TracedTensor>>(x: TaggedTensor<B>) -> (TracedTensor, Dtype) {
+    let d = x.dtype();
+    let a = match x {
+        TaggedTensorTuple::F32([a]) => a,
+        TaggedTensorTuple::F16([a]) => a,
+        TaggedTensorTuple::BF16([a]) => a,
+        TaggedTensorTuple::FP8([a]) => a,
+        TaggedTensorTuple::U32([a]) => a,
+    };
+    (a, d)
+}
+
+fn split2<B: Backend<BackendTensor = TracedTensor>>(
+    x: TaggedTensorTuple<B, 2>,
+) -> ([TracedTensor; 2], Dtype) {
+    match x {
+        TaggedTensorTuple::F32(a) => (a, Dtype::F32),
+        TaggedTensorTuple::F16(a) => (a, Dtype::F16),
+        TaggedTensorTuple::BF16(a) => (a, Dtype::BF16),
+        TaggedTensorTuple::FP8(a) => (a, Dtype::F8),
+        TaggedTensorTuple::U32(a) => (a, Dtype::U32),
+    }
+}
+
+fn split3<B: Backend<BackendTensor = TracedTensor>>(
+    x: TaggedTensorTuple<B, 3>,
+) -> ([TracedTensor; 3], Dtype) {
+    match x {
+        TaggedTensorTuple::F32(a) => (a, Dtype::F32),
+        TaggedTensorTuple::F16(a) => (a, Dtype::F16),
+        TaggedTensorTuple::BF16(a) => (a, Dtype::BF16),
+        TaggedTensorTuple::FP8(a) => (a, Dtype::F8),
+        TaggedTensorTuple::U32(a) => (a, Dtype::U32),
+    }
+}
+
+/// FNV-1a over raw bytes. A stand-in for the production commitment, so the
+/// trace records *that* a constant was bound and *which* one, not its value.
+fn digest_bytes(bytes: &[u8]) -> u64 {
+    let mut h: u64 = 0xcbf2_9ce4_8422_2325;
+    for b in bytes {
+        h ^= *b as u64;
+        h = h.wrapping_mul(0x1000_0000_01b3);
+    }
+    h
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+impl Backend for ProvingBackend {
+    type BackendTensor = TracedTensor;
+
+    fn zeros(&self, shape: Shape, target_dtype: Dtype) -> TaggedTensor<Self> {
+        self.source("zeros", target_dtype, shape, vec![])
+    }
+
+    fn ndarray_from_vec_f32(
+        &self,
+        data: Vec<f32>,
+        shape: Shape,
+    ) -> Result<TaggedTensor<Self>, BackendError> {
+        let bytes: Vec<u8> = data.iter().flat_map(|x| x.to_bits().to_le_bytes()).collect();
+        Ok(self.source(
+            "const",
+            Dtype::F32,
+            shape,
+            vec![
+                ("digest", Attr::Digest(digest_bytes(&bytes))),
+                ("len", Attr::Len(data.len())),
+            ],
+        ))
+    }
+
+    fn ndarray_from_vec_f16(
+        &self,
+        data: Vec<half::f16>,
+        shape: Shape,
+    ) -> Result<TaggedTensor<Self>, BackendError> {
+        let bytes: Vec<u8> = data.iter().flat_map(|x| x.to_bits().to_le_bytes()).collect();
+        Ok(self.source(
+            "const",
+            Dtype::F16,
+            shape,
+            vec![
+                ("digest", Attr::Digest(digest_bytes(&bytes))),
+                ("len", Attr::Len(data.len())),
+            ],
+        ))
+    }
+
+    fn ndarray_from_vec_bf16(
+        &self,
+        data: Vec<half::bf16>,
+        shape: Shape,
+    ) -> Result<TaggedTensor<Self>, BackendError> {
+        let bytes: Vec<u8> = data.iter().flat_map(|x| x.to_bits().to_le_bytes()).collect();
+        Ok(self.source(
+            "const",
+            Dtype::BF16,
+            shape,
+            vec![
+                ("digest", Attr::Digest(digest_bytes(&bytes))),
+                ("len", Attr::Len(data.len())),
+            ],
+        ))
+    }
+
+    fn ndarray_from_vec_fp8(
+        &self,
+        data: Vec<float8::F8E4M3>,
+        shape: Shape,
+    ) -> Result<TaggedTensor<Self>, BackendError> {
+        let bytes: Vec<u8> = data.iter().map(|x| x.to_bits()).collect();
+        Ok(self.source(
+            "const",
+            Dtype::F8,
+            shape,
+            vec![
+                ("digest", Attr::Digest(digest_bytes(&bytes))),
+                ("len", Attr::Len(data.len())),
+            ],
+        ))
+    }
+
+    fn ndarray_from_vec_u32(
+        &self,
+        data: Vec<u32>,
+        shape: Shape,
+    ) -> Result<TaggedTensor<Self>, BackendError> {
+        let bytes: Vec<u8> = data.iter().flat_map(|x| x.to_le_bytes()).collect();
+        Ok(self.source(
+            "const",
+            Dtype::U32,
+            shape,
+            vec![
+                ("digest", Attr::Digest(digest_bytes(&bytes))),
+                ("len", Attr::Len(data.len())),
+            ],
+        ))
+    }
+
+    fn cast(&self, x: TaggedTensor<Self>, target_dtype: Dtype) -> TaggedTensor<Self> {
+        let (a, from) = split1(x);
+        let out = self.fresh(a.shape.clone());
+        self.record(
+            "cast",
+            from,
+            &[&a],
+            &[&out],
+            vec![("to", Attr::Dtype(target_dtype))],
+        );
+        retag(out, target_dtype)
+    }
+
+    fn matmul(&self, args: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        let (xs, dtype) = split2(args);
+        let [a, b] = xs;
+        let (shape, k) = Self::matmul_shape(&a.shape, &b.shape);
+        let out = self.fresh(shape);
+        self.record(
+            "matmul",
+            dtype,
+            &[&a, &b],
+            &[&out],
+            vec![("contract", Attr::Nat(k))],
+        );
+        retag(out, dtype)
+    }
+
+    fn add(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("add", a)
+    }
+    fn sub(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("sub", a)
+    }
+    fn mul(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("mul", a)
+    }
+    fn div(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("div", a)
+    }
+    fn pow(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("pow", a)
+    }
+    fn lt(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("lt", a)
+    }
+    fn gt(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("gt", a)
+    }
+    fn gte(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("gte", a)
+    }
+    fn lte(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("lte", a)
+    }
+    fn eq(&self, a: TaggedTensorTuple<Self, 2>) -> TaggedTensor<Self> {
+        self.binary("eq", a)
+    }
+
+    fn where_cond(&self, args: TaggedTensorTuple<Self, 3>) -> TaggedTensor<Self> {
+        let (xs, dtype) = split3(args);
+        let [mask, x, y] = xs;
+        if mask.shape != x.shape || x.shape != y.shape {
+            panic!("where: shape mismatch");
+        }
+        let out = self.fresh(x.shape.clone());
+        self.record("select", dtype, &[&mask, &x, &y], &[&out], vec![]);
+        retag(out, dtype)
+    }
+
+    fn sin(&self, x: TaggedTensor<Self>) -> TaggedTensor<Self> {
+        self.unary("sin", x)
+    }
+    fn cos(&self, x: TaggedTensor<Self>) -> TaggedTensor<Self> {
+        self.unary("cos", x)
+    }
+    fn log(&self, x: TaggedTensor<Self>) -> TaggedTensor<Self> {
+        self.unary("log", x)
+    }
+    fn floor(&self, x: TaggedTensor<Self>) -> TaggedTensor<Self> {
+        self.unary("floor", x)
+    }
+    fn neg(&self, x: TaggedTensor<Self>) -> TaggedTensor<Self> {
+        self.unary("neg", x)
+    }
+
+    fn broadcast(&self, x: TaggedTensor<Self>, shape: Shape) -> TaggedTensor<Self> {
+        self.reshaping("broadcast", x, shape.clone(), vec![("to", Attr::Shape(shape))])
+    }
+
+    fn reshape(&self, x: TaggedTensor<Self>, new_shape: Shape) -> TaggedTensor<Self> {
+        self.reshaping(
+            "reshape",
+            x,
+            new_shape.clone(),
+            vec![("to", Attr::Shape(new_shape))],
+        )
+    }
+
+    fn transpose(&self, x: TaggedTensor<Self>, dim0: usize, dim1: usize) -> TaggedTensor<Self> {
+        let mut shape = x.shape();
+        shape.0.swap(dim0, dim1);
+        self.reshaping(
+            "transpose",
+            x,
+            shape,
+            vec![("dim0", Attr::Nat(dim0)), ("dim1", Attr::Nat(dim1))],
+        )
+    }
+
+    fn max(&self, x: TaggedTensor<Self>) -> TaggedTensor<Self> {
+        let d = x.dtype();
+        self.reduce("max", x, d)
+    }
+
+    fn sum(&self, x: TaggedTensor<Self>) -> TaggedTensor<Self> {
+        let d = x.dtype();
+        self.reduce("sum", x, d)
+    }
+
+    fn argmax(&self, x: TaggedTensor<Self>) -> TaggedTensor<Self> {
+        self.reduce("argmax", x, Dtype::U32)
+    }
+
+    fn topk(&self, x: TaggedTensor<Self>, k: usize) -> (TaggedTensor<Self>, TaggedTensor<Self>) {
+        let (a, dtype) = split1(x);
+        let mut shape = a.shape.clone();
+        let last = shape.0.len() - 1;
+        let extent = shape.0[last];
+        shape.0[last] = k;
+        let values = self.fresh(shape.clone());
+        let indices = self.fresh(shape);
+        self.record(
+            "topk",
+            dtype,
+            &[&a],
+            &[&values, &indices],
+            vec![("k", Attr::Nat(k)), ("extent", Attr::Nat(extent))],
+        );
+        (retag(values, dtype), retag(indices, Dtype::U32))
+    }
+
+    fn compare(&self, x: TaggedTensorTuple<Self, 2>) -> bool {
+        let (xs, _) = split2(x);
+        xs[0].shape == xs[1].shape
+    }
+
+    fn concat(
+        &self,
+        x: TaggedTensor<Self>,
+        y: TaggedTensor<Self>,
+        dim: usize,
+    ) -> TaggedTensor<Self> {
+        let (a, dtype) = split1(x);
+        let (b, dtype2) = split1(y);
+        if dtype != dtype2 {
+            panic!("concat: dtype mismatch");
+        }
+        let mut shape = a.shape.clone();
+        shape.0[dim] = a.shape.0[dim] + b.shape.0[dim];
+        let out = self.fresh(shape);
+        self.record(
+            "concat",
+            dtype,
+            &[&a, &b],
+            &[&out],
+            vec![("dim", Attr::Nat(dim))],
+        );
+        retag(out, dtype)
+    }
+
+    fn index(
+        &self,
+        x: TaggedTensor<Self>,
+        dim: usize,
+        indices: TaggedTensor<Self>,
+    ) -> TaggedTensor<Self> {
+        let (a, dtype) = split1(x);
+        let (idx, _) = split1(indices);
+        assert_eq!(idx.shape.rank(), 1, "index: indices must be rank 1");
+        let n = idx.shape.0[0];
+        let mut shape = a.shape.clone();
+        shape.0[dim] = n;
+        let out = self.fresh(shape);
+        self.record(
+            "index",
+            dtype,
+            &[&a, &idx],
+            &[&out],
+            vec![("dim", Attr::Nat(dim)), ("count", Attr::Nat(n))],
+        );
+        retag(out, dtype)
+    }
+
+    fn slice(
+        &self,
+        x: TaggedTensor<Self>,
+        dim: usize,
+        start: usize,
+        len: usize,
+    ) -> TaggedTensor<Self> {
+        let (a, dtype) = split1(x);
+        let mut shape = a.shape.clone();
+        shape.0[dim] = len;
+        let out = self.fresh(shape);
+        self.record(
+            "slice",
+            dtype,
+            &[&a],
+            &[&out],
+            vec![
+                ("dim", Attr::Nat(dim)),
+                ("start", Attr::Nat(start)),
+                ("len", Attr::Nat(len)),
+            ],
+        );
+        retag(out, dtype)
+    }
+
+    fn arange(&self, end: usize) -> TaggedTensor<Self> {
+        self.source(
+            "arange",
+            Dtype::U32,
+            Shape(vec![end]),
+            vec![("end", Attr::Nat(end))],
+        )
+    }
+
+    /// **Deliberately fail-closed.** `ShapeOnlyBackend::to_bool` returns `true`
+    /// unconditionally; inheriting that would silently pick the `then` branch of
+    /// every `If` and produce a trace of a program nobody ran. A tracer that
+    /// cannot decide a branch must REFUSE, not guess: branch decisions are
+    /// resolved from shapes and bound as public inputs before tracing.
+    fn to_bool(&self, _x: TaggedTensor<Self>) -> bool {
+        self.inner.borrow_mut().branch_demands += 1;
+        panic!(
+            "ProvingBackend: data-dependent branch demanded. Branch decisions must be \
+             resolved statically and bound as public inputs before tracing; the tracer \
+             refuses to guess."
+        );
+    }
+
+    fn to_vec(&self, _vec: TaggedTensor<Self>) -> TaggedVec {
+        panic!("ProvingBackend: no tensor data is computed; to_vec is not available");
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Trace serialization. Hand-rolled so the tracer adds no dependency.
+
+fn json_shape(s: &Shape) -> String {
+    let dims: Vec<String> = s.0.iter().map(|d| d.to_string()).collect();
+    format!("[{}]", dims.join(","))
+}
+
+fn dtype_name(d: Dtype) -> &'static str {
+    match d {
+        Dtype::F32 => "f32",
+        Dtype::F16 => "f16",
+        Dtype::BF16 => "bf16",
+        Dtype::F8 => "fp8",
+        Dtype::U32 => "u32",
+    }
+}
+
+fn json_attr(a: &Attr) -> String {
+    match a {
+        Attr::Nat(n) | Attr::Len(n) => n.to_string(),
+        Attr::Shape(s) => json_shape(s),
+        Attr::Dtype(d) => format!("\"{}\"", dtype_name(*d)),
+        Attr::Digest(h) => format!("\"{h:016x}\""),
+    }
+}
+
+impl Trace {
+    /// Total number of tensor-valued wires allocated.
+    pub fn wire_count(&self) -> u32 {
+        self.next_wire
+    }
+
+    /// Histogram of op names, sorted by descending count.
+    pub fn op_histogram(&self) -> Vec<(&'static str, usize)> {
+        let mut counts: std::collections::BTreeMap<&'static str, usize> = Default::default();
+        for op in &self.ops {
+            *counts.entry(op.op).or_default() += 1;
+        }
+        let mut v: Vec<_> = counts.into_iter().collect();
+        v.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(b.0)));
+        v
+    }
+
+    /// Sum over ops of the output tensor sizes: a first-order proxy for the
+    /// row count a per-element arithmetization would pay.
+    pub fn scalar_output_elements(&self) -> usize {
+        self.ops
+            .iter()
+            .map(|o| o.output_shapes.iter().map(|s| s.size()).sum::<usize>())
+            .sum()
+    }
+
+    /// Multiply-accumulate count: the dominant prover cost term.
+    pub fn mac_count(&self) -> usize {
+        self.ops
+            .iter()
+            .filter(|o| o.op == "matmul")
+            .map(|o| {
+                let k = o
+                    .attrs
+                    .iter()
+                    .find_map(|(n, a)| match (n, a) {
+                        (&"contract", Attr::Nat(k)) => Some(*k),
+                        _ => None,
+                    })
+                    .unwrap_or(0);
+                o.output_shapes[0].size() * k
+            })
+            .sum()
+    }
+
+    pub fn to_json(&self) -> String {
+        let mut s = String::new();
+        s.push_str("{\n");
+        s.push_str("  \"format\": \"catgrad-trace/v0\",\n");
+        s.push_str(&format!("  \"wire_count\": {},\n", self.next_wire));
+        s.push_str(&format!("  \"op_count\": {},\n", self.ops.len()));
+        s.push_str(&format!(
+            "  \"branch_demands\": {},\n",
+            self.branch_demands
+        ));
+        s.push_str("  \"ops\": [\n");
+        let body: Vec<String> = self
+            .ops
+            .iter()
+            .map(|o| {
+                let ins: Vec<String> = o.inputs.iter().map(|w| w.to_string()).collect();
+                let outs: Vec<String> = o.outputs.iter().map(|w| w.to_string()).collect();
+                let ish: Vec<String> = o.input_shapes.iter().map(json_shape).collect();
+                let osh: Vec<String> = o.output_shapes.iter().map(json_shape).collect();
+                let attrs: Vec<String> = o
+                    .attrs
+                    .iter()
+                    .map(|(n, a)| format!("\"{}\": {}", n, json_attr(a)))
+                    .collect();
+                format!(
+                    "    {{\"i\": {}, \"op\": \"{}\", \"dtype\": \"{}\", \
+                     \"in\": [{}], \"out\": [{}], \
+                     \"in_shapes\": [{}], \"out_shapes\": [{}], \"attrs\": {{{}}}}}",
+                    o.index,
+                    o.op,
+                    dtype_name(o.dtype),
+                    ins.join(","),
+                    outs.join(","),
+                    ish.join(","),
+                    osh.join(","),
+                    attrs.join(", ")
+                )
+            })
+            .collect();
+        s.push_str(&body.join(",\n"));
+        s.push_str("\n  ]\n}\n");
+        s
+    }
+}
