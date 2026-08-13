@@ -207,11 +207,17 @@ paid on 100% of instances; repeated public verdicts are a leakage oracle).
 **Laminate_base nonetheless fits our deployed fhegg parameters today** for a
 depth-1 payload, needing no rotation keys — verified at source down to the
 irreducible trinomial. Full corrections and the M0/M1/M2 path:
-`notes/vfhe-shortest-path.md`. The single-digit rung is approachable along the
-*protocol* axis; the accelerator is not the critical path (rate gap: ~26
-prover dies per FHE FPGA even granting 1,000× ASIC speedup) [measured,
+`notes/archive/vfhe-shortest-path.md`. The single-digit rung is approachable
+along the *protocol* axis; the accelerator is not the critical path (rate gap:
+~26 prover dies per FHE FPGA even granting 1,000× ASIC speedup) [measured,
 lane-derived]. vFHE has **already converged on our substrate** — small-field
-sumcheck, because ⚠ **FALSE, and contradicted by the file cited three lines earlier** (`vfhe-shortest-path.md:32`: 36 > 31 bits, hence `fheggQ0_scalar24_base64_fits`). They embed natively into THEMSELVES. Original claim: FHE's 28–36-bit RNS limbs embed natively [measured].
+sumcheck.
+
+⚠ **The reason once given for that convergence is FALSE**: "FHE's 28–36-bit RNS
+limbs embed natively into a 31-bit field" — they do not, 36 > 31, and the file
+cited three lines up says so at `vfhe-shortest-path.md:32`
+(`fheggQ0_scalar24_base64_fits`). The limbs embed natively into *themselves*.
+The convergence claim rests on the rest of the paragraph, not on that.
 
 **Structural synergies** (`notes/shared-arithmetic.md`): FHE computes in Z_q
 already — no float→field gap exists, the ciphertext trace IS the witness;
@@ -219,10 +225,14 @@ and the one-die argument is **producer-consumer fusion** (the prover's MLE
 tables are the FHE evaluation's own intermediate polynomials, streamed
 through the fold as produced — traffic paid once; no published design does
 it) [measured, lane-confirmed]. Zama's open HPU already contains Plonky2's
-exact prime in its `ntt_gf64` core: the machines share a butterfly in
-shipping RTL today [measured].
+exact prime in its `ntt_gf64` core — ⚠ but **"the machines share a butterfly"
+is half-false**: same prime, *different machine*. `ntt_core_gf64` has **no
+multipliers** (twiddles are barrel shifts via the ord(2)=192 trick) and does
+not port to BabyBear — three elaboration-time walls plus the shift trick
+itself. And the HPU ciphertext ring is **ℤ/2⁶⁴**; Goldilocks is only the
+transform field (`notes/hpu-seam-study.md`) [measured].
 
-**Our holdings, audited** (`notes/vfhe-agenda.md`): a working, node-deployed
+**Our holdings, audited** (`notes/archive/vfhe-agenda.md`): a working, node-deployed
 BFV stack (ct×ct + relin, distributed relin ceremony, threshold decrypt with
 a *proven* smudging bound, wgpu NTT + TFHE bootstrap, 478/480 tests green);
 a Lean-emitted Rust-consumed BFV AIR over BabyBear (1 of 98,304 equations —

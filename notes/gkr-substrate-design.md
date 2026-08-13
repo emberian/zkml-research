@@ -299,8 +299,8 @@ BS08 multiplicative folding `Fold(f,α)(x²)`; `AdditiveFriTower/Query.lean` is 
 char-2 affine-subspace counterpart; `SubUdSeam.lean`, `CorrelatedAgreement.lean`,
 `OutOfDomain.lean` all sit on that univariate object. Grep for
 `basefold|ligero|brakedown|hyrax|zeromorph|gemini|dory` across `.lean`/`.rs`
-returns only prose in two docs — and `docs/SELVAGE-RECOMPOSITION.md` explicitly
-*withdraws* the Basefold staging.
+returns only prose in two docs — and `SELVAGE-RECOMPOSITION.md` (in the Selvage
+tree, not this repo) explicitly *withdraws* the Basefold staging.
 
 The bridge from univariate FRI to a multilinear evaluation claim — the thing
 BaseFold/WHIR *is* — is not in the tree. **The one seed we hold is
