@@ -1,0 +1,171 @@
+# H2 measurement: 3-limb RNS (36/36/37) vs single 109-bit prime, and the proof-field cost
+# host: Apple M2 Max, 12 core, arm64, macOS. rustc release, lto=fat, codegen-units=1.
+# CONTENDED BOX (load avg 78 during the run: co-tenant lake/Lean builds).
+# Each figure is min-of-40-trials x 60..800 iters; ratios stable to ~5% across 3 whole-program runs.
+# Reproduce: cargo run --release   (in this directory)
+#
+# validation gates run at startup, all pass:
+#  - fhe-math 0.1.1 NttOperator and our Ntt64 both convolve negacyclically vs schoolbook (n=8)
+#  - forward/backward round trip at N=4096 for q0(36b), p61(61b), p109 Solinas, p109 generic
+#  - our u128 NTT negacyclic convolution vs schoolbook (n=8)
+#  - fhe-math's own NttOperator is timed alongside ours so the u64 baseline is not a strawman
+
+===== RUN 1 =====
+== scalar modmul throughput (vector of 4096, one pass) ==
+u64 36-bit  Shoup mul  x4096                            3.020 us
+u64 36-bit  Barrett mul (2 var) x4096                   8.174 us
+u64 61-bit  Shoup mul  x4096                            3.120 us
+u64 61-bit  Barrett mul (2 var) x4096                   6.964 us
+u128 109-bit Shoup mul x4096                           11.250 us
+u128 109-bit Montgomery mul (2 var) x4096              12.815 us
+
+== forward NTT, N=4096 ==
+u64 36-bit  forward NTT                                26.897 us
+u64 61-bit  forward NTT                                26.885 us
+u128 109-bit forward NTT (Solinas prime)               95.668 us
+u128 109-bit forward NTT (generic prime)               93.305 us
+  [ref] fhe-math NttOperator forward (36b)             20.968 us
+
+== inverse NTT, N=4096 ==
+u64 36-bit  backward NTT                               31.236 us
+u128 109-bit backward NTT (Solinas)                   106.176 us
+
+== DERIVED: RNS tower (3 x 36/36/37-bit) vs single 109-bit ==
+  forward NTT of one degree-4096 poly, full modulus:
+    RNS 3-limb :     80.692 us  (3 x 26.897)
+    single 109 :     95.668 us  (Solinas)
+    single 109 :     93.305 us  (generic)
+    ratio single/RNS = 1.19x (Solinas), 1.16x (generic)
+  per-coefficient modmul:
+    RNS 3-limb Shoup :      2.212 ns/coeff (3 x 0.737)
+    single 109 Shoup :      2.747 ns/coeff
+    ratio = 1.24x
+    RNS 3-limb general (Barrett):    5.987 ns/coeff | single 109 Montgomery:    3.129 ns/coeff | ratio 0.52x
+  61-bit-vs-36-bit in the SAME u64 lane (H3 probe): shoup 1.03x, barrett 0.85x, ntt 1.00x
+  inverse NTT ratio single/RNS = 1.13x
+
+== DERIVED: BFV operations at N=4096, log q = 109 ==
+u64 36-bit  modular add x4096 (branchless)              0.882 us
+u128 109-bit modular add x4096 (branchless)             5.761 us
+u128 109-bit LAZY add x4096 (no reduce)                 1.715 us
+u64 36-bit  LAZY add x4096 (no reduce)                  0.648 us
+  LAZY add ratio single/RNS = 0.88x   (RNS 3x0.648 us vs single 1.715 us)
+  ct+ct add (2 polys x 1 modulus-worth): RNS 5.292 us vs single 11.521 us, ratio 2.18x
+  ct*pt (both already NTT, 2 polys pointwise): RNS 18.117 us vs single 22.500 us, ratio 1.24x
+
+== proof-field arithmetic: BabyBear vs 109-bit ==
+BabyBear scalar mul x4096                               1.824 us
+BabyBear PACKED mul x4096 (4 lanes/vec)                 0.992 us
+  ns/mul: BabyBear scalar 0.4454, BabyBear packed 0.2421, u64-36b Shoup 0.7372, u128-109b Shoup 2.7466, u128-109b Montgomery 3.1286
+  PROOF-FIELD PENALTY of moving BabyBear -> 109-bit:  6.17x (vs scalar BabyBear)   11.35x (vs packed BabyBear)
+  (general 2-operand: Montgomery-109 vs scalar BabyBear = 7.02x, vs packed = 12.92x)
+
+== sizes ==
+  one degree-4096 poly, u64-per-residue storage: RNS 3x4096x8 = 98304 B; single 109-bit as 2xu64 = 65536 B
+  bit-packed: RNS 3 limbs (36+36+37=109 b) = 55808 B; single 109 b = 57344 B  (identical)
+===== RUN 2 =====
+== scalar modmul throughput (vector of 4096, one pass) ==
+u64 36-bit  Shoup mul  x4096                            3.422 us
+u64 36-bit  Barrett mul (2 var) x4096                   8.337 us
+u64 61-bit  Shoup mul  x4096                            3.195 us
+u64 61-bit  Barrett mul (2 var) x4096                   7.320 us
+u128 109-bit Shoup mul x4096                           11.894 us
+u128 109-bit Montgomery mul (2 var) x4096              13.534 us
+
+== forward NTT, N=4096 ==
+u64 36-bit  forward NTT                                29.082 us
+u64 61-bit  forward NTT                                26.873 us
+u128 109-bit forward NTT (Solinas prime)               98.221 us
+u128 109-bit forward NTT (generic prime)               98.376 us
+  [ref] fhe-math NttOperator forward (36b)             21.013 us
+
+== inverse NTT, N=4096 ==
+u64 36-bit  backward NTT                               31.630 us
+u128 109-bit backward NTT (Solinas)                   106.356 us
+
+== DERIVED: RNS tower (3 x 36/36/37-bit) vs single 109-bit ==
+  forward NTT of one degree-4096 poly, full modulus:
+    RNS 3-limb :     87.246 us  (3 x 29.082)
+    single 109 :     98.221 us  (Solinas)
+    single 109 :     98.376 us  (generic)
+    ratio single/RNS = 1.13x (Solinas), 1.13x (generic)
+  per-coefficient modmul:
+    RNS 3-limb Shoup :      2.506 ns/coeff (3 x 0.835)
+    single 109 Shoup :      2.904 ns/coeff
+    ratio = 1.16x
+    RNS 3-limb general (Barrett):    6.106 ns/coeff | single 109 Montgomery:    3.304 ns/coeff | ratio 0.54x
+  61-bit-vs-36-bit in the SAME u64 lane (H3 probe): shoup 0.93x, barrett 0.88x, ntt 0.92x
+  inverse NTT ratio single/RNS = 1.12x
+
+== DERIVED: BFV operations at N=4096, log q = 109 ==
+u64 36-bit  modular add x4096 (branchless)              0.826 us
+u128 109-bit modular add x4096 (branchless)             5.391 us
+u128 109-bit LAZY add x4096 (no reduce)                 1.603 us
+u64 36-bit  LAZY add x4096 (no reduce)                  0.605 us
+  LAZY add ratio single/RNS = 0.88x   (RNS 3x0.605 us vs single 1.603 us)
+  ct+ct add (2 polys x 1 modulus-worth): RNS 4.955 us vs single 10.781 us, ratio 2.18x
+  ct*pt (both already NTT, 2 polys pointwise): RNS 20.530 us vs single 23.788 us, ratio 1.16x
+
+== proof-field arithmetic: BabyBear vs 109-bit ==
+BabyBear scalar mul x4096                               1.711 us
+BabyBear PACKED mul x4096 (4 lanes/vec)                 0.607 us
+  ns/mul: BabyBear scalar 0.4176, BabyBear packed 0.1481, u64-36b Shoup 0.8354, u128-109b Shoup 2.9038, u128-109b Montgomery 3.3043
+  PROOF-FIELD PENALTY of moving BabyBear -> 109-bit:  6.95x (vs scalar BabyBear)   19.61x (vs packed BabyBear)
+  (general 2-operand: Montgomery-109 vs scalar BabyBear = 7.91x, vs packed = 22.31x)
+
+== sizes ==
+  one degree-4096 poly, u64-per-residue storage: RNS 3x4096x8 = 98304 B; single 109-bit as 2xu64 = 65536 B
+  bit-packed: RNS 3 limbs (36+36+37=109 b) = 55808 B; single 109 b = 57344 B  (identical)
+===== RUN 3 =====
+== scalar modmul throughput (vector of 4096, one pass) ==
+u64 36-bit  Shoup mul  x4096                            3.194 us
+u64 36-bit  Barrett mul (2 var) x4096                   8.163 us
+u64 61-bit  Shoup mul  x4096                            3.198 us
+u64 61-bit  Barrett mul (2 var) x4096                   7.306 us
+u128 109-bit Shoup mul x4096                           11.891 us
+u128 109-bit Montgomery mul (2 var) x4096              13.541 us
+
+== forward NTT, N=4096 ==
+u64 36-bit  forward NTT                                26.837 us
+u64 61-bit  forward NTT                                26.910 us
+u128 109-bit forward NTT (Solinas prime)               98.305 us
+u128 109-bit forward NTT (generic prime)               98.463 us
+  [ref] fhe-math NttOperator forward (36b)             20.994 us
+
+== inverse NTT, N=4096 ==
+u64 36-bit  backward NTT                               31.362 us
+u128 109-bit backward NTT (Solinas)                   106.346 us
+
+== DERIVED: RNS tower (3 x 36/36/37-bit) vs single 109-bit ==
+  forward NTT of one degree-4096 poly, full modulus:
+    RNS 3-limb :     80.510 us  (3 x 26.837)
+    single 109 :     98.305 us  (Solinas)
+    single 109 :     98.463 us  (generic)
+    ratio single/RNS = 1.22x (Solinas), 1.22x (generic)
+  per-coefficient modmul:
+    RNS 3-limb Shoup :      2.340 ns/coeff (3 x 0.780)
+    single 109 Shoup :      2.903 ns/coeff
+    ratio = 1.24x
+    RNS 3-limb general (Barrett):    5.979 ns/coeff | single 109 Montgomery:    3.306 ns/coeff | ratio 0.55x
+  61-bit-vs-36-bit in the SAME u64 lane (H3 probe): shoup 1.00x, barrett 0.90x, ntt 1.00x
+  inverse NTT ratio single/RNS = 1.13x
+
+== DERIVED: BFV operations at N=4096, log q = 109 ==
+u64 36-bit  modular add x4096 (branchless)              0.779 us
+u128 109-bit modular add x4096 (branchless)             5.085 us
+u128 109-bit LAZY add x4096 (no reduce)                 1.513 us
+u64 36-bit  LAZY add x4096 (no reduce)                  0.573 us
+  LAZY add ratio single/RNS = 0.88x   (RNS 3x0.573 us vs single 1.513 us)
+  ct+ct add (2 polys x 1 modulus-worth): RNS 4.672 us vs single 10.170 us, ratio 2.18x
+  ct*pt (both already NTT, 2 polys pointwise): RNS 19.166 us vs single 23.782 us, ratio 1.24x
+
+== proof-field arithmetic: BabyBear vs 109-bit ==
+BabyBear scalar mul x4096                               1.610 us
+BabyBear PACKED mul x4096 (4 lanes/vec)                 0.730 us
+  ns/mul: BabyBear scalar 0.3930, BabyBear packed 0.1783, u64-36b Shoup 0.7799, u128-109b Shoup 2.9031, u128-109b Montgomery 3.3060
+  PROOF-FIELD PENALTY of moving BabyBear -> 109-bit:  7.39x (vs scalar BabyBear)   16.28x (vs packed BabyBear)
+  (general 2-operand: Montgomery-109 vs scalar BabyBear = 8.41x, vs packed = 18.54x)
+
+== sizes ==
+  one degree-4096 poly, u64-per-residue storage: RNS 3x4096x8 = 98304 B; single 109-bit as 2xu64 = 65536 B
+  bit-packed: RNS 3 limbs (36+36+37=109 b) = 55808 B; single 109 b = 57344 B  (identical)
