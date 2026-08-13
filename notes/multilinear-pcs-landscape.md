@@ -1097,3 +1097,293 @@ general-degree sumcheck statement `dn/|𝔽|`, which is exactly the S3 generaliz
 Its answer being negative is *itself* the finding: the multilinear→univariate route (Gemini) is real
 but is **not** what the sumcheck-native community reaches for, and §7.5 explains why — it re-imports the
 univariate-evaluation-opening problem that BaseFold was designed to delete.
+
+---
+
+## 8. Paper-side findings — WHIR / STIR / MCA (lane report, integrated)
+
+### 8.1 ⭐⭐ Selvage's MCA theorem is WHIR Lemma 4.10, and Selvage is CORRECT where the paper is not
+
+The lane verified `whir.pdf` ≡ `whir-proximity-generator-mca-2024-1586.pdf` (byte-identical,
+md5 `3403217f…`, 2024-11-21 — not a revision) and read §4.2 pp.22–23 with
+`pdftotext -layout -f 23 -l 24`. Two defects in the printed lemma:
+
+| | WHIR as printed | Selvage | verdict |
+|---|---|---|---|
+| proximity bound | `B*(C,ℓ) = **min**{1 − δ_C/2, B(C,ℓ)}` | `max (1 - dC / 2) B` | **Selvage correct; `min` is a typo** |
+| δ-range in Def 4.9 | `δ ∈ (0, 1 − **B**(C,ℓ))` | `δ < 1 - Bstar` | **Selvage correct; second typo** |
+| failure event / CA conclusion | Def 4.9 / Def 4.7 | `MutualCAFailure` / `CorrelatedAgreement` | identical, term for term |
+| generator | abstract in Def 4.7, only `(1,α,…,α^{ℓ−1})` instantiated | abstract `G`, `comb r f` | **Selvage strictly more general** |
+| `err` monotone | never stated | `herr_mono` hypothesis | **Selvage repairs a silent step** |
+
+Three independent confirmations that `max` is right: (i) the proof needs *both* `δ < 1 − B` and
+`δ < δ_C/2` (verbatim: *"because δ < δ_C/2, we have |Λ(C,g_r,δ)| ≤ 1"*), whose conjunction is
+`δ < 1 − max(B, 1 − δ_C/2)`; (ii) **Corollary 4.11 prints `B*(C,ℓ) := (1+ρ)/2`**, which is
+`max{(1+ρ)/2, √ρ}` by AM–GM — `min` would give `√ρ`, so the corollary is inconsistent with the
+lemma as printed and consistent with Selvage; (iii) WHIR's own authors restate it in
+`open-problems-…-2026-680` §4.1 p.18 as *"for any F-additive code C and **δ < δ_min(C)/2**"*.
+
+And `herr_mono` is a **genuine repair**: the paper's last step applies the generator at proximity
+parameter `1 − |T|/n ≤ δ` while holding only the bound `err(δ)`, which needs
+`err(1 − |T|/n) ≤ err(δ)`. The paper never states it; it is satisfiable (both branches of BCIKS's
+`err` are nondecreasing).
+
+**SELVAGE.md's claim "correlated agreement (WHIR Lemma 4.10, domain-general)" is VERIFIED**, with
+the corrections above. Domain-generality is not even a stretch — Lemma 4.10 is stated for an
+arbitrary linear code `C ⊆ F^n`, no domain structure at all.
+
+### 8.2 The WHIR theorem to target is 5.2, and its MCA hypothesis is at arity 2 — our exact shape
+
+Theorem 5.2 (§5.1 pp.33–34) is **unconditional**, parameterized by *"Gen is a proximity generator
+with mutual correlated agreement … with bound B\* and error err\*"*, and its per-round errors are
+```
+ε^fold_{i,s} ≤ d·ℓ_{i,s−1}/|F| + err*(C_RS^{(i,s)}, 2, δ_i)
+ε^out_i     ≤ 2^{m_i}·ℓ²_{i,0}/(2·|F|)
+ε^shift_i   ≤ (1 − δ_{i−1})^{t_{i−1}} + ℓ_{i,0}·(t_{i−1}+1)/|F|
+ε^fin       ≤ (1 − δ_{M−1})^{t_{M−1}}
+```
+**The arity is 2 everywhere** — `err*(·, 2, δ)`, `B*(·, 2)` — i.e. exactly Selvage's
+`![foldEven D f, foldOdd D f]`. WHIR needs arity > 2 in **one** place only (Theorem 7.5's `ε^com`,
+the Σ-IOP compiler). For the PCS weight `ŵ = Z·eq(X,z)`, `d* = 3` and `d = 3`.
+
+There is **no PCS theorem in WHIR at all** — the complete theorem list is 1, 2 (both informal),
+4.3, 4.8, 4.20, 5.2, 5.6, 7.5, 7.11, A.3. *"The WHIR PCS"* is Construction 5.1 at
+`CRS[F,L,m, Z·eq(z,·), σ]` plus BCS. **Binding/extractability is never stated as a theorem.** So
+a Lean port would be porting an IOPP; the PCS wrapper is unformalized in the source — which is
+exactly the wrapper `Selvage/Commitment.lean` + `Erasure.lean` already supply.
+
+⚠ Theorem 7.5's hypothesis prints `δ < B*`; every other use in the paper writes `δ ∈ (0, 1 − B*)`,
+and `δ < B*` is nonsense for `B* = (1+ρ)/2`. **A port copying it literally proves a different
+theorem.**
+
+### 8.3 You do NOT need STIR
+
+The lane grepped all 17 `[ACFY24]` citations in `whir.txt`. **WHIR imports exactly one technical
+result from STIR**: Lemma 4.5, restated as WHIR Lemma 4.25 (the out-of-domain sampling lemma),
+whose proof is two lines — `Pr[û(r)=û′(r)] ≤ (d−1)/(|F|−|L|)` plus a union bound over `(ℓ choose 2)`.
+
+**STIR's `Quotient` (Def 4.2), `PolyQuotient` (Def 4.3), Lemma 4.4, `DegCor` (Def 4.11/4.12) and
+Lemma 4.13 — ~6 pages of its technical core — are NOT needed.** WHIR replaces them with
+weight-polynomial accumulation, which is just the polynomial identity lemma. And there is no query
+gain to be had: `q_STIR = q_WHIR` (WHIR Table 1 p.6). STIR also carries an *enormous* field-size
+hypothesis (Theorem 5.1: `|F| = Ω(λ·2^λ·d²·|L|^{3.5}/log(1/ρ))`, with its own note *"this bound is
+not tight"*). **Porting STIR is a detour.** ⇒ delete it from the candidate list as a *target*;
+keep it as the source of one two-line lemma.
+
+### 8.4 ⚑ The conjecture landscape moved, and it argues for aiming LOWER
+
+Source: `open-problems-list-decoding-correlated-agreement-2026-680` — **Arnon–Boneh–Fenzi 2026, two
+of WHIR's own authors surveying exactly this question**. It is the single most useful file in the
+corpus for this lane and it was not in the brief.
+
+- **WHIR Conjecture 4.12 item 1 (Johnson) is now a THEOREM** — survey Theorem 4.12 = [BCHKS25] Thm
+  4.6; independently Haböck 2025/2110 Theorem 2. ⚠ **But do not price it as "available in Lean."**
+  Haböck's own abstract says he *"**outlines** how to generalize the Guruswami–Sudan list decoder
+  analysis"* and the body invokes the interpolating polynomial over `K = F_q(Z)` (rational function
+  field), irreducible/separable factorization with inseparability exponents, `disc_Y(Q)`, and a
+  **Hensel lift**, noting it *"requires certain familiarity with algebraic function fields."*
+  **A proof sketch resting on BCIKS §5 — the hardest thing in this literature to machine-check.**
+- **WHIR Conjecture 4.12 item 2 (capacity) is REFUTED in its general form.** Survey Theorem 4.16
+  ([BCHKS25; KK25]) — *"the theorem above captures both **prime fields and smooth domains**"*; and
+  Theorem 4.17 ([CS25] Cor. 1) gives **`ε_ca(C,δ) = 1`** outright in a regime, i.e. the proximity
+  gap vanishes entirely, and `ε_ca ≤ ε_mca` so MCA dies with it. **We are on a 31-bit prime field
+  with a smooth domain.** ⇒ §5.4's verdict stands and is now sourced to a theorem, not a filename.
+  (The SoK's caveat (ii) — *"the refutation is established over large fields, and a small-field
+  analogue … we do not claim it"* — is **behind**: `krachun-kazanin-habock-…-2026-782` states a
+  counterexample *"for Reed–Solomon codes over **multiplicative subgroups of prime fields**"*, and
+  the SoK does not cite it, 0 grep hits.)
+
+**The price of being unconditional, from WHIR §6.3.4 p.53, direct quote** — at `(m,ρ)=(24,1/2)`,
+λ=128: *"WHIR-UD's argument are 621 KiB, WHIR-JB's are 299 KiB, and WHIR-CB's are 156 KiB"*;
+verifier *"4.8ms / 2.5ms / 1.4ms"*; prover *"49s / 50s / 47s"*.
+
+> ⭐ **The whole conjecture buys 4× on proof size, 3.4× on verifier time, and NOTHING on prover
+> time.** That is the number that should drive "which construction is provable soonest," and it
+> says: take the unconditional one.
+
+### 8.5 ⚑⚑ The highest-leverage finding in the whole lane, and it was not in the brief
+
+**Mutual correlated agreement at the 1.5-Johnson bound is PROVEN for GENERAL LINEAR CODES by
+ELEMENTARY MEANS.** Two independent papers, both already on disk:
+
+- **GKL, `linear-proximity-gaps-1p5-johnson-2024-1810.pdf`.** Their `Bad_δ(π₁,π₂)` (Def 8) *is* the
+  MCA failure set, and they say so (§1.2 p.4: *"also called **mutual correlated agreement** in
+  WHIR"*).
+  > **Theorem 3.** For `δ ≤ 1 − ∛(1−Δ_C) + η`: `|Bad_δ(π₁,π₂)| < 2/η + (n+6)/(η·(∛(1−Δ_C+η) − √(1−Δ_C+η)))`.
+  > **Theorem 4.** For `l+1` words: `Pr_{z_l}[z_l ∈ Bad_δ] < (…)·l/q`.
+
+  **Machinery checked by grep**: `function field|Hensel|Guruswami-Sudan|algebraic geometry|Riemann`
+  → **0 hits**. The proof is Lemmas 1–8: maximal agree-domains, pairwise and 4-way intersection
+  counting, a low/high-error partition at the Johnson radius, plus one imported lemma (BGKS20 Lemma
+  3.1, itself elementary).
+- **Khatam–Zeilberger, `khatam-zeilberger.pdf` (2024/1843)** — was **absent**, fetched by the lane.
+  > **Theorem 1 (Distance Preservation within 1.5 Johnson).** `|A_{π,ϵ,η}| ≤ 1/(ϵη)`.
+
+  Proof = Lemma 1 (an injection), Lemma 2 (triple-intersection counting), Lemma 3 (a Johnson
+  generalization). **The bound is independent of `n`** — better than GKL's `O(n/η)` — at the cost of
+  a proximity loss `η` the survey flags as under-explored (Remark 4.4).
+
+**Why this matters more than anything else here.** Selvage's *unconditional* RS proximity generator
+tops out at `δ < (1−ρ)/3` (`ProximityGapUD.foldDistancePreserving_UD`); the full unique-decoding
+band `(1−ρ)/2` already costs a **named hypothesis**, `PolishchukSpielman F`
+(`ProximityGapUDTight.foldDistancePreserving_UD_full:1002`); Johnson costs `HaboeckTheorem2`; and
+capacity is refuted. **GKL/Khatam would lift Selvage from `(1−ρ)/3` to the 1.5-Johnson radius
+without touching BCIKS §5, by elementary counting.** For `δ_min ≥ 0.77` — i.e. `ρ ≲ 0.23`, so rate
+1/8 and below, which is where FRI-family systems actually run — 1.5-Johnson beats unique decoding
+outright.
+
+**This is a Lean target that is independent of which PCS wins, elementary, and upgrades every
+theorem downstream of it at once.**
+
+### 8.6 Also not in the brief: MCA up to CAPACITY is *proven* — for a different code
+
+- Survey **Theorem 4.14 ([GG25] Cor. 4.10)**: for a **folded** Reed–Solomon code
+  `FRS[F,L,k,s,ω]` with `s > 16η^{−2}`: `ε_mca(C, 1−ρ−η) ≤ 2n/(η|F|) + 24/(η³|F|)`.
+- **Theorem 4.13**: same for τ-subspace-design codes generally.
+
+**Changing the code rather than assuming the conjecture** is a live and apparently underexplored
+option, and it is the only route to capacity-regime numbers that is not refuted. Not a
+recommendation — a flagged design fork.
+
+### 8.7 31-bit reality check — two hard constraints, on different fields
+
+**(A) Out-of-domain sampling forces an extension for challenges.** WHIR Lemma 4.25 with `s = 1`
+gives `ε^out_i ≤ 2^{m_i}·ℓ²/(2|F|)`. *Derived*: `ε^out ≤ 2^{−λ}` needs `|F| ≥ 2^{m+λ−1}·ℓ²` — at
+m=24, λ=128 that is `|F| ≥ 2^{151}·ℓ²`. WHIR says so itself (§6.2 p.44): *"The argument verifier
+samples challenges from a **sufficiently large extension of the base field**."* **There is no 31-bit
+benchmark anywhere in the WHIR paper** — its fields are a 192-bit prime and Goldilocks with a
+quadratic (λ=100) or cubic (λ=128) extension.
+
+**(B) Two-adicity caps `m`.** `L_i` must be a smooth coset of `F*` and lives in the **base** field.
+BabyBear `p = 2^31 − 2^27 + 1` has two-adicity **27**; KoalaBear `2^31 − 2^24 + 1` has **24**.
+*Derived*: `m + log₂(1/ρ) ≤ 27` ⇒ **m ≤ 26 at ρ=1/2, m ≤ 23 at ρ=1/16** on BabyBear (KoalaBear:
+23 / 20). WHIR hits the same wall on Goldilocks (§6.3 p.44: *"we ignore pairs where m − log ρ > 32,
+as the field does not have a sufficiently large smooth evaluation domain"*).
+
+⇒ **Base field carries the domain and the Merkle leaves and caps `m` at ~26; every verifier
+challenge — folding, out-of-domain, shift, combination — comes from a degree-4/5 extension, and
+post-round-0 sumcheck arithmetic is extension arithmetic.** Biggest hidden cost, and it is in no
+paper. `Selvage/SmallField.lean` already holds the lift (`fold_liftWord_mem:270`).
+
+---
+
+## 9. Paper-side findings — tensor-code family (lane report, integrated)
+
+### 9.1 Corpus corrections
+
+- ⚠ **`tensorcommitments.pdf` is MISIDENTIFIED in the brief.** It is *TensorCommitments: A
+  Lightweight Verifiable Inference for Language Models*, **arXiv:2602.12630, Feb 2026** — an
+  ML-systems proof-of-inference paper whose crypto content is a Merkle variant with a
+  position-binding definition. **Not Bootle–Chiesa–Groth, not a tensor-query PCS, no evaluation
+  soundness theorem.** Not a candidate.
+- The two `-487` files are **byte-identical duplicates** (md5 `4fc04733…`); one paper.
+- **Absent, therefore fetched** from the local IACR mirror: Brakedown 2021/1043, Ligero 2022/1608,
+  Hyrax 2017/1132. **Orion**: absent, not fetched.
+
+### 9.2 ⭐ Diamond–Gruen 2024/1351 — the abstract-layer keystone, and it lands in Selvage unchanged
+
+~9 pages: 3 counting lemmas + 2 theorems + 1 corollary, **stated for an arbitrary linear code**.
+
+- **Theorem 3.1**: if `C` has proximity gaps for affine lines w.r.t. `e ≤ ⌊(d−1)/2⌋` and `ε ≥ e+1`,
+  then so does every interleaving `C^m`. Proof = Lemmas 3.2/3.3/3.4 (triangle + unique decoding;
+  two counting bounds) + pigeonhole. **No polynomial method, no list decoding.**
+- **Theorem 3.6** (Angeris–Evans–Roh): interleaved gaps for all `m` ⟹ **tensor-style** gaps.
+  Induction on `ϑ` with one probability-slicing step.
+- **Corollary 3.7**: RS has tensor-style proximity gaps at `e ≤ ⌊(d−1)/2⌋`, `ε := n`.
+
+Fit to Selvage, assessed by the lane and consistent with what I read: `d^m(U, C^m) ≤ e` **is**
+`CorrelatedAgreement C δ f` at `δ = e/|ι|`, `ℓ = m`; Def 2.1 is `IsProximityGenerator` at `ℓ=2`
+with `G` the affine-line distribution; **Def 2.3 is the same predicate at `ℓ = 2^ϑ` with `G` the
+tensor distribution** — since `IsProximityGenerator` is *parameterized by `G`*, this is an ordinary
+instance, **no signature change**. Two honest caveats: the tensor generator must be presented as a
+distribution over `Fin (2^ϑ) → F` supported on tensor vectors (a `G.pr` construction — real work,
+not a definitional change); and Theorem 3.1 needs **column** distance on `Fin m → ι → F`, which
+`relDist` does not provide (one new definition + a bridge lemma).
+
+⭐ **It is the shared proximity input of Ligerito *and* Binius2** — Binius2's Theorem 2.3 is BCIKS
+Thm 4.1 and its Theorem 2.4 is Diamond–Gruen Cor. 1. Three independent constructions land on the
+same pair. **If one abstract proximity result is proved next, that pair is it.**
+
+### 9.3 ⚑ Gemini's cheapness is misleading — my §7.5 scrutiny confirmed independently
+
+The tensor lane grepped `gemini-elastic.txt` for `KZG|pairing|Merkle|FRI`: **11 hits for
+KZG/pairing** (§2.3 *"An elastic realization of the KZG polynomial commitment scheme"*; BLS12-381
+in the experiments), **zero for FRI, zero for hash-based, zero for Merkle.**
+
+> *"Gemini as published compiles with KZG. … the queries at `β, −β, β²` with `β ← F^×` are
+> **out-of-domain**, which a FRI-based univariate PCS answers by quotienting (DEEP-style) with its
+> own soundness terms. If our univariate cone stops at 'RS proximity + FRI folding' with no
+> evaluation-at-a-point argument, Gemini's cheapness is misleading — **the missing work is the
+> compilation, not the reduction.**"*
+
+That is exactly the objection I raised in §7.5, reached independently. And there is a measurement:
+**Blaze benchmarks this route as "ZeromorphFri" and it is the SLOWEST prover in their comparison.**
+
+Lemma 5.4 remains, genuinely, **the cheapest soundness statement in the corpus** — ~10 lines, one
+Schwartz–Zippel, `(N−1)/|F^×|`, no hypothesis on code, domain, smoothness, or characteristic. Worth
+having as a *lemma*. It is not a route to a PCS on its own.
+
+### 9.4 ❌ RAA / Blaze / 2026-487 — the distance is not a foundation
+
+**Blaze Theorem 3.1** is genuinely proven and explicit, but what it proves is that a **randomly
+generated** RAA code has distance `≥ δ` with failure probability `≥ 1 − p`, and the usable form is
+conditional on `B' := max{f(α,β,δ) : (α,β) ∈ CP(r,δ)} < 0`, which the authors describe as *"quite
+messy to state formally, [but] **easy to evaluate on a computer**"* — a **computer-checked
+transcendental optimization**, i.e. in Lean an interval-arithmetic obligation or an axiom.
+Concretely: `k=2^22`, rate 1/4 gives `δ = 0.19` except with probability **2^−13**; 2^−27 with
+near-linear generation tests, 2^−42 with near-quadratic. **Nowhere near a 2^−100 bar.** And §8 p.36:
+*"we do not have satisfactory distance guarantees for RAA codes of block length smaller than 2^21."*
+
+**Blaze does not even remove RS from the stack**: code-switching produces an IOPP whose oracles are
+**Reed–Solomon encoded**, and the opening *"executes a constant number of **Basefold**
+commitments"*. **Blaze = RAA layer + BaseFold/RS layer.** It adds a code to our stack rather than
+replacing one. Same structure as Bolt (§4.1).
+
+**2026/487 (Generalized RAA over prime fields) is worse.** Its distance theorems are `o(1/N)` with
+unspecified `K` and constants — **no failure probability at any concrete `N`** — and the central
+theorems carry **"Proof Sketch"** only (grep: 4 sketches, 7 proofs, **no appendix**, file ends at
+line 2237). Its Theorem 9 soundness is *"the same framework established in Brakedown"* with RAA
+substituted, **asserted, not proved**. The lane's verdict, which I endorse: *"the only paper putting
+RAA on a prime field, and the least rigorous document in my corpus. I would not build on it."*
+
+⇒ **§4.1's LDPC objection generalizes to the whole expander/RAA family, and it is sharper than
+their √N verifier costs.** Their soundness rests on a distance parameter we cannot prove and would
+have to assume — converting a proved floor (`reedSolomonCode_minDist`, ~30 lines of Vandermonde)
+into a named assumption.
+
+### 9.5 Ligerito, Ligero, Brakedown — shapes and the honest disqualifiers
+
+**Ligerito** (Novakovic–Angeris, May 2025 — an unrefereed *note*, no eprint number) has the best
+recursion shape in the corpus: soundness composes **per level by explicit induction on `ℓ`**
+(§6.3 p.15), each step = (Diamond–Gruen interleaved gap) + (partial sumcheck). Polylog verifier,
+**no √N**. Any code with efficiently evaluable generator rows; unique decoding `d/2` (RS) / `d/3`
+(general). Measured: 2^24 → 255 KiB / 1.3 s; 2^30 → 420 KiB / 80 s.
+
+⚠ **But its stated error bound has at least two transcription defects**, both verified at the byte
+level by the lane: eqs (4)/(15)/(17) print `(m − n − 1)/(2m)` where the quantity is `(m + n − 1)/(2m)`
+(confirmed against the paper's *own* asymptotic `|S_i| = ⌈−(λ+log ℓ)/log((1+ρ)/2)⌉`, whose base is
+`(1+ρ)/2 = (m+n)/(2m)`), and eq. (18)'s summand prints `(d_i/(3m_i))^{|S_i|}` where eq. (5) gives
+`(1 − d_i/(3m_i))^{|S_i|}` — inconsistent with the tail term *in the same display*. **The printed
+form is the more favourable one; formalizing it verbatim would prove a bound the protocol does not
+have.** Also: its commitment is **interleaved, leaf = a whole row of `X`**, so `OpeningScheme` gets
+re-instantiated at a row-valued type (`PositionBinding` survives verbatim, being generic in `Op`).
+
+**Ligero / Brakedown**: the SoK's own answer to *"what is simplest to prove"* is this family —
+Ligero Theorem 4.4 holds for **any linear code** at `e < d/4` with a ~30-line Lemma 4.2; Brakedown's
+binding is 3 elementary steps. **The price is a √N verifier and tens-of-MB proofs**, and — the
+sharper objection — **knowledge soundness needs Brakedown's Lemma 2/3, rewinding extractors in
+expected polynomial time, which is substantially harder in Lean than anything else in this
+document.** Binding is cheap; *knowledge* is not.
+
+### 9.6 ❌ Hyrax is out, and ❌ Binius ring-switching is out of scope
+
+Hyrax's multilinear commitment is **Pedersen in an elliptic curve group** (M191), and the
+construction *requires* the commitment to be additively homomorphic — the verifier folds committed
+rows by a linear combination **in the group**. A Merkle/BCS `OpeningScheme` is not homomorphic, so
+**there is no hash-based instantiation of the technique.** Not post-quantum. Answered honestly:
+this candidate does not exist in our setting.
+
+Binius ring-switching is *characteristic-agnostic* per its own authors (2024/504 §1.3), but (i) it
+is **not a PCS** — it consumes one; (ii) its value (eliminating embedding overhead) largely
+evaporates at 31 bits: packing buys `ℓ → ℓ−2`, not `ℓ → ℓ−7`; (iii) `[L:K]` must be a **power of
+2**, ruling out degree-5 extensions.

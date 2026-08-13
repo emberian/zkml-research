@@ -37,6 +37,22 @@ The design phase produced one sentence that reorganizes everything:
 > **An AIR commits the INTERIOR of a relation; a sumcheck commits its
 > BOUNDARY.**
 
+⚠ **TERMINOLOGY AND PRIOR ART (2026-08-13):** this is standard and named —
+**`polynomial virtualization`** (Thaler, *"Sum-check Is All You Need"*, eprint
+2025/2041 §5.2, whose whole thesis is this sentence), with the upper-bound
+half a **published theorem from 2013** (Thaler CRYPTO'13 Thm 3) and a
+complexity lineage (Kalai–Raz → RRR16 → Ron-Zewi–Rothblum) whose Remark 1.2
+restates it exactly: *an AIR commits the Cook–Levin witness; a virtualizing
+sumcheck commits the original NP witness.* **Retire "boundary"** — it collides
+with *border rank*. Say **"shallow and wide"** for the qualifying class, and
+**materialize-vs-virtualize** for the fork (not AIR-vs-sumcheck: R1CS/Plonkish/
+AIR are interconvertible). ⚠ **The monotone reading is wrong** — the same
+survey says *"not zero, there's a sweet spot."* **What is ours: the measured
+EXCHANGE RATE** (one committed felt ≈ 3,120 field mults at lb=4 / 12,331 at
+lb=6, vs ~40 to virtualize one per layer — 78×–308×), which locates that sweet
+spot as a threshold rule; **and the lower-bound half, which does not exist
+anywhere.**
+
 The interior of a bilinear form is n³; its boundary is n². That is 5,461× at
 n=4096, and it is Θ(n). It generalizes:
 
