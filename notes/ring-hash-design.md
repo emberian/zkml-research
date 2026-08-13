@@ -36,7 +36,7 @@ Prior context: `two-rocks.md` §Rock 2 (the survey and the enabling theorem),
 | best σ-Poseidon point | **dense-in-full-rounds, 143.8 rows/elt (5.0×)** at τ=1; **89.8 (8.0×)** at τ=4 | §2.1, §4.1 |
 | second candidate | **gadget-Feistel, 27.4 rows/elt (26×)** — higher ceiling, much less mature, 3 hard caveats | §3 |
 | ⚑ **the τ=1 vs τ=4 fork** | **τ=4**, decided by 2026/1127's **own** challenge-space rationale (‖S‖ = q^τ) | §4.5–4.6 |
-| **delegate instead of building?** | *open — literature lane outstanding* | §5 |
+| **delegate instead of building?** | ⚑ **DON'T BUILD YET** — two escapes are *substrate* decisions that outrank the hash; one gating measurement named | §5.2 |
 
 **Three things this lane found that were nobody's recorded position:**
 
@@ -886,9 +886,52 @@ formulation, and the corroborating signal is that **none of 2026/1127, Symphony,
 ProtoGaLattice or Neo/SuperNeo cites it** — the field has moved to ℓ-succinct
 SIS / PRISIS / vanishing-SIS.
 
-### 5.2 The lane's verdict
+### 5.2 VERDICT: do not build the ring-native hash yet — and the reason is sequencing, not worthlessness
 
-*(pending — detail outstanding; see §5.1)*
+**A negative on our own candidate, which the brief said would be a good outcome.
+It is.** Stated at the resolution the evidence supports:
+
+> **Two of the escapes would make a ring-native hash unnecessary, and both are
+> SUBSTRATE decisions that sit above this note. Settle them first. If we remain
+> on R_q-native, sumcheck-based lattice folding, the hash is needed — and §1–§4
+> have it priced, its fork resolved, and its conditions checkable.**
+
+Ranking the escapes by how much each actually removes:
+
+| escape | removes | verdict |
+|---|---|---|
+| **0. Field-native folding** (Neo/SuperNeo 2026/242) | the *whole problem* — no R_q transcript, so an ordinary field Poseidon suffices | **substrate decision; may dominate everything** |
+| **1. Symphony** (2025/1905) | the in-circuit FS hash entirely, **in our exact setting** (lattice folding, Ajtai commitments) | **strongest paper-level escape; verified** |
+| **2. ProtoGaLattice** (2026/1317) | ~33× of the *same* bill; residual still in-circuit | **not an escape — and it COMPOSES with a better hash** |
+| **3. GKR delegation** (2026/551, Keccacheck) | *pending* — and under a KRS25 security cloud | **weakest; do not count it until §5.1's hazard is settled** |
+| **4. ACLMT** (2022/941) | nothing | dead as a proof, not proven broken as a scheme |
+
+**Why this is sequencing rather than a kill.** Escapes 0 and 1 do not say "a ring
+hash is a bad design"; they say **"you may not need an in-circuit hash at all."**
+That is a claim about *which folding scheme and which ambient algebra we build
+on* — not about whether §1's branch closure or §4's τ verdict are right. Escape 2
+positively *wants* a cheaper hash. So the design work is not wasted: it is
+**correctly ordered behind one measurement.**
+
+> ⚑ **THE GATING MEASUREMENT, and it is the honest next action:** *what does TFHE
+> blind rotation cost in a field-native constraint system, against 2026/1127's
+> R_q-CCS-with-automorphisms?* 2026/1127 chose R_q because bootstrapping is
+> natively ring-structured. If field-native blind rotation is competitive,
+> Escape 0 wins and the ring hash is moot. If the ring structure is worth more
+> than the FS bill, we stay in R_q and build the hash. **Nothing else in this
+> note changes that ordering, and no amount of further hash design substitutes
+> for it.**
+
+⚠ **Honesty ledger** (the lane's, and it should stay attached): of the papers in
+this section, **only 2026/1127 and Keccacheck have implementations.** Symphony
+and ProtoGaLattice are unimplemented at time of reading. An escape that exists
+only on paper is not yet an escape — which is a reason to *measure*, not a reason
+to build the hash by default.
+
+⚠ **What is NOT settled here**: Escape 3's numbers, and whether KRS25 bites a
+careful two-hash separation. If Escape 3 survives that and lands its *verifier*
+under ~3×10^5 R_q constraints (§5.0's bar), it would change this ranking. **It is
+the one open thread in this section.**
 
 ---
 
