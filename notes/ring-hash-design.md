@@ -1,9 +1,22 @@
 # Ring-hash candidate: the design note
 
-2026-08-13. **Status: IN PROGRESS — written incrementally by the revival lane.**
-The predecessor design lane died on credits after writing three scripts and no
-prose. This file is the prose. Every number below was produced by re-running the
-scripts in this session; the run outputs are quoted, not remembered.
+2026-08-13. **Written incrementally by the revival lane.** The predecessor design
+lane died on credits after writing three scripts and no prose. This file is the
+prose. Every number below was produced by **re-running the scripts in this
+session**; the run outputs are quoted, not remembered.
+
+> ⚑ **Read §5.2 before acting on §1–§4.** The design is in good shape — the
+> recorded #1 weakness closes, the τ fork resolves, the conditions are checkable
+> — **and the recommendation is still "do not build it yet"**, because two
+> escapes would remove the need for an in-circuit hash entirely and both are
+> substrate decisions that outrank the hash. §1–§4 are what to build **if** the
+> gating measurement in §5.2 says we stay in R_q. They are not an argument that
+> we should.
+
+**Still open** (named, not hidden): the coefficient-grouping degree analysis over
+F_{q^4} (§4.5 item 5); Escape 3's numbers and whether KRS25 bites a two-hash
+separation (§5.2); and the round-count derivation, which is owed in *both* τ
+regimes (§4.4).
 
 **Scripts.** They lived only in `~/src/ring-ro-hash/`, **which is not a git
 repo** — the exact way the predecessor's work nearly vanished. Now versioned at
