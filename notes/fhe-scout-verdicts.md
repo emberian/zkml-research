@@ -53,7 +53,11 @@ disk but NO depth verdicts — absence below is not a negative finding.**
 ## Security ledger additions
 
 - **2026/279**: coefficient-isometry hybrid attacks — 2–3 bits off dense
-  secrets like our CBD(10) (stacks on MATZOV ~122). The attack mechanism IS
+  secrets like ours (stacks on MATZOV ~122). ⚠ **Our secret is CBD(20)**
+  (variance 10, support ±20) — this line said CBD(10), one of two labels
+  ("ternary" was the other) that were misreadings of `sample_vec_cbd`
+  (`notes/fhe-core-theory.md`, `docs/VERDICTS.md` §3). Dense either way, so
+  the finding stands. The attack mechanism IS
   the signed-permutation fact we use for free hoisting — the same structure,
   wielded by the adversary.
 - **2026/366**: ring-structure decoding, up to 13 bits off sparse RLWE sets.
