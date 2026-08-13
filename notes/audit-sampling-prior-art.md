@@ -119,3 +119,17 @@ of it. That is also the strongest honest form of the pitch, because RAND
 explicitly asked for the missing piece: *"development of hardware security
 module (HSM)-like devices with an interface that is specialized for ML
 applications."*
+
+
+## Addendum 2026-08-12 — a proved lower bound the design must clear
+
+**eprint 2025/358 (Boyle–Komargodski–Vafa): memory checking has
+Ω(log n / log log n) overhead EVEN under covert security.** A Merkle inference
+ledger is a memory checker; this theorem says relaxing soundness to
+catch-with-constant-probability buys **no asymptotic savings** on the ledger
+itself. Any "sampling makes the ledger cheap" claim has to clear this bound —
+sampling amortizes the PROOFS, not the ledger. Also now pinned: the rational
+proofs line (2013/156, 2014/992, 2017/270, 2018/514, 2026/658), rational
+sumchecks without Schwartz–Zippel (2015/1058), financially-backed covert
+security (2021/1652 — the deterrence factor as on-chain slashing with
+non-interactive judging), and RDoC at its ePrint number (2011/518).

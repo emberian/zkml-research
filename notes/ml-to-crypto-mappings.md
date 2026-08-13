@@ -28,7 +28,14 @@ path)"), `BinaryTowerFanPaar` (formalized Fan–Paar multiplication),
 `Tower256ConcreteBackend` + `binary_tower_256.rs` native kernels. We spent the
 day comparing 31-bit prime fields while sitting on a formalized
 small-value-native commitment substrate. Expander ships `gf2`/`gf2_128` crates
-too. **Status: unexplored in the entire log; highest priority to cost.**
+too. **Status — CORRECTED by the full-corpus mine (2026-08-12): not an
+unexplored lever.** Small-value preservation is a named technique in Thaler's
+own survey ("Sum-check Is All You Need", 2025/2041), Dao–Thaler do
+constraint-packing over binary towers (2024/1038, ~128× on the eq
+pre-computation), and 2026/587 measures **2–3× on Spartan-in-Jolt, 20×+ at
+memory limits, from small-value handling alone**. What remains unclaimed is
+the **ML application** — pointing this surveyed program at the Ω(m)
+nonlinearity floor. Narrower gap, better substrate.
 
 ## B. Low-rank deltas → tiny proofs (LoRA)
 
@@ -95,8 +102,12 @@ memory. Weights stream from disk; the prover never holds the model.
 
 **"Prove a 70B model on a 64 GB box" is a capability that exists in zero
 published systems**, and the barrier is engineering, not theory. For an open
-project this is a headline nobody contests. **Status: the memory numbers are
-all in the log; the streaming response is not.**
+project this is a headline nobody contests. **Status — UPGRADED by the mine:
+integration, not campaign.** Sparrow (2024/1631, the Hobbit authors) is a
+space-efficient sumcheck for *data-parallel* circuits — mappings D and F in
+one paper — measuring **3.2–28.7× less prover space than Gemini** and, on a
+400 MB dataset, **prover space 1.4× the native computation**. Theory floor:
+2021/358 (Block et al.) and 2025/1473 (optimality).
 
 ## G. Proof-aware quantization — the dual of everything we tried
 

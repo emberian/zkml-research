@@ -131,3 +131,21 @@ because it decides whether we get regime-3 economics with post-quantum security.
   sourced.
 - **Not yet read**: both papers beyond the front matter. Neither the accumulation
   treatment nor the FS phenomenon has been checked.
+
+
+## Addendum 2026-08-12 — two regimes the full-corpus mine added
+
+**Regime 4 — rounding as a low-degree polynomial, GKR over a ring.**
+eprint 2019/762 (Chen, Cheon, Kim, Park; MSR/SNU) reduces ROUNDING to a
+low-degree polynomial and runs GKR over a ring rather than a field — from 2019,
+explicitly motivated by AI workloads ("VC is currently missing the opportunity
+in the whole AI space where approximate computations are unavoidable"). Bitan
+et al. 2025/2152 cites it; our record did not. This is the direct ancestor of
+the approximate line, with a different (ring) instantiation route.
+
+**Regime 5 — arguments native to ℤ and ℚ.** Zinc (eprint 2025/316, Nethermind):
+hash-based succinct arguments over the integers and rationals, no hidden-order
+groups, arbitrary moduli including composite — bypassing "arithmetization
+overheads of orders of magnitude" instead of choosing a field at all. A
+different answer to requantization than any format choice; Limber (2026/1635)
+is the same commit-then-fingerprint family.
