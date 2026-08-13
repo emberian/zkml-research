@@ -4,6 +4,11 @@
   breadstuffs-codex checkout, rev 1c2b90b, oleans warm). `lake env lean`
   writes NO olean — `lake build <Module>` before importing. minidregg
   importGraph symlink repaired; **breadstuffs/metatheory's is still dangling**.
+- ⚑ **`Bfv/Mul.lean` and `Bfv/Smudging.lean` are in NO default build target**
+  (the `Bfv` lean_lib has no globs, so only `Bfv.lean` + transitive imports
+  build). **43 keystones are unpinned by CI** and `#assert_namespace_axioms`
+  never walks them. Both build green standalone. This is the
+  gating-defaults-to-silence class, in our own tree, found 2026-08-13.
 - **Kernel landmines** (CyclotomicInertia lane): the CommRing/Field Semiring
   diamond DIVERGES at ZMod p for our primes — state helpers over [Field R].
   Never route `Splits` through X^q−X (kernel normalizes a 2^31+-degree poly).

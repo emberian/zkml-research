@@ -12,15 +12,31 @@ metatheory/Bfv. Corrects the vFHE agenda's missing-piece list.
   and no worst-case-to-average-case reduction supports the instance at σ≈3.16
   (though CBD = normal-form LWE dissolves the ternary-secret objection for the
   single-party path via ACPS).
-- **r_t(q) = 0.82·t — costing ~7 bits — ⚠ SUPERSEDED 2026-08-13: this is an
-  ENCODING bug, not a parameter bug.** KPZ 2021/204's own first modification:
-  encrypt as `a·s + e + ⌊(Q/t)·m⌉` (round AFTER scaling) instead of
-  pre-rounding Δ=⌊Q/t⌋, and the r_t(Q) term vanishes — "the noise growth in
-  BFV becomes the same, or actually somewhat better, as in BGV." One line in
-  encryption. No new primes, no re-genesis, no VK rotation. The Q≡1(mod t)
-  re-genesis I recommended was a cost verdict that outlived its premise.
-  Predicted: depth 1→2 free (Fheanor harness confirms deployed BFV at depth 1
-  today).
+- **r_t(q) = 0.82·t — costing ~7 bits — ⚠⚠ CLOSED NO-OP 2026-08-13 (measured):
+  the KPZ fix is ALREADY IN FORCE in the deployed library. There is nothing to
+  implement and no depth to recover.** The chain of supersessions, in order:
+  (i) it was called a parameter bug wanting a Q≡1(mod t) re-genesis; (ii)
+  corrected to an ENCODING bug per KPZ 2021/204's first modification — encrypt
+  as `a·s + e + ⌊(Q/t)·m⌉` instead of pre-rounding Δ=⌊Q/t⌋; (iii) **now
+  measured: `vendor/fhe-dregg` already encrypts that way.**
+  `Plaintext::to_poly` (`vendor/fhe-dregg/src/bfv/plaintext.rs:51-64`) computes
+  `−[Q·m]_t · t⁻¹ mod Q` from the per-limb `(−t)⁻¹` scaling polynomial built at
+  `vendor/fhe-dregg/src/bfv/parameters.rs:418-436` — which is *verbatim* KPZ
+  **Remark 3.1**'s RNS identity `⌊Q[m]_t/t⌉ mod Q = −[Qm]_t/t mod Q`, and
+  equals `⌊Q·m/t⌋` exactly. Lineage: KPZ p.4 notes SEAL v3.4.0 independently
+  added this; fhe.rs's own comment says "We use the same code as SEAL".
+  **The r_t(Q) term is structurally absent from our noise path.**
+  ⚠ And the predicted payoff was wrong twice over, both measured at the
+  deployed ring (N=4096, log₂Q=109.0, t=1032193, r_t(Q)=843789=0.817·t):
+  **deployed depth is 2, not 1** (40/40 draws), and an A/B against a
+  hand-built classic Δ·m ciphertext shows the r_t(Q) term is worth **~8 bits,
+  and 1/40 of a depth level** — depth 2 in 39/40 draws even *with* the defect.
+  A level here costs 33–42 bits, so 8 bits was never going to buy one. The
+  "~7 bits ⇒ free depth 1→2" step was a bit-count silently promoted to a
+  level-count. The "Fheanor harness confirms depth 1" premise measured a
+  *different library* (Fheanor Pow2BFV, ternary sk, DIGITS=3 gadget
+  key-switch, budget-hits-0 meter), not our deployed BFV.
+  Harness + falsifier: `breadstuffs/fhegg-fhe/tests/kpz_encoding_depth.rs`.
 
 ## THE INVERSION: rotation is not the missing piece for our workload
 
@@ -54,6 +70,37 @@ layer, on a heuristic bound; multi-layer wants n=8192.
 never before** — 30.5 bits at our parameters, free. And hoisting is *exactly*
 noise-neutral at power-of-two m (the automorphism is a signed permutation —
 fhe-math rq/mod.rs:329) — a clean Lean theorem replacing HS18's hedge.
+
+## ✅ THE RING LIFT LANDED (2026-08-13, `36dd4578e`, `metatheory/Bfv/Ring.lean`)
+
+**The row-sum bound survived the carrier change VERBATIM** — `stepR_noise_le`
+is `step_noise_le` with `Ct P → RCt P N`, `ℤ → Rn N`, `|·| ≤ M →
+NormInfLE · M` and *nothing else*: same `RowBound` hypothesis (imported and
+reused, not copied), same `G * M` conclusion, **no factor of N**. The proof is
+the original with `intro k` prepended. That was the whole bet and it paid.
+
+Also landed, all proved, zero `sorry`, zero obligations (`Bfv` namespace went
+62 → 90 kernel-clean theorems):
+- **`negaMul` is PROVED to be the ring product, not postulated** — the main
+  vacuity risk. `toPoly_injective` + `negaMul_toPoly_dvd` show
+  `X^N+1 ∣ toPoly a * toPoly b − toPoly (negaMul a b)` against Mathlib's
+  `Polynomial ℤ`, stated in the quotient. An arbitrary bilinear op wearing a
+  ring's name would have passed every other test.
+- **`negaMul_normInf_le : ‖a·b‖_∞ ≤ N·‖a‖_∞·‖b‖_∞` — the provable δ_R = N,
+  and it is proved TIGHT**: attained at *every* N by all-ones inputs
+  (`negaMul_expansion_attained`, a general theorem not a case-test), with
+  `N−1` refuted. The heuristic 2√N is deliberately not formalized.
+- **`deployed_ring_depth`**: at N=4096, G=3, B=2^20, **T=42 steps keep every
+  coefficient inside the decrypt margin** — the 42 previously proved about
+  one scalar phase now holds on the whole ring.
+- Teeth: row-bound necessity, satisfiable-and-not-vacuous, the negacyclic
+  signature (`X·X = −1` at N=2 — nonneg inputs, negative output), and
+  `negaMul_one_eq_mul` showing the scalar model is the N=1 case so the files
+  refine rather than contradict.
+
+Nice bonus: `Bfv/Mul.lean` had already priced this as a named blocker and
+carried a hedge inflating the scalar bound by 4096. **That hedge constant is
+now a theorem.**
 
 ## The Lean convergence (the good surprise)
 
