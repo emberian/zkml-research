@@ -1,0 +1,9 @@
+=== ANONYMOUS PROBES (--no-auth): what a stranger sees ===
+--- deepseek-ai/DeepSeek-V4 ---
+exit=2  GATED/UNAVAILABLE deepseek-ai/DeepSeek-V4: HTTP 401 for https://huggingface.co/api/models/deepseek-ai/DeepSeek-V4/revision/main?blobs=true -- not readable: gated, private, or absent (the Hub answers all three alike, so this tool records the code rather than guessing which)
+--- meta-llama/Llama-3.1-8B-Instruct ---
+exit=2  GATED/UNAVAILABLE meta-llama/Llama-3.1-8B-Instruct: HTTP 401 for https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct/resolve/0e9e39f249a16976918f6564b8830bc894c89659/config.json -- not readable: gated, private, or absent (the Hub answers all three alike, so this tool records the code rather than guessing which)
+--- google/gemma-3-27b-it ---
+exit=2  GATED/UNAVAILABLE google/gemma-3-27b-it: HTTP 401 for https://huggingface.co/google/gemma-3-27b-it/resolve/005ad3404e59d6023443cb575daa05336842228a/config.json -- not readable: gated, private, or absent (the Hub answers all three alike, so this tool records the code rather than guessing which)
+--- openai/gpt-oss-20b ---
+exit=0  commitment  e4c2a9aea6bb485b16e41318319e2fc970a69f4a962bb534e98162fa47f2452d

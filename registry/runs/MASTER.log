@@ -1,0 +1,689 @@
+=== 2026-08-13T16:10:37Z FULL openai/gpt-oss-20b ===
+repo openai/gpt-oss-20b @ 6cee5e81ee83917806bbde320786a8fb61efebee (18 files)
+  aux config.json (1806 B)
+  aux generation_config.json (177 B)
+  aux tokenizer.json (27868174 B)
+  aux tokenizer_config.json (4200 B)
+  aux special_tokens_map.json (98 B)
+  aux chat_template.jinja (16738 B)
+  aux model.safetensors.index.json (36355 B)
+  shard model-00000-of-00002.safetensors: 4792272488 B, header 22240 B, 196 tensors, 0 B unclaimed
+  shard model-00001-of-00002.safetensors: 4798702184 B, header 22304 B, 197 tensors, 0 B unclaimed
+  shard model-00002-of-00002.safetensors: 4170342232 B, header 7568 B, 66 tensors, 0 B unclaimed
+    model-00000-of-00002.safetensors: 0.27/4.79 GB (8.9 MB/s)
+    model-00000-of-00002.safetensors: 0.59/4.79 GB (9.7 MB/s)
+    model-00000-of-00002.safetensors: 0.88/4.79 GB (9.7 MB/s)
+    model-00000-of-00002.safetensors: 1.18/4.79 GB (9.8 MB/s)
+    model-00000-of-00002.safetensors: 1.46/4.79 GB (9.6 MB/s)
+    model-00000-of-00002.safetensors: 1.80/4.79 GB (9.9 MB/s)
+    model-00000-of-00002.safetensors: 2.13/4.79 GB (10.0 MB/s)
+    model-00000-of-00002.safetensors: 2.47/4.79 GB (10.1 MB/s)
+    model-00000-of-00002.safetensors: 2.81/4.79 GB (9.8 MB/s)
+    model-00000-of-00002.safetensors: 2.98/4.79 GB (9.4 MB/s)
+    model-00000-of-00002.safetensors: 3.14/4.79 GB (9.0 MB/s)
+    model-00000-of-00002.safetensors: 3.20/4.79 GB (8.4 MB/s)
+    model-00000-of-00002.safetensors: 3.27/4.79 GB (7.9 MB/s)
+    model-00000-of-00002.safetensors: 3.59/4.79 GB (8.0 MB/s)
+    model-00000-of-00002.safetensors: 3.66/4.79 GB (7.7 MB/s)
+    model-00000-of-00002.safetensors: 3.83/4.79 GB (7.5 MB/s)
+    model-00000-of-00002.safetensors: 4.08/4.79 GB (7.5 MB/s)
+    model-00000-of-00002.safetensors: 4.34/4.79 GB (7.6 MB/s)
+    model-00000-of-00002.safetensors: 4.51/4.79 GB (7.5 MB/s)
+  streamed model-00000-of-00002.safetensors: 4.79 GB in 10.5 min (7.6 MB/s), interior recheck OK
+    model-00001-of-00002.safetensors: 0.28/4.80 GB (9.1 MB/s)
+    model-00001-of-00002.safetensors: 0.59/4.80 GB (9.6 MB/s)
+    model-00001-of-00002.safetensors: 0.65/4.80 GB (6.9 MB/s)
+    model-00001-of-00002.safetensors: 0.89/4.80 GB (7.1 MB/s)
+    model-00001-of-00002.safetensors: 1.28/4.80 GB (8.2 MB/s)
+    model-00001-of-00002.safetensors: 1.64/4.80 GB (8.9 MB/s)
+    model-00001-of-00002.safetensors: 1.97/4.80 GB (9.1 MB/s)
+    model-00001-of-00002.safetensors: 2.26/4.80 GB (9.1 MB/s)
+    model-00001-of-00002.safetensors: 2.58/4.80 GB (9.3 MB/s)
+    model-00001-of-00002.safetensors: 2.96/4.80 GB (9.6 MB/s)
+    model-00001-of-00002.safetensors: 3.36/4.80 GB (9.9 MB/s)
+    model-00001-of-00002.safetensors: 3.70/4.80 GB (10.0 MB/s)
+    model-00001-of-00002.safetensors: 4.05/4.80 GB (10.2 MB/s)
+    model-00001-of-00002.safetensors: 4.41/4.80 GB (10.3 MB/s)
+    model-00001-of-00002.safetensors: 4.55/4.80 GB (9.9 MB/s)
+  streamed model-00001-of-00002.safetensors: 4.80 GB in 8.1 min (9.9 MB/s), interior recheck OK
+    model-00002-of-00002.safetensors: 0.31/4.17 GB (10.0 MB/s)
+    model-00002-of-00002.safetensors: 0.63/4.17 GB (10.2 MB/s)
+    model-00002-of-00002.safetensors: 0.91/4.17 GB (10.0 MB/s)
+    model-00002-of-00002.safetensors: 1.17/4.17 GB (9.6 MB/s)
+    model-00002-of-00002.safetensors: 1.54/4.17 GB (10.1 MB/s)
+    model-00002-of-00002.safetensors: 1.89/4.17 GB (10.4 MB/s)
+    model-00002-of-00002.safetensors: 2.18/4.17 GB (10.2 MB/s)
+    model-00002-of-00002.safetensors: 2.21/4.17 GB (8.5 MB/s)
+    model-00002-of-00002.safetensors: 2.44/4.17 GB (8.4 MB/s)
+    model-00002-of-00002.safetensors: 2.62/4.17 GB (7.8 MB/s)
+    model-00002-of-00002.safetensors: 2.72/4.17 GB (7.4 MB/s)
+    model-00002-of-00002.safetensors: 3.05/4.17 GB (7.7 MB/s)
+    model-00002-of-00002.safetensors: 3.38/4.17 GB (7.9 MB/s)
+    model-00002-of-00002.safetensors: 3.74/4.17 GB (8.2 MB/s)
+    model-00002-of-00002.safetensors: 3.88/4.17 GB (8.0 MB/s)
+    model-00002-of-00002.safetensors: 4.17/4.17 GB (8.1 MB/s)
+  streamed model-00002-of-00002.safetensors: 4.17 GB in 8.6 min (8.0 MB/s), interior recheck OK
+
+commitment  3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f
+algorithm   sha256
+coverage    full
+repo        openai/gpt-oss-20b @ 6cee5e81ee83917806bbde320786a8fb61efebee
+tensors     459 in 3 shards
+tensor B    13761264768
+fetched     13789367970 B in 24 requests
+wall        1640.4 s
+written     /Users/ember/dev/zkml-research/registry/manifests/openai__gpt-oss-20b.6cee5e81ee83.full.json
+=== 2026-08-13T16:37:58Z FULL RERUN openai/gpt-oss-20b ===
+repo openai/gpt-oss-20b @ 6cee5e81ee83917806bbde320786a8fb61efebee (18 files)
+  aux config.json (1806 B)
+  aux generation_config.json (177 B)
+  aux tokenizer.json (27868174 B)
+  aux tokenizer_config.json (4200 B)
+  aux special_tokens_map.json (98 B)
+  aux chat_template.jinja (16738 B)
+  aux model.safetensors.index.json (36355 B)
+  shard model-00000-of-00002.safetensors: 4792272488 B, header 22240 B, 196 tensors, 0 B unclaimed
+  shard model-00001-of-00002.safetensors: 4798702184 B, header 22304 B, 197 tensors, 0 B unclaimed
+  shard model-00002-of-00002.safetensors: 4170342232 B, header 7568 B, 66 tensors, 0 B unclaimed
+    model-00000-of-00002.safetensors: 0.39/4.79 GB (12.9 MB/s)
+    model-00000-of-00002.safetensors: 0.81/4.79 GB (13.4 MB/s)
+    model-00000-of-00002.safetensors: 1.22/4.79 GB (13.4 MB/s)
+    model-00000-of-00002.safetensors: 1.64/4.79 GB (13.5 MB/s)
+    model-00000-of-00002.safetensors: 2.04/4.79 GB (13.5 MB/s)
+    model-00000-of-00002.safetensors: 2.45/4.79 GB (13.5 MB/s)
+    model-00000-of-00002.safetensors: 2.82/4.79 GB (12.6 MB/s)
+    model-00000-of-00002.safetensors: 3.14/4.79 GB (12.4 MB/s)
+    model-00000-of-00002.safetensors: 3.21/4.79 GB (11.3 MB/s)
+    model-00000-of-00002.safetensors: 3.41/4.79 GB (10.9 MB/s)
+    model-00000-of-00002.safetensors: 3.60/4.79 GB (10.4 MB/s)
+    model-00000-of-00002.safetensors: 3.67/4.79 GB (9.5 MB/s)
+    model-00000-of-00002.safetensors: 4.02/4.79 GB (9.7 MB/s)
+    model-00000-of-00002.safetensors: 4.16/4.79 GB (9.3 MB/s)
+    model-00000-of-00002.safetensors: 4.44/4.79 GB (9.3 MB/s)
+    model-00000-of-00002.safetensors: 4.52/4.79 GB (8.9 MB/s)
+  hub LFS sha256 agrees for model-00000-of-00002.safetensors
+  streamed model-00000-of-00002.safetensors: 4.79 GB in 8.8 min (9.1 MB/s), interior recheck OK
+    model-00001-of-00002.safetensors: 0.40/4.80 GB (13.2 MB/s)
+    model-00001-of-00002.safetensors: 0.64/4.80 GB (10.5 MB/s)
+    model-00001-of-00002.safetensors: 0.69/4.80 GB (7.5 MB/s)
+    model-00001-of-00002.safetensors: 0.88/4.80 GB (7.2 MB/s)
+    model-00001-of-00002.safetensors: 1.16/4.80 GB (7.6 MB/s)
+    model-00001-of-00002.safetensors: 1.48/4.80 GB (8.1 MB/s)
+    model-00001-of-00002.safetensors: 1.79/4.80 GB (8.4 MB/s)
+    model-00001-of-00002.safetensors: 2.12/4.80 GB (8.7 MB/s)
+    model-00001-of-00002.safetensors: 2.41/4.80 GB (8.8 MB/s)
+    model-00001-of-00002.safetensors: 2.72/4.80 GB (8.9 MB/s)
+    model-00001-of-00002.safetensors: 3.05/4.80 GB (9.1 MB/s)
+    model-00001-of-00002.safetensors: 3.37/4.80 GB (9.2 MB/s)
+    model-00001-of-00002.safetensors: 3.72/4.80 GB (9.4 MB/s)
+    model-00001-of-00002.safetensors: 4.09/4.80 GB (9.6 MB/s)
+    model-00001-of-00002.safetensors: 4.49/4.80 GB (9.8 MB/s)
+    model-00001-of-00002.safetensors: 4.78/4.80 GB (9.8 MB/s)
+  hub LFS sha256 agrees for model-00001-of-00002.safetensors
+  streamed model-00001-of-00002.safetensors: 4.80 GB in 8.1 min (9.8 MB/s), interior recheck OK
+    model-00002-of-00002.safetensors: 0.37/4.17 GB (12.1 MB/s)
+    model-00002-of-00002.safetensors: 0.75/4.17 GB (12.5 MB/s)
+    model-00002-of-00002.safetensors: 1.05/4.17 GB (11.5 MB/s)
+    model-00002-of-00002.safetensors: 1.37/4.17 GB (11.3 MB/s)
+    model-00002-of-00002.safetensors: 1.67/4.17 GB (11.0 MB/s)
+    model-00002-of-00002.safetensors: 1.95/4.17 GB (10.7 MB/s)
+    model-00002-of-00002.safetensors: 2.26/4.17 GB (10.6 MB/s)
+    model-00002-of-00002.safetensors: 2.57/4.17 GB (10.6 MB/s)
+    model-00002-of-00002.safetensors: 2.63/4.17 GB (9.0 MB/s)
+    model-00002-of-00002.safetensors: 2.76/4.17 GB (8.6 MB/s)
+    model-00002-of-00002.safetensors: 3.01/4.17 GB (8.6 MB/s)
+    model-00002-of-00002.safetensors: 3.30/4.17 GB (8.6 MB/s)
+    model-00002-of-00002.safetensors: 3.47/4.17 GB (8.4 MB/s)
+    model-00002-of-00002.safetensors: 3.72/4.17 GB (8.4 MB/s)
+    model-00002-of-00002.safetensors: 3.84/4.17 GB (8.0 MB/s)
+    model-00002-of-00002.safetensors: 3.98/4.17 GB (7.8 MB/s)
+  hub LFS sha256 agrees for model-00002-of-00002.safetensors
+  streamed model-00002-of-00002.safetensors: 4.17 GB in 8.9 min (7.8 MB/s), interior recheck OK
+
+commitment  3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f
+algorithm   sha256
+coverage    full
+repo        openai/gpt-oss-20b @ 6cee5e81ee83917806bbde320786a8fb61efebee
+tensors     459 in 3 shards
+tensor B    13761264768
+fetched     13789369858 B in 24 requests
+wall        1555.6 s
+written     runs/openai__gpt-oss-20b.rerun.json
+=== 2026-08-13T17:03:54Z FULL Qwen/Qwen3-8B ===
+repo Qwen/Qwen3-8B @ b968826d9c46dd6066d109eabc6255188de91218 (15 files)
+  aux config.json (728 B)
+  aux generation_config.json (239 B)
+  aux tokenizer.json (11422654 B)
+  aux tokenizer_config.json (9732 B)
+  aux vocab.json (2776833 B)
+  aux merges.txt (1671853 B)
+  aux model.safetensors.index.json (32878 B)
+  shard model-00001-of-00005.safetensors: 3996250744 B, header 9328 B, 81 tensors, 0 B unclaimed
+  shard model-00002-of-00005.safetensors: 3993160032 B, header 13144 B, 114 tensors, 0 B unclaimed
+  shard model-00003-of-00005.safetensors: 3959604768 B, header 12824 B, 111 tensors, 0 B unclaimed
+  shard model-00004-of-00005.safetensors: 3187841392 B, header 10600 B, 92 tensors, 0 B unclaimed
+  shard model-00005-of-00005.safetensors: 1244659840 B, header 120 B, 1 tensors, 0 B unclaimed
+    model-00001-of-00005.safetensors: 0.18/4.00 GB (5.7 MB/s)
+    model-00001-of-00005.safetensors: 0.30/4.00 GB (4.9 MB/s)
+    model-00001-of-00005.safetensors: 0.46/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 0.63/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 0.79/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 0.93/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 1.09/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 1.22/4.00 GB (4.9 MB/s)
+    model-00001-of-00005.safetensors: 1.36/4.00 GB (4.9 MB/s)
+    model-00001-of-00005.safetensors: 1.56/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 1.76/4.00 GB (5.2 MB/s)
+    model-00001-of-00005.safetensors: 1.88/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 2.03/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 2.18/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 2.32/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 2.50/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 2.68/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 2.89/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 3.12/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.27/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.45/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.61/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.77/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.94/4.00 GB (5.3 MB/s)
+  hub LFS sha256 agrees for model-00001-of-00005.safetensors
+  streamed model-00001-of-00005.safetensors: 4.00 GB in 12.6 min (5.3 MB/s), interior recheck OK
+    model-00002-of-00005.safetensors: 0.18/3.99 GB (6.0 MB/s)
+    model-00002-of-00005.safetensors: 0.37/3.99 GB (6.0 MB/s)
+    model-00002-of-00005.safetensors: 0.52/3.99 GB (5.6 MB/s)
+    model-00002-of-00005.safetensors: 0.67/3.99 GB (5.5 MB/s)
+    model-00002-of-00005.safetensors: 0.86/3.99 GB (5.6 MB/s)
+    model-00002-of-00005.safetensors: 1.02/3.99 GB (5.6 MB/s)
+    model-00002-of-00005.safetensors: 1.22/3.99 GB (5.7 MB/s)
+    model-00002-of-00005.safetensors: 1.36/3.99 GB (5.5 MB/s)
+    model-00002-of-00005.safetensors: 1.55/3.99 GB (5.6 MB/s)
+    model-00002-of-00005.safetensors: 1.80/3.99 GB (5.9 MB/s)
+    model-00002-of-00005.safetensors: 2.13/3.99 GB (6.3 MB/s)
+    model-00002-of-00005.safetensors: 2.39/3.99 GB (6.5 MB/s)
+    model-00002-of-00005.safetensors: 2.72/3.99 GB (6.8 MB/s)
+    model-00002-of-00005.safetensors: 3.02/3.99 GB (7.0 MB/s)
+    model-00002-of-00005.safetensors: 3.33/3.99 GB (7.2 MB/s)
+    model-00002-of-00005.safetensors: 3.66/3.99 GB (7.5 MB/s)
+  hub LFS sha256 agrees for model-00002-of-00005.safetensors
+  streamed model-00002-of-00005.safetensors: 3.99 GB in 8.6 min (7.7 MB/s), interior recheck OK
+    model-00003-of-00005.safetensors: 0.37/3.96 GB (12.3 MB/s)
+    model-00003-of-00005.safetensors: 0.65/3.96 GB (10.7 MB/s)
+    model-00003-of-00005.safetensors: 1.02/3.96 GB (11.3 MB/s)
+    model-00003-of-00005.safetensors: 1.38/3.96 GB (11.3 MB/s)
+    model-00003-of-00005.safetensors: 1.72/3.96 GB (11.3 MB/s)
+    model-00003-of-00005.safetensors: 2.04/3.96 GB (11.2 MB/s)
+    model-00003-of-00005.safetensors: 2.34/3.96 GB (11.0 MB/s)
+    model-00003-of-00005.safetensors: 2.65/3.96 GB (10.9 MB/s)
+    model-00003-of-00005.safetensors: 2.98/3.96 GB (10.9 MB/s)
+    model-00003-of-00005.safetensors: 3.25/3.96 GB (10.7 MB/s)
+    model-00003-of-00005.safetensors: 3.57/3.96 GB (10.6 MB/s)
+    model-00003-of-00005.safetensors: 3.83/3.96 GB (10.5 MB/s)
+  hub LFS sha256 agrees for model-00003-of-00005.safetensors
+  streamed model-00003-of-00005.safetensors: 3.96 GB in 6.3 min (10.5 MB/s), interior recheck OK
+    model-00004-of-00005.safetensors: 0.37/3.19 GB (12.3 MB/s)
+    model-00004-of-00005.safetensors: 0.65/3.19 GB (10.8 MB/s)
+    model-00004-of-00005.safetensors: 1.02/3.19 GB (11.2 MB/s)
+    model-00004-of-00005.safetensors: 1.41/3.19 GB (11.6 MB/s)
+    model-00004-of-00005.safetensors: 1.80/3.19 GB (11.8 MB/s)
+    model-00004-of-00005.safetensors: 2.11/3.19 GB (11.6 MB/s)
+    model-00004-of-00005.safetensors: 2.48/3.19 GB (11.7 MB/s)
+    model-00004-of-00005.safetensors: 2.89/3.19 GB (11.9 MB/s)
+  hub LFS sha256 agrees for model-00004-of-00005.safetensors
+  streamed model-00004-of-00005.safetensors: 3.19 GB in 4.4 min (12.0 MB/s), interior recheck OK
+    model-00005-of-00005.safetensors: 0.38/1.24 GB (12.6 MB/s)
+    model-00005-of-00005.safetensors: 0.67/1.24 GB (11.0 MB/s)
+    model-00005-of-00005.safetensors: 1.02/1.24 GB (11.1 MB/s)
+  hub LFS sha256 agrees for model-00005-of-00005.safetensors
+  streamed model-00005-of-00005.safetensors: 1.24 GB in 1.8 min (11.3 MB/s), interior recheck OK
+
+commitment  13adc299c5f4d3f8e1c9bdfac84d890c3e3ea6ede6b2bae5fdaa7df8651910fa
+algorithm   sha256
+coverage    full
+repo        Qwen/Qwen3-8B @ b968826d9c46dd6066d109eabc6255188de91218
+tensors     399 in 5 shards
+tensor B    16381470720
+fetched     16397542326 B in 34 requests
+wall        2040.1 s
+written     /Users/ember/dev/zkml-research/registry/manifests/Qwen__Qwen3-8B.b968826d9c46.full.json
+=== 2026-08-13T17:37:54Z FULL RERUN Qwen/Qwen3-0.6B ===
+repo Qwen/Qwen3-0.6B @ c1899de289a04d12100db370d81485cdf75e47ca (10 files)
+  aux config.json (726 B)
+  aux generation_config.json (239 B)
+  aux tokenizer.json (11422654 B)
+  aux tokenizer_config.json (9732 B)
+  aux vocab.json (2776833 B)
+  aux merges.txt (1671853 B)
+  shard model.safetensors: 1503300328 B, header 35552 B, 311 tensors, 0 B unclaimed
+    model.safetensors: 0.34/1.50 GB (10.8 MB/s)
+    model.safetensors: 0.69/1.50 GB (11.3 MB/s)
+    model.safetensors: 1.05/1.50 GB (11.5 MB/s)
+    model.safetensors: 1.43/1.50 GB (11.7 MB/s)
+  hub LFS sha256 agrees for model.safetensors
+  streamed model.safetensors: 1.50 GB in 2.1 min (11.7 MB/s), interior recheck OK
+
+commitment  bed2361d5898823569760ebf4bc7998a9bdbc90426afe78c30692aa2c465ba5d
+algorithm   sha256
+coverage    full
+repo        Qwen/Qwen3-0.6B @ c1899de289a04d12100db370d81485cdf75e47ca
+tensors     311 in 1 shards
+tensor B    1503264768
+fetched     1519231965 B in 12 requests
+wall        133.1 s
+note        repo has no model.safetensors.index.json; the single top-level model.safetensors is the whole shard set
+written     runs/Qwen__Qwen3-0.6B.rerun.json
+=== 2026-08-13T17:40:07Z STRUCTURE openai/gpt-oss-120b ===
+repo openai/gpt-oss-120b @ b5c939de8f754692c1647ca79fbf85e8c1e70f8a (37 files)
+  aux config.json (2089 B)
+  aux generation_config.json (177 B)
+  aux tokenizer.json (27868174 B)
+  aux tokenizer_config.json (4200 B)
+  aux special_tokens_map.json (98 B)
+  aux chat_template.jinja (16738 B)
+  aux model.safetensors.index.json (54511 B)
+  shard model-00000-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00001-of-00014.safetensors: 4115586736 B, header 6056 B, 54 tensors, 0 B unclaimed
+  shard model-00002-of-00014.safetensors: 4625017888 B, header 4632 B, 41 tensors, 0 B unclaimed
+  shard model-00003-of-00014.safetensors: 4115586752 B, header 6072 B, 54 tensors, 0 B unclaimed
+  shard model-00004-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00005-of-00014.safetensors: 4115586696 B, header 6016 B, 54 tensors, 0 B unclaimed
+  shard model-00006-of-00014.safetensors: 4625017856 B, header 4600 B, 41 tensors, 0 B unclaimed
+  shard model-00007-of-00014.safetensors: 4060267176 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00008-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00009-of-00014.safetensors: 4170906304 B, header 7480 B, 67 tensors, 0 B unclaimed
+  shard model-00010-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00011-of-00014.safetensors: 4115586752 B, header 6072 B, 54 tensors, 0 B unclaimed
+  shard model-00012-of-00014.safetensors: 4064660808 B, header 2496 B, 22 tensors, 0 B unclaimed
+  shard model-00013-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00014-of-00014.safetensors: 4115586736 B, header 6056 B, 54 tensors, 0 B unclaimed
+
+commitment  b8699decd118b360206bf47f7783c5ab50706d80fcbc33d75a91577c38de8a76
+algorithm   sha256
+coverage    structure-only
+repo        openai/gpt-oss-120b @ b5c939de8f754692c1647ca79fbf85e8c1e70f8a
+tensors     687 in 15 shards
+tensor B    65248815744
+fetched     28184414 B in 69 requests
+wall        26.7 s
+written     /Users/ember/dev/zkml-research/registry/manifests/openai__gpt-oss-120b.b5c939de8f75.structure.json
+=== 2026-08-13T17:40:34Z STRUCTURE deepseek-ai/DeepSeek-V3.1 ===
+repo deepseek-ai/DeepSeek-V3.1 @ c0781d039fb7a1ba2abc4add0bdc293e92d2b8db (177 files)
+  aux config.json (1686 B)
+  aux generation_config.json (171 B)
+  aux tokenizer.json (7847578 B)
+  aux tokenizer_config.json (3744 B)
+  aux model.safetensors.index.json (8898324 B)
+  shard model-00001-of-000163.safetensors: 5234139343 B, header 34119 B, 270 tensors, 0 B unclaimed
+  shard model-00002-of-000163.safetensors: 4302383966 B, header 75094 B, 586 tensors, 0 B unclaimed
+  shard model-00003-of-000163.safetensors: 4302384375 B, header 75503 B, 586 tensors, 0 B unclaimed
+  shard model-00004-of-000163.safetensors: 4302349996 B, header 73668 B, 576 tensors, 0 B unclaimed
+  shard model-00005-of-000163.safetensors: 4302384154 B, header 75282 B, 586 tensors, 0 B unclaimed
+  shard model-00006-of-000163.safetensors: 4372073602 B, header 75162 B, 584 tensors, 0 B unclaimed
+  shard model-00007-of-000163.safetensors: 4306080097 B, header 75097 B, 588 tensors, 0 B unclaimed
+  shard model-00008-of-000163.safetensors: 4302384356 B, header 75484 B, 586 tensors, 0 B unclaimed
+  shard model-00009-of-000163.safetensors: 4302350190 B, header 73862 B, 576 tensors, 0 B unclaimed
+  shard model-00010-of-000163.safetensors: 4302383960 B, header 75088 B, 586 tensors, 0 B unclaimed
+  shard model-00011-of-000163.safetensors: 4302384375 B, header 75503 B, 586 tensors, 0 B unclaimed
+  shard model-00012-of-000163.safetensors: 1321583941 B, header 23357 B, 183 tensors, 0 B unclaimed
+  shard model-00013-of-000163.safetensors: 4302317244 B, header 73172 B, 573 tensors, 0 B unclaimed
+  shard model-00014-of-000163.safetensors: 4302384328 B, header 75456 B, 586 tensors, 0 B unclaimed
+  shard model-00015-of-000163.safetensors: 4302350218 B, header 73890 B, 576 tensors, 0 B unclaimed
+  shard model-00016-of-000163.safetensors: 4302383932 B, header 75060 B, 586 tensors, 0 B unclaimed
+  shard model-00017-of-000163.safetensors: 4302384377 B, header 75505 B, 586 tensors, 0 B unclaimed
+  shard model-00018-of-000163.safetensors: 4302350026 B, header 73698 B, 576 tensors, 0 B unclaimed
+  shard model-00019-of-000163.safetensors: 4302384124 B, header 75252 B, 586 tensors, 0 B unclaimed
+  shard model-00020-of-000163.safetensors: 4302384377 B, header 75505 B, 586 tensors, 0 B unclaimed
+  shard model-00021-of-000163.safetensors: 4302350413 B, header 74085 B, 576 tensors, 0 B unclaimed
+  shard model-00022-of-000163.safetensors: 4302384900 B, header 76028 B, 586 tensors, 0 B unclaimed
+  shard model-00023-of-000163.safetensors: 4302350808 B, header 74480 B, 576 tensors, 0 B unclaimed
+  shard model-00024-of-000163.safetensors: 4302384504 B, header 75632 B, 586 tensors, 0 B unclaimed
+  shard model-00025-of-000163.safetensors: 4302384961 B, header 76089 B, 586 tensors, 0 B unclaimed
+  shard model-00026-of-000163.safetensors: 4302350620 B, header 74292 B, 576 tensors, 0 B unclaimed
+  shard model-00027-of-000163.safetensors: 4302384692 B, header 75820 B, 586 tensors, 0 B unclaimed
+  shard model-00028-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00029-of-000163.safetensors: 4302350448 B, header 74120 B, 576 tensors, 0 B unclaimed
+  shard model-00030-of-000163.safetensors: 4302384884 B, header 76012 B, 586 tensors, 0 B unclaimed
+  shard model-00031-of-000163.safetensors: 4302350824 B, header 74496 B, 576 tensors, 0 B unclaimed
+  shard model-00032-of-000163.safetensors: 4302384488 B, header 75616 B, 586 tensors, 0 B unclaimed
+  shard model-00033-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00034-of-000163.safetensors: 1747417474 B, header 31098 B, 241 tensors, 0 B unclaimed
+  shard model-00035-of-000163.safetensors: 4302317817 B, header 73745 B, 573 tensors, 0 B unclaimed
+  shard model-00036-of-000163.safetensors: 4302384914 B, header 76042 B, 586 tensors, 0 B unclaimed
+  shard model-00037-of-000163.safetensors: 4302350794 B, header 74466 B, 576 tensors, 0 B unclaimed
+  shard model-00038-of-000163.safetensors: 4302384518 B, header 75646 B, 586 tensors, 0 B unclaimed
+  shard model-00039-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00040-of-000163.safetensors: 4302350602 B, header 74274 B, 576 tensors, 0 B unclaimed
+  shard model-00041-of-000163.safetensors: 4302384710 B, header 75838 B, 586 tensors, 0 B unclaimed
+  shard model-00042-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00043-of-000163.safetensors: 4302350432 B, header 74104 B, 576 tensors, 0 B unclaimed
+  shard model-00044-of-000163.safetensors: 4302384900 B, header 76028 B, 586 tensors, 0 B unclaimed
+  shard model-00045-of-000163.safetensors: 4302350808 B, header 74480 B, 576 tensors, 0 B unclaimed
+  shard model-00046-of-000163.safetensors: 4302384504 B, header 75632 B, 586 tensors, 0 B unclaimed
+  shard model-00047-of-000163.safetensors: 4302384961 B, header 76089 B, 586 tensors, 0 B unclaimed
+  shard model-00048-of-000163.safetensors: 4302350620 B, header 74292 B, 576 tensors, 0 B unclaimed
+  shard model-00049-of-000163.safetensors: 4302384692 B, header 75820 B, 586 tensors, 0 B unclaimed
+  shard model-00050-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00051-of-000163.safetensors: 4302350448 B, header 74120 B, 576 tensors, 0 B unclaimed
+  shard model-00052-of-000163.safetensors: 4302384884 B, header 76012 B, 586 tensors, 0 B unclaimed
+  shard model-00053-of-000163.safetensors: 4302350824 B, header 74496 B, 576 tensors, 0 B unclaimed
+  shard model-00054-of-000163.safetensors: 4302384488 B, header 75616 B, 586 tensors, 0 B unclaimed
+  shard model-00055-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00056-of-000163.safetensors: 1747417474 B, header 31098 B, 241 tensors, 0 B unclaimed
+  shard model-00057-of-000163.safetensors: 4302317817 B, header 73745 B, 573 tensors, 0 B unclaimed
+  shard model-00058-of-000163.safetensors: 4302384914 B, header 76042 B, 586 tensors, 0 B unclaimed
+  shard model-00059-of-000163.safetensors: 4302350794 B, header 74466 B, 576 tensors, 0 B unclaimed
+  shard model-00060-of-000163.safetensors: 4302384518 B, header 75646 B, 586 tensors, 0 B unclaimed
+  shard model-00061-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00062-of-000163.safetensors: 4302350602 B, header 74274 B, 576 tensors, 0 B unclaimed
+  shard model-00063-of-000163.safetensors: 4302384710 B, header 75838 B, 586 tensors, 0 B unclaimed
+  shard model-00064-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00065-of-000163.safetensors: 4302350432 B, header 74104 B, 576 tensors, 0 B unclaimed
+  shard model-00066-of-000163.safetensors: 4302384900 B, header 76028 B, 586 tensors, 0 B unclaimed
+  shard model-00067-of-000163.safetensors: 4302350808 B, header 74480 B, 576 tensors, 0 B unclaimed
+  shard model-00068-of-000163.safetensors: 4302384504 B, header 75632 B, 586 tensors, 0 B unclaimed
+  shard model-00069-of-000163.safetensors: 4302384961 B, header 76089 B, 586 tensors, 0 B unclaimed
+  shard model-00070-of-000163.safetensors: 4302350620 B, header 74292 B, 576 tensors, 0 B unclaimed
+  shard model-00071-of-000163.safetensors: 4302384692 B, header 75820 B, 586 tensors, 0 B unclaimed
+  shard model-00072-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00073-of-000163.safetensors: 4302350448 B, header 74120 B, 576 tensors, 0 B unclaimed
+  shard model-00074-of-000163.safetensors: 4302384884 B, header 76012 B, 586 tensors, 0 B unclaimed
+  shard model-00075-of-000163.safetensors: 4302350824 B, header 74496 B, 576 tensors, 0 B unclaimed
+  shard model-00076-of-000163.safetensors: 4302384488 B, header 75616 B, 586 tensors, 0 B unclaimed
+  shard model-00077-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00078-of-000163.safetensors: 1747417474 B, header 31098 B, 241 tensors, 0 B unclaimed
+  shard model-00079-of-000163.safetensors: 4302317817 B, header 73745 B, 573 tensors, 0 B unclaimed
+  shard model-00080-of-000163.safetensors: 4302384914 B, header 76042 B, 586 tensors, 0 B unclaimed
+  shard model-00081-of-000163.safetensors: 4302350794 B, header 74466 B, 576 tensors, 0 B unclaimed
+  shard model-00082-of-000163.safetensors: 4302384518 B, header 75646 B, 586 tensors, 0 B unclaimed
+  shard model-00083-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00084-of-000163.safetensors: 4302350602 B, header 74274 B, 576 tensors, 0 B unclaimed
+  shard model-00085-of-000163.safetensors: 4302384710 B, header 75838 B, 586 tensors, 0 B unclaimed
+  shard model-00086-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00087-of-000163.safetensors: 4302350432 B, header 74104 B, 576 tensors, 0 B unclaimed
+  shard model-00088-of-000163.safetensors: 4302384900 B, header 76028 B, 586 tensors, 0 B unclaimed
+  shard model-00089-of-000163.safetensors: 4302350808 B, header 74480 B, 576 tensors, 0 B unclaimed
+  shard model-00090-of-000163.safetensors: 4302384504 B, header 75632 B, 586 tensors, 0 B unclaimed
+  shard model-00091-of-000163.safetensors: 4302384961 B, header 76089 B, 586 tensors, 0 B unclaimed
+  shard model-00092-of-000163.safetensors: 4302350620 B, header 74292 B, 576 tensors, 0 B unclaimed
+  shard model-00093-of-000163.safetensors: 4302384692 B, header 75820 B, 586 tensors, 0 B unclaimed
+  shard model-00094-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00095-of-000163.safetensors: 4302350448 B, header 74120 B, 576 tensors, 0 B unclaimed
+  shard model-00096-of-000163.safetensors: 4302384884 B, header 76012 B, 586 tensors, 0 B unclaimed
+  shard model-00097-of-000163.safetensors: 4302350824 B, header 74496 B, 576 tensors, 0 B unclaimed
+  shard model-00098-of-000163.safetensors: 4302384488 B, header 75616 B, 586 tensors, 0 B unclaimed
+  shard model-00099-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00100-of-000163.safetensors: 1747417474 B, header 31098 B, 241 tensors, 0 B unclaimed
+  shard model-00101-of-000163.safetensors: 4302317817 B, header 73745 B, 573 tensors, 0 B unclaimed
+  shard model-00102-of-000163.safetensors: 4302384914 B, header 76042 B, 586 tensors, 0 B unclaimed
+  shard model-00103-of-000163.safetensors: 4302350794 B, header 74466 B, 576 tensors, 0 B unclaimed
+  shard model-00104-of-000163.safetensors: 4302384518 B, header 75646 B, 586 tensors, 0 B unclaimed
+  shard model-00105-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00106-of-000163.safetensors: 4302350602 B, header 74274 B, 576 tensors, 0 B unclaimed
+  shard model-00107-of-000163.safetensors: 4302384710 B, header 75838 B, 586 tensors, 0 B unclaimed
+  shard model-00108-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00109-of-000163.safetensors: 4302350432 B, header 74104 B, 576 tensors, 0 B unclaimed
+  shard model-00110-of-000163.safetensors: 4302384900 B, header 76028 B, 586 tensors, 0 B unclaimed
+  shard model-00111-of-000163.safetensors: 4302350808 B, header 74480 B, 576 tensors, 0 B unclaimed
+  shard model-00112-of-000163.safetensors: 4302384504 B, header 75632 B, 586 tensors, 0 B unclaimed
+  shard model-00113-of-000163.safetensors: 4302384961 B, header 76089 B, 586 tensors, 0 B unclaimed
+  shard model-00114-of-000163.safetensors: 4302350620 B, header 74292 B, 576 tensors, 0 B unclaimed
+  shard model-00115-of-000163.safetensors: 4302384692 B, header 75820 B, 586 tensors, 0 B unclaimed
+  shard model-00116-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00117-of-000163.safetensors: 4302350448 B, header 74120 B, 576 tensors, 0 B unclaimed
+  shard model-00118-of-000163.safetensors: 4302384884 B, header 76012 B, 586 tensors, 0 B unclaimed
+  shard model-00119-of-000163.safetensors: 4302350824 B, header 74496 B, 576 tensors, 0 B unclaimed
+  shard model-00120-of-000163.safetensors: 4302384488 B, header 75616 B, 586 tensors, 0 B unclaimed
+  shard model-00121-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00122-of-000163.safetensors: 1747417474 B, header 31098 B, 241 tensors, 0 B unclaimed
+  shard model-00123-of-000163.safetensors: 4302317817 B, header 73745 B, 573 tensors, 0 B unclaimed
+  shard model-00124-of-000163.safetensors: 4302384914 B, header 76042 B, 586 tensors, 0 B unclaimed
+  shard model-00125-of-000163.safetensors: 4302350794 B, header 74466 B, 576 tensors, 0 B unclaimed
+  shard model-00126-of-000163.safetensors: 4302384518 B, header 75646 B, 586 tensors, 0 B unclaimed
+  shard model-00127-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00128-of-000163.safetensors: 4302350602 B, header 74274 B, 576 tensors, 0 B unclaimed
+  shard model-00129-of-000163.safetensors: 4302384710 B, header 75838 B, 586 tensors, 0 B unclaimed
+  shard model-00130-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00131-of-000163.safetensors: 4302350432 B, header 74104 B, 576 tensors, 0 B unclaimed
+  shard model-00132-of-000163.safetensors: 4302384900 B, header 76028 B, 586 tensors, 0 B unclaimed
+  shard model-00133-of-000163.safetensors: 4302350808 B, header 74480 B, 576 tensors, 0 B unclaimed
+  shard model-00134-of-000163.safetensors: 4302384504 B, header 75632 B, 586 tensors, 0 B unclaimed
+  shard model-00135-of-000163.safetensors: 4302384961 B, header 76089 B, 586 tensors, 0 B unclaimed
+  shard model-00136-of-000163.safetensors: 4302350620 B, header 74292 B, 576 tensors, 0 B unclaimed
+  shard model-00137-of-000163.safetensors: 4302384692 B, header 75820 B, 586 tensors, 0 B unclaimed
+  shard model-00138-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00139-of-000163.safetensors: 4302350448 B, header 74120 B, 576 tensors, 0 B unclaimed
+  shard model-00140-of-000163.safetensors: 4302384884 B, header 76012 B, 586 tensors, 0 B unclaimed
+  shard model-00141-of-000163.safetensors: 3142388798 B, header 55862 B, 431 tensors, 0 B unclaimed
+  shard model-00142-of-000163.safetensors: 4302317817 B, header 73745 B, 573 tensors, 0 B unclaimed
+  shard model-00143-of-000163.safetensors: 4302384914 B, header 76042 B, 586 tensors, 0 B unclaimed
+  shard model-00144-of-000163.safetensors: 4302350794 B, header 74466 B, 576 tensors, 0 B unclaimed
+  shard model-00145-of-000163.safetensors: 4302384518 B, header 75646 B, 586 tensors, 0 B unclaimed
+  shard model-00146-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00147-of-000163.safetensors: 4302350602 B, header 74274 B, 576 tensors, 0 B unclaimed
+  shard model-00148-of-000163.safetensors: 4302384710 B, header 75838 B, 586 tensors, 0 B unclaimed
+  shard model-00149-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00150-of-000163.safetensors: 4302350432 B, header 74104 B, 576 tensors, 0 B unclaimed
+  shard model-00151-of-000163.safetensors: 4302384900 B, header 76028 B, 586 tensors, 0 B unclaimed
+  shard model-00152-of-000163.safetensors: 4302350808 B, header 74480 B, 576 tensors, 0 B unclaimed
+  shard model-00153-of-000163.safetensors: 4302384504 B, header 75632 B, 586 tensors, 0 B unclaimed
+  shard model-00154-of-000163.safetensors: 4302384961 B, header 76089 B, 586 tensors, 0 B unclaimed
+  shard model-00155-of-000163.safetensors: 4302350620 B, header 74292 B, 576 tensors, 0 B unclaimed
+  shard model-00156-of-000163.safetensors: 4302384692 B, header 75820 B, 586 tensors, 0 B unclaimed
+  shard model-00157-of-000163.safetensors: 4302384963 B, header 76091 B, 586 tensors, 0 B unclaimed
+  shard model-00158-of-000163.safetensors: 4302350448 B, header 74120 B, 576 tensors, 0 B unclaimed
+  shard model-00159-of-000163.safetensors: 4302384884 B, header 76012 B, 586 tensors, 0 B unclaimed
+  shard model-00160-of-000163.safetensors: 5230637362 B, header 58442 B, 452 tensors, 0 B unclaimed
+  shard model-00161-of-000163.safetensors: 4302384321 B, header 75449 B, 586 tensors, 0 B unclaimed
+  shard model-00162-of-000163.safetensors: 4302384948 B, header 76076 B, 586 tensors, 0 B unclaimed
+  shard model-00163-of-000163.safetensors: 6584784447 B, header 48183 B, 373 tensors, 0 B unclaimed
+
+commitment  5db967ae32cc5e96ad951bab72b5ab2fb7c6cb94400e23f209fc7aa589d5e9ba
+algorithm   sha256
+coverage    structure-only
+repo        deepseek-ai/DeepSeek-V3.1 @ c0781d039fb7a1ba2abc4add0bdc293e92d2b8db
+tensors     91991 in 163 shards
+tensor B    688574839360
+fetched     49474069 B in 659 requests
+wall        451.0 s
+written     /Users/ember/dev/zkml-research/registry/manifests/deepseek-ai__DeepSeek-V3.1.c0781d039fb7.structure.json
+=== 2026-08-13T17:48:05Z STRUCTURE moonshotai/Kimi-K3 ===
+repo moonshotai/Kimi-K3 @ 9f62e4e9fffbd0a83ddd60e1c209d828994b3569 (118 files)
+  aux config.json (7006 B)
+  aux generation_config.json (53 B)
+  aux tokenizer_config.json (3478 B)
+  aux preprocessor_config.json (1011 B)
+  aux model.safetensors.index.json (59764096 B)
+  shard model-00001-of-000096.safetensors: 2341216112 B, header 2920 B, 23 tensors, 0 B unclaimed
+  shard model-00002-of-000096.safetensors: 16990911504 B, header 818696 B, 5404 tensors, 0 B unclaimed
+  shard model-00003-of-000096.safetensors: 16990911504 B, header 818696 B, 5404 tensors, 0 B unclaimed
+  shard model-00004-of-000096.safetensors: 16567501776 B, header 817608 B, 5398 tensors, 0 B unclaimed
+  shard model-00005-of-000096.safetensors: 16990911504 B, header 818696 B, 5404 tensors, 0 B unclaimed
+  shard model-00006-of-000096.safetensors: 16990911504 B, header 818696 B, 5404 tensors, 0 B unclaimed
+  shard model-00007-of-000096.safetensors: 16990911504 B, header 818696 B, 5404 tensors, 0 B unclaimed
+  shard model-00008-of-000096.safetensors: 16567501776 B, header 817608 B, 5398 tensors, 0 B unclaimed
+  shard model-00009-of-000096.safetensors: 16990911504 B, header 818696 B, 5404 tensors, 0 B unclaimed
+  shard model-00010-of-000096.safetensors: 16990911504 B, header 818696 B, 5404 tensors, 0 B unclaimed
+  shard model-00011-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00012-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00013-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00014-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00015-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00016-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00017-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00018-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00019-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00020-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00021-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00022-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00023-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00024-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00025-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00026-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00027-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00028-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00029-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00030-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00031-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00032-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00033-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00034-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00035-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00036-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00037-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00038-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00039-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00040-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00041-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00042-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00043-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00044-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00045-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00046-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00047-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00048-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00049-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00050-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00051-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00052-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00053-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00054-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00055-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00056-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00057-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00058-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00059-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00060-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00061-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00062-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00063-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00064-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00065-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00066-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00067-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00068-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00069-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00070-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00071-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00072-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00073-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00074-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00075-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00076-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00077-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00078-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00079-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00080-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00081-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00082-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00083-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00084-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00085-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00086-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00087-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00088-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00089-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00090-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00091-of-000096.safetensors: 16990916912 B, header 824104 B, 5404 tensors, 0 B unclaimed
+  shard model-00092-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00093-of-000096.safetensors: 16567507176 B, header 823008 B, 5398 tensors, 0 B unclaimed
+  shard model-00094-of-000096.safetensors: 4697664072 B, header 576 B, 5 tensors, 0 B unclaimed
+  shard model-00095-of-000096.safetensors: 92289328 B, header 296 B, 3 tensors, 0 B unclaimed
+  shard model-00096-of-000096.safetensors: 802448352 B, header 19416 B, 165 tensors, 0 B unclaimed
+
+commitment  9bf53e646d4b9b9609d6140d0b710140e92a65fcd9ad68b6f7c5d1c3b07d5a2b
+algorithm   sha256
+coverage    structure-only
+repo        moonshotai/Kimi-K3 @ 9f62e4e9fffbd0a83ddd60e1c209d828994b3569
+tensors     497220 in 96 shards
+tensor B    1560860324864
+fetched     271100897 B in 391 requests
+wall        268.9 s
+written     /Users/ember/dev/zkml-research/registry/manifests/moonshotai__Kimi-K3.9f62e4e9fffb.structure.json
+=== 2026-08-13T17:52:38Z GATED PROBE deepseek-ai/DeepSeek-V4 ===
+    retry in 1.5s after HTTP Error 404: Not Found
+    retry in 3.0s after HTTP Error 404: Not Found
+    retry in 6.0s after HTTP Error 404: Not Found
+    retry in 12.0s after HTTP Error 404: Not Found
+    retry in 24.0s after HTTP Error 404: Not Found
+    retry in 30.0s after HTTP Error 404: Not Found
+    retry in 30.0s after HTTP Error 404: Not Found
+    retry in 30.0s after HTTP Error 404: Not Found
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 1183, in <module>
+    t.set_defaults(func=cmd_tamper)
+             ^^^^^^
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 1179, in main
+    ),
+    
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 754, in cmd_commit
+    return manifest
+    
+    
+    
+    
+    
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 386, in build_manifest
+    alg: str,
+           ^^
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 346, in hf_api
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 273, in get
+    self.bytes_fetched += len(body)
+OSError: giving up on https://huggingface.co/api/models/deepseek-ai/DeepSeek-V4/revision/main?blobs=true: HTTP Error 404: Not Found
+exit=0
+=== 2026-08-13T17:54:56Z GATED PROBE meta-llama/Llama-3.1-8B-Instruct ===
+repo meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659 (17 files)
+  aux config.json (855 B)
+  aux generation_config.json (184 B)
+  aux tokenizer.json (9085657 B)
+  aux tokenizer_config.json (55351 B)
+  aux special_tokens_map.json (296 B)
+  aux model.safetensors.index.json (23950 B)
+  shard model-00001-of-00004.safetensors: 4976698672 B, header 9512 B, 82 tensors, 0 B unclaimed
+  shard model-00002-of-00004.safetensors: 4999802720 B, header 12120 B, 104 tensors, 0 B unclaimed
+  shard model-00003-of-00004.safetensors: 4915916176 B, header 11656 B, 100 tensors, 0 B unclaimed
+  shard model-00004-of-00004.safetensors: 1168138808 B, header 560 B, 5 tensors, 0 B unclaimed
+
+commitment  15e0a6c49eb594cbf20e6db9c6c047fe4b1c3b1bc6107f7b204f3f7e67083261
+algorithm   sha256
+coverage    structure-only
+repo        meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659
+tensors     291 in 4 shards
+tensor B    16060522496
+fetched     9282907 B in 24 requests
+wall        10.3 s
+written     runs/meta-llama__Llama-3.1-8B-Instruct.attempt.json
+exit=0
+=== 2026-08-13T17:55:06Z GATED PROBE google/gemma-3-27b-it ===
+repo google/gemma-3-27b-it @ 005ad3404e59d6023443cb575daa05336842228a (25 files)
+  aux config.json (972 B)
+  aux generation_config.json (215 B)
+  aux tokenizer.json (33384568 B)
+  aux tokenizer_config.json (1156999 B)
+  aux special_tokens_map.json (662 B)
+  aux preprocessor_config.json (570 B)
+  aux processor_config.json (70 B)
+  aux model.safetensors.index.json (126651 B)
+  shard model-00001-of-00012.safetensors: 4854573696 B, header 63384 B, 460 tensors, 0 B unclaimed
+  shard model-00002-of-00012.safetensors: 4954792944 B, header 10216 B, 78 tensors, 0 B unclaimed
+  shard model-00003-of-00012.safetensors: 4954792976 B, header 10248 B, 78 tensors, 0 B unclaimed
+  shard model-00004-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00005-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00006-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00007-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00008-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00009-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00010-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00011-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00012-of-00012.safetensors: 462476696 B, header 912 B, 7 tensors, 0 B unclaimed
+
+commitment  7752d385091eea4476db4b51694894f9c402acd38a08d2ddd07b07b08e29eb5e
+algorithm   sha256
+coverage    structure-only
+repo        google/gemma-3-27b-it @ 005ad3404e59d6023443cb575daa05336842228a
+tensors     1247 in 12 shards
+tensor B    54864813280
+fetched     35144542 B in 58 requests
+wall        34.2 s
+written     runs/google__gemma-3-27b-it.attempt.json
+exit=0
+=== 2026-08-13T17:55:40Z DONE ===

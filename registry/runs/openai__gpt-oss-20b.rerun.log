@@ -1,0 +1,75 @@
+repo openai/gpt-oss-20b @ 6cee5e81ee83917806bbde320786a8fb61efebee (18 files)
+  aux config.json (1806 B)
+  aux generation_config.json (177 B)
+  aux tokenizer.json (27868174 B)
+  aux tokenizer_config.json (4200 B)
+  aux special_tokens_map.json (98 B)
+  aux chat_template.jinja (16738 B)
+  aux model.safetensors.index.json (36355 B)
+  shard model-00000-of-00002.safetensors: 4792272488 B, header 22240 B, 196 tensors, 0 B unclaimed
+  shard model-00001-of-00002.safetensors: 4798702184 B, header 22304 B, 197 tensors, 0 B unclaimed
+  shard model-00002-of-00002.safetensors: 4170342232 B, header 7568 B, 66 tensors, 0 B unclaimed
+    model-00000-of-00002.safetensors: 0.39/4.79 GB (12.9 MB/s)
+    model-00000-of-00002.safetensors: 0.81/4.79 GB (13.4 MB/s)
+    model-00000-of-00002.safetensors: 1.22/4.79 GB (13.4 MB/s)
+    model-00000-of-00002.safetensors: 1.64/4.79 GB (13.5 MB/s)
+    model-00000-of-00002.safetensors: 2.04/4.79 GB (13.5 MB/s)
+    model-00000-of-00002.safetensors: 2.45/4.79 GB (13.5 MB/s)
+    model-00000-of-00002.safetensors: 2.82/4.79 GB (12.6 MB/s)
+    model-00000-of-00002.safetensors: 3.14/4.79 GB (12.4 MB/s)
+    model-00000-of-00002.safetensors: 3.21/4.79 GB (11.3 MB/s)
+    model-00000-of-00002.safetensors: 3.41/4.79 GB (10.9 MB/s)
+    model-00000-of-00002.safetensors: 3.60/4.79 GB (10.4 MB/s)
+    model-00000-of-00002.safetensors: 3.67/4.79 GB (9.5 MB/s)
+    model-00000-of-00002.safetensors: 4.02/4.79 GB (9.7 MB/s)
+    model-00000-of-00002.safetensors: 4.16/4.79 GB (9.3 MB/s)
+    model-00000-of-00002.safetensors: 4.44/4.79 GB (9.3 MB/s)
+    model-00000-of-00002.safetensors: 4.52/4.79 GB (8.9 MB/s)
+  hub LFS sha256 agrees for model-00000-of-00002.safetensors
+  streamed model-00000-of-00002.safetensors: 4.79 GB in 8.8 min (9.1 MB/s), interior recheck OK
+    model-00001-of-00002.safetensors: 0.40/4.80 GB (13.2 MB/s)
+    model-00001-of-00002.safetensors: 0.64/4.80 GB (10.5 MB/s)
+    model-00001-of-00002.safetensors: 0.69/4.80 GB (7.5 MB/s)
+    model-00001-of-00002.safetensors: 0.88/4.80 GB (7.2 MB/s)
+    model-00001-of-00002.safetensors: 1.16/4.80 GB (7.6 MB/s)
+    model-00001-of-00002.safetensors: 1.48/4.80 GB (8.1 MB/s)
+    model-00001-of-00002.safetensors: 1.79/4.80 GB (8.4 MB/s)
+    model-00001-of-00002.safetensors: 2.12/4.80 GB (8.7 MB/s)
+    model-00001-of-00002.safetensors: 2.41/4.80 GB (8.8 MB/s)
+    model-00001-of-00002.safetensors: 2.72/4.80 GB (8.9 MB/s)
+    model-00001-of-00002.safetensors: 3.05/4.80 GB (9.1 MB/s)
+    model-00001-of-00002.safetensors: 3.37/4.80 GB (9.2 MB/s)
+    model-00001-of-00002.safetensors: 3.72/4.80 GB (9.4 MB/s)
+    model-00001-of-00002.safetensors: 4.09/4.80 GB (9.6 MB/s)
+    model-00001-of-00002.safetensors: 4.49/4.80 GB (9.8 MB/s)
+    model-00001-of-00002.safetensors: 4.78/4.80 GB (9.8 MB/s)
+  hub LFS sha256 agrees for model-00001-of-00002.safetensors
+  streamed model-00001-of-00002.safetensors: 4.80 GB in 8.1 min (9.8 MB/s), interior recheck OK
+    model-00002-of-00002.safetensors: 0.37/4.17 GB (12.1 MB/s)
+    model-00002-of-00002.safetensors: 0.75/4.17 GB (12.5 MB/s)
+    model-00002-of-00002.safetensors: 1.05/4.17 GB (11.5 MB/s)
+    model-00002-of-00002.safetensors: 1.37/4.17 GB (11.3 MB/s)
+    model-00002-of-00002.safetensors: 1.67/4.17 GB (11.0 MB/s)
+    model-00002-of-00002.safetensors: 1.95/4.17 GB (10.7 MB/s)
+    model-00002-of-00002.safetensors: 2.26/4.17 GB (10.6 MB/s)
+    model-00002-of-00002.safetensors: 2.57/4.17 GB (10.6 MB/s)
+    model-00002-of-00002.safetensors: 2.63/4.17 GB (9.0 MB/s)
+    model-00002-of-00002.safetensors: 2.76/4.17 GB (8.6 MB/s)
+    model-00002-of-00002.safetensors: 3.01/4.17 GB (8.6 MB/s)
+    model-00002-of-00002.safetensors: 3.30/4.17 GB (8.6 MB/s)
+    model-00002-of-00002.safetensors: 3.47/4.17 GB (8.4 MB/s)
+    model-00002-of-00002.safetensors: 3.72/4.17 GB (8.4 MB/s)
+    model-00002-of-00002.safetensors: 3.84/4.17 GB (8.0 MB/s)
+    model-00002-of-00002.safetensors: 3.98/4.17 GB (7.8 MB/s)
+  hub LFS sha256 agrees for model-00002-of-00002.safetensors
+  streamed model-00002-of-00002.safetensors: 4.17 GB in 8.9 min (7.8 MB/s), interior recheck OK
+
+commitment  3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f
+algorithm   sha256
+coverage    full
+repo        openai/gpt-oss-20b @ 6cee5e81ee83917806bbde320786a8fb61efebee
+tensors     459 in 3 shards
+tensor B    13761264768
+fetched     13789369858 B in 24 requests
+wall        1555.6 s
+written     runs/openai__gpt-oss-20b.rerun.json

@@ -1,0 +1,30 @@
+    retry in 1.5s after HTTP Error 404: Not Found
+    retry in 3.0s after HTTP Error 404: Not Found
+    retry in 6.0s after HTTP Error 404: Not Found
+    retry in 12.0s after HTTP Error 404: Not Found
+    retry in 24.0s after HTTP Error 404: Not Found
+    retry in 30.0s after HTTP Error 404: Not Found
+    retry in 30.0s after HTTP Error 404: Not Found
+    retry in 30.0s after HTTP Error 404: Not Found
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 1183, in <module>
+    t.set_defaults(func=cmd_tamper)
+             ^^^^^^
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 1179, in main
+    ),
+    
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 754, in cmd_commit
+    return manifest
+    
+    
+    
+    
+    
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 386, in build_manifest
+    alg: str,
+           ^^
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 346, in hf_api
+  File "/Users/ember/dev/zkml-research/registry/registry_tool.py", line 273, in get
+    self.bytes_fetched += len(body)
+OSError: giving up on https://huggingface.co/api/models/deepseek-ai/DeepSeek-V4/revision/main?blobs=true: HTTP Error 404: Not Found
+exit=0

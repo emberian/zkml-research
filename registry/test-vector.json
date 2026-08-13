@@ -1,0 +1,54 @@
+{
+ "annotations": {
+  "note": "synthetic test vector; the repo example/tiny does not exist",
+  "tool_version": "0.1.0"
+ },
+ "commitment": "1b34613e012a472aa38b25f760f4ca17ed016058b49d4e95aab141a4a9b2a0e0",
+ "core": {
+  "aux_files": [
+   {
+    "byte_len": 2,
+    "hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "path": "config.json"
+   }
+  ],
+  "coverage": "full",
+  "format": "zkml-weight-registry",
+  "format_version": 1,
+  "hash_algorithm": "sha256",
+  "shards": [
+   {
+    "byte_len": 80,
+    "data_start": 72,
+    "file_hash": "178027ff2691cf2f29fb1e676178318f53f325659cb22e58e4f91a41b0fe2daf",
+    "header_hash": "10fbc0ab0346603d52577d1e51bc8dbe5e19c95e6ab2d90ec50fb880de83098d",
+    "header_len": 64,
+    "n_tensors": 1,
+    "path": "model.safetensors",
+    "tensor_bytes": 8,
+    "unclaimed_data_bytes": 0
+   }
+  ],
+  "source": {
+   "host": "huggingface.co",
+   "index_present": false,
+   "repo_id": "example/tiny",
+   "revision": "0000000000000000000000000000000000000000"
+  },
+  "tensors": [
+   {
+    "byte_len": 8,
+    "dtype": "F32",
+    "hash": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+    "name": "w",
+    "offset_begin": 0,
+    "offset_end": 8,
+    "shape": [
+     2
+    ],
+    "shard": "model.safetensors"
+   }
+  ]
+ },
+ "format": "zkml-weight-registry"
+}

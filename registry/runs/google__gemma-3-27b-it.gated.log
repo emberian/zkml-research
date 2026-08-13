@@ -1,0 +1,32 @@
+repo google/gemma-3-27b-it @ 005ad3404e59d6023443cb575daa05336842228a (25 files)
+  aux config.json (972 B)
+  aux generation_config.json (215 B)
+  aux tokenizer.json (33384568 B)
+  aux tokenizer_config.json (1156999 B)
+  aux special_tokens_map.json (662 B)
+  aux preprocessor_config.json (570 B)
+  aux processor_config.json (70 B)
+  aux model.safetensors.index.json (126651 B)
+  shard model-00001-of-00012.safetensors: 4854573696 B, header 63384 B, 460 tensors, 0 B unclaimed
+  shard model-00002-of-00012.safetensors: 4954792944 B, header 10216 B, 78 tensors, 0 B unclaimed
+  shard model-00003-of-00012.safetensors: 4954792976 B, header 10248 B, 78 tensors, 0 B unclaimed
+  shard model-00004-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00005-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00006-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00007-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00008-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00009-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00010-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00011-of-00012.safetensors: 4954793016 B, header 10288 B, 78 tensors, 0 B unclaimed
+  shard model-00012-of-00012.safetensors: 462476696 B, header 912 B, 7 tensors, 0 B unclaimed
+
+commitment  7752d385091eea4476db4b51694894f9c402acd38a08d2ddd07b07b08e29eb5e
+algorithm   sha256
+coverage    structure-only
+repo        google/gemma-3-27b-it @ 005ad3404e59d6023443cb575daa05336842228a
+tensors     1247 in 12 shards
+tensor B    54864813280
+fetched     35144542 B in 58 requests
+wall        34.2 s
+written     runs/google__gemma-3-27b-it.attempt.json
+exit=0

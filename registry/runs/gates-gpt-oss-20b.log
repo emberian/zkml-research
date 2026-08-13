@@ -1,0 +1,17 @@
+gates for manifests/openai__gpt-oss-20b.6cee5e81ee83.full.json
+
+PASS  G1 verify accepts the honest manifest (exit 0)
+PASS  G2:tensor-hash verify REFUSES the corrupted manifest (exit 1)
+PASS  G2:commitment verify REFUSES the corrupted manifest (exit 1)
+PASS  G2:byte-len verify REFUSES the corrupted manifest (exit 1)
+PASS  G2:aux-hash verify REFUSES the corrupted manifest (exit 1)
+PASS  G2:header-hash verify REFUSES the corrupted manifest (exit 1)
+PASS  G2:offsets verify REFUSES the corrupted manifest (exit 1)
+PASS  G2:file-hash verify REFUSES the corrupted manifest (exit 1)
+PASS  G7 rerun-from-scratch reproduces the preimage AND the commitment
+      3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f
+PASS  G8 canonical preimage is invariant under key order / whitespace
+PASS  G9 test vector reproduces (880-byte preimage) and matches the doc
+PASS  G10 COMMITMENTS.md digests match the manifests exactly
+
+ALL GATES PASSED
