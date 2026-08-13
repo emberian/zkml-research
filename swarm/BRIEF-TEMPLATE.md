@@ -48,6 +48,13 @@ wire anything.** A lane that proposes adopting an upstream engine has
 misunderstood the project. If a capability is missing, the answer is that we
 build it in Lean, in Selvage.
 
+## 7c. A CONFESSION'S LOCATION LIST NEEDS THE SAME GREP AS A CLAIM
+Found 2026-08-13, and it cost a cleanup lane real time. A lane self-corrected
+with *"I cited this wrongly, including in file Y."* That location list was
+**recalled, not grepped** — file Y had cited it correctly all along. I put the
+false accusation into a brief, and the next lane had to disprove it.
+**When a lane confesses, the WHERE is a claim too: grep it before propagating.**
+
 ## 8. STANDING ORDERS (copy verbatim into every brief)
 - Read theorem statements, not abstracts, for anything you call a bound.
 - Verify claimed absences with multiple spellings AND post-mirror via web.
