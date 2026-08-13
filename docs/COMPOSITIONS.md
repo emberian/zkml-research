@@ -117,8 +117,17 @@ zkML matmul, the vFHE vector relations, C5 — waits on it. And the right choice
 is the one whose *proof* is closest to a composition of what exists, not the
 one that is fastest.
 
-**Cost**: a campaign. The landscape lane is establishing which candidate is
-nearest.
+**Cost — ⚑ MUCH SMALLER THAN I WROTE (2026-08-13).** My premise was wrong:
+`openAt : … → (Fin m → F) → Op` is the KZG/homomorphic shape and **no
+hash-based multilinear PCS has it** — in BaseFold/WHIR/Ligerito the commitment
+IS a Merkle vector commitment to a codeword, i.e. our existing
+`OpeningScheme`, **reusable unchanged**; the opening is an interactive
+reduction our `Rbr → Depth → FiatShamir → AccRbrBcs` chain already compiles.
+**The deliverable is ONE `RbrKnowledgeSoundness` instance.** Route: **BaseFold
+at RS in our own unconditional (1−ρ)/3 band**, where `Proximity.lean:321` and
+`MultiplicativeMleTerminal.lean:210` are *the same operator* and
+`foldMleVariables_booleanMobiusPolynomial` is *already BaseFold's central
+identity*. Five new items, no conjecture, no new proximity result.
 
 ---
 
@@ -132,9 +141,12 @@ dimension-binding hash, without which it is unsound. Plus the 2^30 area
 ceiling, which is our field's, not their design's.
 
 **Why it matters**: it kills the one-recursion-circuit-per-proof-shape
-explosion, and the BP is decidable per layer with an induction on top — **the
-most tractable large formalization available.** Ceno independently made it
-their default.
+explosion, and the BP is decidable per layer with an induction on top. Ceno
+independently made it their default. ⚠ **RE-SCOPED (2026-08-13): Jagged has
+NO cryptographic content** (zero hits for extract/binding/knowledge-sound/RBR)
+— **which is exactly why it is tractable.** Alone it is a green theorem that
+commits to nothing. It is a large *convenience* that must sit on top of a PCS
+doing the security work (C6), not a large security win.
 
 ---
 
