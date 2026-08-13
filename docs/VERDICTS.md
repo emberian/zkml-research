@@ -97,6 +97,14 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   with each concrete ring a valuation** (semiring provenance: transport
   commutes iff the map is a homomorphism). This is a *check*, not a deadline —
   cheap iff constraints consume the ring through an interface.
+- **The degree-3 rung is LANDED** (`Assurance/AirSumcheckCubic.lean`):
+  `cubicForm E A B C D = Ê·(Â·B̂ + Ĉ·D̂)`, soundness `≤ m·3/|F|`. **Both
+  consumers are theorems, not prose** — `cubicForm_fraction_layer` (GKR) and
+  `cubicForm_matmul` (zkML) discharge "one rung serves both", and
+  `cubicForm_subsumes_prodDiff` proves the degree-2 engine is a *special
+  case*, so the two files denote one object. **Multilinear Schwartz–Zippel
+  landed** with it. Table folding is wired: **m=16 runs instantly**; the
+  remaining ceiling is memory (~40 MB at m=20), not time.
 - **Sumcheck is 2–17% of prover time.** Prover-level optimizations trade in
   2–4× on a term that small; statement- and protocol-level levers are 10–100×.
 - **We are abandoning Plonky3.** Upstream code may be read for API shapes and

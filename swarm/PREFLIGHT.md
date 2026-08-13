@@ -12,6 +12,13 @@
 - **Kernel landmines** (CyclotomicInertia lane): the CommRing/Field Semiring
   diamond DIVERGES at ZMod p for our primes — state helpers over [Field R].
   Never route `Splits` through X^q−X (kernel normalizes a 2^31+-degree poly).
+- ⚑ **`--only` gives NO STANDING PROTECTION AGAINST A LATER `--amend`** (found
+  2026-08-13, cost: four of another lane's staged deletions swept into a
+  commit titled for something else). `--only` protects **the invocation you
+  type it on**. A follow-up `git commit --amend` takes **the index**, which by
+  then may hold a sibling lane's staged work. **If you must amend, use
+  `--only` again on the same paths, and verify the tree hash is unchanged for
+  a message-only fix.**
 - **Shared trees**: minidregg + breadstuffs worktrees carry codex's
   uncommitted work (Compiler.lean, prover/src/lib.rs, untracked Uwueave
   files). `git status` first; commit `--only` named paths; never `add -A`,
