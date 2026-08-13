@@ -381,7 +381,57 @@ that residual is the folding scheme's to state and is *not* settled here; what i
 settled is that **no modulus tradeoff is forced** and the two candidates remain
 independently evaluable.
 
-### 4.3 The security half
+### 4.3 The security half, part 1: the invariant subfield, measured
+
+The sharpest *concrete* form of "the extension-field S-box question" is an
+invariant subspace, and it is checkable rather than speculative. At τ=4 each slot
+is F_{q^4}, which **contains the base field F_q**. The S-box x^7 maps F_q into
+F_q; and the Frobenius twist σ_k carries at τ>1 is x ↦ x^{q^j}, which **fixes F_q
+pointwise**. So *both* the nonlinear layer and the slot permutation preserve
+
+> V = { states whose every slot value lies in F_q } — a subspace of dimension ℓ=4
+> inside the d=16-dimensional state.
+
+If the linear layer also preserves V, then V is invariant under the whole round;
+on V the permutation is just an ℓ-slot F_q SPN (a ~2^30 object against 2^120 in
+the toy), giving a distinguisher and preimages on V. Only the σ-layer
+*coefficients* can break it. Measured (`design_subfield_invariance.py`, p=89,
+ℓ=4, S-box x^7, the slot-MDS set {1,5,−1,−5}):
+
+```
+  sigma coeffs        round consts    state leaves V after round
+  scalar (in F_p)     in F_p          NEVER (invariant through 12)  <-- INVARIANT SUBSPACE
+  scalar (in F_p)     generic         round 1
+  generic F_(p^4)     in F_p          round 1
+  generic F_(p^4)     generic         round 1
+```
+
+**The invariant subspace is real, and the cure is a checkable condition:**
+
+> ⚑ **C6 (new; τ>1 only): the σ-layer coefficients must not lie in the base field
+> F_q.** One subfield test per coefficient (u ∈ F_q iff u^q = u).
+
+Two things make this a *mild* rather than alarming finding:
+
+1. **It is not a new class of condition — it is an existing one, one field
+   down.** `ring-hash-cryptanalysis.md` weakness #4 already records that "mixing
+   coefficients must be generic ring elements — a scalar/real MDS **revives a
+   t-cell invariant subspace** with trivial distinguisher and preimages on it."
+   C6 is that same condition widened from "not a scalar in Z_q" to "not in the
+   subfield F_q". **τ=4 does not add an unfamiliar requirement; it widens a
+   requirement the design already had, and the widened form is machine-checkable.**
+2. V is invariant **only when both** the coefficients and the round constants lie
+   in F_q — either one outside breaks it in one round. But rely on the
+   *coefficients*: a constant outside F_q breaks V by accident of a generic
+   instantiation (constants only translate), whereas a coefficient outside F_q
+   breaks it structurally, in the layer meant to mix.
+
+⚠ **What this does NOT settle**: the algebraic-degree question over F_{q^4}
+(Chaghri-style coefficient grouping — whether iterated x^7 still grows degree
+multiplicatively when the Frobenius is a q-power map). That is a separate front
+and this script does not touch it. See §4.4.
+
+### 4.4 The security half, part 2: degree growth and the literature
 
 *(pending — cryptanalysis-literature lane outstanding)*
 
