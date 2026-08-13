@@ -17,7 +17,7 @@ in §4 and §5.
 
 | brief said | measured / read | where |
 |---|---|---|
-| "690× at B=512" | **B=512 is not a deployed shape.** The node's fold batch is **B=4** (`ORDER_COUNT : Nat := 4`, `metatheory/Market/DarkBazaarPrivateDescriptor.lean:44`), structurally refused otherwise. Deployed ratio is **4.2×**; 715× at B=512 is confirmed but is a batch we do not run. | §4 |
+| "690× at B=512" | **B=512 is not a deployed shape.** The node's fold batch is **B=4** (`ORDER_COUNT : Nat := 4`, `metatheory/Market/DarkBazaarPrivateDescriptor.lean:44`), pinned by the session roster and the fixed-arity proving family. Deployed ratio is **4.2×**; 715× at B=512 is confirmed but is a batch we do not run. | §4 |
 | "h2 measured lazy accumulation at 0.88×" | **Wrong cell** (0.88× is *single-prime-109-bit lazy ÷ RNS-3-limb lazy*), and then **measured in-tree**: lazy is 0.84× at B=256 but **break-even at the deployed B=4**. The direction holds on two instruments; the free-speedup argument does not hold at the batch we run. | §5 |
 | "zero carries, zero range checks" | Zero *in the fold relation*. The Θ(N·L) term in "the linear route is Θ(N·L)" **is** the one-time canonicalisation range-check on the result. The reduction is not eliminated; it is performed **once instead of B times**. That is the whole mechanism and it should be said that way. | §2.5 |
 | "one common-point opening certifies the whole fold" | True, but only under an accounting where the **inputs are already committed**. Under total-system accounting both routes are Θ(B·N·L) and the ratio is the per-add column count, not B. Both accountings are legitimate; they answer different questions. | §4.2 |
@@ -56,10 +56,17 @@ general weighted-fold statement.
 
 **The batch size B.** `node/src/dark_clearing_service.rs:135` takes `FAMILY_ORDERS`
 from `dregg_circuit_prove::dark_bazaar_private::ORDER_COUNT`, which the Lean descriptor
-`metatheory/Market/DarkBazaarPrivateDescriptor.lean:44` fixes at **4**. The service
-*structurally refuses* any other N (`dark_clearing_service.rs:383`). The emitted
+`metatheory/Market/DarkBazaarPrivateDescriptor.lean:44` fixes at **4**. The emitted
 descriptor is `circuit/descriptors/by-name/dark-bazaar-private-n4k4.json`, trace width
 181, 12 public inputs.
+
+⚠ Precision about the enforcement, because my first draft over-stated it: line 383
+(`family_counts_agree`) is a **drift check** — it refuses when the descriptor *name*'s
+`n{N}k{K}` disagrees with the compiled constants, which is what stops the constants
+sliding away from the emission. What pins B=4 per session is the roster
+(`OpenSessionRequest.traders` is "exactly `FAMILY_ORDERS` hex Ed25519 verifying keys")
+together with the fixed-arity proving family. Both are real; neither is a runtime
+`if orders != 4` on submission, and it is worth saying which is which.
 
 ⚠ So **the deployed B is 4, and it is enforced, not incidental.** The B=512..10⁵
 numbers that circulate come from `fhegg-fhe/src/bin/gpu_resident_bench.rs`, which sweeps
