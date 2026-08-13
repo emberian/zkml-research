@@ -7,12 +7,23 @@
 sumcheck rounds. AIR cost Θ(B·N·L), linear route Θ(N·L), **ratio = B**.
 
 **Verdict**: the *algebra* holds and is now demonstrated on real deployed-shape
-ciphertexts. But **three of the four headline numbers in the source claim are wrong or
-mis-attributed** (§0), and — ⚑ the biggest finding — **the brief's premise that nobody
-has applied this to FHE ciphertext folding is FALSE**: Zama eprint 2026/027 does exactly
-that, is implemented and benchmarked, and **the PDF is in `~/paperbin`** (§5). What
-survives is narrow, real, and worth having: **a batch fold is aligned-pointwise, not a
-contraction, so even the sumcheck the state of the art runs is unnecessary** (§5.3).
+ciphertexts. Everything else in the source claim needs revising.
+
+- **Three of the four headline numbers are wrong or mis-attributed** (§0).
+- ⚑ **The brief's premise is FALSE.** "Nobody has applied this to FHE ciphertext folding"
+  — Zama **2024/451** proves exactly `ĉ = Σ wᵢcᵢ` with fixed public weights *the circuit
+  way*, and Zama **2026/027** proves linear maps on GLWE ciphertexts *the MLE way*. **Both
+  PDFs are in `~/paperbin`.** And the Layer-A fact is stated almost verbatim in the
+  Binius64 Blueprint, also in `~/paperbin` (§5).
+- ⚑ **The ratio claim has a hole I did not price**: it is prover-side only, and the
+  verifier moves the *opposite* way — `O(B)` openings against `O(polylog)` for the AIR
+  route — in direct tension with binding condition (c) (§4.4).
+- ⚑ **The stub is a shipped-bug class**, not a toy caveat: consuming claimed evaluations
+  without checking them against commitments is the OtterSec/Dusk PLONK defect, ~$60M
+  (§3).
+
+**What survives is narrow, real, and worth having**: a batch fold is *aligned-pointwise,
+not a contraction*, so even the sumcheck the state of the art runs is unnecessary (§5.3).
 
 ---
 
@@ -313,11 +324,28 @@ measurement harness, and the adversaries.
   cost 93 bits. The test also **builds the base-field point it exists to reject** and
   asserts the same predicate scores it zero, so the gate is refutable rather than argued.
 
-### ⚑ What is stubbed, named
+### ⚑ What is stubbed, named — **and it is a shipped-bug class, not a hypothetical**
 
 **There is no polynomial commitment.** `FoldOpening::values` are numbers the prover
 asserts; nothing ties them to `FoldOpening::commitments`. This is the same caveat
 `sumcheck-toy` carries and it is the *whole* remaining gap in the protocol.
+
+⚑ **Say the severity at the right resolution.** This exact shape is a live audit finding
+with money behind it. `~/paperbin/audit-blog-ottersec-dusk-plonk-unverified-evals.txt`
+(OtterSec, Apr 2026):
+
+> *"the prover slipped four public selector evaluations into the proof struct, and the
+> verifier consumed them in its final equation **without ever validating them against the
+> trusted commitments** in the verifier key. The prover can set them to whatever values
+> make the equation pass."* — ~$60M at risk.
+
+That is a one-for-one description of `verify` as it stands: it consumes `values` in its
+final equation and never validates them against `commitments`. So the stub is not "a
+missing optimisation" or "an unbacked claim in a toy" — **it is the precise defect class
+that has already shipped to production elsewhere.** Every one of the `B+1` evaluations
+must be bound by a verified opening against a commitment fixed *before* `r`. Nothing less
+counts, and the writeup must say so in these words rather than in the softer ones I first
+used.
 
 It is made visible in the type rather than in a comment: `verify` returns
 `VerifiedAt { point }` — the outstanding obligation, as a field, so it cannot be read as
@@ -431,7 +459,45 @@ But "already committed" was doing more work in that sentence than it had earned,
 one-to-two-order-of-magnitude increase in per-order ingress commitment cost, and that
 belongs in the decision, not in a footnote.
 
-### 4.4 The deployed answer, in one line
+### 4.4 ⚑ The verifier goes the other way — a hole in the ratio claim, found in review
+
+Everything above prices the **prover**. The prior-art sweep surfaced the objection I had
+not priced, and it is correct:
+
+> *The zero-round claim is really "the verifier does O(k) work". Your claim is sound only
+> when the fold arity k is small enough that the verifier can compute `Σ aₖ ĉₖ(r)` itself,
+> or when the `aₖ` MLE is verifier-evaluable. If k is large or the `aₖ` are committed,
+> you are back to a sumcheck.*
+
+Worked through:
+
+- The **arithmetic** is fine — `B` multiply-adds in `EF`, trivial at any `B` we would run.
+- The **openings** are the problem. The verifier must check `B+1` evaluations against
+  `B+1` commitments. With a hash-based PCS that is `B+1` Merkle-path sets — `O(B·λ·log M)`
+  hashes. **The linear route's verifier is linear in `B`; the AIR route's verifier is
+  polylogarithmic in the trace.** So the two routes trade in *opposite directions* and my
+  §4.1 table prices only one side of that trade.
+- The standard fix is to commit all `B+1` polynomials as columns of **one** Merkle tree, so
+  one opening yields all `B+1` values per query — verifier back to `O(λ·log M)` hashes plus
+  `O(B)` cheap field ops.
+
+⚑ **But that fix collides head-on with binding condition (c).** Closing (c) means *each
+trader commits its own ciphertext independently at ingress* — `B` separate roots, by
+construction, produced at different times by different parties. You cannot also have them
+be columns of one tree. So:
+
+| | one shared tree | B independent per-trader roots (what (c) needs) |
+|---|---|---|
+| verifier | `O(λ log M)` hashes + `O(B)` field ops | **`O(B·λ log M)` hashes** |
+| binding (c) | ✗ — needs a single committer holding all inputs | ✓ |
+
+**This tension is unresolved and it is the most interesting thing the review turned up.**
+It does not touch the deployed answer (`B=4`: four Merkle openings, nothing), but it means
+the `715×`-at-`B=512` figure is a **prover-side** number whose verifier-side counterpart
+moves the wrong way, and any push toward large `B` (§4.5's "raise `ORDER_COUNT`") has to
+answer it first. Do not quote the marginal ratio without this sentence attached.
+
+### 4.5 The deployed answer, in one line
 
 > At the batch the node actually folds (**B=4**), the opening route commits **4.2×**
 > fewer field elements than the AIR that would have to be written — not 690×. The 690×
@@ -457,28 +523,79 @@ and *those* are the shapes where 715×–5000× is live, if anything ever needs 
 > surviving delta is real but much narrower than "our actual claim", and it is stated in
 > §5.3.
 
-⚠ **Instrument disclosure, per house law.** This section is built from web/arXiv search
-**plus full text of three papers I pulled and `pdftotext`-extracted myself** (VERITAS,
-the Zama SNARG, and the reference lists of both). `~/paperbin` (1,091 PDFs, 507 with
-`.txt`) was checked directly for the vFHE shelf and **is not blind here** — it carries
-Rinocchio (`2021-322`), Atapoor's lattice-SNARK vFHE (`2024-032`), Laminate
-(`2025-2285`), ring-R1CS publicly-verifiable FHE (`2024-1764`), a blind-PCS vFHE
-(`2026-487`), Zama's verifiable bootstrapping via lattice folding (`2026-1127`), and the
-Zama matvec SNARG above. Everything below is a *presence* finding; **no absence is
-claimed anywhere in this section.**
+⚠ **Instrument disclosure, per house law.** Two independent instruments, both named.
+(i) Web/arXiv search plus full text of three papers I pulled and `pdftotext`-extracted
+myself (VERITAS, the Zama matvec SNARG, and the reference lists of both). (ii) A full
+sweep of `~/paperbin` — 1,205 PDFs + 561 `.txt` siblings including the `joshibot/`,
+`attestable/` and `uweave/` subdirs — by ripgrep over every extraction **plus four
+`pdftotext` sweeps over all 810 PDFs lacking one**, plus ~25 targeted reads (§5.7).
+paperbin is **not blind here**: it carries Rinocchio (`2021-322`), both Zama vFHE papers
+(`2024-451`, `2026-027`), Atapoor (`2024-032`), Laminate (`2025-2285`), ring-R1CS vFHE
+(`2024-1764`), blind-PCS vFHE (`2026-487`), Phalanx (`2025-302`), Heliopolis (`2023-1949`),
+HasteBoots (`2025-261`), the packed-sumcheck TFHE SNARK (`2025-719`), and Zama's
+verifiable bootstrapping (`2026-1127`). Everything below is a *presence* finding;
+**no absence is claimed anywhere in this section**, and §5.7 says which shelf is missing.
 Two instrument failures, named: the ACM Computing Surveys systematic review of verifiable
 FHE (`10.1145/3797902`) **returned 403 and was not read**, and eprint 2024/032 **429'd**
 (though the PDF is in paperbin and was not read either). Both remain unconsulted, and the
 survey is the single best instrument for any absence question.
 
-### Layer A — "linear maps are free in the multilinear world": **KNOWN, and we are not close to first**
+### Layer A — **written down almost verbatim, in our own corpus**
 
-This is folklore and it is the operating assumption of several whole literatures:
-GKR/sumcheck zkML checks linear layers with sumchecks over MLEs; batch-opening arguments
-are random-linear-combination arguments; folding schemes (Nova and descendants) exist
-*because* a linear combination of committed instances is cheap under commitment
-homomorphism. **Claiming novelty at Layer A would be wrong.** Our note should never have
-been going to.
+Not merely folklore-adjacent. The single closest statement is the **Binius64 Blueprint**,
+§4.4 "The Zero Reduction" (`~/paperbin/binius64-blueprint-spec.pdf`, `.txt` ll. 1072–1080):
+
+> *"Alone among the four constraint reductions it costs nothing: **it adds no prover
+> message and no sumcheck round**, and it draws no challenges of its own… **Its whole
+> content is the observation that a Zero constraint is linear**, so that the polynomial
+> whose vanishing is at stake is d̂ itself rather than a product of witness multilinears.
+> A multilinear that vanishes on the cube is the zero polynomial; **a single evaluation at
+> a point the prover could not predict therefore certifies the constraint outright, with
+> no sumcheck needed to get there.**"*
+
+That is this note's §2.3 and §2.4, as a general reduction, with the reason. Supporting
+sightings, each an independent statement of the same fact:
+
+- **Binius** (`binius1-towers-binary-fields-2023-1784.pdf`, Ex. 4.9) generalises it and
+  gives it the name **"virtual polynomial"**: the verifier "may query each of the handles
+  at `r`, evaluate `g` itself on the results, and finally compare". The term has a citation
+  lineage (Jolt Atlas, Powdr, DeepProve all restate it).
+- **GKR-HND transformers** (`gkr-hnd-transformer.pdf`, arXiv 2607.21162): *"**addition is
+  checked by MLE linearity**"* — one sentence, no proof, i.e. treated as known — used for
+  the residual stream.
+- **Laminate** (`laminate-succinct-simd-verifiable-fhe-2025-2285.pdf`, §4.4.2), inside a
+  *verifiable-FHE* paper: *"reduces to a single opening query against the committed scalar
+  coefficient MLE… **with no additional sumcheck rounds**"*, for affine gates that are
+  exactly "CT-CT additions, PT-CT additions, scalar-CT multiplications".
+- **Thaler's book** §16.1 for the batch-opening converse; **Bünz et al.**
+  (`accumulation-without-homomorphism-bunz-2024-474.pdf`) names the folding premise
+  explicitly *in order to remove it*.
+
+**Claiming novelty at Layer A would be plainly wrong.** It is citable, named, and sitting
+in `~/paperbin` in a production spec document.
+
+### 5.0 ⚑ Our exact statement is in paperbin — solved the AIR way, by the authors of 5.1
+
+`~/paperbin/vfhe-zama-plonky2-tfhe-bootstrap-20min-2024-451.pdf` — Tremblay Thibault &
+Walter, *Towards Verifiable FHE in Practice*, §"Weighted sum":
+
+> *"the weights `w_i` are in cleartext… **The weights are assumed to be constants known in
+> advance and built in the arithmetic circuit.** … the circuit now multiplies each element
+> `a_{c_i}` with its respective weight `w_i` before summing them together, resulting in a
+> combined element `â = Σ_{i=1}^n w_i·a_{c_i}` … equivalent to the `j`-th element of the
+> ciphertext `ĉ = Σ_{i=1}^n w_i·c_i`."*
+
+**That is `FoldOpen`, verbatim** — fixed public weights, RLWE ciphertext coefficient
+vectors — **solved by building the interior into a plonky2 circuit.** So the "AIR route"
+this note prices against is not a straw man I invented for the comparison; it is the
+published baseline, by the same group that later wrote 5.1. Two things follow:
+
+1. The §4.1 cost model is pricing a **real** design, which strengthens it.
+2. They pay exactly what the model predicts: *"the circuit now computes **one hash chain
+   per input ciphertext**… input and output of the step circuit increase in size linearly
+   with the number of input ciphertexts `n`."* — and that hash chain is **their answer to
+   our binding condition (c)**, paid in-circuit. §2.6 called route (ii) "not an option
+   because it spends the entire win"; here is someone spending it.
 
 ### 5.1 ⚑ Layer B — **published**: Zama eprint 2026/027, and it is in our own corpus
 
@@ -570,15 +687,56 @@ thing the claim is about:
 | verifiability | **designated-verifier** (secret authenticator key) | publicly verifiable (hash-based PCS) |
 | generality | any BFV circuit incl. rotation, relinearisation, bootstrapping | **linear folds only** |
 
-### 5.5 ⚑ The prior-art verdict, in the form it should be quoted
+### 5.5 ⚑ Four things that refute or complicate the claim
+
+**(a) "Free additions ⟺ no modular reduction" was written down in 2021, in this setting.**
+Rinocchio (`~/paperbin/ring-rinocchio-snarks-for-ring-arithmetic-2021-322.pdf`, discussion,
+p.39):
+
+> *"When using a QAP to emulate ring arithmetic, **addition gates are no longer for free;
+> in contrast to QRPs with free ring additions. This is due to the fact that, in the
+> QAP-based approach, a modular reduction might be necessary after adding two numbers.**"*
+
+That is §2.5's mechanism — the thing I wrote up as "the whole mechanism and it should be
+said that way" — stated five years ago, in the ring-SNARK-for-FHE literature. **Any
+framing of "we noticed that reduction is what breaks freeness" as new is dead.**
+
+**(b) ⚑ The field-alignment escape hatch makes our side condition look optional.**
+Both Zama papers simply *choose the FHE modulus to be the proof field*: 2024/451 takes
+`q = 2⁶⁴−2³²+1` (Goldilocks), and the TFHE SNARK `2025/719` takes `q = 2³¹−2²⁷+1`
+(**BabyBear — our field**). With `q_FHE = p`, mod-`q` reduction is native field arithmetic:
+**no limb map, no range leg, no lazy-accumulation discipline, and the identity holds
+without any side condition at all.** The first question any reviewer asks is why we do not
+do that, and the honest answer is narrow: *we do not control the modulus* — the deployed
+carrier is `fhe.rs` BFV at HE-standard 36/36/37-bit RNS primes, and changing them is an FHE
+security-parameter decision, not a proof-system one. That answer needs to be in the writeup,
+because without it the entire §2.5 apparatus reads as self-inflicted.
+
+**(c) The general method is "witness the quotient"; ours is a restriction.**
+Limber (`~/paperbin/eprint-2026-1635.pdf`, Chen–Xia–Nguyen–Bünz, Aug 2026) proves
+integer/mod-`p` R1CS with committed quotient witnesses — *"if the relation holds over the
+integers, then the relation holds over the random prime `p` unconditionally"* — and
+2026/027 does the ring analogue with an explicit committed `r` in `Mx = y + (X^N+1)·r`.
+**Forbidding reduction is strictly weaker than accounting for it.** Position §2.5 as a
+cheap specialisation for the aligned case, never as the better general answer.
+
+**(d) The FHE side couples the two conditions we stated separately.**
+Heliopolis (`~/paperbin/heliopolis-fri-over-ciphertexts-iop-2023-1949.pdf`, §1.2):
+*"**the size of the coefficients in the linear combination and the additive depth …
+constitutes a significant obstacle for noise management in practice**"*. Small `aₖ` and
+bounded depth are what keep both the RLWE noise *and* the integer magnitude in range — so
+§2.5's field-wrap bound and the existing `plain_bound` wrap gate are **one coupled
+condition**, not two independent ones. The note currently presents them separately.
+
+### 5.6 ⚑ The prior-art verdict, in the form it should be quoted
 
 | layer | verdict |
 |---|---|
-| "MLE is linear, so linear maps need no rounds" | **folklore.** Not ours, not close. |
-| "apply it to FHE ciphertext folding / linear maps on RLWE ciphertexts" | **published**: Zama eprint **2026/027**, ring-switching + PCS, implemented, benchmarked, **in `~/paperbin`**. The brief's premise that this was open is **false**. |
-| "the no-modular-reduction side condition" | **documented as a limitation** of Bois–Cascudo–Fiore–Kim (PKC 2021). Not a discovery. |
-| enforcing that condition with an explicit **range leg on the result** rather than restricting the pipeline | **not found stated** in what I read — but three papers is not a survey, and the vFHE survey went unread. Treat as *unverified*, not as novel. |
-| **a fold is aligned-pointwise, not a contraction, so even Zama's two sumchecks are unnecessary** | the real delta (§5.3). Narrow, technical, and worth the build. |
+| "MLE is linear, so linear maps need no rounds / one common-point opening certifies them" | **written down almost verbatim** — Binius64 Blueprint §4.4 "Zero Reduction", in `~/paperbin`. Named ("virtual polynomial") in Binius. Not ours, not close. |
+| "apply it to an FHE ciphertext fold `c_out = Σ wᵢcᵢ` with fixed public weights" | **published, in `~/paperbin`, twice.** Zama **2024/451** does exactly this statement *the circuit way*; Zama **2026/027** does linear maps on GLWE ciphertexts *the MLE way* (with sumchecks). The brief's premise that this was open is **false**. |
+| "free additions ⟺ no modular reduction" | **Rinocchio (2021), p.39**, in this exact setting. Not a discovery. |
+| enforcing the condition with a **range leg on the result** rather than restricting the pipeline | **not found stated** — but the general method (witness the quotient: Limber, 2026/027) is *stronger*, so this is a specialisation, not an advance. |
+| **a fold is aligned-pointwise, not a contraction, so even Zama 2026/027's two sumchecks are unnecessary** | the real delta (§5.3). Narrow, technical, worth the build — **and partially spent by §4.4**, since the verifier cost it saves in rounds it pays back in `B` openings. |
 
 **What this means for how the result gets described.** Not "one common-point opening
 certifies the whole fold — nobody has done this for FHE." Rather:
@@ -592,9 +750,28 @@ certifies the whole fold — nobody has done this for FHE." Rather:
 > restricting the pipeline.*
 
 ⚑ And the honest sequencing consequence: **before any more is built here, read Zama
-2026/027's protocol section in full.** It is in `~/paperbin`, it is the direct predecessor,
-and §7's build order should be re-derived against it rather than against this note's
-assumption that the ground was empty.
+2024/451 §"Weighted sum" and 2026/027's protocol section in full.** Both are in
+`~/paperbin`, they are the direct predecessors on the two opposite routes, and §7's build
+order should be re-derived against them rather than against this note's original assumption
+that the ground was empty.
+
+### 5.7 What was searched, and the gap that remains
+
+The paperbin sweep was: ripgrep over all 561 `.txt` extractions, plus **four full
+`pdftotext` sweeps over all 810 PDFs lacking a `.txt` sibling** (Layer-A phrases, Layer-B
+phrases, ciphertext-linear-combination phrases, linear-map-commitment phrases), plus
+targeted reads of ~25 high-value PDFs. Every vFHE paper in the corpus was checked for what
+it does with the additive part; the table of results is in the sweep record.
+
+⚠ **The most likely place for a further prior hit was not searched, because it is not in
+the corpus.** The classic "verifiable HE for linear/additive computation only" line —
+**Fiore–Gennaro–Pastro (CCS'14), Fiore–Nitulescu–Pointcheval (PKC'20),
+Bois–Cascudo–Fiore–Kim (PKC'21), Chatel et al. (arXiv 2207.14071), Madi et al.
+(RDAAPS'21)**, and **Boneh–Drake–Fisch–Gabizon** "linear combination schemes" — is
+**absent from `~/paperbin` entirely**. HasteBoots's related-work section characterises the
+first four as "supporting only basic FHE operations such as LWE additions", which is
+precisely our fragment. **Fetch those before any novelty is claimed anywhere.** Nothing in
+this section is an absence claim, and this paragraph is why.
 
 ---
 
