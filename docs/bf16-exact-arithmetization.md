@@ -1,4 +1,26 @@
-# bf16 is the ZK-friendly float — two verified facts and what they buy
+# bf16: two exact-arithmetic facts that stand — and the format thesis that did not
+
+> **Status, 2026-08-13. The two computed facts are why this file is still
+> here; the thesis built on them is dead.**
+> - ✅ **Fact 1 stands**: every unary function on bf16 is an exact 2^16 table.
+>   It generalizes and is live — the exact-table route is in `docs/AGENDA.md`
+>   Pillar I and `docs/VERDICTS.md` §5.
+> - ✅ **Fact 2 stands, with a qualifier Phase 0 found by exhaustion**:
+>   `bf16 × bf16 → fp32` never rounds *in the significand* — but exhaustively,
+>   23.23% of finite-operand pairs round for **exponent**-range reasons. Stated
+>   correctly as `−126 ≤ e_x + e_y ≤ 126`, it is 100% exact over 3,179,217,920
+>   pairs (`docs/PHASE0-RESULT.md`). The 200k random sample below never reached
+>   the extremes.
+> - ⚠ **The thesis is refuted.** "bf16 is the ZK-friendly float" does not
+>   survive: **bf16 is not a block format** — it carries a per-element exponent
+>   — and Phase 0 measured the speedup at **1.4×, not 4×**. The live
+>   arithmetization is **MXFP4-specific** (`docs/mx-formats.md`,
+>   `docs/VERDICTS.md` §5), and NVFP4 preserves within-block exactness but
+>   destroys the power-of-two-scale shift argument.
+> - The accumulator-width question this note calls "the crux" is answered by
+>   block floating point in `docs/the-position.md`.
+>
+> Read `docs/VERDICTS.md` first. Everything below is the note as written.
 
 Status: design note, 2026-08-11. The two numeric facts below were computed
 here; nothing else in this note is sourced yet. Research lanes are still out and
