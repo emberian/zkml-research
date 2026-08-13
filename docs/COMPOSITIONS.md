@@ -56,18 +56,31 @@ claiming a path.
 
 ---
 
-## C3. Virtualize the permutation (a live prediction, cheap to test)
+## C3. Virtualize the permutation — ✅ **DONE 2026-08-13, `notes/poseidon2-virtualization.md`**
 
-**Pieces**: the threshold rule (virtualize while layer count < the 78–308×
-exchange rate). Plus Poseidon2 at ~21 layers. Plus a corroborating measurement
-already in our tree (`map_write_chip` 227 ms vs `umem_write_read_nochip`
-14.9 ms).
+**Predicted**: virtualizing beats committing by **4–15×**, via the threshold rule
+(virtualize while layer count < the 78–308× exchange rate) applied to Poseidon2's
+~21 layers.
 
-**Why it matters**: the permutation is **the most-committed object in the
-prover**, and the rule predicts virtualizing beats committing by **4–15×**.
+**Measured**: virtualizing wins by **2.11× prover, 1.28× verifier, 1.25× proof
+size, 2.24× committed felts** — at identical security and identical constraint
+degree, on the most-committed object in the prover. **Confirmed in direction.**
 
-**Cost**: a measurement, not a campaign. **Do this first — it is the cheapest
-large number on the board.**
+⚑ **Refuted in mechanism, and the exchange rate moved.** The win is *in-AIR*
+virtualization of the **211 of 352 committed felts that carry no nonlinearity**
+(13 partial rounds × 15 affine lanes, plus the initial linear layer) — no
+sumcheck, no degree cost, strictly Pareto. The *sumcheck* virtualization C3 had
+in mind **loses at α=7** by 1.4–2.4×, because **78–308× is in counted field
+multiplications and the wall-clock exchange rate is ≈5×** (both halves now
+measured). Crossover: fold beats commit iff **α ≤ 3** — the KoalaBear answer,
+reached from the other direction. And the `map_write_chip` / `umem_write_read_nochip`
+"corroboration" was checked at source and is a chip present-vs-absent comparison,
+not this fork.
+
+**What lands**: `permEmissionNarrow` in
+`breadstuffs/metatheory/Dregg2/Circuit/Emit/Poseidon2RoundGates.lean` — 141 gates
+instead of 352, chip width 386 → 175. Flag day: chip AIR JSON re-emit + VK
+rotation.
 
 ---
 
@@ -173,7 +186,11 @@ an argument. And RPC shows the failure mode is *real and deployed*.
 
 ## The order
 
-**C3** (a measurement, cheapest large number) → **C4** (settles a design
-question before more constraints are written) → **C1** (a port with immediate
-ML surface) → **C6** (the gap) → **C7**, **C5** (both wait on C6) → **C2**,
-**C8** (research-shaped).
+~~**C3**~~ ✅ done → **C4** (settles a design question before more constraints
+are written) → **C1** (a port with immediate ML surface) → **C6** (the gap) →
+**C7**, **C5** (both wait on C6) → **C2**, **C8** (research-shaped).
+
+⚠ C3 leaves a **debt for C2/C5/C7**: every one of them prices a fork against the
+78–308× exchange rate, and that number is in counted multiplications, not
+wall-clock. Re-derive against the ≈5× measured rate before quoting a verdict —
+this is the "a cost verdict outlives its premise" shape, and C3 is the premise.

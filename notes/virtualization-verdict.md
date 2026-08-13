@@ -70,6 +70,16 @@ turns it into a **threshold rule**: virtualize while the layer count is below
 the exchange rate. Sunset condition stated: the ratio swings **28× across the
 blowup knob**.
 
+⚑ **CORRECTED 2026-08-13 by `notes/poseidon2-virtualization.md` §4 — the units.**
+78×/308× is in **counted field multiplications**; the mult-equiv → wall-clock
+conversion was never taken. Taken (both halves measured on the deployed prover:
+54.7 ns per marginal committed felt, 10.97 ns per value per sumcheck layer), the
+exchange rate at lb=3 is **≈5 layers, not ≈40**. Hashing SIMD-vectorizes harder
+than sumcheck folding does, so a scalar multiplication count **over-prices
+commitment by ~8×**. The rule survives; the threshold does not — and the
+correction **reverses test #1 below**. Never quote 78×/308× as a wall-clock
+budget.
+
 The SELVAGE marquee 5,461× **checks out to 2.4%** and now has a derivation
 artifact rather than an assertion.
 
@@ -102,11 +112,22 @@ protocol selection by static analysis and the field dropped it.
 
 ## ⚑ The three sharpest tests — and the first one is a live prediction
 
-1. **The Poseidon2 permutation.** ~21 layers against a 78/308 threshold, so
-   the rule predicts **virtualizing BEATS committing by 4–15× on the
-   most-committed object in the prover.** Corroborating signal already
-   measured in our own tree: `map_write_chip` 227 ms vs
-   `umem_write_read_nochip` 14.9 ms.
+1. ~~**The Poseidon2 permutation.**~~ ✅ **RESOLVED 2026-08-13 —
+   `notes/poseidon2-virtualization.md`.** The prediction was "~21 layers against
+   a 78/308 threshold ⇒ virtualizing beats committing by 4–15×". Measured:
+   **virtualizing wins by 2.11× prover / 1.28× verifier / 2.24× committed felts
+   — but NOT by a sumcheck.** The win is *in-AIR* virtualization of the **211 of
+   352 committed felts that are degree 1** (upstream `p3-poseidon2-air` already
+   does it; our chip does not): no sumcheck, no degree cost, strictly Pareto.
+   The *sumcheck* virtualization this line predicted **LOSES at α=7** by 1.4–2.4×
+   against the corrected exchange rate above, and wins only at **α ≤ 3** — which
+   is the KoalaBear answer, reached from the other direction.
+   ⚠ And the `map_write_chip` 227 ms vs `umem_write_read_nochip` 14.9 ms
+   "corroborating signal" **is not one.** Checked at source
+   (`breadstuffs/.docs-history-noclaude/PERFORMANCE.md:85-110`): that is a chip
+   table PRESENT vs ABSENT comparison — the no-chip shape "hashes nothing
+   intra-proof" — not a materialize-vs-virtualize fork on one relation. It
+   belongs to the universal-memory result.
 2. **The LogUp aux column** — 71% of committed elements. Thaler's own matmul
    virtualization *is* a degree raise, so price it through
    degree→blowup→hash, **not element count.**
