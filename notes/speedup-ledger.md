@@ -19,7 +19,7 @@ done, and things that exist on paper only.
 | VEIL ZK wrapper | **3% prover overhead** for the ZK property | 2026/683 | ZK is nearly free now |
 | Binius ring-switching | **zero embedding overhead** for tiny values | 2024/504 | the small-value lever, formal substrate already in our tree |
 | Sampling audit | **24× prover → ~1.24× system** at p=1% | our derivation + Rinberg | the deployability multiplier; not a prover speedup, better |
-| Small-value sumcheck handling | **2–3× (Spartan-in-Jolt), 20×+ at memory limits** | 2026/587 | measured; the Thaler-program substrate for mapping A |
+| Small-value sumcheck handling | **2–3× (Spartan-in-Jolt) — ⚠ ON BN254.** 2026/587's own ancestor 2024/1046 **measured it going the WRONG WAY at BabyBear-deg4**: *"the running times of the existing algorithms are better than Algorithms 3 and 4."* Transfer factor 0.51–0.63 at our κ | 2026/587 + 2024/1046 | measured on a large prime field; **does not transfer as stated** |
 | Sparrow space-efficient data-parallel | **3.2–28.7× less prover space than Gemini; 1.4× native space** | 2024/1631 | mappings D+F in one paper |
 | VerfCNN | **10× over plaintext CPU inference** (VGG-16, 12.6 s) | 2025/2020 | best overhead ratio seen anywhere; conv-specific |
 | exp table rank-1 hi/lo | 2^16 table → two 2^8 tables | 2026/1390 Prop 3 | exact version unclaimed (OpenLLM has the rounded version) |

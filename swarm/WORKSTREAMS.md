@@ -53,6 +53,54 @@ Z4. **Inference-shaped audit instantiation** — QUEUED, parallel (needs no trac
     width floor (named but UNDERIVED, §8 ~line 1110). ⚑ headline finding to
     confirm: sampling cannot amortize WITHIN a wide inference — `q ≤ p/N`.
 
+## GKR substrate tier (spec for all five: notes/gkr-substrate-design.md)
+The artifact four lanes converged on. Design pass landed 2026-08-13. Headline
+from the pass: **Selvage's sumcheck protocol layer is ALREADY degree-generic**
+(`{d : ℕ}` through `adaptive_sumcheck_soundness`) and the round-chain skeleton
+in `MultilinearExtension.lean` is proved for an ARBITRARY `g` — degree 1 is
+pinned only at the realizer, and `Assurance/AirSumcheckQuadratic.lean` (916 lines,
+CLOSED at d=2) is a line-for-line template for d=3. Two laws the substrate is
+built on: **never return folding randomness without the terminal value** (the p3
+seam), and **never compress `h(1)` out of the round message** — at our pin p3
+derives `h(1) := claimed_sum − h(0)`, which makes the round check a *tautology*
+rather than a skipped check (`sumcheck/src/data.rs:14-26,118-131`).
+
+G1. **`eq` + zerocheck + multilinear Schwartz–Zippel** — QUEUED, DISPATCH FIRST
+    (G2/G4 wait on it). New `Selvage/EqPoly.lean`. A two-vector `eq` is ABSENT in
+    our Lean (only the boolean-corner `chiEval`); multilinear SZ is the rung's
+    dominant new proof term. Cheapest spike inside it: `eqMle` +
+    `eqMle_cubePt` + `eqMle_fold`, ~40 lines, no protocol change.
+    Gate: named theorems + `#guard_msgs in #print axioms` (⚠ NOT
+    `#assert_axioms` — that tool does not exist in minidregg).
+G2. **The degree-3 cubic realizer with an eq factor** — BLOCKED(on: G1).
+    New `Assurance/AirSumcheckCubic.lean`. Gate: terminal check FACTORED into the
+    input claims (an opaque oracle value is the Class-3 industry bug); the
+    `ringChar F > 3` node-injectivity condition stated, not assumed.
+G3. **Degree-`d` Rust engine + the folding prover, conformance-bound** —
+    BLOCKED(on: G2). ⚠ `round_sum` is today the literal O(4^m) mirror;
+    `mle_kernels::fold_mle_table` exists but is not implemented for the prime
+    scalar the sumcheck engine uses. Without it the rung caps at m≈12.
+    Measure wall-clock + peak RSS at m ∈ {10,16,20}.
+G4. **logUp-GKR vs logup\*, priced on the substrate** — BLOCKED(on: G1, G2).
+    The deciding term is the **post-challenge commitment floor** on a hash PCS,
+    NOT field-op counts (and every published field-op constant is denominated in
+    a unit 2026/587 moves by >10×).
+G5. **Multilinear PCS seam: interface + ideal inhabitant + equivocator** —
+    QUEUED, parallel, blocks on nothing. ⚠ `Selvage/Commitment.lean`'s
+    `OpeningScheme` is POSITIONAL (`openAt : … → ι → Op`) — a vector commitment,
+    the wrong shape for a multilinear claim; this needs a sibling structure, not
+    a reuse. Must NOT attempt the BaseFold/WHIR bridge — that is a campaign;
+    `Selvage/MultiplicativeMleTerminal.lean` is its seed.
+
+⚑ Two OPEN decisions the memo refuses to make silently, both ember's:
+(i) **the challenge field** — we already hold Ext6 (proved a field, no
+`native_decide`) and `Assurance/MixedFieldBudget.lean` prefers it at 137 bits,
+but that model's proximity leg is field-size-bound and contains **no query-count
+term**, so it cannot see the 100-bit wall grey-lit §3 records; (ii) **prime-only
+substrate vs two instantiations** of the (already field-generic) Lean interface —
+`prover/src/tower256_kernels.rs` already holds a char-2 two-vector `eq` and an
+inversion-free `fraction_add_layer` with no driver above it.
+
 ## Verification tier
 8. **census-on-Avigad** — QUEUED. Spec: compositions item A. Collegial gift.
 9. **KB-vs-Goldilocks recursion benchmark** — QUEUED. Gates the flag day;

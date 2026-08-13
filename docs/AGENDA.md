@@ -57,7 +57,7 @@ spec gives Zamir nothing to hide in.** (`notes/float-in-zk-three-regimes.md`,
 - The surviving principle: **prove the model's NATIVE serving format.** The
   frontier ships block-native: gpt-oss is MXFP4 (98.1% of weights, 78.9% of
   per-token linear FLOPs, *no bf16 original exists* — the MXFP4 checkpoint is
-  the evaluated artifact); DeepSeek-V4 is power-of-two block-scaled
+  the evaluated artifact); ⚠ **DeepSeek-V4 DOES NOT EXIST** (404 with credentials — registry lane verified; V3.1 was substituted and the correction never propagated). DeepSeek-V4 is power-of-two block-scaled
   everywhere; Kimi-K3 likewise [measured, byte-verified census]. Gemma 4 —
   the model Attestable proves via int8 — is plain BF16, Tier 3.
 - **MXFP4 block dots are exact ≤13-bit integer computations** (verified over
@@ -203,7 +203,7 @@ irreducible trinomial. Full corrections and the M0/M1/M2 path:
 *protocol* axis; the accelerator is not the critical path (rate gap: ~26
 prover dies per FHE FPGA even granting 1,000× ASIC speedup) [measured,
 lane-derived]. vFHE has **already converged on our substrate** — small-field
-sumcheck, because FHE's 28–36-bit RNS limbs embed natively [measured].
+sumcheck, because ⚠ **FALSE, and contradicted by the file cited three lines earlier** (`vfhe-shortest-path.md:32`: 36 > 31 bits, hence `fheggQ0_scalar24_base64_fits`). They embed natively into THEMSELVES. Original claim: FHE's 28–36-bit RNS limbs embed natively [measured].
 
 **Structural synergies** (`notes/shared-arithmetic.md`): FHE computes in Z_q
 already — no float→field gap exists, the ciphertext trace IS the witness;
