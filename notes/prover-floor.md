@@ -3,12 +3,33 @@
 2026-08-13. `paper/scripts/prover_floor.py`. **The design artifact the
 verification phase was crowding out.**
 
-## The one-sentence result
+## ⚑ Read first: the hash-bound half of this note is OPEN, not settled
 
-**The prover is hash-bound at every blowup ≥ 2, and the floor is hashing too.
-The sumcheck is 2–17% of prover time — so a 2× on the sumcheck is a
-1.02–1.17× on the prover.** That re-prices most of the speedup literature,
-including several things we spent days evaluating.
+**This file is the DERIVED side of an open contradiction.** A measurement on
+this laptop (`notes/fast-systems-recon.md`, matched Plonky3 FRI-vs-WHIR bench)
+gets **~19% hashing with Blake3, ~40% with Poseidon2** at ρ=1/2 — *not*
+hash-bound. The derivation below gets **94% hash at our deployed lb=6**. The
+two have never been reconciled; the deployed point is ρ=1/64 and the
+measurement is ρ=1/2, so the disagreement may be about where the folding
+rounds are booked.
+
+**`docs/VERDICTS.md` §7.1 carries this as open item 1.** Resolve by
+instrumenting one real IR-v2 proof at lb=6 and lb=4 with a profiler. **Until
+then do not quote either figure as settled**, and treat everything in this
+file that rides on hashing being dominant — the 94%, the ~3.4× migration
+figure below — as contingent on it.
+
+**What does NOT depend on the open question**, and is in VERDICTS in final
+form: the sumcheck is **2–17% of prover time** (so a 2× on the sumcheck is a
+1.02–1.17× on the prover, which re-prices most of the speedup literature);
+**`lb=6` is 2.9× off the measured optimum**; `fold_add`'s ratio = B is
+**prover-side only**; and the commitment floor is irreducible and dominant.
+
+---
+
+*Everything below is the derivation as written, unchanged — including the
+hash-bound headline it reached. It is the 94% side of the open question above,
+not a settled result.*
 
 ## The cost function (per committed base felt, blowup 2^b, width w, height h)
 
@@ -64,11 +85,21 @@ Proved two ways (Ω(|w|) reads; Ω(H(w)) bits through the oracle). **Irreducible
 AND dominant**, so exactly three levers: fewer committed values, smaller ones,
 more bits per unit ALU.
 
+⚠ **This floor is the `Ω(|w|)` extraction argument (GH98/GVW02) — it is NOT
+eprint 2026/1390**, which is a lookup-specific, self-described
+restricted-model separation and does not support a general commitment floor.
+See `notes/boundary-statements.md` §2.5(b). (`notes/virtualization-verdict.md`
+says this note mis-cites 1390; it does not — the accusation is the one thing
+in that correction that is wrong at source.)
+
 ⚑ **It changes the field choice for a stronger reason than the field memo
 gave**: the only figure of merit a hash has is bits/op — **Poseidon2-KoalaBear
 0.301 vs BabyBear 0.227** — *and* **α=3 makes lb=2 legal** (measured: 38 of 91
 goldens refuse lb=2 today because the α=7 S-box needs a degree-6 quotient).
-**So the migration is ~3.4× on the dominant term, not ~1.5×.**
+**So the migration is ~3.4× on the dominant term, not ~1.5×** — ⚑ *contingent
+on the open hash-bound question above; if the prover is arithmetic-bound the
+3.4× shrinks to much less.* (And KoalaBear is a **recommended, unexecuted**
+migration target — deployed in both trees is BabyBear.)
 
 ## Small values: the literature pushes on the smaller half
 

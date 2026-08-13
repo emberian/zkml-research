@@ -26,6 +26,11 @@ where the folding rounds are booked.** ⚑ **Resolve by instrumenting one real
 IR-v2 proof at lb=6 and lb=4 with a profiler. Until then, do not quote either
 figure as settled.**
 
+**This is `docs/VERDICTS.md` §7.1, open item 1 — it is still open.** The other
+side of it is `notes/prover-floor.md`, which leads with the same warning.
+(KoalaBear is the *recommended, unexecuted* migration target; both trees
+deploy BabyBear.)
+
 ## The measured ~3× cliff that forces a design decision NOW
 
 Plonky3's own sumcheck bench, run here at 2^22: **`base_ext` 11.99 ms vs
@@ -79,7 +84,13 @@ not their design. That is why SP1 shards.
 
 Our IR-v2 reads **128.7 conjectured / 71.7 Johnson / 34.6 unique-decoding** —
 independently reproducing our own recorded "conjectured 130 / proven 51–73",
-which cross-checks both.
+which cross-checks the arithmetic of both. ⚠ **That does not make 130 a
+quotable security level.** The conjectured column is **CBR-shaped — the
+capacity regime `ethereum/soundcalc` deleted outright in Nov 2025** (commit
+`ffaeb81`, "Remove CBR (due to DG25 and CS25)"). 57 of the 130-vs-73 headroom
+is a *withdrawal*, not a knob. **Our number is UDR 34 / JBR 73; never quote
+130.** `docs/VERDICTS.md` §2; derivation in `notes/two-regime-calculator.md`
+and `notes/grey-lit-corrections.md` §4.
 
 **To reach 100 genuinely-UD bits: 86 queries instead of 19 — and `log_blowup`
 does NOT change.** We already run ρ=1/64, so each query is worth *more*
