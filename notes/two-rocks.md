@@ -145,3 +145,5 @@ factors — the ⟺ has real teeth now), Goldilocks proved prime, and the
 domain-availability lemma whose Goldilocks negative instance is the
 matvecmul panic stated as mathematics. Commit 641ceeb, whole tree green,
 HEAD-verified, codex untouched.
+
+(Integrated 2026-08-13: paper/DRAFT.md, CLAIM-LEDGER.md and SUBMISSION-GATES.md now carry all of the above — four corrections applied, G1–G3 closed, new gates G13–G15.)
