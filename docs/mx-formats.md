@@ -107,3 +107,53 @@ the MX spec. The specific things that must be measured, not assumed:
   and "shared exponent" too.
 
 **Phase 0 cost a day and saved a quarter. Phase 0′ should cost the same day.**
+
+## RESOLVED by the native-format census (2026-08-12, byte-verified)
+
+The census (HF safetensors headers + config.json + decoded tensor bytes)
+settles this note's hypothesis, with one correction:
+
+**MXINT8 was the wrong name; MXFP4 is the right one — for this note's own
+reasons.** MXINT8 has ZERO model releases. MXFP4 is what actually ships, and it
+has the same properties this note wanted: E2M1 values are multiples of ½, so a
+k=32 block dot product is an exact ≤13-bit integer computation — verified over
+20,000 random blocks under two summation orders against exact rationals, zero
+deviations. Exact elements, power-of-two E8M0 scales, static shifts, no
+per-element window for Zamir. And because the checkpoint IS the evaluated
+model, zero semantic gap.
+
+**Tier 1 — block-native, power-of-two scales, no BF16 original exists:**
+- **DeepSeek-V4-Flash/Pro** — the strongest case in existence: every weight
+  power-of-two block-scaled (experts FP4-E2M1 block-32 E8M0; the rest FP8
+  E4M3 at 128×128 E8M0). There is no unscaled path to defer to.
+- **gpt-oss-120b/20b** — MXFP4 block-32 E8M0 on the MoE experts = 98.1% of
+  weights, 78.9% of per-token linear FLOPs; attention stays BF16. The card:
+  "All evals were performed with the same MXFP4 quantization" — the MXFP4
+  checkpoint is the ground truth; no BF16 original.
+- **Kimi-K3 (2.8T)** — same shape, largest open model ever.
+- DeepSeek-V3.1/V3.2 — 128×128 tiles with byte-verified power-of-two scales
+  (2688/2688; V3/R1's older scales are NOT powers of two, 0/896).
+
+Tier 3 (nothing to exploit, BF16/per-tensor): Gemma 4 — the model Attestable
+proves via int8 — plus Qwen, GLM-5.2, Llama 4, Mistral's FP8-per-tensor line.
+
+**The load-bearing caveat: "prove the shipped format" pins the WEIGHTS, not
+the COMPUTATION.** Three reasons, none fixable by format choice: (i) one
+gpt-oss checkpoint runs W4A16/W4A8/W4A4 across vLLM's TWELVE MoE backends —
+the canonical fallback is W4A16 with BF16 activations; (ii) OCP MX v1.0 §6.1,
+verbatim: "The internal precision of the dot product and order of operations
+is implementation-defined"; (iii) cross-block FP32 accumulation over 90–128
+blocks with differing exponents is order-dependent even when each block is
+exact. **So the provable statement is "gpt-oss under backend X on SM100", not
+"gpt-oss" — pinning a backend is part of the statement.** The within-block
+exactness result confines the nondeterminism to the cross-block sum, which is
+exactly where an order-independent exact accumulator (our §(b) from the first
+bf16 note) earns its keep.
+
+Spec artifacts in ~/paperbin: `ocp-microscaling-mx-v1.0-spec.pdf` (primary),
+`numeric-format-catalog-bitexact-conformance-2606.09686.pdf` (conformance
+vectors for FP8/BF16/MXFP4 — a ready-made differential oracle), and
+`ozaki-scheme-fp4-tensorcore-base13-limbs-2608.06812.pdf` (exact FP64 GEMM on
+FP4 tensor cores via limb decomposition — the bit-exact-float-as-integer-limbs
+technique, developed HPC-side, unaware of ZK; most transplantable single idea
+the census found).
