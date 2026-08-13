@@ -1,0 +1,78 @@
+# notes/ — what is in here and how to read it
+
+**Start with `docs/VERDICTS.md`.** It is the single current-truth file: what we
+believe now, in final form, no history, no ⚠ markers. Open questions are its §7.
+
+> **The rule: where a note and VERDICTS disagree, VERDICTS wins and the note is
+> history.** Notes are *evidence* — what a lane measured, derived, or read at
+> source. VERDICTS is the *conclusion*. Cite a note for its measurement; cite
+> VERDICTS for what we think.
+
+**When a note is wrong, the fix is ordering, not deletion.** Current truth goes
+at the top, superseded reasoning stays below it, and every measurement is kept —
+a refuted claim with its refutation attached is how we stop re-deriving it. If a
+file's *central* claim dies, it moves to `archive/` rather than being edited into
+something it never said.
+
+---
+
+## The five things that were contradicting each other, and where they now live
+
+| question | answer | files that hold it |
+|---|---|---|
+| **Is the prover hash-bound?** | ⚑ **OPEN.** Derived 94% at lb=6, measured 19–40% at ρ=1/2. One profiling run settles it. VERDICTS §7.1 | `prover-floor.md` (derived side), `fast-systems-recon.md` (measured side) — both lead with the contradiction |
+| **Which field?** | **BabyBear deployed, both trees. KoalaBear recommended and UNEXECUTED.** Never "our KoalaBear parameters" | `field-choice-verdict.md`, `hash-verdict.md`, `koalabear-limb*.md` |
+| **"Conjectured 130"?** | **CBR-shaped, from a regime deleted upstream. Never quote it.** Ours is UDR 34 / JBR 73 | `two-regime-calculator.md`, `grey-lit-corrections.md` §4 |
+| **The `fold_add` ratio** | **= B, PROVER-SIDE ONLY**, and deployed B is **4** (4.2×), not 512 | `fold-as-opening-verdict.md`, `fold-as-opening.md` §0 |
+| **eprint 2026/1390** | A **lookup-specific restricted-model separation** — *not* a general Ω(m) commitment floor. The floor we hold is the `Ω(\|w\|)` extraction argument | `boundary-statements.md` §2.5(b), `virtualization-verdict.md` §4 |
+
+## Evidence — what each file measured
+
+**Prover cost and proof-system design**
+- `prover-floor.md` — the cost function per committed felt; sumcheck is 2–17% of prover time; lb=6 is 2.9× off the optimum
+- `fast-systems-recon.md` — six systems read at source, hashing/LDE timed here; the base→ext 2.95× cliff; our soundness posture against five production systems
+- `boundary-statements.md` + `virtualization-verdict.md` — the exchange rate: one committed base felt ≈ 3,120 mults at lb=4, 12,331 at lb=6; virtualizing one ≈ 40/layer
+- `two-regime-calculator.md` — the regime in the type, 22 theorems, 0 sorry; the CBR withdrawal
+- `multilinear-pcs-landscape.md` + `multilinear-pcs-verdict.md` — the seam is one `RbrKnowledgeSoundness` instance; route is BaseFold at RS
+- `gkr-substrate-design.md` + `gkr-substrate-findings.md` — the Lean-authored substrate design; our proximity leg has no query-count term
+- `fold-as-opening.md` + `fold-as-opening-verdict.md` — built and measured; three of four briefed numbers wrong
+- `formalization-frontier.md` — ArkLib measured: 416 sorry-tainted declarations, 133 security results
+- `avigad-stwo-verdict.md` — the StarkWare/Avigad formalization is the twin, and carries a real theorem anyway
+- `lookup-ram-verdicts.md` — the lookup/RAM frontier, both halves; the three-member one-hot law (Twist/Shout is closed to our stack, by its authors)
+- `spain-celer-verdicts.md`, `ozaki-limbs-verdict.md` — read at source, both rejected as imports with the reason kept
+- `field-choice-verdict.md`, `hash-verdict.md`, `field-recursion-evidence.md`, `koalabear-limb*.md`, `poseidon2-audit-verdict.md` — the field/hash campaign
+- `grey-lit-corrections.md` — five of our verdicts refuted from outside the eprint corpus
+- `sis-lattice-verdict.md`, `two-ladder-composition.md`, `shared-arithmetic.md`, `system-primitives.md`, `joint-representation.md` — adjacent design threads
+
+**FHE / vFHE**
+- `h2-verdict.md` — measured both directions: 109-bit joint prime is a net loss, 61-bit wins, costs one depth level
+- `coeff-matmul-landed.md` — built: 12 bits/matmul split-sign, depth 2 after, 466 µs at 512×31
+- `fhe-core-theory.md` — the secret is CBD(20); the honest security ledger
+- `kpz-noop-and-the-model-gap.md` — the KPZ fix is a no-op, derived and measured
+- `fhe-scout-verdicts.md` — the FHE frontier scan with its coverage gaps named
+- `hpu-seam-study.md` — 162,770 lines of Zama SystemVerilog read; the ring is ℤ/2⁶⁴
+- `ring-hash-design.md`, `ring-hash-cryptanalysis.md`, `ring-hash-{build,tau}-verdict.md`, `ring-hash-scripts/` — build it, τ=2; FS 52% → 4%
+
+**zkML**
+- `moe-router-binding.md` (+ `-cost.py`) — router binding must be zero-knowledge; expert selections recover 91% of tokens
+- `ml-systems-corrections.md`, `kv-cache-correction.md` — append-dominant KV is true of the computation, false of serving
+- `ml-to-crypto-mappings.md`, `speedup-ledger.md` — the mapping tricks and every measured speedup in one place
+- `float-in-zk-three-regimes.md` — the three regimes; ⚠ its bf16 framing is superseded
+- `zkml-landscape.md`, `zkml-integration-architecture.md`, `catgrad-seam.md` — the open position, and where the pillar lives
+- `attestable-calibration.md` — the overhead number is a baseline choice, not a measurement
+- `audit-sampling-prior-art.md`, `audit-theorem-statement.md`, `impl-readiness.md` — the audit game: prior art, the Lean spec, and what is mechanically verified
+
+**Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
+`inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
+instrument; absence claims are only as good as those two lines.
+
+**Method and process** — `soundness-theater-correction.md`, `the-absence-problem.md`,
+`missed-threads.md`, `context-window-compositions.md`, `window-review-2026-08-13.md`,
+`what-remains.md`, `kpz-noop-and-the-model-gap.md` §"model gap". Keep as-is; they are
+about how the work went, not what is true.
+
+## archive/
+
+**History, not truth. Do not cite it.** Files whose central claim died, kept
+whole with their reasoning and measurements, each labelled with what replaced
+it. `archive/README.md` is the table.
