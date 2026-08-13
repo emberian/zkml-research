@@ -512,7 +512,56 @@ from τ=2, not a result at τ=4; point 2 is a density comparison, not a bound.**
 The coefficient-grouping analysis over F_{q^4} remains genuinely undone, and it
 is the single largest open item for the τ=4 branch.
 
-*(further literature verification pending)*
+⚑ **And the decisive symmetry the handoff missed: τ=1 does not avoid needing a
+degree analysis either.** `ring-hash-cryptanalysis.md` weakness #5 says the round
+count "is borrowed, not derived — RF=8/RP=22 is a width-~12 Poseidon set, but the
+object is a width-144 SPN … **Deriving it for the actual width and the measured
+degree curve is the design lane's first job.**" That job is outstanding **in both
+regimes**. So τ=4 does not *add* the requirement for a degree analysis; it
+changes *which* analysis (coefficient grouping over F_{q^4} rather than a
+wide-trail round-count derivation at width 144). **"τ=1 is safer" is only true if
+τ=1 were analysed and τ=4 unanalysed. Neither is analysed.**
+
+### 4.5 VERDICT: τ=4
+
+**Recommendation: τ=4, at the dense-in-full-rounds schedule (89.8 rows/elt, 8.0×
+the decompose-and-hash baseline), conditional on one named analysis.**
+Confidence: **moderate** — the cost case is measured and robust, the security
+case rests on an argument-from-symmetry plus one undone analysis.
+
+The five inputs, in the order they should be weighed:
+
+1. **Cost — decisive, and measured.** τ=4 reaches slot-MDS for 1.60–2.77× less
+   than τ=1, and at τ=1's *equal budget* the #1 weakness simply stays unfixed.
+   The verdict survives a **3.2× round-count penalty** before it flips.
+2. **Status quo — τ=4 is the deployed ring.** "Keep τ=1" is the branch that
+   requires changing the deployed modulus, not the conservative one.
+3. **C1 invertibility — clears.** α=7 is legal at τ=4 on the Frog modulus, and a
+   joint modulus serving both candidates exists at 2^64−279.
+4. **The invariant subfield — real, and cured by a checkable condition (C6)**
+   that is the *existing* weakness-#4 condition widened one field down. τ=4
+   widens a requirement rather than introducing a strange new class.
+5. **Coefficient grouping over F_{q^4} — genuinely open, and the one real cost of
+   this verdict.** Mitigated but not closed by: the lane's own clean τ=2
+   measurement (an extension-field case), and our support-4 layer sitting above
+   the support-3 density that repaired Chaghri. **Not closed. Do not describe it
+   as closed.**
+
+**The gating experiment, named so it can be done rather than deferred:** run the
+prior lane's own integral/degree instrument at **τ=4** with the {1,5,−1,−5}
+layer, against the matched τ=1 and τ=2 runs it already has, and check whether the
+degree curve stalls. It is the same instrument, already written, at a third
+parameter. ⚠ **State its limitation up front**: an integral over F_q-subspaces
+measures F_q-degree, and Frobenius is F_q-**linear**, so this instrument is
+**blind by construction to a coefficient-grouping stall in the F_{q^4}-univariate
+exponent set.** A clean result from it is weak evidence, not a clearance — and
+the real analysis is the exponent-set argument, which is paper work, not a
+script.
+
+**If that analysis comes back bad**, the fallback is not τ=1 — it is τ=2 (slots
+F_{q^2}, ℓ=8, already measured clean for degree stall), which recovers part of
+the branch win at part of the risk. That intermediate was never on the table
+because the fork was posed as binary. It is not binary.
 
 ---
 
