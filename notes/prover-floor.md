@@ -53,7 +53,7 @@ certifies it. Zero sumcheck rounds, zero carries, zero range checks.** The
 side condition (no reduction) is met by lazy accumulation, **which h2 already
 measured at 0.88× — faster on the FHE side too.** AIR cost is Θ(B·N·L)
 (proportional to the *additions*); the linear route is Θ(N·L) (proportional
-to the *result*). **Ratio = B — 690× at B=512.**
+to the *result*). **Ratio = B — 690× at B=512, ⚠ PROVER-SIDE ONLY** (2026-08-13: the verifier moves the *opposite* way — B+1 openings against B+1 commitments is O(B) Merkle work vs a polylogarithmic AIR verifier, and the one-shared-tree fix collides with the per-trader-root binding condition).
 
 And ct×ct's entire cost is the range checks on key-switch digits, which in
 RNS-BV *are* the limbs — so a matched limb deletes a third by construction.
