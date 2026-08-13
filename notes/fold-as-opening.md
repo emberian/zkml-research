@@ -9,7 +9,7 @@ sumcheck rounds. AIR cost Θ(B·N·L), linear route Θ(N·L), **ratio = B**.
 **Verdict so far**: the *algebra* holds and is now demonstrated on real deployed-shape
 ciphertexts. **Three of the four headline numbers in the source claim are wrong or
 mis-attributed**, and the correction makes the result *narrower but sharper*. Details
-in §4 and §5.
+in §4, §5 and §6.
 
 ---
 
@@ -18,7 +18,7 @@ in §4 and §5.
 | brief said | measured / read | where |
 |---|---|---|
 | "690× at B=512" | **B=512 is not a deployed shape.** The node's fold batch is **B=4** (`ORDER_COUNT : Nat := 4`, `metatheory/Market/DarkBazaarPrivateDescriptor.lean:44`), pinned by the session roster and the fixed-arity proving family. Deployed ratio is **4.2×**; 715× at B=512 is confirmed but is a batch we do not run. | §4 |
-| "h2 measured lazy accumulation at 0.88×" | **Wrong cell** (0.88× is *single-prime-109-bit lazy ÷ RNS-3-limb lazy*), and then **measured in-tree**: lazy is 0.84× at B=256 but **break-even at the deployed B=4**. The direction holds on two instruments; the free-speedup argument does not hold at the batch we run. | §5 |
+| "h2 measured lazy accumulation at 0.88×" | **Wrong cell** (0.88× is *single-prime-109-bit lazy ÷ RNS-3-limb lazy*), and then **measured in-tree**: lazy is 0.84× at B=256 but **break-even at the deployed B=4**. The direction holds on two instruments; the free-speedup argument does not hold at the batch we run. | §6 |
 | "zero carries, zero range checks" | Zero *in the fold relation*. The Θ(N·L) term in "the linear route is Θ(N·L)" **is** the one-time canonicalisation range-check on the result. The reduction is not eliminated; it is performed **once instead of B times**. That is the whole mechanism and it should be said that way. | §2.5 |
 | "one common-point opening certifies the whole fold" | True, but only under an accounting where the **inputs are already committed**. Under total-system accounting both routes are Θ(B·N·L) and the ratio is the per-add column count, not B. Both accountings are legitimate; they answer different questions. | §4.2 |
 
@@ -439,36 +439,7 @@ and *those* are the shapes where 715×–5000× is live, if anything ever needs 
 
 ---
 
-## 4bis. What is left to build, in order
-
-Not a wishlist — the ordered remainder, with the one that is actually blocking first.
-
-1. **Close binding condition (c) by replacing the ingress commitment.** The trader
-   computes `Commit(flat(cₖ))` and signs *that*; `order_ingress`'s wire-byte digest and
-   the attestation's `ordered_inputs` are re-pointed at it. This is a wire-format change,
-   a descriptor re-emit and a re-genesis — i.e. ordinary work here. **Until this lands the
-   protocol proves a statement about committed vectors that nothing ties to the
-   ciphertexts the FHE engine held**, which is the difference between a result and a
-   result you can use.
-2. **The multilinear PCS.** The stub. `p3-sumcheck`'s `commit_base` + `layout` (WHIR) at
-   the pinned revision is the candidate and it natively supports several opening claims
-   on one stacked commitment — which is exactly the `B+1`-polys-one-point shape. Costed
-   separately in `notes/multilinear-pcs-landscape.md`; do not duplicate that lane.
-3. **The relation in Lean**, per §2.2, with the range leg as a lookup. Smaller than it
-   looks: §2.7 found the FHE-semantics half already proved (`Bfv.Ring.matVecRCt` /
-   `matVecR_noiseAtInt`). What is new is the *argument* leg plus one connecting lemma
-   ("the phase is ℤ-linear in `(c₀, c₁)` for fixed `s`").
-4. **Switch the deployed fold to lazy accumulation.** Required (§3, the load-bearing
-   negative result), and measured break-even at B=4 — so it is a correctness
-   prerequisite, not a speedup. Do not sell it as one. ⚑ And per §2.7 it moves the Rust
-   *toward* the Lean model, not away from it — `Bfv.Ring` already folds in ℤ.
-
-⚑ **Do not do (2) before (1).** A PCS opening against a commitment that is not the
-ingress commitment is a beautifully-proved statement about the wrong object.
-
----
-
-## 4ter. Prior art — **we are not first at the fact, and the nearest neighbour is sharper than expected**
+## 5. Prior art — **we are not first at the fact, and the nearest neighbour is sharper than expected**
 
 ⚠ **Instrument disclosure, per house law.** This section is built from **web/arXiv search
 plus full-text of one paper I pulled and extracted myself**. `~/paperbin` (1,091 PDFs,
@@ -539,7 +510,7 @@ is the one to use.
 
 ---
 
-## 5. Lazy accumulation — the correction
+## 6. Lazy accumulation — the correction
 
 `notes/h2-verdict.md:27` reads:
 
@@ -594,3 +565,32 @@ fine — but it is not the supporting argument the brief made it.
 (`fhegg-fhe/src/gpu_arena.rs`) whose conditional subtract is one instruction in a lane.
 Every figure above is CPU-scalar. Nothing here is measured for the shipped GPU kernel,
 where the branch is cheapest and lazy accumulation has the least to win.
+
+---
+
+## 7. What is left to build, in order
+
+Not a wishlist — the ordered remainder, with the one that is actually blocking first.
+
+1. **Close binding condition (c) by replacing the ingress commitment.** The trader
+   computes `Commit(flat(cₖ))` and signs *that*; `order_ingress`'s wire-byte digest and
+   the attestation's `ordered_inputs` are re-pointed at it. This is a wire-format change,
+   a descriptor re-emit and a re-genesis — i.e. ordinary work here. **Until this lands the
+   protocol proves a statement about committed vectors that nothing ties to the
+   ciphertexts the FHE engine held**, which is the difference between a result and a
+   result you can use.
+2. **The multilinear PCS.** The stub. `p3-sumcheck`'s `commit_base` + `layout` (WHIR) at
+   the pinned revision is the candidate and it natively supports several opening claims
+   on one stacked commitment — which is exactly the `B+1`-polys-one-point shape. Costed
+   separately in `notes/multilinear-pcs-landscape.md`; do not duplicate that lane.
+3. **The relation in Lean**, per §2.2, with the range leg as a lookup. Smaller than it
+   looks: §2.7 found the FHE-semantics half already proved (`Bfv.Ring.matVecRCt` /
+   `matVecR_noiseAtInt`). What is new is the *argument* leg plus one connecting lemma
+   ("the phase is ℤ-linear in `(c₀, c₁)` for fixed `s`").
+4. **Switch the deployed fold to lazy accumulation.** Required (§3, the load-bearing
+   negative result), and measured break-even at B=4 — so it is a correctness
+   prerequisite, not a speedup. Do not sell it as one. ⚑ And per §2.7 it moves the Rust
+   *toward* the Lean model, not away from it — `Bfv.Ring` already folds in ℤ.
+
+⚑ **Do not do (2) before (1).** A PCS opening against a commitment that is not the
+ingress commitment is a beautifully-proved statement about the wrong object.
