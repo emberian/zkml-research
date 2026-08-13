@@ -69,9 +69,11 @@ catgrad lane: KV cache is explicit graph I/O, "exactly what you need for
 per-token IVC"; one term, two circuit shapes (prefill, decode). GKR lane: below
 batch ≈14 a plain AIR wins — fixed costs must amortize. Landscape lane:
 Attestable's backwards batch scaling shows per-token linearity is the enemy.
-Conclusion nobody drew: fold the decode loop — token-level accumulation, one
-final proof. Standard shape (Nova lineage — note Limber is Bünz), all
-ingredients on the table, absent from PLAN.md.
+Conclusion nobody drew — **CORRECTED 2026-08-12: partially drawn.**
+eprint 2024/480 "Folding-based zkLLM" proposes IVC/NIVC over a RAM machine for
+LLM inference (no implementation, no evaluation). What remains unclaimed: the
+**KV-cache-as-accumulator-state** formulation, and any measurement at all.
+Narrow the claim to those.
 
 ## 5. MX element widths make BINARY op tables total
 
