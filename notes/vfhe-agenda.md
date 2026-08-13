@@ -97,15 +97,75 @@ stale — it exists at `Bfv/Noise.lean:433`.
   (2019/762), Zinc's composite moduli (2025/316), ring lookups (2026/471,
   2026/494) — exactly what proving RNS tower arithmetic natively wants.
 
+## The survey's verdict (landed 2026-08-13)
+
+**The calibration number for the whole ladder:** eprint 2025/719 proves a full
+TFHE bootstrap with packed sumcheck **over BabyBear** in **2.02 s** — against
+the 843 µs bootstrap itself, ~**2,400× overhead**. That is today's vFHE state
+of the art: real, measured, and exactly the "crazy ambitious" distance Vitalik
+named. (Same amortization applies as for LLM proving: sample the audits and
+the per-op overhead stops being paid per op.)
+
+**vFHE has already converged on our substrate.** The practical line (Zama's
+plonky2 verifier, HasteBoots, 2025/719) is **small-field sumcheck** —
+Goldilocks and BabyBear — because FHE's own 28–36-bit RNS limbs embed
+natively in the proof field. The vFHE substrate IS the zkML substrate.
+
+**Three legs of an unassembled machine, one group.** The SJTU/Chipltech group
+published the FHE-proving protocol (2025/719), the sumcheck ASIC (PipeSC,
+2026/691 — the entire 16-multiplier core is **2.3 mm², 1.2 W in 12 nm**), and
+the NTT engine (RENTT, 2026/460), citing verifiable FHE as motivation in all
+three — and has not assembled them. A vFHE accelerator is **an FHE machine
+with a sumcheck coprocessor and hash cores riding its HBM and multiplier
+pool** — not a merger of an FHE chip with a SNARK chip. The prover
+(~0.016 modmul/byte) rides the FHE machine's memory system (<1 op/byte),
+which the prover alone could never economically justify.
+
+**The hardware reality check:** every famous FHE ASIC — F1, CraterLake, BTS,
+ARK, SHARP, BASALISC — is *simulation*; none was fabbed. The first real
+silicon is Intel HERACLES (ISSCC Feb 2026), shipped with 64 MB SRAM against
+the 256–512 MB every simulated design assumed, no commercial plans, PI gone
+— a capstone, not a roadmap. DPRIVE is over. Meanwhile **GPUs beat the
+silicon roadmaps** (Zama: 1,040 confidential transfers/s on 8×H100 "a year
+early, on commodity hardware"; Cheddar's CKKS bootstrap at 22.1 ms on an
+RTX 5090 beats most *simulated* FPGA designs). Rule of thumb: an FHE-ASIC
+paper's CPU baseline overstates by ~100–200× vs GPU.
+
+**Two facts that make the open-hardware move buildable now:**
+- **Zama's HPU is fully open SystemVerilog** (BSD-3-Clause-Clear): a complete
+  TFHE processor — NTT cores *including a Goldilocks-64 variant*, PBS/KS
+  datapath, scheduler, microcode, Versal V80 block design, prebuilt
+  bitstream, measured ~13–14.2k PBS/s, actively developed. CoFHEE is
+  silicon-proven open FHE RTL (55 nm, GPLv3). The one hole: **no open RTL
+  anywhere for RNS-CKKS key-switching** — the field's largest open-hardware
+  gap.
+- **AWS F1 retired 2025-12-20** (every ZPrize FPGA artifact now targets dead
+  hardware, unported). **F2** = VU47P, 16 GB HBM2 at ~430 GB/s measured,
+  **$1.98/hr flat, ~$0.66 spot** (~$480/mo continuous). Verdict: credible
+  for TFHE and prototyping; NOT CKKS-bootstrap-class (2× short on bandwidth,
+  ~10× on SRAM — which is why every shipping FPGA FHE product is TFHE).
+
+**The buildable move nobody occupies:** connect Zama's open HPU RTL to a
+BabyBear packed-sumcheck engine sharing its HBM and multiplier pool, plus a
+Poseidon2 island and a scheduler. Protocol published and implemented; FHE
+processor open; board is a V80 or an F2 at spot prices; `fhegg-rtl`'s
+Lean-golden-model→Verilog shape is the right glue. **Being early costs a
+board, not a tapeout.**
+
+Survey's revised ordering: (1) Lean-verified cross-limb binding — the field's
+actual soundness hole; (2) the Galois-ring small-value sumcheck port; (3)
+HPU + packed-sumcheck on open FPGA; (4) the CKKS adversarial-steering
+question; (5) BFV/MXFP4 pricing.
+
+Corrections recorded: HEIR's `--emit-verilog` is a booleanization pass, not a
+hardware backend (widely misreported); Fabric's FHE claim is one word in a
+compiler-target list with zero published numbers and silence since 2025-03;
+Ant's MPU H1 is the only other joint FHE+ZK silicon claim and has zero
+verifiable specs.
+
 ## In flight
 
-- **Survey lane (opus)**: vFHE state of the art, ring-proof substrate
-  recommendation, the FHE-LLM bridge, CKKS/block-float verdict, hardware
-  landscape incl. joint FHE+prover silicon.
-- **Asset audit lane (opus)**: what fhegg actually implements and tests, what
-  minidregg's FHE Lean actually proves vs states, whether the two shores
-  connect anywhere — ending with "what do we have Monday, and the first two
-  missing pieces."
-
-Agenda proper waits for both. The one commitment made now: **this goes on the
-main agenda as aggressive-and-soon, fully open — including the hardware.**
+Both lanes have landed (survey above; audit in this note's holdings section).
+The commitment stands: **aggressive-and-soon, fully open — including the
+hardware.** Next artifact: the PLAN re-cut, drawing on every note in this
+repo.
