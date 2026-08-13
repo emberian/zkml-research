@@ -58,6 +58,13 @@ catgrad-vs-catena question to hellas.ai — ember's thread, and the seam note
 says it should come BEFORE committing engineering (card Z2 is where a private
 clone stops being reversible)**.
 
+## E2. Debt to DELETE, not to grow
+The `sumcheck-toy` leaf crate (M0 recon) is p3 surface in our tree. It served
+its purpose — the measured API facts are recorded — and it should be deleted
+once the Lean-authored engine covers the same ground. Do not extend it, do not
+promote it out of non-default-members, and do not let "we already have a p3
+harness" become an argument for anything.
+
 ## F. Resume-from-transcript (died on credits mid-work)
 KPZ encryption fix (at a num-bigint dev-dep question) · S-two carrier census
 (one namespace fix from running) · ring-hash design refinement (developing the

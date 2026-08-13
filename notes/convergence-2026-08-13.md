@@ -21,12 +21,26 @@ Four independent lanes converged on the same missing artifact:
 - **vFHE M1**: the 98,304-equation BFV family is a vector-relation problem
   arithmetized as AIR rows — the reason coverage sat at 1.
 
-**And two halves already exist**: `p3-whir` (multilinear PCS over RS proximity)
-sits **at our pin, unwired** (zero `p3-whir` in any breadstuffs Cargo.toml),
-and `Selvage/LogupStar.lean` + `LogupIndexLink.lean` hold the **Lean half of
-the pushforward kernel** with `[LOGUP-ADDRESS-LINK]` named as the open seam.
+**The asset we actually hold**: `Selvage/LogupStar.lean` +
+`LogupIndexLink.lean` — the **Lean half of the pushforward kernel**, with
+`[LOGUP-ADDRESS-LINK]` named as the open seam, and `canonicalIndexColumn`
++ its boolean proof already there. That is the half worth having, because it
+is the half that is *ours and proved*.
 
-**This is the next real decision, and it is not in the constants table.**
+⚠ **CORRECTION TO MY OWN FRAMING (ember, and he is right): the existence of
+p3-whir at our pin is NOT an asset and should never again be cited as one.**
+The direction is **abandoning Plonky3 as fast as possible** — we do not want
+their code in the trust path, we want our own Lean-authored, formally verified
+substrate. Every "X already exists upstream, unwired" observation in this
+repo's notes is a *temptation*, not an opportunity: wiring it grows exactly
+the dependency Selvage exists to replace, and puts an unverified Rust engine
+where a Lean-derived one belongs. **The substrate gets BUILT, in Lean, in
+Selvage.** Upstream code may be read for API shapes and used as a throwaway
+differential oracle in tests; it never enters the trust path, and "it's
+already there" is not a reason for anything.
+
+**The next real decision is what the Lean-authored multilinear/GKR substrate
+looks like — not which upstream crate to wire.**
 
 ## 2. Three closures that shrink the board (all decisive, all negative)
 
