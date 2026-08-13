@@ -174,9 +174,14 @@ weight-and-architecture registry** — a thing an open project can ship and a
 closed one structurally cannot. Composes with: LoRA fine-tunes as registry
 deltas (base committed once; adapters are kilobytes; the fine-tuning side
 just got claimed at NDSS'26, the inference side is open) and MoE router
-binding (zero papers in 7,090; top-k as a permutation argument; proof cost ∝
-active params — ~18× architectural discount on frontier MoEs) [measured
-absence].
+binding (~~zero papers in 7,090~~ **⚑ RETRACTED 2026-08-13 — the absence was
+FALSE**: ZK-DeepSeek arXiv 2511.19902 and arXiv 2606.05433 OP-10, **both already
+in `~/paperbin/` on the day it was declared**; the sweep read first-2-page caches
+and both bury MoE in a subsection. Top-k as a **threshold** argument, Θ(N), not a
+permutation; proof cost ∝ active params — **18.3× at context 1, decaying to 2.7×
+at 128k**, and the router binding costs 0.72% of the sparse proof. The live gaps
+are the tie-break, expert-identity binding, and the context decay — see
+`notes/moe-router-binding.md`).
 
 ---
 
