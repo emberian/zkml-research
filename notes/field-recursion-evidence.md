@@ -16,8 +16,16 @@ explicit. This feeds the field-choice memo.
   design response to 31-bit recursion cost is two dedicated opcodes
   (blake_compress 168 cols, qm_31_add_mul 72 cols) — never framed as a
   field-choice cost [peer's inference, flagged].
-- Plonky3 [stated]: ships zero recursion (895 files, no path matches
-  "recurs"); downstreams build their own.
+- Plonky3 [stated]: UPSTREAM ships zero recursion (895 files, no path
+  matches "recurs"); downstreams build their own. ⚠ Ember's correction: OUR
+  orbit has `~/dev/plonky3-recursion` (the emberian fork — ~67K lines,
+  full in-circuit FRI verifier + Poseidon2-in-circuit AIR), consumed by
+  ~30 breadstuffs circuit-prove files with a reimplemented verifier. So
+  "no Plonky3 recursion exists" is false for us specifically — we hold one
+  of the few working BabyBear recursion stacks, which is itself evidence
+  for the field memo: the 31-bit recursion cost is not hypothetical to us,
+  it is measured in our own wrap accounting (40.9M → 1.02M R1CS via native
+  hashing).
 
 So ember's "we're only using BabyBear because Plonky3 already was" is the
 INDUSTRY-WIDE pattern: fields chosen for arithmetic, recursion paid as an
