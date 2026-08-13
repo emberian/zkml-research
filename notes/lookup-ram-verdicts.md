@@ -89,6 +89,16 @@ into BabyBear wherever access is genuinely LIFO/FIFO.
 
 ## Per-consumer verdicts
 
+⚠ Anti-myopia (ember): consumers (a)-(d) below are the zkML/vFHE set, but
+**Selvage/minidregg has its OWN internal lookup and memory consumers** —
+`LogupStar`, `BinaryLookup`, `LogupIndexLink`, the `Tower256Logup*`
+controller/admission family, the AIR-side LogUp bridges
+(`AuthenticatedColumnLogupBridge`, `SparseAuthenticatedStateLogupBridge`),
+`AirRange`, and the umem memory boundary. Every frontier verdict here
+(LogUp-GKR standing, the moving 2026/587 constants, the read-only/write-once
+levers, the three-member one-hot law) applies to those consumers too, and
+any migration decision must enumerate them — consumer (g), the home tree.
+
 (a) 2^16 exact tables → **LogUp-GKR stays**, Celer spike still gated on
 2026/587's re-pricing. (b) vFHE gadget decomposition → LogUp-GKR/719-style.
 (c) hash lookups → moot (no 31-bit Monolith). (d) KV-cache RAM → **offline
