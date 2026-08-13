@@ -151,6 +151,62 @@ Three defects:
 AIR".** Our constraint counts must come from our own emitted object and cannot be
 compared to this figure.
 
+### PA2b. The extension-field S-box: three sources, and one citation of ours is wrong
+
+Added after the τ adjudication (`ring-hash-design.md` §4.4b) turned this from a
+side question into the deciding one.
+
+⚠ **Our "2026/1127 fn.11" citation is WRONG — fix it wherever it appears**
+(`sigma_poseidon.py:70`, `design_branch_frontier.py:368`). **Footnote 11 is a
+bare URL**, `https://www.poseidon-initiative.info/`. The substance is in the
+*sentence carrying the marker*:
+
+> "good cryptanalysis of Poseidon only exists for fields of the form Z_q… **The
+> study of Poseidon over extension fields is left for now as an open problem.**"
+
+Cite the sentence, not the footnote.
+
+**Poseidon2b is a real paper by the Poseidon designers** — eprint **2025/1893**
+(held locally, misnamed, at `~/paperbin/eprint-2025-1893.pdf`). Its **Remark 4**
+is the caveat the brief referred to, and it is blunter than a paraphrase:
+
+> "**we cannot convincingly argue the security of Poseidon2b against such
+> attacks.**"
+
+⚑ **Beyne & Verbauwhede, "Integral cryptanalysis in characteristic p", ASIACRYPT
+2025, eprint 2025/932** — the load-bearing new result, and it is why our τ
+verdict moved. In large prime characteristic, **integral/divisibility properties
+survive far past the round where algebraic degree saturates**, so prior degree
+estimates for the MiMC/Poseidon family are *"overly optimistic."* Verified at
+the authors' own artifact (`KULeuven-COSIC/integral-cryptanalysis-characteristic-p`,
+executed `SPN.ipynb` outputs), the last round carrying a mod-p² property is
+**monotone in extension degree**: **1** at a prime field, **13** at degree 2,
+**20** at degree 4, 21–22 at degree 8. Their stated scope — *"finite rings of
+prime characteristic p that are isomorphic to a product of fields"* — is
+literally R_q.
+
+**This supersedes §"What held" bullet 2 as a clearance.** That bullet records
+"no Chaghri-style degree stall at τ=1 or τ=2, degree grows multiplicatively" —
+still true, and now known to be **the wrong invariant**: degree growth does not
+bound the integral property. ⚠ Their base primes are 2^17–2^31 against our 2^64,
+so **round counts do not transfer**; the direction is solid, the magnitude at our
+parameters is unmeasured. `ring-hash-design.md` §4.5 names the experiment.
+
+**And the invariant-subfield condition (C6) is a named published class, not our
+invention** — Marvellous, eprint **2019/426**, verbatim:
+
+> "We require that the affine polynomial has **coefficients which do not lie in
+> any subfield** of F_{2^{n/m}} thus frustrating this attack."
+
+Our sharpened form: every σ-layer coefficient and round constant c ∈ R_q must
+satisfy **σ₉(c) ≠ c**. Integer coefficients fail; X passes. **Cost zero.**
+
+⚠ Two things **not** verified at source (eprint.iacr.org rate-limited throughout):
+2025/932's abstract and §6.2 prose (confirmed via artifact README, not the PDF),
+and the Chaghri §5.2.1 subfield quote (both local copies are v1 and lack the
+string; the quote is from the CCS 2022 version). **Nothing above depends on the
+Chaghri quote** — Marvellous says the same thing and is verified locally.
+
 ### PA3. SWIFFTX — the precedent, and the precedent for the wrong answer
 
 **Arbitman, Dogon, Lyubashevsky, Micciancio, Peikert, Rosen, "SWIFFTX: A Proposal

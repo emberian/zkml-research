@@ -67,7 +67,9 @@ the FOURTH independent reason to prefer full splitting; see sbox_law.py for the 
 WHAT THIS IS NOT: the sponge mode reduces "RO" to "P is an ideal permutation".
 That P is ideal is a CRYPTANALYTIC HEURISTIC, exactly as for Poseidon, and nothing
 here establishes it. See the report for the residual: for tau > 1 the S-box is a power
-map over F_{q^tau}, whose analysis 2026/1127 fn.11 flags as open.
+map over F_{q^tau}, which 2026/1127 flags as open -- NB the marker is fn.11 but
+footnote 11 is a bare URL; the substance is the sentence carrying it: "The study
+of Poseidon over extension fields is left for now as an open problem."
 """
 from math import gcd
 

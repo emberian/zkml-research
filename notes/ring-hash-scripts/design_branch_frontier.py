@@ -365,5 +365,6 @@ print(f"""
     and ONE Def-9 row plus one chain row ({{1,5,-1,-5}}, 2 rows/element/round)
     already reaches branch {ell+1} = slot-MDS.  The branch-number weakness is
     CLOSED at tau=4 for +1 row/element/round over the prior lane's support-3
-    layer.  What tau=4 does NOT close is fn.11: the S-box is a power map over
+    layer.  What tau=4 does NOT close is 1127's open problem (the sentence at the
+    fn.11 marker; the footnote itself is a bare URL): the S-box is a power map over
     F_(q^4), with no published cryptanalysis.""")
