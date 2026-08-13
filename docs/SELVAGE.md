@@ -67,7 +67,7 @@ n=4096, and it is Θ(n). It generalizes:
   autoregressive decode is B=1.**
 - **vFHE**: `fold_add` is a **linear** map, so MLE linearity gives
   `ĉ_out = Σaₖĉₖ` as polynomials — **one common-point opening, zero sumcheck
-  rounds, zero carries, zero range checks.** Ratio = B (690× at B=512). We
+  rounds, zero carries, zero range checks.** Ratio = B (690× at B=512) — ⚠ **prover-side only**; the verifier moves the opposite way to O(B). We
   have the proof; nobody has built it.
 - **Kernel turns**: a typed semantic transition's boundary is the *state
   delta*; its interior is an execution trace. **The kernel's statements are
