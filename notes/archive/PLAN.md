@@ -1,11 +1,19 @@
 # Plan: open verifiable inference on block-float bf16
 
-> ⚠ **SUPERSEDED IN PART — read `docs/PHASE0-RESULT.md` first.** Phase 0 ran and
-> returned **negative**. The speedup is **~1.4×, not ~4×**: requantization is not
-> absent but per-element-ified, and the 75% figure double-counts operations
-> DeepProve already implements as fused tables. §1's framing, §2's central claim
-> and §4b are cut. **§5 — the soundness argument for bit-exactness — never
-> depended on the cost claim and is now the centre of the project.**
+> **ARCHIVED — history, not truth. Do not cite this file.**
+> It was the top-level document until `docs/AGENDA.md` replaced it, and its
+> central cost claim is dead: Phase 0 ran and returned **negative** — the
+> speedup is **~1.4×, not ~4×** (requantization is not absent but
+> per-element-ified, and the 75% figure double-counts operations DeepProve
+> already implements as fused tables), so §1's framing, §2's central claim and
+> §4b are cut. §4a's use of eprint **2026/1390** as a general `Ω(m)` commitment
+> floor is also wrong — it is a lookup-specific, self-described
+> restricted-model separation (`notes/boundary-statements.md` §2.5(b)).
+> §5 — the soundness argument for bit-exactness — never depended on the cost
+> claim and lives on in `docs/the-position.md` and `docs/SYSTEM.md`.
+> Current truth: `docs/VERDICTS.md`. Replacement plan: `docs/AGENDA.md`,
+> `docs/FRONTIER-QUEUE.md`. The measurement that killed it:
+> `docs/PHASE0-RESULT.md`.
 
 2026-08-11. Written after six research lanes. Every number below is marked
 **[measured]** (from a paper's own tables), **[verified]** (computed here), or

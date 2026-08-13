@@ -2,8 +2,12 @@
 
 2026-08-13. The synthesis of this repo's research run (~40 notes, ~35 commits,
 14 research lanes, one full-corpus mine of 25,765 papers). Supersedes
-`PLAN.md` as the top-level document; every claim below traces to a note in
-`notes/` or `docs/`, and every note to a source or a measurement.
+`PLAN.md` (now `notes/archive/PLAN.md`) as the top-level document; every claim
+below traces to a note in `notes/` or `docs/`, and every note to a source or a
+measurement.
+
+**Where this file and `docs/VERDICTS.md` disagree, VERDICTS wins** — it is the
+single current-truth file and this one is a synthesis written before it.
 
 **Tags:** [measured] = a paper's own tables or our own harness · [verified] =
 computed/proved here · [stated] = a primary source speaking · [inferred] =

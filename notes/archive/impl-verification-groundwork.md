@@ -1,5 +1,9 @@
 # Impl-gating verification: the Selvage legs, mechanically confirmed
 
+> **ARCHIVED — history, not truth. Do not cite this file.**
+> A truncated fragment. Everything in it, plus the two precision corrections
+> and the ε_beacon transport obligation, is in **`notes/impl-readiness.md`** §1.
+
 2026-08-13. Skeptical lane re-elaborated the light-client files from source
 and ran #print axioms on fresh oleans — NOT trusting docblocks.
 
