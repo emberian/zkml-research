@@ -33,8 +33,9 @@ repo** — the exact way the predecessor's work nearly vanished. Now versioned a
 | `design_mds_interleave.py` | *(recovered)* schedule/cost table for σ-density | 3.4s |
 | `design_gadget_feistel.py` | *(recovered)* the second candidate, full-scale | 58.2s |
 | `design_branch_law_check.py` | **(new)** extends the t+\|K\| law past t=2 | 45s |
-| `design_tau_tradeoff.py` | **(new)** prices the fork; C1 at τ>1; joint modulus | ~30s |
-| `design_subfield_invariance.py` | **(new)** the τ=4 invariant subfield, and C6 | 2s |
+| `design_tau_tradeoff.py` | **(new)** prices τ=1/2/4; C1 at τ>1; joint modulus | ~30s |
+| `design_subfield_invariance.py` | **(new)** the τ>1 invariant subfield, and C6 | 2s |
+| `design_ceiling_decomposition.py` | **(new)** why the Feistel beats the packing ceiling and σ-Poseidon can't reach it | <1s |
 | `costmodel.py` | the 716.8 rows/elt baseline (2026/1127 App C.3) | — |
 | `sigma_poseidon.py` | the C1–C5 design conditions + validator | — |
 | `density_repricing.py` | why support-3, not support-1 (Chaghri); **superseded on cost by §2.0** | — |
