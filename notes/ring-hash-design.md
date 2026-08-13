@@ -192,10 +192,24 @@ corrected law.** It also revises the project's recorded headline: the "defensibl
 3.9×–4.8×" in `density_repricing.py` was computed under the old law; the same
 fully-dense-in-full-rounds schedule is **5.0×** under the corrected one.
 
-⚠ **This halving is load-bearing for the whole cost case and rests on one
-premise: that Definition 9 really carries two independent automorphism channels
-per row.** That premise is being verified at source; until it is confirmed,
-treat every σ cost here as a factor-2 risk. *(verification pending)*
+✅ **The premise is VERIFIED at source.** Definition 9's public parameters are
+`pp = (n_r, n_c, t, t', t̃, n_s, deg, ℓ_in, σ, σ̃)` — **two automorphisms**, with
+three matrix families `M_j, M'_j, M̃_j` and three multisets `S_i, S'_i, S̃_i` per
+term (`|S_i| + |S'_i| + |S̃_i| ≤ deg`), combined as
+
+> `Σ_i c_i · (∘_{j∈S_i} M_j z̃) ∘ (∘_{j∈S'_i} σ(M'_j)·σ(z̃)) ∘ (∘_{j∈S̃_i} σ̃(M̃_j)·σ̃(z̃)) = 0`
+
+Since σ is a ring homomorphism, `σ(M'_j)·σ(z̃) = σ(M'_j z̃)`. Taking three degree-1
+terms gives exactly `c₁(M₁z̃) + c₂σ(M'₁z̃) + c₃σ̃(M̃₁z̃) = 0` — **both automorphism
+channels in one constraint, each applied to an arbitrary matrix-times-witness
+combination.** The halved pricing stands, and it is not a factor-2 risk.
+
+⚠ One real limit the script's paraphrase glosses: **pp fixes exactly two
+automorphisms σ, σ̃ for the whole index** — you choose them (σ_5 and σ_{−1} is the
+natural pick, and is what 2026/1127 itself uses) but you do not get a fresh
+automorphism per row. The chain-plus-combine construction respects this; any
+schedule that wants three or more *distinct* automorphisms in a single row does
+not.
 
 ### 2.1 The schedules
 
