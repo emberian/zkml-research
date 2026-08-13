@@ -142,4 +142,25 @@ By (leverage × our-asset alignment):
 6. **G. Proof-aware QAT** — deepest long-term, needs training runs.
 7. **E** as the stated design rule; **H** as spec lines.
 
+## Prior-art sweep (Kagi, 2026-08-12) — status per mapping
+
+Papers pulled to `~/paperbin/`; mirror now covers 2024–2025 fully and 2026
+through ~May.
+
+| mapping | status | what the sweep found |
+|---|---|---|
+| **A. Binius × ML** | **unclaimed** | Only Binius-internal work (a 2026 MDPI Hybrid-Commit paper on PCS engineering). Nothing connects small-value commitment to ML inference. |
+| **B. LoRA × ZK** | **claimed for FINE-TUNING; narrow to inference** | `verilora-ndss26.pdf` (NDSS 2026 — "first framework to integrate LoRA fine-tuning with ZKPs"), `zk-lora-verification.pdf` (2501.13965), `smdp-model-updates.pdf` (2604.04738 — succinct model-difference proofs). All prove the *training/update* side. Prove-base-once-plus-thin-adapter at **inference**, and the registry link, appear open — but every claim must now cite these. |
+| **C. MoE router binding** | **unclaimed** | No verifiable-MoE hit at all; every published system proves dense models. |
+| **D. layer-fold sumcheck** | primitive known, application unclaimed | Data-parallel GKR sumcheck is in the literature (`collab-zksnark-dataparallel.pdf`, eprint 2024/143; Thaler '13). Nobody folds transformer layers into one hypercube. |
+| **F. streaming LLM prover** | **substrate exists — read Hobbit first** | `hobbit-space-efficient.pdf` (USENIX Sec'25): space-efficient zkSNARK with **optimal prover time** — exactly the primitive; plus `gemini-elastic.pdf` and `sumcheck-speedup-2026-587.pdf`. The LLM-scale application (weights streamed from disk, 70B on 64 GB) remains unclaimed. Hobbit may change F from "engineering campaign" to "integration." |
+| **G. proof-aware QAT** | unclaimed as stated | ZEN's quantization-oriented optimizations (survey 2502.18535) are post-hoc handling, not training-into-the-circuit. LLM-QAT/ZeroQAT are pure ML. "Train the model to be the circuit" is in nobody's paper. |
+| **bubble (fusion)** | **close-adjacent — check three sources** | `zkcomposer.pdf` (2607.08095, decomposing proof construction to scale zkML), FluxZK (ACM, GPU kernel fusion *within* proving: memory-access fusion, compute-transfer pipelining), and 2606.05433 mentions a concurrent-GPU-stream design. None clearly fuses proving with the *inference* kernel to ride its weight traffic — but the distance is one idea, not ten. Read before claiming. |
+
+Net effect on the ranking: **A and C are the clean unclaimed ones.** F gets
+*easier* (Hobbit is the substrate) but less novel as a paper claim. B narrows
+to inference + registry. The bubble needs a careful read of three adjacent
+works before anyone says "nobody has costed that kernel" again — the sweep
+already found the sentence weakening.
+
 None of these is a format. That is the point.
