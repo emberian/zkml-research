@@ -160,3 +160,57 @@ Minimum viable op set for that: ~20 of the 32 primitives.
   non-associative and the two use different reduction kernels, so "the model
   output" may be backend-relative. This is another argument for the
   accumulate-exactly-round-once approach.
+
+
+## RESOLVED 2026-08-13: the catena-lang question (lane report, decisive)
+
+**Verdict: fork catgrad now; track catena as the successor whose op vocabulary
+we stay compatible with.** Deciding facts:
+
+1. **catena cannot express a model today.** Zero models — SmolLM2 is open
+   wishlist issue #125; matmul is naive, attention/embedding/KV absent.
+   catgrad runs 18 LLM families. Our Phase-2 endpoint is reachable only
+   through catgrad this year.
+2. **catgrad has the seam; catena has none.** No backend trait, no
+   interpreter, no CPU path — GPU C++ codegen (HIP/CUDA) → dlopen → libffi
+   only. The closest hook is `CompileReport.unpacked_products`, a public
+   typed closure-free IR a prover could consume — but that means building
+   the second-ever backend and defining the interface ourselves, under
+   weekly ABI churn (bf16 added and removed from the runtime ABI in one
+   week).
+3. **catgrad's static shapes are strictly stronger.** catena has dependent
+   *lengths* bound from runtime values, with no type-level data/shape
+   separation — the tensor-data-never-becomes-shape guarantee we prized is
+   absent, in a type system whose own docs call it unfinished.
+4. **catgrad's dormancy is an asset for a proving target**: pin a commit and
+   nothing moves under the trace format.
+
+**The hedge that makes migration free: key the Lean constraint semantics to
+the OP VOCABULARY, not to catgrad's internals** — scalar
+add/mul/sub/cmp/select/fma at bf16/f32, matmul-as-fold, ordered reduce, pure
+map, index read. That vocabulary is the *intersection* of the two systems
+(catena issue #48 plans a `catgrad.hex` expressing catgrad's ops in catena
+primitives). Two catena facts actively help us: `reducec` lowers to a
+SEQUENTIAL fold — the accumulation order is *specified*, making the
+accumulate-exactly analysis well-posed — and transcendentals are in-language
+Cody–Waite polynomial programs (no libm), so "what does exp mean" dissolves
+on both targets. Their determinism discipline (no FMA contraction, no
+fast-math, ordered folds) is exactly the reference semantics a proof needs:
+**they are building our spec for us.**
+
+**Collaboration surface — unusually good and time-sensitive.** hellas.ai's
+homepage advertises *"catgrad ZK Verification — Enhanced with zero-knowledge
+proofs"* — and there is not one line of ZK code in either repo (grep: zero
+hits). Their in-repo verification story is determinism→replay, i.e. the
+verifier redoes the GPU compute — untenable for the compute network they
+describe. We would be walking in with the missing leg of their own pitch.
+Their `|- P` proof-carrying witness types (erased at codegen) show the team
+already thinks proofs-in-types; a proving backend extends that judgment from
+compile time to execution. Ask them the catgrad-vs-catena question before
+committing engineering — the repo evidence (issues #48/#147) suggests they'd
+answer exactly our verdict.
+
+Caveats recorded: catena's flagship cross-platform bitwise-identity claim is
+untested by its own repo (CI has no GPU; the 47 runtime tests never run);
+catena has **no LICENSE file** (manifests declare MIT OR Apache-2.0); 1
+star, 0 forks — a private-in-public repo.
