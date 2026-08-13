@@ -12,7 +12,12 @@ Lean in `minidregg/Selvage/`, zero `sorry`.
 
 Concretely it holds, proved: FRI/RS proximity with **attained** error bounds
 and regime interfaces that track the 2025–26 literature *including the
-refutations*; correlated agreement (WHIR Lemma 4.10, domain-general); the
+refutations*; correlated agreement (WHIR Lemma 4.10, domain-general — ✅
+**verified at source 2026-08-13, and our version is *better than the paper's***:
+the printed `min{1−δ_C/2, B}` must be `max`, Def 4.9's `1−B` must be `1−B*`,
+ours is stated for an **arbitrary** generator rather than the power curve, and
+our `herr_mono` supplies a monotonicity side condition the paper's proof uses
+**silently**); the
 **RBR→Fiat–Shamir compiler theorem** over an *inhabited* lazy-sampling oracle;
 **BCS-style transform soundness at the deployed alphabet**; **state-restoration
 soundness**; **accumulation depth composition** — including a machine-checked
@@ -92,9 +97,22 @@ factor on top of that choice.
 1. ⚑ **Hash-bound or arithmetic-bound?** Two lanes disagree (derived 94% hash;
    measured 19–40%). Decides whether the field/hash migration is worth ~3.4×
    or much less. **One profiling run.**
-2. ⚑ **The multilinear PCS seam.** Selvage is univariate RS/FRI throughout;
-   `Commitment.lean`'s `OpeningScheme` is *positional* — the wrong shape for a
-   multilinear claim. This is **the** gap, and it is a campaign, not a lemma.
+2. ⚑ **The multilinear PCS seam.** Selvage is univariate RS/FRI throughout.
+   ⚠ **CORRECTED 2026-08-13** (`notes/multilinear-pcs-landscape.md`): the
+   *positional* framing was **wrong, and correcting it shrinks the job**.
+   `openAt : … → (Fin m → F) → Op` is the **KZG/homomorphic** shape; **no
+   hash-based multilinear PCS has it.** In BaseFold, WHIR, Ligerito and every
+   Ligero/Brakedown descendant the commitment **is** a Merkle vector commitment
+   to a codeword — exactly our `OpeningScheme`, reusable **unchanged** (verified
+   verbatim: ZCF23 p.20, Haböck p.8, WHIR Construction 5.1) — and the opening is
+   an **interactive reduction** compiled by the BCS transform we already hold.
+   The deliverable is therefore one object: an `RbrKnowledgeSoundness` instance
+   for the braided protocol, after which `Depth.lean:1982` + `FiatShamir` +
+   `AccRbrBcs` carry it to a non-interactive verifier **for free**.
+   **Recommendation: BaseFold @ RS in our own unconditional `(1−ρ)/3` band**
+   (`ProximityGapUD.foldDistancePreserving_UD` — which is *also* ZCF23's own
+   published regime), then WHIR-UD. Five new items, no conjecture, **no new
+   proximity result**. Not a campaign. See §11 of the landscape note.
 3. ⚑ **Value-ring polymorphism.** The base→extension boundary is a measured
    ~3× cliff. ⚠ **"Must be designed in from day one" is NOT supported** —
    Hierarchy Builder exists to evolve algebraic hierarchies *"without breaking
@@ -143,7 +161,17 @@ build:**
    log-area — which kills the recursion-circuit explosion. It reduces to a
    degree-2 sumcheck (which our engine already proves) plus a **width-4,
    two-bit-state read-once branching program** — decidable per layer, with an
-   induction on top. **The single most Lean-tractable big idea available.**
+   induction on top. ⚠ **QUALIFIED 2026-08-13**: the machinery description is
+   **correct in every clause** (Lemma 2.3 degree-2; Claim 3.2.2 *"width-4"* with
+   a literal two-bit state; Claim 4.2.1 per layer; Lemma 4.2's reverse
+   induction), and it *is* the most Lean-tractable object in the corpus — **but
+   that is because it has NO cryptographic content.** Instrument: grep over
+   2025/917 for `extract|binding|knowledge.sound|round-by-round|Fiat` → **0 hits
+   each**. It is an information-theoretic claim transformer `p̂(z)=v ⟼ q̂(z′)=v′`
+   whose output claim needs a dense multilinear PCS underneath — batch-BaseFold,
+   per its own §7 *and* Rothblum's Simons talk. **Proved first and alone it is a
+   green theorem that commits to nothing.** Do it *after* the base PCS, and
+   formalize Lemma 5.1's `(2m+1)/|𝔽|`, not Theorem 1.5's `2m/|𝔽|`.
 3. **A boundary-statement compiler.** ⚠ **CONTRADICTED 2026-08-13: it
    exists.** Distiller (eprint 2022/1557, S&P 2023) compiles *"not the
    original computation but an abstracted specification of it,"* provably
