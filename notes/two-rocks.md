@@ -93,10 +93,22 @@ splits completely, so SWIFFT is the zero-S-box case of exactly this design
 **The Lean transfer is free**: `RingSponge.lean` elaborates clean —
 minidregg's sponge mode instantiates at R_q with ZERO new hypotheses.
 
-**Open, stated plainly**: no cryptanalysis yet; the |K|+1 branch number is
+~~**Open, stated plainly**: no cryptanalysis yet; the |K|+1 branch number is
 a real weakness needing a degree analysis; extension-field slots (τ>1) are
-a second front the Poseidon2b designers themselves decline to argue. This
-is a candidate with a clear attack surface, not a construction.
+a second front the Poseidon2b designers themselves decline to argue.~~
+**SUPERSEDED 2026-08-13** — all three clauses moved:
+- *"no cryptanalysis yet"* → done, `ring-hash-cryptanalysis.md` (direction
+  SURVIVES, six priced weaknesses), now with prior art.
+- *"the |K|+1 branch number is a real weakness needing a degree analysis"* →
+  **the branch weakness is CLOSED at τ=4** (2 rows/elt/round reach slot-MDS),
+  and the composite law is **t+|K|**, not t·|K|+1. `ring-hash-design.md` §1.
+  What still needs a degree analysis is **coefficient grouping over F_{q^4}** —
+  a different question from the branch number, and the one real open item.
+- *"extension-field slots (τ>1) are a second front"* → **adjudicated: τ=4 wins**,
+  on 2026/1127's own rationale that the strong sampling set has size q^τ and
+  τ=1 collapses the challenge space to q. `ring-hash-design.md` §4.
+This remains a candidate with a clear attack surface, not a construction — but
+the surface is now mapped and priced.
 
 ## GATE RESULTS (2026-08-13, red-team + experiment + Lean — all three landed)
 
