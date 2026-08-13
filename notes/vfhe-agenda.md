@@ -72,7 +72,16 @@ right then and wrong now — worth remembering as a lesson about filters.
   sides). **Zero `@[export]` on any FHE Lean symbol** — the strongest twin
   predictor in the house book.
 
-**The two missing pieces, named by the audit:**
+**The two missing pieces, named by the audit — ⚠ #1 INVERTED by the FHE
+theory lane (2026-08-13, see `fhe-core-theory.md`):** for public-weights ×
+encrypted-activations at deployed parameters, the slot/BSGS route does not
+even close under the provable noise bound; the **rotation-free
+coefficient-encoding matmul** closes with ~49 bits of headroom and needs no
+new key material. Rotation is needed only for slot-to-slot nonlinearity
+chains (multi-layer wants n=8192 anyway); PackLWEs is the one genuinely
+missing primitive for general packed shapes.
+
+Original audit items, kept for the record:
 1. **Homomorphic slot rotation.** Not a single Galois/rotation key in the
    tree. Without slot mixing, packed matmul (BSGS/diagonal method) cannot be
    written at all — today's linear step is one ciphertext per coordinate,
