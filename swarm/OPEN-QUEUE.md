@@ -23,7 +23,7 @@ pillars, or (c) gated items whose gate silently cleared — nobody re-checks.
   indifferentiability does NOT close [FS-ROM] for knowledge soundness; the
   re-aim "gets the first AND the closure." Arguably Selvage's deepest open
   formal item. Never became a card.
-- **Verified table contents** — the moat item, queued since week one, cheap,
+- **Verified table contents** — a thing worth building right, queued since week one, cheap,
   zero motion.
 - **Chiesa–Orrù Corollary 1 plug** (move 2) — FRI into the state-restoration
   framework where our assets are the scarce half. Move 1 is in flight; move 2

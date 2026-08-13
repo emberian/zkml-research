@@ -93,7 +93,7 @@ ledger. Our tree has the formally verified append-only event log, the durable
 WAL handler with idempotent retry, and root-CAS discipline. The non-prover half
 of the audit system is already built and verified. Nobody connected it.
 
-## 7. Verified artifacts are the moat nobody else can copy
+## 7. Verified artifacts are worth building correctly
 
 The tables' *contents* proved equal to the reference function's graph in Lean;
 constraint semantics Lean-emitted per house law; ezkl's dead `TableOOR` check

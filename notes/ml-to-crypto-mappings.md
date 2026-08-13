@@ -148,7 +148,7 @@ nobody's paper.**
 - **Global table registry**: nonlinearity tables are model-independent public
   constants. Commit the canonical exp/GELU/rsqrt tables *once for the
   ecosystem*; every verifier hardcodes the roots. Composes with Lean-verified
-  table contents (the moat item).
+  table contents (a thing worth building right).
 - **Embedding = row-select** is already a lookup; vocab-sized tables are the
   same LogUp machinery.
 
