@@ -75,7 +75,10 @@ architectures, tables — all publicly committed), one soundness ledger
    commit-then-audit soundness statement, with the error budget composed
    into one number. This is the theorem that makes tier-2 and tier-3
    DEPLOYABLE at ~1.2× overhead with today's provers.
-3. **The fhegg demo**: KPZ one-line fix (free depth level) → rotation-free
+3. **The fhegg demo**: ⚠ *the KPZ one-line fix is a **NO-OP** — fhe.rs already
+   encrypts with KPZ's exact-division encoding, so there is no free depth level
+   to collect and this step is deleted, not done* (`docs/VERDICTS.md` §3,
+   `notes/kpz-noop-and-the-model-gap.md`) → rotation-free
    encrypted matvec (closes under the PROVEN noise bound; zero new key
    material) → fold_add proved as a vector relation (the 98,304-equation
    family re-arithmetized) → sampled audits over the op stream the node

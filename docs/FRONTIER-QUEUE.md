@@ -188,8 +188,10 @@ corrections baked in → statement-first with teeth → detached-clone gate.*
    vFHE M1. The single highest-leverage engineering move on the board.
 2. **The registry** — days, no prover, ships something real and closes an
    attack class nobody else has closed.
-3. **KPZ encryption fix + depth re-measure** — an afternoon for a free
-   depth level (and it cancels a re-genesis I recommended).
+3. ~~**KPZ encryption fix + depth re-measure**~~ — ⚠ **DONE AND EMPTY: the fix
+   is a NO-OP.** fhe.rs already uses exact-division encoding; there is no free
+   depth level. Struck from the queue, not pending
+   (`notes/kpz-noop-and-the-model-gap.md`, `docs/VERDICTS.md` §3).
 4. **G1: the single-prime experiment** — an afternoon that could delete our
    #1 soundness hole.
 5. **Verified table contents** — cheap and worth having.

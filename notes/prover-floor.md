@@ -71,10 +71,15 @@ deployed lb=6 point** (10.5× butterfly network × 2.0× 36-bit limbs in a
 **For fold_add there is a PROOF, not a ratio.** MLE is a *linear* map, so
 `c_out = Σaₖcₖ ⟹ ĉ_out = Σaₖĉₖ` as polynomials — **one common-point opening
 certifies it. Zero sumcheck rounds, zero carries, zero range checks.** The
-side condition (no reduction) is met by lazy accumulation, **which h2 already
-measured at 0.88× — faster on the FHE side too.** AIR cost is Θ(B·N·L)
+side condition (no reduction) is met by lazy accumulation, ~~**which h2 already
+measured at 0.88× — faster on the FHE side too**~~ — ⚠ **wrong cell**: 0.88× is
+single-prime-109-bit lazy ÷ RNS-3-limb lazy, and measured in-tree lazy is 0.84×
+at B=256 but **break-even at the deployed B=4**. The side condition is met; the
+free-speedup argument is not (`notes/fold-as-opening.md` §0/§6).
+AIR cost is Θ(B·N·L)
 (proportional to the *additions*); the linear route is Θ(N·L) (proportional
-to the *result*). **Ratio = B — 690× at B=512, ⚠ PROVER-SIDE ONLY** (2026-08-13: the verifier moves the *opposite* way — B+1 openings against B+1 commitments is O(B) Merkle work vs a polylogarithmic AIR verifier, and the one-shared-tree fix collides with the per-trader-root binding condition).
+to the *result*). **Ratio = B — 690× at B=512** (⚠ **the deployed batch is
+B=4, ratio 4.2×**), **⚠ PROVER-SIDE ONLY** (2026-08-13: the verifier moves the *opposite* way — B+1 openings against B+1 commitments is O(B) Merkle work vs a polylogarithmic AIR verifier, and the one-shared-tree fix collides with the per-trader-root binding condition).
 
 And ct×ct's entire cost is the range checks on key-switch digits, which in
 RNS-BV *are* the limbs — so a matched limb deletes a third by construction.

@@ -67,7 +67,10 @@ n=4096, and it is Θ(n). It generalizes:
   autoregressive decode is B=1.**
 - **vFHE**: `fold_add` is a **linear** map, so MLE linearity gives
   `ĉ_out = Σaₖĉₖ` as polynomials — **one common-point opening, zero sumcheck
-  rounds, zero carries, zero range checks.** Ratio = B (690× at B=512) — ⚠ **prover-side only**; the verifier moves the opposite way to O(B). We
+  rounds, zero carries, zero range checks.** Ratio = B — ⚠ **prover-side
+  only**; the verifier moves the opposite way to O(B). ⚠ And the deployed batch
+  is **B=4** (ratio **4.2×**); 690–715× prices B=512, a shape the node does not
+  fold (`notes/fold-as-opening.md` §0/§4). We
   have the proof; nobody has built it.
 - **Kernel turns**: a typed semantic transition's boundary is the *state
   delta*; its interior is an execution trace. **The kernel's statements are
