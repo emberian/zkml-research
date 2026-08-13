@@ -563,6 +563,45 @@ F_{q^2}, ℓ=8, already measured clean for degree stall), which recovers part of
 the branch win at part of the risk. That intermediate was never on the table
 because the fork was posed as binary. It is not binary.
 
+### 4.6 A systems-level argument against τ=1 that nobody has made
+
+⚠ Not recorded anywhere in our corpus (grepped: no hits for *exceptional set*,
+*strong sampling set*, *challenge space* across `notes/` and `paper/`). It is
+elementary, and it points the same way.
+
+Lattice folding needs challenges drawn from an **exceptional set** S ⊆ R_q — a
+set whose pairwise *differences are units* — because soundness arguments divide
+by challenge differences. In R_q ≅ ∏_{i=1}^{ℓ} F_{q^τ}, an element is a unit iff
+**every** CRT slot is nonzero. So:
+
+> **|S| ≤ q^τ, and the bound is tight.** *Proof.* For distinct s, s' ∈ S, s − s'
+> is a unit, so its slot-1 component is nonzero, so s and s' differ in slot 1.
+> Hence the slot-1 projection S → F_{q^τ} is injective and |S| ≤ q^τ. The
+> diagonal copy {(c,…,c) : c ∈ F_{q^τ}} attains it, since (c−c',…,c−c') is a unit
+> whenever c ≠ c'. ∎
+
+**τ is exactly the exponent of the challenge space.** At q ~ 2^64:
+
+| τ | slots ℓ | challenge space |
+|---|---|---|
+| 1 | 16 | **2^64** |
+| 2 | 8 | 2^128 |
+| 4 | 4 | **2^256** |
+
+**A fully splitting ring — the τ=1 the handoff prefers — has the *smallest
+possible* challenge space, q itself.** 2^64 is not enough for a 128-bit
+soundness target without parallel repetition or an extension, and repetition is
+paid by the *whole folding scheme*, not by the hash. τ=4 gives 2^256 outright.
+
+⚠ **Hedge, and it matters:** the mathematics above is a proof, but the *systems*
+consequence assumes 2026/1127's folding scheme draws challenges from an
+exceptional set of R_q in the standard way. That is near-universal in lattice
+folding (it is why these schemes care about splitting behaviour at all), **but I
+have not confirmed it in the paper.** Confirm before quoting this as a cost of
+τ=1. If it holds, it is a stronger argument than anything in §4.1–4.5, because it
+is a cost τ=1 imposes on the *ambient system* rather than on the hash — and the
+hash was only ever ~5% of the problem.
+
 ---
 
 ## 5. Delegation vs. a new hash
