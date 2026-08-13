@@ -1,21 +1,23 @@
-# Field choice: KoalaBear everywhere
+# Field choice: the memo says KoalaBear everywhere — and we deploy BabyBear
 
-> ⚠ **STATUS CHECK (2026-08-13): a RECOMMENDATION, not our deployed state —
-> but an actively evaluated one with landed proofs.**
+> **Status first, because this file is a RECOMMENDATION and reads like a state.**
 > **Deployed in both trees: BabyBear = 2013265921 = 15·2²⁷+1** (breadstuffs
 > `circuit/src/field.rs:3`; minidregg `prover/src/babybear.rs:4`, `field6.rs`
 > = BabyBear[u]/(u⁶−31), `Selvage/SmallField.lean:6`, `MixedFieldBudget:97`).
-> **Evaluated, seriously: KoalaBear = 2130706433 = 127·2²⁴+1** — the subject
-> of `Theory/CyclotomicInertia.lean` (the family law, machine-checked) and of
-> the paper, whose p61 is *"KoalaBear one machine word up."*
-> So: write "our deployed BabyBear" and "the KoalaBear migration target" —
-> not "our KoalaBear parameters."
- — the memo's verdict and its corrections
+> **Recommended, seriously evaluated, NOT executed: KoalaBear = 2130706433 =
+> 127·2²⁴+1** — the subject of `Theory/CyclotomicInertia.lean` (the family law,
+> machine-checked) and of the paper, whose p61 is *"KoalaBear one machine word
+> up."* Nothing has migrated.
+> So: write **"our deployed BabyBear"** and **"the KoalaBear migration
+> target"** — never "our KoalaBear parameters." `docs/VERDICTS.md` §1.
+> ⚑ And the migration's headline value (~3.4× on the dominant term) rides on
+> the **open** hash-bound question — VERDICTS §7.1.
 
-2026-08-13. Final lane of the campaign. Full memo published as an artifact by
-the lane (v4, with its v1 error retracted in-place — the discipline held).
+2026-08-13. Final lane of the campaign — the memo's verdict and its
+corrections. Full memo published as an artifact by the lane (v4, with its v1
+error retracted in-place — the discipline held).
 
-## The verdict
+## The verdict (of the memo — a recommendation)
 
 **KoalaBear everywhere. Binary towers as the committed second field. Not
 Goldilocks, not M31, not the BFV limbs.** The case is *constraint degree,

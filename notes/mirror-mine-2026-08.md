@@ -29,6 +29,13 @@ regimes Loom states, and re-price the "conjectured 130 / proven 51–73" pair in
 the breadstuffs FRI-reality record.** These four papers are the source of truth
 for that number now.
 
+> **The re-pricing half is DONE and the answer is a withdrawal, not a number.**
+> The EF calculator deleted the capacity regime outright (`ffaeb81`,
+> 2025-11-17); our IR-v2 reads **UDR 34 / JBR 73 / CBR 130**, and the
+> conjectured column is CBR-shaped. **Never quote 130.** `docs/VERDICTS.md` §2,
+> `notes/two-regime-calculator.md`. Checking Loom's stated regimes against the
+> four papers is still open.
+
 ## 2. A correction to our own record: Attestable DOES publish security accounting
 
 `2026/532` — **S-two whitepaper, by StarkWare *and Attestable***. An M31 IOP
