@@ -134,24 +134,208 @@ S-boxes) only appears over 4 rounds via the AES superbox argument, which is a
 standard wide-trail *inference*, not a measurement, and must be labelled that
 way.
 
-### 1.5 Extending the t+|K| law past t=2
+### 1.5 Extending the t+|K| law past t=2 (this lane)
 
-*(pending — see `design_branch_law_check.py`)*
+Three points at one t is thin — and at t=2, |K|=2 the law t+|K|=4 coincides
+with 2|K|, so one of the three does not even discriminate. `design_branch_law_check.py`
+(new, this lane) splits the claim into its two halves and pushes t up:
+
+- **Upper bound, constructive.** The attaining vector that Part B describes in
+  prose but never exhibits: on one slot s, set the per-element values to
+  v = Mds_s⁻¹·e_a. We build it and read off wt(x)=t, wt(Mx)=|K| directly.
+- **Lower bound, exhaustive.** Certify no support pair of total weight < t+|K|
+  is singular, with a work budget; rows over budget are reported as skipped and
+  claim nothing.
+
+Result over 30 configurations at (q,d) = (65537,4) and (12289,8), t ∈ 2..6,
+|K| ∈ 2..4:
+
+```
+  branch = t+|K| EXACTLY (both halves certified) in 13/30 configs;
+  17 lower halves over budget; 0 disagreements
+  certified over t in [2,3,4] and |K| in [2,3,4], at both (q,d)
+```
+
+**The law survives extension: t ∈ {2,3,4}, |K| ∈ {2,3,4}, two ring geometries,
+zero disagreements.** And the *upper* half — the half that carries the security
+meaning, since it is what says the free R_q-MDS adds t−1 rather than multiplying
+— is unconditional and construction-based at **all 30 rows including t=6**. The
+naive t·|K|+1 bound is refuted by construction everywhere.
 
 ---
 
-## 2. The schedule cost table
+## 2. The schedule cost table: how few dense rounds suffice
 
-*(pending)*
+`design_mds_interleave.py`. All at τ=1, d=16 — this is the table that says what
+slot-MDS *costs* in the τ=1 regime, and it is therefore the main input to §4.
 
-## 3. The second candidate: gadget-Feistel
+**(A) Composite slot-support** (exact, structural — boolean products of the
+per-round slot patterns):
 
-*(pending)*
+```
+  support-3 every round (1 row/elt)    [3, 5, 7, 9, 11, 13, 15, 16, 16, 16]
+  support-9 every round (4 rows/elt)   [9, 16, 16, ...]
+  dense every round (8 rows/elt)       [16, 16, ...]
+  dense every 4th, support-3 else      [3, 5, 7, 16, 16, ...]
+```
+
+Support-3 alone saturates all 16 slots after **8 rounds** (the product sets
+{±5^j} grow by one exponent per round); one dense round collapses the wait to
+that round's position. **Support saturation is necessary for RO-likeness and
+nowhere near sufficient** — say this every time the table is quoted.
+
+**(B) Composite MDS-ness** (d=8, exact to cap): a single dense Cauchy round
+makes the composite skeleton MDS **at once**, and subsequent support-3 rounds do
+not destroy it. Support-3 alone becomes MDS only when its product set saturates
+(round 4 at d=8).
+
+**(C) Slot diffusion of the real permutation, S-box on** (d=16 τ=1 toy, active
+slots of 64 after r rounds): support-3 crawls `12 → 20 → 28 → 36 → 44 → 52`;
+dense-every-round and even dense-in-round-0-only both hit `64` immediately.
+
+**(D) Cost per absorbed ring element** at proposal geometry (t=9, rate 8, RF=8,
+RP=22, α=7, S_α=4), against the 716.8 rows/elt decompose-and-hash baseline of
+2026/1127 App C.3:
+
+| σ schedule | rows/perm | per elt | vs 716.8 | branch delivered |
+|---|---:|---:|---:|---|
+| support-3 every round *(prior lane's headline)* | 646 | 80.8 | 8.9× | 4 of 17 |
+| support-9 in full, support-3 in partial | 862 | 107.8 | 6.7× | 10 of 17 in full rounds |
+| dense in 4 outer full rounds, support-3 else | 898 | 112.2 | 6.4× | 17 in 4 rounds |
+| dense every 4th round, support-3 else | 1087 | 135.9 | 5.3× | 17 every 4th |
+| **dense in ALL full rounds, support-3 in partial** | **1150** | **143.8** | **5.0×** | 17 in every full round |
+| dense every round | 2536 | 317.0 | 2.3× | 17 everywhere |
+
+The cost law is `rows/perm = S_α·(RF·t + RP) + Σ_rounds (σ rows/elt)·t`,
+reproduced exactly for all six rows. The **S-box floor alone** is
+`4·(8·9+22) = 376` rows/perm = **47.0/elt (15.3×)** — that is the σ-free
+ceiling on how good any schedule can get, and it bounds the whole design.
+
+The shape of the answer follows Poseidon2's own precedent: Poseidon2's internal
+rounds use I + diag(v), branch **2** — weaker than our support-3 — and put the
+strong MDS only in external rounds. **Dense-in-full-rounds is the analogous
+schedule, and it is the recommended τ=1 point: 143.8/elt, 5.0×.**
+
+---
+
+## 3. The second candidate: the gadget-decomposition Feistel
+
+`design_gadget_feistel.py`. This is a *non-algebraic* alternative — no S-box, no
+automorphisms; the nonlinearity is base-B gadget decomposition, which is free
+where a folding scheme already proves norms.
+
+**The design.** R_q = Z_q[X]/(X^16+1), gadget base B = 2^16, K = 4 planes
+(B^K = 2^64). State (L,R) ∈ R_q^4 × R_q^4, so t=8 elements, sponge rate 7,
+capacity 1 element = 1024 bits. Per round: decompose R_i + a_{r,i} into planes
+(1 linear row/element, plane norm bound is the folding scheme's own ∞-norm
+check — **free**); form P=2 adjacent-plane products Z_{i,j} = Y_{i,j}·Y_{i,j+1}
+(P mult rows/element); Feistel-swap with F_r a *public dense linear* form in the
+witnessed planes and products (**free** — it fuses into the next round's
+decomposition row). Cost **w·(1+P) = 12 rows/round**, NR=16 rounds.
+
+**Measured, at full scale (q = 2^64−59, d=16, 16 rounds):**
+
+1. **Bijectivity**: explicit inverse round-trips **25/25** random full-size
+   states (8 ring elements = 8192 bits each). Structural — Feistel inverts for
+   any round function — but exhibited constructively at deployment size.
+2. **Slot mixing** (τ=1 toy): one flipped input slot reaches **33.0/64 active
+   slots after 1 round, 64.0/64 after 2**. Full diffusion in two rounds.
+3. **P ≥ 1 is a hard requirement, not an option.** With P=0 the round function
+   is linear-up-to-carries and a fixed input difference maps to a **fixed**
+   output difference through all 16 rounds — constant in 40/40 samples at
+   1 round, and the script confirms P=0 is trivially distinguishable. P=2 kills
+   the order-1 differential (0/40 at every round count tested).
+4. **Cost**: 192 rows/perm ÷ rate 7 = **27.4 rows per absorbed ring element**.
+   **26× cheaper than Poseidon-over-Z_q (716.8) and 5.2× cheaper than the
+   σ-Poseidon dense-in-full-rounds point (143.8).**
+
+**The three caveats, and they are load-bearing:**
+
+- ⚑ **At the deployed Frog modulus it is BROKEN BY DEFAULT.** A sponge
+  permutation must be a *function* of its input. Base-B decomposition
+  constrained only by "recomposes mod q" + "coefficients < B" pins the planes
+  uniquely only for coefficients ≥ γ := B^K − q. At Frog
+  (q = 15912092521325583641), **γ/q = 0.159 = 2^-2.7**, giving **≈2.55 ambiguous
+  coefficients per element** — the script exhibits it constructively: coefficient
+  12345 has two valid plane vectors, `[12345,0,0,0]` and
+  `[3410,40643,7127,56531]`, both recomposing to 12345 mod q and both passing the
+  norm check. **A malicious prover chooses, and each choice changes the hash
+  output — free Fiat–Shamir grinding.** At q = 2^64−59, γ = 59, γ/q = 2^-58.1,
+  ambiguity per element 5×10^-17: grinding one ambiguous coefficient costs ~2^54,
+  priced into the ROM bound as Q·2^-54, **no gate needed**. So this candidate
+  *requires a modulus change* — which is ordinary work, but it must be said.
+  (⚠ Worth flagging outward: the same representative-malleability exists in
+  2026/1127's **own** App C.4 MSIS-hash use at γ/q = 0.159. Whether it is
+  exploitable there depends on how u_i enters knowledge soundness. **A question
+  we should ask them, not an attack we claim.**)
+- ⚑ **NR=16 is precedent plus margin, not cryptanalysis.** It comes from the HKT
+  14-round indifferentiability result for 2-branch Feistel **with ideal round
+  functions**, and nothing about F is an ideal round function.
+- ⚑ **The order-2 differential does not die in one round.** The degree-2 plane
+  structure makes the second derivative of a single F state-independent up to
+  carries — **constant in 40/40**. Across rounds the next decomposition destroys
+  the polynomial structure, but **meet-in-the-middle / boomerang from both ends
+  is the obvious attack and is the first attack-me item for this candidate.**
+
+**Assessment.** 27.4/elt is a big number — 26× — and it comes from *not* paying
+for an S-box at all. But this candidate is much less mature than the σ-Poseidon
+one: its nonlinearity has no analogue in the literature, its round count is
+borrowed from an idealised model, and it has a live second-order structure. It
+is the higher-ceiling, higher-risk option. Do not quote 27.4 without the three
+caveats attached.
+
+---
 
 ## 4. The fork: τ=1 vs τ=4
 
-*(pending — cryptanalysis lane input outstanding)*
+*(cost half done — security half pending cryptanalysis-lane input)*
+
+### 4.1 The fork is real
+
+`ring-hash-cryptanalysis.md`'s handoff says **"keep τ=1 (load-bearing); τ>1
+reopens the extension-field S-box question."** The design lane's branch closure
+(§1.2) happens **at τ=4**. Nobody had put these on one axis. `design_tau_tradeoff.py`
+(new, this lane) does the cost half in the §2 metric; τ changes only how many σ
+rows buy slot-MDS (ℓ=16 needs 8 rows; ℓ=4 needs 2), because element size, S-box
+cost (x^7 = 4 R_q mults) and round counts are all τ-independent.
+
+| regime | schedule | rows/perm | per elt | vs 716.8 | branch |
+|---|---|---:|---:|---:|---|
+| τ=1 | support-3 every round | 646 | 80.8 | 8.9× | 4 of 17 — **the #1 weakness** |
+| τ=1 | dense in all full rounds | 1150 | 143.8 | 5.0× | 17 = slot-MDS in full rounds |
+| τ=1 | dense every round | 2536 | 317.0 | 2.3× | 17 everywhere |
+| τ=4 | support-3 every round | 646 | 80.8 | 8.9× | 4 of 5 |
+| **τ=4** | **slot-MDS in full, support-3 in partial** | **718** | **89.8** | **8.0×** | **5 = slot-MDS in full rounds** |
+| τ=4 | slot-MDS every round | 916 | 114.5 | 6.3× | 5 everywhere |
+
+**The fork in one number each way:**
+- slot-MDS in every round: τ=1 costs 317.0/elt, τ=4 costs 114.5 — **τ=4 is 2.77× cheaper**
+- slot-MDS in full rounds: τ=1 costs 143.8/elt, τ=4 costs 89.8 — **τ=4 is 1.60× cheaper**
+
+And the comparison that actually decides it — **what does the same budget buy?**
+At ~90 rows/elt, **τ=4 buys slot-MDS in every full round; τ=1 buys support-3
+only, i.e. the recorded #1 weakness un-fixed.**
+
+**Robustness of the cost verdict.** Round counts are held at RF=8/RP=22 for both,
+and those are borrowed (a width-~12 prime-field Poseidon set) and underived for
+*either* regime — §5 of the cryptanalysis note is right about that. So the honest
+form of the cost verdict is a break-even: **τ=4 stays ahead until the
+extension-field S-box needs ~3.2× the partial rounds of τ=1** (RP=70 against 22).
+That is a wide margin, and it is the right way to state it, because the round
+count is exactly the quantity the extension-field question could move.
+
+### 4.2 The security half
+
+*(pending)*
+
+---
 
 ## 5. Delegation vs. a new hash
 
 *(pending — literature lane input outstanding)*
+
+---
+
+## 6. Prior art
+
+*(pending — literature lane input outstanding; lands in `ring-hash-cryptanalysis.md`)*
