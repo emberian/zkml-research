@@ -94,10 +94,20 @@ models genuinely ship block-native and what their serving semantics pin down.
 **Unmeasured.** Everything above is inference from Phase 0's static column plus
 the MX spec. The specific things that must be measured, not assumed:
 
-- Does the static-shift model actually apply to MXINT8 end-to-end, or does the
-  block-boundary handling (crossing blocks in a dot product, converting between
-  block scales between layers) reintroduce dynamic shifts? **This is the exact
-  place my bf16 reasoning failed, and it is the first thing to check.**
+- ~~Does the static-shift model actually apply end-to-end, or does block-boundary
+  handling reintroduce dynamic shifts?~~ **MEASURED 2026-08-13, on real gpt-oss-20b
+  weights** (10 scales tensors, 5 layers × both MoE projections, 124.4M scale
+  bytes, 1.38M reduction rows, range-fetch integrity verified): per-row exponent
+  spread is **p50=2, p90=2, p99=3, max=8**. **100% of rows fit a width-8
+  alignment window; 99.92% fit width-4; 94.63% have spread ≤2.** Zero
+  denormal/special bytes. So the cheap alignment path is not the common case —
+  it is effectively the *only* case for gpt-oss's MXFP4 weights (all 78.9% of
+  per-token linear FLOPs), and the wide accumulator is a one-in-a-million
+  fallback. Script: `phase0/e8m0_spread.py`; results:
+  `phase0/results_e8m0_spread.txt`. Caveats: weights only (activation-side
+  spread is a runtime question and backend-dependent); 20b measured, 120b
+  inferred-same (same scheme, same 90-block rows). **This is, per the verified
+  zeros, the first MX-format-for-proving measurement in any literature.**
 - Does MXINT8 recover Gemma 3's cosine similarity? DeepProve's Table 4 is
   per-tensor; nobody has published the MX row.
 - What does a 32-element block do to accumulator width, given the

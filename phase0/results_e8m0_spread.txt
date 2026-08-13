@@ -1,0 +1,45 @@
+repo: openai/gpt-oss-20b   tensors: 10   layers [0, 5, 11, 17, 23]  kinds ['gate_up_proj_scales', 'down_proj_scales']
+
+tensor                                       shape             byte μ     σ  min  max  sp50  sp90  sp99 spMax  <=W8    <=W12   <=W16   <=W24   <=W32 
+L0.gate_up                                   [32, 5760, 90]    121.32  0.62  117  126     2     2     3     6  100.00  100.00  100.00  100.00  100.00
+L0.down                                      [32, 2880, 90]    120.30  1.28  117  129     2     2     3     6  100.00  100.00  100.00  100.00  100.00
+L5.gate_up                                   [32, 5760, 90]    120.35  0.76  116  126     2     2     2     5  100.00  100.00  100.00  100.00  100.00
+L5.down                                      [32, 2880, 90]    123.03  0.87  118  132     2     2     3     8  100.00  100.00  100.00  100.00  100.00
+L11.gate_up                                  [32, 5760, 90]    119.86  1.13  115  127     1     2     3     6  100.00  100.00  100.00  100.00  100.00
+L11.down                                     [32, 2880, 90]    125.38  0.76  119  134     2     2     3     6  100.00  100.00  100.00  100.00  100.00
+L17.gate_up                                  [32, 5760, 90]    119.75  1.26  115  127     2     2     4     6  100.00  100.00  100.00  100.00  100.00
+L17.down                                     [32, 2880, 90]    127.00  1.02  119  135     2     2     3     7  100.00  100.00  100.00  100.00  100.00
+L23.gate_up                                  [32, 5760, 90]    120.17  1.11  116  127     2     3     3     6  100.00  100.00  100.00  100.00  100.00
+L23.down                                     [32, 2880, 90]    128.72  0.61  125  136     2     2     4     8  100.00  100.00  100.00  100.00  100.00
+
+pooled over 1382400 reduction rows (124416000 scale bytes):
+  spread p50/p90/p99/max = 2 / 2 / 3 / 8
+  window width  8: 100.000% of rows fit
+  window width 12: 100.000% of rows fit
+  window width 16: 100.000% of rows fit
+  window width 24: 100.000% of rows fit
+  window width 32: 100.000% of rows fit
+  special bytes: value 0 x0, value 255 x0
+
+  exact pooled spread tail:
+    spread=0:       42 rows (  0.0030%)  cumulative   0.00304%
+    spread=1:   541154 rows ( 39.1460%)  cumulative  39.14902%
+    spread=2:   766937 rows ( 55.4787%)  cumulative  94.62768%
+    spread=3:    68774 rows (  4.9750%)  cumulative  99.60265%
+    spread=4:     4443 rows (  0.3214%)  cumulative  99.92405%
+    spread=5:      812 rows (  0.0587%)  cumulative  99.98278%
+    spread=6:      219 rows (  0.0158%)  cumulative  99.99863%
+    spread=7:       17 rows (  0.0012%)  cumulative  99.99986%
+    spread=8:        2 rows (  0.0001%)  cumulative 100.00000%
+
+adjacent-block |delta| within rows, per tensor (p50/p90/p99/max):
+  L0.gate_up               0 / 1 / 1 / 5
+  L0.down                  0 / 1 / 1 / 5
+  L5.gate_up               0 / 1 / 1 / 5
+  L5.down                  0 / 1 / 1 / 7
+  L11.gate_up              0 / 1 / 1 / 6
+  L11.down                 0 / 1 / 1 / 6
+  L17.gate_up              0 / 1 / 2 / 5
+  L17.down                 0 / 1 / 1 / 7
+  L23.gate_up              0 / 1 / 2 / 6
+  L23.down                 0 / 1 / 2 / 7
