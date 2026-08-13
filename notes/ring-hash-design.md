@@ -526,12 +526,19 @@ wide-trail round-count derivation at width 144). **"τ=1 is safer" is only true 
 
 **Recommendation: τ=4, at the dense-in-full-rounds schedule (89.8 rows/elt, 8.0×
 the decompose-and-hash baseline), conditional on one named analysis.**
-Confidence: **moderate** — the cost case is measured and robust, the security
-case rests on an argument-from-symmetry plus one undone analysis.
+Confidence: **moderate-to-high** — raised by §4.6, which turned out to be the
+paper's own stated rationale rather than our inference. The cost case is measured
+and robust; the residual risk is one undone analysis (item 5).
 
-The five inputs, in the order they should be weighed:
+The six inputs, in the order they should be weighed:
 
-1. **Cost — decisive, and measured.** τ=4 reaches slot-MDS for 1.60–2.77× less
+0. ⚑ **The challenge space — decisive, and it is 2026/1127's own argument
+   (§4.6).** The strong sampling set has size **q^τ**, and the paper says
+   explicitly "*we may choose τ to obtain exponentially-sized strong sampling
+   sets.*" τ=1 collapses it to q = 2^64; τ=4 gives 2^256. **This is a cost τ=1
+   imposes on the host folding scheme, not on the hash**, and it alone would
+   settle the fork.
+1. **Cost — measured.** τ=4 reaches slot-MDS for 1.60–2.77× less
    than τ=1, and at τ=1's *equal budget* the #1 weakness simply stays unfixed.
    The verdict survives a **3.2× round-count penalty** before it flips.
 2. **Status quo — τ=4 is the deployed ring.** "Keep τ=1" is the branch that
