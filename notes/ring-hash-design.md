@@ -674,7 +674,118 @@ That, and not the branch number, is the decisive reason the fork resolves to
 
 ## 5. Delegation vs. a new hash
 
-*(pending — literature lane input outstanding)*
+### 5.0 The bar, stated first so the verdict is decidable
+
+Three of four ring-native FS "escapes" suggest the open problem may be
+**avoidable** — either by not needing an in-circuit hash (Symphony 2025/1905),
+by cutting RO calls to a handful (ProtoGaLattice 2026/1317), or by **delegating**
+the hash to a cheaper argument (GKR/sumcheck: 2026/551 for Poseidon, Keccacheck
+2025/1764 for Keccak-f). **A "we should delegate instead" conclusion is a good
+outcome and we should be willing to reach it.** So set the bar before hearing the
+evidence.
+
+**The hash is not part of the bill — it is the bill.** `costmodel.py`: of the
+2,417,127 R_q constraints of Fiat–Shamir, **2,402,503 (99.4%) is hash
+absorb/squeeze.** So anything that removes the hash removes essentially the whole
+FS cost, and the comparison is clean.
+
+| option | FS cost (R_q constraints) | FS share of a 2^22–2^23 IVC circuit |
+|---|---:|---|
+| status quo (Poseidon over Z_q) | 2,417,127 = 2^21.2 | 58% – 29% |
+| σ-Poseidon, τ=1 (5.0×) | 483,425 = 2^18.9 | — |
+| **σ-Poseidon, τ=4 (8.0×)** | **302,141 = 2^18.2** | 14.5% – 4.8% |
+| gadget-Feistel (26×) | 92,257 = 2^16.5 | 4.9% – 1.5% |
+
+> ⚑ **The bar: a delegation scheme must land the *verifier's* in-circuit cost
+> below ~3×10^5 R_q constraints to beat σ-Poseidon, and below ~9×10^4 to beat the
+> gadget-Feistel.** Prover-side savings do not count — the whole problem is
+> *in-circuit* verifier cost. This is the number to hold every escape against.
+
+Two structural questions that decide whether delegation is even applicable, and
+which we can answer from our own side:
+
+1. **Does sumcheck/GKR work over R_q at all?** *Yes, and better at τ=4.* Sumcheck
+   soundness needs challenges from a strong sampling set, which §4.6 establishes
+   has size **q^τ** — 2^256 at τ=4, ample; **2^64 at τ=1, marginal.** So the same
+   τ choice that settles §4 also conditions delegation. Pleasing convergence, and
+   it means τ=4 should be fixed *before* the delegation question is re-opened.
+2. **Does it compose with the substrate we are actually building?** ⚠ **Less
+   readily than "it composes with our GKR substrate" suggests.**
+   `gkr-substrate-findings.md` records, verified by grep over our trees:
+   **"GKR / layered circuits / zerocheck / two-vector `eq` in Lean: all absent"**;
+   the commitment seam is **positional — "the wrong shape for a multilinear
+   claim"** — and the BaseFold bridge "is a campaign, not a memo section". Our
+   substrate is also a **prime-field, FRI-based** engine, whereas this setting is
+   R_q lattice folding. **Delegation here is not a matter of reusing something we
+   have; it is a second proof system to build and to compose.** That cost belongs
+   in the comparison.
+
+### 5.1 The escapes, assessed
+
+**Escapes 1–3 (Symphony, ProtoGaLattice, GKR-delegation) — *pending detail*.**
+The lane's net verdict is in §5.2.
+
+#### Escape 4 — ACLMT: "no valid proof AND no known attack", which is neither of the two things people say
+
+**Albrecht, Cini, Lai, Malavolta, Thyagarajan, "Lattice-Based SNARKs: Publicly
+Verifiable, Preprocessing, and Recursively Composable", CRYPTO 2022, eprint
+2022/941.** Its Theorem 4 rests on **knowledge k-M-ISIS** (Def. 26); the concrete
+instantiation sets η₀=η₁=1, which *is* **knowledge k-R-ISIS** (Def. 27) — so both
+variants are at stake, as the brief said. **⚠ Wee–Wu is ASIACRYPT 2023 despite
+its 2024/28 eprint number.**
+
+⚠ **The brief's "evidence for the implausibility" is right, and my instinct to
+upgrade it to 'broken' would have been wrong.** Three limits on the refutation:
+
+- The attack is built against an **integer/matrix translation** ("MatrixACLMT",
+  Assumptions 4.2/4.3), **not** ACLMT's literal ring/module object.
+- Its sampler (Alg. 4.4) is a **candidate** resting on a real-rank heuristic —
+  *"we do not know how to rule out an extractor that outputs the same
+  distribution"* — and the refutation leg is **conditional**: *"under the
+  inhomogeneous SIS assumption, either Assumption 4.2 or Assumption 4.3 must be
+  false."*
+- **Wee–Wu explicitly decline the SNARK break**: *"they do not appear to directly
+  break soundness of the SNARKs themselves. It is an interesting question to
+  study whether our approach can be extended…"*
+
+**What is nonetheless decisive is author-side concession, including from ACLMT's
+own authors:**
+- Wee–Wu fn.4: *"Albrecht implemented and confirmed the attack"* — ACLMT's own
+  first author, and his gist is titled **"Knowledge K-M-ISIS is false"** (the
+  *module* version, i.e. he carried it out of the integer translation himself).
+- **RoK, Paper, SISsors** (ASIACRYPT 2024, with **Lai**, an ACLMT co-author),
+  fn.4: the assumption *"has subsequently been cryptanalysed … **rendering the
+  security proofs vacuous**."*
+- **SLAP** (EUROCRYPT 2024, with Albrecht): *"has been recently shown to be (at
+  least 'morally') broken."* Albrecht's SIS-with-hints zoo lists
+  **"BROKEN Knowledge K-R-ISIS"** with a SageMath attack implementation.
+
+**ACLMT was never revised** (2 revisions, last 2023-02-08, predating Wee–Wu's
+publication), and no repair paper exists.
+
+**What survives** — matters if anyone reaches for this again: plain
+`k-R-ISIS`/`k-M-ISIS` is **untouched**; the VC as a **weakly binding** commitment
+stands (ACLMT's Appendix B is literally *"Vector Commitments without Knowledge
+Assumptions"*), but **weak binding is not extractability, so it yields no SNARK**;
+and Orbweaver's *restricted* "Knowledge k-P-R-ISIS" is still in play.
+
+⚠ **A disambiguation worth carrying, because it is routinely conflated:** eprint
+**2024/30** (Debris-Alazard–Fallahpour–Stehlé, *Quantum Oblivious LWE Sampling*,
+STOC 2024) is a **different** result — a quantum break of the *linear-only-
+encryption* SNARK line, **not** ACLMT.
+
+> **Corrected one-liner: *ACLMT's SNARK has no valid security proof and no known
+> attack.* Do not cite it as a proven-secure lattice SNARK; do not call it broken
+> either.**
+
+**Effect on the delegation question: none.** Escape 4 removes nothing on any
+formulation, and the corroborating signal is that **none of 2026/1127, Symphony,
+ProtoGaLattice or Neo/SuperNeo cites it** — the field has moved to ℓ-succinct
+SIS / PRISIS / vanishing-SIS.
+
+### 5.2 The lane's verdict
+
+*(pending — detail outstanding; see §5.1)*
 
 ---
 

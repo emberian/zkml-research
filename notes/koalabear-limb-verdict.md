@@ -3,18 +3,31 @@
 2026-08-13. `paper/scripts/koalabear_limb.py`, 41/41 checks, commit `e1539a9`.
 Verified from scratch rather than trusting the recovered numbers.
 
-## ⚑ The finding that corrects a week of my phrasing
+## ⚑ Deployed vs evaluated — and I got the tone wrong in both directions
 
-**The proof field is BabyBear, not KoalaBear.** `circuit/src/field.rs:3` says
-so; `Cargo.toml` has zero `koala` hits. **KoalaBear appears in four prose
-sites and zero config sites.** The field memo's "KoalaBear everywhere" is a
-**recommendation we have not executed**, and I have been writing "our
-KoalaBear parameters" as though it were our state.
+**Checked both trees.** DEPLOYED, everywhere, is **BabyBear = 2013265921 =
+15·2²⁷+1**: breadstuffs `circuit/src/field.rs:3`; minidregg
+`prover/src/babybear.rs:4` (`P = 2_013_265_921`, 2-adicity 27); `field6.rs` is
+`BabyBear[u]/(u⁶−31)`; `Selvage/SmallField.lean:6` says *"DEPLOYED base field
+is BabyBear"*; `MixedFieldBudget.lean:97` defines `babyBear := 2013265921`.
 
-The idea survives the substitution intact — **BabyBear is itself a legal limb**
-(2-adicity 27) — and only the name changes. But a KoalaBear limb under a
-BabyBear prover would have been **exactly the two-31-bit-primes configuration
-the field memo's own seam rule forbids.** Worth having caught before building.
+**But KoalaBear = 2130706433 = 127·2²⁴+1 is a serious EVALUATION target with
+landed proofs** — `Theory/CyclotomicInertia.lean` is a whole module about it
+(`orderOf_koalaBear_three_pow` and the family law), the paper's p61 is
+literally *"KoalaBear one machine word up"* (same Solinas shape, same cofactor
+127), and the field memo recommends migrating. My "four prose sites and zero
+config sites" undersold that badly — it was true of one `Cargo.toml` and false
+of the research programme.
+
+**And the consequence for THIS lane's objection**: "a KoalaBear limb under a
+BabyBear prover is the two-31-bit-primes config the seam rule forbids" is true
+**today and dissolves under the recommended migration** — a KoalaBear limb
+under a KoalaBear prover is exactly the aligned configuration the idea wants.
+**Both primes are legal BFV limbs** (BB 2-adicity 27, KB 24, both ≡ 1 mod
+8192), so the route works on whichever field we are on; **what it requires is
+that the limb EQUALS the prover field.** So: conditional on the migration, not
+dead — while the "real but small" verdict below (70% fixed row overhead) is
+independent of which field and stands either way.
 
 ## Verified, and one number that doesn't reproduce
 
