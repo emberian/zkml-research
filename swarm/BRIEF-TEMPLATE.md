@@ -38,6 +38,16 @@ The exact sections the report must have. Always include:
 - for multi-thread lanes: per-thread return status — a thread that never
   returned must be REPORTED as such, never silently absorbed
 
+## 7b. SUBSTRATE LAW (state in every brief that touches proving)
+**We are abandoning Plonky3 and every third-party prover stack as fast as we
+can.** The trust path is Lean-authored and formally verified — ours. Upstream
+crates may be READ for API shapes and may serve as throwaway differential
+oracles in tests; they never enter the trust path, they are never a
+"foundation," and **"it already exists upstream, unwired" is not a reason to
+wire anything.** A lane that proposes adopting an upstream engine has
+misunderstood the project. If a capability is missing, the answer is that we
+build it in Lean, in Selvage.
+
 ## 8. STANDING ORDERS (copy verbatim into every brief)
 - Read theorem statements, not abstracts, for anything you call a bound.
 - Verify claimed absences with multiple spellings AND post-mirror via web.
