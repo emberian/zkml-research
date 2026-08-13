@@ -189,7 +189,54 @@ first one costs):
 There is no third way, and (ii) is not a fallback — it is a way to spend the entire win.
 Naming it here so it does not get picked later as "the compatible option".
 
-### 2.7 What this relation does NOT say
+### 2.7 ⚑ Half of this is already in Lean, and it is the ℤ half
+
+I went looking for where to put the Lean statement and found the FHE-semantics half
+already there. **Read, not relayed:**
+
+`metatheory/Bfv/Ring.lean:354` —
+
+```lean
+def matVecRCt {P : Params} {N n : ℕ} (S : Fin n → Fin n → ℤ) (x : Fin n → RCt P N) :
+    Fin n → RCt P N :=
+  fun i => ⟨fun k => ∑ j, S i j * (x j).phase k⟩
+```
+
+That is `c_out = Σⱼ aⱼcⱼ` at the ring level with **public integer coefficients**, and
+`matVecR_noiseAtInt` (line 364) proves the output noise is the same linear map applied to
+the input noises — "exact coefficient algebra". `stepR_noise_le` then bounds it with **no
+factor of `N`**, precisely because the multipliers are public integer scalars acting
+coefficientwise rather than ring elements.
+
+Three consequences, and the third is the interesting one:
+
+1. **The Lean work item is smaller than §4bis first suggested.** The FHE-semantics leg of
+   `FoldOpen` — "the linear combination of ciphertexts is the linear combination of
+   phases, and its noise is the linear combination of noises" — is proved. What is *not*
+   proved, and is the genuinely new Lean work, is the **argument** leg: that a
+   common-point opening of committed MLEs certifies the claimed output. That is a
+   statement about the proof system, not about BFV.
+2. **The carrier is `Rn N = Fin N → ℤ` — integer coefficients, no modular reduction.**
+   So the Lean model of the fold *has always been the lazy-accumulation model.* My §2.5
+   side condition is not an extra hypothesis to bolt on; it is the hypothesis the existing
+   Lean development already works under.
+3. ⚑ **Which means the divergence is on the Rust side.** `Bfv.Ring` folds in ℤ;
+   `bfv_lean::add_row` reduces mod `q_j` at every step. They are reconciled only through
+   the separate per-coefficient wrap argument (`Bfv.Noise.decryptPhase_add_q`). So
+   "switch the deployed fold to lazy accumulation" is not a change *away* from the
+   verified model — **it is a change *toward* it.** The reducing implementation is the
+   one that does not match the Lean.
+
+⚠ The composition is not free, and the remaining gap is worth naming exactly: `RCt` is a
+**phase-only** model — one `Rn N` per ciphertext, the decryption phase. The object `flat`
+commits is the **`(c₀, c₁)` RNS residue pair**, which is not the phase; the phase is
+`c₀ + c₁·s` and depends on the secret key. So `FoldOpen` certifies linearity of the
+*wire* representation, and `Bfv.Ring` certifies that linearity of the wire representation
+implies linearity of the phase and hence of the message. Chaining them needs the step
+"phase is ℤ-linear in `(c₀, c₁)` for fixed `s`", which is true and easy but is **not
+written down**. That is the seam, and it is one lemma, not a campaign.
+
+### 2.8 What this relation does NOT say
 
 - It does not say the committed `cₖ` are well-formed BFV ciphertexts (canonical
   residues, honest encryption, declared `plain_bound` truthful). That is the *pre-existing*
@@ -400,11 +447,14 @@ Not a wishlist — the ordered remainder, with the one that is actually blocking
    the pinned revision is the candidate and it natively supports several opening claims
    on one stacked commitment — which is exactly the `B+1`-polys-one-point shape. Costed
    separately in `notes/multilinear-pcs-landscape.md`; do not duplicate that lane.
-3. **The relation in Lean**, per §2.2, with the range leg as a lookup. This is the
-   only part that is a *constraint* and it is the only part that goes in Lean.
+3. **The relation in Lean**, per §2.2, with the range leg as a lookup. Smaller than it
+   looks: §2.7 found the FHE-semantics half already proved (`Bfv.Ring.matVecRCt` /
+   `matVecR_noiseAtInt`). What is new is the *argument* leg plus one connecting lemma
+   ("the phase is ℤ-linear in `(c₀, c₁)` for fixed `s`").
 4. **Switch the deployed fold to lazy accumulation.** Required (§3, the load-bearing
    negative result), and measured break-even at B=4 — so it is a correctness
-   prerequisite, not a speedup. Do not sell it as one.
+   prerequisite, not a speedup. Do not sell it as one. ⚑ And per §2.7 it moves the Rust
+   *toward* the Lean model, not away from it — `Bfv.Ring` already folds in ℤ.
 
 ⚑ **Do not do (2) before (1).** A PCS opening against a commitment that is not the
 ingress commitment is a beautifully-proved statement about the wrong object.
