@@ -722,8 +722,42 @@ which we can answer from our own side:
 
 ### 5.1 The escapes, assessed
 
-**Escapes 1–3 (Symphony, ProtoGaLattice, GKR-delegation) — *pending detail*.**
-The lane's net verdict is in §5.2.
+**Escapes 2–3 (ProtoGaLattice, GKR-delegation) — *pending lane detail*.** Escape
+1 verified at source below; the lane's net verdict is in §5.2.
+
+#### Escape 1 — Symphony (2025/1905): verified, and it targets exactly our setting
+
+Headline confirmed verbatim: *"we re-envision how to use folding, and introduce
+Symphony, **the first folding-based SNARK that avoids embedding hashes in SNARK
+circuits**."*
+
+**It is not a general-purpose remark — it is aimed at our exact bill.** Symphony
+is itself **lattice-based** (Ajtai commitments, R_q-multiplications), and it
+states our measurement independently: *"the Fiat–Shamir circuit is **dominant**
+in lattice-based folding schemes"*, and *"the verifier circuit complexity is
+dominated by the Fiat–Shamir heuristic, which is large."* That is the same 99.4%
+we measured in §5.0, from the other side.
+
+**Mechanism**: high-arity lattice folding plus a **commit-and-prove compiler**
+that moves the Fiat–Shamir transform *outside* the recursive SNARK circuit; the
+output is two CP-SNARK proofs plus one SNARK proof. Because hashing gadgets are
+what cap folding arity at 2–3, removing them also unlocks high arity — the two
+benefits are the same benefit.
+
+⚠ **Its own stated limitation, and it matters for us**: *"it is more nuanced to
+compile **hash-based** folding schemes: although we can move the Fiat–Shamir
+transform outside the recursive SNARK circuit, the CP-SNARK statement still needs
+to check **Merkle-path openings**, which accounts for the dominant part of the
+recursive statement and requires instantiating random oracles."* So the escape is
+clean for *commitment-based* lattice folding (which 2026/1127 is) and **not**
+clean for hash/Merkle-based folding.
+
+⚑ **And a hazard it raises that bears directly on Escape 3**: *"attacks exist
+[KRS25] for **GKR-based SNARKs if we allow the proven statement to compute the
+Fiat–Shamir hash function itself**."* **Delegating our FS hash to a GKR argument
+and then Fiat–Shamir-ing that argument is precisely the configuration named
+there.** This must be resolved before Escape 3 is counted as an escape at all —
+flagged for the lane, not yet run down.
 
 #### ⚑ Escape 0, which our own corpus already held: don't be in R_q at all
 
