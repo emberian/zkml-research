@@ -207,7 +207,14 @@ RP=22, α=7, S_α=4), against the 716.8 rows/elt decompose-and-hash baseline of
 | dense every round | 2536 | 317.0 | 2.3× | 17 everywhere |
 
 The cost law is `rows/perm = S_α·(RF·t + RP) + Σ_rounds (σ rows/elt)·t`,
-reproduced exactly for all six rows. The **S-box floor alone** is
+reproduced exactly for all six rows. The 716.8 baseline is itself reproduced:
+`costmodel.py` gives `S_α·(RF·(r+c)+RP) = 4·(8·24+22) = 856` per permutation,
+`+2r` per absorb → 44.80 per Z_q element → **16 × 44.80 = 716.8 per ring
+element**. ⚠ **Calibration, in our disfavour and therefore worth keeping:** that
+model totals the whole FS bill at 2^21.20, while 2026/1127 states its Poseidon
+count is "over 2^22" — so **our baseline understates the paper's own figure by
+~1.9×, and every speedup ratio quoted here is conservative by about that factor.**
+Do not "correct" it upward without re-deriving the transcript accounting. The **S-box floor alone** is
 `4·(8·9+22) = 376` rows/perm = **47.0/elt (15.3×)** — that is the σ-free
 ceiling on how good any schedule can get, and it bounds the whole design.
 
