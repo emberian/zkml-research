@@ -28,8 +28,12 @@ And the machine-checked version — the part that IS a first — has a proof
 skeleton **already closed in our own tree**: `Loom/LightClientSound.lean` is
 structurally a commit-then-audit theorem (commit to a chain, sample ONE uniform
 schedule, catch any false link except with probability ≤ n·(err⋆+1/|F|), sharp,
-with keystones). The Lean development the audit-sampling lane priced as "the
-real first" is a refactor of a theorem we have, not a new campaign.
+with keystones). ⚠ 2026-08-13 correction: "a refactor, not a campaign" was too strong. Two
+legs ARE machine-checked in Loom (`lightClientSound` = the checker leg,
+`lightClientGrinding_sound` = a beacon leg with the try-count factor proved
+necessary), but the sequential composition, stopping time, and ε_bind are
+new work — the existing theorems enter as cited lemmas. See
+`audit-theorem-statement.md` for the exact statement.
 
 ## 2. The memory-bubble fusion was dropped on a misread refutation
 
