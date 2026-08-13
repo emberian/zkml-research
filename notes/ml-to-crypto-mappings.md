@@ -135,9 +135,26 @@ requantization relation at all, §5's zero-slack property free.
 
 zkPyTorch's M61 co-design is a half-step; I-BERT's approximations port to
 fields directly. Requires touching training, so it is for open-weight models —
-which is our audience anyway. **Status: one sentence of it in the log
-(zkPyTorch); the full idea — "train the model to be the circuit" — is in
-nobody's paper.**
+which is our audience anyway. ⚑ **STATUS: REFUTED 2026-08-13, not narrowed.** "Train the model into the
+crypto system's native arithmetic" is a named, mature pattern:
+**Tailor** (eprint 2026/1551 §6.1) does proof-aware QAT *by that name* for
+FHE — power-of-two scales, unsigned post-ReLU, bias-free layers, "bit-identical
+round-trip inference," requantization shifts *derived not hand-tuned*;
+**BOLT** (IEEE S&P 2024 §6) calls it "secure computation-aware fine-tuning"
+and frames the paper as ML/crypto co-design; **Zama ships it industrially**
+(Concrete-ML: "obtaining FHE-compatible models with good accuracy requires
+QAT", via Brevitas). And **I-BERT — our stated "closest prior art" — is
+itself already QAT** (§: "we perform quantization-aware fine-tuning").
+⚠ **Two of the refuting papers were in ~/paperbin when this row was written.**
+
+**What survives is a TRANSFER claim, not a novelty claim**: (a) the ZK/SNARK
+instantiation — everyone did it for FHE/MPC where the motive is *feasibility*;
+nobody did it for a proof system where the motive is killing the per-element
+error window; (b) **field-native** rather than integer-native (Tailor targets
+bit-sliced two's complement, BOLT fixed-point over Z_2^ℓ); (c) **zero**
+requantization rather than *exact* requantization — Tailor still has shifts,
+just derived ones, and our goal is strictly stronger; (d) determinism as a
+training objective; (e) tie-free routers.
 
 ## H. Small structural freebies
 
