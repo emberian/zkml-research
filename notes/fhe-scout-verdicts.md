@@ -72,3 +72,39 @@ our expansion is 10.9–27× at 109 KB/ct. Pirouette beats transciphering at
 its own game anyway (but needs client-held sk — true for inference, not the
 collective-key deployment). Homomorphic-decryption depth verdict: NOT
 ESTABLISHED (the lane that owned it never returned).
+
+
+## Addendum from the scout's second composition
+
+**The top line, sharpened: "make the FHE modulus be the proof field" is
+converging from BOTH sides of the literature and is in nobody's notes but
+ours.** GBFV does it on the PLAINTEXT side — Geelen–Vercauteren name the
+Fermat prime 2^16+1 and Goldilocks explicitly, citing Plonky2/Miden/RISC
+Zero as the reason. Zama 2026/027 does it on the CIPHERTEXT side (the
+modulus literally IS Goldilocks, no RNS). **That is the frontier worth
+occupying, and the single-prime experiment is our move onto it.**
+
+Strengthening the case: **Laminate's own text argues FOR a ~20-bit
+plaintext field** (20→50 bits raises depth and runtime >20×) — our
+t = 1,032,193 is already in the regime the FHE-over-SNARK literature
+prefers. The deployed parameters were more prescient than we knew.
+
+Upgrades and additions:
+- **MS-PackLWEs / RevHomTrace (2025/1088) → evaluate-now**: trace noise
+  variance O(N³) → O(N log N), and it supplies PackLWEs — the exact
+  primitive the agenda names as missing for Rhombus.
+- **Smart–Walter derandomized evaluation (2025/2005) is a Lean-shaped
+  theorem**: CPA-D-style security requires randomized evaluation, which
+  breaks provability; they derandomize in the ROM for TFHE. The BFV
+  analogue is the hinge between our threshold-decryption CPA-D oracle and
+  a provable SNARK-over-FHE layer.
+- **2026/269 is a heuristic→theorem conversion for our deployed
+  primitive**: proves blind-rotation independence properties FROM (M)LWE
+  where prior estimators assumed them (and deviate up to 50% unrolled).
+- 2026/027's own honesty: if WHIR's performance conjectures fail, ~4×
+  proof-size blowup — the same conjectured-vs-proven split as everywhere.
+- Verified absence: no "FHE with polynomial-only noise growth" exists in
+  the 2024–26 mirror; GBFV's b-vs-p decoupling is the only structural one.
+- Experiment 3 concretized: gate the two-ladder on LEVELS by feeding
+  `vendor/fhe-dregg/benches/bfv.rs` numbers at deployed parameters into
+  Laminate's and 2026/487's published models.
