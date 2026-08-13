@@ -305,6 +305,10 @@ measurement harness, and the adversaries.
 - **`input_binding_is_a_commitment_not_a_wire_digest`** — asserts the MLE commitment and
   the proto3 wire digest of the *same ciphertext* differ, so binding condition (c) cannot
   be quietly assumed closed.
+- **`the_challenge_point_lives_in_the_EXTENSION_field`** — the regression guard for §2.4.
+  A drop to base-field challenges would typecheck, pass every other test in the file, and
+  cost 93 bits. The test also **builds the base-field point it exists to reject** and
+  asserts the same predicate scores it zero, so the gate is refutable rather than argued.
 
 ### ⚑ What is stubbed, named
 
