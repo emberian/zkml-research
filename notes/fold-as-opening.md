@@ -171,10 +171,12 @@ Enforced by leg (3) of §2.2 — a range check on the *output* limbs against
 *result only*, `Θ(N·L)`, never `Θ(B·N·L)`.
 
 **(c) What binds `cₖ` to the ciphertexts the FHE engine held.**
-⚑ **This is the real seam and it is currently unmet.** `order_ingress` binds an order
-by a *byte digest of the wire encoding*; the MLE commitment is a Merkle root over a
-Reed–Solomon codeword of `flat(cₖ)`. Two different objects over the same bytes. There
-are exactly two ways to close it:
+⚑ **This is the real seam and it is currently unmet.** Read at source:
+`fhegg-fhe/src/attestation.rs:185`, `InputDigest::ciphertext` binds
+`ciphertext.to_fhe_bytes()` — a *byte digest of the wire encoding*. The MLE commitment
+is a Merkle root over a Reed–Solomon codeword of `flat(cₖ)`. Two different functions of
+the same ciphertext. There are exactly two ways to close it (and see §4.3 for what the
+first one costs):
 
   - **(i) make the ingress commitment BE the MLE commitment** — the trader computes
     `Commit(flat(cₖ))` and signs *that*; the attestation's `ordered_inputs` digest is
@@ -336,7 +338,39 @@ FHE fold at deployed B", against the AIR route's ≥618× (packed) / 1639× (sca
 `h2-verdict.md` — the same order, and the comparison will only get worse once the
 opening lands.
 
-### 4.3 The deployed answer, in one line
+### 4.3 ⚑ A correction to my own marginal accounting
+
+The marginal column above charges the input commitments to nobody, on the grounds that
+*"the attestation already binds every ordered input ciphertext"*. **Read at source, that
+is true but not sufficient.** `fhegg-fhe/src/attestation.rs:185`:
+
+```rust
+pub fn ciphertext(ciphertext: &LeanCiphertext) -> Self {
+    Self::ciphertext_bytes(&ciphertext.to_fhe_bytes())   // a digest of the WIRE BYTES
+}
+```
+
+So the inputs are already bound — **by the wrong function**, which is binding condition
+(c) restated as an accounting fact. Closing (c) does not merely *re-point* an existing
+commitment; it **replaces a SHA-class digest over 98,304 bytes with an RS-encode +
+Merkle commitment over 49,152 field elements.** Measured here, the sponge over the limb
+vector alone is **~5 ms**, against roughly ~0.1 ms for a byte digest of the same
+ciphertext — call it one to two orders of magnitude dearer *per input*.
+
+That does not overturn the marginal frame, and here is precisely why it does not:
+
+- the cost is **per-trader, at ingress, once**, and it is off the folding node's
+  critical path — which is what "marginal to the fold prover" means;
+- it is paid **anyway** by any design that proves anything about these ciphertexts with
+  a hash-based PCS. It is not a cost of *this* result.
+
+But "already committed" was doing more work in that sentence than it had earned, so:
+**the honest marginal claim is "the input commitment is not the fold prover's cost", not
+"the input commitment is free".** ⚑ The system-wide bill for closing (c) is a
+one-to-two-order-of-magnitude increase in per-order ingress commitment cost, and that
+belongs in the decision, not in a footnote.
+
+### 4.4 The deployed answer, in one line
 
 > At the batch the node actually folds (**B=4**), the opening route commits **4.2×**
 > fewer field elements than the AIR that would have to be written — not 690×. The 690×
@@ -348,6 +382,32 @@ economics of the linear route improve linearly with the auction's batch, which i
 argument for a bigger auction rather than a faster prover; (b) it applies unchanged to
 any other ciphertext fold in the system with a large `B` — the GPU arena sweeps N=10³–10⁵
 and *those* are the shapes where 715×–5000× is live, if anything ever needs them proved.
+
+---
+
+## 4bis. What is left to build, in order
+
+Not a wishlist — the ordered remainder, with the one that is actually blocking first.
+
+1. **Close binding condition (c) by replacing the ingress commitment.** The trader
+   computes `Commit(flat(cₖ))` and signs *that*; `order_ingress`'s wire-byte digest and
+   the attestation's `ordered_inputs` are re-pointed at it. This is a wire-format change,
+   a descriptor re-emit and a re-genesis — i.e. ordinary work here. **Until this lands the
+   protocol proves a statement about committed vectors that nothing ties to the
+   ciphertexts the FHE engine held**, which is the difference between a result and a
+   result you can use.
+2. **The multilinear PCS.** The stub. `p3-sumcheck`'s `commit_base` + `layout` (WHIR) at
+   the pinned revision is the candidate and it natively supports several opening claims
+   on one stacked commitment — which is exactly the `B+1`-polys-one-point shape. Costed
+   separately in `notes/multilinear-pcs-landscape.md`; do not duplicate that lane.
+3. **The relation in Lean**, per §2.2, with the range leg as a lookup. This is the
+   only part that is a *constraint* and it is the only part that goes in Lean.
+4. **Switch the deployed fold to lazy accumulation.** Required (§3, the load-bearing
+   negative result), and measured break-even at B=4 — so it is a correctness
+   prerequisite, not a speedup. Do not sell it as one.
+
+⚑ **Do not do (2) before (1).** A PCS opening against a commitment that is not the
+ingress commitment is a beautifully-proved statement about the wrong object.
 
 ---
 
