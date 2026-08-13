@@ -1,0 +1,221 @@
+{
+ "version": "zkml-trace/v1",
+ "inputs": [
+  {
+   "role": "param",
+   "dtype": "f32",
+   "shape": [
+    784,
+    100
+   ],
+   "path": "weight/b399b1f5a6354f02"
+  },
+  {
+   "role": "param",
+   "dtype": "f32",
+   "shape": [
+    100,
+    10
+   ],
+   "path": "weight/56d3cfe223499d49"
+  },
+  {
+   "role": "input",
+   "dtype": "f32",
+   "shape": [
+    2,
+    28,
+    28
+   ],
+   "path": "input/0"
+  },
+  {
+   "role": "literal",
+   "dtype": "f32",
+   "shape": [],
+   "path": "lit/c1216a7f9c5c2f98"
+  },
+  {
+   "role": "literal",
+   "dtype": "f32",
+   "shape": [],
+   "path": "lit/0f15fcfdf6fc7fcc"
+  },
+  {
+   "role": "literal",
+   "dtype": "f32",
+   "shape": [],
+   "path": "lit/c1216a7f9c5c2f98"
+  },
+  {
+   "role": "literal",
+   "dtype": "f32",
+   "shape": [],
+   "path": "lit/0f15fcfdf6fc7fcc"
+  }
+ ],
+ "ops": [
+  {
+   "op": "reshape",
+   "ins": [
+    2
+   ],
+   "shape": [
+    2,
+    784
+   ]
+  },
+  {
+   "op": "matmul",
+   "ins": [
+    7,
+    0
+   ]
+  },
+  {
+   "op": "un",
+   "kind": "neg",
+   "ins": [
+    8
+   ]
+  },
+  {
+   "op": "broadcast",
+   "ins": [
+    3
+   ],
+   "shape": [
+    2,
+    100
+   ]
+  },
+  {
+   "op": "cast",
+   "ins": [
+    10
+   ],
+   "dtype": "f32"
+  },
+  {
+   "op": "broadcast",
+   "ins": [
+    4
+   ],
+   "shape": [
+    2,
+    100
+   ]
+  },
+  {
+   "op": "cast",
+   "ins": [
+    12
+   ],
+   "dtype": "f32"
+  },
+  {
+   "op": "bin",
+   "kind": "pow",
+   "ins": [
+    13,
+    9
+   ]
+  },
+  {
+   "op": "bin",
+   "kind": "add",
+   "ins": [
+    11,
+    14
+   ]
+  },
+  {
+   "op": "bin",
+   "kind": "div",
+   "ins": [
+    11,
+    15
+   ]
+  },
+  {
+   "op": "matmul",
+   "ins": [
+    16,
+    1
+   ]
+  },
+  {
+   "op": "un",
+   "kind": "neg",
+   "ins": [
+    17
+   ]
+  },
+  {
+   "op": "broadcast",
+   "ins": [
+    5
+   ],
+   "shape": [
+    2,
+    10
+   ]
+  },
+  {
+   "op": "cast",
+   "ins": [
+    19
+   ],
+   "dtype": "f32"
+  },
+  {
+   "op": "broadcast",
+   "ins": [
+    6
+   ],
+   "shape": [
+    2,
+    10
+   ]
+  },
+  {
+   "op": "cast",
+   "ins": [
+    21
+   ],
+   "dtype": "f32"
+  },
+  {
+   "op": "bin",
+   "kind": "pow",
+   "ins": [
+    22,
+    18
+   ]
+  },
+  {
+   "op": "bin",
+   "kind": "add",
+   "ins": [
+    20,
+    23
+   ]
+  },
+  {
+   "op": "bin",
+   "kind": "div",
+   "ins": [
+    20,
+    24
+   ]
+  }
+ ],
+ "out": 25,
+ "out_ty": {
+  "dtype": "f32",
+  "shape": [
+   2,
+   10
+  ]
+ }
+}
