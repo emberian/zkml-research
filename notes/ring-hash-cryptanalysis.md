@@ -52,9 +52,9 @@ weaknesses the design lane must address before this is more than a candidate.**
 Not executed: a direct Gröbner/CICO attack (no Sage; sympy timed out at n=4)
 — priced via the degree data instead, and said so.
 
-**Handoff**: ~~keep τ=1 (load-bearing)~~ — **superseded, see
-`ring-hash-design.md` §4: the fork was adjudicated and the answer is τ=4**;
-derive the round count; fix the two validator gates; carry the degree deficit as
+**Handoff**: ~~keep τ=1 (load-bearing)~~ — **contested: the design lane's branch
+closure happens at τ=4, and this preference was never adjudicated against it.
+See `ring-hash-design.md` §4 for the adjudication**; derive the round count; fix the two validator gates; carry the degree deficit as
 a known margin cost.
 
 ---
