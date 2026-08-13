@@ -725,6 +725,32 @@ which we can answer from our own side:
 **Escapes 1–3 (Symphony, ProtoGaLattice, GKR-delegation) — *pending detail*.**
 The lane's net verdict is in §5.2.
 
+#### ⚑ Escape 0, which our own corpus already held: don't be in R_q at all
+
+The lane ranks **Neo/SuperNeo** alongside Symphony as removing more than a
+perfect ring hash would. That is **eprint 2026/242 (Nguyen–Setty)**, and it is
+**already in our notes** — `mirror-mine-2026-08.md` §4 records it as the *"first
+folding scheme that is post-quantum, pay-per-bit, **field-native sumcheck over a
+small field (Goldilocks)**, general CCS, low recursion overhead."*
+
+**That is an escape of a different kind from the other four, and it may dominate
+all of them: if the folding scheme is *field-native* rather than R_q-native, the
+ring-hash problem does not arise.** You hash with an ordinary field Poseidon,
+because the transcript is field elements. The entire §4 τ analysis — challenge
+space, slot structure, extension-field S-boxes — is an artifact of choosing an
+R_q-native folding scheme (LatticeFold / 2026/1127) in the first place.
+
+⚠ **This is a substrate choice, not a hash choice, and it is above this note's
+pay grade to make** — 2026/1127's R_q-CCS exists because *TFHE bootstrapping is
+natively ring-structured*, and moving to a field-native folding scheme means
+re-expressing blind rotation in a field-native constraint system. **That
+re-expression is exactly the measurement the lane names as the one number that
+would flip the verdict** (§5.2). It is also why "just use Neo" is not free.
+
+`sis-lattice-verdict.md` also records the relevant tension: Neo/SuperNeo's
+"Almost Goldilocks" is Goldilocks−32, *"subtracted precisely to destroy
+two-adicity"*.
+
 #### Escape 4 — ACLMT: "no valid proof AND no known attack", which is neither of the two things people say
 
 **Albrecht, Cini, Lai, Malavolta, Thyagarajan, "Lattice-Based SNARKs: Publicly
