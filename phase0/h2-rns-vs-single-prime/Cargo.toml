@@ -1,0 +1,18 @@
+[package]
+name = "h2-rns-bench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+fhe-math = "=0.1.1"
+rand = "0.9"
+p3-baby-bear = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+p3-field = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+p3-dft = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+p3-matrix = { git = "https://github.com/Plonky3/Plonky3", rev = "82cfad73cd734d37a0d51953094f970c531817ec" }
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
