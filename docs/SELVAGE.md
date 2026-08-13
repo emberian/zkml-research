@@ -80,9 +80,17 @@ factor on top of that choice.
    `Commitment.lean`'s `OpeningScheme` is *positional* — the wrong shape for a
    multilinear claim. This is **the** gap, and it is a campaign, not a lemma.
 3. ⚑ **Value-ring polymorphism.** The base→extension boundary is a measured
-   ~3× cliff. **The emitted AIR object must be polymorphic in the value ring
-   before more constraints are written**, or we pay it forever and a retrofit
-   rewrites every constraint.
+   ~3× cliff. ⚠ **"Must be designed in from day one" is NOT supported** —
+   Hierarchy Builder exists to evolve algebraic hierarchies *"without breaking
+   user code"* and MathComp completed that retrofit. **True narrower
+   statement: cheap iff constraints consume the ring through an interface,
+   ruinous iff `Felt` leaks everywhere — a check, not a deadline.** And the
+   semiring-provenance literature *prescribes the shape*: transport commutes
+   with a ring change **iff the map is a homomorphism**, and semantics in any
+   K **factors through the free object** — so the emitted AIR should be a
+   syntactic expression over ℤ-coefficients with each ring a valuation, not a
+   `BabyBear → BabyBear` function (Kovach–Kjolstad, PLDI'23: exactly this,
+   proved in Lean 4, ~540 lines).
 4. **Degree.** The engine is degree-1; GKR fraction trees and zkML matmul both
    want degree 3. The protocol layer is already degree-generic and
    `AirSumcheckQuadratic` already did degree 2 — so this is a port, plus
@@ -120,10 +128,18 @@ build:**
    degree-2 sumcheck (which our engine already proves) plus a **width-4,
    two-bit-state read-once branching program** — decidable per layer, with an
    induction on top. **The single most Lean-tractable big idea available.**
-3. **A boundary-statement compiler.** We *noticed* interior-vs-boundary.
-   Nobody has turned it into a discipline: given a computation, emit the
-   cheapest boundary statement, with the choice justified. That is a research
-   direction, not an engineering task.
+3. **A boundary-statement compiler.** ⚠ **CONTRADICTED 2026-08-13: it
+   exists.** Distiller (eprint 2022/1557, S&P 2023) compiles *"not the
+   original computation but an abstracted specification of it,"* provably
+   safely, at 1.3–50× — via a refinement chain over transition systems, with
+   the mechanization explicitly a free choice. **What survives as ours: the
+   COST THEORY (which abstraction is cheapest and why) and the Lean
+   instantiation.** It has zero follow-ups in 25,765 eprint texts. And the
+   near-term move is smaller than a compiler: **Dumas–Kaltofen–Villard's
+   certificate catalogue (rank, determinant, char/min poly, Frobenius, PSD)
+   already meets our boundary criterion — they named it "essentially optimal"
+   in 2014 — and is compiled with Fiat–Shamir as a HEURISTIC. Selvage holds
+   exactly the RBR→FS leg they lack. Joining them is a port.**
 4. **Value-ring-polymorphic constraint authoring in Lean**, with the *emitted*
    object polymorphic too. Every fast system encodes this in its type system;
    nobody has done it in a proof-carrying authoring language.
