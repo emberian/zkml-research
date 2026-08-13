@@ -60,9 +60,23 @@ total. **Crypto mapping:** prove only the fired experts' matmuls, plus a
 permutation argument plus monotonicity check, which SNARKs do cheaply.
 
 Router binding also closes an effort-gap cousin of Hollow-LLM: an unproven
-router lets the prover route everything to a cheap expert. **Status: absent
+router lets the prover route everything to a cheap expert. ~~**Status: absent
 from the log and from every zkML paper we read; all of them prove dense
-models.**
+models.**~~
+
+⚑ **RETRACTED 2026-08-13 — the absence is FALSE.** `notes/moe-router-binding.md`
+§7. **ZK-DeepSeek (arXiv 2511.19902)** proves DeepSeek-V3's grouped two-round top-k
+and proves only the selected experts; **arXiv 2606.05433 §A.5 OP-10** names routing
+commitment and top-K verification as protocol sub-problems. **Both were already in
+`~/paperbin/`, pulled and correctly named on 2026-08-12 — the same day the absence
+was declared.** The sweep read first-2-page caches and both papers bury MoE in a
+§4.3 and an appendix. What remains open is narrower and sharper: the tie-break
+(ZK-DeepSeek's non-decreasing sort is **unsound** on ties; 2606.05433 calls bf16 ties
+"rare" and the criterion `2^mantissa < n_experts` says they **dominate**), **expert-
+identity binding** (neither addresses it; the naive fix costs Θ(E·d·f) and erases the
+discount), and the discount's **decay with context length** (18.3× at C=1 → 2.7× at
+128k, unpublished). Also cite **CryptoMoE** (NeurIPS'25) — the counter-current that
+hides routing.
 
 ## D. Layer uniformity → one sumcheck over the layer dimension
 
@@ -162,7 +176,7 @@ through ~May.
 |---|---|---|
 | **A. Binius × ML** | **unclaimed** | Only Binius-internal work (a 2026 MDPI Hybrid-Commit paper on PCS engineering). Nothing connects small-value commitment to ML inference. |
 | **B. LoRA × ZK** | **claimed for FINE-TUNING; narrow to inference** | `verilora-ndss26.pdf` (NDSS 2026 — "first framework to integrate LoRA fine-tuning with ZKPs"), `zk-lora-verification.pdf` (2501.13965), `smdp-model-updates.pdf` (2604.04738 — succinct model-difference proofs). All prove the *training/update* side. Prove-base-once-plus-thin-adapter at **inference**, and the registry link, appear open — but every claim must now cite these. |
-| **C. MoE router binding** | **unclaimed** | No verifiable-MoE hit at all; every published system proves dense models. |
+| **C. MoE router binding** | ~~unclaimed~~ **⚑ REFUTED 2026-08-13** | ~~No verifiable-MoE hit at all; every published system proves dense models.~~ **FALSE.** ZK-DeepSeek (2511.19902) + 2606.05433 OP-10, **both already in `~/paperbin/` when this row was written**. The first-2-page cache cannot see a §4.3. See `notes/moe-router-binding.md` §7 for the corrected gap. |
 | **D. layer-fold sumcheck** | primitive known, application unclaimed | Data-parallel GKR sumcheck is in the literature (`collab-zksnark-dataparallel.pdf`, eprint 2024/143; Thaler '13). Nobody folds transformer layers into one hypercube. |
 | **F. streaming LLM prover** | **substrate exists — read Hobbit first** | `hobbit-space-efficient.pdf` (USENIX Sec'25): space-efficient zkSNARK with **optimal prover time** — exactly the primitive; plus `gemini-elastic.pdf` and `sumcheck-speedup-2026-587.pdf`. The LLM-scale application (weights streamed from disk, 70B on 64 GB) remains unclaimed. Hobbit may change F from "engineering campaign" to "integration." |
 | **G. proof-aware QAT** | unclaimed as stated | ZEN's quantization-oriented optimizations (survey 2502.18535) are post-hoc handling, not training-into-the-circuit. LLM-QAT/ZeroQAT are pure ML. "Train the model to be the circuit" is in nobody's paper. |
