@@ -519,4 +519,27 @@ is the single largest open item for the τ=4 branch.
 
 ## 6. Prior art
 
-*(pending — literature lane input outstanding; lands in `ring-hash-cryptanalysis.md`)*
+**Done — it landed in `ring-hash-cryptanalysis.md` §"Prior art"**, which
+previously had zero external citations. Three items; **two of the three came back
+partly refuted**:
+
+- **Rubato / Grassi et al. 2023/822** — verified as a full-round break of 5 of 6
+  variants, but "warning shot at *our* design" is **overstated**: the attack
+  needs a divisor of q, our q is prime, and the paper's own countermeasure is
+  "restrict q to prime" (which Rubato's designers then adopted). What transfers
+  is the *mechanism by analogy*: their Lemma 1 descends a polynomial map over Z_q
+  to every quotient Z_m; **our analogue is the factorization of X^16+1 into τ
+  ideals**, on which the S-box acts slot-wise and every automorphism permutes
+  slots without mixing — the same wound in ideal-theoretic clothing, and exactly
+  what §1 discharges.
+- **2021/1010** — the de-linearization remark exists but is a *different idea*
+  (domain extension, not RO-likeness), and **the "3,971 AIR constraints" figure
+  is refuted and must not be quoted**: its own breakdown sums to 3071, it is an
+  op count with no AIR exhibited, and the paper misstates its own ring. **There
+  is no usable external datum for "R-SIS hash in an AIR."**
+- **SWIFFTX** — verified, and it poses our exact problem in 2008 ("not
+  pseudorandom … due to linearity"). Its de-linearizer is two operations and both
+  leave the ring. **"Cannot be arithmetized" is our inference, labelled as such**
+  — well supported, since the layer's stated goal is high degree over GF(257)
+  itself. This is the sharpest statement of our contribution: **de-linearize
+  without leaving R_q.**
