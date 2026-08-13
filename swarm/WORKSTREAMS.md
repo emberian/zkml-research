@@ -29,6 +29,30 @@ scaffold+claim-ledger. Gate: red team clears; experiment verdict in.
 7. **num_queries pin** — QUEUED. Spec: field-choice-verdict prerequisite.
    (Soundness; field-independent; do before flag day.)
 
+## zkML pillar (Opus-ready; spec for all four: notes/zkml-integration-architecture.md)
+Placement DECIDED: minidregg, not breadstuffs. Op vocabulary in `Theory/`
+(candidate-independent), semantics in `Selvage/`, emission in `Compiler/`,
+engine = card 1's Selvage sumcheck. The breadstuffs "interim" was measured and
+DROPPED — it needs more new machinery than the destination.
+Rung 0 LANDED: catgrad tracer built + running (`~/src/catgrad-spike` @ 253dd37,
+forked at `faf053f`); MNIST = 26 ops, 0 branch demands, 158800 MACs.
+
+Z1. **Lean op vocabulary in `Theory/`** — QUEUED, DISPATCH FIRST (Z2/Z3 wait on
+    it). `IxSignature` + two algebras + agreement by `fold_fusion`; template is
+    `Theory/IndexedProgram.lean`. Gate: import-boundary green, no vacuous
+    theorem, mismatch tooth fails on the wrong algebra. Forbidden: `#guard`.
+Z2. **Tracer v1 + differential harness + toy GPT-2** — QUEUED. Path-to-wire
+    binding, Merkle weight commitment (FNV is a placeholder), canonicalization,
+    fixtures as shape differential. Tripwire verbatim in the brief: NO
+    `assert_zero`/builder/gate in Rust.
+Z3. **Matmul as a vector relation** — BLOCKED(on: Z1, card 1). Instantiate
+    `Assurance/AirSumcheckQuadratic.lean`'s degree-2 MLE face. ⚠ must state it
+    BUILDS `[PROVER-sumcheck-gates]` (degree-2) and `[PROVER-fs]`, not assumes.
+Z4. **Inference-shaped audit instantiation** — QUEUED, parallel (needs no tracer,
+    no prover). Instantiate AuditSampling for inference + derive the `1 − 1/N`
+    width floor (named but UNDERIVED, §8 ~line 1110). ⚑ headline finding to
+    confirm: sampling cannot amortize WITHIN a wide inference — `q ≤ p/N`.
+
 ## Verification tier
 8. **census-on-Avigad** — QUEUED. Spec: compositions item A. Collegial gift.
 9. **KB-vs-Goldilocks recursion benchmark** — QUEUED. Gates the flag day;
