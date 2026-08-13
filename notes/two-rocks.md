@@ -97,3 +97,51 @@ minidregg's sponge mode instantiates at R_q with ZERO new hypotheses.
 a real weakness needing a degree analysis; extension-field slots (τ>1) are
 a second front the Poseidon2b designers themselves decline to argue. This
 is a candidate with a clear attack surface, not a construction.
+
+## GATE RESULTS (2026-08-13, red-team + experiment + Lean — all three landed)
+
+**Red team: the architecture survives; four headline corrections MANDATORY
+before quoting:**
+1. **Prior-art restated**: the prime appears in a 2014 Lisp NTT
+   candidate-moduli table (stylewarning/lisp-random, comment-only, never
+   deployed) — the honest frame is "never deployed; once listed as a
+   candidate in 2014," which is arguably more charming anyway.
+2. **Noise floor is 55–59 bits, not 51** — the 51 used weight bit-width as
+   magnitude (16× understates ℓ1); with fhe.rs's ACTUAL distributions the
+   floor is 59 — **only 2.4 bits under the candidate at 8-bit weights**.
+   Tight. (4-bit weights keep comfortable margin.) And the clean floor
+   depends on fhe.rs's exact-division encoding — p mod t ≈ 0.95t is
+   near-worst for textbook-Δ BFV; the paper must state the encoding.
+3. **Candidate core-SVP is 213.7, not 205** (stale draft number — even
+   better, but the printed number was wrong). And the deployed fhegg secret
+   is **CBD(20)** (σ=√10, support ±20) — mislabeled as ternary AND as
+   CBD(10) by earlier lanes; actual-distribution security 98.1/130.5.
+4. **Barrel-shift uniqueness restated**: the literal claim was false
+   (Goldilocks is 64 bits — outside its own claimed window; 37 Φ_m(2^b)
+   primes exist in 65–160 bits). The true theorem: among that form with
+   **2-adicity ≥ 9**, Goldilocks is unique — and it is the form SIX ways.
+   Form ≠ capability (factors of Φ_d(2) qualify too; the F7 73-bit factor
+   is a live example), and the scan scripts had real bugs (factorint with
+   a limit silently drops composite cofactors). Also: **p61 has NO
+   barrel-shift capability** (ord₂ ≈ 2^57) — never imply it inherits that.
+
+**Experiment: CONFIRMED on mechanism, REFUTED on "one line" — and the scar
+strengthens the thesis.** Ceiling 2^32 → 2^54 by execution; p61 is
+**10–40% FASTER than Goldilocks** (61 bits leaves spare-bit headroom that
+64-exactly cannot); proof sizes equal. But e2e broke first: the artifact's
+RLWE encode/decode was **Goldilocks-structural in two hidden ways**
+(bit-shift decode relying on 2^64 mod q being tiny; wrapping_add through
+u64) — **12/12 unit tests passed while decryption was garbage** — repaired
+with ~20 lines of textbook exact Regev, field-generic by measurement
+(13/13 on BOTH fields). This is more evidence for the paper's actual
+thesis: representation choices propagate into deployed systems unexamined,
+twice over in one artifact.
+
+**Lean: everything proved, zero obligations.** The family law verbatim
+(`familyP_maximalInertia_iff`), three independent derivations of the KB
+headline, p61 fully certified with kernel-checked Lucas primality, the
+n=214 counterexample proved (67-digit prime, ord₉=2, three quadratic
+factors — the ⟺ has real teeth now), Goldilocks proved prime, and the
+domain-availability lemma whose Goldilocks negative instance is the
+matvecmul panic stated as mathematics. Commit 641ceeb, whole tree green,
+HEAD-verified, codex untouched.
