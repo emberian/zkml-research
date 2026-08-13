@@ -255,8 +255,15 @@ RISC Zero [measured]. What remains ours:
    whole S-two dev) — the layer everyone stops before, where the conjectured
    legs live, now in an active refutation race (2025/2046 et al.) that
    re-prices deployed "100-bit" claims.
-4. **The vacuity instruments** — carrier census, premise inhabitation. Their
-   development lacks them; "Verification Theatre" (2026/192: four vulns
+4. **The vacuity instruments** — carrier census, premise inhabitation.
+   ⚠ NOT a differentiator and not novel (ember, 2026-08-13): checking whether
+   your assumptions have inhabitants is what careful people do, vacuity
+   detection has existed in model checking since ~2001, and vacuous
+   assumptions early in a development are NORMAL — you write the statement
+   before you have the witness. The only real difference is that we run the
+   check mechanically and by default instead of by remembering to, and that
+   we mark what is still open. Shipping unmarked is the error, not having
+   them. Their development lacks the mechanical check; "Verification Theatre" (2026/192: four vulns
    *inside* verified proof code) is the external motivation.
 
 Two imports taken from their work: the restricted-bad-set tuple-compression
