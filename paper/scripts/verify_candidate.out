@@ -1,0 +1,47 @@
+== candidate p61 = 2^61 - 2^54 + 1 ==
+[PASS] p61 == 2287828610704211969
+[PASS] p61 == 127*2^54 + 1 (family form, cofactor 127)
+[PASS] p61 is prime (deterministic MR < 2^64)
+[PASS] 2-adicity of p61-1 is exactly 54
+[PASS] cofactor (p61-1)/2^54 == 127, prime
+[PASS] KoalaBear == 127*2^24 + 1 == 2^31 - 2^24 + 1 (same Solinas shape)
+[PASS] fold identity: 2^61 ≡ 2^54 - 1 (mod p61)
+[PASS] 3 lazy-reduction bits: p61 < 2^61 <= 2^64/8
+[PASS] omega = g^((p-1)/2^54) with g=3 has omega^(2^53) == -1 (order exactly 2^54; negacyclic NTT legal to N = 2^53)
+
+== 3-adic inertia: ord_9 criterion ==
+[PASS] ord_9(p61) == 6  (maximal inertia: Phi_{3^k} irreducible for all k)
+[PASS] ord_9(Goldilocks) == 3  (FAILS maximal inertia)
+[PASS] ord_9(BabyBear) == 3  (FAILS maximal inertia)
+[PASS] ord_9(KoalaBear) == 6  (passes)
+[PASS] direct: ord_{3^k}(p61) == phi(3^k) for k = 2..8
+
+== family law: p = 127*2^n + 1, n = 1..80 ==
+[PASS] n odd or n ≡ 3 (mod 6)  =>  3 | p (no primes there)
+[PASS] every family prime n=1..80: maximal inertia <=> n ≡ 0,2 (mod 6)
+   family primes found: n=2(inert), n=12(inert), n=18(inert), n=24(inert), n=54(inert), n=72(inert)
+[PASS] KoalaBear (n=24 ≡ 0) and p61 (n=54 ≡ 0) both instances, both inert
+[PASS] failing witness: 127*2^214 + 1 prime (probabilistic MR) with ord_9 == 2 (NOT inert)
+
+== reference adicities ==
+[PASS] 2-adicity(Goldilocks) == 32
+[PASS] 2-adicity(BabyBear) == 27
+[PASS] 2-adicity(KoalaBear) == 24
+
+== Goldilocks barrel-shift structure (identities only; uniqueness scan is a lane) ==
+[PASS] Goldilocks == Phi_6(2^32) == Phi_12(2^16) == Phi_24(2^8)
+
+== Crandall primes 2^k - c, c < 4096: structural 2-adicity cap ==
+[PASS] v2(2^k - c - 1) == v2(c+1) for all odd c < 4096 (k=90 witness)
+[PASS] max v2(c+1) over odd c < 4096 == 12 (so 2-adicity <= 12, structural)
+
+== Solinas census: p = 2^a - 2^b + 1, a in [96,130] ==
+   primes found: 117  |  with 2-adicity >= 20: 93
+   (bases above 2^64 are probabilistic MR, 40 rounds)
+[PASS] census note figure: 93 primes with 2-adicity >= 20 in a ∈ [96,130]
+[PASS] example 2^108 - 2^50 + 1 is prime with 2-adicity 50
+[PASS] example 2^109 - 2^58 + 1 is prime with 2-adicity 58
+[PASS] example 2^109 - 2^65 + 1 is prime with 2-adicity 65
+[PASS] example 2^113 - 2^32 + 1 is prime with 2-adicity 32
+
+RESULT: all 29 checks pass
