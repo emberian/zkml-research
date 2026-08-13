@@ -2,7 +2,7 @@
 # Selvage.FiatShamir — the transcript layer: the ROM as an inhabited handler, and
 # Fiat–Shamir of a round-by-round-sound reduction.
 
-LOOM-RECOMPOSITION §2 commits the transcript layer to ONE BCS/FS compilation of
+SELVAGE-RECOMPOSITION §2 commits the transcript layer to ONE BCS/FS compilation of
 the whole protocol with round-by-round soundness as the invariant: where RBR
 holds, Fiat–Shamir in the ROM yields STRAIGHTLINE extraction from a single
 transcript — no rewinding, no R–T tree (the CY24/BMNW25 route; what WARP and

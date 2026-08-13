@@ -2,7 +2,7 @@
 # Selvage.Rbr — round-by-round knowledge soundness: the vocabulary Selvage's extraction rides.
 
 Statement-first transcription of WARP (ePrint 2025/753) §4 and Appendix B — the
-extraction skeleton LOOM-RECOMPOSITION §2 commits to: every component enters the
+extraction skeleton SELVAGE-RECOMPOSITION §2 commits to: every component enters the
 stack with an RBR knowledge-soundness proof, and depth composition to
 state-restoration (hence, after BCS/FS, straightline extraction from a single
 transcript) is the loss-free union-bound theorem stated here as **[OB-2]**.
@@ -90,7 +90,7 @@ noncomputable def fracHamming {A : Type} {n : ℕ} (u v : Fin n → A) : ℝ :=
 display; exactly the clause bodies of Def 4.1): the implicit instance `y` is
 within fractional Hamming distance `δ` of some `y⋆` that puts `(𝕚, 𝕩, y⋆, 𝕨)`
 in the relation. The strict relation is the `δ`-free fibre; the slack lives
-ONLY here, on the extraction side (LOOM-RECOMPOSITION §1, promise-relation
+ONLY here, on the extraction side (SELVAGE-RECOMPOSITION §1, promise-relation
 interface). -/
 def RelaxedMem {Idx X A W : Type} {n : ℕ}
     (R : Idx → X → (Fin n → A) → W → Prop) (δ : ℝ)

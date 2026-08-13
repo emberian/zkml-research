@@ -1,7 +1,7 @@
 /-
 # Selvage.LightClient — the whole-history aggregation object and its attestation.
 
-THE v0 MILESTONE APEX (docs/LOOM-RECOMPOSITION.md §1/§6, docs/HYPEREDGE-DESIGN.md
+THE v0 MILESTONE APEX (docs/SELVAGE-RECOMPOSITION.md §1/§6, docs/HYPEREDGE-DESIGN.md
 §4): a verifier checking ONE aggregate accumulated claim learns that every link
 of the history is a well-formed accumulated claim, executed IN ORDER. A history
 is a chain of links; each link carries an `AccClaim` (`Selvage/Accumulator.lean`)

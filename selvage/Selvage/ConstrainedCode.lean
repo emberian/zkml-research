@@ -25,7 +25,7 @@ out of scope for the PCS/accumulator floor, and this file never claims it. The
 domain-point evaluation claim `f(pt) = σ` is the instance `evalConstraint`
 (`satisfies_evalConstraint_iff`), the discrete `Z·eq` weight.
 
-This is docs/LOOM-RECOMPOSITION.md §6's constraint channel: "points + targets,
+This is docs/SELVAGE-RECOMPOSITION.md §6's constraint channel: "points + targets,
 γ-linear in both" — `LinearConstraint` is the channel entry, and γ-linearity in
 both components is exactly what `batchConstraint` exercises.
 

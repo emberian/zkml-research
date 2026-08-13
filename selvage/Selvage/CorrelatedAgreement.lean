@@ -6,7 +6,7 @@ every linear code** — WHIR (eprint 2024/1586) §4.2: Definition 4.7 (proximity
 generator), Definition 4.9 (mutual correlated agreement), Lemma 4.10 (in the
 unique-decoding regime every proximity generator has mutual correlated agreement
 with the *same* error). This is THE load-bearing property of Selvage's link layer
-(docs/LOOM-RECOMPOSITION.md §1: plain proximity gaps do not relate input
+(docs/SELVAGE-RECOMPOSITION.md §1: plain proximity gaps do not relate input
 agreement sets to the output's — WARP fn. 6) and the v0 parameter rung (§5: the
 UD regime is unconditional end-to-end).
 

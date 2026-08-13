@@ -39,7 +39,7 @@ collapses to `(1+ρ)/2` by AM–GM exactly as printed).
 code — i.e. that the geometric generator actually IS a proximity generator with
 `B = √ρ` and explicit `err` — is WHIR Theorem 4.8, imported there from BCIKS,
 "Proximity Gaps for Reed–Solomon Codes" (eprint 2020/654). That is real future
-proof work (the Johnson-regime rung of docs/LOOM-RECOMPOSITION.md §5's ladder);
+proof work (the Johnson-regime rung of docs/SELVAGE-RECOMPOSITION.md §5's ladder);
 here it enters only as the hypothesis `hPG`, never as an instance or axiom
 (ATLAS law 1: naming is faking). Premise inhabitation is still exhibited
 non-vacuously: at full rate `d = n` the RS code is ⊤ (Lagrange interpolation,

@@ -1,7 +1,7 @@
 /-
 # Selvage.Accumulator — the WARP-shape accumulated claim and its γ-fold.
 
-THE HEART of Selvage (docs/LOOM-RECOMPOSITION.md §1): the accumulated object
+THE HEART of Selvage (docs/SELVAGE-RECOMPOSITION.md §1): the accumulated object
 `acc.𝕩 = (rt, α, μ, β, η)` — one word commitment `rt`, one multilinear
 evaluation constraint `û(α) = μ`, one bundled circuit constraint
 `P̂(β, C⁻¹(f)) = η` — read abstractly as a CONSTRAINED-CODEWORD claim: a word

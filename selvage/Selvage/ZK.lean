@@ -3,7 +3,7 @@
 word-level hiding shell of the masked γ-fold.
 
 **OB-4 is a contribution slot, confirmed ABSENT from the literature**
-(docs/LOOM-RECOMPOSITION.md §4): neither WARP nor Arc has any ZK — salt-zero
+(docs/SELVAGE-RECOMPOSITION.md §4): neither WARP nor Arc has any ZK — salt-zero
 Merkle commitments, `t` codeword symbols leaked per accumulation step, no
 sketch of a simulator — and 2026/289's concrete zk machinery is
 Pedersen-homomorphic with rewinding extraction (4m-transcript trees,

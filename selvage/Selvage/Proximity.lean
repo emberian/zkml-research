@@ -57,7 +57,7 @@ delivered in one regime and REDUCED in the other:
   Selvage/ReedSolomon.lean's Corollary 4.11 carries. ONE proximity-gap
   hypothesis now gates the entire rate<1 story (mutual CA and the LDT
   alike); its UD-regime instantiation is the ladder's next rung
-  (docs/LOOM-RECOMPOSITION.md §5) and is NOT claimed here.
+  (docs/SELVAGE-RECOMPOSITION.md §5) and is NOT claimed here.
 
 **Honest scope limits.** This is the folding/decision skeleton of the LDT at
 claim resolution, matching the strict decider contract (`[DEC-proximity]`):
