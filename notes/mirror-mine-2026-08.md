@@ -97,7 +97,7 @@ Across 7,090 papers:
   motivation.
 - `2024/1841` — Jolt's Lasso subtable semantics for all RV32I instructions
   **formally verified in ACL2**. The direct precedent for "the lookup table is
-  proved correct" (moat item), and evidence the idea has legs outside our tree.
+  proved correct" (worthwhile work item), and evidence the idea has legs outside our tree.
 - `2025/1993` — FRI round-by-round soundness *simplified explicitly to enable
   formal verification*. A bridge paper for Loom.
 - `2026/604` **CatCrypt** — 172 protocols machine-checked in Lean, 110 with a

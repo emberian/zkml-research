@@ -131,7 +131,7 @@ bits of headroom where the diagonal/BSGS route fails by 2.9. Build it
    of the published statement's corner case) — and *nothing runs it*.
    breadstuffs re-verifies FRI in-circuit at every link. The migration turns
    a proved theorem into a statement about a deployed object.
-3. **Verified table contents.** The moat item: a theorem that *this
+3. **Verified table contents.** The worthwhile work item: a theorem that *this
    committed table is exactly the graph of this function*. StarkWare
    explicitly carved this out as an assumption. Cheap, unclaimed, compounds
    with every table-using consumer.
@@ -192,7 +192,7 @@ corrections baked in → statement-first with teeth → detached-clone gate.*
    depth level (and it cancels a re-genesis I recommended).
 4. **G1: the single-prime experiment** — an afternoon that could delete our
    #1 soundness hole.
-5. **Verified table contents** — the moat, cheap.
+5. **Verified table contents** — cheap and worth having.
 6. **The tuple-compression lemma** — small, three consumers, one of them the
    breadstuffs apex floor.
 7. **`num_queries` pinning** — field-independent soundness fix found in

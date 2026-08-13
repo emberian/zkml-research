@@ -25,12 +25,12 @@ bad set" is a hypothesis). Recursion opcodes and all builtins/hashes uncovered.
 instrument would notice if they were mis-stated. Not a vacuity claim — a
 missing-instrument claim. Our carrier-census discipline is the thing they lack.
 
-## The moat, revised honestly
+## What is actually worth building here
 
 "We do Lean" is no longer a differentiator: StarkWare runs a funded in-house
 Lean program; ArkLib covers IOR/FRI/sum-check abstractly; a Rust→Lean pipeline
 (2605.30106, Charon/Aeneas/hax) is attacking the twin problem directly on
-Plonky3 and RISC Zero. What remains ours, narrower and sharper:
+Plonky3 and RISC Zero. What is still worth our building, because it is true and missing:
 
 1. **Verified table CONTENTS against a mathematical spec.** StarkWare
    explicitly carved this out — `h_rc` is an assumption, "must be verified
