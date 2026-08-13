@@ -135,3 +135,65 @@ isolated vs 19.6% on full codebases** — is the citable gap our
 whole-tree-build discipline addresses; the EF initiative is **$20M/3yr
 scoped to "critical components"** — any "verify every component" citation
 overclaims; verified-zkevm.org itself is an empty template.
+
+
+## The closing synthesis: six unclaimed positions, three moves
+
+The frontier lane's final scoreboard (multi-agent, self-correcting — it
+retracted its own LogUp-first claim after finding StarkWare's S-two dev
+verifies LogUp; positioned the sponge asset honestly; and censused
+Isabelle/STARK: 5,476 lemmas, 0 sorry — **and its headline soundness bound
+has never been exhibited below 1**, no proximity leg, GF(5) only — the
+cleanest external specimen of the vacuity class, landed ten days ago).
+
+**The tree's genuinely unclaimed positions, in order:**
+1. **BCS transform soundness** — stub in ArkLib, absent everywhere else;
+   ours proved at the deployed root-and-columns alphabet.
+2. **RBR→Fiat–Shamir compiler theorem** — absent everywhere; ours
+   unconditional at (t+k)·ε_rbr.
+3. **State-restoration soundness** — absent everywhere; ours proved.
+4. **Sponge indifferentiability in a foundational prover** — first ever
+   outside EasyCrypt'19 (the only one in existence). ⚠ Re-aim needed:
+   indifferentiability does NOT close [FS-ROM] for knowledge soundness
+   (2025/536 §2.3 verbatim); extraction-friendly indifferentiability gets
+   the first AND the closure.
+5. **An instantiated two-sided soundness bound < 1 at deployment
+   parameters** (2^-56 < error ≤ 2^-55, dominant term named). Hirai:
+   uninstantiated. Isabelle: never shown < 1. ArkLib: no statement.
+   **Nobody else has a number at all.**
+6. **Grinding necessity** — everyone else proves sufficiency only; ours
+   exhibits 9/25 > 1/5 exactly.
+
+**The edge, named**: everyone else has legs and no composition, or
+composition and no legs. The tree owns the COMPILATION half of the stack —
+BCS, RBR→FS, state restoration, sponge, and the arithmetic that turns it
+into one number.
+
+**Three moves:**
+1. **Compose, don't re-prove**: port ArkLib's Polishchuk–Spielman + take
+   their proved unique-decoding CA as realizer + discharge Hirai's h_mca =
+   **the first unconditional machine-checked FRI RBR soundness theorem,
+   assembled from three trees none of which can do it alone. Days.**
+2. **Plug FRI into Chiesa–Orrù Corollary 1** — generic in ε^sr, zero
+   occurrences of "FRI" in it; our FS-of-RBR keystone + BCS instance are
+   the scarce half.
+3. **Ship the two-regime security calculator** — ErrorBudget/MixedField/
+   PowGrinding generalized over {regime, code, field, extension, grinding},
+   reproducing S-two Tables 5–6 as Lean-computed two-sided bounds with the
+   regime tag IN THE TYPE. The corroborating need is overwhelming (Isabelle
+   bound never < 1; the retracted EasyCrypt LPZK proof — wrong at the
+   DEFINITION layer; "no zkVM has end-to-end FV" per 2607.23752).
+
+**And the Proximity Prize's Grand MCA Challenge — $1M, $0 awarded — asks
+for δ* WITH a matching lower bound proof: our prove-the-floor-FALSE law,
+written by someone else, as a prize.**
+
+Unresolved and flagged: CatCrypt (172 protocols claimed "Novel" incl. FRI/
+STARK/PLONK, built in 2 months with GenAI, **main repo private** — the
+single largest unknown; if real it claims several positions above);
+`lalalune/ArkLib` advertises sorry-free MCA theorems whose files do not
+exist at HEAD (unexplained); ArkLib total sorry count differs between
+censuses (244 vs 310; load-bearing ones verified individually); ~/paperbin
+needs dedup (~120 new PDFs, duplicates under different names, IoTeX
+numbering reversed in several filenames — authoritative: 2026/858 =
+Threshold Halving, 2026/861 = Action–Orbit).
