@@ -8,8 +8,14 @@ red-team re-derivation · modulus-swap experiment · family-law Lean ·
 scaffold+claim-ledger. Gate: red team clears; experiment verdict in.
 
 ## Build tier (Opus-ready now)
-1. **M0 sumcheck wiring** — QUEUED→dispatching. Spec: notes/vfhe-shortest-path.md.
-   Gate: product-of-MLEs toy proves+verifies end-to-end at our pin.
+1. **Selvage sumcheck engine, Lean-bound** — REFRAMED (ember caught the
+   mis-sequencing): p3-sumcheck M0 LANDED as reconnaissance only (bc2e9f4b9;
+   measured API facts: degree-2-pair engine, verifier folds-but-checks-nothing
+   [fail-open seam], p3-lookup does not compose). The engine that RUNS is
+   Selvage's own: grow minidregg/prover against the Lean sumcheck verifier as
+   spec, emitted-vector binding, p3 toy demoted to differential harness in
+   tests only (a confession, not a substitute). Gate: prover+verifier
+   roundtrip where the verifier semantics are Selvage's, bound to Lean.
 2. **Weight registry** — QUEUED→dispatching. Spec: composition B
    (notes/context-window-compositions.md) + range-request technique
    (phase0/e8m0_spread.py). Gate: published commitments for ≥3 Tier-1 models
