@@ -468,6 +468,77 @@ ingress commitment is a beautifully-proved statement about the wrong object.
 
 ---
 
+## 4ter. Prior art — **we are not first at the fact, and the nearest neighbour is sharper than expected**
+
+⚠ **Instrument disclosure, per house law.** This section is built from **web/arXiv search
+plus full-text of one paper I pulled and extracted myself**. `~/paperbin` (1,091 PDFs,
+507 with `.txt`) was swept separately. Neither instrument alone supports an absence
+claim, and this section makes none: everything below is a *presence* finding.
+One instrument failed outright and is named: the ACM Computing Surveys systematic review
+of verifiable FHE (`10.1145/3797902`) **returned 403 and was not read** — it is the single
+best instrument for the absence question and it remains unconsulted.
+
+### Layer A — "linear maps are free in the multilinear world": **KNOWN, and we are not close to first**
+
+This is folklore and it is the operating assumption of several whole literatures:
+GKR/sumcheck zkML checks linear layers with sumchecks over MLEs; batch-opening arguments
+are random-linear-combination arguments; folding schemes (Nova and descendants) exist
+*because* a linear combination of committed instances is cheap under commitment
+homomorphism. **Claiming novelty at Layer A would be wrong.** Our note should never have
+been going to.
+
+### Layer B — FHE ciphertext folding: **the neighbourhood is populated, and two neighbours are very close**
+
+The literature has a name and a taxonomy for this (Chatel–Knabenhans–Pyrgelis–Troncoso–
+Hubaux, *Verifiable Encodings for Secure Homomorphic Analytics* / **VERITAS**,
+arXiv:2207.14071v4, §related work). Read at source:
+
+1. ⚑ **Bois, Cascudo, Fiore, Kim — "Flexible and efficient verifiable computation on
+   encrypted data" (PKC 2021).** VERITAS's own summary: *"the resulting approach still
+   limits the admissible HE pipelines (since it **does not support modular reduction**)."*
+   **Our "no modular reduction during accumulation" side condition is a KNOWN limitation
+   of a known line of work.** We did not discover the constraint; we are proposing to
+   *live inside it deliberately* (lazy accumulation) and to *enforce it* with an explicit
+   range leg (§2.5), which is the part I have not found stated anywhere.
+2. **Fiore, Gennaro, Pastro — "Efficiently verifiable computation on encrypted data"
+   (CCS 2014).** Built from two blocks, the second of which is *"a commit-and-prove SNARK
+   for **multiple polynomial evaluations**"*. That is structurally our shape — commit
+   ciphertext polynomials, prove evaluations — a decade early, in the pairing/QAP setting.
+3. **Rinocchio** (Ganesh–Nitulescu–Soria-Vazquez), SNARKs for ring arithmetic; and
+   **Fiore–Gennaro–Pastro-style homomorphic MACs** (Catalano et al. authenticate *linear
+   ciphertext operations* specifically).
+
+### The nearest neighbour, and exactly how it differs
+
+**VERITAS** carries a homomorphic *authenticator* alongside the ciphertext and applies the
+same linear map to it. Its own words (§VI-B): *"both authenticators trivially support the
+BFV linear operations… These operations are simply executed on all components of the
+authentication σ"* and *"do not expand the size of the authentication."*
+
+So VERITAS **does** exploit linearity — and the difference from our claim is exactly the
+thing the claim is about:
+
+| | VERITAS (REP / PE) | this note |
+|---|---|---|
+| mechanism | homomorphic authenticator carried *through* the computation | commit + one common-point opening *after* it |
+| cost of the additive part | **Θ(additions)**, constant-factor: measured **53×** (REP) / **4.5×** (PE) per add vs bare BFV | **Θ(result)** — the additions cost *nothing*, `B+1` evaluations at one point |
+| verifiability | **designated-verifier** (secret authenticator key) | publicly verifiable (hash-based PCS) |
+| generality | any BFV circuit incl. rotation, relinearisation, bootstrapping | **linear folds only** |
+
+⚑ **The honest position, then.** The *fact* is known (Layer A). The *setting* is populated
+(vFHE, and the no-reduction restriction is already documented as a limitation). What I have
+not found stated is the specific combination: **cost proportional to the RESULT rather than
+to the ADDITIONS, for an FHE ciphertext fold, publicly verifiable, with the no-reduction
+condition promoted from a restriction into an enforced range leg.** VERITAS is the closest
+and it is Θ(work) with a 4.5–53× constant; we are Θ(result) with zero per-addition cost —
+but only for the linear fragment, which VERITAS covers as a special case of far more.
+
+**Trading generality for asymptotics is the actual claim.** That is a much narrower and
+more defensible sentence than "one common-point opening certifies the whole fold", and it
+is the one to use.
+
+---
+
 ## 5. Lazy accumulation — the correction
 
 `notes/h2-verdict.md:27` reads:
