@@ -152,6 +152,38 @@ processor open; board is a V80 or an F2 at spot prices; `fhegg-rtl`'s
 Lean-golden-model→Verilog shape is the right glue. **Being early costs a
 board, not a tapeout.**
 
+**Three sharpenings from the full hardware report (landed after the addendum):**
+
+1. **The vFHE overhead ladder has a protocol rung far below 2,400×.**
+   plonky2-verified bootstrap: ~20 min → packed sumcheck (2025/719): 2.02 s
+   (~2,400×) → **Laminate (eprint 2025/2285): 5–67× overhead, via GKR run
+   *inside* the FHE** — attacking the protocol, not the silicon. Vitalik's
+   "single-digit FHE-proving" rung is approachable along the Laminate axis,
+   not the accelerator axis. (Argos, arXiv:2412.03550, gets 3–8% from a TEE —
+   the trust-model alternative to keep in the comparison table.)
+
+2. **The rate gap decides the architecture.** Zama's HPU emits ~13k PBS/s;
+   proving ONE PBS costs ~194 core-seconds (2025/719). Rate-matching one FHE
+   FPGA needs ~2.5M CPU cores — or **~26 prover dies per FHE FPGA even
+   granting a 1,000× ASIC speedup**. Proving remains 10³–10⁴× the cost of
+   evaluating. So the board-level HPU+sumcheck build is a *testbed and
+   dataflow proof*, not a rate-matched system; rate-matching comes from
+   protocol work (Laminate direction) + sampling amortization. The prover IS
+   nearly free in *area* (2.3 mm² vs hundreds) — the binding constraint is
+   bandwidth and the rate gap.
+
+3. **Producer-consumer fusion is the real one-die argument — and it is the
+   FHE-side answer to the shared-arithmetic question.** Co-located FHE +
+   prover *contend* on HBM (both are <1–2.7 and 0.01–0.28 modmul/byte
+   streamers) — UNLESS fused at the dataflow level: the prover's MLE tables
+   ARE the FHE evaluation's intermediate polynomials, so a fused design
+   streams FHE limbs through the sumcheck fold **as they are produced**,
+   paying the traffic once. Off-die that data crosses PCIe twice. *"That
+   producer-consumer fusion — not shared multipliers — is the real hardware
+   argument for one die, and no published design does it yet."* Also on the
+   record: Zama's HPU `ntt_gf64` core uses **Plonky2's exact prime** — an FHE
+   accelerator and a prover already share a butterfly in shipping open RTL.
+
 Survey's revised ordering: (1) Lean-verified cross-limb binding — the field's
 actual soundness hole; (2) the Galois-ring small-value sumcheck port; (3)
 HPU + packed-sumcheck on open FPGA; (4) the CKKS adversarial-steering

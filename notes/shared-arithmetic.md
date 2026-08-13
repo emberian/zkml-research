@@ -59,6 +59,19 @@ in the proof-compatible domain. This is a concrete, structural reason
 Vitalik's almost-linearity point. The NTTs inside FHE ops are also exactly the
 transform machinery STARK provers know how to amortize.
 
+## Confirmed from the FHE side (hardware survey, 2026-08-13)
+
+The full hardware report independently arrives at the same structure for
+vFHE and names it: co-located FHE evaluation and proving CONTEND on HBM
+(both are sub-3-modmul/byte streamers), and the genuine one-die argument is
+**producer-consumer fusion** — the prover's MLE tables are the FHE
+evaluation's own intermediate polynomials, so a fused design streams limbs
+through the sumcheck fold as they are produced, paying the memory traffic
+once. No published design does it. That is L1+L3 of this note, stated in
+hardware terms, for the FHE workload. Supporting detail: Zama's open HPU
+already contains a Goldilocks-64 NTT core — Plonky2's exact prime — so the
+two machines already share a butterfly in shipping RTL.
+
 ## What this changes
 
 The bubble idea (missed-threads item 2) was about *hardware co-location* —
