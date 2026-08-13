@@ -466,9 +466,48 @@ Two things make this a *mild* rather than alarming finding:
 multiplicatively when the Frobenius is a q-power map). That is a separate front
 and this script does not touch it. See §4.4.
 
-### 4.4 The security half, part 2: degree growth and the literature
+### 4.4 The security half, part 2: degree growth — where the τ=1 preference comes from
 
-*(pending — cryptanalysis-literature lane outstanding)*
+**Located the actual source of the handoff's τ=1 preference**, and it is not
+vague: `density_repricing.py` closes with
+
+> "Chaghri's failure mechanism is the algebraic degree of an F2-LINEARIZED
+> POLYNOMIAL over an EXTENSION field. At tau = 1 … σ_k carries NO Frobenius twist
+> — it is a pure permutation of the d slot coordinates, an F_q-linear permutation
+> matrix — so there is no linearized polynomial and coefficient grouping does not
+> literally apply. … **At tau > 1 the Frobenius twists are real and Chaghri
+> applies directly.** … the 4.8× butterfly figure is defensible at tau=1 and NOT
+> defensible at tau>1 without a coefficient-grouping-style degree analysis that I
+> have not done."
+
+So "τ>1 reopens the extension-field S-box question" means exactly: **at τ>1 our
+σ-layer *is* an F_q-linearized polynomial, which is the object Chaghri was broken
+through, and the coefficient-grouping degree analysis is undone.** That is a real
+and correctly-identified gap. Two things bear on it, one from the record and one
+from §1:
+
+1. **The prior lane already probed an extension-field case and found nothing.**
+   `ring-hash-cryptanalysis.md` "What held" records: *"No Chaghri-style degree
+   stall **at τ=1 or τ=2** — degree grows multiplicatively because x^α (α=7) is
+   not a q-power map."* **τ=2 is an extension field** (slots F_{q^2}, Frobenius
+   twists real). So the lane's own measurement already covers a τ>1 case and came
+   back clean — and it came back clean *after* the lane retracted a false
+   positive there, so it was examined with more care than average, not less.
+   This is in direct tension with the same file's "keep τ=1" handoff.
+2. **Density: our τ=4 layer is denser than the patched Chaghri.** Chaghri's
+   broken B had **support 1**; Liu–Sarkar–Wang–Meier–Isobe's repair, which the
+   designers adopted, was **support 3**. The τ=4 slot-MDS set {1,5,−1,−5} is
+   **support 4** — above the repair — and it is exactly the layer §1.2 measures
+   as slot-MDS. The attack's own stated root cause ("the vulnerability of Chaghri
+   exists in the usage of a **sparse** affine transform") is the property we do
+   not have at the recommended parameters.
+
+⚠ Neither of these is the degree analysis. **Point 1 is evidence by extension
+from τ=2, not a result at τ=4; point 2 is a density comparison, not a bound.**
+The coefficient-grouping analysis over F_{q^4} remains genuinely undone, and it
+is the single largest open item for the τ=4 branch.
+
+*(further literature verification pending)*
 
 ---
 
