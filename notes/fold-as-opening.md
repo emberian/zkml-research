@@ -274,7 +274,7 @@ measurement harness, and the adversaries.
 |---|---|---|
 | the limb map `flat` | `src/lib.rs` `flatten` | 37-bit RNS residue → 2× 19-bit BabyBear limbs, layout pinned by a test |
 | the lazy accumulator | `lazy_fold` / `LimbAccumulator` | componentwise limb sums, **no carry, no mod-q reduction** |
-| the FHE-side lazy fold | `lazy_fold_residues` | `bfv_lean::add_row` minus the conditional subtract, no limb map — so §5 can be measured without contamination |
+| the FHE-side lazy fold | `lazy_fold_residues` | `bfv_lean::add_row` minus the conditional subtract, no limb map — so §6 can be measured without contamination |
 | the transcript | `draw_point` | Poseidon2 `DuplexChallenger` on deployed constants; absorbs shape, all `Cₖ`, `C_out`, **all `aₖ`**, the bound; then samples `r ∈ EF^16` |
 | the commitment | `commit` | Poseidon2 sponge over the limb vector — binding, **not openable** |
 | the protocol | `prove` / `verify` | `B+1` MLE evaluations at one point, one field equation |
