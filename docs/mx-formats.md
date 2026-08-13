@@ -1,5 +1,12 @@
 # We picked the wrong format, not the wrong idea
 
+> **Status since written: the central hypothesis was tested and holds.**
+> **MXFP4 within-block exactness holds**, and it is what the live
+> arithmetization is built on. ⚠ **NVFP4 preserves the exactness but destroys
+> the power-of-two-scale shift argument** — so the "16-element NV variants"
+> mentioned below are *not* interchangeable with MX for our purposes; our
+> arithmetization is **MXFP4-specific**. `docs/VERDICTS.md` §5.
+
 2026-08-11, written immediately after `PHASE0-RESULT.md`. **This is a hypothesis
 with the same status my bf16 claim had this morning, and it must get the same
 treatment before anyone believes it.**

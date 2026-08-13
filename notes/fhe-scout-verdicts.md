@@ -71,12 +71,19 @@ a Lean hash metatheory. Filed as a research target, not a claim.
 
 ## Transciphering, honestly (partial coverage)
 
-No 20-bit-p parameter set exists in the SoK tables (all 25–33-bit); our
-⚠ **SUPERSEDED — the wrong obstruction.** x⁵ IS a permutation at deployed t (t−1 = 2¹⁴·3²·7, gcd(t−1,5)=1); the real wall is the 269-bit noise consumption. Depth law: `Pasta-r: pt-ct 2r, ct-ct (r−1)+⌈log₂d⌉`. Original: gcd(t−1,3)=3 blocks cube-map ciphers at deployed t; and the prize is small —
-our expansion is 10.9–27× at 109 KB/ct. Pirouette beats transciphering at
-its own game anyway (but needs client-held sk — true for inference, not the
-collective-key deployment). Homomorphic-decryption depth verdict: NOT
-ESTABLISHED (the lane that owned it never returned).
+> ⚠ **DEAD — and the obstruction first named here was the wrong one.** The wall
+> is **269 bits of homomorphic-decryption noise against our 109-bit modulus**,
+> not the cube-map algebra: **x⁵ IS a permutation at deployed t** (t−1 =
+> 2¹⁴·3²·7, so gcd(t−1,5)=1). Depth law: `Pasta-r: pt-ct 2r, ct-ct
+> (r−1)+⌈log₂d⌉`. *(The superseded obstruction: gcd(t−1,3)=3 blocks cube-map
+> ciphers at deployed t.)* And the "NOT ESTABLISHED" verdict below was later
+> established — it is the 269 bits. `docs/VERDICTS.md` §3.
+
+No 20-bit-p parameter set exists in the SoK tables (all 25–33-bit); and the
+prize is small — our expansion is 10.9–27× at 109 KB/ct. Pirouette beats
+transciphering at its own game anyway (but needs client-held sk — true for
+inference, not the collective-key deployment). Homomorphic-decryption depth
+verdict: NOT ESTABLISHED (the lane that owned it never returned).
 
 
 ## Addendum from the scout's second composition
