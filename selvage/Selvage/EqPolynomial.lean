@@ -22,9 +22,11 @@ degree-3 rung consumes:
   `eq(z, x)·(…)` gains exactly one degree over what it multiplies.
 
 Teeth: `eqMle_corner_indicator` (it IS an indicator on the cube),
-`eqMle_offcube` (a genuine extension), `eqMle_not_symm_witness` — `eq` is
-symmetric as a polynomial identity (`eqMle_comm`), which is a THEOREM here and
-not the definition.
+`eqMle_offcube` (a genuine extension, not a table), `eqMle_indicator_fires` (the
+indicator computed BOTH ways, so the `1` is not an accident of the `0` case),
+`eqMle_fold_fires` (the bridge computed against the landed AND gate), and
+`eqMle_separates` (`eq` is not the constant `1`, so the zerocheck randomization
+is a real test). Symmetry (`eqMle_comm`) is a THEOREM here, not the definition.
 -/
 import Selvage.MultilinearExtension
 
@@ -125,5 +127,29 @@ zerocheck randomization is a real test. -/
 theorem eqMle_separates : eqMle (![1, 0] : Fin 2 → ZMod 5) ![0, 1] = 0 := by decide
 
 end EqExample
+
+
+/-! ## Axiom pins (house law) -/
+
+/-- info: 'Minidregg.Selvage.eqMle_cubePt' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms eqMle_cubePt
+/-- info: 'Minidregg.Selvage.eqMle_comm' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms eqMle_comm
+/-- info: 'Minidregg.Selvage.eqMle_corner_indicator' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms eqMle_corner_indicator
+/-- info: 'Minidregg.Selvage.eqMle_fold' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms eqMle_fold
+/-- info: 'Minidregg.Selvage.eqMle_update' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms eqMle_update
+/-- info: 'Minidregg.Selvage.eqMle_multilinear' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms eqMle_multilinear
+/-- info: 'Minidregg.Selvage.eqMle_eq_mle' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms eqMle_eq_mle
+/-- info: 'Minidregg.Selvage.EqExample.eqMle_offcube' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms EqExample.eqMle_offcube
+/-- info: 'Minidregg.Selvage.EqExample.eqMle_fold_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms EqExample.eqMle_fold_fires
+/-- info: 'Minidregg.Selvage.EqExample.eqMle_separates' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms EqExample.eqMle_separates
 
 end Minidregg.Selvage
