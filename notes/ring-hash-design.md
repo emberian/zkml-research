@@ -316,6 +316,13 @@ And the comparison that actually decides it — **what does the same budget buy?
 At ~90 rows/elt, **τ=4 buys slot-MDS in every full round; τ=1 buys support-3
 only, i.e. the recorded #1 weakness un-fixed.**
 
+**A framing point that the fork's wording hides: τ=4 is the status quo, not the
+proposal.** The deployed Frog ring *is* τ=4 (`ord_32(q) = 4`, measured). So "keep
+τ=1" is not the conservative branch — it requires **changing the deployed
+modulus** to one with q ≡ 1 mod 32, on top of paying 1.6× more for the same
+branch. The burden of justification sits on τ=1, and the handoff line phrased it
+the other way round.
+
 **Robustness of the cost verdict.** Round counts are held at RF=8/RP=22 for both,
 and those are borrowed (a width-~12 prime-field Poseidon set) and underived for
 *either* regime — §5 of the cryptanalysis note is right about that. So the honest
