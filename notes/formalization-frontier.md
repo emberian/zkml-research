@@ -91,3 +91,47 @@ depth theorem into a statement about a deployed object.
   Remark 1.1 is the why), Symphony's fold-to-SNARK-without-FS-in-circuit
   compiler, ProtogaLattice (4 RO calls/iteration) if the lattice branch is
   ever re-priced, SwitchFold's code-agnostic PCS switching.
+
+
+## The wider Lean landscape (companion sweep, same skepticism discipline)
+
+**Mathlib has ZERO error-correcting coding theory** — verified by code search:
+no Reed-Solomon, no linear codes, no Berlekamp-Welch (absent from Lean
+*anywhere*), no Singleton/MDS. The real Lean coding-theory substrate is
+**CompPoly** (Verified-zkEVM): Gao's unique decoder fully proved (refusal
+characterized as an iff!), Guruswami-Sudan list decoding proved, STARK fields
+with irreducibility certificates — sorry-free in live code. Its own wiki
+states its gaps: no FRI/PCS integration, and the Johnson list-SIZE analysis
+unproved. Our coding-theory position should be stated against CompPoly, not
+against Mathlib.
+
+**The SP1 Hypercube FV post-mortem (2026-05-20) is the wound-class
+discipline validated externally at production scale**: of 62 "verified"
+opcodes, 51 complete; SLTI **vacuously true** (contradictory hypotheses);
+the JALR proof **hypothesized exactly the gap that was the bug** (`h_valid_pc`
+assuming the alignment SP1 failed to enforce); LoadHalf/LoadWord proved
+**wrong-spec byte semantics**. Every failure mode is one of our minted
+classes — premise vacuity, hypothesis-shaped holes, wrong-statement green.
+The best public citation for why the carrier census and premise-inhabitation
+instruments exist.
+
+**Zcash Ironwood shipped production Lean verification**: 2,700+ theorems,
+balance integrity via a knowledge-soundness extractor, triggered by a
+counterfeiting bug that sat latent ~4 years. Production-scale Lean crypto
+FV is no longer hypothetical — and it was motivated by exactly the class of
+silent constraint-omission our discipline targets.
+
+**The CA/MCA composition now has THREE pieces on the table**: Hirai's
+FRI-RBR (needs `FRI_MCA_Hypothesis`), the IoTeX rs-proximity-gaps Lean
+formalization of the **half-threshold correlated-agreement bound**
+(0-sorry, audited — ⚠ its README swaps its own two eprint numbers;
+2026/858 is the Lean one, cite by title), and our corpus. Whether any pair
+composes is a statement-compatibility check, not a research program.
+
+Also recorded: Isabelle/CryptHOL got AGM + KZG security first (2026/1490);
+HOPSCOTCH is a second Lean game-hopping framework (unaudited); the
+Hicks-coauthored FV survey's number — automated tools catch **45.7% of bugs
+isolated vs 19.6% on full codebases** — is the citable gap our
+whole-tree-build discipline addresses; the EF initiative is **$20M/3yr
+scoped to "critical components"** — any "verify every component" citation
+overclaims; verified-zkevm.org itself is an empty template.
