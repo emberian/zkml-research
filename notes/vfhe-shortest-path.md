@@ -40,12 +40,13 @@ TFHE's ciphertext modulus to BabyBear** (q = Q = p = 2^31−2^27+1, n = N_R =
 1024), which eliminates key/modulus switching entirely. The transferable
 lesson: *pick the FHE modulus to be the proof field.*
 
-**And that lesson lands better on BFV than on TFHE**: our deployed RNS limbs
-(36/36/37-bit, all prime, all NTT-friendly, verified at source) are already
-proof-friendly primes. Packed sumcheck over our own limbs reaches 2^108 at
-k=3 (vs BabyBear's k=4 → 2^124) with cost O((kd²+k²d)N) — **a 36-bit FHE
-limb is a cheaper packed-sumcheck field than BabyBear, and we would not
-touch fhegg's parameters at all.** Where BFV is harder: cross-limb binding
+**And that lesson lands better on BFV than on TFHE** — our deployed RNS
+limbs are proof-friendly primes and we would not touch fhegg's parameters.
+⚠ **BUT the "cheaper than BabyBear at lower k" claim is REFUTED by the
+field-choice lane (2026-08-13)**: the p^k comparison dropped the (2k−1)d
+numerator — at λ=100 the saving is zero — and the limbs' two-adicity
+(13/14/17) is fully consumed by the FHE NTT, leaving nothing for a proof
+NTT. The limbs remain *usable* fields; they are not *better* ones. Where BFV is harder: cross-limb binding
 (the extended-basis tensor + t/Q rounding is not expressible in any single
 limb) — confirmed from our own source as the gap, matching the survey's #1.
 
