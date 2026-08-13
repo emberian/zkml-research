@@ -87,7 +87,9 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   proximity result.
 - **Jagged PCS has no cryptographic content** — which is why it is tractable.
   A large convenience on top of a PCS that does the security work.
-- **`fold_add` as one opening: ratio = B, PROVER-SIDE ONLY.** The verifier
+- **`fold_add` as one opening: ratio = B, PROVER-SIDE ONLY — and B is 4 in
+  deployment, so the real figure is 4.2×, not 690×.** ("Lazy accumulation is
+  free" is also dead: 0.88× is a *column* ratio and it breaks even at B=4.) The verifier
   moves the opposite way (O(B) Merkle work vs a polylogarithmic AIR verifier),
   and the shared-tree fix collides with per-party root binding.
 - **The base→extension boundary is a measured ~3× cliff.** The emitted
@@ -146,3 +148,12 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
    abstract, and we hold the grinding mechanism but no beacon model.
 7. **Does the virtualization threshold beat committing on Poseidon2?**
    Predicted 4–15×; a measurement, and the cheapest large number available.
+8. **Is our FHE parameter point post-quantum at all?** (N=4096, log q=109,
+   t=2²⁰) is a **classical**-line set nobody ships — Apple ships N=4096 with
+   **83 bits** for `.quantum128`, and **N=8192 / 148 bits** when it wants
+   log t ≈ 20. **If we claim PQ-128 there, that is a gap.** Not refuted
+   anywhere.
+9. **d=5 at KoalaBear: 128 or not?** Plonky3's `p3-security` says it reaches
+   128; our `PROVEN-120-CONFIG.md` says d=5 cannot reach 120. **Probably a
+   scope difference** (RS proximity leg vs whole apex composite) — **check,
+   do not guess.**
