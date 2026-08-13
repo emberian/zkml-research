@@ -6,10 +6,13 @@
 **as polynomials**, so one common-point opening certifies the whole fold — zero
 sumcheck rounds. AIR cost Θ(B·N·L), linear route Θ(N·L), **ratio = B**.
 
-**Verdict so far**: the *algebra* holds and is now demonstrated on real deployed-shape
-ciphertexts. **Three of the four headline numbers in the source claim are wrong or
-mis-attributed**, and the correction makes the result *narrower but sharper*. Details
-in §4, §5 and §6.
+**Verdict**: the *algebra* holds and is now demonstrated on real deployed-shape
+ciphertexts. But **three of the four headline numbers in the source claim are wrong or
+mis-attributed** (§0), and — ⚑ the biggest finding — **the brief's premise that nobody
+has applied this to FHE ciphertext folding is FALSE**: Zama eprint 2026/027 does exactly
+that, is implemented and benchmarked, and **the PDF is in `~/paperbin`** (§5). What
+survives is narrow, real, and worth having: **a batch fold is aligned-pointwise, not a
+contraction, so even the sumcheck the state of the art runs is unnecessary** (§5.3).
 
 ---
 
@@ -443,15 +446,30 @@ and *those* are the shapes where 715×–5000× is live, if anything ever needs 
 
 ---
 
-## 5. Prior art — **we are not first at the fact, and the nearest neighbour is sharper than expected**
+## 5. Prior art — **the brief's premise is false: we are not first at Layer B either**
 
-⚠ **Instrument disclosure, per house law.** This section is built from **web/arXiv search
-plus full-text of one paper I pulled and extracted myself**. `~/paperbin` (1,091 PDFs,
-507 with `.txt`) was swept separately. Neither instrument alone supports an absence
-claim, and this section makes none: everything below is a *presence* finding.
-One instrument failed outright and is named: the ACM Computing Surveys systematic review
-of verifiable FHE (`10.1145/3797902`) **returned 403 and was not read** — it is the single
-best instrument for the absence question and it remains unconsulted.
+> **Headline.** The brief said "we are almost certainly not first at the FACT — the
+> question is whether anyone has applied it to FHE ciphertext folding, which is our
+> actual claim." **Someone has.** Tremblay Thibault, Walter & Zhang (Zama + USC),
+> *Practical SNARGs for Matrix Multiplications over Encrypted Data*, eprint **2026/027**,
+> with an open-source implementation — **and the PDF is in `~/paperbin`**
+> (`practical-snargs-matvec-over-encrypted-data-zama-2026-027.pdf`). Read at source. The
+> surviving delta is real but much narrower than "our actual claim", and it is stated in
+> §5.3.
+
+⚠ **Instrument disclosure, per house law.** This section is built from web/arXiv search
+**plus full text of three papers I pulled and `pdftotext`-extracted myself** (VERITAS,
+the Zama SNARG, and the reference lists of both). `~/paperbin` (1,091 PDFs, 507 with
+`.txt`) was checked directly for the vFHE shelf and **is not blind here** — it carries
+Rinocchio (`2021-322`), Atapoor's lattice-SNARK vFHE (`2024-032`), Laminate
+(`2025-2285`), ring-R1CS publicly-verifiable FHE (`2024-1764`), a blind-PCS vFHE
+(`2026-487`), Zama's verifiable bootstrapping via lattice folding (`2026-1127`), and the
+Zama matvec SNARG above. Everything below is a *presence* finding; **no absence is
+claimed anywhere in this section.**
+Two instrument failures, named: the ACM Computing Surveys systematic review of verifiable
+FHE (`10.1145/3797902`) **returned 403 and was not read**, and eprint 2024/032 **429'd**
+(though the PDF is in paperbin and was not read either). Both remain unconsulted, and the
+survey is the single best instrument for any absence question.
 
 ### Layer A — "linear maps are free in the multilinear world": **KNOWN, and we are not close to first**
 
@@ -462,7 +480,34 @@ are random-linear-combination arguments; folding schemes (Nova and descendants) 
 homomorphism. **Claiming novelty at Layer A would be wrong.** Our note should never have
 been going to.
 
-### Layer B — FHE ciphertext folding: **the neighbourhood is populated, and two neighbours are very close**
+### 5.1 ⚑ Layer B — **published**: Zama eprint 2026/027, and it is in our own corpus
+
+*Practical SNARGs for Matrix Multiplications over Encrypted Data* proves exactly the
+statement `Mx = y` for a **public matrix `M` and an encrypted vector `x`** — a linear map
+on RLWE ciphertexts, of which our fold is the special case where `M` is one 0/1 selector
+row. Its method, in its own §1.1:
+
+> *"the main challenge here is the mathematical gap between polynomial rings
+> `R_q = Z_q[X]/(X^N+1)` and finite fields… we adopt the **ring-switching** idea…
+> **Ring embedding**: an appropriate extension field `F_q` of `Z_q` is chosen… we embed
+> the statement `Mx = y` over `R_q` into a statement over `F_q[X]`. **Ring reduction**:
+> reduce the statement, via a **polynomial commitment scheme** over the extension field,
+> from `F_q[X]` to `F_q`… each `R_q` element is compressed into an `F_q` element."*
+
+That is "commit the ciphertext coefficients as polynomials, move to an extension field,
+reduce the ring statement to field evaluations" — **the shape this note proposed, already
+built, benchmarked and open-sourced.** The brief's framing ("the question is whether
+anyone has applied it to FHE ciphertext folding") is answered *yes*, by a paper sitting in
+`~/paperbin`. Recording that plainly, because the alternative is discovering it after
+building on the assumption.
+
+Note also *what they had to give up to avoid limbs*: `q` is a **64-bit prime** with
+extension degree 2. They match the proof field to the FHE modulus — the "shared
+cryptographic parameters" constraint VERITAS criticises in Fiore et al. We take the other
+branch (31-bit BabyBear + a 19-bit limb map + an explicit range leg), which is a real
+design fork and not obviously the worse one, given `prover-floor.md`'s field-choice result.
+
+### 5.2 Layer B's wider neighbourhood
 
 The literature has a name and a taxonomy for this (Chatel–Knabenhans–Pyrgelis–Troncoso–
 Hubaux, *Verifiable Encodings for Secure Homomorphic Analytics* / **VERITAS**,
@@ -483,7 +528,32 @@ arXiv:2207.14071v4, §related work). Read at source:
    **Fiore–Gennaro–Pastro-style homomorphic MACs** (Catalano et al. authenticate *linear
    ciphertext operations* specifically).
 
-### The nearest neighbour, and exactly how it differs
+### 5.3 ⚑ The surviving delta: a fold is not a contraction
+
+Zama's scheme **runs the sumcheck protocol twice** (§: *"prover and verifier run the
+sumcheck protocol twice"*). Ours runs it zero times. That is not an oversight on their
+part — it is a consequence of proving a strictly harder statement, and the distinction is
+the one genuinely load-bearing technical point left in this note:
+
+- **Matrix–vector, `y_i = Σ_j M_ij x_j`.** The output index `i` and the summed index `j`
+  are **different**. This is a *contraction*, and a contraction needs a sumcheck over `j`.
+  Zama proves this and pays for it.
+- **A fold, `c_out[t] = Σ_k a_k c_k[t]`.** `k` is a **batch** index, not a contracted
+  coordinate: every term is aligned at the *same* coordinate `t`, and there are only `B`
+  of them. So it is `B+1` separate multilinears related by a pointwise identity, and
+  `B+1` evaluations at one common point settle it. **Zero rounds.**
+
+**So the delta is: for the aligned-pointwise case, even the sumcheck the state of the art
+runs is unnecessary.** That is a real observation and it is worth the build. It is also
+*much* smaller than "nobody has applied this to FHE ciphertext folding", and it should be
+written up as a corner of Zama-style ring-switching vFHE, not as a new result.
+
+⚠ Honesty bound on §5.3: I read the Zama paper's abstract, §1, §1.1 and grepped its body
+for the sumcheck usage. **I did not read their protocol section in full**, so "they could
+not have specialised the aligned case" is *not* claimed — only that their headline
+statement is a contraction and their protocol runs sumchecks.
+
+### 5.4 The nearest neighbour on the authenticator branch, and how it differs
 
 **VERITAS** carries a homomorphic *authenticator* alongside the ciphertext and applies the
 same linear map to it. Its own words (§VI-B): *"both authenticators trivially support the
@@ -500,17 +570,31 @@ thing the claim is about:
 | verifiability | **designated-verifier** (secret authenticator key) | publicly verifiable (hash-based PCS) |
 | generality | any BFV circuit incl. rotation, relinearisation, bootstrapping | **linear folds only** |
 
-⚑ **The honest position, then.** The *fact* is known (Layer A). The *setting* is populated
-(vFHE, and the no-reduction restriction is already documented as a limitation). What I have
-not found stated is the specific combination: **cost proportional to the RESULT rather than
-to the ADDITIONS, for an FHE ciphertext fold, publicly verifiable, with the no-reduction
-condition promoted from a restriction into an enforced range leg.** VERITAS is the closest
-and it is Θ(work) with a 4.5–53× constant; we are Θ(result) with zero per-addition cost —
-but only for the linear fragment, which VERITAS covers as a special case of far more.
+### 5.5 ⚑ The prior-art verdict, in the form it should be quoted
 
-**Trading generality for asymptotics is the actual claim.** That is a much narrower and
-more defensible sentence than "one common-point opening certifies the whole fold", and it
-is the one to use.
+| layer | verdict |
+|---|---|
+| "MLE is linear, so linear maps need no rounds" | **folklore.** Not ours, not close. |
+| "apply it to FHE ciphertext folding / linear maps on RLWE ciphertexts" | **published**: Zama eprint **2026/027**, ring-switching + PCS, implemented, benchmarked, **in `~/paperbin`**. The brief's premise that this was open is **false**. |
+| "the no-modular-reduction side condition" | **documented as a limitation** of Bois–Cascudo–Fiore–Kim (PKC 2021). Not a discovery. |
+| enforcing that condition with an explicit **range leg on the result** rather than restricting the pipeline | **not found stated** in what I read — but three papers is not a survey, and the vFHE survey went unread. Treat as *unverified*, not as novel. |
+| **a fold is aligned-pointwise, not a contraction, so even Zama's two sumchecks are unnecessary** | the real delta (§5.3). Narrow, technical, and worth the build. |
+
+**What this means for how the result gets described.** Not "one common-point opening
+certifies the whole fold — nobody has done this for FHE." Rather:
+
+> *Ring-switching vFHE (Zama 2026/027) proves linear maps on RLWE ciphertexts by
+> committing coefficients and reducing to an extension field, at the cost of a sumcheck
+> because a matrix–vector product is a contraction. **A batch fold is not a contraction**
+> — the batch index is not summed against the output index — so for that case the
+> sumcheck is unnecessary and `B+1` openings at one common point suffice, with the
+> no-reduction condition enforced by an `Θ(N·L)` range leg on the result rather than by
+> restricting the pipeline.*
+
+⚑ And the honest sequencing consequence: **before any more is built here, read Zama
+2026/027's protocol section in full.** It is in `~/paperbin`, it is the direct predecessor,
+and §7's build order should be re-derived against it rather than against this note's
+assumption that the ground was empty.
 
 ---
 
