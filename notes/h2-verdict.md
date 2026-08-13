@@ -33,6 +33,12 @@ auto-vectorise on NEON and u128 adds do not — **and it is repairable**: 109
 bits in u128 leaves 19 spare bits, so a ≤512-add fold with lazy accumulation
 runs at 0.88×.
 
+⚠ **Do not carry that 0.88× forward as "lazy accumulation is free."** It is a
+*column* ratio (single-prime-109-bit lazy ÷ RNS-3-limb lazy), and measured
+in-tree the lazy fold is 0.84× at B=256 but **break-even at the deployed B=4**
+(`notes/fold-as-opening.md` §6). Several notes cited this cell for a claim it
+does not make.
+
 ## (B) Proof side — real in ELEMENTS, evaporates in TIME
 
 Ground truth read from the emitted descriptors (not relayed): all four row
