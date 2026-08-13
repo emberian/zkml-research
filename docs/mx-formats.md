@@ -69,6 +69,26 @@ Gemma 3," but "**use the block-scaled quantization the hardware standardized,
 which was designed to fix precisely that failure**" — and get static shifts and
 power-of-two scales as a side effect.
 
+## ⚠ The concession that reframes this note (ember, 2026-08-12)
+
+**MXINT8 on an unmodified model is quantization.** It does not preserve the
+served computation; you prove a *derivative* of the model. That silently
+surrenders the property that made bf16 attractive in the first place — models
+already ship in bf16, so proving the bf16 path is proving the unmodified model
+with zero semantic gap. The 2.29× static column is real, but as stated above it
+buys speed by reopening the "what did you actually attest?" question — the same
+criticism we levelled at int8 pipelines.
+
+The reconciliation worth testing (hypothesis, unverified): **target the model's
+NATIVE serving format, whatever it is.** For older models that is bf16 (the
+1.4× path — fine, soundness-first). For a growing frontier class the native
+format is already a block format — gpt-oss reportedly ships MXFP4 weights;
+DeepSeek-V3 trained in FP8; Blackwell serves MX natively. For those models the
+block structure and static shifts come free AND zero-loss, because the block
+computation IS the model. "Prove the shipped format exactly" is the principle;
+MXINT8-as-conversion was a wrong turn off it. Needs a lane to verify which
+models genuinely ship block-native and what their serving semantics pin down.
+
 ## Status — read this before repeating my mistake
 
 **Unmeasured.** Everything above is inference from Phase 0's static column plus
