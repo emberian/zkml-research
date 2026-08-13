@@ -76,6 +76,12 @@ understated the damage: 2^123.6 is just |F|; the realized bound is 100.**
 
 ## 4. ⚑ Our "conjectured 130" stands on a WITHDRAWN regime
 
+> **SETTLED since this was written: it is CBR-shaped, definitively.** The
+> re-derivation happened in `notes/two-regime-calculator.md`. Our deployed
+> IR-v2 (lb=6, q=19, pow=16) reads **UDR 34 / JBR 73 / CBR 130**, and 57 of the
+> 130-vs-73 headroom is a *withdrawal*, not a knob. **Never quote 130.**
+> `docs/VERDICTS.md` §2.
+
 The EF's calculator **deleted the capacity regime outright** — commit
 `ffaeb81`, 2025-11-17, *"Remove CBR (due to DG25 and CS25)."* Only UDR and
 JBR remain. A "conjectured 130" is very likely CBR-shaped: not an optimistic

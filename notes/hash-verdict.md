@@ -1,4 +1,16 @@
-# Hash verdict: keep Poseidon2, on KoalaBear, with one free fix riding the flag day
+# Hash verdict: keep Poseidon2 — and if a flag day comes, one free fix rides it
+
+> **Status first.** **Keep Poseidon2** is our state and is settled. The rest of
+> this file is *conditional on a field migration that has not happened*:
+> **deployed in both trees is BabyBear**, and **KoalaBear is a recommended,
+> unexecuted target** (`docs/VERDICTS.md` §1). Read "on KoalaBear" below as "if
+> we migrate," never as our parameters.
+> ⚠ **And §3's "actionable finding" is not actionable on its own** — the
+> 2026/306 round-skipping attack was audited to **no action needed**: our
+> BabyBear t=16/t=24 instances carry a **+286-bit margin** and the attack
+> cannot reach our bar even if every skippable round were free
+> (`notes/poseidon2-audit-verdict.md`; VERDICTS §1). The transpose fix is free
+> *if a flag day happens anyway*; it does not justify one.
 
 2026-08-13. Companion to `field-choice-verdict.md`; full memo published as an
 artifact by the lane (23 papers in ~/paperbin). The lane caught and withdrew
@@ -18,7 +30,8 @@ algebra; every headline Gröbner number was computed at 128–512-bit fields).
    captioned "no Poseidon trace vars" with a LINEAR stand-in hash. The FS
    attack that matters is KRS25 (2025/118), which breaks GKR-Fiat-Shamir
    for EVERY hash — and we verifiably do not run GKR-FS.
-3. **The actionable finding — ride the flag day**: eprint 2026/306 attacks
+3. **A free fix that rides a flag day** — ⚠ *audited to NO ACTION on its own;
+   see the status block above*: eprint 2026/306 attacks
    Poseidon2's non-MDS internal linear layer, and **our deployed shape is
    the attacked one**. The fix is free: transpose to M̄_ε = M₄ ⊗ P_{t/4},
    same fast matmul, **not shipped in any Plonky3**. One more line in the
