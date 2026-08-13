@@ -4,6 +4,14 @@
 the math sweep did. **Act on §1 first.**
 
 ## 1. ⚑ SECURITY — audit our Poseidon2 instance
+> **AUDITED 2026-08-13, VERDICT: no action needed, and TWO PREMISES BELOW ARE
+> WRONG.** The 2^106 figure and the post-disclosure round increase are both
+> **Poseidon2b, the BINARY-field variant** — we deploy none. The Plonky3
+> call-out is (64,16) = **Goldilocks**, which we do not instantiate. Our
+> BabyBear t=16/t=24 instances carry a **+286-bit margin**, and the attack
+> cannot reach our bar even if every skippable round were free. Full verdict
+> and the KoalaBear counterfactual (α=3 roughly HALVES the margin — an input
+> to the field decision) in `notes/poseidon2-audit-verdict.md`.
 
 **The Ethereum Foundation moved OFF Poseidon2** (Khovratovich, slide titled
 *"Why We Moved from Poseidon2: Round Skipping Attack"*). Mechanism, eprint
