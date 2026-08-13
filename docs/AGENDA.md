@@ -94,9 +94,15 @@ spec gives Zamir nothing to hide in.** (`notes/float-in-zk-three-regimes.md`,
   commitment for matmul); small-field + hash PCS is live at Polyhedra and
   measured superior by both DeepProve's A/B and OpenLLM (FRI-M61 3.8–5.7×
   prover, ~1000× verify over KZG) [measured].
-- [awaiting] Spain's one-constraint div/sqrt techniques and whether they
-  survive Zamir; Celer's queries≫table lookup (2.4× over logUp-GKR at
-  exactly our shapes).
+- **CLOSED**: Spain rejected as design (ordered-field theorems, false over
+  F_p; verifier holds the RSA factorization), adopted as evidence — it
+  PROVES a composition lemma whose conclusion is Zamir's δ-consistent set,
+  and is exploitable at its own published parameters with ordinary weights
+  at GPT-2 depth. Ozaki ratios re-verified and stand. Celer: adapt gated on
+  one spike (grand product 10m vs 43m; crossover read off their own figure;
+  table count is now a design variable). New read-and-price item: eprint
+  2026/347, exact-integer Mod-PCS from any PCS, hash-based. See
+  `notes/spain-celer-verdicts.md`.
 
 ### Honest baselines
 
@@ -176,9 +182,19 @@ absence].
 
 ## Pillar IV — vFHE
 
-**The ladder, calibrated:** plonky2-verified bootstrap ~20 min → packed
-sumcheck over **BabyBear** 2.02 s (~2,400×) → **Laminate 5–67× via GKR
-inside the FHE** [measured]. The single-digit rung is approachable along the
+**The ladder, calibrated — and split (2026-08-13): it was TWO ladders.**
+SNARK-over-FHE (publicly verifiable, proves ciphertext ops): plonzy2 ~20 min
+→ packed sumcheck 2.02 s *96-core wall* (~194 core-s; the ~2,400× was not
+core-normalized). FHE-over-SNARK (designated-verifier, proves the plaintext
+relation, one-bit leakage per observed verdict): **Laminate 5–67×,
+core-normalized but entirely estimated — no implementation** [measured →
+corrected]. Different security statements; not one ladder. Sampling composes
+cleanly with the first class, poorly with Laminate (noise provisioning is
+paid on 100% of instances; repeated public verdicts are a leakage oracle).
+**Laminate_base nonetheless fits our deployed fhegg parameters today** for a
+depth-1 payload, needing no rotation keys — verified at source down to the
+irreducible trinomial. Full corrections and the M0/M1/M2 path:
+`notes/vfhe-shortest-path.md`. The single-digit rung is approachable along the
 *protocol* axis; the accelerator is not the critical path (rate gap: ~26
 prover dies per FHE FPGA even granting 1,000× ASIC speedup) [measured,
 lane-derived]. vFHE has **already converged on our substrate** — small-field
