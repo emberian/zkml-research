@@ -28,8 +28,11 @@ done, and things that exist on paper only.
 
 ## Bin 2 — combinations nobody has done (each half exists; the product doesn't)
 
-1. **Binius small-value commitment × the Ω(m) nonlinearity floor.** The floor
-   (2026/1390) says you can't reduce the *count* of committed activations; ring
+1. **Binius small-value commitment × the `Ω(|w|)` nonlinearity floor.** The
+   floor — the extraction argument (GH98/GVW02), ⚠ **not eprint 2026/1390,
+   which this line originally credited and which is a lookup-specific
+   restricted-model separation** (`notes/virtualization-verdict.md` §4) — says
+   you can't reduce the *count* of committed activations; ring
    switching says you can shrink each one's *cost* to its bit-width. Nonlinear
    commitment is the measured 66–75% of prover time, so this attacks the
    dominant term at its constant. Binius×ML: **zero papers in 7,090.**
