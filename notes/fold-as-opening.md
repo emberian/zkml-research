@@ -261,7 +261,7 @@ written down**. That is the seam, and it is one lemma, not a campaign.
 
 `~/dev/breadstuffs/fold-opening/` — a workspace member, **not** a default-member,
 following the `sumcheck-toy` precedent (M0 of this same ladder; this is M1).
-**16/16 tests green.**
+**17/17 tests green.**
 
 **Substrate, said out loud: no AIR, constraint, gadget or `air_accepts` is authored,
 here or anywhere in this lane.** The relation is §2 above, in the shape a Lean theorem
