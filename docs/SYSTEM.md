@@ -22,11 +22,19 @@ specification time, the work the zkVM trace pays for at proving time:
 - **Authority is request-indexed in the statement**, not re-derived inside a
   VM trace. The turn's semantics ARE the circuit; there is no instruction
   fetch to prove.
-- **Memory is what the campaign showed is cheap**: weights and code are
-  read-only (preprocessed tables — complexity ~0), state is
-  canonical-transition-shaped (validated patches, not general RAM), KV-style
-  state is append-dominant (write-once SSA shape, ~6 cells vs ~502). The
-  expensive general-RAM case the whole industry optimizes barely appears.
+- **Memory is what the campaign showed is cheap** — ⚠ **with a correction
+  (2026-08-13, see `notes/kv-cache-correction.md`)**: weights and code are
+  genuinely read-only (preprocessed, ~0), and state is
+  canonical-transition-shaped. But **"KV-state is append-dominant" is true of
+  the COMPUTATION and false of DEPLOYED SERVING** — speculative-decode
+  rollback overwrites committed slots in place, sliding-window layers
+  (including gpt-oss) delete mid-request by architecture, preemption wipes
+  whole caches, and ~75% of 2026 frontier layers are fixed-size recurrent
+  state rather than an append-only log. **The repair: fold over the ACCEPTED
+  TOKEN SEQUENCE, never over cache writes** — every exception but CacheBlend
+  and lossy KV quantization is semantically transparent, so the fold still
+  proves the right thing. The cheap-memory claim survives; the sentence had
+  to get longer and more honest.
 - **The effect system already separates public from private from encrypted**
   (typed ZK/MPC/FHE requests with explicit disclosure), so "which parts get
   which proof treatment" is a type, not an afterthought.
