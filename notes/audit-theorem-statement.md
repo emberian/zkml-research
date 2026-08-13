@@ -1,5 +1,31 @@
 # The audit theorem: formal statement (the Lean spec)
 
+> **STATUS 2026-08-13: LANDED.** `Selvage/AuditSampling.lean` (1,173 lines,
+> commits `5dfeb19` + `503231d`) implements this spec — and the core is
+> PROVED, not just stated: the per-round detection lemma, the supermartingale
+> step, finite-horizon optional stopping (by induction — the tower property
+> is definitional for the house `uniformProb` vocabulary, and the lane
+> correctly judged that building Mathlib-measure-theory machinery beside it
+> would have been a twin), and `E[Λ] ≤ b/q`, sorry-free at 20 axiom pins.
+> Adaptivity is enforced BY THE TYPE (corrupt : List Ω → Bool cannot see the
+> current coin). The teeth: the per-round bound is attained exactly;
+> dropping ε_beacon makes the sequential bound FALSE with the other three
+> legs proved to still hold (the refutation attributable to ε_beacon alone);
+> and **the fail-open wound-class is now a theorem** — a checker whose
+> failure reads as acceptance makes the detection legs UNINHABITABLE, and
+> pricing the refusal honestly forces q ≤ 0. lightClientSound is cited and
+> valued modulo the two transport hypotheses, named `[AUDIT-chk-corrupt]`
+> and `[AUDIT-chk-anchor]`, explicitly NOT dischargeable in-file. Grinding
+> cited as motivation only, per the correction. Ten residuals named,
+> including: the world's coins are i.i.d. uniform even though the adversary
+> is not; the 1/q constant is not shown unimprovable; c_t is not first-class.
+> Gate: detached clone at the committed SHA, 2,456 jobs green — the lane
+> deviated from the hbox instruction because the shared scratch is the
+> documented evidence-corrupting race, and the detached-HEAD gate is
+> stronger. Per the full-corpus sweeps, **this is the first machine-checked
+> commit-then-audit soundness statement in any proof assistant** — position
+> #2-of-claims, now occupied in code.
+
 2026-08-13. Final form after the 2026/541 + beacon-grinding lane. This is the
 statement the Lean development proves. Claims-survival verdict and the
 ε_beacon derivation are below it.
