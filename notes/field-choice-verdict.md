@@ -1,4 +1,12 @@
-# Field choice: KoalaBear everywhere — the memo's verdict and its corrections
+# Field choice: KoalaBear everywhere
+
+> ⚠ **STATUS CHECK (2026-08-13): this is a RECOMMENDATION, not our state.**
+> Verified at source: `circuit/src/field.rs:3` — *"Uses BabyBear (p = 2^31 −
+> 2^27 + 1) as the native field for STARK proofs"*; zero `koala` hits in
+> Cargo.toml. **KoalaBear appears in four prose sites and zero config sites.**
+> We run BabyBear. Every "our KoalaBear parameters" phrasing elsewhere in
+> these notes is wrong and should read "the recommended migration target."
+ — the memo's verdict and its corrections
 
 2026-08-13. Final lane of the campaign. Full memo published as an artifact by
 the lane (v4, with its v1 error retracted in-place — the discipline held).
