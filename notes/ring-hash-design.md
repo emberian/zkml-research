@@ -747,8 +747,11 @@ own construction degenerate to its minimum, q.** This is the strongest item in
 hash — and the hash was only ever a slice of the problem. **A ring-hash design
 that demands τ=1 is asking the host protocol to give up its challenge space.**
 
-That, and not the branch number, is the decisive reason the fork resolves to
-τ=4.
+⚠ **Scope, corrected after §4.4b:** an earlier draft ended this subsection "and
+that is the decisive reason the fork resolves to τ=4." **It is not.** This
+argument is decisive *against τ=1* — it says nothing about τ=2 vs τ=4, both of
+which clear the 128-bit challenge-space requirement (2^128 and 2^256). It sets
+the **floor** on τ; §4.4b sets the **ceiling**; τ=2 is where they meet.
 
 ---
 
