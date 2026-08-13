@@ -836,7 +836,20 @@ where the branch is cheapest and lazy accumulation has the least to win.
 ## 7. What is left to build, in order
 
 Not a wishlist — the ordered remainder, with the one that is actually blocking first.
+**Re-derived after §5**, because the first draft of this list assumed the ground was empty
+and it is not.
 
+0. ⚑ **Read the two predecessors, and settle the modulus question. Before anything else.**
+   Zama **2024/451** §"Weighted sum" (our statement, circuit route) and **2026/027**'s
+   protocol section (our statement, MLE route) are both in `~/paperbin`. Then answer the
+   question §5.5(b) raises, because **it can delete items 1–4 entirely**: both predecessors
+   choose `q_FHE = the proof field` and thereby need no limb map, no range leg and no
+   lazy-accumulation discipline. Our answer is "we do not control the modulus — the
+   deployed carrier is `fhe.rs` BFV at HE-standard 36/36/37-bit RNS primes". **That is an
+   assumption I did not verify**: whether the fold path could run at a proof-field-aligned
+   modulus is an FHE security-parameter question, `notes/field-choice-verdict.md` and
+   `koalabear-limb-verdict.md` are adjacent to it, and it is strictly cheaper to answer
+   than to build items 1–4. Do it first.
 1. **Close binding condition (c) by replacing the ingress commitment.** The trader
    computes `Commit(flat(cₖ))` and signs *that*; `order_ingress`'s wire-byte digest and
    the attestation's `ordered_inputs` are re-pointed at it. This is a wire-format change,
@@ -857,5 +870,19 @@ Not a wishlist — the ordered remainder, with the one that is actually blocking
    prerequisite, not a speedup. Do not sell it as one. ⚑ And per §2.7 it moves the Rust
    *toward* the Lean model, not away from it — `Bfv.Ring` already folds in ℤ.
 
-⚑ **Do not do (2) before (1).** A PCS opening against a commitment that is not the
-ingress commitment is a beautifully-proved statement about the wrong object.
+5. ⚑ **Resolve the §4.4 tension before any push to larger `B`.** Per-trader independent
+   commitments (what (1) requires) force `O(B)` Merkle openings on the verifier; one
+   shared tree keeps the verifier cheap but cannot be built by `B` separate parties at
+   `B` separate times. At `B=4` this is four openings and does not matter. **It is the
+   thing that decides whether "raise `ORDER_COUNT` to get the 715×" is a real option or
+   a mirage**, so it must be answered before that argument is used for anything.
+
+**Ordering constraints, both load-bearing:**
+
+- ⚑ **Do not do (2) before (1).** A PCS opening against a commitment that is not the
+  ingress commitment is a beautifully-proved statement about the wrong object.
+- ⚑ **Do not do (1) before (0).** Item (1) is a wire-format change, a descriptor re-emit
+  and a re-genesis; committing to it before settling the modulus question means possibly
+  paying for a limb-map architecture that the aligned-modulus route would not need. This
+  is not the greenfield-deferral failure mode — nothing is being deferred for
+  compatibility. It is one cheap read gating four expensive builds.
