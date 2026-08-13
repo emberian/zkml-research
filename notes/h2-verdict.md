@@ -93,6 +93,17 @@ an enormous smooth subgroup. It does **not** save the 109-bit design
 NTT — the cost is the 2-limb width, not the reduction), but the family-law
 claim gains a data point.
 
+## ⚑ Two corrections from the limb lane (independent derivation, both sharpen this)
+
+1. **"16× fewer committed elements" does not reproduce.** Derived
+   independently it is **4.80× padded** — which, run back through H2's own
+   model, makes the 109-bit joint prime **3.85× worse, not break-even.** The
+   verdict hardens; the number was too generous to the losing side.
+2. **The 61-bit arm's "48 bits of noise budget" cashes out as exactly ONE
+   DEPTH LEVEL** (+3.03 bits of margin at depth 1, −29.94 at depth 2). That
+   is the concrete price, and it is the crispest statement of the H1
+   dependency: **the 61-bit design point costs one multiplication of depth.**
+
 ## Named caveats
 
 Proof-side numbers are **derived, not measured** (trace geometry from emitted
