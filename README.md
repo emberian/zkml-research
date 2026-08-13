@@ -30,9 +30,16 @@ wrong for the people who made them.
 
 ## Contents
 
+- **`docs/VERDICTS.md` — start here.** The single current-truth file: what we
+  believe now, in final form, with the open questions in its §7. **Where any
+  other file disagrees with it, it wins and the other file is history.**
+- `notes/README.md` — the index of research-lane findings: what each one
+  measured, and which file holds each of the questions that are still open.
 - `docs/` — design notes. Each states what is verified, what is sourced, and
   what is guessed.
 - `notes/` — research-lane findings as they land.
+- `notes/archive/` — files whose central claim died. Kept whole, with what
+  replaced them. History, not truth; not for citing.
 
 ## House rule
 
