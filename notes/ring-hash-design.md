@@ -722,8 +722,44 @@ which we can answer from our own side:
 
 ### 5.1 The escapes, assessed
 
-**Escapes 2–3 (ProtoGaLattice, GKR-delegation) — *pending lane detail*.** Escape
-1 verified at source below; the lane's net verdict is in §5.2.
+**Escape 3 (GKR-delegation) — *pending lane detail*.** Escapes 1, 2 and 4
+verified at source below; the lane's net verdict is in §5.2.
+
+#### Escape 2 — ProtoGaLattice (2026/1317): NOT an escape. A 33× cut of the *same* bill — which is the good news
+
+The brief asked whether the residual RO calls still have to be arithmetized. **They
+do, and the paper says so in the same breath as the claim:**
+
+> "sumcheck imposes a huge number of random oracle calls (≈100 according to
+> Latticefold) and therefore a complex verifier circuit. When used in an IVC or
+> PCD construction, **all these evaluations of hash functions need to be hardcoded
+> into the verifier circuit**, which is a very significant source of inefficiency."
+
+and the result:
+
+> "we obtain a folding scheme for k witnesses of a high-degree polynomial relation
+> that **requires only three random oracle calls**. To this, we need to add the
+> cost of a range proof … for each of the witnesses."
+
+So: **~100 → 3 (the abstract says four counting the range-proof overhead), a
+~25–33× reduction, of exactly the bill a better hash also reduces.** It is a
+*reduction*, not an escape — precisely the distinction the brief asked for.
+
+⚑ **And that makes it the best news in this section, not the worst.**
+ProtoGaLattice reduces the **number** of hash invocations; a ring-native hash
+reduces the **cost per** invocation. **They are orthogonal and compose
+multiplicatively.** A design that does both is strictly better than either.
+⚠ I am not quoting a combined figure: our §5.0 accounting derives N_sponge=2683
+permutations from *transcript size*, while ProtoGaLattice counts *RO calls* in
+LatticeFold's accounting. **Reconciling those two accountings is required before
+multiplying them**, and I have not done it. The qualitative composition is safe;
+a number would not be.
+
+⚠ Its own limitation, carried: *"the accumulator we obtain satisfies a relaxed
+bound B₁ which is greater than the initial bound B, so **we cannot iterate our
+folding scheme forever**. To achieve IVC or PCD, we require the norm bootstrapping
+protocol that we introduce next."* The three-RO-call figure is for one folding
+step, not for unbounded IVC.
 
 #### Escape 1 — Symphony (2025/1905): verified, and it targets exactly our setting
 
