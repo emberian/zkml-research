@@ -1,11 +1,15 @@
 # Field choice: KoalaBear everywhere
 
-> ⚠ **STATUS CHECK (2026-08-13): this is a RECOMMENDATION, not our state.**
-> Verified at source: `circuit/src/field.rs:3` — *"Uses BabyBear (p = 2^31 −
-> 2^27 + 1) as the native field for STARK proofs"*; zero `koala` hits in
-> Cargo.toml. **KoalaBear appears in four prose sites and zero config sites.**
-> We run BabyBear. Every "our KoalaBear parameters" phrasing elsewhere in
-> these notes is wrong and should read "the recommended migration target."
+> ⚠ **STATUS CHECK (2026-08-13): a RECOMMENDATION, not our deployed state —
+> but an actively evaluated one with landed proofs.**
+> **Deployed in both trees: BabyBear = 2013265921 = 15·2²⁷+1** (breadstuffs
+> `circuit/src/field.rs:3`; minidregg `prover/src/babybear.rs:4`, `field6.rs`
+> = BabyBear[u]/(u⁶−31), `Selvage/SmallField.lean:6`, `MixedFieldBudget:97`).
+> **Evaluated, seriously: KoalaBear = 2130706433 = 127·2²⁴+1** — the subject
+> of `Theory/CyclotomicInertia.lean` (the family law, machine-checked) and of
+> the paper, whose p61 is *"KoalaBear one machine word up."*
+> So: write "our deployed BabyBear" and "the KoalaBear migration target" —
+> not "our KoalaBear parameters."
  — the memo's verdict and its corrections
 
 2026-08-13. Final lane of the campaign. Full memo published as an artifact by
