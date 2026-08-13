@@ -12,6 +12,16 @@
 | "Multilinear/GKR substrate absent everywhere" | **REFUTED** | six shipped systems incl. **Ethereum mainnet** |
 | Proof-aware QAT: "in nobody's paper" | **REFUTED** | **two papers in ~/paperbin** + an industrially shipped product |
 
+## Update, same day: the count reached TEN
+
+Added by the ML-systems sweep: the MX exponent-spread statistic (published,
+**in our paperbin**), the weight registry (four groups, one **in our
+paperbin**), proof-aware QAT again, sequential LLM auditing (e-values,
+MPI-SWS), and "append-dominant KV" (six counts). **Every single absence
+stated as "zero papers" was found by a crypto-shaped query, and the ML
+systems / cs.AR / MLSys / ICLR-workshop literature answers the same question
+in different words.** That is the mechanism, stated exactly.
+
 ## The mechanisms, all four of them
 
 1. **Corpus blindness.** The eprint mirror is cryptology-only and incomplete.
