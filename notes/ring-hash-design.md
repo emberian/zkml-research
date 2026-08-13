@@ -593,14 +593,29 @@ possible* challenge space, q itself.** 2^64 is not enough for a 128-bit
 soundness target without parallel repetition or an extension, and repetition is
 paid by the *whole folding scheme*, not by the hash. τ=4 gives 2^256 outright.
 
-⚠ **Hedge, and it matters:** the mathematics above is a proof, but the *systems*
-consequence assumes 2026/1127's folding scheme draws challenges from an
-exceptional set of R_q in the standard way. That is near-universal in lattice
-folding (it is why these schemes care about splitting behaviour at all), **but I
-have not confirmed it in the paper.** Confirm before quoting this as a cost of
-τ=1. If it holds, it is a stronger argument than anything in §4.1–4.5, because it
-is a cost τ=1 imposes on the *ambient system* rather than on the hash — and the
-hash was only ever ~5% of the problem.
+✅ **Confirmed at source, and it is 2026/1127's own reasoning — not our
+inference.** The paper's Definition 4 is exactly this notion ("*a strong sampling
+set if a − b has a multiplicative inverse*", crediting [CCKP19]), it gives
+verbatim our diagonal construction and our bound —
+
+> "Let R̄ = R_q := Z_q[X]/⟨X^d+1⟩ and suppose q is a prime such that R_q ≅ F_{q^τ}^t.
+> Then C := {a ∈ R_q : NTT(a) = (i, i, …, i) ∈ F_{q^τ}, i ∈ F_{q^τ}} is a strong
+> sampling set of **size q^τ**."
+
+— and then states the design principle outright:
+
+> **"For a fixed q, we may choose τ to obtain exponentially-sized strong sampling
+> sets. This will be useful in our protocol."**
+
+*(Their `t` is the slot count, our ℓ.)* So **the paper deliberately raises τ to
+enlarge the challenge space, and τ=1 is precisely the choice that makes their
+own construction degenerate to its minimum, q.** This is the strongest item in
+§4: it is a cost τ=1 imposes on the *ambient folding scheme* rather than on the
+hash — and the hash was only ever a slice of the problem. **A ring-hash design
+that demands τ=1 is asking the host protocol to give up its challenge space.**
+
+That, and not the branch number, is the decisive reason the fork resolves to
+τ=4.
 
 ---
 
