@@ -412,7 +412,8 @@ house style (a *deliberately wrong* reading proved unequal by `decide`).
 initiality).
 **Gate:** `scripts/check-import-boundary.sh` green (Mathlib-only); no vacuous or
 tautological theorem; the tooth actually fails on the wrong algebra; `#assert_axioms`
-clean. **Forbidden:** `#guard` (see `docs/GUARD-DISCIPLINE.md`), any import of
+clean. **Forbidden:** `#guard` (see `metatheory/docs/GUARD-DISCIPLINE.md` in
+breadstuffs — not this repo), any import of
 `Selvage`/`Compiler`, any mention of a field or proof system.
 
 ### Z2 — tracer v1 + differential harness + toy GPT-2 (rungs 1 and 3)
