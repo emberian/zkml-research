@@ -104,9 +104,14 @@ a second front the Poseidon2b designers themselves decline to argue.~~
   and the composite law is **t+|K|**, not t·|K|+1. `ring-hash-design.md` §1.
   What still needs a degree analysis is **coefficient grouping over F_{q^4}** —
   a different question from the branch number, and the one real open item.
-- *"extension-field slots (τ>1) are a second front"* → **adjudicated: τ=4 wins**,
-  on 2026/1127's own rationale that the strong sampling set has size q^τ and
-  τ=1 collapses the challenge space to q. `ring-hash-design.md` §4.
+- *"extension-field slots (τ>1) are a second front"* → **still the live question,
+  and it is now THE question.** τ=1 is eliminated (2026/1127's own rationale: the
+  strong sampling set has size q^τ, so τ=1 collapses the challenge space to
+  2^64). But Beyne–Verbauwhede (eprint 2025/932, ASIACRYPT 2025) show integral
+  properties in characteristic p survive **monotonically longer with extension
+  degree** — round 1 at a prime field, 13 at degree 2, **20 at degree 4** — which
+  withdrew an earlier τ=4 verdict. **τ=2 leads provisionally; one named
+  experiment settles it.** `ring-hash-design.md` §4.4b–4.5.
 This remains a candidate with a clear attack surface, not a construction — but
 the surface is now mapped and priced.
 
