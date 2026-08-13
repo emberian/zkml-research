@@ -53,7 +53,20 @@ weights — has a floor of 59 bits against a 61-bit prime: **2.4 bits of
 margin, untested.** The design point may simply not exist there. *This is the
 single most important missing measurement.*
 
-**H2. The tradeoff has never been measured, in either direction.** Single
+**H2 — ✅ CLOSED 2026-08-13 (see `notes/h2-verdict.md`), AND IT COLLAPSED INTO
+H1.** Measured both directions: the FHE-side penalty is only 1.2–1.3× on the
+NTT path (single-prime actually WINS on ct×ct modmul and RAM size), and the
+proof-side saving is 16× fewer committed elements — which **evaporates**
+against an 18.5×-dearer multiply, leaving single-prime at 109 bits **1.11–1.53×
+SLOWER** on the packed prover Plonky3 actually runs. **A 109-bit joint prime is
+a net loss and no sampling rate rescues it.** A 61-bit joint prime is a net win
+on both sides — but only by spending 48 bits of noise budget, **so the design
+point exists if and only if H1 holds, and H2 can no longer be cited as
+independent support.** The sampling asymmetry I hypothesised as decisive was
+measured and does NOT decide (proving costs ≥618× performing, so the whole FHE
+penalty moves the total 0.19% at f=1). Original text follows:
+
+**H2. The tradeoff had never been measured, in either direction.** Single
 prime deletes RNS-emulation cost on the proof side and deletes RNS *speed* on
 the FHE side (one 61-bit software modmul vs three 32-bit-lane limbs). **We
 have zero numbers for the FHE-side loss.** The entire thesis is that the
