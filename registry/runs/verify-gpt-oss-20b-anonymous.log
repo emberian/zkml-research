@@ -1,0 +1,23 @@
+verifying manifests/openai__gpt-oss-20b.6cee5e81ee83.full.json
+  repo openai/gpt-oss-20b @ 6cee5e81ee83917806bbde320786a8fb61efebee  coverage=full  hash=sha256
+  ok   commitment recomputes: 3218eb92942a115dcc79ef1acd8778702991be0a034acc5ab55eb26be47db61f
+  ok   aux chat_template.jinja (16738 B)
+  ok   aux config.json (1806 B)
+  ok   aux generation_config.json (177 B)
+  ok   aux model.safetensors.index.json (36355 B)
+  ok   aux special_tokens_map.json (98 B)
+  ok   aux tokenizer.json (27868174 B)
+  ok   aux tokenizer_config.json (4200 B)
+  ok   header+length+structure model-00000-of-00002.safetensors
+  ok   header+length+structure model-00001-of-00002.safetensors
+  ok   header+length+structure model-00002-of-00002.safetensors
+  ok   hub LFS sha256 agrees on 3/3 whole shards (publisher metadata, same trust domain)
+  ok   tensor model.layers.1.mlp.experts.gate_up_proj_scales (16588800 B)
+  ok   tensor model.layers.11.self_attn.k_proj.bias (1024 B)
+  ok   tensor model.layers.13.mlp.experts.gate_up_proj_blocks (265420800 B)
+
+  checks run     23
+  bytes fetched  310014911
+  audit game     sampled 3/459 tensors uniformly without replacement; an adversary who altered a fraction f of tensors evades with probability about (1-f)^3 (f=0.01 -> 0.970, f=0.10 -> 0.729)
+
+VERIFY PASSED

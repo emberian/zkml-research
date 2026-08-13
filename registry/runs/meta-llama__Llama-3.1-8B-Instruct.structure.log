@@ -1,0 +1,21 @@
+repo meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659 (17 files)
+  aux config.json (855 B)
+  aux generation_config.json (184 B)
+  aux tokenizer.json (9085657 B)
+  aux tokenizer_config.json (55351 B)
+  aux special_tokens_map.json (296 B)
+  aux model.safetensors.index.json (23950 B)
+  shard model-00001-of-00004.safetensors: 4976698672 B, header 9512 B, 82 tensors, 0 B unclaimed
+  shard model-00002-of-00004.safetensors: 4999802720 B, header 12120 B, 104 tensors, 0 B unclaimed
+  shard model-00003-of-00004.safetensors: 4915916176 B, header 11656 B, 100 tensors, 0 B unclaimed
+  shard model-00004-of-00004.safetensors: 1168138808 B, header 560 B, 5 tensors, 0 B unclaimed
+
+commitment  15e0a6c49eb594cbf20e6db9c6c047fe4b1c3b1bc6107f7b204f3f7e67083261
+algorithm   sha256
+coverage    structure-only
+repo        meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659
+tensors     291 in 4 shards
+tensor B    16060522496
+fetched     9282907 B in 24 requests
+wall        9.3 s
+written     /Users/ember/dev/zkml-research/registry/manifests/meta-llama__Llama-3.1-8B-Instruct.0e9e39f249a1.structure.json

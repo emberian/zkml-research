@@ -1,0 +1,96 @@
+repo Qwen/Qwen3-8B @ b968826d9c46dd6066d109eabc6255188de91218 (15 files)
+  aux config.json (728 B)
+  aux generation_config.json (239 B)
+  aux tokenizer.json (11422654 B)
+  aux tokenizer_config.json (9732 B)
+  aux vocab.json (2776833 B)
+  aux merges.txt (1671853 B)
+  aux model.safetensors.index.json (32878 B)
+  shard model-00001-of-00005.safetensors: 3996250744 B, header 9328 B, 81 tensors, 0 B unclaimed
+  shard model-00002-of-00005.safetensors: 3993160032 B, header 13144 B, 114 tensors, 0 B unclaimed
+  shard model-00003-of-00005.safetensors: 3959604768 B, header 12824 B, 111 tensors, 0 B unclaimed
+  shard model-00004-of-00005.safetensors: 3187841392 B, header 10600 B, 92 tensors, 0 B unclaimed
+  shard model-00005-of-00005.safetensors: 1244659840 B, header 120 B, 1 tensors, 0 B unclaimed
+    model-00001-of-00005.safetensors: 0.18/4.00 GB (5.7 MB/s)
+    model-00001-of-00005.safetensors: 0.30/4.00 GB (4.9 MB/s)
+    model-00001-of-00005.safetensors: 0.46/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 0.63/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 0.79/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 0.93/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 1.09/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 1.22/4.00 GB (4.9 MB/s)
+    model-00001-of-00005.safetensors: 1.36/4.00 GB (4.9 MB/s)
+    model-00001-of-00005.safetensors: 1.56/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 1.76/4.00 GB (5.2 MB/s)
+    model-00001-of-00005.safetensors: 1.88/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 2.03/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 2.18/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 2.32/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 2.50/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 2.68/4.00 GB (5.0 MB/s)
+    model-00001-of-00005.safetensors: 2.89/4.00 GB (5.1 MB/s)
+    model-00001-of-00005.safetensors: 3.12/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.27/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.45/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.61/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.77/4.00 GB (5.3 MB/s)
+    model-00001-of-00005.safetensors: 3.94/4.00 GB (5.3 MB/s)
+  hub LFS sha256 agrees for model-00001-of-00005.safetensors
+  streamed model-00001-of-00005.safetensors: 4.00 GB in 12.6 min (5.3 MB/s), interior recheck OK
+    model-00002-of-00005.safetensors: 0.18/3.99 GB (6.0 MB/s)
+    model-00002-of-00005.safetensors: 0.37/3.99 GB (6.0 MB/s)
+    model-00002-of-00005.safetensors: 0.52/3.99 GB (5.6 MB/s)
+    model-00002-of-00005.safetensors: 0.67/3.99 GB (5.5 MB/s)
+    model-00002-of-00005.safetensors: 0.86/3.99 GB (5.6 MB/s)
+    model-00002-of-00005.safetensors: 1.02/3.99 GB (5.6 MB/s)
+    model-00002-of-00005.safetensors: 1.22/3.99 GB (5.7 MB/s)
+    model-00002-of-00005.safetensors: 1.36/3.99 GB (5.5 MB/s)
+    model-00002-of-00005.safetensors: 1.55/3.99 GB (5.6 MB/s)
+    model-00002-of-00005.safetensors: 1.80/3.99 GB (5.9 MB/s)
+    model-00002-of-00005.safetensors: 2.13/3.99 GB (6.3 MB/s)
+    model-00002-of-00005.safetensors: 2.39/3.99 GB (6.5 MB/s)
+    model-00002-of-00005.safetensors: 2.72/3.99 GB (6.8 MB/s)
+    model-00002-of-00005.safetensors: 3.02/3.99 GB (7.0 MB/s)
+    model-00002-of-00005.safetensors: 3.33/3.99 GB (7.2 MB/s)
+    model-00002-of-00005.safetensors: 3.66/3.99 GB (7.5 MB/s)
+  hub LFS sha256 agrees for model-00002-of-00005.safetensors
+  streamed model-00002-of-00005.safetensors: 3.99 GB in 8.6 min (7.7 MB/s), interior recheck OK
+    model-00003-of-00005.safetensors: 0.37/3.96 GB (12.3 MB/s)
+    model-00003-of-00005.safetensors: 0.65/3.96 GB (10.7 MB/s)
+    model-00003-of-00005.safetensors: 1.02/3.96 GB (11.3 MB/s)
+    model-00003-of-00005.safetensors: 1.38/3.96 GB (11.3 MB/s)
+    model-00003-of-00005.safetensors: 1.72/3.96 GB (11.3 MB/s)
+    model-00003-of-00005.safetensors: 2.04/3.96 GB (11.2 MB/s)
+    model-00003-of-00005.safetensors: 2.34/3.96 GB (11.0 MB/s)
+    model-00003-of-00005.safetensors: 2.65/3.96 GB (10.9 MB/s)
+    model-00003-of-00005.safetensors: 2.98/3.96 GB (10.9 MB/s)
+    model-00003-of-00005.safetensors: 3.25/3.96 GB (10.7 MB/s)
+    model-00003-of-00005.safetensors: 3.57/3.96 GB (10.6 MB/s)
+    model-00003-of-00005.safetensors: 3.83/3.96 GB (10.5 MB/s)
+  hub LFS sha256 agrees for model-00003-of-00005.safetensors
+  streamed model-00003-of-00005.safetensors: 3.96 GB in 6.3 min (10.5 MB/s), interior recheck OK
+    model-00004-of-00005.safetensors: 0.37/3.19 GB (12.3 MB/s)
+    model-00004-of-00005.safetensors: 0.65/3.19 GB (10.8 MB/s)
+    model-00004-of-00005.safetensors: 1.02/3.19 GB (11.2 MB/s)
+    model-00004-of-00005.safetensors: 1.41/3.19 GB (11.6 MB/s)
+    model-00004-of-00005.safetensors: 1.80/3.19 GB (11.8 MB/s)
+    model-00004-of-00005.safetensors: 2.11/3.19 GB (11.6 MB/s)
+    model-00004-of-00005.safetensors: 2.48/3.19 GB (11.7 MB/s)
+    model-00004-of-00005.safetensors: 2.89/3.19 GB (11.9 MB/s)
+  hub LFS sha256 agrees for model-00004-of-00005.safetensors
+  streamed model-00004-of-00005.safetensors: 3.19 GB in 4.4 min (12.0 MB/s), interior recheck OK
+    model-00005-of-00005.safetensors: 0.38/1.24 GB (12.6 MB/s)
+    model-00005-of-00005.safetensors: 0.67/1.24 GB (11.0 MB/s)
+    model-00005-of-00005.safetensors: 1.02/1.24 GB (11.1 MB/s)
+  hub LFS sha256 agrees for model-00005-of-00005.safetensors
+  streamed model-00005-of-00005.safetensors: 1.24 GB in 1.8 min (11.3 MB/s), interior recheck OK
+
+commitment  13adc299c5f4d3f8e1c9bdfac84d890c3e3ea6ede6b2bae5fdaa7df8651910fa
+algorithm   sha256
+coverage    full
+repo        Qwen/Qwen3-8B @ b968826d9c46dd6066d109eabc6255188de91218
+tensors     399 in 5 shards
+tensor B    16381470720
+fetched     16397542326 B in 34 requests
+wall        2040.1 s
+written     /Users/ember/dev/zkml-research/registry/manifests/Qwen__Qwen3-8B.b968826d9c46.full.json

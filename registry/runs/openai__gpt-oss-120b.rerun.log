@@ -1,0 +1,33 @@
+repo openai/gpt-oss-120b @ b5c939de8f754692c1647ca79fbf85e8c1e70f8a (37 files)
+  aux config.json (2089 B)
+  aux generation_config.json (177 B)
+  aux tokenizer.json (27868174 B)
+  aux tokenizer_config.json (4200 B)
+  aux special_tokens_map.json (98 B)
+  aux chat_template.jinja (16738 B)
+  aux model.safetensors.index.json (54511 B)
+  shard model-00000-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00001-of-00014.safetensors: 4115586736 B, header 6056 B, 54 tensors, 0 B unclaimed
+  shard model-00002-of-00014.safetensors: 4625017888 B, header 4632 B, 41 tensors, 0 B unclaimed
+  shard model-00003-of-00014.safetensors: 4115586752 B, header 6072 B, 54 tensors, 0 B unclaimed
+  shard model-00004-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00005-of-00014.safetensors: 4115586696 B, header 6016 B, 54 tensors, 0 B unclaimed
+  shard model-00006-of-00014.safetensors: 4625017856 B, header 4600 B, 41 tensors, 0 B unclaimed
+  shard model-00007-of-00014.safetensors: 4060267176 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00008-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00009-of-00014.safetensors: 4170906304 B, header 7480 B, 67 tensors, 0 B unclaimed
+  shard model-00010-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00011-of-00014.safetensors: 4115586752 B, header 6072 B, 54 tensors, 0 B unclaimed
+  shard model-00012-of-00014.safetensors: 4064660808 B, header 2496 B, 22 tensors, 0 B unclaimed
+  shard model-00013-of-00014.safetensors: 4625017896 B, header 4640 B, 41 tensors, 0 B unclaimed
+  shard model-00014-of-00014.safetensors: 4115586736 B, header 6056 B, 54 tensors, 0 B unclaimed
+
+commitment  b8699decd118b360206bf47f7783c5ab50706d80fcbc33d75a91577c38de8a76
+algorithm   sha256
+coverage    structure-only
+repo        openai/gpt-oss-120b @ b5c939de8f754692c1647ca79fbf85e8c1e70f8a
+tensors     687 in 15 shards
+tensor B    65248815744
+fetched     28184414 B in 69 requests
+wall        36.1 s
+written     runs/openai__gpt-oss-120b.rerun.json
