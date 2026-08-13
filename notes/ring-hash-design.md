@@ -166,6 +166,34 @@ naive t·|K|+1 bound is refuted by construction everywhere.
 
 ## 2. The schedule cost table: how few dense rounds suffice
 
+### 2.0 First: the σ price was HALVED, and this supersedes the recorded pricing
+
+`ring-hash-cryptanalysis.md` and `density_repricing.py` both price a σ-layer of
+support s at **s−1** rows/element/round. `design_branch_frontier.py` re-reads
+2026/1127's Definition 9 and prices it at **⌈(s−1)/2⌉**. The argument: the
+R1CS-with-automorphisms row is
+
+> `A z ∘ B z = C z + σ(C' z) + σ̃(C̃ z)`
+
+with σ = σ_5 and σ̃ = σ_{−1} **both present in one row**, each applied to an
+arbitrary linear combination of the witness. So a chain `u_j = σ_5(u_{j−1})`
+costs 1 row each, and **one** combine row then reaches
+{5^0..5^c} ∪ {−5^0..−5^{c−1}} — support 2c+1 for c rows. The old pricing missed
+the σ̃ channel *and* the chain reuse.
+
+Consequences: full support at τ=1 costs **d/2 = 8**, not d−1 = 15; and at τ=4
+full slot-support costs **2**, not 3. **Every cost number in §2 and §4 uses the
+corrected law.** It also revises the project's recorded headline: the "defensible
+3.9×–4.8×" in `density_repricing.py` was computed under the old law; the same
+fully-dense-in-full-rounds schedule is **5.0×** under the corrected one.
+
+⚠ **This halving is load-bearing for the whole cost case and rests on one
+premise: that Definition 9 really carries two independent automorphism channels
+per row.** That premise is being verified at source; until it is confirmed,
+treat every σ cost here as a factor-2 risk. *(verification pending)*
+
+### 2.1 The schedules
+
 `design_mds_interleave.py`. All at τ=1, d=16 — this is the table that says what
 slot-MDS *costs* in the τ=1 regime, and it is therefore the main input to §4.
 
