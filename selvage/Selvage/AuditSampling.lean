@@ -1112,8 +1112,19 @@ theorem chkErr_bound_of_lightClient
   express this — `εchk` is a free parameter — but nothing here derives the
   `1 − 1/N` floor from a checker model, and nothing composes it with the
   temporal concentration.
+* **The commitment `c_t` is not a first-class object.** It is folded into the
+  history: `Round.corrupt`, `Round.fires` and `Round.alarms` read `List Ω`, and
+  everything decided before the beacon emits — the commitment included — is
+  determined by that. This is what makes `BeaconLeg`'s `∀ h` the spec's
+  `ess inf … | F_{t−1}, c_t`, and it is also a simplification: a model wanting
+  to say something about the commitment ITSELF (its opening, its equivocation
+  witness) cannot say it here, and would have to widen `Round`.
+* **`ChkLeg`'s product form.** `Pr[fire ∧ chkErr] ≤ Pr[fire]·ε_chk` is an
+  assumption about the beacon and the checker being independent. It is
+  discharged by `Round.chkLeg_of_product` only when the coin space LITERALLY
+  factors; a deployment whose checker reads the beacon owes it directly.
 * **`ε_chk > 0` unconditionally.** If one-way functions exist, no checker has
-  `ε_chk = 0` (Haitner–Lin–vanAmeijden-style floor). Cited; not formalized. The
+  `ε_chk = 0` (the HLvA floor). Cited; not formalized. The
   `AuditWitness` instance is a MODEL with a perfect checker, not a claim that
   one exists.
 -/
