@@ -123,3 +123,45 @@ Until then the correct description is: *"a candidate representation with
 verified properties and an unmeasured tradeoff."* Everything stronger is
 premature, and the paper should not be drafted around a claim H1/H2 might
 refute.
+
+## H4 addendum — the frontier-MoE stress case (Kimi K3, 2.4T)
+
+Ember: Kimi K3 is a 2.4T MoE with many active parameters — and it is Tier-1
+MXFP4-native, i.e. exactly the model class our format work targets. Running
+the scaling there sharpens the claim into its correct form.
+
+Active-parameter scenarios (K2 was ~1T/32B; larger MoEs trend to more active):
+
+| active | ν needed | chunks @ Goldilocks 2^31 | chunks @ p61 2^53 |
+|---|---|---|---|
+| 31B (1.3%) | ~40 | 465 | 1 |
+| 72B (3%) | ~41 | 1,073 | 1 |
+| 120B (5%) | ~42 | 1,788 | 1 |
+| 240B (10%) | ~43 | 3,576 | 1 |
+
+**But memory chunks you too, and this is the honest framing:** on a ~200 GB
+streaming box (ν_max ≈ 34, from Sparrow-class 1.4× native space), K3 at 5%
+active needs **224 chunks from memory alone** — while Goldilocks forces
+**1,788**. So the field ceiling costs **~8× more chunks than the machine
+actually requires**, and every extra chunk is accumulation/binding overhead
+paid per chunk.
+
+**That is the claim's mature form.** Not "we unlock one doubling," and not
+"the ceiling never binds" — but: *at frontier-MoE scale both constraints
+bind, and the field ceiling multiplies the required chunk count by ~8× over
+what the hardware demands. p61 removes the field term entirely, leaving
+memory as the sole constraint — which is where it should be, since memory is
+a hardware fact and 2-adicity is a choice nobody made deliberately.*
+
+Two things this makes concrete:
+- **The MoE and accumulation threads are load-bearing here, not adjacent.**
+  Chunk-binding cost is exactly the accumulation work; the router-binding
+  spec decides what a chunk must prove. The prime's value is measured *in
+  units of chunks avoided*, so it cannot be evaluated without them.
+- **Registry side**: committing 2.4T MXFP4 params is ~1.2 TB of one-time
+  stream-hashing. Feasible with the range-streaming tool, and it is the
+  scale the registry lane should eventually target — not gpt-oss-20b.
+
+Caveat unchanged: ν is a single-point calibration from Zama's benchmark, and
+the streaming-prover memory figure is surveyed-but-unmeasured. H1 and H2
+remain untouched.
