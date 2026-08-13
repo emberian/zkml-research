@@ -5,8 +5,16 @@
 shortest path from Selvage's existing machine-checked FRI/proximity cone to a
 machine-checked *multilinear opening*? And what exactly would the theorem say?
 
-**Status**: IN PROGRESS — written incrementally. Sections marked ⟨draft⟩ are not yet
-cross-checked against paper theorem statements.
+**Status**: COMPLETE. Written incrementally; four paper-reading lanes integrated (§6 BaseFold
+family, §7 jagged/adapters, §8 WHIR/STIR/MCA, §9 tensor codes). **The answer is §11**; the
+master table is §12. Sections still marked ⟨draft⟩ are superseded by the lane findings that
+follow them and are kept only to show what changed.
+
+**One-line answer**: **BaseFold at Reed–Solomon, in Selvage's own unconditional `(1−ρ)/3` band,
+packaged as an `RbrKnowledgeSoundness` instance** — five new items, no conjecture, no new
+proximity result, and the commitment layer untouched. Then WHIR-UD. The highest-leverage
+*independent* item is elementary MCA at the 1.5-Johnson bound (GKL / Khatam), which upgrades
+the radius of everything downstream.
 
 ---
 
@@ -1387,3 +1395,297 @@ Binius ring-switching is *characteristic-agnostic* per its own authors (2024/504
 is **not a PCS** — it consumes one; (ii) its value (eliminating embedding overhead) largely
 evaporates at 31 bits: packing buys `ℓ → ℓ−2`, not `ℓ → ℓ−7`; (iii) `[L:K]` must be a **power of
 2**, ruling out degree-5 extensions.
+
+---
+
+## 10. The rest of the BaseFold family — all four rejected, with reasons
+
+| | regime | conjecture? | commit = ordinary RS/FRI root? | verdict |
+|---|---|---|---|---|
+| **DeepFold** 2024/1595 | capacity `1−ρ−ε` | ⚠ **YES, and it infects the COMMITMENT** | **NO** — root **+ a (α,c) DEEP triple** | reject |
+| **UltraFold** 2026/266 | conjectured capacity, **in prose only** | yes | ZCF23 + leaf permutation | **not a distinct target** |
+| **Galois-ring BaseFold** 2025/1767 | `δ ≲ Δ/3` | no, but **two unproved "Fact"s** | **NO** — no evaluation domain at all | reject |
+| **SwitchFold** 2026/1489 | **`δ/3`, unique decoding, ZERO conjectures** | **no** | **NO** — interleaved matrix, row leaves | reject, but note the regime |
+
+**DeepFold** is a *simpler protocol* than BaseFold — no sumcheck at all, a degree-1 "ladder" of
+DEEP evaluations folded by the same `r_i`, and the FRI leg is bit-for-bit standard with
+**our exact fold convention** `f^{(i)} = f_E + r_i·f_O`. But: **Conjecture 1** (RS list-decodability
+to capacity, `L ≤ (|L|/ε)^{C_ρ}`) sits on the dependency chain *Theorem 4 → Lemma 7 → Theorem 2's
+proof*, and Theorem 4 is the **binding** theorem — so **the conjecture infects the commitment
+itself**, and the commitment is a three-message `⟨rt, α, c⟩` triple, not a root: *without `(α,c)` the
+scheme is not binding at all* in that regime. Further: `poly(|L₀|)` in Theorem 2's bound is **never
+instantiated anywhere**, so no bit-security is derivable for the non-query term; **no extractor is
+ever constructed** ("extractor" occurs once, in a definition); and the proof invokes *"**the DEEP
+theorem**"* with **no statement, no number, no citation** — its largest hidden dependency. Its
+measured numbers are excellent (s=34 vs BaseFold's 120; 208 KB vs 619 KB) and irrelevant to
+provability.
+
+**UltraFold** *"contains no theorem"* — Definition 1 and Lemmas 1–8, and **every soundness lemma has
+the form "the same bound as centralized BaseFold" with the bound never written down.** Lemma 5's
+proof is a simulation wrapper. Its only quantitative content is a prose paragraph citing WHIR's
+**conjectured** capacity MCA. Formalizing UltraFold = formalizing BaseFold plus an index-permutation
+identity. ⚠ Two internal defects worth noting as a calibration on the paper: it uses Goldilocks
+(`2^64`) while its own §2 requires `|F| = Ω(2^λ)` at λ=100 (the d-round sumcheck alone loses `2^{−58}`
+at d=27), and its one quantitative citation attributes a bound to "DEEP-FRI [12]" where ref [12] is
+**DeepFold**.
+
+**Galois-ring BaseFold**: the headline finding is that **every soundness error is in terms of the
+residue field `p^r`, never `|GR| = p^{rs}`** — *you get a ring of size `p^{rs}` and the security of a
+field of size `p^r`; `s > 1` buys `Z_{p^s}` representation and **zero bits of soundness***. Good news
+for a would-be formalizer: no exceptional set, no Lenstra machinery. Bad news: **Fact 2** (the
+Schwartz–Zippel replacement over a finite chain ring, `Pr[f(x)=0] ≤ d/p^r`) is stated with **no proof
+and no citation**; the ring analogue of `fold_preserves_code` is **used but never stated or proved**;
+four field-only results (BKS'18 Johnson, twice) are applied to free modules with no ring-side proof;
+**no knowledge-soundness theorem exists**; and **`p ≠ 2` is required** (the fold needs `2·diag(T)` to
+be a unit) — ⚠ *in a paper motivated by lattice/FHE, which live over `Z_{2^k}`*.
+
+**SwitchFold** deserves its own note because **its regime is the friendliest in the corpus**:
+everything strictly inside `δ/3`, unique decoding, **zero conjectures anywhere**, on the strength of
+one Ligero-style lemma (BKS'18 Thm 7) for an **arbitrary linear code**. But it has **no folding
+operator and no braid** — so `FoldDistancePreserving` and `IsProximityGenerator` have *no counterpart*
+— its commitment is an interleaved matrix with row leaves, it adds **Θ(log N) fresh roots plus three
+point-oracle commitments per level**, its `κ_Hash` is never instantiated, and its **Lemma 7**
+(RBR-knowledge-soundness ⇒ knowledge-soundness), load-bearing for Theorems 3/5/6, is stated with
+**no proof and no citation**. Its measured cost is the tell: `33λ` queries **per level per opening**
+at δ=1/16, giving 754 s at N=2^30 for BrakeFold. Reject — but keep the regime observation.
+
+---
+
+## 11. ⭐ RANKING — what to formalize first, with the composition path
+
+### 11.0 Where I disagree with a lane, and why
+
+The BaseFold lane's recommendation is **Haböck 2024/1571 in the unique-decoding regime**. Its
+argument is strong and I accept its premises: Haböck's Theorem 1 *is* round-by-round (the shape our
+pipeline consumes), concrete, conjecture-free, and three lemmas long, whereas ZCF23's published
+proof is asymptotic with a `negl`-defined bad event and a second distance notion `Δ*`.
+
+**But its ingredient is not one we hold, and WHIR's is.** Haböck needs two *new* correlated-agreement
+results: **(G1)** the weighted variant (sub-probability measure with denominator `B_i = 2^i`), and
+**(G2)** the *subcode* variant — whose short Vandermonde proof runs **on top of the BCIKS20 Prop-2
+intermediate `P(X,Z)`, which Selvage's `IsProximityGenerator` does not expose** (it concludes only
+the final `∃ S, … ∧ ∀ i, ∃ u ∈ C, AgreesOn S (f i) u`). The lane flagged this itself, conditionally.
+I read the Lean; the condition is **not met**. Meanwhile WHIR Theorem 5.2's hypothesis — *"Gen is a
+proximity generator with mutual correlated agreement … with bound `B*` and error `err*`"*, **at arity
+2** — is `HasMutualCorrelatedAgreement G C Bstar errstar` on the nose, and Selvage's version of the
+lemma that discharges it is **more general and more correct than the paper's** (§8.1).
+
+**And the third option neither lane took is the right first one:** *take the protocol, not the
+paper's proof.* Nothing forces us to formalize ZCF23's asymptotic argument. Selvage's `Rbr.lean`
+exists; the deliverable is an `RbrKnowledgeSoundness` instance. We can state BaseFold's soundness
+round-by-round — which is *Haböck's structural insight, applied in ZCF23's fold convention (already
+ours) at the radius our ingredients already reach unconditionally.* That combination is in no paper
+and is strictly the cheapest thing on the table.
+
+### 11.1 The ranking
+
+**Rank 0 — prerequisites, both small, both shared.** Do these regardless of what wins.
+
+**(0a) The degree-2 honest sumcheck round family.** `adaptive_sumcheck_soundness`
+(`SumcheckReduction.lean:296`) is *already* `d`-generic with bound `v·d/|F|` (§3.4, verified at
+source). What is missing is the honest side at `d = 2`: a `roundPoly` through three interpolation
+points and the "multiaffine × multiaffine is degree ≤ 2 per coordinate" lemma, discharging
+`hHonestDeg` and `hHonest` for `g(b) = f̃(b)·eq(z,b)`. **Needed by BaseFold, WHIR (`d = 3` for
+`ŵ = Z·eq`), and jagged (`2m/|𝔽|` *is* Lemma 2.3's degree-2 error).** *Not* needed on Haböck's route
+— his `Λ_i` linearization absorbs the sumcheck into the relation, contributing exactly `1/|F|`,
+which is worth knowing but is not a reason to take that route.
+
+**(0b) `relDist_fold_le`.** `relDist (fold D f α) (fold D u α) ≤ 2 · relDist f u`, ~40 lines from
+`card_sq_preimage`/`card_eq_two_mul_card`. This is what lets us reach ZCF23's `3δ` bound **without
+importing the coset distance `Δ*`** that the paper threads through five results (§6.1).
+
+**Rank 1 — ⭐ BaseFold at Reed–Solomon, unconditional band, as an `RbrKnowledgeSoundness` instance.**
+
+*Why it wins on "provable soonest":* it has the **fewest machine parts** of any candidate that is
+actually a multilinear PCS — binary folding (not k-ary), no domain shift, no out-of-domain sample,
+no list-decoding-preservation theorem (at unique decoding the list is a singleton, so WHIR's
+Theorem 4.20 collapses to §5.1's triangle), one oracle per round beyond the FRI tower, and a
+tie-off that is the verifier **re-encoding one field element** (`Enc₀(h₁(r₀)/ẽq_z(r)) = π₀`).
+And the commitment is `Selvage/Commitment.lean` **unchanged**.
+
+*The composition path, theorem by theorem:*
+
+| step | cite | status |
+|---|---|---|
+| commitment + binding | `Commitment.lean` `BindingCommitment`, `opened_eq_committed:154`, `commit_injective:161` | **held** |
+| `t` columns → full word | `Erasure.lean:128` `recoverFromColumns_sound` | **held** |
+| Möbius round-trip | `booleanMobiusPolynomial` + new `coeffsToTable` | **new**, §2.1 (C1) |
+| tower fold = coefficient fold | `Proximity.lean:321` `fold_eval` | **new** induction, §2.1 (C2) |
+| terminal word is the MLE | `MultiplicativeMleTerminal.lean:318` | **held**; §2.1 (C3) is a corollary |
+| far ⟹ far, per round | `ProximityGapUD.lean:534` `foldDistancePreserving_UD` (unconditional at `δ < (1−ρ)/3`, `b = |κ|`) | **held** |
+| far ⟹ far, whole tower | `Proximity.lean:706` `proximity_sound_prob` | **held** |
+| adaptive + committed + queried | `HalfThresholdFriQuery.lean:415` `friAdaptive_sampled_sound` (`m·b/|F| + (1−τ)^q`) | **held** |
+| **fold-chain consistency** | `CorrelatedAgreement.lean:165` `codeword_eq_of_close_of_close` + (0b) | **elementary**, §5.1 — and it is ZCF23's own Lemma 8 (§6.1) |
+| sumcheck round | `SumcheckReduction.lean:296` at `d := 2` | **held** + (0a) |
+| extension-field challenges | `SmallField.lean:270` `fold_liftWord_mem` | **held** |
+| RBR packaging | `AccRbrInstance.lean` as template | **new**, §3.1 (S4) |
+| RBR ⟹ state-restoration | `Depth.lean:1982` `OB2_depth_composition_nonneg_proved` | **held** |
+| ⟹ non-interactive at the deployed alphabet | `FiatShamir.lean`, `AccRbrBcs.lean` | **held** |
+
+*The theorem it produces*, in Selvage's vocabulary (§3.1), with a per-round bound
+`n/|K| + 0 + 2/|K|` — **the chain-consistency term is zero** because
+`codeword_eq_of_close_of_close` is deterministic (§5.5) — plus one `(1−τ)^q` query term.
+
+*What is genuinely new work, stated without softening:* (C1), (C2), (0a), (0b), and (S4). Five items.
+(S4) — building `Reduction`/`KStateFn`/`RbrKnowledgeSoundness` and proving `extract_sound` — is the
+large one, and `AccRbrInstance.lean` is a worked precedent, not a guess.
+
+**Rank 2 — WHIR-UD (Theorem 5.2), once Rank 1's scaffolding exists.**
+
+Selvage holds *more* of WHIR than of BaseFold: `constrainedRS` **is** WHIR Def 4.5; `OutOfDomain.lean`
+**is** WHIR §4.4 including the pinning bound; `reedSolomon_johnson_list_bound` **is** Theorem 4.3;
+`close_of_correlatedAgreement` **is** the ⊇ algebra of Claim 4.23; and its MCA hypothesis at arity 2
+**is** `HasMutualCorrelatedAgreement`. **You do not need STIR** — WHIR imports exactly one STIR lemma
+(4.25, a two-line union bound) and discards the entire `Quotient`/`PolyQuotient`/`DegCor` stack
+(§8.3). Theorem 5.6 (batching) is *"one polynomial-identity-lemma step plus a union bound"* and is the
+cheapest real WHIR theorem to check.
+
+The reason it is Rank 2 and not Rank 1 is honest: **k-ary folding and per-round domain shifting are
+machinery BaseFold does not have**, and Theorem 4.20's list-decoding preservation, while trivial at
+`ℓ = 1`, is stated in the general form. Do it second, on the scaffolding Rank 1 builds.
+
+⚠ Two porting traps: **Theorem 7.5's `δ < B*` is a typo for `δ < 1 − B*`** — copying it literally
+proves a different theorem — and **Lemma 4.10's printed `min` must be `max`** (§8.1).
+
+**Rank 3 — ⭐ GKL / Khatam: elementary MCA at the 1.5-Johnson bound.**
+
+This is the **highest-leverage item in the whole landscape**, it is independent of which PCS wins,
+and it is in neither the brief nor any lane's top recommendation. Selvage's unconditional RS
+proximity generator stops at `(1−ρ)/3`; the full UD band already costs a **named hypothesis**
+(`PolishchukSpielman`); Johnson costs `HaboeckTheorem2`, whose core is Guruswami–Sudan over a
+rational function field with a Hensel lift — the worst formalization target in this literature. GKL
+Theorem 3/4 and Khatam Theorem 1 reach the **1.5-Johnson** radius for **arbitrary linear codes** by
+agree-domain intersection counting, with **zero** hits for `function field|Hensel|Guruswami-Sudan`
+(grep-verified). Khatam's bound `1/(ϵη)` is even **independent of `n`**. At `ρ ≲ 0.23` — rate 1/8 and
+below, where these systems run — 1.5-Johnson beats unique decoding outright. **One elementary Lean
+result that upgrades the radius of every theorem downstream of it.**
+
+**Rank 4 — Jagged.** Cheap, self-contained, `multiAffine_eq_mle` applied six times plus (0a). But it
+**commits to nothing on its own** (§7.2/§7.4): no extractor, no binding, no knowledge soundness, no
+RBR — a claim transformer whose output claim needs a dense PCS that Ranks 1–2 supply. Do it *after*.
+Formalize **Lemma 5.1's `(2m+1)/|𝔽|`**, not Theorem 1.5's `2m/|𝔽|`, and quantify `i` over
+`Fin m → Bool` (Remark 3.1).
+
+**Rank 5 — Diamond–Gruen 2024/1351**, if and when interleaved/tensor commitments become interesting.
+Three elementary counting lemmas + pigeonhole + one induction, for an **arbitrary** linear code, and
+it lands in `IsProximityGenerator` as an ordinary instance (the tensor generator is just another `G`).
+It is the shared proximity input of Ligerito *and* Binius2. Two honest costs: presenting the tensor
+generator as a `G.pr`, and a **column** distance on `Fin m → ι → F` that `relDist` does not provide.
+Not on the critical path for Ranks 1–2; a good thing to hold.
+
+### 11.2 Ruled out, with the reason in one line each
+
+- **Gemini / multilinear-from-univariate** — the identity matches are exact and beautiful
+  (`mleCoefficientFold` *is* `f^{(j)}`; `fold_eval` *is* Eq. 16; the completeness induction is already
+  proved), and Lemma 5.4 is the **cheapest soundness statement in the corpus**. But Gemini compiles
+  with **KZG** (11 KZG/pairing hits, **0** for FRI/Merkle/hash-based), and its `β, −β, β²` queries are
+  **out-of-domain**, requiring a univariate *evaluation* PCS — quotienting/DEEP — that Selvage does not
+  have assembled. **BaseFold's whole structural advantage is deleting exactly that requirement.** Two
+  lanes and I reached this independently. Keep Lemma 5.4 as a lemma; do not take the route.
+- **Ligero / Brakedown / Shockwave** — the SoK's own answer to "simplest to prove", and genuinely so
+  for *binding*; but √N verifier, tens-of-MB proofs, and **knowledge soundness needs rewinding
+  extractors in expected polynomial time**, harder in Lean than anything else here.
+- **Blaze / Bolt / RAA / LDPC / expander codes** — the distance is a property of a *randomly sampled*
+  code (Blaze: failure `2^−13` … `2^−42`, conditional on a **computer-checked transcendental
+  optimization**; nothing below block length `2^21`; Bolt: Gallager ensemble). Replacing a 30-line
+  Vandermonde theorem with a random-ensemble distance theorem is a research-scale formalization in
+  combinatorics we hold none of. And **neither removes RS**: both end in a BaseFold/WHIR call.
+- **2026/487 (RAA over prime fields)** — `o(1/N)` with unspecified constants, **proof sketches with no
+  appendix**, soundness asserted as a Brakedown re-parameterization. Not buildable on.
+- **Ligerito** — best recursion shape in the corpus (explicit induction on `ℓ`), no √N verifier; but an
+  unrefereed note whose **stated error bound has two transcription defects**, both in the *favourable*
+  direction, and an interleaved row-leaf commitment.
+- **Hyrax** — Pedersen/dlog, *requires* an additively homomorphic commitment. **No hash-based
+  instantiation exists.** Not post-quantum.
+- **STIR as a target** — one lemma imported, `q_STIR = q_WHIR`, and an untight field-size hypothesis.
+  Detour.
+- **Binius ring-switching** — not a PCS (it consumes one); worth `ℓ → ℓ−2` at 31 bits rather than
+  `ℓ → ℓ−7`; needs `[L:K]` a power of 2, ruling out degree-5 extensions.
+- **Zinc / integer-mod / LigeSIS / Titan / Vela–Carina** — orthogonal (different ring, different
+  assumption, or not hash-based).
+- **DeepFold / UltraFold / Galois-ring / SwitchFold** — §10.
+- **TensorSwitch (2025/2065)** — ⚠ **not ruled out; unassessed.** It is a *base* multilinear PCS, by
+  jagged's own senior author, that both jagged (Remark 7.1) and 2026/347 reach for, that takes
+  *"`C` has mutual correlated agreement up to `δ`"* as a **hypothesis** — our predicate as someone
+  else's assumption — and that has the **round-by-round section nobody else has**. It was published
+  the same month up-to-capacity MCA was refuted, and **nobody has read its §3.19 against
+  Crites–Stewart 2025/2046.** That reading is the single cheapest open action in this note.
+
+### 11.3 The honest statement of what remains genuinely new work
+
+**For Rank 1 (BaseFold-UD), five items**: the Möbius round-trip (C1); the tower-fold induction (C2);
+the degree-2 honest sumcheck family (0a); `relDist_fold_le` (0b); and the RBR instance with
+`extract_sound` (S4). Nothing on that list requires a proximity result we do not hold, and nothing on
+it requires a conjecture. **That is the verdict the brief asked whether we could reach: no, "all of
+them need a new proximity result" is *not* the outcome — for BaseFold at the unconditional radius.**
+
+**For Rank 2 (WHIR-UD), add**: Theorem 4.20's folding-preserves-list-decoding (trivial at `ℓ=1`,
+stated generally), k-ary folding, and per-round domain shifting. Everything else is held.
+
+**For any radius above `(1−ρ)/3`**: a real proximity result we do not hold — either
+`PolishchukSpielman` (to `(1−ρ)/2`), or `HaboeckTheorem2` (to Johnson, and its core is the hardest
+target in this literature), or **GKL/Khatam** (to 1.5-Johnson, and *elementary* — Rank 3). Above
+Johnson: **refuted over prime fields with smooth domains**, which is our setting.
+
+**Under-claiming deliberately**: (C1)–(C2), (0a)–(0b) and (S4) are shapes derived from reading the
+Lean and the theorem statements. I have built none of them, and this repo's own record says my
+effort estimates run long. Treat the *decomposition* as the deliverable and the *sizes* as untested.
+
+---
+
+## 12. Master table — the per-candidate deliverable
+
+Columns: **Commit** = can we reuse `Selvage/Commitment.lean` unchanged (the criterion that
+dominates cost, §0)? **RBR** = is the paper's soundness already in the round-by-round shape
+`Selvage/Rbr.lean` consumes? **Ingredient** = does Selvage hold the proximity result it needs?
+
+| Candidate | Lean-shaped soundness statement | Regime, and what discharges it | Commit reusable | RBR | Ingredient held | Verdict |
+|---|---|---|---|---|---|---|
+| **BaseFold @ RS** (ZCF23 protocol, RBR-shaped by us) | `basefoldRbr : RbrKnowledgeSoundness (basefoldReduction T deg δstar)`, per-round `err ≤ n/\|K\| + 0 + 2/\|K\|`, query `(1−τ)^q` | `δ < (1−ρ)/3`, from `foldDistancePreserving_UD` (**unconditional**) + `codeword_eq_of_close_of_close` (**deterministic**) | ✅ **unchanged** | ✅ (by us; ZCF23's own proof is asymptotic) | ✅ **all of it** | ⭐ **RANK 1** |
+| **WHIR-UD** (Thm 5.2) | same shape; `ε^fold ≤ d·ℓ/\|F\| + err*(·,2,δ)`, `ε^out ≤ 2^m ℓ²/(2\|F\|)`, `ε^shift ≤ (1−δ)^t + ℓ(t+1)/\|F\|`, `ε^fin ≤ (1−δ)^t` | `δ < 1 − B*`, `B* = (1+ρ)/2`; discharged by Lemma 4.10/Cor 4.11 = **Selvage's `hasMutualCorrelatedAgreement_of_isProximityGenerator`** | ✅ unchanged (2^k-coset leaves) | ✅ **the paper is RBR** | ✅ **MCA at arity 2 is exactly ours** | **RANK 2** |
+| **Haböck 2024/1571** (Thm 1) | `ε ≤ max{ε(C₀,M,1,θ), 1/\|F\| + ε(C_i,1,B_i,θ), (1−θ)^s}` | Johnson, *"carries over verbatim to unique decoding"* | ✅ unchanged | ✅ **the paper is RBR** | ⚠ **needs weighted CA (G1) + subcode CA (G2); (G2) does not go through from `IsProximityGenerator`'s conclusion** | strong structure, missing ingredient |
+| **Jagged** (Thm 1.4) | `p̂(z) ≠ v ⟹ Pr[reject ∨ q̂(z′) ≠ v′] ≥ 1 − 2m/\|𝔽\|` | none — information-theoretic | n/a — **no commitment** | ❌ plain soundness only | n/a | **RANK 4** — adapter; commits to nothing alone |
+| **GKL / Khatam MCA** | `\|Bad_δ(π₁,π₂)\| < 2/η + (n+6)/(η·(∛(1−Δ)+η − √(1−Δ+η)))`; Khatam `\|A_{π,ϵ,η}\| ≤ 1/(ϵη)` | **1.5-Johnson, arbitrary linear code, elementary** (grep: 0 hits for function field / Hensel / Guruswami-Sudan) | — | — | it *is* the ingredient | ⭐ **RANK 3** — radius upgrade for everything |
+| **Diamond–Gruen** (Thm 3.1/3.6) | interleaved + tensor-style proximity gaps at `e ≤ ⌊(d−1)/2⌋`, `ε := n` | unique decoding, **arbitrary linear code** | — | — | lands as an `IsProximityGenerator` instance | **RANK 5** — hold |
+| Gemini (Thm 5.2 / Lem 5.4) | `(N−1)/\|𝔽ˣ\|`, one Schwartz–Zippel, **no code/field/domain hypothesis** | n/a | ❌ — needs a **univariate evaluation PCS** (quotient/DEEP) we have not assembled; compiles with KZG | ❌ | — | cheapest *lemma*; **not a route** |
+| Ligerito | eqs (17)/(18), per-level induction on `ℓ` | UD `d/2` (RS) / `d/3` (general) | ❌ interleaved, **row leaves** | partial (induction, not RBR) | needs Diamond–Gruen | ⚠ two error-bound typos, both favourable |
+| Ligero / Brakedown | Ligero Thm 4.4 `(1−e/n)^t + (e+1)/\|F\|`; Brakedown binding (5)/(6) | `e < d/4` (any linear code) / `γ/3` | ❌ interleaved, column leaves | ❌ | ✅ (elementary) | √N verifier; **KS needs expected-PPT rewinding** |
+| Blaze / Bolt / RAA / LDPC | Blaze Thm 7.1 `n/\|F\| + 2^{−λ} + O((1/δ+log n)/\|F\|)` | ⚠ distance is **probabilistic over code sampling**, `2^−13`…`2^−42`, + a computer-checked optimization | ❌ | ❌ | ❌ — the distance theorem is a research-scale formalization | **out** — and neither removes RS |
+| 2026/487 (RAA over `F_p`) | Thm 9 `(1−δ/3)^ℓ + N/p^k`, **asserted, unproved** | `o(1/N)`, no concrete `N` | ❌ | ❌ | ❌ | **out** |
+| DeepFold | Thm 2, existence-shaped; `poly(\|L₀\|)/\|F\| + (1−Δ)^s` with `poly` **never instantiated** | capacity; ⚠ **Conjecture 1 infects the COMMITMENT** | ❌ root **+ (α,c)** | ❌ | ❌ | **out** |
+| UltraFold | **no theorem in the paper** | — | — | — | — | **not a distinct target** |
+| Galois-ring BaseFold | Thm 3, errors in `p^r` (residue field) not `\|GR\|` | `δ ≲ Δ/3`; ⚠ `p ≠ 2`; **no knowledge soundness** | ❌ no evaluation domain | ❌ | ❌ (Fact 2 unproved) | **out** |
+| SwitchFold | Thm 6 (Big-O); Thm 2 per switch | ⭐ `δ/3`, UD, **zero conjectures** | ❌ interleaved matrix | RBR chain, but **Lemma 7 unproved** | needs Lemma 1 for arbitrary code | **out**, regime noted |
+| STIR | Thm 5.1 / Lemma 5.4 | Johnson; `\|F\| = Ω(λ2^λ d²\|L\|^{3.5})`, *"not tight"* | ❌ + `Fill` oracle | ✅ | ✅ | **detour** — WHIR imports one lemma from it |
+| Hyrax | — | — | ❌ **Pedersen, needs homomorphic commitment** | — | — | **no hash-based instantiation exists** |
+| **TensorSwitch** 2025/2065 | Thm 1.1 / **Thm 8.5**: *"`C` with **MCA** and list-decoding up to `δ`"* ⟹ soundness `2^{−λ}` | ⚠ **unassessed against Crites–Stewart 2025/2046** | ? interleaved tensor | ✅ **has §2.5 RBR** | ⭐ takes **our predicate** as its hypothesis | ⚠ **UNASSESSED — cheapest open action** |
+
+### 12.1 Corpus corrections this note produced
+
+- `tensorcommitments.pdf` is **arXiv 2602.12630, an ML proof-of-inference paper** — not
+  Bootle–Chiesa–Groth, not a tensor-query PCS.
+- `ring-fully-succinct-integer-mod-pcs-successor-to-zinc-2026-347.pdf` is **not a Zinc successor** —
+  different authors, a competitor. The real successor is `zincplus.pdf`.
+- `jagged-pcs-sp1.pdf` ≡ `grey-succinct-jagged-…pdf` is the **superseded v1** of 2025/917.
+- **2026/1367 has six byte-identical copies**, and `sok-hash-based-pcs-fri-basefold-stir-whir-…txt`
+  is **truncated** (78 597 B vs 90 086 B) — do not grep that one.
+- `whir.pdf` ≡ `whir-proximity-generator-mca-2024-1586.pdf`; `habock-…-2110` duplicated likewise.
+- **Fetched because absent**: STIR (2024/390), Khatam–Zeilberger (2024/1843), Brakedown (2021/1043),
+  Ligero (2022/1608), Hyrax (2017/1132), Bolt (2026/310), LigeSIS (2026/751). **Orion** is still absent.
+- **`tensorswitch-2025-2065.pdf` is on disk and was on no lane's list.**
+
+### 12.2 Errata found in the source papers (do not transcribe as printed)
+
+| paper | defect |
+|---|---|
+| WHIR Lemma 4.10 | `min{1 − δ_C/2, B}` should be **`max`** — Selvage has it right; Cor. 4.11's printed `(1+ρ)/2` confirms |
+| WHIR Def 4.9 | `δ ∈ (0, 1 − B)` should be `1 − **B\***` |
+| WHIR Thm 7.5 | `δ < B*` should be `δ < 1 − B*` |
+| WHIR §2.1.4 | rate `ρ_i := (2/k)^i·ρ` should be `(2/2^k)^i·ρ` |
+| Haböck 2024/1571 p.10 | both fold numerators print `f(x) + f(−x)`; the odd part must be the **difference** over `2x` |
+| Gemini Construction 1 | prints `f_e + ρ·f_e`; correct is **`f_e + ρ·f_o`** (Lemma 5.3's text swaps them instead) |
+| Jagged Thm 1.5 | `2m/\|𝔽\|` should be **`(2m+1)/\|𝔽\|`** (its own Lemma 5.1) |
+| Ligerito eqs (4)/(15)/(17) | `(m − n − 1)/(2m)` should be `(m + n − 1)/(2m)` — the printed form is **more favourable** |
+| Ligerito eq (18) | summand prints `(d_i/(3m_i))^{\|S_i\|}`, should be `(1 − d_i/(3m_i))^{\|S_i\|}` |
+| UltraFold | attributes a query bound to "DEEP-FRI [12]"; ref [12] is **DeepFold** |
+| WHIR Lemma 4.10 proof | applies the generator at `1 − \|T\|/n ≤ δ` while holding only `err(δ)` — **needs `err` monotone, never stated**; Selvage's `herr_mono` is the repair |
