@@ -5,18 +5,23 @@ lane died on credits after writing three scripts and no prose. This file is the
 prose. Every number below was produced by **re-running the scripts in this
 session**; the run outputs are quoted, not remembered.
 
-> ⚑ **Read §5.2 before acting on §1–§4.** The design is in good shape — the
-> recorded #1 weakness closes, the τ fork resolves, the conditions are checkable
-> — **and the recommendation is still "do not build it yet"**, because two
-> escapes would remove the need for an in-circuit hash entirely and both are
-> substrate decisions that outrank the hash. §1–§4 are what to build **if** the
-> gating measurement in §5.2 says we stay in R_q. They are not an argument that
-> we should.
+> ⚑ **BUILD IT — delegation is dead** (§5.2, and `ring-hash-build-verdict.md`).
+> Delegation pays only when the hash is expensive *in-circuit*; Poseidon-over-R_q
+> is 856 constraints per permutation, so **2026/1127's bill is transcript VOLUME
+> and delegation attacks UNIT COST.** At the benchmarked config the gadget-Feistel
+> takes Fiat–Shamir from **52.0% of the circuit to 4.0%**, and at 4% there is
+> nothing left for an architectural escape to remove.
+>
+> ⚠ **But do NOT commit to τ=4** (§4.5, revised). An earlier draft of this note
+> recommended τ=4 at moderate-to-high confidence; **that was written before
+> §4.4b and is withdrawn.** Integral properties in characteristic p survive to
+> round **20** at a degree-4 extension against round **1** at a prime field, and
+> the effect is monotone in extension degree. **τ=2 is now the leading
+> candidate**, provisionally, and one named experiment settles it.
 
-**Still open** (named, not hidden): the coefficient-grouping degree analysis over
-F_{q^4} (§4.5 item 5); Escape 3's numbers and whether KRS25 bites a two-hash
-separation (§5.2); and the round-count derivation, which is owed in *both* τ
-regimes (§4.4).
+**Still open** (named, not hidden): **τ itself** — run the Beyne–Verbauwhede
+`SPN.ipynb` at our parameters (§4.5); the round-count derivation, owed in *every*
+τ regime (§4.4); and the Feistel's two structural assumptions (§3, §5.0b).
 
 **Scripts.** They lived only in `~/src/ring-ro-hash/`, **which is not a git
 repo** — the exact way the predecessor's work nearly vanished. Now versioned at
@@ -43,13 +48,14 @@ Prior context: `two-rocks.md` §Rock 2 (the survey and the enabling theorem),
 
 | question | answer | § |
 |---|---|---|
-| the recorded **#1 weakness** (branch ≤9 vs MDS 65) | **CLOSED at τ=4** — 2 rows/elt/round reach branch 5 = slot-MDS | §1.2 |
+| the recorded **#1 weakness** (branch ≤9 vs MDS 65) | **CLOSED at τ>1** — 2 rows/elt/round reach slot-MDS at τ=4, 4 rows at τ=2 | §1.2 |
 | the composite branch law | **t + \|K\|**, not the naive t·\|K\|+1 — refuted by construction at every t tested | §1.4–1.5 |
 | the σ price | **HALVED**: ⌈(s−1)/2⌉, not s−1 — Definition 9 verified to carry two automorphism channels | §2.0 |
-| best σ-Poseidon point | **dense-in-full-rounds, 143.8 rows/elt (5.0×)** at τ=1; **89.8 (8.0×)** at τ=4 | §2.1, §4.1 |
+| best σ-Poseidon point | slot-MDS in full rounds: **143.8/elt (5.0×)** τ=1 · **107.8 (6.7×)** τ=2 · **89.8 (8.0×)** τ=4 | §2.1, §4.1 |
 | second candidate | **gadget-Feistel, 27.4 rows/elt (26×)** — higher ceiling, much less mature, 3 hard caveats | §3 |
-| ⚑ **the τ=1 vs τ=4 fork** | **τ=4**, decided by 2026/1127's **own** challenge-space rationale (‖S‖ = q^τ) | §4.5–4.6 |
-| **delegate instead of building?** | ⚑ **DON'T BUILD YET** — two escapes are *substrate* decisions that outrank the hash; one gating measurement named | §5.2 |
+| ⚑ **the τ fork** | ⚠ **UNSETTLED. τ=1 eliminated; τ=2 leading, provisionally; τ=4 withdrawn.** One named experiment settles it | §4.4b–4.5 |
+| **delegate instead of building?** | ⚑ **BUILD IT** — delegation attacks unit cost, our bill is volume; it loses by 3–31× | §5.2 |
+| why σ-Poseidon can't reach the packing ceiling | the **S-box floor is 15.3×** ≈ the 16× ceiling; every σ row is given back below it | §5.0b |
 
 **Three things this lane found that were nobody's recorded position:**
 
@@ -57,17 +63,22 @@ Prior context: `two-rocks.md` §Rock 2 (the survey and the enabling theorem),
    sampling set‖ = q^τ), and 2026/1127 says *"we may choose τ to obtain
    exponentially-sized strong sampling sets."* **τ=1 collapses it to q = 2^64.**
    The τ=1 preference was asking the host protocol to give up its challenge
-   space — a systems cost, not a hash-side tradeoff. This decides the fork.
+   space — a systems cost, not a hash-side tradeoff. **This eliminates τ=1** (it
+   does not, as an earlier draft said, decide the whole fork).
 2. **C1 (`gcd(α, q^τ−1) = 1`) is twice as constraining at τ=4**, and it makes the
    two candidates want *incompatible* moduli — but a joint modulus exists at
    **2^64 − 279**, found in seconds. No tradeoff is forced.
-3. **The τ=4 invariant subfield is real** (measured: invariant through 12 rounds
-   with scalar coefficients) and its cure **C6** is the *existing* weakness-#4
-   condition widened one field down — not a new class of requirement.
+3. **σ-Poseidon is bounded by its own S-box, not by τ.** The S-box floor is
+   **15.3×**, essentially the 16× packing ceiling — so an S-box design *starts*
+   at the ceiling and every σ row spent on branch number is given back below it.
+   **τ decides whether you land at 8.0× or 5.0×, not whether you can exceed
+   15.3×.** The Feistel is not bounded by it at all, because the bound *is* the
+   S-box and it has none.
 
-**The one genuinely open item on the τ=4 branch**: coefficient-grouping degree
-analysis over F_{q^4}. **Not closed, and τ=1 does not avoid needing an analysis
-either** — the round count is underived in both regimes (§4.4).
+⚠ **And one thing this lane got wrong and then caught**: §4.5's first draft
+recommended τ=4 on the strength of the two effects it had measured. A third,
+unmeasured, monotone effect (§4.4b) falsified it. **The reversal is recorded in
+place rather than edited away** — see §4.5's opening.
 
 ---
 
@@ -581,53 +592,109 @@ changes *which* analysis (coefficient grouping over F_{q^4} rather than a
 wide-trail round-count derivation at width 144). **"τ=1 is safer" is only true if
 τ=1 were analysed and τ=4 unanalysed. Neither is analysed.**
 
-### 4.5 VERDICT: τ=4
+### 4.4b ⚑ THE FINDING THAT FALSIFIES §4.5's FIRST DRAFT — integral cryptanalysis in characteristic p
 
-**Recommendation: τ=4, at the dense-in-full-rounds schedule (89.8 rows/elt, 8.0×
-the decompose-and-hash baseline), conditional on one named analysis.**
-Confidence: **moderate-to-high** — raised by §4.6, which turned out to be the
-paper's own stated rationale rather than our inference. The cost case is measured
-and robust; the residual risk is one undone analysis (item 5).
+**Beyne & Verbauwhede, "Integral cryptanalysis in characteristic p", ASIACRYPT
+2025, eprint 2025/932.** Verified at the **primary artifact** (the authors'
+`KULeuven-COSIC/integral-cryptanalysis-characteristic-p`, whose README says it is
+*"the code used for the analysis in sections 6.2 and 7.2"*), reading the executed
+outputs of `SPN.ipynb` — not relayed from an abstract.
 
-The six inputs, in the order they should be weighed:
+**The result: in large prime characteristic, integral/divisibility properties
+survive far past the round where algebraic degree saturates**, so prior degree
+estimates for MiMC/Poseidon-family designs are, in the authors' own word,
+*"overly optimistic."*
 
-0. ⚑ **The challenge space — decisive, and it is 2026/1127's own argument
-   (§4.6).** The strong sampling set has size **q^τ**, and the paper says
-   explicitly "*we may choose τ to obtain exponentially-sized strong sampling
-   sets.*" τ=1 collapses it to q = 2^64; τ=4 gives 2^256. **This is a cost τ=1
-   imposes on the host folding scheme, not on the hash**, and it alone would
-   settle the fork.
-1. **Cost — measured.** τ=4 reaches slot-MDS for 1.60–2.77× less
-   than τ=1, and at τ=1's *equal budget* the #1 weakness simply stays unfixed.
-   The verdict survives a **3.2× round-count penalty** before it flips.
-2. **Status quo — τ=4 is the deployed ring.** "Keep τ=1" is the branch that
-   requires changing the deployed modulus, not the conservative one.
-3. **C1 invertibility — clears.** α=7 is legal at τ=4 on the Frog modulus, and a
-   joint modulus serving both candidates exists at 2^64−279.
-4. **The invariant subfield — real, and cured by a checkable condition (C6)**
-   that is the *existing* weakness-#4 condition widened one field down. τ=4
-   widens a requirement rather than introducing a strange new class.
-5. **Coefficient grouping over F_{q^4} — genuinely open, and the one real cost of
-   this verdict.** Mitigated but not closed by: the lane's own clean τ=2
-   measurement (an extension-field case), and our support-4 layer sitting above
-   the support-3 density that repaired Chaghri. **Not closed. Do not describe it
-   as closed.**
+`SPN.ipynb` sweeps **extension degree at fixed d=7, t=8, comparable word size** —
+exactly our τ axis. From the cells titled *"SHARK-like properties with higher
+divisibility based on saturating sboxes"* (mod p², which degree cannot see):
 
-**The gating experiment, named so it can be done rather than deferred:** run the
-prior lane's own integral/degree instrument at **τ=4** with the {1,5,−1,−5}
-layer, against the matched τ=1 and τ=2 runs it already has, and check whether the
-degree curve stalls. It is the same instrument, already written, at a third
-parameter. ⚠ **State its limitation up front**: an integral over F_q-subspaces
-measures F_q-degree, and Frobenius is F_q-**linear**, so this instrument is
-**blind by construction to a coefficient-grouping stall in the F_{q^4}-univariate
-exponent set.** A clean result from it is weak evidence, not a clearance — and
-the real analysis is the exponent-set argument, which is paper work, not a
-script.
+| slot field | last round with a mod-p² property |
+|---|---:|
+| **prime** (2^64−2^32+1) | **1** |
+| degree-2 extension | **13** |
+| **degree-4 extension** | **20** |
+| degree-8 extension | 21–22 |
 
-**If that analysis comes back bad**, the fallback is not τ=1 — it is τ=2 (slots
-F_{q^2}, ℓ=8, already measured clean for degree stall), which recovers part of
-the branch win at part of the risk. That intermediate was never on the table
-because the fork was posed as binary. It is not binary.
+**Monotone in extension degree, large prime characteristic, our exact S-box
+shape.** And the artifact's scope statement is *"finite rings of prime
+characteristic p that are isomorphic to a product of fields"* — literally
+R_q ≅ F_{q^4}^4.
+
+⚑ **This falsifies the premise §4.3 rested on** — that the only
+extension-field-specific risk is the invariant subfield and that C6 closes it.
+**There is a second, independent, extension-field-specific effect; no coefficient
+condition closes it; and it is monotone in exactly the direction τ=4 moves.**
+The round-count margin §4.1 priced (3.2×) is measured against RP=22, and a design
+needing to clear round 20 rather than round 1 eats a large share of it.
+
+⚠ **What this does NOT establish**: their base primes are 2^17–2^31 and ours is
+2^64; **the round counts do not transfer.** The *direction* is solid; the
+*magnitude at our parameters is unmeasured.*
+
+### 4.5 VERDICT (REVISED): do not commit to τ=4 — and τ=2 is now the leading candidate
+
+⚠ **This section's first draft said "τ=4, moderate-to-high confidence." That was
+written before §4.4b and is withdrawn.** Recording the reversal rather than
+quietly editing it, because the failure mode is instructive: **I priced the fork
+on the invariant I happened to have a clean measurement for** (branch number,
+invariant subfield) and treated the absence of a *measured* problem as the
+absence of a problem. The instrument I named in the first draft was even
+correctly labelled blind to a coefficient-grouping stall — and the wound turned
+out to be in a third place neither instrument looked.
+
+**Three constraints now bear on τ, and they do not point the same way:**
+
+| | τ=1 (ℓ=16, F_q) | **τ=2 (ℓ=8, F_{q²})** | τ=4 (ℓ=4, F_{q⁴}) |
+|---|---|---|---|
+| challenge space (‖S‖=q^τ, §4.6) | 2^64 — **insufficient** | **2^128 — sufficient** | 2^256 — excess |
+| integral property survives to round (§4.4b) | **1 — best** | 13 | 20 — **worst** |
+| slot-MDS cost, full rounds (§4.1) | 143.8/elt (5.0×) | **107.8/elt (6.7×)** | 89.8/elt (8.0×) — best |
+| S-box cryptanalysis | well-studied | thin | thin |
+
+**τ=1 is eliminated by the challenge space** — 2^64 cannot carry a 128-bit
+soundness target without repetition paid by the whole folding scheme, and that is
+2026/1127's own stated reason for raising τ. **τ=4 is the most exposed on the one
+effect we now know is monotone and unpriced.** **τ=2 is the only point that is
+acceptable on all three axes**: exactly enough challenge space, the mid value on
+integral survival, and 6.7× — giving up 1.3× of cost against τ=4 to move from the
+worst to the middle of the axis that just falsified the previous verdict.
+
+> **Recommendation: τ=2, provisionally — and treat it as provisional.**
+> Confidence: **low-to-moderate**, and deliberately lower than the first draft's.
+> The honest position is the one the cryptanalysis lane reached independently:
+> **the evidence does not settle it, and the missing thing is a measurement, not
+> a citation.**
+
+⚑ **THE EXPERIMENT THAT CONVERTS THIS FROM ARGUMENT INTO MEASUREMENT, and it is
+hours not days:** run the **authors' own `SPN.ipynb`** at our parameters —
+`p = 15912092521325583641`, `d = 7`, comparing `e=4, t=4` (τ=4) against
+`e=2, t=8` (τ=2) and `e=1, t=16` (τ=1). It is their tool, on our numbers, on the
+exact invariant that broke the first verdict. Needs a SageMath kernel (not
+installed; `brew install sagemath`, README pins 10.7; `latte_int` is only needed
+for `Feistel.ipynb`, not ours). **Run this before choosing τ.** Nothing else in
+§4 substitutes for it.
+
+### 4.5b What §4.4b did not disturb
+
+Recorded so the reversal does not swallow the parts that still hold:
+- **§4.6's challenge-space argument stands** and still eliminates τ=1.
+- **§1's branch closure stands** — the measurement is a rank statistic and is
+  unaffected. **The slot group of the Frog ring is the Klein four-group**
+  (σ₅→(3,2,1,0), σ₋₁→(1,0,3,2)); one row reaches 3 of 4 slots, so slot-MDS needs
+  2 rows against 8 at τ=1. Independently confirmed.
+- **§2.0's ⌈(s−1)/2⌉ law stands**, now doubly confirmed: Definition 9 names
+  **σ = σ₅ and σ̃ = σ₋₁ explicitly**, and multiple same-channel terms collapse
+  (σ(M′₁z)+σ(M′₂z) = σ((M′₁+M′₂)z)), so there are **exactly two** channels per row.
+- **C1 stands**, with an addition: **α ∈ {2,3,4,5} are *never* legal at τ=4**
+  (r−1 | 4 ⇒ r | q^4−1 always). Fallback α=11 or 13 costs one extra multiplication.
+- **C6 stands and is a named published class, not our invention.** Marvellous
+  (eprint 2019/426), verbatim: *"We require that the affine polynomial has
+  coefficients which do not lie in any subfield of F_{2^{n/m}} thus frustrating
+  this attack."* Sharpened form for us: every σ-layer coefficient and round
+  constant c must satisfy **σ₉(c) ≠ c**. Integer coefficients fail; X passes.
+  **Cost zero** — a Definition 9 matrix entry is an arbitrary R_q element either way.
+
 
 ### 4.6 A systems-level argument against τ=1 that nobody has made
 
@@ -733,6 +800,51 @@ which we can answer from our own side:
    have; it is a second proof system to build and to compose.** That cost belongs
    in the comparison.
 
+### 5.0b The ceiling, decomposed — why the Feistel beats it and why σ-Poseidon can't reach it
+
+A peer scored the theoretical ceiling for a *perfect* ring-native sponge at
+~1.5×10^5 (recovering the d=16 encoding waste), and the gadget-Feistel came in
+**under** it at 92,257. A number that beats a theoretical ceiling is usually a
+modelling slip, so `design_ceiling_decomposition.py` (new) factors both sides:
+
+> `rows/element = (rows per permutation) ÷ (elements absorbed per permutation)`
+
+**The ceiling is a PACKING-ONLY bound** — rate ×16 with Poseidon's permutation
+cost *held fixed*. Any design with a cheaper permutation is simply not bounded by
+it. That is not an error in the ceiling; it is the ceiling answering a narrower
+question.
+
+| design | rows/perm | rate (R_q elts) | rows/elt | FS total | speedup | = perm × rate |
+|---|---:|---:|---:|---:|---:|---|
+| 2026/1127 baseline | 896 | 1.25 | 716.8 | 2,417,127 | 1.0× | 1.00 × 1.00 |
+| **"perfect" sponge (the ceiling)** | 896 | 20.00 | 44.8 | 151,070 | **16.0×** | 1.00 × 16.00 |
+| σ-Poseidon τ=1 dense-full | 1150 | 8 | 143.8 | 484,741 | 5.0× | 0.78 × 6.40 |
+| σ-Poseidon τ=4 slotMDS-full | 718 | 8 | 89.8 | 302,647 | 8.0× | 1.25 × 6.40 |
+| **σ-Poseidon S-BOX FLOOR (σ-free)** | 376 | 8 | 47.0 | 158,489 | **15.3×** | 2.38 × 6.40 |
+| **gadget-Feistel (no S-box)** | 192 | 7 | 27.4 | 92,492 | **26.1×** | **4.67 × 5.60** |
+
+**(a) The Feistel's 92,257 is NOT a modelling slip.** It wins on *both* factors —
+**4.67× on permutation cost and 5.60× on rate** — because it has **no S-box**:
+its nonlinearity is gadget decomposition, whose norm check the folding scheme
+already pays for. 4.67 × 5.60 = 26.1×, reproducing the reported figure exactly.
+**The arithmetic survives; the risk is not arithmetic.** It rests on the two
+assumptions already in §3, and *those* are where to press: (i) the ∞-norm check
+covers every plane witness free — but the products Z have coefficients < d·B² and
+are witnessed via their own base-B planes; (ii) NR=16 suffices. **If (i) fails
+the permutation factor collapses toward the S-box designs.**
+
+**(b) τ is NOT the binding constraint on σ-Poseidon — the σ-layer is.** The
+**S-box floor alone is 47.0 rows/elt = 15.3×**, which is essentially the 16×
+packing ceiling. So an S-box design *starts at the ceiling*, and every σ row
+bought for branch number is given back below it:
+
+- τ=4 slot-MDS costs 342 rows/perm → lands at **8.0×** (gives back 7.3×)
+- τ=1 dense costs 774 rows/perm → lands at **5.0×** (gives back 10.3×)
+
+> **σ-Poseidon can never exceed 15.3×, and τ only decides whether it lands at
+> 8.0× or 5.0×.** The Feistel is not bounded by 15.3× at all, because that bound
+> *is* the S-box.
+
 ### 5.1 The escapes, assessed
 
 **Escape 3 (GKR-delegation) — *pending lane detail*.** Escapes 1, 2 and 4
@@ -758,15 +870,25 @@ So: **~100 → 3 (the abstract says four counting the range-proof overhead), a
 ~25–33× reduction, of exactly the bill a better hash also reduces.** It is a
 *reduction*, not an escape — precisely the distinction the brief asked for.
 
-⚑ **And that makes it the best news in this section, not the worst.**
-ProtoGaLattice reduces the **number** of hash invocations; a ring-native hash
-reduces the **cost per** invocation. **They are orthogonal and compose
-multiplicatively.** A design that does both is strictly better than either.
-⚠ I am not quoting a combined figure: our §5.0 accounting derives N_sponge=2683
-permutations from *transcript size*, while ProtoGaLattice counts *RO calls* in
-LatticeFold's accounting. **Reconciling those two accountings is required before
-multiplying them**, and I have not done it. The qualitative composition is safe;
-a number would not be.
+⚑ **CORRECTION — my first draft called this "the best news in the section" and
+said the two compose multiplicatively. That was wrong, and the hedge I attached
+to it is where the error was.** I flagged that our accounting counts *sponge
+permutations from transcript size* while ProtoGaLattice counts *RO calls*, said
+reconciling them was required before multiplying, and then wrote the qualitative
+composition anyway. **Reconciled, the 25× is a cut of the wrong quantity:**
+
+- **RO *calls* ≠ sponge *permutations*** — there are ~2,650 permutations spread
+  across those ~100 calls. Cutting calls to 4 does not cut permutations to 4.
+- **Sumcheck messages are only 2.6% of the absorbed transcript.** Removing
+  sumcheck — ProtoGaLattice's entire thesis — **cannot touch the other 97.4%**.
+  **Their own Open Problem #1 concedes this.**
+- Derived in-circuit cost: **~483k–720k**, i.e. **1.6–2.4× OVER** the σ-Poseidon
+  bar. The paper states no figure of its own.
+
+**So it is not an escape and it is not a free multiplier either.** The lesson for
+this note: *a hedge is not a substitute for doing the reconciliation.* I wrote
+down exactly the check that would have caught it and then published the claim the
+check was supposed to gate.
 
 ⚠ Its own limitation, carried: *"the accumulator we obtain satisfies a relaxed
 bound B₁ which is greater than the initial bound B, so **we cannot iterate our
@@ -899,78 +1021,55 @@ formulation, and the corroborating signal is that **none of 2026/1127, Symphony,
 ProtoGaLattice or Neo/SuperNeo cites it** — the field has moved to ℓ-succinct
 SIS / PRISIS / vanishing-SIS.
 
-### 5.2 VERDICT: do not build the ring-native hash yet — and the reason is sequencing, not worthlessness
+### 5.2 VERDICT (REVISED): BUILD IT — delegation is dead
 
-**A negative on our own candidate, which the brief said would be a good outcome.
-It is.** Stated at the resolution the evidence supports:
+⚠ **This section's first draft said "do not build the ring-native hash yet."
+Withdrawn.** Full scoring in `ring-hash-build-verdict.md`; the mechanism, which
+is the part worth carrying:
 
-> **Two of the escapes would make a ring-native hash unnecessary, and both are
-> SUBSTRATE decisions that sit above this note. Settle them first. If we remain
-> on R_q-native, sumcheck-based lattice folding, the hash is needed — and §1–§4
-> have it priced, its fork resolved, and its conditions checkable.**
+> ⚑ **Delegation pays only when the hash is expensive IN-CIRCUIT.** Keccacheck's
+> 6–14× comes from Keccak-f being 20k–50k R1CS *because it is bitwise*.
+> **Poseidon-over-R_q in 2026/1127 is 856 constraints per permutation.** There is
+> no margin to harvest. **2026/1127's bill is transcript VOLUME; delegation
+> attacks UNIT COST.** Different quantities — which is why the escape looked
+> plausible and is not.
 
-Ranking the escapes by how much each actually removes:
+Second, independent reason: **the delegated argument's own Fiat–Shamir lands back
+in-circuit and is sequential** — one in-circuit hash per sumcheck round,
+unbatchable. Applied to a 30-round Poseidon at 856 R_q constraints/perm:
+**820k–2.87M**, i.e. **2.7–31× over bar**.
 
-| escape | removes | verdict |
+| escape | in-circuit cost | verdict |
 |---|---|---|
-| **0. Field-native folding** (Neo/SuperNeo 2026/242) | the *whole problem* — no R_q transcript, so an ordinary field Poseidon suffices | **substrate decision; may dominate everything** |
-| **1. Symphony** (2025/1905) | the in-circuit FS hash entirely, **in our exact setting** (lattice folding, Ajtai commitments) | **strongest paper-level escape; verified** |
-| **2. ProtoGaLattice** (2026/1317) | ~33× of the *same* bill; residual still in-circuit | **not an escape — and it COMPOSES with a better hash** |
-| **3. GKR delegation** (2026/551, Keccacheck) | *pending* — and under a KRS25 security cloud | **weakest; do not count it until §5.1's hazard is settled** |
-| **4. ACLMT** (2022/941) | nothing | dead as a proof, not proven broken as a scheme |
+| **Symphony 2025/1905** | 65,536–131,072 whole batch | **the only TRUE escape** — but needs an uncosted port from Z_q-SIMD to R_q-native CCS |
+| ProtoGaLattice 2026/1317 | ~483k–720k (derived; paper states none) | 1.6–2.4× **over** bar — a reduction of the same bill, of the wrong quantity |
+| 2026/551 | no benchmarks at all | **not the paper the brief described** |
+| Keccacheck-shape → Poseidon | 820k–2.87M | **net loss, 2.7–31× over** |
+| ACLMT 2022/941 | — | removes nothing; dead as a proof, not broken |
 
-**Why this is sequencing rather than a kill.** Escapes 0 and 1 do not say "a ring
-hash is a bad design"; they say **"you may not need an in-circuit hash at all."**
-That is a claim about *which folding scheme and which ambient algebra we build
-on* — not about whether §1's branch closure or §4's τ verdict are right. Escape 2
-positively *wants* a cheaper hash. So the design work is not wasted: it is
-**correctly ordered behind one measurement.**
+⚑ **The number that ends the argument.** At 2026/1127's **benchmarked** config
+(useful work 2.23e6/step), Fiat–Shamir goes from **52.0%** of the circuit today
+to **11.9%** with σ-Poseidon and **4.0%** with the gadget-Feistel. **At 4% there
+is nothing left for an architectural escape to remove.**
 
-> ⚑ **THE GATING MEASUREMENT, and it is the honest next action:** *what does TFHE
-> blind rotation cost in a field-native constraint system, against 2026/1127's
-> R_q-CCS-with-automorphisms?* 2026/1127 chose R_q because bootstrapping is
-> natively ring-structured. If field-native blind rotation is competitive,
-> Escape 0 wins and the ring hash is moot. If the ring structure is worth more
-> than the FS bill, we stay in R_q and build the hash. **Nothing else in this
-> note changes that ordering, and no amount of further hash design substitutes
-> for it.**
+⚠ **Corrections carried:**
+- **Keccacheck is eprint 2025/1764.** Our local `ring-r1cs-…-2024-1764.pdf` is
+  **2024/1764, a different paper** (zero "keccak" hits). The brief's ID was right
+  and the local file is a decoy.
+- **2026/551's GKR-for-Poseidon is an Appendix C sub-component with no
+  benchmarks**, and its §4.3 explicitly warns against our exact use: FS *"should
+  not be instantiated using Poseidon with the same parameters … preferably an
+  entirely different hash function."*
+- **"It composes with our multilinear substrate" is UNEARNED** — and I wrote it.
+  Ours is `variable {F : Type*} [Field F]`, **field-pinned**; a ring
+  instantiation is a typeclass generalization *plus re-deriving every soundness
+  bound from |F| to |A|*. §5.0's structural note was right for the wrong reason.
+- **The honest headline is "FS = 52% of the benchmarked circuit"**, not the
+  "32–64× the blind rotation" figure carried in `two-rocks.md`.
+- **SuperNeo's "128×" reads as a bits/bytes slip; the real packing ceiling is
+  16×** (= d). §5.1's "Escape 0" framing survives as a *substrate* question but
+  its magnitude does not.
 
-⚠ **Honesty ledger** (the lane's, and it should stay attached): of the papers in
-this section, **only 2026/1127 and Keccacheck have implementations.** Symphony
-and ProtoGaLattice are unimplemented at time of reading. An escape that exists
-only on paper is not yet an escape — which is a reason to *measure*, not a reason
-to build the hash by default.
-
-⚠ **What is NOT settled here**: Escape 3's numbers, and whether KRS25 bites a
-careful two-hash separation. If Escape 3 survives that and lands its *verifier*
-under ~3×10^5 R_q constraints (§5.0's bar), it would change this ranking. **It is
-the one open thread in this section.**
-
----
-
-## 6. Prior art
-
-**Done — it landed in `ring-hash-cryptanalysis.md` §"Prior art"**, which
-previously had zero external citations. Three items; **two of the three came back
-partly refuted**:
-
-- **Rubato / Grassi et al. 2023/822** — verified as a full-round break of 5 of 6
-  variants, but "warning shot at *our* design" is **overstated**: the attack
-  needs a divisor of q, our q is prime, and the paper's own countermeasure is
-  "restrict q to prime" (which Rubato's designers then adopted). What transfers
-  is the *mechanism by analogy*: their Lemma 1 descends a polynomial map over Z_q
-  to every quotient Z_m; **our analogue is the factorization of X^16+1 into τ
-  ideals**, on which the S-box acts slot-wise and every automorphism permutes
-  slots without mixing — the same wound in ideal-theoretic clothing, and exactly
-  what §1 discharges.
-- **2021/1010** — the de-linearization remark exists but is a *different idea*
-  (domain extension, not RO-likeness), and **the "3,971 AIR constraints" figure
-  is refuted and must not be quoted**: its own breakdown sums to 3071, it is an
-  op count with no AIR exhibited, and the paper misstates its own ring. **There
-  is no usable external datum for "R-SIS hash in an AIR."**
-- **SWIFFTX** — verified, and it poses our exact problem in 2008 ("not
-  pseudorandom … due to linearity"). Its de-linearizer is two operations and both
-  leave the ring. **"Cannot be arithmetized" is our inference, labelled as such**
-  — well supported, since the layer's stated goal is high degree over GF(257)
-  itself. This is the sharpest statement of our contribution: **de-linearize
-  without leaving R_q.**
+**And the lesson, which is the transferable part**: the first draft predicted
+"delegate" because delegation *fit the architecture we are already building*.
+**An architectural fit is not a cost argument.**
