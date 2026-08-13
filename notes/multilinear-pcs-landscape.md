@@ -207,7 +207,8 @@ This is BaseFold's central algebraic identity, already machine-checked, at
 
 ---
 
-## 2. ⟨draft⟩ Candidate sections follow — see git history for incremental fills
+*(A stray "§2 ⟨draft⟩" placeholder stood here while the note was written incrementally; the
+real §2 begins below. Section numbering is otherwise unique.)*
 
 ### 1.7 The rest of the cone — larger than the brief assumed
 
