@@ -52,5 +52,149 @@ weaknesses the design lane must address before this is more than a candidate.**
 Not executed: a direct Gröbner/CICO attack (no Sage; sympy timed out at n=4)
 — priced via the degree data instead, and said so.
 
-**Handoff**: keep τ=1 (load-bearing); derive the round count; fix the two
-validator gates; carry the degree deficit as a known margin cost.
+**Handoff**: ~~keep τ=1 (load-bearing)~~ — **superseded, see
+`ring-hash-design.md` §4: the fork was adjudicated and the answer is τ=4**;
+derive the round count; fix the two validator gates; carry the degree deficit as
+a known margin cost.
+
+---
+
+## Prior art (added 2026-08-13 — this file previously had NO external citations)
+
+The verdict above was reached with zero external cryptanalysis cited, which is
+its own defect. Three items, each verified at source; **two of the three came
+back partly refuted, and the refutations are the useful part.**
+
+### PA1. Rubato is broken at full rounds — but the analogy needs restating
+
+**Grassi, Manterola Ayala, Norberg Hovd, Øygarden, Raddum, Wang, "Cryptanalysis
+of Symmetric Primitives over Rings and a Key Recovery Attack on Rubato", CRYPTO
+2023 (LNCS 14083, 305–339), eprint 2023/822.** Abstract, verbatim:
+
+> "Symmetric primitives are a cornerstone of cryptography, and have traditionally
+> been defined over fields, where cryptanalysis is now well understood. **However,
+> a few symmetric primitives defined over rings Z_q for a composite number q have
+> recently been proposed, a setting where security is much less studied.**"
+
+and §1.2, sharper for our purposes: *"the cryptanalysis used to argue for their
+security is developed for primitives over fields… knowledge of cryptanalysis
+specific to the ring setting is limited."*
+
+**What breaks:** full-round key recovery on **five of the six** Rubato variants
+(Rubato-128L survives), e.g. Rubato-80M at 2^57.06 time / 2^17.91 data when
+12 | q; 25–58% of admissible q are vulnerable depending on variant. Verified
+experimentally by the authors.
+
+**The mechanism, which is what transfers.** Lemma 1: for u | q and any
+*polynomial* F over Z_q, F(x) mod u ≡ F(x mod u) mod u. So a polynomial round
+function over Z_q **descends to a complete, independently attackable cipher over
+every quotient Z_m** — the attacker gets a small faithful projection of the whole
+primitive, the Gaussian noise stays non-uniform mod m, and once projected the
+degree-2^r map falls to linearization.
+
+⚑ **Do not call this a warning shot at our construction — that is overstated,
+and a referee will say so.** The attack needs a *divisor of q*. Our q is prime,
+so Lemma 1 has no nontrivial u and the first two attack stages have no analogue.
+The paper's own §8.1 opens: *"Restricting q to Prime Numbers. The easiest way to
+prevent our attack is to simply restrict q to be prime."* And **Rubato's
+designers already patched the spec** — the current 2022/537 says *"in this
+version, we explicitly assume that q is prime."* The paper's scope is Z_q, the
+integers mod a composite; it never analyses R_q = Z_q[X]/(X^d+1).
+
+**The honest transfer, which has real teeth.** The R_q analogue of Lemma 1 is not
+the factorization of q but **the factorization of X^16+1 mod q into τ ideals**,
+giving R_q ≅ ∏ F_{q^{16/τ}} — on which x^7 acts slot-wise and each σ_k **permutes
+slots without mixing them**. That is the *same* wound in ideal-theoretic
+clothing: a state map built only from slot-wise power maps and slot-permuting
+automorphisms decomposes into independent per-slot maps. **This is precisely the
+burden §1's branch analysis and `ring-hash-design.md` §1 discharge** — and it is
+*our* analysis, framed by their lemma, not a result of theirs. Cite it for the
+class ("the one deployed ring-native symmetric design was broken at full rounds
+within a year, and the field's cryptanalytic toolkit is field-calibrated"), and
+say plainly which ingredient we do not share.
+
+### PA2. eprint 2021/1010 — the direction was noted; the number is wrong
+
+**Endre Abraham, "Circuit friendly, post-quantum dynamic accumulators from
+RingSIS with logarithmic prover time", eprint 2021/1010.** ⚠ **Unrefereed and
+never published** (DBLP: "Informal and Other Publications"; no venue, no DOI;
+8 pages, single author).
+
+**(a) The de-linearization remark exists — but it is a different idea.**
+§4, its last substantive line: *"…could be mitigated by **using small, chained
+RSIS instances and breaking linearity in-between similar to SWIFFTX**."*
+It is offered as a fix for **fixed-input-size**, i.e. domain extension — not
+pseudorandomness; the paper never mentions random oracles, indifferentiability,
+or Fiat–Shamir. And it is *opposed to its own construction*, which needs the
+linearity (`acc = Σ L(x_i)`, and its circuit-friendliness pitch is literally
+"even linear"). **Cite as "the direction was noted in passing as future work,
+without a construction, and for domain extension rather than RO behaviour."**
+Not as an independent proposal of our idea.
+
+**(b) The "3,971 AIR constraints" figure is REFUTED — do not quote it.** Verbatim:
+*"Our circuit complexity with relation to ZkStarks, expressed as an AIR is 3971
+(1024 constants, 1024 multiplication and 1023 addition) for a single R-SIS hash."*
+Three defects:
+- **1024 + 1024 + 1023 = 3071, not 3971.** The paper contradicts its own breakdown.
+- **It is an arithmetic-operation count, not an AIR constraint count** — the op
+  count of one length-1024 inner product. **No AIR is exhibited anywhere**: no
+  trace width, row count, transition constraints, constraint degree, or proof
+  system. AIR reference [9] is cited once, for the word.
+- ⚑ **The paper misstates the ring.** §2 justifies the quotient as "the
+  irreducible x^n + 1"; but its own q = 59393 is prime with q−1 = 2^11·29, so
+  2048 | q−1 and **X^1024+1 splits into 1024 linear factors** — R_q ≅ F_q^1024,
+  fully split. (Computed, not recalled.) x^n+1 is irreducible over ℚ, never over
+  an NTT-friendly Z_q. A reader following this citation lands on a paper that has
+  the slot structure of R_q backwards.
+
+**Consequence for us: there is no usable external datum for "R-SIS hash in an
+AIR".** Our constraint counts must come from our own emitted object and cannot be
+compared to this figure.
+
+### PA3. SWIFFTX — the precedent, and the precedent for the wrong answer
+
+**Arbitman, Dogon, Lyubashevsky, Micciancio, Peikert, Rosen, "SWIFFTX: A Proposal
+for the SHA-3 Standard" (NIST SHA-3 submission, 2008)**, over SWIFFT (LMPR,
+FSE 2008). SWIFFT is R = Z_257[α]/(α^64+1), f(x) = Σ a_i·x_i with binary-coefficient
+inputs — and FSE 2008 §4 states the problem flatly: *"**Our family of functions is
+not pseudorandom (at least as currently defined), due to linearity.**"* This is
+**exactly our problem, posed in 2008.**
+
+**The de-linearizer is two operations, and both leave the ring** (§2.3: *"The
+linearity … is broken by the change of base performed by ConvertToBytes, as well
+as by an S-box"*):
+- **ConvertToBytes** — a base-257→base-256 radix conversion on *integer
+  representatives*, coupling groups of 8 coefficients with a carry bit, mapping
+  64 elements of Z_257 to **65 bytes**. Not coefficient-wise, not endomorphic:
+  it changes the object.
+- **A 256-entry byte permutation** applied to those bytes — i.e. to the binary
+  representation, not to Z_257 and *a fortiori* not to Z_257[α]/(α^64+1).
+
+(SWIFFTX's FinalTransform then computes over **Z_256**[α]/(α^64+1) — a third
+algebraic setting, with a non-field coefficient ring. It de-linearizes by moving
+between three incompatible domains.)
+
+**"…which is precisely why it cannot be arithmetized" — sound, but label it as
+OUR inference.** SWIFFTX predates arithmetization-oriented design by a decade and
+never mentions circuits or constraints. What the paper *does* say is the strongest
+support available (§1): the de-linearizing layer's *"primary goal … is to
+significantly increase the degree of the entire SWIFFTX function, viewed as a
+polynomial over either GF(2) or **GF(257)**."* **A layer whose stated design goal
+is to have no low-degree expression over GF(257) is, by construction, a layer with
+no cheap R_q-arithmetic expression** — and a carry-propagating radix conversion
+plus a random-permutation lookup are precisely bit-decomposition, range-check and
+lookup work in a circuit. Attribute the arithmetization consequence to us.
+
+**Fate**: a first-round SHA-3 candidate, not advanced to round 2. ⚠ NISTIR 7620
+gives **no per-candidate rationale** — its speed (320 cycles/byte in plain C) is
+far off SHA-2 and that is the plausible reason, but **NIST does not say so and we
+must not assert it**. No published break of SWIFFTX itself was found (searched;
+"none found", not "none exists"). Known figures are against bare SWIFFT
+(~2^106 collisions).
+
+**This is the sharpest statement of our contribution.** SWIFFTX proved a linear
+ring-SIS hash *can* be de-linearized while preserving the lattice reduction — but
+bought it with a byte-domain excursion designed for high degree over GF(257).
+**Our constraint is the one SWIFFTX had no reason to respect: de-linearize
+WITHOUT leaving R_q**, via a power map that is a ring-native permutation, so the
+nonlinearity lives in the arithmetic the proof system already speaks.
