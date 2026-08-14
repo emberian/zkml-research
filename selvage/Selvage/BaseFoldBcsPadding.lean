@@ -254,9 +254,17 @@ theorem paddedChallengeCommon_challengeFrame_prefix {m queryCount : Nat}
           [(completedRoundFrames receipt).get ⟨earlier, hindex⟩] := by
     rw [List.take_add_one, List.getElem?_eq_getElem hindex]
     rfl
+  have htakeOneFlat :
+      ((completedRoundFrames receipt).take ((earlier : Nat) + 1)).flatten =
+        ((completedRoundFrames receipt).take earlier).flatten ++
+          roundStepFrame earlier (receipt.round earlier)
+            (receipt.challenge earlier) := by
+    rw [htakeOne]
+    simp [completedRoundFrames]
+  rw [htakeOneFlat] at hfull
   simpa [paddedChallengeCommon, paddedChallengeMessage, padMessage,
-    challengeMessage, challengeBody, htakeOne, completedRoundFrames,
-    roundStepFrame, List.append_assoc] using hfull
+    challengeMessage, challengeBody, roundStepFrame,
+    List.append_assoc] using hfull
 
 theorem paddedChallengeMessage_length_strict {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
