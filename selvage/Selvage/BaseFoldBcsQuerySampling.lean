@@ -173,7 +173,7 @@ private theorem babyBear_zero_probability :
     rw [Nat.card_eq_fintype_card]
     exact Fintype.card_subtype_eq 0,
     Nat.cast_one]
-  rw [Nat.card_eq_fintype_card, ZMod.card]
+  rw [ZMod.card]
 
 /-- A batch rejects when any query-seed digest has zero in the lane consumed
 by the exact factorization. The other seven digest lanes remain present and
@@ -198,13 +198,15 @@ private theorem one_query_seed_rejection_probability {queryCount : Nat}
         (uniformProb_equiv (splitCoord a)
           (fun split : QueryRest × Digest => split.2 0 = 0))
     _ = uniformProb Digest (fun seed => seed 0 = 0) :=
-      uniformProb_prod_snd _
+      uniformProb_prod_snd (A := QueryRest) (B := Digest)
+        (fun seed : Digest => seed 0 = 0)
     _ = uniformProb (LaneRest × F) (fun split => split.2 = 0) := by
       simpa [Digest, LaneRest] using
         (uniformProb_equiv (splitCoord (0 : Fin 8))
           (fun split : LaneRest × F => split.2 = 0))
     _ = uniformProb F (fun value => value = 0) :=
-      uniformProb_prod_snd _
+      uniformProb_prod_snd (A := LaneRest) (B := F)
+        (fun value : F => value = 0)
     _ = 1 / (modulus : Real) := babyBear_zero_probability
 
 /-- For independent uniform ideal query-seed digests, fail-closed unbiased
