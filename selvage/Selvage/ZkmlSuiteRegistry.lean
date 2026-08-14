@@ -87,7 +87,15 @@ theorem lookup_some_iff (request : AdmissionRequest) (suite : RegisteredSuite) :
     lookup request = some suite ↔
       request = dreggIr2BabyBearPoseidonFri.admission ∧
         suite = dreggIr2BabyBearPoseidonFri := by
-  simp [lookup]
+  constructor
+  · intro h
+    by_cases hrequest : request = dreggIr2BabyBearPoseidonFri.admission
+    · have hsuite : dreggIr2BabyBearPoseidonFri = suite := by
+        simpa [lookup, hrequest] using h
+      exact ⟨hrequest, hsuite.symm⟩
+    · simp [lookup, hrequest] at h
+  · rintro ⟨rfl, rfl⟩
+    simp [lookup]
 
 theorem exact_suite_admitted :
     lookup dreggIr2BabyBearPoseidonFri.admission =
