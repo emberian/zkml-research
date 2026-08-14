@@ -168,6 +168,54 @@ def guardedProgramReindex {α : Type} : List (GuardedInvolution α) → α ≃ �
     guardedProgramReindex (move :: moves) =
       move.reindex.trans (guardedProgramReindex moves) := rfl
 
+/-- Program composition respects list append in execution order. -/
+theorem guardedProgramReindex_append {α : Type}
+    (left right : List (GuardedInvolution α)) :
+    guardedProgramReindex (left ++ right) =
+      (guardedProgramReindex left).trans (guardedProgramReindex right) := by
+  induction left with
+  | nil => rfl
+  | cons move moves ih =>
+      simp only [List.cons_append, guardedProgramReindex_cons, ih]
+      rfl
+
+/-- If every move in a program fixes one coordinate, their composite fixes
+that coordinate pointwise as well. -/
+theorem guardedProgramReindex_apply_at_of_fixes {ι Value : Type}
+    (moves : List (GuardedInvolution (ι → Value))) (index : ι)
+    (hfix : ∀ move ∈ moves, ∀ values, move.apply values index = values index)
+    (values : ι → Value) :
+    guardedProgramReindex moves values index = values index := by
+  induction moves generalizing values with
+  | nil => rfl
+  | cons move moves ih =>
+      change guardedProgramReindex moves (move.apply values) index = values index
+      rw [ih (fun later hlater => hfix later (List.mem_cons_of_mem move hlater))]
+      exact hfix move (by simp) values
+
+/-- A program with one distinguished coordinate move transports the source
+coordinate to the target when every earlier move fixes the source and every
+later move fixes the target. -/
+theorem guardedProgramReindex_apply_at_single {ι Value : Type}
+    (before : List (GuardedInvolution (ι → Value)))
+    (move : GuardedInvolution (ι → Value))
+    (after : List (GuardedInvolution (ι → Value)))
+    (source target : ι)
+    (hbefore : ∀ earlier ∈ before, ∀ values,
+      earlier.apply values source = values source)
+    (hmove : ∀ values, move.apply values target = values source)
+    (hafter : ∀ later ∈ after, ∀ values,
+      later.apply values target = values target)
+    (values : ι → Value) :
+    guardedProgramReindex (before ++ move :: after) values target =
+      values source := by
+  rw [guardedProgramReindex_append]
+  change guardedProgramReindex after
+      (move.apply (guardedProgramReindex before values)) target = values source
+  rw [guardedProgramReindex_apply_at_of_fixes after target hafter]
+  rw [hmove]
+  exact guardedProgramReindex_apply_at_of_fixes before source hbefore values
+
 /-- Any finite online program of stable guarded moves preserves the exact
 uniform counting measure. -/
 theorem uniformProb_guardedProgram {α : Type} [Fintype α]
