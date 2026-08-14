@@ -275,7 +275,7 @@ theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
         ((state.remaining.take (xs.length + 1)).map Prod.snd).length =
           (x :: xs).length := by
     constructor <;>
-      simp only [List.length_map, hlength, List.length_cons] <;> omega
+      simp only [List.length_map, hlength, List.length_cons]
   obtain ⟨coreNext, hcore, hans⟩ :=
     prefixHybridStep_constr_of_primitivePathFresh D iv
       (fun _ => .construction

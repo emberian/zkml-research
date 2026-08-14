@@ -953,7 +953,7 @@ theorem paddedRateSegment_lastRateCoin {m queryCount : Nat}
   have hget : remaining.get ⟨work - 1, hindex⟩ =
       coins (paddedSegmentLast statement receipt round) := by
     dsimp [remaining]
-    simp only [List.get_eq_getElem, List.getElem_drop, List.getElem_ofFn]
+    simp only [List.getElem_drop, List.getElem_ofFn]
     apply congrArg coins
     apply Fin.ext
     change paddedWorkPrefix statement receipt round + (work - 1) =
@@ -1158,7 +1158,8 @@ theorem paddedSegmentReindex_head {m queryCount : Nat}
   have hprogramLength : program.length = m + queryCount := by
     simp [program, paddedSegmentSwapProgram]
   have hroundProgram : (round : Nat) < program.length := by
-    simpa [hprogramLength] using round.isLt
+    rw [hprogramLength]
+    exact round.isLt
   have hselected :
       program.get ⟨round, hroundProgram⟩ =
         paddedSegmentSwapMove statement receipt round := by
@@ -1491,6 +1492,11 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 #check @paddedWorkPrefix_succ
 #check @paddedWorkPrefix_final
 #check @paddedWorkHybridRun_classify
+#check @paddedRateSegment_lastRateCoin
+#check @paddedWorkHybridStep_constr_fresh_semantics
+#check @PaddedEagerFreshRun
+#check @paddedWorkHybridStateNat_fresh_semantics
+#check @paddedWorkHybridRun_fresh_semantics
 #check @paddedDeferredWork_need_exact
 #check @paddedDeferredWorkRun_exact
 #check @paddedDeferredWorkStep_constr_semantics
@@ -1500,6 +1506,7 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 #check @paddedSegmentReindex_head
 #check @paddedSegmentHeadAnswerSchedule_reindex
 #check @paddedDeferredWorkRun_reindexed_semantics
+#check @paddedEagerDeferredRun_fresh_agreement
 #check @uniformProb_paddedSegmentReindex
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedConstructionDistinguisher_move_answer_independent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -1514,6 +1521,15 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridRun_classify' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedWorkHybridRun_classify
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridStep_constr_fresh_semantics' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedWorkHybridStep_constr_fresh_semantics
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridRun_fresh_semantics' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedWorkHybridRun_fresh_semantics
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedEagerDeferredRun_fresh_agreement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedEagerDeferredRun_fresh_agreement
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedDeferredWorkRun_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedDeferredWorkRun_exact
