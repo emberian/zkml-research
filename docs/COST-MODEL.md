@@ -37,7 +37,65 @@ multiplying them:
 - **A measured "13.13× faster" is a phase ratio, not a system ratio.** Grind
   alone (25%, blowup-independent) caps any blowup-only speedup at 4×.
 
-## ✅ POPULATED (2026-08-14) — the data was in `notes/phase-profile.md` all along
+## ⚑⚑ RETRACTION (2026-08-14, ember): THE CLOCK DATA IS NOT SOUND, AND I USED IT TO OVERTURN THE COUNTS
+
+Every wall-clock figure below was taken on an **M2 Max at load average
+16–95 with 36 login sessions**. The measuring lanes said so and labelled the
+absolute ms as upper bounds. **I then built a composition model on them anyway
+— and worse, used them to overturn an operation-count model**, writing *"the
+exchange rate was in the wrong unit — counted multiplications where
+nanoseconds bill."* **On a box that contended, counted operations are the MORE
+reliable estimator, not the less.**
+
+**And "the ratios are safe" is false**, which is the part I did not think
+through: hash work (large-buffer traversal, memory-bound) and field arithmetic
+(cache-resident, compute-bound) **degrade at different rates under
+contention.** So `hash/arith` — *the central claim of two days* — is exactly
+the quantity most corrupted by a busy machine.
+
+### What we actually have, in exact counts (contention-immune)
+
+| b | Merkle | FRI-fold | challenger | grind | total perms | grind share |
+|---:|---:|---:|---:|---:|---:|---:|
+| 3 | 26,493 | 549 | 736 | 47,917 | **75,695** | **63.3%** |
+| 4 | 52,989 | 1,101 | 736 | 47,917 | 102,743 | 46.6% |
+| 5 | 105,981 | 2,205 | 736 | 47,917 | 156,839 | 30.6% |
+| **6** | **211,965** | **4,413** | **736** | **47,917** | **265,031** | **18.1%** |
+| 7 | 423,933 | 8,829 | 736 | 47,917 | 481,415 | 10.0% |
+
+**Blowup 6→3 is a 3.50× reduction in hash WORK** — exact, no clock. (The
+contended-clock model said 3.61× on the system; close, but only the count
+survives a busy box.)
+
+### ⚑ Two structural errors the counts expose that the clock hid
+
+1. **`hash/arith` rests on comparing an EXACT count against a CONTENDED
+   clock.** We have exact permutation counts and **no field-multiplication
+   counts at all** — the profiler had no hook. **That comparison is not
+   sound**, and "hash-bound at every feasible blowup" must be demoted to
+   *unproven* until an arithmetic op-count hook exists.
+2. **The grind fix does not reduce operation count — it reduces CRITICAL
+   PATH, and total work RISES** (a window gets scanned). **Work and latency
+   are different quantities and cannot be composed in one unit.** "The grind
+   fix is worth 1.94× after the blowup drop" was a **latency claim dressed as
+   a throughput one, computed on a machine that cannot measure latency.**
+
+### The methodology that follows
+
+- **Operation counts are the primary instrument.** They are exact,
+  deterministic, contention-immune, and reproducible by anyone.
+- **Wall clock is a secondary instrument** for the one thing counts cannot
+  express — the *conversion rate* between op classes — and it requires a
+  quiet machine, which we do not have.
+- **Never compose a work claim with a latency claim.** Report them in separate
+  columns.
+- **Build the arithmetic op-count hook.** It is the missing half of the only
+  instrument that works here.
+
+*Everything below this line was computed from the contended clock and is
+retained as history, not as evidence.*
+
+## ~~POPULATED (2026-08-14)~~ — SUPERSEDED BY THE RETRACTION ABOVE
 
 **Deployed point, b=6, pow=16, IR-v2 descriptor batch** (ms, min-of-21,
 contended box — ratios are the deliverable):
