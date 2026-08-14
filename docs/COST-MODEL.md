@@ -217,6 +217,54 @@ argument wants a quiet box.
 **Rule: a derived quantity is only as clean as its dirtiest input.** Subtracting
 a contaminated baseline does not decontaminate the result.
 
+### ⚑ The LDE layout change: landed, and the mechanism was NOT what the counts implied
+
+Diagnosis confirmed verbatim before anything was touched (18 DFT calls, 12
+under `compute quotient`, all width 4, three height groups; zero
+`coset_idft_batch` at every blowup). ⚠ One correction: `p3-batch-stark`
+already commits all twelve in **one MMCS batch** — "twelve commits" was twelve
+`coset_lde_batch` **calls**.
+
+**The mechanism, and the hypothesis it killed:**
+- **Coset-twiddle tables: REFUTED.** Width-independent in *counts* exactly as
+  predicted — **and ~zero on a clock** (cold-vs-warm sign-random at all 14
+  geometries). ⚑ ***A width-independent counted term is not thereby the
+  cost.***
+- **Confirmed by construction**: hold output size at `h·2^b` constant and
+  slide the split — **butterfly work FALLS 4× while the clock RISES 34×.** The
+  cost is `2^b` × a constant of **~10–15 µs that depends on neither height nor
+  width.**
+- **Identified**: it is **rayon's cold hand-off** (`in_worker_cold`), paid per
+  dispatch by a caller that is not a pool worker. The same workload inside
+  `ThreadPool::install` is **11–27× faster.**
+
+**Landed clean**: batched at shift `ONE` with each chunk's shift folded into
+its coefficients (*a coset DFT is a coefficient scaling plus a plain DFT*),
+element-wise equality asserted against the per-chunk path at b∈3..=7 across all
+three geometries, and **proof bytes byte-identical at b=2..8. No wire change,
+no VK rotation, no re-emit, no flag day.** Measured: **phase 3.57–4.07×**
+single-threaded, **whole prove 1.19–1.75×** at default threads — while the
+*arithmetic* moves −0.11% total, which is the prior lane's point landing
+exactly.
+
+⚠ **Consequence for this file**: `hash/arith` at b=3 moves **0.902 → 1.224**,
+so "at parity at the lowest feasible blowup" no longer holds and the crossover
+shifts **b≈2.9 → b≈2.5.**
+
+### ⚑⚑ The bigger prize, measured and deliberately NOT taken
+
+**The batching's absolute gain is ~98% a cold-hand-off artifact**: at b=6 it
+saves **6.05 ms from the caller thread and 0.137 ms from inside the pool.**
+
+**Running the WHOLE PROVER inside `ThreadPool::install` measures 2.2–2.5× at
+default threads** — the same constant, attacked ~25× harder. **Not taken**
+because it touches prover entry points across the tree and *where the `install`
+goes is a real ownership decision.* The instrument is committed and the number
+is the reason.
+
+> **Anyone spending the next hour on prover speed should spend it there, not on
+> more layout work.**
+
 ### The methodology that follows
 
 - **Operation counts are the primary instrument.** They are exact,
