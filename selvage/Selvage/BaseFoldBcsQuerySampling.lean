@@ -21,6 +21,7 @@ import Selvage.BaseFoldBcsFiatShamir
 namespace Minidregg.Selvage.BaseFoldBcsQuerySampling
 
 open Minidregg.Selvage
+open BabyBearExt4
 open Minidregg.Selvage.BaseFoldPoseidon2
 open Minidregg.Selvage.BaseFoldBcsFiatShamir
 
@@ -39,6 +40,7 @@ def querySlackSize (ell : Nat) : Nat :=
 
 theorem queryIndexBits_le_27 {ell : Nat} (hell : ell ≤ 28) :
     queryIndexBits ell ≤ 27 := by
+  simp only [queryIndexBits]
   omega
 
 theorem babyBear_nonzero_factorization {ell : Nat} (hell : ell ≤ 28) :
@@ -93,21 +95,26 @@ def acceptedScalarEquiv (ell : Nat) (hell : ell ≤ 28) :
     have hrebuild :
         (x.1.val - 1) / queryIndexSize ell * queryIndexSize ell +
             (x.1.val - 1) % queryIndexSize ell + 1 = x.1.val := by
-      rw [Nat.div_mul_add_mod]
+      rw [Nat.div_add_mod']
       omega
     rw [hrebuild, ZMod.natCast_zmod_val]
   right_inv pair := by
+    have hfactor := babyBear_nonzero_factorization hell
+    have hslack := pair.1.isLt
+    have hcoord := pair.2.isLt
+    have hraw :
+        pair.1.val * queryIndexSize ell + pair.2.val + 1 < modulus := by
+      omega
     apply Prod.ext
     · apply Fin.ext
       dsimp only
-      have hcoord := pair.2.isLt
-      rw [Nat.add_sub_cancel]
-      simp [Nat.add_div, queryIndexSize_pos ell.ne']
+      rw [ZMod.val_cast_of_lt hraw, Nat.add_sub_cancel,
+        Nat.mul_add_div (queryIndexSize_pos ell), Nat.div_eq_of_lt hcoord,
+        Nat.add_zero]
     · apply Fin.ext
       dsimp only
-      have hcoord := pair.2.isLt
-      rw [Nat.add_sub_cancel]
-      simp [Nat.add_mod, queryIndexSize_pos ell.ne']
+      rw [ZMod.val_cast_of_lt hraw, Nat.add_sub_cancel, Nat.mul_add_mod,
+        Nat.mod_eq_of_lt hcoord]
 
 /-- The accepted decoder is the second projection of the exact factorization. -/
 def unbiasedQueryCoordinate {ell : Nat} (hell : ell ≤ 28)
@@ -118,34 +125,6 @@ def unbiasedQueryCoordinate {ell : Nat} (hell : ell ≤ 28)
     (seed : Digest) (accepted : seed 0 ≠ 0) :
     (unbiasedQueryCoordinate hell seed accepted : Nat) =
       ((seed 0).val - 1) % (2 ^ (ell - 1)) := rfl
-
-/-- Exact marginalization of an ignored first product component. -/
-private theorem uniformProb_snd {A B : Type} [Fintype A] [Fintype B]
-    [Nonempty A] (event : B → Prop) :
-    uniformProb (A × B) (fun pair => event pair.2) = uniformProb B event := by
-  let swap := Equiv.prodComm A B
-  calc
-    uniformProb (A × B) (fun pair => event pair.2) =
-        uniformProb (B × A) (fun pair => event pair.1) := by
-      simpa [swap] using
-        (uniformProb_equiv swap (fun pair : B × A => event pair.1))
-    _ = uniformProb B event := by
-      classical
-      unfold uniformProb
-      have hA : (Fintype.card A : Real) ≠ 0 := by
-        exact_mod_cast Fintype.card_ne_zero
-      rw [show Nat.card {pair : B × A // event pair.1} =
-          Nat.card {b : B // event b} * Nat.card A by
-        rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card,
-          Nat.card_eq_fintype_card]
-        exact Fintype.card_congr
-          { toFun := fun pair => (⟨pair.1.1, pair.2⟩, pair.1.2)
-            invFun := fun pair => ⟨(pair.1.1, pair.2), pair.1.2⟩
-            left_inv := fun _ => rfl
-            right_inv := fun _ => rfl },
-        Nat.card_prod, Fintype.card_prod]
-      push_cast
-      rw [← div_mul_div_comm, div_self hA, mul_one]
 
 /-- Conditional on accepting the nonzero field lane, every BaseFold query
 coordinate is exactly uniform. This is equality for every event, not a
@@ -163,7 +142,7 @@ theorem acceptedScalar_coordinate_uniform {ell : Nat} (hell : ell ≤ 28)
           (fun pair => event pair.2) :=
       uniformProb_equiv (acceptedScalarEquiv ell hell) _
     _ = uniformProb (PowerTwoFriLevels ell 1) event :=
-      uniformProb_snd event
+      uniformProb_prod_snd event
 
 /-! ## Fail-closed BaseFold schedule -/
 
@@ -247,7 +226,11 @@ theorem unbiasedAccepts_to_rawCommittedIor {ell m queryCount : Nat}
   have hopen := accepted.2.2.2.2.1 j a
   have rootJ := accepted.2.1 j (Nat.le_of_lt j.isLt)
   have rootNext := accepted.2.1 (j + 1) (Nat.succ_le_iff.mpr j.isLt)
-  simpa [rootJ, rootNext] using hopen
+  simpa [show receiptLevelRoot receipt j.castSucc =
+        st.rootAt receipt.challenge j (Nat.le_of_lt j.isLt) by simpa using rootJ,
+    show receiptLevelRoot receipt j.succ =
+        st.rootAt receipt.challenge (j + 1)
+          (Nat.succ_le_iff.mpr j.isLt) by simpa using rootNext] using hopen
 
 #check @babyBear_nonzero_factorization
 #check @acceptedScalarEquiv
