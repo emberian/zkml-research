@@ -128,10 +128,10 @@ theorem acceptedSeedFamilyEquiv_coordinates {ell queryCount : Nat}
 
 /-! ## Exact joint uniformity -/
 
+set_option maxHeartbeats 1600000 in
 /-- Conditional on fail-closed acceptance, the entire query-coordinate family
 is a fresh uniform product.  The unused digest lanes and factorization slack
 coordinates are marginalized exactly. -/
-set_option maxHeartbeats 800000 in
 theorem acceptedSeedCoordinates_uniform {ell queryCount : Nat}
     (hell : ell ≤ 28) (event : QueryCoordinateFamily ell queryCount → Prop) :
     uniformProb (AcceptedSeedFamily queryCount)
@@ -153,9 +153,15 @@ theorem acceptedSeedCoordinates_uniform {ell queryCount : Nat}
     _ = uniformProb
         (QuerySlackFamily ell queryCount × QueryCoordinateFamily ell queryCount)
         (fun split => event split.2) :=
-      uniformProb_prod_snd (fun split => event split.2)
+      uniformProb_prod_snd
+        (A := Fin queryCount → DigestTail)
+        (B := QuerySlackFamily ell queryCount ×
+          QueryCoordinateFamily ell queryCount)
+        (fun split => event split.2)
     _ = uniformProb (QueryCoordinateFamily ell queryCount) event :=
-      uniformProb_prod_snd event
+      uniformProb_prod_snd
+        (A := QuerySlackFamily ell queryCount)
+        (B := QueryCoordinateFamily ell queryCount) event
 
 #check @acceptedDigestEquiv
 #check @acceptedSeedFamilyEquiv
