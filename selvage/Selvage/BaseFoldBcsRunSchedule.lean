@@ -15,6 +15,7 @@ remaining off-bad semantic agreement or the random-permutation switch.
 
 import Selvage.BaseFoldBcsPadding
 import Selvage.SpongeIndiffAdaptiveCoupling
+import Selvage.SpongeIndiffPrefixFresh
 
 namespace Minidregg.Selvage.BaseFoldBcsRunSchedule
 
