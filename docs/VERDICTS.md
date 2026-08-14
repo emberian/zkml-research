@@ -37,7 +37,15 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   ρ=1/64 already bought the expensive half. Four of five production systems
   refuse the capacity conjecture; we are the outlier. Measured price of the
   proven regime elsewhere: ~2× proof size, ~4% time.
-- **`lb=6` is 2.9× off the measured optimum** (20 ms at lb=4 vs 58 ms).
+- ⚑ **"`lb=6` is 2.9× off the optimum" is REFUTED — it was a grind draw.**
+  `query_proof_of_work_bits=16` is **~25% of a deployed prove** (47,917
+  permutations / 8.2 ms), depends on **neither blowup nor trace**, and is
+  **exponentially distributed** — it drew 0.04 / 8.2 / 10.1 / 31.9 / 40.0 /
+  40.8 ms across one ladder. At **pow=0** the curve is strictly monotone
+  (14.9 / 20.3 / 34.9 / 67.9 / 120.6 / 243.3 ms) with **lb=3 fastest by
+  1.4×**. The published lb=3 point paid 40.8 ms of grind against lb=4's 10.1 —
+  **that 30 ms of coin flip *was* the reported optimum.** (The published
+  `prove` column also included a full self-verify.)
 - **`num_queries` is unpinned in the recursion verifier** — read from the
   inner proof, never checked against a configured count. A child minting one
   query drops the column to 19 bits (JBR) / 16 (UDR). *The field wall is
@@ -75,10 +83,15 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   *an AIR commits the Cook–Levin witness; a virtualizing sumcheck commits the
   original NP witness.* **The monotone reading is wrong — there is a sweet
   spot, not zero.**
-- **The exchange rate (ours, measured)**: one committed base felt ≈ **3,120
-  field mults at lb=4, 12,331 at lb=6**; virtualizing one ≈ **40 per layer**.
-  **78×–308×**, which turns the sweet spot into a threshold rule. Swings 28×
-  across the blowup knob.
+- ⚑ **The exchange rate was in the WRONG UNIT.** 78–308× is *counted field
+  multiplications*; the conversion to wall-clock had never been taken.
+  **Measured: 54.7 ns per marginal committed felt vs 10.97 ns per value per
+  sumcheck layer — a ~5× wall-clock rate at lb=3**, because hashing
+  SIMD-vectorizes harder than folding does. **Consequence: a degree-(α+1) fold
+  costs 77–132 ns against 55 ns to commit, so GKR LOSES at α=7 by 1.4–2.4×
+  and wins only at α ≤ 3.** The layer budget is **0.42–0.71 layers at α=7**,
+  1.49–1.66 at α=3. ⚠ Every plan priced against 78–308× (C2, C5, C7) needs
+  re-pricing.
 - **The multilinear seam is ONE `RbrKnowledgeSoundness` instance, not a new
   abstraction.** No hash-based multilinear PCS is indexed by an evaluation
   point; the commitment is a Merkle vector commitment to a codeword — our
@@ -97,6 +110,16 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   with each concrete ring a valuation** (semiring provenance: transport
   commutes iff the map is a homomorphism). This is a *check*, not a deadline —
   cheap iff constraints consume the ring through an interface.
+- ⚑ **Poseidon2 virtualization: direction CONFIRMED, mechanism REFUTED.** The
+  sumcheck route loses (see the exchange-rate correction). **The win is
+  in-AIR virtualization of the degree-1 lanes**: 211 of the deployed 352
+  committed felts (59.9%) carry no nonlinearity, so carrying them as
+  expressions gives **352 → 157 felts, 352 → 141 constraints, 2.11× prove,
+  2.34× committed cells, at identical `max_constraint_degree = 7`** —
+  strictly Pareto, no trade to price. **And the ratio GROWS as α falls**
+  (2.24× BabyBear → 2.83× KoalaBear w16), so the field question gets a second
+  answer pointing the same way. ⚠ The `map_write_chip` 227 ms "corroboration"
+  **was not one** — it is a chip-table present-vs-absent comparison.
 - **The degree-3 rung is LANDED** (`Assurance/AirSumcheckCubic.lean`):
   `cubicForm E A B C D = Ê·(Â·B̂ + Ĉ·D̂)`, soundness `≤ m·3/|F|`. **Both
   consumers are theorems, not prose** — `cubicForm_fraction_layer` (GKR) and
@@ -110,6 +133,40 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
 - **We are abandoning Plonky3.** Upstream code may be read for API shapes and
   used as a throwaway differential oracle; it never enters the trust path.
 
+## 4b. Tensor units and the GEMM route
+
+- ⚑ **The Amdahl ceiling for tensor silicon is 1.26× at the deployed point.**
+  GEMM-shaped work is only the two LDE rows — **20.8% of prove** (21–32%
+  across the range) — and **MLE folding is under 0.1%.** Trace height does not
+  rescue it: swept 2^6→2^12, `hash/arith` is flat-to-rising, because the
+  Merkle leaf is a sponge over the whole row and scales like the LDE.
+- **The field-mapping question is SOLVED and free**: CROSS's **BAT** (Basis
+  Aligned Transformation) precomputes `a·2^{8i} mod q` offline for a
+  **preknown** operand, turning one modular multiply into a K×K byte-matrix
+  product. **BabyBear at 31 bits ⇒ K=4, exactly CROSS's K — it transfers with
+  zero modification**, and our implementation is bit-exact four independent
+  ways. Measured: **BAT beats three-limb Montgomery by 3.05×** on hardware
+  with *no INT8 unit*.
+- ⚠ **BUT BAT needs one operand PREKNOWN.** Free for an NTT (twiddles);
+  **not free for an MLE fold or a sumcheck round** (two runtime witness
+  tensors). Grouping them as "also GEMM-shaped" is true and a *different
+  claim*; porting by analogy would be the expensive mistake.
+- **Four-step does not survive to LDE sizes**: the extra-multiply factor grows
+  as √N/log N — 341× at N=2^12, **3277× at N=2^20**. Four-step and radix-2 are
+  the m=2 and m=log N members of one family costing `m·N^{1+1/m}`.
+- ⚠ **MoMA does not use tensor cores at all** (scalar 2^64-limb Barrett), and
+  **MORPH's mapping is different** (its GEMM is base *conversion*, for
+  256–753-bit moduli). Drop both from the tensor thread.
+- ✅ **The fusion thesis HOLDS at toy scale and compounds**: 1.30–4.92× single
+  hand-off; **2.7–7.1× at 2^20–2^22 on memory traffic alone** discounting the
+  1.3–2.5 ms device sync; and across K=1→16 batched hand-offs fused per-stage
+  falls **3.8–5.3× and is still falling** while unfused plateaus. ⚠ Two
+  caveats that must travel with it: **unified memory makes every number a
+  lower bound**, and the sync floor is wgpu's, not physics. **Structural
+  finding: two wgpu devices cannot share a buffer, so fusion was unreachable
+  by construction** — `bfv_ntt_gpu`, `tfhe_*_wgpu` and `private_book_bfv_wgpu`
+  each still stand up their own device.
+
 ## 5. zkML
 
 - **MXFP4 within-block exactness holds; NVFP4 preserves it but destroys the
@@ -122,6 +179,12 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   experts); raw-logit ~4%; V4's Sqrt(Softplus) never saturates.
 - **"Append-dominant KV" is true of the computation, false of serving.** Fold
   over the **accepted token sequence**, never over cache writes.
+- ⚑ **CSE does not rescue matmul.** The 2,696,666→220 figure is a
+  Poseidon2/Merkle shape that re-reads subterms; a contraction's `m·k·n`
+  products are pairwise **distinct**, so CSE leaves **318,040 gates at
+  318,040** — **no gate-level emit of any kind gets below `m·k·n`.** At ~52
+  bytes/gate that is a ~17 MB descriptor. (The conclusion "matmul needs a
+  vector relation" stands; the reason was wrong.)
 - **The registry commitment as shipped is a checksum no prover can open.** The
   real object is Poseidon2 over the field-element encoding, at a leaf
   granularity the circuit opens, in the layout the prover reads.
@@ -141,9 +204,13 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
 
 ## 7. Genuinely open
 
-1. **Is the prover hash-bound?** Derived 94% at lb=6; measured 19–40% at
-   ρ=1/2. **Decides whether the field/hash migration is worth 3.4× or much
-   less. One profiling run.**
+1. ~~Is the prover hash-bound?~~ **SETTLED — HASH-BOUND AT EVERY FEASIBLE
+   BLOWUP.** Measured per-phase on a real IR-v2 proof: `hash/arith` = 1.01 at
+   b=3 → 1.86 at b=8, **no crossover in range** (extrapolates to b≈2.9, and
+   **b=2 does not exist for this circuit** — a degree-7 S-box needs
+   `log_blowup ≥ 3`). The blowup knob moves the mixture 1.8× across its whole
+   range and never flips it. ⇒ **the field/hash migration is worth its ~3.4×
+   on the dominant term**, and the KoalaBear case strengthens.
 2. **H1** — does the 61-bit design point survive a 2.4-bit margin? Now carries
    the whole joint-representation question.
 3. **Can we choose the FHE modulus?** Both Zama predecessors set q_FHE = the
