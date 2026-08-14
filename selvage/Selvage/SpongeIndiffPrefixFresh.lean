@@ -237,10 +237,14 @@ theorem programPrefixes_preserves_ro_fresh_of_not_prefix
                 apply hnotPrefix
                 rw [equal]
                 exact hcurrentPrefix
+              have htailMessage :
+                  nextPrefix ++ message = seen ++ (block :: message) := by
+                simp [nextPrefix, List.append_assoc]
               have hnotTail : ¬ (target <+: nextPrefix ++ message) := by
-                intro prefix
+                intro hprefix
                 apply hnotPrefix
-                simpa [nextPrefix, List.append_assoc] using prefix
+                rw [← htailMessage]
+                exact hprefix
               simp only [programPrefixes] at hrun
               cases hedge : primitive.lookup (state.1 + block, state.2) with
               | some edgeValue =>
