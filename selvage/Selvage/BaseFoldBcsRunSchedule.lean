@@ -918,6 +918,129 @@ theorem paddedSegmentLast_succ {m queryCount : Nat}
     round.isLt
   omega
 
+/-- The last rate in the exact work-stream slice for one public round is the
+rate coordinate at that round's static segment-last index. -/
+theorem paddedRateSegment_lastRateCoin {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount))
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    lastRateCoin
+        ((((List.ofFn coins).drop
+          (paddedWorkPrefix statement receipt round)).take
+            (paddedRoundPrimitiveWork statement receipt round)).map
+              Prod.fst) =
+      (coins (paddedSegmentLast statement receipt round)).1 := by
+  let remaining := (List.ofFn coins).drop
+    (paddedWorkPrefix statement receipt round)
+  let work := paddedRoundPrimitiveWork statement receipt round
+  have hworkPos : 0 < work :=
+    paddedRoundPrimitiveWork_pos statement receipt round
+  have hprefixStep :
+      paddedWorkPrefix statement receipt (round + 1) =
+        paddedWorkPrefix statement receipt round + work := by
+    simpa [work] using
+      paddedWorkPrefix_succ statement receipt round round.isLt
+  have hprefixLe :=
+    paddedWorkPrefix_le_final statement receipt (round + 1)
+  have hremainingLength : remaining.length =
+      paddedTranscriptPrimitiveWork statement receipt -
+        paddedWorkPrefix statement receipt round := by
+    simp [remaining]
+  have hindex : work - 1 < remaining.length := by
+    rw [hremainingLength]
+    omega
+  have hget : remaining.get ⟨work - 1, hindex⟩ =
+      coins (paddedSegmentLast statement receipt round) := by
+    dsimp [remaining]
+    simp only [List.get_eq_getElem, List.getElem_drop, List.getElem_ofFn]
+    apply congrArg coins
+    apply Fin.ext
+    change paddedWorkPrefix statement receipt round + (work - 1) =
+      paddedWorkPrefix statement receipt (round + 1) - 1
+    rw [hprefixStep]
+  have htake : remaining.take work =
+      remaining.take (work - 1) ++
+        [remaining.get ⟨work - 1, hindex⟩] := by
+    calc
+      remaining.take work = remaining.take ((work - 1) + 1) := by
+        congr 2
+        omega
+      _ = remaining.take (work - 1) ++
+          [remaining.get ⟨work - 1, hindex⟩] := by
+        rw [List.take_add_one, List.getElem?_eq_getElem hindex]
+  change lastRateCoin ((remaining.take work).map Prod.fst) = _
+  rw [htake, List.map_append]
+  simp [hget]
+
+/-- One good eager BaseFold construction round returns exactly its static
+segment-last rate coin.  The premise permits shared proper RO prefixes but
+requires the current primitive path and complete message to be fresh. -/
+theorem paddedWorkHybridStep_constr_fresh_semantics {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (round : Fin (m + queryCount))
+    (state : WorkHybridState Rate Cap)
+    (hans : state.core.ans.length = round)
+    (hremaining : state.remaining =
+      (List.ofFn coins).drop (paddedWorkPrefix statement receipt round))
+    (hpath : PrimitivePathFresh state.core.ro state.core.primitive (0, 0) []
+      (paddedPublicMessageSchedule statement receipt round)
+      ((state.remaining.take
+        (paddedRoundPrimitiveWork statement receipt round)).map Prod.fst)
+      ((state.remaining.take
+        (paddedRoundPrimitiveWork statement receipt round)).map Prod.snd))
+    (hro : state.core.ro.lookup
+      (paddedPublicMessageSchedule statement receipt round) = none) :
+    ∃ next,
+      workHybridStep
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) state round = .ok next ∧
+        next.core.ans = state.core.ans ++
+          [.rate (coins (paddedSegmentLast statement receipt round)).1] := by
+  obtain ⟨x, xs, hquery, hmessage⟩ :=
+    paddedConstructionQuerySchedule_is_constr statement receipt round
+  have hmove :
+      (paddedConstructionDistinguisher statement receipt verdict).move
+          state.core.ans = .constr x xs := by
+    rw [paddedConstructionDistinguisher_move_at_length statement receipt
+      verdict state.core.ans (by omega)]
+    calc
+      paddedConstructionQuerySchedule statement receipt
+          ⟨state.core.ans.length, by omega⟩ =
+          paddedConstructionQuerySchedule statement receipt round := by
+        apply congrArg (paddedConstructionQuerySchedule statement receipt)
+        exact Fin.ext hans
+      _ = .constr x xs := hquery
+  have hsize : xs.length + 1 =
+      paddedRoundPrimitiveWork statement receipt round := by
+    simp [paddedRoundPrimitiveWork, hquery]
+  have henough : xs.length + 1 ≤ state.remaining.length := by
+    rw [hremaining, List.length_drop, List.length_ofFn, hsize]
+    have hprefixLe :=
+      paddedWorkPrefix_le_final statement receipt (round + 1)
+    have hprefixStep :=
+      paddedWorkPrefix_succ statement receipt round round.isLt
+    omega
+  have hpath' : PrimitivePathFresh state.core.ro state.core.primitive
+      (0, 0) [] (x :: xs)
+      ((state.remaining.take (xs.length + 1)).map Prod.fst)
+      ((state.remaining.take (xs.length + 1)).map Prod.snd) := by
+    rw [← hmessage, hsize]
+    exact hpath
+  have hro' : state.core.ro.lookup (x :: xs) = none := by
+    rw [← hmessage]
+    exact hro
+  obtain ⟨next, hstep, hnextAnswers⟩ :=
+    workHybridStep_constr_of_primitivePathFresh
+      (paddedConstructionDistinguisher statement receipt verdict)
+      (0, 0) state round x xs hmove henough hpath' hro'
+  refine ⟨next, hstep, ?_⟩
+  rw [hnextAnswers, hsize, hremaining,
+    paddedRateSegment_lastRateCoin statement receipt round coins]
+
 theorem paddedSegmentHead_le_last {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
     (round : Fin (m + queryCount)) :
