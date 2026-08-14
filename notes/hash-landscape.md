@@ -998,6 +998,36 @@ Every number above is either (a) ours and committed, with the note named, or
 §2 comes from the literature** — the crossover is computed entirely from our own
 measurements, which is why it is the part of this document I would defend hardest.
 
+### Reproducing the two measurements that carry this document
+
+```sh
+# (1) in-circuit R -- AIR cells per invocation, pinned p3 rev 82cfad7
+#     deps: p3-keccak-air, p3-blake3-air; print NUM_KECCAK_COLS * NUM_ROUNDS
+#     and NUM_BLAKE3_COLS.  Rows/invocation read from each generation.rs.
+#     -> Blake3 9,168 (1 row) ; Keccak 63,192 (2,633 x 24) ; Poseidon2 300
+
+# (2) native hash swap -- same AIR, same field, only the Merkle hash differs
+P=~/.cargo/git/checkouts/plonky3-*/82cfad7
+CARGO_TARGET_DIR=/tmp/p3t cargo build --release -p p3-keccak-air   --example prove_goldilocks_poseidon2 --example prove_goldilocks_keccak
+time /tmp/p3t/release/examples/prove_goldilocks_poseidon2   # min-of-6: 40,195 ms
+time /tmp/p3t/release/examples/prove_goldilocks_keccak      # min-of-5:  6,907 ms
+```
+
+Crossover arithmetic: `notes/hash-landscape-scripts/crossover.py`, every input
+cited to a committed note.
+
+### ⚠ One methodological note, recorded because it nearly cost a false claim
+
+A literature sweep reported our **"+286-bit margin"** as unfindable in any paper and
+supplied replacement figures. **I drafted, and committed, a correction saying our own
+notes were wrong by 40–80 bits.** Reading `poseidon2-audit-verdict.md` at source
+showed the refutation was the error: the number is **our derivation at our bar
+(2^123.6) and our parameter set**, the note says so on its face, and the sweep had
+searched for a published literal that was never claimed. **A sweep's absence result
+is evidence about the sweep.** The retraction is in §3 and the false correction is
+still in this branch's history at `c68d228`, superseded by `de70388` — fixed
+forward, not rewritten.
+
 ⚠ **Corpus disclosure**: the literature sweeps feeding §1d and §3 run against
 `~/paperbin` (1,218 PDFs, full text) and `~/dev/gh/forks/IACR-eprint-mirror/`
 (IACR only, cryptology only, incomplete). **No absence claim in this document may
