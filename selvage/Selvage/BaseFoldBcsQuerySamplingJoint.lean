@@ -63,7 +63,7 @@ def acceptedDigestEquiv (ell : Nat) (hell : ell ≤ 28) :
   invFun split :=
     let scalar := (acceptedScalarEquiv ell hell).symm split.2
     ⟨fun lane => if h : lane = 0 then scalar.1 else split.1 ⟨lane, h⟩,
-      by simp [scalar]⟩
+      by simpa only [if_pos rfl] using scalar.2⟩
   left_inv seed := by
     apply Subtype.ext
     funext lane
@@ -131,6 +131,7 @@ theorem acceptedSeedFamilyEquiv_coordinates {ell queryCount : Nat}
 /-- Conditional on fail-closed acceptance, the entire query-coordinate family
 is a fresh uniform product.  The unused digest lanes and factorization slack
 coordinates are marginalized exactly. -/
+set_option maxHeartbeats 800000 in
 theorem acceptedSeedCoordinates_uniform {ell queryCount : Nat}
     (hell : ell ≤ 28) (event : QueryCoordinateFamily ell queryCount → Prop) :
     uniformProb (AcceptedSeedFamily queryCount)
