@@ -36,6 +36,39 @@ def ConstructionReturnsLastRate (iv : Rate × Cap)
         some result ∧
       result.state.1 = lastRateCoin rateCoins
 
+/-- Replay-compatible structural witness for a designated terminal rate.  All
+proper-prefix edges may either replay consistently or be freshly programmed;
+the final edge itself must be absent, so the still-fresh full-message RO lookup
+uses `terminalRate`. -/
+noncomputable def TerminalPrimitiveFreshTo (terminalRate : Rate)
+    (ro : Oracle (List Rate) Rate)
+    (primitive : Oracle (Rate × Cap) (Rate × Cap))
+    (state : Rate × Cap) (seen : List Rate) :
+    List Rate → List Rate → List Cap → Prop
+  | [], _, _ => False
+  | _ :: _, [], _ => False
+  | _ :: _, _, [] => False
+  | block :: message, rateCoin :: rateCoins,
+      capacityCoin :: capacityCoins =>
+      let nextPrefix := seen ++ [block]
+      let key : Rate × Cap := (state.1 + block, state.2)
+      if message.isEmpty then
+        rateCoins = [] ∧ capacityCoins = [] ∧ rateCoin = terminalRate ∧
+          primitive.lookup key = none
+      else
+        match primitive.lookup key with
+        | some edgeValue =>
+            let roReply := ro.respond nextPrefix edgeValue.1
+            edgeValue.1 = roReply.1 ∧
+              TerminalPrimitiveFreshTo terminalRate roReply.2 primitive
+                edgeValue nextPrefix message rateCoins capacityCoins
+        | none =>
+            let roReply := ro.respond nextPrefix rateCoin
+            let programmed : Rate × Cap := (roReply.1, capacityCoin)
+            let primitiveReply := primitive.respond key programmed
+            TerminalPrimitiveFreshTo terminalRate roReply.2 primitiveReply.2
+              primitiveReply.1 nextPrefix message rateCoins capacityCoins
+
 omit [DecidableEq Rate] in
 @[simp] theorem lastRateCoin_append_singleton (rates : List Rate)
     (rate : Rate) :
@@ -208,6 +241,152 @@ theorem programPrefixes_fresh_final_rate
                             (result := result) (by simp) htailFresh hroTail
                               htailRun
                           simpa [lastRateCoin] using hfinal
+
+/-- Consistent replay of proper-prefix edges plus a fresh terminal primitive
+edge is sufficient to execute and return the designated terminal rate. -/
+theorem programPrefixes_terminalPrimitiveFreshTo_returns_rate
+    (terminalRate : Rate)
+    (ro : Oracle (List Rate) Rate)
+    (primitive : Oracle (Rate × Cap) (Rate × Cap))
+    (state : Rate × Cap) (seen : List Rate) :
+    ∀ {message rateCoins : List Rate} {capacityCoins : List Cap},
+      TerminalPrimitiveFreshTo terminalRate ro primitive state seen message
+          rateCoins capacityCoins →
+      ro.lookup (seen ++ message) = none →
+      ∃ result,
+        programPrefixes ro primitive state seen message rateCoins
+            capacityCoins = some result ∧
+          result.state.1 = terminalRate := by
+  intro message
+  induction message generalizing ro primitive state seen with
+  | nil =>
+      intro rateCoins capacityCoins hterminal
+      simp [TerminalPrimitiveFreshTo] at hterminal
+  | cons block message ih =>
+      intro rateCoins capacityCoins hterminal hro
+      cases rateCoins with
+      | nil => simp [TerminalPrimitiveFreshTo] at hterminal
+      | cons rateCoin rateCoins =>
+          cases capacityCoins with
+          | nil => simp [TerminalPrimitiveFreshTo] at hterminal
+          | cons capacityCoin capacityCoins =>
+              let nextPrefix := seen ++ [block]
+              let key : Rate × Cap := (state.1 + block, state.2)
+              cases message with
+              | nil =>
+                  change rateCoins = [] ∧ capacityCoins = [] ∧
+                    rateCoin = terminalRate ∧ primitive.lookup key = none at
+                    hterminal
+                  obtain ⟨hrates, hcapacities, hrateCoin, hedge⟩ := hterminal
+                  subst rateCoins
+                  subst capacityCoins
+                  subst rateCoin
+                  let roReply := ro.respond nextPrefix terminalRate
+                  let programmed : Rate × Cap := (roReply.1, capacityCoin)
+                  let primitiveReply := primitive.respond key programmed
+                  have hroPrefix : ro.lookup nextPrefix = none := by
+                    simpa [nextPrefix] using hro
+                  have hroReply : roReply.1 = terminalRate := by
+                    dsimp [roReply]
+                    exact Oracle.respond_fresh_fst hroPrefix terminalRate
+                  have hprimitiveReply : primitiveReply.1 = programmed := by
+                    dsimp [primitiveReply]
+                    exact Oracle.respond_fresh_fst hedge programmed
+                  refine ⟨⟨primitiveReply.1, roReply.2, primitiveReply.2⟩,
+                    ?_, ?_⟩
+                  · simp only [programPrefixes]
+                    rw [show (state.1 + block, state.2) = key by rfl, hedge]
+                    simp [nextPrefix, key, roReply, programmed, primitiveReply]
+                  · change primitiveReply.1.1 = terminalRate
+                    rw [hprimitiveReply]
+                    exact hroReply
+              | cons next rest =>
+                  change
+                    (match primitive.lookup key with
+                    | some edgeValue =>
+                        let roReply := ro.respond nextPrefix edgeValue.1
+                        edgeValue.1 = roReply.1 ∧
+                          TerminalPrimitiveFreshTo terminalRate roReply.2
+                            primitive edgeValue nextPrefix (next :: rest)
+                              rateCoins capacityCoins
+                    | none =>
+                        let roReply := ro.respond nextPrefix rateCoin
+                        let programmed : Rate × Cap :=
+                          (roReply.1, capacityCoin)
+                        let primitiveReply := primitive.respond key programmed
+                        TerminalPrimitiveFreshTo terminalRate roReply.2
+                          primitiveReply.2 primitiveReply.1 nextPrefix
+                            (next :: rest) rateCoins capacityCoins) at hterminal
+                  have hmessageNe :
+                      nextPrefix ++ (next :: rest) ≠ nextPrefix := by
+                    intro equal
+                    have hlength := congrArg List.length equal
+                    simp at hlength
+                  cases hedge : primitive.lookup key with
+                  | some edgeValue =>
+                      rw [hedge] at hterminal
+                      let roReply := ro.respond nextPrefix edgeValue.1
+                      change edgeValue.1 = roReply.1 ∧
+                        TerminalPrimitiveFreshTo terminalRate roReply.2
+                          primitive edgeValue nextPrefix (next :: rest)
+                            rateCoins capacityCoins at hterminal
+                      obtain ⟨hagree, htailFresh⟩ := hterminal
+                      have hroTail : roReply.2.lookup
+                          (nextPrefix ++ (next :: rest)) = none := by
+                        dsimp [roReply]
+                        rw [Oracle.lookup_respond_ne ro hmessageNe edgeValue.1]
+                        simpa [nextPrefix, List.append_assoc] using hro
+                      obtain ⟨result, htailRun, hresultRate⟩ := ih
+                        (ro := roReply.2) (primitive := primitive)
+                        (state := edgeValue) (seen := nextPrefix)
+                        htailFresh hroTail
+                      refine ⟨result, ?_, hresultRate⟩
+                      simp only [programPrefixes]
+                      rw [show (state.1 + block, state.2) = key by rfl, hedge]
+                      simp only
+                      rw [if_pos hagree]
+                      exact htailRun
+                  | none =>
+                      rw [hedge] at hterminal
+                      let roReply := ro.respond nextPrefix rateCoin
+                      let programmed : Rate × Cap :=
+                        (roReply.1, capacityCoin)
+                      let primitiveReply := primitive.respond key programmed
+                      change TerminalPrimitiveFreshTo terminalRate roReply.2
+                        primitiveReply.2 primitiveReply.1 nextPrefix
+                          (next :: rest) rateCoins capacityCoins at hterminal
+                      have hroTail : roReply.2.lookup
+                          (nextPrefix ++ (next :: rest)) = none := by
+                        dsimp [roReply]
+                        rw [Oracle.lookup_respond_ne ro hmessageNe rateCoin]
+                        simpa [nextPrefix, List.append_assoc] using hro
+                      obtain ⟨result, htailRun, hresultRate⟩ := ih
+                        (ro := roReply.2) (primitive := primitiveReply.2)
+                        (state := primitiveReply.1) (seen := nextPrefix)
+                        hterminal hroTail
+                      refine ⟨result, ?_, hresultRate⟩
+                      simp only [programPrefixes]
+                      rw [show (state.1 + block, state.2) = key by rfl, hedge]
+                      simpa [nextPrefix, key, roReply, programmed,
+                        primitiveReply] using htailRun
+
+/-- Public construction wrapper: replay-compatible proper prefixes and a fresh
+terminal edge imply the exact last-rate semantic event. -/
+theorem constructionReturnsLastRate_of_terminalPrimitiveFresh
+    (iv : Rate × Cap) (ro : Oracle (List Rate) Rate)
+    (primitive : Oracle (Rate × Cap) (Rate × Cap))
+    (message rateCoins : List Rate) (capacityCoins : List Cap)
+    (hnonempty : message ≠ [])
+    (hterminal : TerminalPrimitiveFreshTo (lastRateCoin rateCoins) ro
+      primitive iv [] message rateCoins capacityCoins)
+    (hro : ro.lookup message = none) :
+    ConstructionReturnsLastRate iv ro primitive message rateCoins
+      capacityCoins := by
+  obtain ⟨result, hrun, hrate⟩ :=
+    programPrefixes_terminalPrimitiveFreshTo_returns_rate
+      (lastRateCoin rateCoins) ro primitive iv [] hterminal (by simpa using hro)
+  refine ⟨result, ?_, hrate⟩
+  simp [programConstruction, hnonempty, hrun]
 
 /-- Prefix programming preserves freshness of any RO query which is not a
 prefix of the full message being programmed.  This is the frame lemma that
@@ -560,7 +739,10 @@ theorem workHybridStep_constr_preserves_ro_fresh_of_not_prefix {q : Nat}
 
 #check @programPrefixes_some_of_primitivePathFresh
 #check @ConstructionReturnsLastRate
+#check @TerminalPrimitiveFreshTo
 #check @programPrefixes_fresh_final_rate
+#check @programPrefixes_terminalPrimitiveFreshTo_returns_rate
+#check @constructionReturnsLastRate_of_terminalPrimitiveFresh
 #check @programPrefixes_preserves_ro_fresh_of_not_prefix
 #check @programConstruction_fresh_final_rate
 #check @programConstruction_preserves_ro_fresh_of_not_prefix
@@ -577,6 +759,12 @@ theorem workHybridStep_constr_preserves_ro_fresh_of_not_prefix {q : Nat}
 /-- info: 'Minidregg.Selvage.programPrefixes_fresh_final_rate' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms programPrefixes_fresh_final_rate
+/-- info: 'Minidregg.Selvage.programPrefixes_terminalPrimitiveFreshTo_returns_rate' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms programPrefixes_terminalPrimitiveFreshTo_returns_rate
+/-- info: 'Minidregg.Selvage.constructionReturnsLastRate_of_terminalPrimitiveFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms constructionReturnsLastRate_of_terminalPrimitiveFresh
 /-- info: 'Minidregg.Selvage.programPrefixes_preserves_ro_fresh_of_not_prefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms programPrefixes_preserves_ro_fresh_of_not_prefix
