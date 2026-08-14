@@ -50,8 +50,59 @@ as a STRUCTURE FIELD.** That is **uninhabitable in characteristic 2**, so
 anyone "instantiates it at a binary field."** A whole binary-field port could
 land, compile, pass its axiom pins, and prove nothing.
 
-**Its replacement already exists and is proved.** *This is the single most
-important line in the analysis.*
+✅ **CLOSED 2026-08-14 — and the hypothesis is REAL, so the bug was the
+silence, not the binder.** The multiplicative fold divides by `2` and `2x`; at
+char 2, `f(x) + f(−x) = 2f(x) = 0` and squaring is the Frobenius, so the
+`{x,−x}` fibres are **singletons**. ⚑ **Multiplicative FRI does not exist over
+a binary field** — migrating `FoldingData` would not be a migration but a
+*different protocol*, **and that protocol already exists and is proved**:
+`AdditiveFriTower` + `AdditiveProximity` (`additiveProximityGap_UD`,
+`additiveFold_distance_UD`, unconditional below `(1−ρ)/3`).
+
+So the fix targets the silence: new `Selvage/CharTwoWall.lean` names the
+emptiness, names **the consequence** (`foldingData_vacuous_of_charTwo` — at
+char 2 *every* predicate holds of every `FoldingData`, including `False`), and
+locates the wall exactly. ⚠ **Subtler than reported**: a theorem over
+`FoldingTower F ι m` with `m` free is **not** fully vacuous at char 2 — it
+survives at `m = 0`, so the refusal is satisfiable *and* refutable rather than
+blanket. And `strippedCharTwoWitness` is a **machine-checked negative
+control**: `FoldingData` *minus* `two_ne` is verified inhabited over `ZMod 2`,
+so **`two_ne` is the whole wall and deleting it cannot be papered over.**
+
+⚑⚑ **TWO NEW FAILURE CLASSES, BOTH CAUSED BY THE IMPORT GRAPH:**
+
+1. **AN IMPOSSIBILITY PROOF DOWNSTREAM OF ITS SUBJECT CANNOT BE CITED BY IT.**
+   The theorem refuting the two `Tower256AdditiveFri*` modules lived in a file
+   that *imports* them. **That is exactly how a refuted module stays in the
+   build looking healthy.** Fixed by splitting the cardinality argument into a
+   new module directly above the controller — and the modules are now
+   **retracted with the refutation machine-checked in-file.**
+2. **AN IMPORT BOUNDARY WAS MISLEADING AN AUDITOR ABOUT WHAT IS PROVED.**
+   Within `Theory/`, the additive proximity gap genuinely *is* a hypothesis —
+   because the boundary forbids naming `Selvage` — so 4 files and 8 docstrings
+   labelled it a floor or *"NAMED, not proved"* while
+   `additiveProximityGap_UD` **proves it unconditionally one layer up.** Labels
+   now read *"hypothesis HERE; PROVED one import layer up"* with the genuine
+   remainder stated. **An auditor reading "residual" as "unproved anywhere"
+   was being misled by an import edge.**
+
+**The census is reassuring: exactly ONE trap in 345 structures.** `ringChar ≠
+2`, `Invertible 2`, `CharZero`, odd-characteristic and 2-adic root-of-unity
+hypotheses are **absent repo-wide**; `Fact (Nat.Prime p)` is never a wall; the
+~150 `/2` hits are ℝ decoding radii. **One new find**:
+`Compiler/FriQueryVerifierAir.lean` takes `(2:F)*half = 1` over an
+unconstrained `[Field F]` — **vacuous at Tower256**, previously prose-only.
+
+**And there is now a detector**: `scripts/check-char2-vacuity.sh` walks
+**29,263 declarations** and gates on the *finding*, not a self-test — **proved
+red-capable twice rather than assumed** (it reported 5 hits before the wall
+module got its structural exemption, and *renaming that module fails the run
+rather than reading clean*). Exemption is by home module, not a name list;
+**allowlist empty by design.**
+
+⚠ **Follow-up**: `SemanticHistoryTower256CheckpointGame` and
+`...DeployedBcs` still build on the retracted admission module and are vacuous
+for the same reason — deleting all four together is the next step.
 
 ## The short path — and it is not Ligerito
 
