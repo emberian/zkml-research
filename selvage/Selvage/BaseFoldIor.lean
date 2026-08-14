@@ -118,7 +118,7 @@ theorem exists_basefoldTable_of_mem_code (T : FoldingTower F ι m)
   have hp' : p.degree < ((2 ^ m : ℕ) : WithBot ℕ) := by
     simpa using hp
   refine ⟨tableOfPoly m p, funext fun i => ?_⟩
-  rw [← hword i, booleanMobiusPolynomial_tableOfPoly m p hp']
+  rw [hword i, booleanMobiusPolynomial_tableOfPoly m p hp']
 
 /-- The finite set of challenge tuples accepted by the full-word IOR for fixed
 statement, word, and adaptive prover. -/
@@ -129,7 +129,7 @@ noncomputable def basefoldIorAcceptSet (T : FoldingTower F ι m)
     (fun r => BaseFoldIorAccepts T z H word prover r)
     (Classical.decPred _) Finset.univ
 
-omit [Fintype F] [DecidableEq F] in
+omit [DecidableEq F] in
 theorem mem_basefoldIorAcceptSet {T : FoldingTower F ι m}
     {z : Fin m → F} {H : F} {word : ι 0 → F}
     {prover : (ℕ → F) → ℕ → Polynomial F} {r : Fin m → F} :
@@ -137,7 +137,7 @@ theorem mem_basefoldIorAcceptSet {T : FoldingTower F ι m}
       BaseFoldIorAccepts T z H word prover r := by
   simp [basefoldIorAcceptSet]
 
-omit [Fintype F] [DecidableEq F] in
+omit [DecidableEq F] in
 /-- IOR acceptance is contained in the underlying proximity-test event. -/
 theorem basefoldIorAcceptSet_subset (T : FoldingTower F ι m)
     (z : Fin m → F) (H : F) (word : ι 0 → F)
@@ -190,13 +190,19 @@ theorem basefoldIor_noncodeword_sound [∀ n, Fintype (ι n)]
     Finset.card_le_card (basefoldIorAcceptSet_subset T z H word prover)
   have hprox := proximity_sound_prob T (basefoldDegSched m)
     (by norm_num : (0 : ℝ) ≤ 0) hfold hfar
+  have hprox' :
+      ((acceptSet T (basefoldDegSched m) word).card : ℝ) /
+          (Fintype.card F : ℝ) ^ m ≤
+        (m : ℝ) / Fintype.card F := by
+    simpa using hprox
   rw [show uniformProb (Fin m → F) (fun r =>
       BaseFoldIorAccepts T z H word prover r) =
       ((basefoldIorAcceptSet T z H word prover).card : ℝ) /
         (Fintype.card F : ℝ) ^ m by
     rw [uniformProb_eq_card_filter]
-    simp only [basefoldIorAcceptSet, Fintype.card_fun, Fintype.card_fin]]
-  refine le_trans ?_ hprox
+    simp only [basefoldIorAcceptSet, Fintype.card_fun, Fintype.card_fin,
+      Nat.cast_pow]]
+  refine le_trans ?_ hprox'
   have hden : (0 : ℝ) < (Fintype.card F : ℝ) ^ m := by positivity
   exact (div_le_div_iff_of_pos_right hden).mpr (by exact_mod_cast hcard)
 
