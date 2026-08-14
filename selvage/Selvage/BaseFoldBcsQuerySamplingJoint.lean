@@ -25,6 +25,7 @@ namespace Minidregg.Selvage.BaseFoldBcsQuerySamplingJoint
 
 open Minidregg.Selvage
 open BabyBearExt4
+open Minidregg.Selvage.BaseFoldPoseidon2
 open Minidregg.Selvage.BaseFoldBcsFiatShamir
 open Minidregg.Selvage.BaseFoldBcsQuerySampling
 
@@ -38,6 +39,10 @@ abbrev AcceptedDigest := {seed : Digest // seed 0 ≠ 0}
 
 abbrev AcceptedSeedFamily (queryCount : Nat) :=
   {seeds : Fin queryCount → Digest // ∀ a, seeds a 0 ≠ 0}
+
+noncomputable instance acceptedSeedFamilyFintype (queryCount : Nat) :
+    Fintype (AcceptedSeedFamily queryCount) :=
+  Fintype.ofFinite _
 
 abbrev QueryCoordinateFamily (ell queryCount : Nat) :=
   Fin queryCount → PowerTwoFriLevels ell 1
@@ -69,8 +74,11 @@ def acceptedDigestEquiv (ell : Nat) (hell : ell ≤ 28) :
   right_inv split := by
     apply Prod.ext
     · funext lane
-      simp [acceptedDigestEquiv, lane.2]
-    · simp [acceptedDigestEquiv]
+      dsimp only
+      simp [lane.2]
+    · dsimp only
+      simpa only [if_pos] using
+        (acceptedScalarEquiv ell hell).apply_symm_apply split.2
 
 /-! ## Lift the equivalence to a complete seed batch -/
 
@@ -114,6 +122,8 @@ theorem acceptedSeedFamilyEquiv_coordinates {ell queryCount : Nat}
     (hell : ell ≤ 28) (seeds : AcceptedSeedFamily queryCount) :
     (acceptedSeedFamilyEquiv ell queryCount hell seeds).2.2 =
       acceptedSeedCoordinates hell seeds := by
+  funext a
+  apply Fin.ext
   rfl
 
 /-! ## Exact joint uniformity -/
