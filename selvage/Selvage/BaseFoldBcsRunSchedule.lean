@@ -39,8 +39,8 @@ def paddedPublicMessageSchedule {m queryCount : Nat}
 /-- No public full message may already occur as a prefix of a different
 public message.  Under this structural property, the simple segment-last to
 segment-head reindexing below is the correct public full-message routing.
-Cross-domain and distinct-query cases are discharged in `BaseFoldBcsPadding`;
-the causal challenge/challenge case remains the live grammar lemma. -/
+Cross-domain, distinct-query, and causal challenge/challenge cases are
+discharged in `BaseFoldBcsPadding`. -/
 def PaddedFullMessageRoutingSafe {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount) : Prop :=
   ∀ left right : Fin (m + queryCount), left ≠ right →
@@ -501,6 +501,7 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
     (paddedSegmentSwapProgram statement receipt) event
 
 #check @paddedConstructionDistinguisher_move_answer_independent
+#check @paddedFullMessageRoutingSafe
 #check @paddedWorkPrefix_succ
 #check @paddedWorkPrefix_final
 #check @paddedDeferredWork_need_exact
@@ -511,6 +512,9 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedConstructionDistinguisher_move_answer_independent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedConstructionDistinguisher_move_answer_independent
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedFullMessageRoutingSafe' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedFullMessageRoutingSafe
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkPrefix_final' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedWorkPrefix_final
