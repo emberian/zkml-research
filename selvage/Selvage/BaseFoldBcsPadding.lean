@@ -126,6 +126,79 @@ theorem paddedChallengeMessage_eq_of_samePrefix {m queryCount : Nat}
   exact congrArg padMessage
     (challengeMessage_eq_of_samePrefix statement left right j prior current)
 
+/-- Challenge and query messages cannot be prefixes of one another: their
+first absorbed blocks are distinct before any receipt-controlled payload. -/
+theorem padded_challenge_query_not_prefix {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (j : Fin m) (a : Fin queryCount) :
+    ¬ paddedChallengeMessage statement receipt j <+:
+      paddedQueryMessage statement receipt a := by
+  intro prefix
+  have first := prefix.getElem (i := 0) (by
+    simp [paddedChallengeMessage, padMessage, challengeMessage])
+  have domains : challengeDomain = queryDomain := by
+    simpa [paddedChallengeMessage, paddedQueryMessage, padMessage,
+      challengeMessage, queryMessage] using first
+  exact challenge_query_domains_distinct domains
+
+theorem padded_query_challenge_not_prefix {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (j : Fin m) (a : Fin queryCount) :
+    ¬ paddedQueryMessage statement receipt a <+:
+      paddedChallengeMessage statement receipt j := by
+  intro prefix
+  have first := prefix.getElem (i := 0) (by
+    simp [paddedQueryMessage, padMessage, queryMessage])
+  have domains : queryDomain = challengeDomain := by
+    simpa [paddedChallengeMessage, paddedQueryMessage, padMessage,
+      challengeMessage, queryMessage] using first
+  exact challenge_query_domains_distinct domains.symm
+
+theorem paddedQueryMessage_length_eq {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (left right : Fin queryCount) :
+    (paddedQueryMessage statement receipt left).length =
+      (paddedQueryMessage statement receipt right).length := by
+  simp [paddedQueryMessage, padMessage, queryMessage, queryBody]
+
+/-- Within the canonical BabyBear range, query labels make the padded query
+messages injective. -/
+theorem paddedQueryMessage_injective {m queryCount : Nat}
+    (hcount : queryCount ≤ modulus)
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    Function.Injective (paddedQueryMessage statement receipt) := by
+  intro left right equal
+  have unpadded :
+      queryMessage statement receipt left =
+        queryMessage statement receipt right :=
+    padMessage_injective equal
+  have bodies :
+      queryBody statement receipt left = queryBody statement receipt right :=
+    (List.cons.inj unpadded).2
+  have tails :
+      [terminalRootTag, receipt.terminalRoot, queryIndexTag, indexBlock left] =
+        [terminalRootTag, receipt.terminalRoot, queryIndexTag,
+          indexBlock right] :=
+    List.append_cancel_left bodies
+  have indices : indexBlock left = indexBlock right := by
+    simpa using tails
+  apply Fin.ext
+  exact tagBlock_injective_below_modulus
+    (lt_of_lt_of_le left.isLt hcount)
+    (lt_of_lt_of_le right.isLt hcount) indices
+
+theorem padded_query_not_prefix_of_ne {m queryCount : Nat}
+    (hcount : queryCount ≤ modulus)
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (left right : Fin queryCount) (hne : left ≠ right) :
+    ¬ paddedQueryMessage statement receipt left <+:
+      paddedQueryMessage statement receipt right := by
+  intro prefix
+  apply hne
+  apply paddedQueryMessage_injective hcount statement receipt
+  exact prefix.eq_of_length
+    (paddedQueryMessage_length_eq statement receipt left right)
+
 noncomputable def paddedDerivedChallengeRate {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
     (j : Fin m) : Rate :=

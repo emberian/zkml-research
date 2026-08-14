@@ -45,6 +45,18 @@ abbrev Cap := BaseFoldPoseidon2Rom.Cap
 def tagBlock (tag : Nat) : Rate :=
   fun lane => if lane = 0 then (tag : F) else 0
 
+/-- Small natural tags have their literal BabyBear meaning.  The bound is
+load-bearing: unrestricted natural casts would identify values modulo the
+field characteristic. -/
+theorem tagBlock_injective_below_modulus {left right : Nat}
+    (hleft : left < modulus) (hright : right < modulus)
+    (equal : tagBlock left = tagBlock right) : left = right := by
+  have equalLane := congrFun equal (0 : Fin 8)
+  simp only [tagBlock, ↓reduceIte] at equalLane
+  have equalValue := congrArg ZMod.val equalLane
+  simpa [ZMod.val_cast_of_lt hleft, ZMod.val_cast_of_lt hright] using
+    equalValue
+
 def profileBlock : Rate := tagBlock 1001
 def statementFrameTag : Rate := tagBlock 1002
 def roundFrameTag : Rate := tagBlock 1003

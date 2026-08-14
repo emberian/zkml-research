@@ -26,6 +26,27 @@ set_option autoImplicit false
 
 noncomputable section
 
+/-! ## The remaining structural routing premise -/
+
+/-- The exact padded message belonging to each public construction draw. -/
+def paddedPublicMessageSchedule {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    Fin (m + queryCount) → List Rate :=
+  Fin.append
+    (paddedChallengeMessage statement receipt)
+    (paddedQueryMessage statement receipt)
+
+/-- No public full message may already occur as a prefix of a different
+public message.  Under this structural property, the simple segment-last to
+segment-head reindexing below is the correct public full-message routing.
+Cross-domain and distinct-query cases are discharged in `BaseFoldBcsPadding`;
+the causal challenge/challenge case remains the live grammar lemma. -/
+def PaddedFullMessageRoutingSafe {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount) : Prop :=
+  ∀ left right : Fin (m + queryCount), left ≠ right →
+    ¬ paddedPublicMessageSchedule statement receipt left <+:
+      paddedPublicMessageSchedule statement receipt right
+
 /-! ## The public move is answer-independent -/
 
 /-- At any valid public prefix length, the fixed-receipt adapter selects the
