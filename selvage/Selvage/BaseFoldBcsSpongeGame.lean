@@ -127,7 +127,7 @@ theorem constructionDistinguisher_romBound
   simp only [
     BaseFoldPoseidon2Rom.capacity_card,
     BaseFoldPoseidon2Rom.state_card, Nat.cast_pow] at bound
-  convert bound using 1 <;> ring
+  simpa only [Nat.cast_pow] using bound
 
 #check @constructionQueries_eq_ofFn
 #check @constructionDistinguisher_primitiveWorkOn_exact
