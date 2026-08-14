@@ -1277,7 +1277,7 @@ theorem paddedWorkHybridStateNat_success_routing
       ∀ future : Fin (m + queryCount), round ≤ future →
         state.core.ro.lookup
           (paddedPublicMessageSchedule statement receipt future) = none := by
-  induction round with
+  induction round generalizing state with
   | zero =>
       simp only [paddedWorkHybridStateNat] at hstate
       injection hstate with hstateEq
