@@ -96,6 +96,27 @@ hash" is not one number — Blake3's 32-bit ARX structure lands two 16-bit limbs
 word and **one row per compression**, where Keccak needs 24. Any analysis that
 prices "a bitwise hash" from the Keccak figure over-charges Blake3 by ~7×.
 
+#### ⚑ Cross-checked by a second, independent instrument
+
+Grey-lit ("beam call #2" notes, `hackmd.io/@tcoratger/B16moU0q1x`, surfaced via
+`~/paperbin/grey-ethresearch-ragged-gkr-poseidon2b.txt`) reports **in-circuit
+proving throughput** for the same three hashes in a prime field: Plonky3 Poseidon2
+(t=16, KoalaBear) at **1.75–2M perms/s**, **Blake3 at 30k/s**, **Keccak-256 at
+4k/s**. As ratios: **Blake3 ≈ 58–67×, Keccak ≈ 440–500×.**
+
+| hash | my measured **cells** ratio | their measured **throughput** ratio |
+|---|---:|---:|
+| Blake3 | **30.6×** | 58–67× |
+| Keccak-f | **210.6×** | 440–500× |
+
+**Two instruments, different quantities (committed cells vs prover throughput),
+different fields (BabyBear vs KoalaBear), agreeing on the ordering and within ~2×
+on magnitude.** Throughput running ~2× above the cell ratio is the expected sign —
+a wider table costs more than its cell count through per-row and per-column
+constants, which is the same effect `field-op-counts.md` Finding 3 measured on the
+width-4 quotient chunks. **I use the cell ratio because it is ours and exact; the
+throughput ratio says the cell ratio is, if anything, generous to the swap.**
+
 **The invocation ratio is 1:1 where it matters.** At a 256-bit digest a 2-to-1
 Merkle node is *one* Poseidon2-w16 permutation **or** *one* Blake3 compression, so
 the cell ratio **is** `R` for the recursion column — which is Merkle-path
@@ -204,6 +225,13 @@ be folded in here.* What is already settled from our own prior work:
 - **The lookup fork is closed, not deferred**: no 31-bit-prime Monolith exists
   anywhere. Plonky3's Monolith AIR rejects KoalaBear **by name in a source
   comment**, and BabyBear breaks the Bars bijection. (`hash-verdict.md` §4)
+- ⚑ **The AO-hash line is still live and still winning in prime fields.** Ashlar
+  (ethresear.ch, 2026-08-06) reports **191 measured R1CS** against Poseidon 243 /
+  Poseidon2 240, and 14,232 EVM gas against Poseidon's 18,229. ⚠ These are
+  large-prime, small-width (t=3-ish) numbers and are **not** comparable to the
+  BabyBear AIR cells in §1a — but the *direction* matters: people are still
+  finding room **below** Poseidon2 in a prime field, which is the opposite of the
+  "algebraic hashes are over" reading.
 
 ---
 
