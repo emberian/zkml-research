@@ -196,6 +196,92 @@ theorem programPrefixes_fresh_final_rate
                               htailRun
                           simpa [lastRateCoin] using hfinal
 
+/-- Prefix programming preserves freshness of any RO query which is not a
+prefix of the full message being programmed.  This is the frame lemma that
+allows a prefix-free public schedule to derive complete-message freshness
+without forbidding intentional proper-prefix sharing. -/
+theorem programPrefixes_preserves_ro_fresh_of_not_prefix
+    (ro : Oracle (List Rate) Rate)
+    (primitive : Oracle (Rate × Cap) (Rate × Cap))
+    (state : Rate × Cap) (seen : List Rate) :
+    ∀ {message rateCoins : List Rate} {capacityCoins : List Cap} {result}
+      {target : List Rate},
+      programPrefixes ro primitive state seen message rateCoins capacityCoins =
+          some result →
+      ro.lookup target = none →
+      ¬ (target <+: seen ++ message) →
+      result.ro.lookup target = none := by
+  intro message
+  induction message generalizing ro primitive state seen with
+  | nil =>
+      intro rateCoins capacityCoins result target hrun hfresh _
+      cases rateCoins <;> cases capacityCoins <;>
+        simp [programPrefixes] at hrun
+      subst result
+      exact hfresh
+  | cons block message ih =>
+      intro rateCoins capacityCoins result target hrun hfresh hnotPrefix
+      cases rateCoins with
+      | nil => simp [programPrefixes] at hrun
+      | cons rateCoin rateCoins =>
+          cases capacityCoins with
+          | nil => simp [programPrefixes] at hrun
+          | cons capacityCoin capacityCoins =>
+              let nextPrefix := seen ++ [block]
+              have hcurrentPrefix :
+                  nextPrefix <+: seen ++ (block :: message) := by
+                refine ⟨message, ?_⟩
+                simp [nextPrefix, List.append_assoc]
+              have htargetNe : target ≠ nextPrefix := by
+                intro equal
+                apply hnotPrefix
+                rw [equal]
+                exact hcurrentPrefix
+              have hnotTail : ¬ (target <+: nextPrefix ++ message) := by
+                intro prefix
+                apply hnotPrefix
+                simpa [nextPrefix, List.append_assoc] using prefix
+              simp only [programPrefixes] at hrun
+              cases hedge : primitive.lookup (state.1 + block, state.2) with
+              | some edgeValue =>
+                  rw [hedge] at hrun
+                  simp only at hrun
+                  by_cases hagree :
+                      edgeValue.1 =
+                        (ro.respond nextPrefix edgeValue.1).1
+                  · rw [if_pos hagree] at hrun
+                    have hfresh' :
+                        (ro.respond nextPrefix edgeValue.1).2.lookup target =
+                          none := by
+                      rw [Oracle.lookup_respond_ne ro htargetNe edgeValue.1]
+                      exact hfresh
+                    exact ih
+                      (ro := (ro.respond nextPrefix edgeValue.1).2)
+                      (primitive := primitive) (state := edgeValue)
+                      (seen := nextPrefix) hrun hfresh' hnotTail
+                  · rw [if_neg hagree] at hrun
+                    contradiction
+              | none =>
+                  rw [hedge] at hrun
+                  let roReply := ro.respond nextPrefix rateCoin
+                  let programmed : Rate × Cap := (roReply.1, capacityCoin)
+                  let primitiveReply :=
+                    primitive.respond (state.1 + block, state.2) programmed
+                  have htailRun :
+                      programPrefixes roReply.2 primitiveReply.2
+                        primitiveReply.1 nextPrefix message rateCoins
+                          capacityCoins = some result := by
+                    simpa [nextPrefix, roReply, programmed, primitiveReply]
+                      using hrun
+                  have hfresh' : roReply.2.lookup target = none := by
+                    dsimp [roReply]
+                    rw [Oracle.lookup_respond_ne ro htargetNe rateCoin]
+                    exact hfresh
+                  exact ih (ro := roReply.2)
+                    (primitive := primitiveReply.2)
+                    (state := primitiveReply.1) (seen := nextPrefix)
+                    htailRun hfresh' hnotTail
+
 /-- Public construction wrapper for the fresh-path output theorem. -/
 theorem programConstruction_fresh_final_rate
     (iv : Rate × Cap) (ro : Oracle (List Rate) Rate)
@@ -215,6 +301,24 @@ theorem programConstruction_fresh_final_rate
     hfresh (by simpa using hro) hrun
   refine ⟨result, ?_, hrate⟩
   simp [programConstruction, hnonempty, hrun]
+
+/-- Public construction wrapper for RO freshness framing. -/
+theorem programConstruction_preserves_ro_fresh_of_not_prefix
+    (iv : Rate × Cap) (ro : Oracle (List Rate) Rate)
+    (primitive : Oracle (Rate × Cap) (Rate × Cap))
+    (message rateCoins : List Rate) (capacityCoins : List Cap) {result}
+    {target : List Rate}
+    (hrun : programConstruction iv ro primitive message rateCoins
+      capacityCoins = some result)
+    (hfresh : ro.lookup target = none)
+    (hnotPrefix : ¬ (target <+: message)) :
+    result.ro.lookup target = none := by
+  unfold programConstruction at hrun
+  split at hrun
+  · contradiction
+  · simpa using
+      (programPrefixes_preserves_ro_fresh_of_not_prefix ro primitive iv []
+        hrun hfresh (by simpa using hnotPrefix))
 
 /-- The adaptive prefix-hybrid step exposes the same final rate coin under the
 fresh-path predicate. -/
@@ -296,7 +400,9 @@ theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
 
 #check @programPrefixes_some_of_primitivePathFresh
 #check @programPrefixes_fresh_final_rate
+#check @programPrefixes_preserves_ro_fresh_of_not_prefix
 #check @programConstruction_fresh_final_rate
+#check @programConstruction_preserves_ro_fresh_of_not_prefix
 #check @prefixHybridStep_constr_of_primitivePathFresh
 #check @workHybridStep_constr_of_primitivePathFresh
 
@@ -306,9 +412,15 @@ theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
 /-- info: 'Minidregg.Selvage.programPrefixes_fresh_final_rate' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms programPrefixes_fresh_final_rate
+/-- info: 'Minidregg.Selvage.programPrefixes_preserves_ro_fresh_of_not_prefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms programPrefixes_preserves_ro_fresh_of_not_prefix
 /-- info: 'Minidregg.Selvage.programConstruction_fresh_final_rate' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms programConstruction_fresh_final_rate
+/-- info: 'Minidregg.Selvage.programConstruction_preserves_ro_fresh_of_not_prefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms programConstruction_preserves_ro_fresh_of_not_prefix
 /-- info: 'Minidregg.Selvage.prefixHybridStep_constr_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms prefixHybridStep_constr_of_primitivePathFresh
