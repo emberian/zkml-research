@@ -187,6 +187,147 @@ theorem basefoldCommittedIor_exact_sound_of_terminalConsistency
 
 end SoundnessHandoff
 
+/-! ## Pricing terminal inconsistency by coherent sampled queries -/
+
+/-- If an adaptive transcript starts at `word` but its terminal differs from
+the literal derived terminal, some round must contain a nonliteral fold
+transition.  This is the deterministic telescoping fact that turns terminal
+inconsistency into a sampled-query target. -/
+theorem friAdaptive_terminal_ne_implies_transition_ne
+    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+    (T : FoldingTower F ι m) (st : FriAdaptiveTranscript S)
+    (word : ι 0 → F) (r : Fin m → F)
+    (hzero : st.wordAt r 0 (Nat.zero_le m) = word)
+    (hterminal : st.wordAt r m le_rfl ≠
+      T.word word (chalExt r) m le_rfl) :
+    ∃ j : Fin m,
+      st.wordAt r (j + 1) (Nat.succ_le_iff.mpr j.isLt) ≠
+        fold (T.data j j.isLt)
+          (st.wordAt r j (Nat.le_of_lt j.isLt)) (r j) := by
+  by_contra hno
+  push Not at hno
+  have hlevels : ∀ n (hn : n ≤ m),
+      st.wordAt r n hn = T.word word (chalExt r) n hn := by
+    intro n
+    induction n with
+    | zero =>
+        intro hn
+        simpa using hzero
+    | succ n ih =>
+        intro hn
+        rw [hno ⟨n, hn⟩, ih (Nat.le_of_succ_le hn),
+          T.word_succ, chalExt_coe]
+  exact hterminal (hlevels m le_rfl)
+
+section CoherentSoundness
+
+variable [Fintype F] [DecidableEq F]
+variable {ell : ℕ} {RootP OpP : ℕ → Type}
+variable (SP : ∀ n, BindingCommitment (RootP n) F
+  (PowerTwoFriLevels ell n) (OpP n))
+
+/-- ⭐ **Sampled committed BaseFold soundness, before CR/FS.**  For power-of-
+two coherent query paths, a false strict opening claim can be accepted only
+through the already-proved full-word algebraic event or by missing a genuinely
+inconsistent committed fold transition:
+
+`Pr[accept] ≤ m * 3 / |F| + (1 - tau)^qCount`.
+
+`htau` is the finite-domain quantization floor: every nonzero transition
+distance is at least `tau`.  Perfect position binding is still carried by
+`SP`; the raw equivocation branch in `HalfThresholdFriTranscript` is the
+separate deployed `[COMMIT-CR]` term. -/
+theorem basefoldCommittedIor_coherent_exact_sound
+    (T : FoldingTower F (PowerTwoFriLevels ell) m)
+    (st : FriAdaptiveTranscript SP) (hmell : m ≤ ell)
+    (z : Fin m → F) (H : F)
+    (word : PowerTwoFriLevels ell 0 → F)
+    (prover : (ℕ → F) → ℕ → Polynomial F)
+    (qCount : ℕ) {tau : ℝ} (htau1 : tau ≤ 1)
+    (htau : ∀ j : Fin m,
+      tau ≤ 1 / (Fintype.card (PowerTwoFriLevels ell (j + 1)) : ℝ))
+    (hword0 : st.word 0 (fun i => i.elim0) = word)
+    (hfalse : ¬ BaseFoldExactClaim T z H word)
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (χ : ℕ → F) (i : ℕ), i < m →
+      (prover χ i).degree < ((2 + 1 : ℕ) : WithBot ℕ)) :
+    uniformProb
+      ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
+      (fun x => BaseFoldCommittedIorAccepts SP T st z H prover qCount x.1
+        (powerTwoCoherentSchedule hmell x.2))
+      ≤ (m : ℝ) * (3 / Fintype.card F) + (1 - tau) ^ qCount := by
+  classical
+  let terminalEq : (Fin m → F) → Prop := fun r =>
+    st.wordAt r m le_rfl = T.word word (chalExt r) m le_rfl
+  let accepts : (Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1) → Prop :=
+    fun x => BaseFoldCommittedIorAccepts SP T st z H prover qCount x.1
+      (powerTwoCoherentSchedule hmell x.2)
+  have hsplit : uniformProb
+      ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1)) accepts
+      ≤ uniformProb
+          ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
+          (fun x => terminalEq x.1 ∧ accepts x) +
+        uniformProb
+          ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
+          (fun x => ¬ terminalEq x.1 ∧ accepts x) := by
+    refine le_trans (uniformProb_mono fun x hx => ?_)
+      (uniformProb_or_le _ _)
+    by_cases heq : terminalEq x.1
+    · exact Or.inl ⟨heq, hx⟩
+    · exact Or.inr ⟨heq, hx⟩
+  have halgebra : uniformProb
+      ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
+      (fun x => terminalEq x.1 ∧ accepts x)
+      ≤ (m : ℝ) * (3 / Fintype.card F) := by
+    let e := Equiv.prodComm (Fin m → F)
+      (Fin qCount → PowerTwoFriLevels ell 1)
+    calc
+      uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
+          (fun x => terminalEq x.1 ∧ accepts x) =
+          uniformProb ((Fin qCount → PowerTwoFriLevels ell 1) × (Fin m → F))
+            (fun x => terminalEq x.2 ∧ accepts (x.2, x.1)) := by
+              simpa [e] using uniformProb_equiv e
+                (fun x => terminalEq x.2 ∧ accepts (x.2, x.1))
+      _ ≤ (m : ℝ) * (3 / Fintype.card F) := by
+        apply uniformProb_prod_le
+        · positivity
+        · intro seed
+          refine le_trans (uniformProb_mono fun r hacc =>
+            BaseFoldCommittedIorAccepts.toFullWord SP T st z H word prover
+              qCount r (powerTwoCoherentSchedule hmell seed) hacc.1 hacc.2) ?_
+          have hne : ∀ n, n ≤ m → Nonempty (PowerTwoFriLevels ell n) :=
+            fun n hn => ⟨⟨0, by positivity⟩⟩
+          exact basefoldIor_exact_sound T z H word prover hne hfalse hpm hdeg
+  have hquery : uniformProb
+      ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
+      (fun x => ¬ terminalEq x.1 ∧ accepts x)
+      ≤ (1 - tau) ^ qCount := by
+    apply uniformProb_prod_le (pow_nonneg (sub_nonneg.mpr htau1) _)
+    intro r
+    by_cases heq : terminalEq r
+    · rw [uniformProb_false]
+      · exact pow_nonneg (sub_nonneg.mpr htau1) _
+      · intro seed hacc
+        exact hacc.1 heq
+    · have hzero : st.wordAt r 0 (Nat.zero_le m) = word := by
+        change st.word 0 (friPrefix r 0 (Nat.zero_le m)) = word
+        rw [show friPrefix r 0 (Nat.zero_le m) = (fun i => i.elim0) by
+          funext i
+          exact i.elim0]
+        exact hword0
+      obtain ⟨j, hj⟩ := friAdaptive_terminal_ne_implies_transition_ne
+        SP T st word r hzero heq
+      have hfar : tau ≤ relDist
+          (st.wordAt r (j + 1) (Nat.succ_le_iff.mpr j.isLt))
+          (fold (T.data j j.isLt)
+            (st.wordAt r j (Nat.le_of_lt j.isLt)) (r j)) :=
+        le_trans (htau j) (one_div_card_le_relDist hj)
+      refine le_trans (uniformProb_mono fun seed hacc => hacc.2.2.2.1.1) ?_
+      exact friAdaptive_coherent_query_miss SP T st hmell r qCount ⟨j, hfar⟩
+  exact le_trans hsplit (add_le_add halgebra hquery)
+
+end CoherentSoundness
+
 /-- ⭐ **End-to-end interactive completeness at sampled-commitment
 resolution.**  The honest adaptive roots, all sampled authentication paths,
 the BaseFold degree-two sumcheck, terminal code check, and braided MLE equation
