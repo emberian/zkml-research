@@ -331,12 +331,21 @@ Named precisely, with what each would take.
 3. **Accumulated exactness over many steps.** `Bfv.iterR_noise_le` gives `G^T·M` on
    the ring for the public-linear path, and `Bfv.Mul` covers **one** multiply with
    its ring lift still a named gap. The depth-budget recursion with the *output*
-   noise as the next *input* noise is deliberately not stated. Open, unchanged —
-   and note `Bfv/Mul.lean` and `Bfv/Smudging.lean` are **still in no default build
-   target** (the `Bfv` lean_lib has no globs), so their 43 keystones remain unpinned
-   by CI. `Bfv/CrossLimb.lean` is rooted; those two are not. **That is a live
-   gating-defaults-to-silence instance and it is not mine to land** — it wants a
-   deliberate pass that builds them and handles whatever the umbrella turns red.
+   noise as the next *input* noise is deliberately not stated. Open, unchanged.
+
+   ⚑ **A PREFLIGHT correction, verified at source, not relayed.**
+   `swarm/PREFLIGHT.md` warns that *"`Bfv/Mul.lean` and `Bfv/Smudging.lean` are in
+   NO default build target … 43 keystones are unpinned by CI"*. **That is stale.**
+   Both are rooted through `Market`, which IS a defaultTarget:
+   `Bfv.Mul` ← `Market/OraclePitQuadratic.lean:3` ← `Market.lean:48`, and
+   `Bfv.Smudging` ← `Market/DarkBazaarCollectiveOpening.lean:59` ← `Market.lean:45`.
+   Both files also carry their own `#assert_all_clean` blocks (`Mul.lean:402`,
+   `Smudging.lean:539`) — a per-keystone pin, which is *stronger* than the
+   namespace walk. **The only true residue** is that `#assert_namespace_axioms Bfv`
+   in `Bfv.lean` does not reach them (`Bfv.lean` does not import them), so the
+   namespace-wide sweep is incomplete while the per-file pins are not. I repeated
+   the stale claim in an earlier draft of this note before checking; the check took
+   two greps.
 4. **`ε_chk` instantiation.** The audit theorem's checker is abstract; tier 2/3
    soundness are parameters until it is instantiated. Nothing here instantiates it.
    ⚠ Note the interaction this lane *does* add: a checker for "the FHE engine

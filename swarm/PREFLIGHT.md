@@ -4,11 +4,22 @@
   breadstuffs-codex checkout, rev 1c2b90b, oleans warm). `lake env lean`
   writes NO olean — `lake build <Module>` before importing. minidregg
   importGraph symlink repaired; **breadstuffs/metatheory's is still dangling**.
-- ⚑ **`Bfv/Mul.lean` and `Bfv/Smudging.lean` are in NO default build target**
-  (the `Bfv` lean_lib has no globs, so only `Bfv.lean` + transitive imports
-  build). **43 keystones are unpinned by CI** and `#assert_namespace_axioms`
-  never walks them. Both build green standalone. This is the
-  gating-defaults-to-silence class, in our own tree, found 2026-08-13.
+- ⚑ **CORRECTED 2026-08-14 — the "`Bfv/Mul.lean` and `Bfv/Smudging.lean` are in
+  NO default build target" line was WRONG, and it was quoted by a later lane
+  before anyone checked.** Both ARE rooted, through `Market` (a defaultTarget):
+  `Bfv.Mul` ← `Market/OraclePitQuadratic.lean:3` ← `Market.lean:48`;
+  `Bfv.Smudging` ← `Market/DarkBazaarCollectiveOpening.lean:59` ← `Market.lean:45`.
+  Both also carry their own `#assert_all_clean` (`Mul.lean:402`,
+  `Smudging.lean:539`) — a **per-keystone** pin, stronger than a namespace walk.
+  **The true residual is narrow**: `#assert_namespace_axioms Bfv` in `Bfv.lean`
+  does not reach them (`Bfv.lean` does not import them), so the *namespace-wide*
+  sweep is incomplete while the per-file pins are not.
+  ⚑ **The class, worth more than the fact:** the original claim was derived from
+  "the `Bfv` lean_lib has no globs", which is TRUE — and then the wrong conclusion
+  was drawn, because a module can be rooted from a DIFFERENT library. **Check
+  reachability by grepping for importers across all targets, not by reading one
+  lakefile stanza.** (`grep -rn "import Bfv.Mul" --include="*.lean" .` — two
+  seconds.)
 - **Kernel landmines** (CyclotomicInertia lane): the CommRing/Field Semiring
   diamond DIVERGES at ZMod p for our primes — state helpers over [Field R].
   Never route `Splits` through X^q−X (kernel normalizes a 2^31+-degree poly).
