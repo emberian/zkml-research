@@ -13,11 +13,12 @@ their Boolean recurrences, every sampled FRI opening, the terminal code, and
 the braided terminal MLE equation.  `basefoldCommittedIor_complete` proves all
 of those checks together for every challenge tuple and every query schedule.
 
-This is perfect-binding interactive completeness.  It does not price the raw
-equivocation branch, random-oracle compilation, or query soundness a second
-time: `HalfThresholdFriTranscript` now retains equivocations, while
-`HalfThresholdFriQuery` and `HalfThresholdFriCoherent` own the sampled-query
-bounds.
+This file also composes arbitrary-word full-word IOR soundness with coherent
+power-of-two query paths, giving the exact pre-cryptographic bound
+`m * 3 / |F| + (1 - tau)^qCount`.  It does not erase the raw equivocation or
+random-oracle branches: `HalfThresholdFriTranscript` retains equivocations,
+while the concrete commitment reduction and BCS/Fiat--Shamir compilation
+remain separate deployment obligations.
 -/
 import Selvage.BaseFoldIor
 import Selvage.HalfThresholdFriCoherent
