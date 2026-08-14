@@ -30,6 +30,26 @@
   files). `git status` first; commit `--only` named paths; never `add -A`,
   never stash. `--only` is PATH-granular — a dirty shared file sweeps foreign
   hunks.
+- ⚑⚑ **THE AGENT HARNESS STOPS BACKGROUNDED BASH JOBS AT ~50 MINUTES — AND A
+  KILLED TEST REPORTS AS `1 failed`, NOT AS UNRUNNABLE.** Found 2026-08-14 by
+  measurement, not guess: three kills at **3017.8 / 3137.0 / 3106.0 s**, within
+  2% of each other, across **two different tests and two sessions** — a limit
+  firing reproducibly, not flakiness. It is **not** nextest's cap (3600 s,
+  never reached); the wrapper's trailing `echo EXIT=$?` **never wrote a line**,
+  so `cargo nextest` never returned at all, and the clean `Summary` /
+  `error: test run failed` are nextest's **SIGTERM handler reporting on the way
+  down.**
+  ⚑ **THE RULE: `1 failed` means (a) the harness killed it, (b) the runner
+  timed it out, or (c) the code is wrong — and ONLY the per-test label
+  (`SIGTERM` / `TIMEOUT` / a panic) separates them. Read the label before
+  reporting a failure.** ⚠ Past lane reports of long-test failures should be
+  re-read with this in mind.
+  **Escape**: relaunch detached (`start_new_session=True`; **macOS has no
+  `setsid`**). And ⚠ **do not reach for `nextest --profile full` out of habit**
+  — it applies an hour `slow-timeout`, while a test whose own `#[ignore]`
+  message documents `cargo test -- --ignored` has **no timeout at all**. That
+  substitution produced a *fourth* stopping condition with a *different label*
+  in the same investigation.
 - ⚑ **DISK: the boot volume hit 0 bytes free twice on 2026-08-13**, killing a
   build and costing another lane a measurement cell. Recovered to 136 GiB on
   its own (APFS purgeable). **Where it goes, measured**:

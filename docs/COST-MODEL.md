@@ -200,6 +200,23 @@ cannot reach this prover — `prove_vm_descriptor2_for_config` pins
 the WITNESS, not the constraint system.** The seam that works is one over: the
 `Dft` type parameter of `TwoAdicFriPcs`.
 
+### ⚠ Even the "safer" number inherits the contention
+
+A lane applying the counts correction to GPU work found the subtlety: its
+**traffic-only** figures — the ones we agreed were the right thing to quote —
+are computed **by subtracting a sync floor that was itself measured on the
+same loaded box.** They inherit the contention too, *just less visibly.*
+
+It also measured the variance rather than assuming it: **the same cell varies
+up to 2.1× across three runs** (50 MB fused: 33.6 / 69.2 / 39.0 ms). So it
+narrowed its own claim to **shape and sign only** — fusion wins 36/36 cells,
+the win grows with size, the K-sweep asymmetry is monotone in every run — and
+stated explicitly that this is **not a calibrated speedup** and that a hardware
+argument wants a quiet box.
+
+**Rule: a derived quantity is only as clean as its dirtiest input.** Subtracting
+a contaminated baseline does not decontaminate the result.
+
 ### The methodology that follows
 
 - **Operation counts are the primary instrument.** They are exact,
