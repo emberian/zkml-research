@@ -194,10 +194,11 @@ grow to cover a real hit. The allowlist beyond it is empty by design.
   still build on the retracted admission module and are vacuous for the same reason. Deleting
   the four together is the follow-up; they were kept only because the retracted modules are
   still imported.
-- ⚠ **The full tree is RED at HEAD from a concurrent lane**, unrelated to this work:
-  `Assurance.SpartanR1CS` and `Assurance.ZkmlLowRankUpdate` both declare
-  `Minidregg.Assurance.matVec`, so `Assurance.lean:8` fails to import. Every module touched
-  here builds; `lake build Minidregg` does not.
+- ~~The full tree is RED from a concurrent lane's `matVec` clash~~ — **resolved by that lane
+  at `b3fbde8`.** Final verification at `f5b604f`: `lake build Minidregg` EXIT=0,
+  `check-char2-vacuity` PASS (29 263 scanned, 0 vacuous), `check-carrier-census` self-test
+  PASS, `check-import-boundary` OK both libs, `check-proof-hygiene` PASS (472 files, 216
+  guarded axiom footprints). No `sorry` anywhere in the new material.
 - The census registry (`charTwoDead`) holds two carriers. It should grow whenever a new char-2
   wall is *proved* — never on a believed emptiness, since a registered name with no evidence
   fails the self-test by design.
