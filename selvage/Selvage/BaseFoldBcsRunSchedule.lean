@@ -689,9 +689,13 @@ theorem paddedDeferredWorkStep_constr_semantics {m queryCount : Nat}
           state.core.ans = .constr x xs := by
     rw [paddedConstructionDistinguisher_move_at_length statement receipt
       verdict state.core.ans (by omega)]
-    convert hquery using 1
-    apply Fin.ext
-    exact hans
+    calc
+      paddedConstructionQuerySchedule statement receipt
+          ⟨state.core.ans.length, by omega⟩ =
+          paddedConstructionQuerySchedule statement receipt round := by
+        apply congrArg (paddedConstructionQuerySchedule statement receipt)
+        exact Fin.ext hans
+      _ = .constr x xs := hquery
   have hsize : xs.length + 1 =
       paddedRoundPrimitiveWork statement receipt round := by
     simp [paddedRoundPrimitiveWork, hquery]
