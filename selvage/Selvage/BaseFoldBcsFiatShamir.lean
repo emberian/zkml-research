@@ -417,13 +417,15 @@ def Accepts {ell m queryCount : Nat}
   (∀ i, i < m →
     (submittedProver receipt (chalOf receipt.challenge) i).eval 0 +
         (submittedProver receipt (chalOf receipt.challenge) i).eval 1 =
-      scChain statement.claimedValue (submittedProver receipt)
+      scChain statement.claimedValue
+        (submittedProver receipt (chalOf receipt.challenge))
         (chalOf receipt.challenge) i) ∧
   SubmittedOpeningsAccept T hmell receipt ∧
   st.wordAt receipt.challenge m le_rfl ∈
     reedSolomonCode (T.dom m) (basefoldDegSched m m) ∧
   ∀ k : PowerTwoFriLevels ell m,
-    scChain statement.claimedValue (submittedProver receipt)
+    scChain statement.claimedValue
+        (submittedProver receipt (chalOf receipt.challenge))
         (chalOf receipt.challenge) m =
       st.wordAt receipt.challenge m le_rfl k *
         eqMle statement.evaluationPoint receipt.challenge
