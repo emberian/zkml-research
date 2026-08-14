@@ -133,8 +133,8 @@ theorem padded_challenge_query_not_prefix {m queryCount : Nat}
     (j : Fin m) (a : Fin queryCount) :
     ¬ (paddedChallengeMessage statement receipt j <+:
       paddedQueryMessage statement receipt a) := by
-  intro prefix
-  have first := prefix.getElem (i := 0) (by
+  intro hprefix
+  have first := hprefix.getElem (i := 0) (by
     simp [paddedChallengeMessage, padMessage, challengeMessage])
   have domains : challengeDomain = queryDomain := by
     simpa [paddedChallengeMessage, paddedQueryMessage, padMessage,
@@ -146,8 +146,8 @@ theorem padded_query_challenge_not_prefix {m queryCount : Nat}
     (j : Fin m) (a : Fin queryCount) :
     ¬ (paddedQueryMessage statement receipt a <+:
       paddedChallengeMessage statement receipt j) := by
-  intro prefix
-  have first := prefix.getElem (i := 0) (by
+  intro hprefix
+  have first := hprefix.getElem (i := 0) (by
     simp [paddedQueryMessage, padMessage, queryMessage])
   have domains : queryDomain = challengeDomain := by
     simpa [paddedChallengeMessage, paddedQueryMessage, padMessage,
@@ -193,10 +193,10 @@ theorem padded_query_not_prefix_of_ne {m queryCount : Nat}
     (left right : Fin queryCount) (hne : left ≠ right) :
     ¬ (paddedQueryMessage statement receipt left <+:
       paddedQueryMessage statement receipt right) := by
-  intro prefix
+  intro hprefix
   apply hne
   apply paddedQueryMessage_injective hcount statement receipt
-  exact prefix.eq_of_length
+  exact hprefix.eq_of_length
     (paddedQueryMessage_length_eq statement receipt left right)
 
 noncomputable def paddedDerivedChallengeRate {m queryCount : Nat}
