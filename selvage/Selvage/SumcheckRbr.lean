@@ -130,7 +130,6 @@ def SumcheckRbrStateProp (d : ℕ) (S : F)
 /-- The degree-`d`, `k`-round sumcheck reduction for fixed true total `S` and
 fixed adaptive honest family.  The implicit words and witness are unit: this
 component preserves the scalar claim. -/
-open Classical in
 @[reducible] noncomputable def sumcheckReduction (k d : ℕ) (hk : 0 < k) (S : F)
     (honest : (ℕ → F) → ℕ → Polynomial F) : Reduction where
   Idx := Unit
@@ -155,11 +154,13 @@ open Classical in
   δstar := 1
   δstar_pos := by norm_num
   δstar_le_one := le_rfl
-  verify := fun _ H _ πs ρs =>
-    let rs := List.ofFn fun i => (πs i, ρs i)
-    if scRunValid d H rs then
-      some ((scRunClaim H rs, scTruthAfter S honest rs), fun _ => ())
-    else none
+  verify := by
+    classical
+    exact fun _ H _ πs ρs =>
+      let rs := List.ofFn fun i => (πs i, ρs i)
+      if scRunValid d H rs then
+        some ((scRunClaim H rs, scTruthAfter S honest rs), fun _ => ())
+      else none
 
 open Classical in
 /-- The Def-4.1 knowledge state for sumcheck. -/
@@ -246,49 +247,50 @@ noncomputable def sumcheckRbrKnowledgeSound (k d : ℕ) (hk : 0 < k) (S : F)
       rw [hlen]
       exact i.isLt
     by_cases hgdeg : g.degree < ((d + 1 : ℕ) : WithBot ℕ)
-    · skip
-    · refine le_trans (le_of_eq (uniformProb_false fun r hev => ?_)) (by positivity)
+    · by_cases hgcheck : g.eval 0 + g.eval 1 = scRunClaim st.x rs
+      · by_cases hfalse : scRunClaim st.x rs ≠
+            (scHonestAt honest rs).eval 0 + (scHonestAt honest rs).eval 1
+        · refine le_trans (uniformProb_mono ?_)
+            (sumcheckRound_prob (hdeg rs hi) hgdeg hgcheck hfalse)
+          intro r hev
+          obtain ⟨w, hdead, halive⟩ := hev
+          rw [sumcheckKState_state_eq, decide_eq_true_eq] at halive
+          have halive' : SumcheckRbrStateProp d S honest st.x
+              (rs ++ [(g, r)]) none := halive
+          have hagree : g.eval r = (scHonestAt honest rs).eval r := by
+            have h := halive'.2.1
+            rw [scRunClaim_append_single,
+              scTruthAfter_append_single hpm] at h
+            exact h
+          exact hagree
+        · refine le_trans (le_of_eq (uniformProb_false fun r hev => ?_))
+            (by positivity)
+          obtain ⟨w, hdead, halive⟩ := hev
+          rw [sumcheckKState_state_eq, decide_eq_false_iff_not] at hdead
+          rw [sumcheckKState_state_eq, decide_eq_true_eq] at halive
+          have halive' : SumcheckRbrStateProp d S honest st.x
+              (rs ++ [(g, r)]) none := halive
+          have hv := (scRunValid_append_single d st.x rs g r).mp halive'.1
+          have heq : scRunClaim st.x rs = scTruthAfter S honest rs :=
+            (not_ne_iff.mp hfalse).trans (hcheck rs hi)
+          apply hdead
+          exact ⟨hv.1, heq, hgdeg, hgcheck⟩
+      · refine le_trans (le_of_eq (uniformProb_false fun r hev => ?_))
+          (by positivity)
+        obtain ⟨w, hdead, halive⟩ := hev
+        rw [sumcheckKState_state_eq, decide_eq_true_eq] at halive
+        have halive' : SumcheckRbrStateProp d S honest st.x
+            (rs ++ [(g, r)]) none := halive
+        have hv := (scRunValid_append_single d st.x rs g r).mp halive'.1
+        exact hgcheck hv.2.2
+    · refine le_trans (le_of_eq (uniformProb_false fun r hev => ?_))
+        (by positivity)
       obtain ⟨w, hdead, halive⟩ := hev
       rw [sumcheckKState_state_eq, decide_eq_true_eq] at halive
       have halive' : SumcheckRbrStateProp d S honest st.x
           (rs ++ [(g, r)]) none := halive
       have hv := (scRunValid_append_single d st.x rs g r).mp halive'.1
       exact hgdeg hv.2.1
-    by_cases hgcheck : g.eval 0 + g.eval 1 = scRunClaim st.x rs
-    · skip
-    · refine le_trans (le_of_eq (uniformProb_false fun r hev => ?_)) (by positivity)
-      obtain ⟨w, hdead, halive⟩ := hev
-      rw [sumcheckKState_state_eq, decide_eq_true_eq] at halive
-      have halive' : SumcheckRbrStateProp d S honest st.x
-          (rs ++ [(g, r)]) none := halive
-      have hv := (scRunValid_append_single d st.x rs g r).mp halive'.1
-      exact hgcheck hv.2.2
-    by_cases hfalse : scRunClaim st.x rs ≠
-        (scHonestAt honest rs).eval 0 + (scHonestAt honest rs).eval 1
-    · refine le_trans (uniformProb_mono ?_)
-        (sumcheckRound_prob (hdeg rs hi) hgdeg hgcheck hfalse)
-      intro r hev
-      obtain ⟨w, hdead, halive⟩ := hev
-      rw [sumcheckKState_state_eq, decide_eq_true_eq] at halive
-      have halive' : SumcheckRbrStateProp d S honest st.x
-          (rs ++ [(g, r)]) none := halive
-      have hagree : g.eval r = (scHonestAt honest rs).eval r := by
-        have h := halive'.2.1
-        rw [scRunClaim_append_single,
-          scTruthAfter_append_single hpm] at h
-        exact h
-      exact hagree
-    · refine le_trans (le_of_eq (uniformProb_false fun r hev => ?_)) (by positivity)
-      obtain ⟨w, hdead, halive⟩ := hev
-      rw [sumcheckKState_state_eq, decide_eq_false_iff_not] at hdead
-      rw [sumcheckKState_state_eq, decide_eq_true_eq] at halive
-      have halive' : SumcheckRbrStateProp d S honest st.x
-          (rs ++ [(g, r)]) none := halive
-      have hv := (scRunValid_append_single d st.x rs g r).mp halive'.1
-      have heq : scRunClaim st.x rs = scTruthAfter S honest rs :=
-        (not_ne_iff.mp hfalse).trans (hcheck rs hi)
-      apply hdead
-      exact ⟨hv.1, heq, hgdeg, hgcheck⟩
 
 /-- The instance's error field computes to the advertised one-round price. -/
 @[simp] theorem sumcheckRbr_err (k d : ℕ) (hk : 0 < k) (S : F)
