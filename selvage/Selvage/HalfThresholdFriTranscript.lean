@@ -237,6 +237,7 @@ def FriRoundQueriesEquivocate
     (∀ b, OpenedFriQuery Sbig Ssmall D rt rt' alpha (q b) (opening b)) ∧
     FriQueryEquivocation Sbig Ssmall D rt rt' w w' (q a) (opening a)
 
+omit [Fintype κ] [Nonempty κ] in
 /-- **Raw sampled-batch split.**  An accepted batch against roots produced
 from fixed words either pins every sampled fold equation or retains a concrete
 equivocation witness at one named query.  This theorem uses only the opening
@@ -256,7 +257,7 @@ theorem friRoundQueries_pin_or_equivocation
   by_cases hpins : ∀ a, w' (q a) = fold D w alpha (q a)
   · exact Or.inl hpins
   · right
-    push_neg at hpins
+    push Not at hpins
     obtain ⟨a, ha⟩ := hpins
     refine ⟨opening, a, hopen, ?_⟩
     rcases openedFriQuery_pins_or_equivocation Sbig Ssmall D hrt hrt'
@@ -271,7 +272,8 @@ theorem not_friRoundQueriesEquivocate
     (D : FoldingData F dom domSq) (rt : RootBig) (rt' : RootSmall)
     (w : ι → F) (w' : κ → F) (alpha : F)
     {qCount : ℕ} (q : Fin qCount → κ) :
-    ¬ FriRoundQueriesEquivocate Sbig Ssmall D rt rt' w w' alpha q := by
+    ¬ FriRoundQueriesEquivocate Sbig.toOpeningScheme Ssmall.toOpeningScheme
+      D rt rt' w w' alpha q := by
   rintro ⟨opening, a, hopen, hequiv⟩
   exact not_friQueryEquivocation Sbig Ssmall D rt rt' w w' (q a)
     (opening a) hequiv
@@ -292,19 +294,22 @@ theorem friRound_query_miss_count
     (hrt : rt = Sbig.commit w) (hrt' : rt' = Ssmall.commit w')
     (alpha : F) (qCount : ℕ) {tau : ℝ}
     (hfar : tau ≤ relDist w' (fold D w alpha)) :
-    ((friRoundQueryAcceptSet Sbig Ssmall D rt rt' alpha qCount).card : ℝ)
+    ((friRoundQueryAcceptSet Sbig.toOpeningScheme Ssmall.toOpeningScheme
+      D rt rt' alpha qCount).card : ℝ)
       ≤ (1 - tau) ^ qCount * (Fintype.card κ : ℝ) ^ qCount := by
   classical
   set agree : Finset (Fin qCount → κ) := Finset.univ.filter fun q =>
     ∀ a, w' (q a) = fold D w alpha (q a) with hagree
-  have hsub : friRoundQueryAcceptSet Sbig Ssmall D rt rt' alpha qCount ⊆ agree := by
+  have hsub : friRoundQueryAcceptSet Sbig.toOpeningScheme Ssmall.toOpeningScheme
+      D rt rt' alpha qCount ⊆ agree := by
     intro q hq
     obtain ⟨opening, hopen⟩ := (Finset.mem_filter.mp hq).2
     rw [hagree, Finset.mem_filter]
     refine ⟨Finset.mem_univ q, fun a => ?_⟩
     exact openedFriQuery_pins Sbig Ssmall D hrt hrt' (hopen a)
   have hcard :
-      ((friRoundQueryAcceptSet Sbig Ssmall D rt rt' alpha qCount).card : ℝ)
+      ((friRoundQueryAcceptSet Sbig.toOpeningScheme Ssmall.toOpeningScheme
+        D rt rt' alpha qCount).card : ℝ)
         ≤ (agree.card : ℝ) := by
     exact_mod_cast Finset.card_le_card hsub
   refine le_trans hcard ?_
@@ -320,7 +325,8 @@ theorem friRound_query_miss_pr
     (hrt : rt = Sbig.commit w) (hrt' : rt' = Ssmall.commit w')
     (alpha : F) (qCount : ℕ) {tau : ℝ}
     (hfar : tau ≤ relDist w' (fold D w alpha)) :
-    ((friRoundQueryAcceptSet Sbig Ssmall D rt rt' alpha qCount).card : ℝ)
+    ((friRoundQueryAcceptSet Sbig.toOpeningScheme Ssmall.toOpeningScheme
+      D rt rt' alpha qCount).card : ℝ)
         / (Fintype.card κ : ℝ) ^ qCount
       ≤ (1 - tau) ^ qCount := by
   have hden : (0 : ℝ) < (Fintype.card κ : ℝ) ^ qCount := by positivity
@@ -339,7 +345,8 @@ theorem friRound_query_miss_halfThreshold
     (hrt : rt = Sbig.commit w) (hrt' : rt' = Ssmall.commit w')
     (alpha : F) (qCount : ℕ) {delta : ℝ}
     (hfar : delta / 2 ≤ relDist w' (fold D w alpha)) :
-    ((friRoundQueryAcceptSet Sbig Ssmall D rt rt' alpha qCount).card : ℝ)
+    ((friRoundQueryAcceptSet Sbig.toOpeningScheme Ssmall.toOpeningScheme
+      D rt rt' alpha qCount).card : ℝ)
         / (Fintype.card κ : ℝ) ^ qCount
       ≤ (1 - delta / 2) ^ qCount :=
   friRound_query_miss_pr Sbig Ssmall D hrt hrt' alpha qCount hfar
