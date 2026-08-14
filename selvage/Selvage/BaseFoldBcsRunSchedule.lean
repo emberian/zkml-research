@@ -645,7 +645,11 @@ theorem paddedCoins_drop_prefix {m queryCount : Nat}
           (paddedWorkPrefix statement receipt round + 1) := by
   have hlength : paddedWorkPrefix statement receipt round <
       (List.ofFn coins).length := by
-    simpa using (paddedSegmentHead statement receipt round).isLt
+    have hhead := (paddedSegmentHead statement receipt round).isLt
+    change paddedWorkPrefix statement receipt round <
+      paddedTranscriptPrimitiveWork statement receipt at hhead
+    rw [List.length_ofFn]
+    exact hhead
   rw [List.drop_eq_getElem_cons hlength, List.getElem_ofFn]
   rfl
 
@@ -685,11 +689,22 @@ theorem paddedDeferredWorkStep_constr_semantics {m queryCount : Nat}
           state.core.ans = .constr x xs := by
     rw [paddedConstructionDistinguisher_move_at_length statement receipt
       verdict state.core.ans (by omega)]
-    exact hquery
+    convert hquery using 1
+    apply Fin.ext
+    exact hans
   have hsize : xs.length + 1 =
       paddedRoundPrimitiveWork statement receipt round := by
     simp [paddedRoundPrimitiveWork, hquery]
-  have hprefixStep := paddedWorkPrefix_succ statement receipt round round.isLt
+  have hsize' : xs.length + 1 =
+      paddedRoundPrimitiveWork statement receipt
+        ⟨round, round.isLt⟩ := by
+    convert hsize using 1
+  have hprefixStep :
+      paddedWorkPrefix statement receipt (round + 1) =
+        paddedWorkPrefix statement receipt round +
+          paddedRoundPrimitiveWork statement receipt
+            ⟨round, round.isLt⟩ :=
+    paddedWorkPrefix_succ statement receipt round round.isLt
   have hprefixLe :=
     paddedWorkPrefix_le_final statement receipt (round + 1)
   let tail := (List.ofFn coins).drop
@@ -722,7 +737,7 @@ theorem paddedDeferredWorkStep_constr_semantics {m queryCount : Nat}
     (paddedConstructionDistinguisher statement receipt verdict)
     (0, 0) state.core round x xs
     (coins (paddedSegmentHead statement receipt round)) hmove hfresh']
-  rw [← hmessage, hremaining, List.drop_drop, hwork, hsize, ← hprefixStep]
+  rw [← hmessage, hremaining, List.drop_drop, hwork, hsize', ← hprefixStep]
 
 /-- Last coordinate of the same nonempty work segment.  In the eager prefix
 hybrid, this is the fresh rate coin assigned to the full padded message. -/
