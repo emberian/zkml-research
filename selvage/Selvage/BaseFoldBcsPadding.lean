@@ -236,8 +236,16 @@ theorem paddedChallengeCommon_challengeFrame_prefix {m queryCount : Nat}
   have hfront :=
     (List.prefix_append_right_inj
       (challengeDomain :: statementBlocks statement)).2 hflatten
-  have hfull := hfront.prefix_append_of_prefix
-    (roundFrame later (receipt.round later) ++ [paddingBlock])
+  have hfull :
+      challengeDomain ::
+          statementBlocks statement ++
+            ((completedRoundFrames receipt).take ((earlier : Nat) + 1)).flatten
+        <+:
+      (challengeDomain ::
+          statementBlocks statement ++
+            ((completedRoundFrames receipt).take later).flatten) ++
+        (roundFrame later (receipt.round later) ++ [paddingBlock]) :=
+    List.prefix_append_of_prefix hfront
   have hindex : (earlier : Nat) < (completedRoundFrames receipt).length := by
     simp [completedRoundFrames, earlier.isLt]
   have htakeOne :
@@ -270,9 +278,17 @@ theorem padded_challenge_not_prefix_of_ne {m queryCount : Nat}
   intro hprefix
   rcases lt_or_gt_of_ne (Fin.val_ne_of_ne hne) with hlt | hgt
   · let common := paddedChallengeCommon statement receipt left
-    have hearlier := paddedChallengeMessage_eq_common statement receipt left
-    have hlater := paddedChallengeCommon_challengeFrame_prefix statement receipt
-      left right hlt
+    have hearlier :
+        paddedChallengeMessage statement receipt left =
+          common ++ [paddingBlock] := by
+      simpa [common] using
+        paddedChallengeMessage_eq_common statement receipt left
+    have hlater :
+        common ++ challengeFrame left (receipt.challenge left) <+:
+          paddedChallengeMessage statement receipt right := by
+      simpa [common] using
+        paddedChallengeCommon_challengeFrame_prefix statement receipt
+          left right hlt
     have hleftIndex : common.length <
         (paddedChallengeMessage statement receipt left).length := by
       rw [hearlier]
@@ -282,27 +298,44 @@ theorem padded_challenge_not_prefix_of_ne {m queryCount : Nat}
       simp [challengeFrame]
     have hpublic := hprefix.getElem hleftIndex
     have hcausal := hlater.getElem hlaterIndex
+    have hrightIndex : common.length <
+        (paddedChallengeMessage statement receipt right).length :=
+      Nat.lt_of_lt_of_le hleftIndex hprefix.length_le
+    have hpublicOpt :
+        (paddedChallengeMessage statement receipt left)[common.length]? =
+          (paddedChallengeMessage statement receipt right)[common.length]? := by
+      rw [List.getElem?_eq_getElem hleftIndex,
+        List.getElem?_eq_getElem hrightIndex]
+      exact congrArg some hpublic
+    have hcausalOpt :
+        (common ++ challengeFrame left
+            (receipt.challenge left))[common.length]? =
+          (paddedChallengeMessage statement receipt right)[common.length]? := by
+      rw [List.getElem?_eq_getElem hlaterIndex,
+        List.getElem?_eq_getElem hrightIndex]
+      exact congrArg some hcausal
     have hpadding :
-        (paddedChallengeMessage statement receipt left)[common.length] =
-          paddingBlock := by
-      rw [hearlier]
-      simp
+        (paddedChallengeMessage statement receipt left)[common.length]? =
+          some paddingBlock := by
+      have equal := congrArg (fun values => values[common.length]?) hearlier
+      simpa using equal
     have hresult :
-        (common ++ challengeFrame left (receipt.challenge left))[common.length]
-          = challengeResultTag := by
+        (common ++ challengeFrame left
+            (receipt.challenge left))[common.length]? =
+          some challengeResultTag := by
       simp [challengeFrame]
-    have impossible : paddingBlock = challengeResultTag := by
+    have impossible : some paddingBlock = some challengeResultTag := by
       calc
-        paddingBlock =
-            (paddedChallengeMessage statement receipt left)[common.length] :=
+        some paddingBlock =
+            (paddedChallengeMessage statement receipt left)[common.length]? :=
           hpadding.symm
-        _ = (paddedChallengeMessage statement receipt right)[common.length] :=
-          hpublic
-        _ = (common ++
-            challengeFrame left (receipt.challenge left))[common.length] :=
-          hcausal.symm
-        _ = challengeResultTag := hresult
-    exact (by decide : paddingBlock ≠ challengeResultTag) impossible
+        _ = (paddedChallengeMessage statement receipt right)[common.length]? :=
+          hpublicOpt
+        _ = (common ++ challengeFrame left
+            (receipt.challenge left))[common.length]? := hcausalOpt.symm
+        _ = some challengeResultTag := hresult
+    exact (by decide : paddingBlock ≠ challengeResultTag)
+      (Option.some.inj impossible)
   · have hstrict := paddedChallengeMessage_length_strict statement receipt
       right left hgt
     have hle := hprefix.length_le
