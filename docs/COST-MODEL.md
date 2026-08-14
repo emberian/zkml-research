@@ -142,6 +142,64 @@ denominator. **It is mine, and here it is:**
 measurement.** Every share in this file now names its phase set, and the two
 above are the first to do so.
 
+### ✅ RESOLVED (2026-08-14) — hash-bound CONFIRMED on the right instrument, and my retraction's premise was INVERTED
+
+`circuit/tests/ir2_field_op_counts.rs` (`9832f5491`). **The verdict is a
+conditional, as asked**: hash-bound iff **Y > X**, where `X = (M + 0.803·A)/P`
+is **exact** and `Y = t_perm/t_mul` is the only measured constant.
+
+| b | X (exact) | margin at Y=890 |
+|---:|---:|---:|
+| 3 | 177.7 | **5.01×** |
+| 6 | 127.7 | **6.97×** |
+| 7 | 124.0 | **7.18×** |
+
+**X ≤ 178 everywhere; measured Y = 890** (16 MB working set) / 898 / 1161
+(cache). **Hash-bound at every feasible blowup by 5.0–7.2×, no crossover.**
+Y moves only **1.3× across a 512× working-set change**, so the cache-vs-DRAM
+hazard is *bounded*. And Y is not a free parameter: a Poseidon2-16 permutation
+is **~564 multiplies** of arithmetic, so Y≈898 in time is the right shape —
+**Y is pinned by what the permutation computes.** Every approximation in X
+over-states arithmetic.
+
+⚑ **AND MY RETRACTION'S PREMISE IS INVERTED AT THIS GEOMETRY.** I reasoned
+that hash is memory-bound and arithmetic cache-resident, so the *hash* side
+would be the corrupted one. Measured: **the permutation count explains 80% of
+the hash phase's time** (84% of the open phase's), while **the field-op count
+explains 25% of LDE-commit's and 0.6% of quotient-eval's.** **The hash side
+behaves like its count; the LDE does not.** The retraction was right that the
+clock was unreliable and **wrong about which side it was unreliable for.**
+
+⚠ **A trap the lane avoided and named**: on this box the SIMD width is **4**
+(NEON), not 8 or 16 — so **a scalar-equivalent count must not be multiplied by
+a scalar-latency rate.** Doing so inflates arithmetic by the SIMD factor and
+would **manufacture** a hash-bound verdict. Both sides were measured as
+packed-path lane rates instead.
+
+### Three findings the counts produced that no clock could
+
+1. ⚑ **`get_evaluations_on_domain`'s slow path is NEVER TAKEN** — zero
+   `coset_idft_batch`, zero `coset_dft_batch`, at every blowup. **This refutes
+   `phase-profile.md`'s diagnosis of "LDE quotient-eval"**: that phase is the
+   twelve width-4 quotient-*chunk* commits.
+2. ⚑ **That phase carries 3.5% of the LDE's arithmetic and 63% of its measured
+   time.** Per call the two LDE phases cost 1.285 ms and 1.077 ms while their
+   per-call *work* differs by **27×**. **The cost is per-CALL and
+   per-narrow-matrix — so the fix is a LAYOUT change** (batch twelve width-4
+   commits into three of width 8/8/32), and **an arithmetic optimization aimed
+   there buys nothing.**
+3. **The counter validates against theory to the unit**: counted ADDs equal
+   the textbook `(h/2)w·log h` butterfly count exactly at every size, while
+   MULs are **78–85%** of it (twiddle-free butterflies skip the multiply) — so
+   **a hand derivation over-charges multiplies by ~20%.**
+
+**And the approach that failed, with the reason**: a counting-field newtype
+cannot reach this prover — `prove_vm_descriptor2_for_config` pins
+`Domain<SC>: PolynomialSpace<Val = P3BabyBear>` and its trace is monomorphic.
+⚑ **The AIR *is* field-generic (`AB::F: PrimeField32`) — the obstruction is
+the WITNESS, not the constraint system.** The seam that works is one over: the
+`Dft` type parameter of `TwoAdicFriPcs`.
+
 ### The methodology that follows
 
 - **Operation counts are the primary instrument.** They are exact,
