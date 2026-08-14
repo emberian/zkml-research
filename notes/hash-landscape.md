@@ -554,16 +554,100 @@ migration, not a knob.
   granted-teams list unpublished. An unexplained pause in a cryptanalysis bounty
   is either administrative or interesting and we should not assume which.
 
+### ⚑ The AO graveyard — the context that decides whether a SIDEWAYS move is sane
+
+Bold = **broken at its own claimed security level**, full-round.
+
+| design | best published attack | status 2026-08 |
+|---|---|---|
+| **Poseidon / Poseidon2** | 2026/306: 2^106 speed-up, **no full-round break** | **unbroken**; margin eroded; Initiative moved to Poseidon1+MDS |
+| **Griffin** | **FreeLunch 2024/347: 2^64 full-round at t≥12**; 2025/259: 2^53 | 🔴 **BROKEN**, ~75-bit shortfall |
+| **Anemoi + Jive** | **2026/1281: ℓ=1 α=3 → 2^70 vs a 128-bit claim** | 🔴 **BROKEN** |
+| **Arion** | **2025/259: 2^53–2^57, "almost all parameter variants"** | 🔴 **BROKEN** |
+| **Rescue / Rescue-Prime** | **2026/1281: full-round α=3 at 2^112; α=5 exactly 2^128** | 🔴 **BROKEN at α=3, zero margin at α=5** |
+| **Skyscraper v1** | **2025/102: truncated differential on the FULL 10 rounds in 2^8.19, implemented** | 🔴 **BROKEN ~1 month after publication** |
+| Skyscraper v2 | none found | unbroken, **19 months old** |
+| **Vision / Vision Mark-32** | **none found — and nobody has looked** | ⚠ **untested, not "safe"** |
+| Monolith | practical collision 2 rds; 5-round distinguisher 2^11.3 | unbroken, 1–3 rounds real margin |
+| Tip5 | **practical SFS collision on 3 rounds — the designers' own bar** | unbroken, ~1 round of real margin |
+| **Jarvis · GMiMC · Grendel · Starkad · Ciminion(ltd) · Hydra** | full-round breaks / withdrawn | 🔴 **DEAD** |
+
+> ### ⚑ **Poseidon2 is the most-attacked and best-surviving AO design, and the field around it is a graveyard.** >$1.5M of bounty-directed adversarial attention over 7 years, no full-round break. **FreeLunch — the technique that killed Griffin, Anemoi and Arion — mentions Poseidon ZERO times** (`pdftotext | grep -c -i poseidon` on 2024/347 → 0).
+
+⚑ **Therefore a SIDEWAYS move inside the AO family is unsupported by any reading of
+the record.** Monolith, Skyscraper, Tip5 and the Marvellous line all have strictly
+less analysis, and three of four have a documented margin erosion in the last year.
+**The only two destinations the security record supports are Poseidon1-on-MDS —
+what the Initiative itself did — or out of the AO family entirely.**
+
+⚑ **And the recurring wound is the LINEAR LAYER, three times over**: Starkad's weak
+Cauchy matrices (2020/188), HADES's bad-MDS invariant subspaces (2020/179), and
+Poseidon2's non-MDS internal matrix (2026/306). **Every one traded diffusion for
+circuit cost.** That is the pattern to watch in any AO design we evaluate — and it
+is the pattern our own deployed shape sits in.
+
+### 🔴 And the uncomfortable one: BLAKE3 has the THINNEST record here
+
+| | SHA-256 | Keccak / SHA-3 | **BLAKE3** |
+|---|---|---|---|
+| standardized | **FIPS 180-2, 2002** | **FIPS 202, 2015** | **NO — expired individual IETF draft** |
+| rounds | 64 | 24 | **7** (BLAKE=14, BLAKE2s=10) |
+| best collision | 37/64 (2^119.1, EUROCRYPT 2026) | 6/24 | **none published** |
+| best distinguisher | 45/64 preimage | **9/24 keyed**; full-round zero-sum | ancestors: 8-round BLAKE-256, 7.5-round BLAKE2s |
+| independent analysis | ~24 yrs, dozens of groups | **~17 yrs, ~90–100 papers, a 64-entry NIST competition, a 14-yr cash bounty** | **6 yrs, ZERO cryptanalysis papers in the eprint corpus** |
+
+> ⚑ **BLAKE3's round count was cut 30% from BLAKE2s on an inheritance argument,
+> landing at 7 rounds against ancestors broken to 7.5–8 — and eprint full-text
+> search for "BLAKE3" returns 6 results, none of them cryptanalysis.** Choosing
+> BLAKE3 **for its security record would be choosing a record that does not exist.**
+> Choosing it for cost, ancestry and Ethereum's coattails is defensible. **Say which
+> one you are doing.** If the analysis record is what you want, it is **SHA-256 or
+> Keccak-24** — and SHA-256 is also the *cheaper* of the two in-circuit (§1a).
+
+⚠ **And do not take K12/TurboSHAKE to claw back constraints.** 12 rounds is defended
+against the *6-round collision*; against the **9-round cube attack** it is a **25%
+margin, not 100%**. Go 24 rounds and pay.
+
 ### ⚠ The framing that must not slip
 
 **Do not treat "traditional hash" as automatically safer in a circuit context.**
-SHA-256 and Blake3 have decades of *differential and linear* cryptanalysis; the
+SHA-256 and Keccak have decades of *differential and linear* cryptanalysis; the
 algebraic hashes have years. But the attack that matters for an arithmetized hash
 is an **algebraic attack on the arithmetization** (Gröbner / CICO / FreeLunch /
-interpolation), which is a **different literature** — and one where the
-traditional hashes have had *less* attention, not more, because nobody arithmetized
-them until recently. **The asymmetry runs both directions and the honest statement
-names which literature each claim comes from.**
+interpolation), a **different literature**.
+
+⚑ **The correction that survives the sweep, and it favors the traditional hashes —
+but not for the reason usually given.** *This is a derivation from mechanism, and
+it should be checked.* When SHA-256 or Keccak-f is arithmetized in a STARK the
+prover does **not** get a low-degree system over `F_p`. It gets **bits**, each a
+field element pinned by `x(x−1)=0` — verified against the pinned source:
+`KeccakCols` commits `a_prime` as `[[[T;64];5];5]`, `Blake3Cols` commits booleans
+per row. **So the system an adversary attacks is isomorphic to the GF(2) system
+SAT/Gröbner/MQ have ground on since 2010, plus booleanity constraints that only
+shrink the variety. Arithmetization creates no new algebraic surface.**
+
+That is structurally the *opposite* of Poseidon, where the primitive is a low-degree
+map over **the same `F_p` as the proof system** — a native Gröbner target. **It is
+why the FreeLunch line exists for AO primitives and has no counterpart for Keccak.**
+So the algebraic record for traditional hashes is thin substantially *because the
+attack bounces off bit-oriented designs*, not because nobody tried — 16 years of
+effort moved algebraic Keccak hash-mode preimages from 3 rounds to **5**.
+
+⚠ **Two honest counterweights.** (a) Under the one *uniform* algebraic instrument
+ever applied across all of them (eprint 2012/421, SAT preimage), **SHA-256 ranks
+WORSE than Keccak**: 16/64 = 75% margin vs Keccak's 2/24 = 92%. That instrument is
+14 years old and single-source, and **I found no modern replication** — the gap is
+itself worth naming. (b) **No published attack on an arithmetized (in-circuit)
+SHA-256, Keccak-f or BLAKE3 was found** in `~/paperbin`, the eprint mirror
+1996–2026, or by web search, as of 2026-08-14 — *an absence claim, scoped to those
+instruments, and those instruments are blind to arXiv and grey literature.*
+
+⚑ **One epistemic caveat that outranks the rest.** Nearly the entire 2022–2026 AO
+attack frontier is **one community** — Inria/ANSSI/Simula UiB, with satellites at
+TU Graz (who are *simultaneously the designers*) and a few others. **"N years of
+analysis" for an AO hash means "N years of one lab's attention, applied in
+bursts."** Against SHA-256/Keccak it means a global field. That asymmetry is real
+and it is not captured by any round count.
 
 ---
 
