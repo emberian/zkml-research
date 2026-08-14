@@ -69,7 +69,14 @@ made.
 - the characteristic-two clause binds exact basis order, affine domain, rate schedule,
   roots-before-challenges, queries, terminal, and ideal UD predicate.
 
-The multiplicative theorem is not silently reused for the additive protocol.
+The multiplicative *fold* is not reused for the additive protocol — it cannot be:
+`Selvage.CharTwoWall.foldingData_charTwo_False` proves the multiplicative `FoldingData` EMPTY at
+characteristic two, so every theorem over it is vacuous there. What IS reused, lawfully and
+through a proved bridge, is the domain-agnostic RS proximity gap:
+`additiveProximityGap_of_isProximityGenerator` transports any PG(2) realizer onto the additive
+image domain, and `additiveProximityGap_UD` feeds the hypothesis-free
+`reedSolomonCode_isProximityGenerator_UD` through it — so the additive gap is PROVED on the
+`δ < (1−ρ)/3` band, not assumed. The bullet list above omits that; it should not.
 
 ### Zero knowledge and straight-line extraction
 
@@ -103,12 +110,34 @@ relations. The deterministic controller:
 
 One controller-game coin owns schedule and ledger. This closes **A**, not deployed **P**.
 
+⛑ **The paragraph above describes the LEGACY binding-closed path**
+(`Tower256AdditiveFriController`), whose `MerklePcs` carrier is proved EMPTY at every
+positive height by `Tower256MerkleCardinalityCore.merklePcs_empty_of_positive` — a 256-bit
+cSHAKE root cannot injectively carry more than `2^256` words. Read it as a description of
+the shape, not as evidence: `Tower256AdditiveFriControllerAdmission` and
+`Tower256AdditiveFriActualReduction` are RETRACTED and carry their own machine-checked
+retraction. The live path is `Tower256AdditiveFriRawAdmission` /
+`Tower256AdditiveFriCanonicalExecutionGame` over `RawMerklePcs`.
+
 Open **P/D/B** obligations:
 
-- exact cSHAKE-to-uniform-ROM transport;
-- a raw non-binding Merkle/PCS interface and adaptive framed-XOF collision reduction deriving
-  PositionBinding/CR (functional Merkle correctness is not collision resistance);
-- far-word/proximity Fiat–Shamir reduction;
+- exact cSHAKE-to-uniform-ROM transport — genuinely open, and `Tower256RawHistoryCshakeTrace`'s
+  `no_constant_uniform_256_slot` proves a *negative*: a deterministic cSHAKE evaluation cannot be
+  relabelled as one uniformly fresh 256-bit slot, so a real ROM/sponge coupling is logically
+  necessary and not merely missing;
+- the collision PRICE. ⛑ The two halves of the old bullet here have separated. The **raw
+  non-binding Merkle/PCS interface LANDED** (`Compiler.Tower256AdditiveFriRawController.RawMerklePcs`,
+  inhabited by `Tower256AdditiveFriRawDeployment`), and the **extraction direction is PROVED**
+  (`bindingFailure_implies_extractedCollision`, `RawMerklePcs.accepted_value_eq_or_extractedCollision`,
+  `extractedCollision_of_columnEquivocation`). What remains is bounding the extracted collision's
+  probability: `bindingFailure_price_le_collision` neither chooses nor bounds that price, so CR
+  stays an explicit premise on the same coin;
+- Fiat–Shamir / `oracleTransport` only. ⛑ The **proximity half is CLOSED**:
+  `Selvage.additiveProximityGap_UD` proves the additive gap unconditionally on the
+  `δ < (1−ρ)/3` band, `additiveFold_distance_UD` gives one-round soundness with no gap
+  hypothesis, `additiveFriAdaptive_coherent_sampled_sound_UD` CONSUMES the far-word premise, and
+  the far-word cover is constructed rather than caller-supplied. What is left is the same ROM
+  transport as the first bullet, not a second proximity obligation;
 - emitted executable checker for the currently noncomputable Tower relation;
 - proof/container/domain/level codecs and authenticated work IDs; and
 - matched end-to-end prover/verifier benchmarks.
@@ -152,10 +181,16 @@ source alignment, semantic-to-finite claim/witness reindexing, roots/opened-colu
 actual unshifted semantic BCS reduction. PCS, commitment-binding, and ROM `Good` events share one
 history coin; private admission has only an `ofNotBad` constructor.
 
-`SemanticHistoryTower256CheckpointGame` now joins the history and Tower256 additive predicates on
-one `Omega`, one existing `FailureLedger`, exact WARP-terminal/additive-initial root and schedule
-equalities, and one four-event union bound without independence. This closes the former structural
-“two ledgers” residual at that exact boundary.
+⛑ **RETRACTED.** `SemanticHistoryTower256CheckpointGame`'s `JointGameFamily` joins the history
+and Tower256 additive predicates on one `Omega`, one `FailureLedger`, exact
+WARP-terminal/additive-initial root and schedule equalities, and one four-event union bound — **of
+a type that cannot exist.** `Tower256MerkleBindingCardinality.jointGameFamily_impossible` derives
+`False` from any inhabitant: the family's `additiveRoundsPositive` plus the tower's `m ≤ ell` force
+a positive Merkle height, exactly where `merklePcs_empty_of_positive` refutes the binding-closed
+PCS. The union bound, the root/schedule equalities, and `acceptedOfNotBad` are therefore VACUOUS,
+not conditional — strictly weaker than the “conditional **P** shape” the next paragraph claims.
+The “two ledgers” residual was not closed; the carrier was shown uninhabited. The replacement is
+`RawSemanticHistoryCheckpointGame`, and `CarrierCensus.auditedNonTargets` records this.
 
 The history failure event is now the literal retained-history Fiat--Shamir verifier/knowledge
 failure rather than an external predicate, and the additive event/UD price and false-accept cover
@@ -231,7 +266,9 @@ is superseded.
 
 1. Instantiate the history same-coin `PcsCrRomReduction.classify`, common-coin realization, MCA,
    and RS code-exactness.
-2. Instantiate exact additive ROM transport, raw-Merkle adaptive PositionBinding/CR, proximity/PCS,
+2. Instantiate exact additive ROM transport, the raw-Merkle collision PRICE (the interface and the
+   extraction direction have landed; ⛑ NOT `PositionBinding` — demanding it unconditionally of a
+   256-bit root is impossible, `merklePcs_empty_of_positive`), PCS,
    hiding, and sampled-decider reductions at the actual controller parameters.
 3. Complete versioned proof/container/domain codecs and authenticated native work profiles.
 4. Close Ext6 PCS/subfield/proximity/final-LDT and concrete reductions inside the landed global

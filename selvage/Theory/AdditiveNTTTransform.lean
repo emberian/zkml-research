@@ -1,7 +1,18 @@
 /-
 # Theory.AdditiveNTTTransform — [ANTT-transform] CLOSED (the additive NTT is a
-linear bijection) + [ANTT-fri] REDUCED to the named additive proximity gap
-[ANTT-proximity].
+linear bijection) + [ANTT-fri] REDUCED, AT THIS IMPORT LAYER ONLY, to the
+additive proximity gap [ANTT-proximity].
+
+⚑ READ THE STATUS LABEL CAREFULLY. `AdditiveProximityGap` is a hypothesis HERE
+because `Theory` may not name `Selvage` — not because the tree lacks a proof.
+`Selvage.additiveProximityGap_UD` DISCHARGES it unconditionally on the
+macroscopic band `δ < (1−ρ)/3` (ρ = d/|R|), axiom-clean, and
+`Selvage.additiveFold_distance_UD` fills this file's `hPG` slot in its own proof
+term, so the additive cone PROVES a proximity gap rather than assuming one. An
+auditor who reads "residual"/"floor" below as "unproved anywhere" is being
+misled by an import boundary. What genuinely remains is the band ABOVE
+`(1−ρ)/3` — full unique decoding and the Johnson regime — which still rides a
+realizer.
 
 Builds on `Theory.AdditiveNTT` (the domain W_k, the GF(2)-linear Ŵ_i, the LCH
 novelpoly basis, the additive fold `friFold` with its completeness half
@@ -52,7 +63,8 @@ novelpoly basis, the additive fold `friFold` with its completeness half
   loss in δ (bad-set form). Distance preservation of the additive FRI fold,
   proved from the named hypothesis; together with `friFold_eval_poly`
   (completeness, Theory/AdditiveNTT) the fold is a sound-and-complete round
-  modulo [ANTT-proximity].
+  modulo [ANTT-proximity] — which `Selvage.additiveFold_distance_UD` discharges
+  on `δ < (1−ρ)/3`, giving the same conclusion with NO gap hypothesis.
 * **`additiveProximityGap_exact`** — the EXACT-agreement regime of the
   hypothesis, PROVED unconditionally with b = 1 (two challenges on the affine
   line u + λ·v determine both components as low-degree words — any field, no
@@ -78,7 +90,7 @@ novelpoly basis, the additive fold `friFold` with its completeness half
   1 + x₁ agrees with no affine polynomial), so the reduction's far-premise is
   inhabited, not vacuous.
 
-## Honest residual (NAMED, not proved)
+## Honest residual (NAMED here; PROVED one import layer up)
 
 * **[ANTT-proximity]** `AdditiveProximityGap` — correlated agreement for
   affine lines of words over the ADDITIVE image domain, bad-challenge-set
@@ -89,12 +101,17 @@ novelpoly basis, the additive fold `friFold` with its completeness half
   SAME BCIKS 2020/654 / WHIR proximity-gap statement, whose proof is
   evaluation-domain-agnostic (BCIKS Thm 1.4 holds for RS codes over ANY set of
   distinct points; the domain structure enters only through the folding
-  algebra, which is proved here). Satisfiable: the literature theorem, and the
-  δ = 0 regime is PROVED (`additiveProximityGap_exact`). Macroscopic δ with
-  its quantitative (δ, b = err·|F|) profile is the floor, parallel to (and in
-  the deployment ultimately unified with) the multiplicative hPG hypothesis;
-  its Selvage-side instantiation against Selvage/Proximity cannot be stated here
-  (the Theory boundary forbids naming Selvage).
+  algebra, which is proved here). Satisfiable: the δ = 0 regime is PROVED here
+  (`additiveProximityGap_exact`), and ⚑ the MACROSCOPIC regime is PROVED one
+  import layer up — `Selvage.additiveProximityGap_UD` establishes
+  `AdditiveProximityGap R β d δ |R|` for every `0 < δ < (1−ρ)/3` with no
+  proximity hypothesis, by transporting the hypothesis-free
+  `reedSolomonCode_isProximityGenerator_UD` through the domain-agnostic bridge
+  `additiveProximityGap_of_isProximityGenerator`. So this is a residual OF THIS
+  FILE, forced by the Theory boundary (which forbids naming Selvage), not a
+  residual of the tree. The genuine remainder is the band at and above
+  `(1−ρ)/3`: full unique decoding and Johnson, where a realizer is still
+  assumed, exactly as on the multiplicative side.
 
 Candidate-independent FIELD MATH — imports Mathlib + Theory only (boundary
 enforced by `scripts/check-import-boundary.sh`).
@@ -416,7 +433,7 @@ theorem foldMap_injOn_transversal [CharP F 2] {β : F} {R : Finset F}
 
 /-! ### [ANTT-proximity]: the additive proximity gap, and the reduction -/
 
-/-- **[ANTT-proximity] (RESIDUAL HYPOTHESIS).** Correlated agreement for
+/-- **[ANTT-proximity] (hypothesis HERE; PROVED in `Selvage`).** Correlated agreement for
 affine lines of words over the additive image domain, bad-challenge-set form:
 for words u, v on the image domain (indexed by the transversal r ↦ q_β(r)),
 UNLESS some degree-< d pair (P₀, P₁) already has CORRELATED
@@ -431,8 +448,11 @@ BCIKS proof is evaluation-domain-agnostic — RS proximity gaps hold over ANY
 set of distinct points, the domain's multiplicative (or here additive)
 structure enters only through the folding algebra, which is proved in this
 file — and the exact-agreement regime is PROVED below
-(`additiveProximityGap_exact`, δ = 0, b = 1). The macroscopic-δ quantitative
-profile is the named floor, parallel to the multiplicative hPG hypothesis. -/
+(`additiveProximityGap_exact`, δ = 0, b = 1). ⚑ The macroscopic-δ profile is
+NOT a standing floor: `Selvage.additiveProximityGap_UD` proves this very
+predicate, with `b = |R|`, for every `0 < δ < (1−ρ)/3`, unconditionally and
+axiom-clean. It is a hypothesis in THIS file only because the `Theory` boundary
+forbids naming `Selvage`. Above `(1−ρ)/3` a realizer is still assumed. -/
 def AdditiveProximityGap (R : Finset F) (β : F) (d : ℕ) (δ : ℝ) (b : ℕ) : Prop :=
   ∀ u v : F → F,
     (∀ P₀ P₁ : F[X], P₀.natDegree < d → P₁.natDegree < d →
@@ -505,16 +525,18 @@ theorem close_of_correlatedAgreement [CharP F 2] {β : F} (hβ : β ≠ 0)
     rw [hS] at hagree
     linarith
 
-/-- **[ANTT-fri] REDUCED: the additive fold preserves distance, GIVEN the
-additive proximity gap.** If f is δ-FAR from every degree-< 2d polynomial on
+/-- **[ANTT-fri]: the additive fold preserves distance, given the additive
+proximity gap — which is PROVED, so see `Selvage.additiveFold_distance_UD` for
+the same conclusion with the `hPG` slot already filled on `δ < (1−ρ)/3`.** If f is δ-FAR from every degree-< 2d polynomial on
 the pair domain, then off a bad set of at most b challenges the folded word
 friFold β λ f is still δ-FAR from degree < d on the image domain — no loss in
 δ. Proof: the fold is the affine line E_f + λ·O_f
 (`friFold_eq_even_add_mul_odd`); were the components correlated-agreeing, f
 would be δ-close (`close_of_correlatedAgreement`), so they are not, and
 [ANTT-proximity] bounds the good challenges by b. Together with
-`friFold_eval_poly` (completeness) this closes the additive FRI round modulo
-the named proximity-gap floor. -/
+`friFold_eval_poly` (completeness) this closes the additive FRI round; on the
+macroscopic band `δ < (1−ρ)/3` the `hPG` argument is supplied by
+`Selvage.additiveProximityGap_UD`, so nothing there is left assumed. -/
 theorem additiveFold_distance [CharP F 2] {β : F} (hβ : β ≠ 0)
     {R : Finset F} (hR : ∀ r ∈ R, r + β ∉ R) {d : ℕ} {δ : ℝ} {b : ℕ}
     (hPG : AdditiveProximityGap R β d δ b) {f : F → F}
