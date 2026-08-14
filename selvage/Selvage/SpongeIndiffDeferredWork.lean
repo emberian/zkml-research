@@ -171,7 +171,7 @@ theorem deferredWorkStep_constr_exact {q : Nat}
   rw [show (state.remaining.take (xs.length + 1)).length =
       xs.length + 1 by rw [hused, hlength]]
   rw [hused]
-  rfl
+  simp
 
 omit [DecidableEq Rate] in
 /-- If the selected full construction message is fresh in the deferred RO,
@@ -188,7 +188,7 @@ theorem deferredIdealStepWithCoin_constr_fresh {q : Nat}
         state.ans ++ [.rate coin.1]⟩ := by
   unfold deferredIdealStepWithCoin idealStep
   rw [hquery]
-  rw [Oracle.respond_fresh_fst hfresh]
+  simp [workCoinAsIdeal, Oracle.respond_fresh_fst hfresh]
 
 omit [DecidableEq Rate] in
 /-- The deferred runner has no semantic failure mode once enough work coins
