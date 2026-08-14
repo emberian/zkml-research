@@ -201,17 +201,87 @@ def rateCodec : LawfulCodec Rate where
   decode := decodeRate
   decode_encode := decodeRate_encodeRate
 
-/-! ## The padded profile's exact byte count -/
+/-! ## Exact padded-message bytes -/
+
+def encodeRates : List Rate → List UInt8
+  | [] => []
+  | block :: blocks => encodeRate block ++ encodeRates blocks
+
+def decodeRates : Nat → List UInt8 → Option (List Rate × List UInt8)
+  | 0, bytes => some ([], bytes)
+  | count + 1, bytes => do
+      let block ← decodeRate (bytes.take 32)
+      let (blocks, rest) ← decodeRates count (bytes.drop 32)
+      pure (block :: blocks, rest)
+
+@[simp] theorem encodeRates_length (blocks : List Rate) :
+    (encodeRates blocks).length = 32 * blocks.length := by
+  induction blocks with
+  | nil => simp [encodeRates]
+  | cons block blocks ih =>
+      simp [encodeRates, ih, Nat.mul_succ, Nat.add_comm]
+
+theorem decodeRates_encodeRates_append (blocks : List Rate)
+    (suffix : List UInt8) :
+    decodeRates blocks.length (encodeRates blocks ++ suffix) =
+      some (blocks, suffix) := by
+  induction blocks with
+  | nil => simp [encodeRates, decodeRates]
+  | cons block blocks ih =>
+      simp [encodeRates, decodeRates, encodeRate_length,
+        decodeRate_encodeRate, ih]
+
+/-- Remove exactly the reserved terminal block.  A missing or different last
+block is a framing error. -/
+def unpadMessage? (blocks : List Rate) : Option (List Rate) :=
+  match blocks.reverse with
+  | [] => none
+  | terminal :: reversed =>
+      if terminal = paddingBlock then some reversed.reverse else none
+
+@[simp] theorem unpadMessage_padMessage (message : List Rate) :
+    unpadMessage? (padMessage message) = some message := by
+  simp [unpadMessage?, padMessage]
 
 def encodePaddedMessage (message : List Rate) : List UInt8 :=
-  (padMessage message).flatMap encodeRate
+  encodeRates (padMessage message)
+
+/-- Parse all complete 32-byte rate blocks, refuse any leftover suffix, then
+require the `.pad1` terminal block. -/
+def decodePaddedMessage (bytes : List UInt8) : Option (List Rate) :=
+  match decodeRates (bytes.length / 32) bytes with
+  | some (blocks, []) => unpadMessage? blocks
+  | _ => none
 
 @[simp] theorem encodePaddedMessage_length (message : List Rate) :
     (encodePaddedMessage message).length = 32 * (message.length + 1) := by
-  rw [encodePaddedMessage, List.length_flatMap]
-  simp only [encodeRate_length, List.map_const', List.sum_replicate,
-    padMessage_length]
-  simp [nsmul_eq_mul, Nat.mul_comm]
+  simp [encodePaddedMessage]
+
+@[simp] theorem decodePaddedMessage_encodePaddedMessage
+    (message : List Rate) :
+    decodePaddedMessage (encodePaddedMessage message) = some message := by
+  have count :
+      (encodePaddedMessage message).length / 32 = message.length + 1 := by
+    rw [encodePaddedMessage_length]
+    omega
+  have parsed :
+      decodeRates (message.length + 1)
+          (encodeRates (padMessage message)) =
+        some (padMessage message, []) := by
+    simpa using decodeRates_encodeRates_append (padMessage message) []
+  rw [decodePaddedMessage, count, encodePaddedMessage, parsed]
+  exact unpadMessage_padMessage message
+
+theorem encodePaddedMessage_injective :
+    Function.Injective encodePaddedMessage := by
+  intro left right equal
+  have decoded := congrArg decodePaddedMessage equal
+  simpa using decoded
+
+def paddedMessageCodec : LawfulCodec (List Rate) where
+  encode := encodePaddedMessage
+  decode := decodePaddedMessage
+  decode_encode := decodePaddedMessage_encodePaddedMessage
 
 #check @decodeField_encodeField
 #check @decodeField_modulus_rejected
@@ -219,6 +289,8 @@ def encodePaddedMessage (message : List Rate) : List UInt8 :=
 #check @decodeRate_encodeRate
 #check @encodeRate_injective
 #check @encodePaddedMessage_length
+#check @decodePaddedMessage_encodePaddedMessage
+#check @encodePaddedMessage_injective
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsByteCodec.decodeField_encodeField' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -229,6 +301,9 @@ def encodePaddedMessage (message : List Rate) : List UInt8 :=
 /-- info: 'Minidregg.Selvage.BaseFoldBcsByteCodec.encodePaddedMessage_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms encodePaddedMessage_length
+/-- info: 'Minidregg.Selvage.BaseFoldBcsByteCodec.decodePaddedMessage_encodePaddedMessage' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms decodePaddedMessage_encodePaddedMessage
 
 end
 
