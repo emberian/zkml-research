@@ -368,6 +368,14 @@ Naming which column of my own run is garbage is the point of running two arms.
 differ by **at most 2 bytes** (190,654 vs 190,652) — the witness is one field element under a
 varint codec. Against 5,826 B per query, that is the entire wire cost of 16 soundness bits.
 
+⚠ *That 2-byte fact is how the first §G4 run ended: its final assertion demanded proof bytes be
+**exactly** equal between the arms and went red at 190,654 vs 190,652. The assertion was wrong, not
+the prover — `rmp-serde` varint-encodes the witness, so a `≈2^16` witness costs a byte or two more
+than `F::ZERO`. It now asserts `|Δ| ≤ 8 B` and prints the worst observed Δ. Every number in the
+tables above is from that run and is unaffected; they are printed before the assertion. The
+corrected assertion is committed and compile-checked, but its re-run has not landed — the shared
+`breadstuffs/target` lock has been held by another lane's `fhegg-fhe --release` build since.*
+
 Putting it together, all relative to the deployed point (`E[grind] = 2^pow/4 × 758 ns`; this
 session's contended rate measured 914 ns, and the quieter 758 ns from `phase-profile` is used —
 using 914 makes the grind column 21% worse, not better):
