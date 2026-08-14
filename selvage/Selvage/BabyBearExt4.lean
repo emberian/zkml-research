@@ -22,6 +22,7 @@ namespace Minidregg.Selvage.BabyBearExt4
 open Polynomial IntermediateField AdjoinRoot
 
 set_option autoImplicit false
+set_option maxRecDepth 100000
 
 noncomputable section
 
@@ -50,7 +51,6 @@ theorem squareN_eq_pow_two (n : Nat) (value : BabyBear) :
   | succ n ih =>
       rw [squareN, ih, ← pow_mul]
       congr 1
-      simp [pow_succ]
 
 theorem eleven_euler_witness :
     (11 : BabyBear) ^ halfOrder = -1 := by
@@ -64,8 +64,11 @@ theorem eleven_euler_witness :
 
 theorem neg_eleven_euler_witness :
     (-11 : BabyBear) ^ halfOrder = -1 := by
-  rw [neg_pow]
-  simpa [halfOrder] using eleven_euler_witness
+  calc
+    (-11 : BabyBear) ^ halfOrder = (-1) ^ halfOrder * 11 ^ halfOrder :=
+      neg_pow 11 halfOrder
+    _ = 11 ^ halfOrder := by norm_num [halfOrder]
+    _ = -1 := eleven_euler_witness
 
 /-- An Euler witness `a^((p-1)/2) = -1` rules out a square root in BabyBear. -/
 private theorem nonsquare_of_euler_witness (a : BabyBear)
