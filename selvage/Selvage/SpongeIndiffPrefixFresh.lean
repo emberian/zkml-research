@@ -23,6 +23,19 @@ def lastRateCoin : List Rate → Rate
   | [rate] => rate
   | _ :: next :: rest => lastRateCoin (next :: rest)
 
+/-- Exact semantic event needed by the eager/deferred transcript coupling: the
+construction succeeds and returns the final supplied rate coin.  Unlike
+`PrimitivePathFresh`, this permits consistent replay of shared primitive
+prefixes. -/
+def ConstructionReturnsLastRate (iv : Rate × Cap)
+    (ro : Oracle (List Rate) Rate)
+    (primitive : Oracle (Rate × Cap) (Rate × Cap))
+    (message rateCoins : List Rate) (capacityCoins : List Cap) : Prop :=
+  ∃ result,
+    programConstruction iv ro primitive message rateCoins capacityCoins =
+        some result ∧
+      result.state.1 = lastRateCoin rateCoins
+
 omit [DecidableEq Rate] in
 @[simp] theorem lastRateCoin_append_singleton (rates : List Rate)
     (rate : Rate) :
@@ -391,6 +404,34 @@ theorem prefixHybridStep_constr_of_primitivePathFresh {q : Nat}
     rw [if_pos hcounts, hprogram]
   · simp [next, hrate]
 
+/-- The exact last-rate event is sufficient for the adaptive construction
+step, including paths which consistently replay shared primitive prefixes. -/
+theorem prefixHybridStep_constr_of_returnsLastRate {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (roundCoins : Fin q → PrefixHybridCoins Rate Cap)
+    (state : PrefixHybridState Rate Cap) (j : Fin q)
+    (x : Rate) (xs rateCoins : List Rate) (capacityCoins : List Cap)
+    (hquery : D.move state.ans = .constr x xs)
+    (hcoins : roundCoins j = .construction rateCoins capacityCoins)
+    (hcounts : rateCoins.length = (x :: xs).length ∧
+      capacityCoins.length = (x :: xs).length)
+    (hgood : ConstructionReturnsLastRate iv state.ro state.primitive
+      (x :: xs) rateCoins capacityCoins) :
+    ∃ next,
+      prefixHybridStep D iv roundCoins state j = .ok next ∧
+        next.ans = state.ans ++ [.rate (lastRateCoin rateCoins)] := by
+  obtain ⟨result, hprogram, hrate⟩ := hgood
+  let next : PrefixHybridState Rate Cap :=
+    ⟨result.ro, result.primitive,
+      state.ans ++ [.rate result.state.1],
+      state.work + (x :: xs).length⟩
+  refine ⟨next, ?_, ?_⟩
+  · unfold prefixHybridStep
+    rw [hquery, hcoins]
+    dsimp only
+    rw [if_pos hcounts, hprogram]
+  · simp [next, hrate]
+
 /-- The fixed work-stream adapter preserves the fresh-path output theorem for
 an exact construction segment. -/
 theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
@@ -438,6 +479,52 @@ theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
   simp only [SpQuery.prefixCoins]
   rw [hcore]
 
+/-- The fixed work adapter lifts the exact last-rate event without requiring
+freshness of proper-prefix edges. -/
+theorem workHybridStep_constr_of_returnsLastRate {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (state : WorkHybridState Rate Cap) (j : Fin q)
+    (x : Rate) (xs : List Rate)
+    (hquery : D.move state.core.ans = .constr x xs)
+    (henough : xs.length + 1 ≤ state.remaining.length)
+    (hgood : ConstructionReturnsLastRate iv state.core.ro
+      state.core.primitive (x :: xs)
+      ((state.remaining.take (xs.length + 1)).map Prod.fst)
+      ((state.remaining.take (xs.length + 1)).map Prod.snd)) :
+    ∃ next,
+      workHybridStep D iv state j = .ok next ∧
+        next.core.ans = state.core.ans ++
+          [.rate (lastRateCoin
+            ((state.remaining.take (xs.length + 1)).map Prod.fst))] := by
+  have hlength :
+      (state.remaining.take (xs.length + 1)).length = xs.length + 1 := by
+    rw [List.length_take]
+    omega
+  have hcounts :
+      ((state.remaining.take (xs.length + 1)).map Prod.fst).length =
+          (x :: xs).length ∧
+        ((state.remaining.take (xs.length + 1)).map Prod.snd).length =
+          (x :: xs).length := by
+    constructor <;>
+      simp only [List.length_map, hlength, List.length_cons]
+  obtain ⟨coreNext, hcore, hans⟩ :=
+    prefixHybridStep_constr_of_returnsLastRate D iv
+      (fun _ => .construction
+        ((state.remaining.take (xs.length + 1)).map Prod.fst)
+        ((state.remaining.take (xs.length + 1)).map Prod.snd))
+      state.core j x xs
+      ((state.remaining.take (xs.length + 1)).map Prod.fst)
+      ((state.remaining.take (xs.length + 1)).map Prod.snd)
+      hquery rfl hcounts hgood
+  refine ⟨⟨coreNext, state.remaining.drop (xs.length + 1)⟩, ?_, hans⟩
+  unfold workHybridStep
+  dsimp only
+  rw [hquery]
+  simp only [SpQuery.primitiveCalls]
+  rw [if_pos hlength]
+  simp only [SpQuery.prefixCoins]
+  rw [hcore]
+
 /-- The fixed work adapter inherits the same RO frame property from a
 successful construction step. -/
 theorem workHybridStep_constr_preserves_ro_fresh_of_not_prefix {q : Nat}
@@ -472,13 +559,16 @@ theorem workHybridStep_constr_preserves_ro_fresh_of_not_prefix {q : Nat}
   · contradiction
 
 #check @programPrefixes_some_of_primitivePathFresh
+#check @ConstructionReturnsLastRate
 #check @programPrefixes_fresh_final_rate
 #check @programPrefixes_preserves_ro_fresh_of_not_prefix
 #check @programConstruction_fresh_final_rate
 #check @programConstruction_preserves_ro_fresh_of_not_prefix
 #check @prefixHybridStep_constr_preserves_ro_fresh_of_not_prefix
 #check @prefixHybridStep_constr_of_primitivePathFresh
+#check @prefixHybridStep_constr_of_returnsLastRate
 #check @workHybridStep_constr_of_primitivePathFresh
+#check @workHybridStep_constr_of_returnsLastRate
 #check @workHybridStep_constr_preserves_ro_fresh_of_not_prefix
 
 /-- info: 'Minidregg.Selvage.programPrefixes_some_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -502,9 +592,15 @@ theorem workHybridStep_constr_preserves_ro_fresh_of_not_prefix {q : Nat}
 /-- info: 'Minidregg.Selvage.prefixHybridStep_constr_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms prefixHybridStep_constr_of_primitivePathFresh
+/-- info: 'Minidregg.Selvage.prefixHybridStep_constr_of_returnsLastRate' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms prefixHybridStep_constr_of_returnsLastRate
 /-- info: 'Minidregg.Selvage.workHybridStep_constr_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms workHybridStep_constr_of_primitivePathFresh
+/-- info: 'Minidregg.Selvage.workHybridStep_constr_of_returnsLastRate' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms workHybridStep_constr_of_returnsLastRate
 /-- info: 'Minidregg.Selvage.workHybridStep_constr_preserves_ro_fresh_of_not_prefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms workHybridStep_constr_preserves_ro_fresh_of_not_prefix
