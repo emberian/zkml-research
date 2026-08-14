@@ -62,10 +62,48 @@ proved by *constructing an emulator*) — **precisely and only what Selvage is**
 — and **Diamond–Posen's own stated compilation target is "a characteristic-2
 adaptation of BaseFold."** ***Step 1 produces exactly what step 3 consumes.***
 
-**Ligerito cannot compose from what we hold**: ours is FRI-shaped (ℓ=2 affine
-line); Ligerito needs interleaved codes, column distance, tensor coefficients
-and column openings — all absent. ⚠ **And Ligerito is an unrefereed note with
-two errata in its error bound, both in the favourable direction.**
+⚑ **THE LIGERITO VERDICT IS SUPERSEDED — exploratory formalization refuted
+two of its six "absent" claims and inverted its sequencing** (ember: *"I'm more
+in favour of exploratory formalization than dismissing out of pocket"*, and he
+was right). `Selvage/LigeritoInterleaved.lean` (567 lines, **0 errors, 0
+warnings, no `sorry`, no `axiom`**, 4 axiom pins, `0c08c93`):
+
+- ❌ **"Column distance is a metric `relDist` cannot express" — REFUTED.**
+  Diamond–Gruen define `Cᵐ` as *"a block code over the alphabet `𝔽ᵐ`"* whose
+  words *"differ at a column if they differ at any component"* — **that is
+  ordinary Hamming distance at a bigger alphabet.** The obstruction was a
+  `[Field F]` binder on the **alphabet**, and `CorrelatedAgreement.lean`'s own
+  `omit [Field F]` annotations are the evidence the mathematics never used it.
+- ⚠ **"Interleaved code object" and "generic codes with distance" were
+  overstated** — 12 lines, and the cone is already written over an arbitrary
+  `Submodule`.
+- ✅ **Genuinely absent**: the `ℓ = m` proximity gap, column openings, and any
+  *proof* about tensor coefficients. *That is the part that matters.*
+- ⚑ **The sequencing inverts the intuition**: Ligerito's **general-code** bound
+  sits at the `d/3` radius — **exactly where `rs_proximityGap_UD` is proved
+  unconditionally** — while its **headline RS** bound needs `d/2`, which
+  `ProximityGapUDTight.lean` leaves open behind Polishchuk–Spielman. **The
+  cheap case stands on proved ground; RS is the expensive one.**
+- **Cost: 12 named missing lemmas** (8 to §3, 4 more to §6). **Exactly one —
+  DG24 Thm 3.1 — is substantial mathematics**; two are wide-but-mechanical
+  retypings of the binder class this lane showed is cosmetic.
+
+⚑ **AND THE ERRATA ARE DISPLAY-ONLY — "Ligerito is broken" would have been the
+flattering-number sin in reverse.** Every base in the theorem it quotes
+(AER24 §3.2 eq 18) has the form `1 − (·)/m`, which settles both typos. The
+cross-check that decides it: **the note's own `|S_i| = 148` is exactly
+`⌈−100/log₂((1+ρ)/2)⌉`, and the printed base would have given 71** — so §6.4
+and the benchmarks used the **corrected** base. **The claimed 100-bit level and
+the proof sizes stand.**
+⚠ Two things the note does not say, found by arithmetic: a general linear code
+buys only **61 bits** from those 148 queries and needs **241** for 100 (1.63×
+the Merkle openings §6.4 calls dominant); and §6.4's *"`|F| ≫ 2^λ` so drop the
+`1/|F|` terms"* has only 2²⁸ of headroom against an `m₁k₁` of order 2²⁶–2³⁰,
+so **those terms land at or above the query term.**
+⚠ **A notation trap that probably caused the original mis-verdict**:
+**Ligerito's "nonzero rows" and Diamond–Gruen's "differing columns" are the
+same set** — the two papers put the interleaving factor on opposite axes, so
+taking both at face value makes them look like different metrics.
 
 **The real gap is ring-switching's connectors**: no `Basis` of an extension
 over a subfield exists in 400 files, and `liftWord` points the wrong way.
