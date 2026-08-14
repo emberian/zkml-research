@@ -6,17 +6,19 @@ coordinates to move are selected by the public transcript produced so far.
 Nor is matching each coordinate marginal enough.  The required map must be a
 bijection of the *whole* fixed work-vector space.
 
-This module supplies the first adaptive construction.  A guarded involution
+This module supplies the adaptive construction kernel.  A guarded involution
 may apply a coin reindexing based on a predicate of the current vector, but the
 predicate must be invariant under that reindexing.  Applying the guarded map
 twice is therefore the identity, so it is an exact equivalence and preserves
 uniform probability.  The work specialization permits a prefix-measurable
-decision to swap later coordinates.  A concrete three-coordinate theorem
-straightens an adaptively selected later coin into one fixed coordinate.
+decision to swap later coordinates.  Finite programs of these guarded moves
+are composed into one equivalence of the whole work-vector space, and hence
+into the exact `UniformWorkCoupling` expected by the eager/deferred boundary.
+A concrete three-coordinate theorem straightens an adaptively selected later
+coin into one fixed coordinate.
 
-This is the reusable online-swap kernel for the full eager/deferred schedule;
-the remaining run theorem must compose such guarded moves from the actual
-public transcript and prove the corresponding off-bad semantic agreement.
+The remaining run theorem must synthesize the program from the actual public
+transcript and prove the corresponding off-bad semantic agreement.
 -/
 import Selvage.SpongeIndiffDeferredWork
 
@@ -102,6 +104,109 @@ def guardedWorkReindex {work : Nat}
 
 end WorkReindexing
 
+/-! ## Prefix guards and finite online programs -/
+
+section PrefixGuards
+
+variable {Rate Cap : Type}
+
+/-- A work-vector predicate is prefix-measurable at `boundary` when it depends
+only on coordinates with numeric index strictly below that boundary. -/
+def WorkPrefixMeasurable {work : Nat} (boundary : Nat)
+    (guard : (Fin work → Rate × Cap) → Prop) : Prop :=
+  ∀ left right,
+    (∀ k : Fin work, (k : Nat) < boundary → left k = right k) →
+      (guard left ↔ guard right)
+
+/-- Swapping two coordinates at or after the observation boundary cannot
+change a prefix-measurable decision.  This is the causality fact needed by an
+online coin scheduler, stated directly on the complete work-vector space. -/
+theorem prefixMeasurable_swap_stable {work boundary : Nat}
+    {guard : (Fin work → Rate × Cap) → Prop}
+    (prefix : WorkPrefixMeasurable boundary guard)
+    (i j : Fin work) (hi : boundary ≤ (i : Nat))
+    (hj : boundary ≤ (j : Nat)) (coins : Fin work → Rate × Cap) :
+    guard (permuteWorkCoins (Equiv.swap i j) coins) ↔ guard coins := by
+  apply prefix
+  intro k hk
+  unfold permuteWorkCoins
+  have hki : k ≠ i := by
+    intro equal
+    subst i
+    omega
+  have hkj : k ≠ j := by
+    intro equal
+    subst j
+    omega
+  rw [Equiv.swap_apply_of_ne_of_ne hki hkj]
+
+/-- A prefix decision may therefore guard a swap wholly in the unobserved
+suffix, producing a genuine involutive whole-space reindexing. -/
+def prefixGuardedSwap {work boundary : Nat}
+    (i j : Fin work) (guard : (Fin work → Rate × Cap) → Prop)
+    (guardDecidable : DecidablePred guard)
+    (prefix : WorkPrefixMeasurable boundary guard)
+    (hi : boundary ≤ (i : Nat)) (hj : boundary ≤ (j : Nat)) :
+    GuardedInvolution (Fin work → Rate × Cap) :=
+  guardedWorkReindex (Equiv.swap i j)
+    (by intro index; simp)
+    guard guardDecidable
+    (prefixMeasurable_swap_stable prefix i j hi hj)
+
+end PrefixGuards
+
+section GuardedPrograms
+
+/-- Compose a finite sequence of adaptive guarded moves.  Every move observes
+the vector produced by the preceding moves; nevertheless the composite is one
+equivalence of the complete original sample space. -/
+def guardedProgramReindex {α : Type} : List (GuardedInvolution α) → α ≃ α
+  | [] => Equiv.refl α
+  | move :: moves => move.reindex |>.trans (guardedProgramReindex moves)
+
+@[simp] theorem guardedProgramReindex_nil {α : Type} :
+    guardedProgramReindex ([] : List (GuardedInvolution α)) = Equiv.refl α :=
+  rfl
+
+@[simp] theorem guardedProgramReindex_cons {α : Type}
+    (move : GuardedInvolution α) (moves : List (GuardedInvolution α)) :
+    guardedProgramReindex (move :: moves) =
+      move.reindex.trans (guardedProgramReindex moves) := rfl
+
+/-- Any finite online program of stable guarded moves preserves the exact
+uniform counting measure. -/
+theorem uniformProb_guardedProgram {α : Type} [Fintype α]
+    (moves : List (GuardedInvolution α)) (event : α → Prop) :
+    uniformProb α (fun value => event (guardedProgramReindex moves value)) =
+      uniformProb α event :=
+  uniformProb_equiv (guardedProgramReindex moves) event
+
+/-- Package a pointwise eager/deferred agreement under a finite guarded
+program as the exact same-space coupling required by the work-stream game. -/
+def guardedProgramCoupling {Rate Cap : Type}
+    [Fintype Rate] [Fintype Cap] {work : Nat}
+    {left right : (Fin work → Rate × Cap) → Prop}
+    (moves : List (GuardedInvolution (Fin work → Rate × Cap)))
+    (event_iff : ∀ coins,
+      left coins ↔ right (guardedProgramReindex moves coins)) :
+    UniformWorkCoupling left right where
+  reindex := guardedProgramReindex moves
+  event_iff := event_iff
+
+/-- Once the run-level semantic agreement supplies the pointwise premise, the
+entire adaptive program transports probability in one theorem application. -/
+theorem uniformProb_eq_of_guardedProgram {Rate Cap : Type}
+    [Fintype Rate] [Fintype Cap] {work : Nat}
+    {left right : (Fin work → Rate × Cap) → Prop}
+    (moves : List (GuardedInvolution (Fin work → Rate × Cap)))
+    (event_iff : ∀ coins,
+      left coins ↔ right (guardedProgramReindex moves coins)) :
+    uniformProb (Fin work → Rate × Cap) left =
+      uniformProb (Fin work → Rate × Cap) right :=
+  uniformProb_eq_of_coupling (guardedProgramCoupling moves event_iff)
+
+end GuardedPrograms
+
 /-! ## A transcript-selected later coordinate is still exactly uniform -/
 
 namespace SpongeAdaptiveCouplingExample
@@ -169,6 +274,8 @@ end SpongeAdaptiveCouplingExample
 
 /-- info: 'Minidregg.Selvage.uniformProb_guarded_reindex' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms uniformProb_guarded_reindex
+#print axioms prefixMeasurable_swap_stable
+#print axioms uniformProb_eq_of_guardedProgram
 /-- info: 'Minidregg.Selvage.SpongeAdaptiveCouplingExample.adaptiveTailEvent_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SpongeAdaptiveCouplingExample.adaptiveTailEvent_probability
