@@ -52,20 +52,14 @@ def GuardedInvolution.reindex {α : Type} (move : GuardedInvolution α) : α ≃
         (move.guard_stable value).2 hguard
       simp only [GuardedInvolution.apply, hguard, hstep, if_pos]
       exact move.step_involutive value
-    · have hstep : ¬ move.guard (move.step value) := by
-        intro h
-        exact hguard ((move.guard_stable value).1 h)
-      simp only [GuardedInvolution.apply, hguard, hstep, if_neg]
+    · simp [GuardedInvolution.apply, hguard]
   right_inv value := by
     by_cases hguard : move.guard value
     · have hstep : move.guard (move.step value) :=
         (move.guard_stable value).2 hguard
       simp only [GuardedInvolution.apply, hguard, hstep, if_pos]
       exact move.step_involutive value
-    · have hstep : ¬ move.guard (move.step value) := by
-        intro h
-        exact hguard ((move.guard_stable value).1 h)
-      simp only [GuardedInvolution.apply, hguard, hstep, if_neg]
+    · simp [GuardedInvolution.apply, hguard]
 
 /-- Uniform counting measure is invariant under a prefix-measurable guarded
 move because that move is an equivalence of the complete sample space. -/
@@ -123,11 +117,11 @@ change a prefix-measurable decision.  This is the causality fact needed by an
 online coin scheduler, stated directly on the complete work-vector space. -/
 theorem prefixMeasurable_swap_stable {work boundary : Nat}
     {guard : (Fin work → Rate × Cap) → Prop}
-    (prefix : WorkPrefixMeasurable boundary guard)
+    (hprefix : WorkPrefixMeasurable boundary guard)
     (i j : Fin work) (hi : boundary ≤ (i : Nat))
     (hj : boundary ≤ (j : Nat)) (coins : Fin work → Rate × Cap) :
     guard (permuteWorkCoins (Equiv.swap i j) coins) ↔ guard coins := by
-  apply prefix
+  apply hprefix
   intro k hk
   unfold permuteWorkCoins
   have hki : k ≠ i := by
@@ -142,16 +136,16 @@ theorem prefixMeasurable_swap_stable {work boundary : Nat}
 
 /-- A prefix decision may therefore guard a swap wholly in the unobserved
 suffix, producing a genuine involutive whole-space reindexing. -/
-def prefixGuardedSwap {work boundary : Nat}
+noncomputable def prefixGuardedSwap {work boundary : Nat}
     (i j : Fin work) (guard : (Fin work → Rate × Cap) → Prop)
     (guardDecidable : DecidablePred guard)
-    (prefix : WorkPrefixMeasurable boundary guard)
+    (hprefix : WorkPrefixMeasurable boundary guard)
     (hi : boundary ≤ (i : Nat)) (hj : boundary ≤ (j : Nat)) :
     GuardedInvolution (Fin work → Rate × Cap) :=
   guardedWorkReindex (Equiv.swap i j)
     (by intro index; simp)
     guard guardDecidable
-    (prefixMeasurable_swap_stable prefix i j hi hj)
+    (prefixMeasurable_swap_stable hprefix i j hi hj)
 
 end PrefixGuards
 
@@ -220,18 +214,18 @@ theorem tailSwapIndex_involutive : Function.Involutive tailSwapIndex := by
   intro index
   fin_cases index <;> rfl
 
-def tailSwapPermutation : Equiv.Perm (Fin 3) :=
+noncomputable def tailSwapPermutation : Equiv.Perm (Fin 3) :=
   Equiv.ofBijective tailSwapIndex tailSwapIndex_involutive.bijective
 
 def earlyGuard (coins : Fin 3 → Bool × Bool) : Prop :=
   (coins 0).1 = true
 
-def tailSwap : GuardedInvolution (Fin 3 → Bool × Bool) :=
+noncomputable def tailSwap : GuardedInvolution (Fin 3 → Bool × Bool) :=
   guardedWorkReindex tailSwapPermutation
     (by
       intro index
       fin_cases index <;> rfl)
-    earlyGuard (fun coins => inferInstance)
+    earlyGuard (fun coins => by unfold earlyGuard; infer_instance)
     (by
       intro coins
       rfl)
