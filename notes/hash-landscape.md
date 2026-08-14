@@ -273,10 +273,30 @@ independent moves. Our `HashFamily` (§5) is precisely the de-welding.
 
 ### 1e. The rest of the space
 
-⏳ *The prime-field and binary-field literature sweeps for Poseidon1, Rescue-Prime,
-Vision, Griffin, Anemoi, Monolith, Skyscraper, Reinforced Concrete, Tip5, and the
-in-circuit cost of Blake3/SHA-256/Keccak in a prime field are in flight and will
-be folded in here.* What is already settled from our own prior work:
+The prime-field in-circuit costs are in §1a and the binary-field ones in §1d; the
+per-design security status for Poseidon1, Rescue-Prime, Vision, Griffin, Anemoi,
+Monolith, Skyscraper, Reinforced Concrete and Tip5 is in **§3's graveyard table**,
+because for those designs *status* is the load-bearing column, not cost. Additional
+in-circuit points, all measured:
+
+| hash | arithmetization | cost/invocation | ratio to Poseidon2 |
+|---|---|---:|---:|
+| Blake3 | **BN254 R1CS** (circom, `.r1cs` header parsed) | **24,544** | **102×** (vs t=3's 240) |
+| SHA-256 | BN254 R1CS (circom) | 26,170 | 109× |
+| SHA-256 | gnark BN254, marginal per 512-bit block | 27,072 | — |
+| Keccak-f | gnark BN254, marginal per permutation | ~56,200 | — |
+| Keccak-f | **circom** BN254 | ~146,000 | — |
+
+⚠ **R1CS is not implementation-neutral**: gnark's Keccak beats circom's by **2.6×**
+purely because gnark uses lookup-argument XOR/AND tables where circom bit-blasts —
+which is §2's arithmetization lever showing up again, inside one unit.
+⚠ **Never quote "157,722 R1CS for a gnark SHA-256"** — 65,712 of that is a one-time
+byte-lookup table charged once per circuit, not per invocation.
+⚑ **Unit flip worth noting**: in a prime AIR **Blake3 > SHA-256** (9,168 vs 7,728);
+in BN254 R1CS **Blake3 < SHA-256** (24,544 vs 26,170). *The ordering of two fixed
+primitives reverses with the arithmetization.*
+
+What is also settled from our own prior work:
 
 - **Poseidon3 does not exist.** The family branches by FIELD, not version:
   Poseidon2b (binary, for Binius), Skyscraper-v2 (big primes). Expecting a
@@ -441,7 +461,7 @@ staircase, not a line**, and the first step is free.
 
 ## 3. THE SECURITY DIMENSION, STATED HONESTLY
 
-⏳ *The full cryptanalysis sweep is in flight.* What is already ours and checked:
+What is ours and checked, then the wider record:
 
 ### ⚠ FIRST — a refutation I nearly published, and why it was wrong
 
