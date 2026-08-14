@@ -82,7 +82,14 @@ theorem constructionDistinguisher_primitiveWorkOn_exact
   unfold Distinguisher.primitiveWorkOn transcriptPrimitiveWork
   conv_rhs =>
     rw [constructionQueries_eq_ofFn, List.map_ofFn, List.ofFn_eq_map]
-  rw [bind_pure_comp, List.map_map]
+  rw [bind_pure_comp]
+  change
+    (List.map
+      (fun j =>
+        ((constructionDistinguisher statement receipt verdict).move
+          ((List.ofFn answers).take j)).primitiveCalls)
+      (List.map Fin.val (List.finRange (m + queryCount)))).sum = _
+  rw [List.map_map]
   apply congrArg List.sum
   apply List.map_congr_left
   intro j _
