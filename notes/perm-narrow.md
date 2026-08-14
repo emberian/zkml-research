@@ -5,7 +5,9 @@ where". The measuring lane specified it and declined to build it; this lane buil
 
 **Landed: `breadstuffs/metatheory/Dregg2/Circuit/Emit/Poseidon2RoundGates.lean` §8** —
 `permEmissionNarrow` beside `permEmission`, **141 gates against 352**, plus the relating theorem,
-the degree pin, the KAT, both poles, and the flag-day list. Whole-tree Lean build green.
+the degree pin, the KAT, both poles, and the flag-day list. `lake build Dregg2` green
+(10,698 jobs); the deployed table-AIR artifacts re-emit byte-identical. See §7 for the reds that
+are NOT this lane's.
 
 ---
 
