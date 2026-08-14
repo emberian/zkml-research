@@ -31,7 +31,7 @@ open Polynomial
 variable {F : Type} [Field F] [Fintype F] [DecidableEq F] {m : ℕ}
 
 /-- BaseFold's scalar sumcheck leg as a native WARP reduction. -/
-noncomputable def basefoldSumcheckReduction (hm : 0 < m)
+@[reducible] noncomputable def basefoldSumcheckReduction (hm : 0 < m)
     (table : (Fin m → Bool) → F) (z : Fin m → F) : Reduction :=
   sumcheckReduction m 2 hm (mle table z) (basefoldHonest table z)
 
