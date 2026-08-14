@@ -338,7 +338,8 @@ theorem paddedWorkHybridStateNat_classify {m queryCount round : Nat}
   induction round with
   | zero =>
       exact Or.inl ⟨WorkHybridState.initial coins, rfl, rfl,
-        by simp [WorkHybridState.initial], by simp [WorkHybridState.initial]⟩
+        by simp [WorkHybridState.initial, PrefixHybridState.empty],
+        by simp [WorkHybridState.initial]⟩
   | succ round ih =>
       have hprev : round ≤ m + queryCount :=
         Nat.le_trans (Nat.le_succ round) hround
@@ -384,6 +385,7 @@ theorem paddedWorkHybridStateNat_classify {m queryCount round : Nat}
         refine Or.inr ⟨error, ?_⟩
         unfold paddedWorkHybridStateNat
         rw [herror]
+        rfl
 
 /-- A complete eager run on the exact BaseFold ledger therefore either
 succeeds with the exact terminal counters or fails only at the explicit
