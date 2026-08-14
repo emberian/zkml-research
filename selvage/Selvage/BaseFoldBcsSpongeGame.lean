@@ -63,11 +63,10 @@ theorem constructionDistinguisher_move {m queryCount : Nat}
     (verdict : List (SpAnswer Rate Cap) → Bool)
     (answers : Fin (m + queryCount) → SpAnswer Rate Cap)
     (j : Fin (m + queryCount)) :
-    (constructionDistinguisher statement receipt verdict).move
+  (constructionDistinguisher statement receipt verdict).move
         ((List.ofFn answers).take j) =
       constructionQuerySchedule statement receipt j := by
-  simp [constructionDistinguisher, List.length_take,
-    Nat.min_eq_left (Nat.le_of_lt j.isLt)]
+  simp [constructionDistinguisher, List.length_take]
 
 /-- Exact work identity for every hypothetical answer trace.  In particular,
 adaptivity in the surrounding game cannot cause this receipt schedule to be
@@ -80,12 +79,10 @@ theorem constructionDistinguisher_primitiveWorkOn_exact
     (constructionDistinguisher statement receipt verdict).primitiveWorkOn
         answers =
       transcriptPrimitiveWork statement receipt := by
-  unfold Distinguisher.primitiveWorkOn transcriptPrimitiveWork
+  unfold Distinguisher.primitiveWorkOn
+  simp_rw [constructionDistinguisher_move]
+  unfold transcriptPrimitiveWork
   rw [constructionQueries_eq_ofFn, List.map_ofFn, List.ofFn_eq_map]
-  apply congrArg List.sum
-  apply List.map_congr_left
-  intro j _
-  rw [constructionDistinguisher_move]
 
 /-- The precise ledger is therefore a valid `PrimitiveWorkBound` witness for
 the exact BaseFold receipt schedule in `SpongeIndiffWorkGame`. -/
