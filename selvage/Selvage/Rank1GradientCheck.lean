@@ -277,7 +277,13 @@ Two-variable Schwartz–Zippel: the defect `G − δ⊗x` is a nonzero table on
 `mi + mj` variables, and the landed `mle_zero_uniform_bound` prices its vanishing.
 At an `n × n` layer (`mi = mj = log₂ n`) the bound is `2·log₂ n/|F|`, e.g.
 `24/2^31` at `n = 4096` over BabyBear — and it is the ONLY soundness cost, because
-there are no rounds to union-bound over. -/
+there are no rounds to union-bound over.
+
+⚠ **Say the real number: `24/2^31 ≈ 2^-26.1` is NOT a security level.** One point of
+the BASE field buys 26 bits, and the deployment fix is the FIELD, not the layer —
+`Selvage/SmallField.lean`'s `securityBits` puts a degree-4 BabyBear extension at
+~116 bits, and repetition multiplies. The bound is logarithmic in `n`, so growing
+the layer costs almost nothing; sampling `r` from the base field costs everything. -/
 theorem rank1_sound {G : (Fin (mi + mj) → Bool) → F} {d : (Fin mi → Bool) → F}
     {x : (Fin mj → Bool) → F} (hG : G ≠ outerTable d x) :
     uniformProb (Fin (mi + mj) → F) (Rank1Accepts G d x)
