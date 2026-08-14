@@ -241,6 +241,183 @@ theorem paddedWorkPrefix_le_final {m queryCount : Nat}
       unfold paddedPrimitiveWorkSchedule paddedTranscriptPrimitiveWork
       rw [paddedConstructionQueries_eq_ofFn]
 
+/-! ## The eager runner reads the same static cost -/
+
+/-- Whenever the eager prefix-programmed runner is at a valid public-prefix
+length, it requests exactly the corresponding fixed BaseFold segment. -/
+theorem paddedWorkHybrid_need_exact {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (state : WorkHybridState Rate Cap)
+    (h : state.core.ans.length < m + queryCount) :
+    ((paddedConstructionDistinguisher statement receipt verdict).move
+        state.core.ans).primitiveCalls =
+      paddedRoundPrimitiveWork statement receipt
+        ⟨state.core.ans.length, h⟩ := by
+  rw [paddedConstructionDistinguisher_move_at_length statement receipt verdict
+    state.core.ans h]
+  rfl
+
+/-- Recursive presentation of eager prefix-programmed execution, exposing its
+numeric public prefix for the coupling induction. -/
+noncomputable def paddedWorkHybridStateNat {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    (round : Nat) → round ≤ m + queryCount →
+      Except WorkHybridError (WorkHybridState Rate Cap)
+  | 0, _ => .ok (WorkHybridState.initial coins)
+  | round + 1, hround =>
+      (paddedWorkHybridStateNat statement receipt verdict coins round
+        (Nat.le_trans (Nat.le_succ round) hround)).bind fun state =>
+        workHybridStep
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) state ⟨round, Nat.lt_of_succ_le hround⟩
+
+/-- The recursive eager presentation is the ordinary finite fold over the
+same work-stream steps. -/
+theorem paddedWorkHybridStateNat_eq_foldl {m queryCount round : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hround : round ≤ m + queryCount) :
+    paddedWorkHybridStateNat statement receipt verdict coins round hround =
+      Fin.foldl round
+        (fun result j => result.bind fun state =>
+          workHybridStep
+            (paddedConstructionDistinguisher statement receipt verdict)
+            (0, 0) state
+            ⟨j, Nat.lt_of_lt_of_le j.isLt hround⟩)
+        (.ok (WorkHybridState.initial coins)) := by
+  induction round with
+  | zero => simp [paddedWorkHybridStateNat]
+  | succ round ih =>
+      rw [Fin.foldl_succ_last]
+      unfold paddedWorkHybridStateNat
+      rw [ih (Nat.le_trans (Nat.le_succ round) hround)]
+      congr
+
+/-- At full query count the recursive eager presentation is the landed
+`workHybridRun` fold. -/
+theorem paddedWorkHybridStateNat_full_eq_run {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    paddedWorkHybridStateNat statement receipt verdict coins
+        (m + queryCount) (Nat.le_refl _) =
+      workHybridRun
+        (paddedConstructionDistinguisher statement receipt verdict)
+        (0, 0) coins := by
+  rw [paddedWorkHybridStateNat_eq_foldl, Fin.foldl_eq_finRange_foldl]
+  unfold workHybridRun
+  congr 1
+
+/-- On the exact receipt work vector, every eager prefix either has the same
+static answer/work/suffix counters as the deferred prefix or has failed with a
+named prefix-hybrid semantic error.  Exhaustion and malformed segmentation are
+excluded. -/
+theorem paddedWorkHybridStateNat_classify {m queryCount round : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hround : round ≤ m + queryCount) :
+    (∃ state,
+      paddedWorkHybridStateNat statement receipt verdict coins round hround =
+          .ok state ∧
+        state.core.ans.length = round ∧
+        state.core.work = paddedWorkPrefix statement receipt round ∧
+        state.remaining = (List.ofFn coins).drop
+          (paddedWorkPrefix statement receipt round)) ∨
+      ∃ error,
+        paddedWorkHybridStateNat statement receipt verdict coins round hround =
+          .error (.hybrid error) := by
+  induction round with
+  | zero =>
+      exact Or.inl ⟨WorkHybridState.initial coins, rfl, rfl,
+        by simp [WorkHybridState.initial], by simp [WorkHybridState.initial]⟩
+  | succ round ih =>
+      have hprev : round ≤ m + queryCount :=
+        Nat.le_trans (Nat.le_succ round) hround
+      rcases ih hprev with hsuccess | hfailure
+      · obtain ⟨state, hstate, hans, hwork, hremaining⟩ := hsuccess
+        have hroundLt : round < m + queryCount := Nat.lt_of_succ_le hround
+        have hneed :
+            ((paddedConstructionDistinguisher statement receipt verdict).move
+                state.core.ans).primitiveCalls =
+              paddedRoundPrimitiveWork statement receipt
+                ⟨round, hroundLt⟩ := by
+          rw [paddedWorkHybrid_need_exact statement receipt verdict state
+            (by omega)]
+          congr
+        have hprefixLe :=
+          paddedWorkPrefix_le_final statement receipt (round + 1)
+        have hprefixStep :=
+          paddedWorkPrefix_succ statement receipt round hroundLt
+        have henough :
+            ((paddedConstructionDistinguisher statement receipt verdict).move
+                state.core.ans).primitiveCalls ≤ state.remaining.length := by
+          rw [hremaining, List.length_drop, List.length_ofFn, hneed]
+          omega
+        rcases workHybridStep_ok_or_hybrid_of_need_le
+            (paddedConstructionDistinguisher statement receipt verdict)
+            (0, 0) state ⟨round, hroundLt⟩ henough with hnext | herror
+        · obtain ⟨next, hnext⟩ := hnext
+          refine Or.inl ⟨next, ?_, ?_, ?_, ?_⟩
+          · unfold paddedWorkHybridStateNat
+            rw [hstate]
+            exact hnext
+          · rw [workHybridStep_ans_length _ _ state next _ hnext, hans]
+          · rw [workHybridStep_work_exact _ _ state next _ hnext,
+              hwork, hneed, hprefixStep]
+          · rw [workHybridStep_remaining_exact _ _ state next _ hnext,
+              hremaining, hneed, List.drop_drop, ← hprefixStep]
+        · obtain ⟨error, herror⟩ := herror
+          refine Or.inr ⟨error, ?_⟩
+          unfold paddedWorkHybridStateNat
+          rw [hstate]
+          exact herror
+      · obtain ⟨error, herror⟩ := hfailure
+        refine Or.inr ⟨error, ?_⟩
+        unfold paddedWorkHybridStateNat
+        rw [herror]
+
+/-- A complete eager run on the exact BaseFold ledger therefore either
+succeeds with the exact terminal counters or fails only at the explicit
+semantic prefix-programming boundary. -/
+theorem paddedWorkHybridRun_classify {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    (∃ state,
+      workHybridRun
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) coins = .ok state ∧
+        state.core.ans.length = m + queryCount ∧
+        state.core.work = paddedTranscriptPrimitiveWork statement receipt ∧
+        state.remaining = []) ∨
+      ∃ error,
+        workHybridRun
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) coins = .error (.hybrid error) := by
+  rcases paddedWorkHybridStateNat_classify statement receipt verdict coins
+      (Nat.le_refl (m + queryCount)) with hsuccess | hfailure
+  · obtain ⟨state, hrun, hans, hwork, hremaining⟩ := hsuccess
+    refine Or.inl ⟨state, ?_, hans, ?_, ?_⟩
+    · rw [← paddedWorkHybridStateNat_full_eq_run]
+      exact hrun
+    · simpa [paddedWorkPrefix_final] using hwork
+    · rw [hremaining, paddedWorkPrefix_final]
+      simp
+  · obtain ⟨error, hrun⟩ := hfailure
+    refine Or.inr ⟨error, ?_⟩
+    rw [← paddedWorkHybridStateNat_full_eq_run]
+    exact hrun
+
 /-! ## The deferred runner reads the same static cost -/
 
 /-- Whenever the deferred runner is at a valid public-prefix length, the work

@@ -105,6 +105,24 @@ theorem workHybridStep_work_exact {q : Nat}
     · contradiction
   · contradiction
 
+/-- Every successful work-stream step appends exactly one public answer. -/
+theorem workHybridStep_ans_length {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (st next : WorkHybridState Rate Cap) (j : Fin q)
+    (h : workHybridStep D iv st j = .ok next) :
+    next.core.ans.length = st.core.ans.length + 1 := by
+  unfold workHybridStep at h
+  dsimp only at h
+  split at h
+  · split at h
+    · split at h
+      · injection h with hnext
+        subst next
+        exact prefixHybridStep_ans_length D iv _ st.core _ j ‹_›
+      · contradiction
+    · contradiction
+  · contradiction
+
 /-- A successful step drops exactly the selected query's primitive cost from
 the front of the remaining work stream. -/
 theorem workHybridStep_remaining_exact {q : Nat}
@@ -123,6 +141,33 @@ theorem workHybridStep_remaining_exact {q : Nat}
       · contradiction
     · contradiction
   · contradiction
+
+/-- With enough supplied work, the eager work-stream step cannot fail for an
+administrative reason: exact segment shape is derivable from its length.  Its
+only remaining failure is an explicit prefix-hybrid semantic error. -/
+theorem workHybridStep_ok_or_hybrid_of_need_le {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (st : WorkHybridState Rate Cap) (j : Fin q)
+    (hneed : (D.move st.core.ans).primitiveCalls ≤ st.remaining.length) :
+    (∃ next, workHybridStep D iv st j = .ok next) ∨
+      ∃ error, workHybridStep D iv st j = .error (.hybrid error) := by
+  have hlength :
+      (st.remaining.take
+          (D.move st.core.ans).primitiveCalls).length =
+        (D.move st.core.ans).primitiveCalls := by
+    rw [List.length_take]
+    omega
+  obtain ⟨roundCoins, hcoins⟩ :=
+    SpQuery.prefixCoins_some_of_length (D.move st.core.ans)
+      (st.remaining.take (D.move st.core.ans).primitiveCalls) hlength
+  unfold workHybridStep
+  dsimp only
+  rw [if_pos hlength, hcoins]
+  cases hstep : prefixHybridStep D iv (fun _ => roundCoins) st.core j with
+  | ok next =>
+      exact Or.inl ⟨⟨next,
+        st.remaining.drop (D.move st.core.ans).primitiveCalls⟩, rfl⟩
+  | error error => exact Or.inr ⟨error, rfl⟩
 
 /-- Execute all public rounds against one fixed primitive-work vector. -/
 noncomputable def workHybridRun {q work : Nat}
