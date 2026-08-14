@@ -131,8 +131,8 @@ first absorbed blocks are distinct before any receipt-controlled payload. -/
 theorem padded_challenge_query_not_prefix {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
     (j : Fin m) (a : Fin queryCount) :
-    ¬ paddedChallengeMessage statement receipt j <+:
-      paddedQueryMessage statement receipt a := by
+    ¬ (paddedChallengeMessage statement receipt j <+:
+      paddedQueryMessage statement receipt a) := by
   intro prefix
   have first := prefix.getElem (i := 0) (by
     simp [paddedChallengeMessage, padMessage, challengeMessage])
@@ -144,8 +144,8 @@ theorem padded_challenge_query_not_prefix {m queryCount : Nat}
 theorem padded_query_challenge_not_prefix {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
     (j : Fin m) (a : Fin queryCount) :
-    ¬ paddedQueryMessage statement receipt a <+:
-      paddedChallengeMessage statement receipt j := by
+    ¬ (paddedQueryMessage statement receipt a <+:
+      paddedChallengeMessage statement receipt j) := by
   intro prefix
   have first := prefix.getElem (i := 0) (by
     simp [paddedQueryMessage, padMessage, queryMessage])
@@ -191,8 +191,8 @@ theorem padded_query_not_prefix_of_ne {m queryCount : Nat}
     (hcount : queryCount ≤ modulus)
     (statement : Statement m) (receipt : Receipt m queryCount)
     (left right : Fin queryCount) (hne : left ≠ right) :
-    ¬ paddedQueryMessage statement receipt left <+:
-      paddedQueryMessage statement receipt right := by
+    ¬ (paddedQueryMessage statement receipt left <+:
+      paddedQueryMessage statement receipt right) := by
   intro prefix
   apply hne
   apply paddedQueryMessage_injective hcount statement receipt
