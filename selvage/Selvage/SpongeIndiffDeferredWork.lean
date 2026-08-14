@@ -149,6 +149,39 @@ theorem deferredWorkStep_ans_length {q : Nat}
       exact deferredIdealStepWithCoin_ans_length D iv state.core j _
   · contradiction
 
+omit [DecidableEq Rate] in
+/-- The deferred runner has no semantic failure mode once enough work coins
+remain.  Positivity of `SpQuery.primitiveCalls` also rules out the nominal
+empty-segment error. -/
+theorem deferredWorkStep_exists_of_need_le {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (state : DeferredWorkState Rate Cap) (j : Fin q)
+    (hneed : (D.move state.core.ans).primitiveCalls ≤
+      state.remaining.length) :
+    ∃ next, deferredWorkStep D iv state j = .ok next := by
+  have hlength :
+      (state.remaining.take
+          (D.move state.core.ans).primitiveCalls).length =
+        (D.move state.core.ans).primitiveCalls := by
+    rw [List.length_take]
+    omega
+  have hnonempty :
+      state.remaining.take (D.move state.core.ans).primitiveCalls ≠ [] := by
+    intro hempty
+    have hzero := congrArg List.length hempty
+    rw [hlength] at hzero
+    exact (Nat.ne_of_gt (SpQuery.primitiveCalls_pos _)) hzero
+  unfold deferredWorkStep
+  dsimp only
+  rw [if_pos hlength]
+  cases hused :
+      state.remaining.take (D.move state.core.ans).primitiveCalls with
+  | nil => exact (hnonempty hused).elim
+  | cons coin rest =>
+      exact ⟨⟨deferredIdealStepWithCoin D iv state.core j coin,
+        state.remaining.drop (D.move state.core.ans).primitiveCalls,
+        state.work + (D.move state.core.ans).primitiveCalls⟩, rfl⟩
+
 /-- Execute every public round against one fixed work vector. -/
 noncomputable def deferredWorkRun {q work : Nat}
     (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
@@ -287,6 +320,9 @@ end SpongeDeferredWorkExample
 #guard_msgs (whitespace := lax) in #print axioms deferredWorkStep_work_exact
 /-- info: 'Minidregg.Selvage.deferredWorkStep_ans_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms deferredWorkStep_ans_length
+/-- info: 'Minidregg.Selvage.deferredWorkStep_exists_of_need_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms deferredWorkStep_exists_of_need_le
 /-- info: 'Minidregg.Selvage.SpongeDeferredWorkExample.revealed_prefix_answer' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SpongeDeferredWorkExample.revealed_prefix_answer
