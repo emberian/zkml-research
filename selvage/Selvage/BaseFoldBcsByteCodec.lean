@@ -219,7 +219,9 @@ def decodeRates : Nat → List UInt8 → Option (List Rate × List UInt8)
   induction blocks with
   | nil => simp [encodeRates]
   | cons block blocks ih =>
-      simp [encodeRates, ih, Nat.mul_succ, Nat.add_comm]
+      simp only [encodeRates, List.length_append, encodeRate_length,
+        List.length_cons, ih]
+      omega
 
 theorem decodeRates_encodeRates_append (blocks : List Rate)
     (suffix : List UInt8) :
