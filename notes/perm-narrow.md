@@ -187,19 +187,32 @@ the narrow arm in §8d.
 ## §7 — BUILD EVIDENCE
 
 ```
-lake build Dregg2.Circuit.Emit.Poseidon2RoundGates   ✔ (73s, no warnings from the file)
-lake build                                           (whole tree)
+lake build Dregg2.Circuit.Emit.Poseidon2RoundGates   ✔ 73s, no warnings from the file
+lake build Dregg2                                    ✔ Build completed successfully (10,698 jobs)
+lake env lean --run EmitTableAirs.lean               ✔ all 11 table-AIR artifacts BYTE-IDENTICAL
 scripts/check-guard-discipline.py                    Poseidon2RoundGates.lean unchanged at 83
                                                      (this lane added ZERO `#guard`s — every new
                                                      assertion is a named theorem)
 ```
 
+⚑ **The deployed artifacts do not move.** `EmitTableAirs` was re-run and every one of the eleven
+files under `circuit/descriptors/table-airs/` — `dregg-ir2-chip-v1.json` (159,195 B) included —
+compares byte-identical to the checked-in copy. The narrow arm is landed *beside* the deployed
+emission, not in place of it.
+
+⚠ The whole-workspace `lake build` is RED in `KimchiStepMainPins01/03/05` (another lane's in-flight
+Mina work). Verified by import closure that none of the three reaches `Poseidon2RoundGates`; the
+`Dregg2` target, which excludes them, is green.
+
 ⚠ The guard-discipline gate is RED at HEAD from three OTHER modules (`KimchiStepMainPins13` +1,
 `TauPrefixMonotone` +16, `BlocklaceFinality` +30) plus 17 stale rows. Not this lane's; stated so the
 red is not read as this diff.
 
-Axiom accounting in the new section: kernel-clean + `#assert_axioms` on all eight relating theorems;
-`native_decide` + `#assert_compiled` on the ten emitted-object computations (counts, degree, KAT,
-teeth, model differential, probes) — the same evaluator a `#guard` runs on, named rather than silent.
-`narrow_aux_cols_is_141`, `narrow_perm_defs_is_1286` and `narrow_blocks_tile` are `rfl`/`decide`,
-i.e. strictly stronger than the guards they would have been.
+Axiom accounting in the new section: **13 `#assert_axioms`** (kernel-clean — every relating theorem,
+plus `narrow_aux_cols_is_141` / `narrow_perm_defs_is_1286` / `narrow_blocks_tile`, which are
+`rfl`/`decide` and so strictly stronger than the guards they would have been) and **12
+`#assert_compiled`** (the emitted-object computations and the two refutation probes) — the same
+evaluator a `#guard` runs on, named rather than silent. No `sorry`, no new axiom.
+
+⚠ The landed commit message says "eight relating theorems / ten computations"; the true counts are
+13 and 12. Recorded here rather than amended — an amend takes the index, and this is a shared tree.
