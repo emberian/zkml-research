@@ -44,21 +44,21 @@ theorem friRawAdaptiveEquivocates_binaryMerkle_collision
   rcases hequiv with ⟨j, opening, a, _hopen, hquery⟩
   rcases hquery with hleft | hright | hnext
   · exact ⟨⟨j, lt_trans j.isLt (Nat.lt_succ_self m)⟩,
-      Nat.le_of_lt (lt_trans j.isLt (Nat.lt_succ_self m)),
+      Nat.le_of_lt j.isLt,
       positionEquivocation_implies_collision H (ell - j)
         (st.rootAt r j (Nat.le_of_lt j.isLt))
         ((T.data j j.isLt).sec (Q j a))
         (opening a).left (opening a).leftPath
         (st.wordAt r j (Nat.le_of_lt j.isLt)) hleft⟩
   · exact ⟨⟨j, lt_trans j.isLt (Nat.lt_succ_self m)⟩,
-      Nat.le_of_lt (lt_trans j.isLt (Nat.lt_succ_self m)),
+      Nat.le_of_lt j.isLt,
       positionEquivocation_implies_collision H (ell - j)
         (st.rootAt r j (Nat.le_of_lt j.isLt))
         ((T.data j j.isLt).neg ((T.data j j.isLt).sec (Q j a)))
         (opening a).right (opening a).rightPath
         (st.wordAt r j (Nat.le_of_lt j.isLt)) hright⟩
   · exact ⟨⟨j + 1, Nat.succ_lt_succ j.isLt⟩,
-      Nat.le_of_lt (Nat.succ_lt_succ j.isLt),
+      Nat.succ_le_iff.mpr j.isLt,
       positionEquivocation_implies_collision H (ell - (j + 1))
         (st.rootAt r (j + 1) (Nat.succ_le_iff.mpr j.isLt)) (Q j a)
         (opening a).next (opening a).nextPath
