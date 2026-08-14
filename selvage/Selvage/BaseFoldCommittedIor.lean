@@ -128,6 +128,65 @@ def BaseFoldCommittedIorAccepts
     scChain H (prover (chalOf r)) (chalOf r) m =
       st.wordAt r m le_rfl k * eqMle z r
 
+/-- If the accepted committed terminal word is the literal terminal derived
+from `word`, the sampled committed verifier refines to the already-proved
+full-word IOR event.  This is the algebra/query boundary: the only new fact
+needed from the sampled Merkle game is terminal-word consistency. -/
+theorem BaseFoldCommittedIorAccepts.toFullWord
+    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+    (T : FoldingTower F ι m) (st : FriAdaptiveTranscript S)
+    (z : Fin m → F) (H : F) (word : ι 0 → F)
+    (prover : (ℕ → F) → ℕ → Polynomial F) (qCount : ℕ)
+    (r : Fin m → F) (Q : FriIndependentQuerySchedule ι m qCount)
+    (hfinal : st.wordAt r m le_rfl = T.word word (chalExt r) m le_rfl)
+    (hacc : BaseFoldCommittedIorAccepts S T st z H prover qCount r Q) :
+    BaseFoldIorAccepts T z H word prover r := by
+  refine ⟨hacc.1, hacc.2.1, ?_, ?_⟩
+  · unfold proximityTest
+    rw [← hfinal]
+    exact hacc.2.2.1.2
+  · intro k
+    rw [← hfinal]
+    exact hacc.2.2.2 k
+
+section SoundnessHandoff
+
+variable [Fintype F] [DecidableEq F] [∀ n, Fintype (ι n)]
+
+/-- ⭐ **Committed-to-IOR soundness handoff.**  If every accepted sampled
+transcript has the correct derived terminal, then adding an arbitrary uniform
+query schedule does not change the arbitrary-word BaseFold algebraic bound
+`m * 3 / |F|`.  A concrete sampled protocol must prove `hfinal` off its named
+query-miss/equivocation event; this theorem deliberately does not erase that
+remaining branch. -/
+theorem basefoldCommittedIor_exact_sound_of_terminalConsistency
+    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+    (T : FoldingTower F ι m) (st : FriAdaptiveTranscript S)
+    (z : Fin m → F) (H : F) (word : ι 0 → F)
+    (prover : (ℕ → F) → ℕ → Polynomial F) (qCount : ℕ)
+    (hne : ∀ n, n ≤ m → Nonempty (ι n))
+    (hfalse : ¬ BaseFoldExactClaim T z H word)
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (χ : ℕ → F) (i : ℕ), i < m →
+      (prover χ i).degree < ((2 + 1 : ℕ) : WithBot ℕ))
+    (hfinal : ∀ (r : Fin m → F)
+        (Q : FriIndependentQuerySchedule ι m qCount),
+      BaseFoldCommittedIorAccepts S T st z H prover qCount r Q →
+        st.wordAt r m le_rfl = T.word word (chalExt r) m le_rfl) :
+    uniformProb
+      (FriIndependentQuerySchedule ι m qCount × (Fin m → F))
+      (fun x => BaseFoldCommittedIorAccepts S T st z H prover qCount x.2 x.1)
+      ≤ (m : ℝ) * (3 / Fintype.card F) := by
+  apply uniformProb_prod_le
+  · positivity
+  · intro Q
+    refine le_trans (uniformProb_mono fun r hacc =>
+      BaseFoldCommittedIorAccepts.toFullWord S T st z H word prover qCount r Q
+        (hfinal r Q hacc) hacc) ?_
+    exact basefoldIor_exact_sound T z H word prover hne hfalse hpm hdeg
+
+end SoundnessHandoff
+
 /-- ⭐ **End-to-end interactive completeness at sampled-commitment
 resolution.**  The honest adaptive roots, all sampled authentication paths,
 the BaseFold degree-two sumcheck, terminal code check, and braided MLE equation
