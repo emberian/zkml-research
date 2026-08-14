@@ -3,11 +3,11 @@
 
 The `.pad1` BaseFold profile is already injective at the semantic rate-block
 layer.  This module pins the next deployment boundary: every BabyBear value is
-four canonical little-endian bytes, and every 12-lane Poseidon2 rate block is
+four canonical little-endian bytes, and every 8-lane Poseidon2 rate block is
 the lane-major concatenation of those words.
 
 Decoding is strict.  A field word must contain exactly four bytes and denote a
-natural below the BabyBear modulus; a rate block must decode exactly twelve
+natural below the BabyBear modulus; a rate block must decode exactly eight
 words and leave no trailing bytes.  The resulting `LawfulCodec Rate` proves
 round-trip and hence byte injectivity.  It does not identify a handwritten
 native implementation with this Lean decoder, and it does not discharge the
@@ -87,7 +87,8 @@ def decodeField (bytes : List UInt8) : Option F :=
   have denoted :
       Bignum.denoteNat 256 (Bignum.digitsLE 256 4 value.val) = value.val :=
     Bignum.denoteNat_digitsLE (by norm_num) 4 value.val fits
-  simp [decodeField, encodeField, denoted, ZMod.natCast_zmod_val]
+  have canonical : value.val < modulus := ZMod.val_lt value
+  simp [decodeField, encodeField, denoted, canonical]
 
 theorem decodeField_wrong_length (bytes : List UInt8)
     (wrong : bytes.length ≠ 4) :
@@ -126,7 +127,8 @@ def decodeFields : Nat → List UInt8 → Option (List F × List UInt8)
     (encodeFields values).length = 4 * values.length := by
   induction values with
   | nil => simp [encodeFields]
-  | cons value values ih => simp [encodeFields, ih, Nat.mul_succ]
+  | cons value values ih =>
+      simp [encodeFields, ih, Nat.mul_succ, Nat.add_comm]
 
 /-- Parsing an encoded list consumes exactly that list and exposes the caller's
 suffix unchanged.  This is the framing law used by the rate decoder. -/
@@ -140,10 +142,10 @@ theorem decodeFields_encodeFields_append (values : List F)
       simp [encodeFields, decodeFields, encodeField_length,
         decodeField_encodeField, ih]
 
-/-! ## Exact 12-lane rate blocks -/
+/-! ## Exact 8-lane rate blocks -/
 
 def listToRate? (values : List F) : Option Rate :=
-  if exact : values.length = 12 then
+  if exact : values.length = 8 then
     some fun lane => values.get (Fin.cast exact.symm lane)
   else none
 
@@ -159,20 +161,21 @@ def encodeRate (block : Rate) : List UInt8 :=
   encodeFields (List.ofFn block)
 
 def decodeRate (bytes : List UInt8) : Option Rate :=
-  match decodeFields 12 bytes with
+  match decodeFields 8 bytes with
   | some (values, []) => listToRate? values
   | _ => none
 
 @[simp] theorem encodeRate_length (block : Rate) :
-    (encodeRate block).length = 48 := by
+    (encodeRate block).length = 32 := by
   simp [encodeRate]
 
 @[simp] theorem decodeRate_encodeRate (block : Rate) :
     decodeRate (encodeRate block) = some block := by
-  rw [decodeRate, encodeRate,
-    show encodeFields (List.ofFn block) =
-      encodeFields (List.ofFn block) ++ [] by simp,
-    decodeFields_encodeFields_append]
+  have parsed :
+      decodeFields 8 (encodeFields (List.ofFn block)) =
+        some (List.ofFn block, []) := by
+    simpa using decodeFields_encodeFields_append (List.ofFn block) []
+  rw [decodeRate, encodeRate, parsed]
   exact listToRate_ofFn block
 
 theorem encodeRate_injective : Function.Injective encodeRate := by
@@ -183,7 +186,11 @@ theorem encodeRate_injective : Function.Injective encodeRate := by
 theorem decodeRate_trailing_rejected (block : Rate)
     (suffix : List UInt8) (nonempty : suffix ≠ []) :
     decodeRate (encodeRate block ++ suffix) = none := by
-  rw [decodeRate, encodeRate, decodeFields_encodeFields_append]
+  have parsed :
+      decodeFields 8 (encodeFields (List.ofFn block) ++ suffix) =
+        some (List.ofFn block, suffix) := by
+    simpa using decodeFields_encodeFields_append (List.ofFn block) suffix
+  rw [decodeRate, encodeRate, parsed]
   cases suffix with
   | nil => contradiction
   | cons byte suffix => rfl
@@ -199,10 +206,11 @@ def encodePaddedMessage (message : List Rate) : List UInt8 :=
   (padMessage message).flatMap encodeRate
 
 @[simp] theorem encodePaddedMessage_length (message : List Rate) :
-    (encodePaddedMessage message).length = 48 * (message.length + 1) := by
+    (encodePaddedMessage message).length = 32 * (message.length + 1) := by
   rw [encodePaddedMessage, List.length_flatMap]
   simp only [encodeRate_length, List.map_const', List.sum_replicate,
     padMessage_length]
+  rw [nsmul_eq_mul, Nat.mul_comm]
 
 #check @decodeField_encodeField
 #check @decodeField_modulus_rejected
