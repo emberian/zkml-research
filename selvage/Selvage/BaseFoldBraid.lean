@@ -34,6 +34,7 @@ noncomputable def basefoldHonest (table : (Fin m → Bool) → F)
 
 /-- The public evaluation claim is exactly the Boolean total walked by the
 BaseFold sumcheck. -/
+omit [Fintype F] [DecidableEq F] in
 theorem basefold_claim_eq_sum (table : (Fin m → Bool) → F) (z : Fin m → F) :
     ∑ b, (table b * basefoldEqTable z b - 0) = mle table z := by
   rw [mle]
@@ -41,11 +42,13 @@ theorem basefold_claim_eq_sum (table : (Fin m → Bool) → F) (z : Fin m → F)
     simp only [basefoldEqTable, sub_zero]
 
 /-- The BaseFold honest family is prefix-measurable. -/
+omit [Fintype F] [DecidableEq F] in
 theorem basefoldHonest_prefixMeasurable (table : (Fin m → Bool) → F)
     (z : Fin m → F) : PrefixMeasurable (basefoldHonest table z) :=
   quadHonest_prefixMeasurable table (basefoldEqTable z) (fun _ => 0)
 
 /-- Every BaseFold sumcheck message has degree at most two. -/
+omit [Fintype F] [DecidableEq F] in
 theorem basefoldHonest_degree (table : (Fin m → Bool) → F) (z : Fin m → F)
     (χ : ℕ → F) (i : ℕ) (hi : i < m) :
     (basefoldHonest table z χ i).degree < ((2 + 1 : ℕ) : WithBot ℕ) :=
@@ -72,8 +75,12 @@ theorem basefold_sumcheck_terminal (table : (Fin m → Bool) → F)
       = mle table r * eqMle z r := by
   have h := scChain_quadHonest_final table (basefoldEqTable z) (fun _ => 0) r
   rw [basefold_claim_eq_sum table z] at h
-  simpa only [basefoldHonest, basefoldEqTable, mle_zero, sub_zero,
-    ← eqMle_eq_mle z] using h
+  have heq : mle (basefoldEqTable z) r = eqMle z r := by
+    rw [eqMle_eq_mle z]
+    rfl
+  have hzero : mle (fun _ : Fin m → Bool => (0 : F)) r = 0 := by
+    simp [mle]
+  simpa only [basefoldHonest, heq, hzero, sub_zero] using h
 
 /-- Perfect completeness of the sumcheck leg, for every challenge vector. -/
 theorem basefold_sumcheck_complete (table : (Fin m → Bool) → F)
@@ -100,6 +107,7 @@ theorem basefold_sumcheck_soundness {table : (Fin m → Bool) → F}
 
 /-- `chalOf` (sumcheck) and `chalExt` (folding tower) are the same padded
 challenge stream.  The braid does not silently sample twice. -/
+omit [Fintype F] [DecidableEq F] in
 theorem chalOf_eq_chalExt (r : Fin m → F) : chalOf r = chalExt r := rfl
 
 /-- ⭐ The algebraic braid: the sumcheck terminal and the RS descent terminal
