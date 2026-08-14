@@ -215,8 +215,71 @@ so **those terms land at or above the query term.**
 same set** — the two papers put the interleaving factor on opposite axes, so
 taking both at face value makes them look like different metrics.
 
-**The real gap is ring-switching's connectors**: no `Basis` of an extension
-over a subfield exists in 400 files, and `liftWord` points the wrong way.
+## ✅ STEP 3 LANDED: the ring-switching connectors
+
+`Theory/ExtensionBasis.lean` + `Selvage/RingSwitching.lean` (`eb1c6bf`,
+`f5b604f`), whole tree green.
+
+**Diamond–Posen read properly**: ring-switching **is** a compiler, and says so
+— Construction 3.1 is **agnostic to the PCS it compiles**, naming Blaze, WHIR,
+*"and even large-field schemes that haven't been created yet."* **Theorem 3.5
+is STRAIGHT-LINE** (Def 2.9: the emulator outputs `t` immediately after the
+commitment, *before seeing `r`*), its proof is three lines, and step 3 is
+literally *"by reversing Definition 2.2."* Interface required: **exactly three
+call sites**, plus completeness and Def-2.9 security. ⚑ **A fixpoint nobody
+had flagged: `Setup′` chooses `L`, hence `κ`, hence `ℓ′` — the compiler does
+not.**
+
+**The connectors**, with Mathlib carrying more than expected (`Basis.reindex`,
+`Basis.equivFun`, `Basis.tensorProduct`): what was genuinely missing is **the
+cube reindexing `Fin (2^κ) ≃ B_κ` and the packing map on it.**
+- `packEquiv` states Def 2.2 as a **`K`-linear equivalence**, so ⚑ **`.symm`
+  *is* Theorem 3.5's extraction step** — the extractor is the inverse, not a
+  construction.
+- ⚑ **`towerExt_finrank`**: every sub-level extension of the binary tower has
+  degree an exact power of two with **κ = d exactly** — *crossing `d` tower
+  levels consumes `d` multilinear variables.* **That is why `B_κ`, not
+  `Fin (2^κ)`, is the right index type.**
+- ⚑ **`liftWord` was not pointing the wrong way — it is the packing map at
+  κ = 0** (`liftWord_eq_packOf_zero`), its degenerate instance at the one arity
+  that contracts nothing; `liftWord_not_packing` refuses it at every real
+  extension, and `unpackWord` supplies the missing direction.
+- ⚑ **`tensorMul_not_injective` turns the paper's Remark 3.3 into a theorem**:
+  a verifier handed one `L`-element instead of the array `ŝ` is **unsound**,
+  not merely lossier.
+
+**Two things already in the tree that nobody knew were the paper's**:
+`eqMle_zero_test` **is Theorem 3.5's Schwartz–Zippel leg verbatim**, and
+**the straight-line extractor Def 2.9 demands is already code-agnostic**
+(`subUdRecover` carries no characteristic hypothesis and an abstract domain,
+with the additive distance bound inside its radius). ***Missing is wiring, not
+mathematics.***
+
+## ⚑⚑ THREE INDEPENDENT SOURCES CONVERGE ON ONE GAP
+
+The handoff is `RingSwitchTarget = Complete + Extractable`, and **exactly one
+item blocks**: `keystone_basis_ambiguity` makes **`Extractable` FALSE unless
+the additive-FRI transcript binds the ORDERED basis, not just the domain.**
+
+- The **BaseFold-additive lane** found it by constructing the GF(16)
+  counterexample.
+- The **ring-switching lane** found it independently as the blocker in its
+  handoff list.
+- ⚑ **And Diamond–Posen's own Corollary 4.5 is the same fact from the other
+  side.**
+
+**That is overdetermined. Binding the ordered basis in the transcript is the
+next concrete piece of work on this path**, and it is a change to
+`Compiler/Tower256AdditiveFriController.lean`, which today binds a sponge
+`domainId`.
+
+## Vacuity discipline, self-caught
+
+The ring-switching lane caught one **in its own work**: its first
+`RingSwitchSecure` was `∃ err : ℝ, err ≤ bound` — **trivially provable, i.e.
+exactly the sin.** Replaced with an assembly step constrained by a supplied
+accepting set (**refutable by a wrong constant**) plus a theorem that the
+antecedent is satisfiable.
 
 ## Corrections to my brief
 
