@@ -79,10 +79,14 @@ theorem constructionDistinguisher_primitiveWorkOn_exact
     (constructionDistinguisher statement receipt verdict).primitiveWorkOn
         answers =
       transcriptPrimitiveWork statement receipt := by
-  unfold Distinguisher.primitiveWorkOn
-  simp_rw [constructionDistinguisher_move]
-  unfold transcriptPrimitiveWork
-  rw [constructionQueries_eq_ofFn, List.map_ofFn, List.ofFn_eq_map]
+  unfold Distinguisher.primitiveWorkOn transcriptPrimitiveWork
+  conv_rhs =>
+    rw [constructionQueries_eq_ofFn, List.map_ofFn, List.ofFn_eq_map]
+  simp only [List.map_map]
+  apply congrArg List.sum
+  apply List.map_congr_left
+  intro j _
+  rw [constructionDistinguisher_move]
 
 /-- The precise ledger is therefore a valid `PrimitiveWorkBound` witness for
 the exact BaseFold receipt schedule in `SpongeIndiffWorkGame`. -/
