@@ -205,8 +205,8 @@ authenticating every queried fibre and satisfying every exact fold equation.
 The opening data remains adversarial/existential; binding removes it in the
 soundness theorem below. -/
 def FriRoundQueriesAccept
-    (Sbig : BindingCommitment RootBig F ι OpBig)
-    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+    (Sbig : OpeningScheme RootBig F ι OpBig)
+    (Ssmall : OpeningScheme RootSmall F κ OpSmall)
     (D : FoldingData F dom domSq) (rt : RootBig) (rt' : RootSmall)
     (alpha : F) {qCount : ℕ} (q : Fin qCount → κ) : Prop :=
   ∃ opening : ∀ _a : Fin qCount, FriQueryOpening F OpBig OpSmall,
@@ -214,13 +214,67 @@ def FriRoundQueriesAccept
 
 /-- Finite set of accepted query schedules for one fixed committed round. -/
 noncomputable def friRoundQueryAcceptSet
-    (Sbig : BindingCommitment RootBig F ι OpBig)
-    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+    (Sbig : OpeningScheme RootBig F ι OpBig)
+    (Ssmall : OpeningScheme RootSmall F κ OpSmall)
     (D : FoldingData F dom domSq) (rt : RootBig) (rt' : RootSmall)
     (alpha : F) (qCount : ℕ) : Finset (Fin qCount → κ) :=
   @Finset.filter (Fin qCount → κ)
     (FriRoundQueriesAccept Sbig Ssmall D rt rt' alpha)
     (Classical.decPred _) Finset.univ
+
+/-- A retained equivocation witness from an accepted query batch: all opening
+checks and fold equations for one submitted batch are preserved, together
+with a named query whose three-symbol opening conflicts with a committed
+word. -/
+def FriRoundQueriesEquivocate
+    (Sbig : OpeningScheme RootBig F ι OpBig)
+    (Ssmall : OpeningScheme RootSmall F κ OpSmall)
+    (D : FoldingData F dom domSq) (rt : RootBig) (rt' : RootSmall)
+    (w : ι → F) (w' : κ → F) (alpha : F)
+    {qCount : ℕ} (q : Fin qCount → κ) : Prop :=
+  ∃ (opening : ∀ _a : Fin qCount, FriQueryOpening F OpBig OpSmall)
+      (a : Fin qCount),
+    (∀ b, OpenedFriQuery Sbig Ssmall D rt rt' alpha (q b) (opening b)) ∧
+    FriQueryEquivocation Sbig Ssmall D rt rt' w w' (q a) (opening a)
+
+/-- **Raw sampled-batch split.**  An accepted batch against roots produced
+from fixed words either pins every sampled fold equation or retains a concrete
+equivocation witness at one named query.  This theorem uses only the opening
+scheme actually executed by the verifier. -/
+theorem friRoundQueries_pin_or_equivocation
+    (Sbig : OpeningScheme RootBig F ι OpBig)
+    (Ssmall : OpeningScheme RootSmall F κ OpSmall)
+    (D : FoldingData F dom domSq)
+    {w : ι → F} {w' : κ → F} {rt : RootBig} {rt' : RootSmall}
+    (hrt : rt = Sbig.commit w) (hrt' : rt' = Ssmall.commit w')
+    (alpha : F) {qCount : ℕ} (q : Fin qCount → κ)
+    (hacc : FriRoundQueriesAccept Sbig Ssmall D rt rt' alpha q) :
+    (∀ a, w' (q a) = fold D w alpha (q a)) ∨
+      FriRoundQueriesEquivocate Sbig Ssmall D rt rt' w w' alpha q := by
+  classical
+  obtain ⟨opening, hopen⟩ := hacc
+  by_cases hpins : ∀ a, w' (q a) = fold D w alpha (q a)
+  · exact Or.inl hpins
+  · right
+    push_neg at hpins
+    obtain ⟨a, ha⟩ := hpins
+    refine ⟨opening, a, hopen, ?_⟩
+    rcases openedFriQuery_pins_or_equivocation Sbig Ssmall D hrt hrt'
+      (hopen a) with hpinned | hequiv
+    · exact False.elim (ha hpinned)
+    · exact hequiv
+
+/-- Perfect binding refutes the retained batch-equivocation branch. -/
+theorem not_friRoundQueriesEquivocate
+    (Sbig : BindingCommitment RootBig F ι OpBig)
+    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+    (D : FoldingData F dom domSq) (rt : RootBig) (rt' : RootSmall)
+    (w : ι → F) (w' : κ → F) (alpha : F)
+    {qCount : ℕ} (q : Fin qCount → κ) :
+    ¬ FriRoundQueriesEquivocate Sbig Ssmall D rt rt' w w' alpha q := by
+  rintro ⟨opening, a, hopen, hequiv⟩
+  exact not_friQueryEquivocation Sbig Ssmall D rt rt' w w' (q a)
+    (opening a) hequiv
 
 /-- **Fixed-round query-miss count, with adversarial opening data.**  If the
 committed next word is `tau`-far from the honest fold of the committed source
@@ -511,7 +565,8 @@ def queryOne : Fin 1 → Fin 2 := fun _ => 1
 to query the coordinate on which the two folded words agree.  Thus the query
 miss event is genuinely inhabited. -/
 theorem spike_wrongChallenge_queryZero_accepts :
-    FriRoundQueriesAccept (idealSchemes 0) (idealSchemes 1) data0
+    FriRoundQueriesAccept (idealSchemes 0).toOpeningScheme
+      (idealSchemes 1).toOpeningScheme data0
       ((idealSchemes 0).commit spikeWord)
       ((idealSchemes 1).commit (fold data0 spikeWord 3)) 1 queryZero := by
   refine ⟨fun _ => {
@@ -531,7 +586,8 @@ theorem spike_wrongChallenge_queryZero_accepts :
 /-- Querying the differing coordinate rejects the same fixed roots.  Binding
 makes adversarial opening data unable to repair the false fold equation. -/
 theorem spike_wrongChallenge_queryOne_rejects :
-    ¬ FriRoundQueriesAccept (idealSchemes 0) (idealSchemes 1) data0
+    ¬ FriRoundQueriesAccept (idealSchemes 0).toOpeningScheme
+      (idealSchemes 1).toOpeningScheme data0
       ((idealSchemes 0).commit spikeWord)
       ((idealSchemes 1).commit (fold data0 spikeWord 3)) 1 queryOne := by
   rintro ⟨opening, hopen⟩
@@ -558,7 +614,8 @@ theorem spike_wrongChallenge_distance :
 /-- The binding-aware query-miss theorem FIRES at the tooth and yields the
 expected one-query `1/2` survival bound. -/
 theorem spike_wrongChallenge_queryMiss_bound :
-    ((friRoundQueryAcceptSet (idealSchemes 0) (idealSchemes 1) data0
+    ((friRoundQueryAcceptSet (idealSchemes 0).toOpeningScheme
+      (idealSchemes 1).toOpeningScheme data0
       ((idealSchemes 0).commit spikeWord)
       ((idealSchemes 1).commit (fold data0 spikeWord 3)) 1 1).card : ℝ)
         / (Fintype.card (Fin 2) : ℝ)
