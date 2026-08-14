@@ -25,6 +25,7 @@ No collision term is guessed here.  A Merkle/sponge instantiation must map the
 retained last event to its actual collision game and codec/work budget.
 -/
 import Selvage.BaseFoldCommittedIor
+import Selvage.CollisionResistanceROM
 
 namespace Minidregg.Selvage
 
@@ -134,6 +135,25 @@ def BaseFoldRawCommittedIorAccepts
     scChain H (prover (chalOf r)) (chalOf r) m =
       st.wordAt r m le_rfl k * eqMle z r
 
+/-- Forgetting the binding field does not change an executed acceptance.
+This gives the raw event an immediate completeness witness from every honest
+binding transcript and prevents the CR split from being vacuous. -/
+theorem basefoldCommittedIorAccepts_toRaw
+    (B : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
+    (T : FoldingTower F ι m) (st : FriAdaptiveTranscript B)
+    (z : Fin m → F) (H : F)
+    (prover : (ℕ → F) → ℕ → Polynomial F) (qCount : ℕ)
+    (r : Fin m → F) (Q : FriIndependentQuerySchedule ι m qCount)
+    (hacc : BaseFoldCommittedIorAccepts B T st z H prover qCount r Q) :
+    BaseFoldRawCommittedIorAccepts (fun n => (B n).toOpeningScheme) T
+      (RawFriAdaptiveTranscript.ofBinding B st) z H prover qCount r Q := by
+  simpa [BaseFoldRawCommittedIorAccepts, RawFriAdaptiveSampledAccepts,
+    RawFriAdaptiveRoundQueriesAccept, BaseFoldCommittedIorAccepts,
+    FriAdaptiveSampledAccepts, FriAdaptiveRoundQueriesAccept,
+    RawFriAdaptiveTranscript.ofBinding, RawFriAdaptiveTranscript.wordAt,
+    RawFriAdaptiveTranscript.rootAt, FriAdaptiveTranscript.wordAt,
+    FriAdaptiveTranscript.rootAt] using hacc
+
 /-- The exact global commitment-failure event retained by the raw verifier:
 one accepted batch contains a named three-symbol position equivocation. -/
 def FriRawAdaptiveEquivocates
@@ -148,6 +168,36 @@ def FriRawAdaptiveEquivocates
       (st.wordAt r j (Nat.le_of_lt j.isLt))
       (st.wordAt r (j + 1) (Nat.succ_le_iff.mpr j.isLt))
       (r j) (Q j)
+
+/-- At the flat-RO commitment resolution, any retained adaptive FRI
+equivocation exposes an actual hash collision at one concrete level.  The
+opening path is the colliding preimage, so the reduction is witness-preserving
+and lossless at this resolution. -/
+theorem friRawAdaptiveEquivocates_flatHash_collision
+    (N : ℕ → ℕ) (Hsh : ∀ n, (ι n → F) → Fin (N n))
+    (T : FoldingTower F ι m)
+    (st : RawFriAdaptiveTranscript
+      (fun n => roScheme F (ι n) (Hsh n)))
+    (r : Fin m → F) (qCount : ℕ)
+    (Q : FriIndependentQuerySchedule ι m qCount)
+    (hequiv : FriRawAdaptiveEquivocates
+      (fun n => roScheme F (ι n) (Hsh n)) T st r qCount Q) :
+    ∃ n : ℕ, ∃ hn : n ≤ m, ∃ x y : ι n → F,
+      x ≠ y ∧ Hsh n x = Hsh n y := by
+  rcases hequiv with ⟨j, opening, a, _hopen, hquery⟩
+  rcases hquery with hleft | hright | hnext
+  · obtain ⟨hne, hhash⟩ :=
+      roScheme_positionEquivocation_collision (Hsh j) hleft
+    exact ⟨j, Nat.le_of_lt j.isLt, (opening a).leftPath,
+      st.wordAt r j (Nat.le_of_lt j.isLt), hne, hhash⟩
+  · obtain ⟨hne, hhash⟩ :=
+      roScheme_positionEquivocation_collision (Hsh j) hright
+    exact ⟨j, Nat.le_of_lt j.isLt, (opening a).rightPath,
+      st.wordAt r j (Nat.le_of_lt j.isLt), hne, hhash⟩
+  · obtain ⟨hne, hhash⟩ :=
+      roScheme_positionEquivocation_collision (Hsh (j + 1)) hnext
+    exact ⟨j + 1, Nat.succ_le_iff.mpr j.isLt, (opening a).nextPath,
+      st.wordAt r (j + 1) (Nat.succ_le_iff.mpr j.isLt), hne, hhash⟩
 
 private def idealFriQueryOpening
     {ι κ : Type} {dom : ι ↪ F} {domSq : κ ↪ F}

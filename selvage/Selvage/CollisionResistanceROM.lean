@@ -293,6 +293,22 @@ def roScheme (F ι : Type*) {N : ℕ} (H : (ι → F) → Fin N) :
   verifyOpen := fun rt i v o => H o = rt ∧ o i = v
   verifyOpen_commit := fun _ _ => ⟨rfl, rfl⟩
 
+/-- A retained `PositionEquivocation` against the flat RO scheme contains the
+two colliding preimages directly: the submitted opening word and the honest
+committed word.  This is the witness-level bridge needed by raw transcript
+verifiers; it does not pass through a proof-by-negation of `PositionBinding`. -/
+theorem roScheme_positionEquivocation_collision
+    {F ι : Type*} {N : ℕ} (H : (ι → F) → Fin N)
+    {rt : Fin N} {i : ι} {value : F} {opening word : ι → F}
+    (hequiv : (roScheme F ι H).PositionEquivocation
+      rt i value opening word) :
+    opening ≠ word ∧ H opening = H word := by
+  rcases hequiv with ⟨hopening, hword, hne⟩
+  refine ⟨?_, hopening.1.trans hword.1.symm⟩
+  intro heq
+  apply hne
+  rw [← hopening.2, heq]
+
 /-- **The reduction, both directions**: `roScheme H` loses position-binding
 IFF `H` has a collision. Break ⇒ collision is `[COMMIT-CR]`(ii) at the flat
 resolution (an equivocation exhibits two distinct preimage words with equal
@@ -534,6 +550,8 @@ layer.
 * `roScheme` / `roScheme_break_iff_collision` / `roBinding` — the RO hash
   commitment, the lossless equivocation ⟺ collision reduction, and CR as
   carried structure in `Selvage/Commitment.lean`'s `BindingCommitment` shape.
+  `roScheme_positionEquivocation_collision` is the direct witness-level form
+  consumed by raw transcript verifiers.
 * `BreakAdversary` / `Wins` / `wins_breaks_binding` / `commitCR_of_RO` (+
   `_pow`) — the discharge: binding breaks priced at `q(q−1)/(2N)`.
 * Keystones — `collisionProb_two` (exact), `collisionProb_two_pos`
