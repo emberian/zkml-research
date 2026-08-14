@@ -23,6 +23,7 @@ costs are not absorbed into the `2 / |F|` field below.
 -/
 import Selvage.BaseFoldBraid
 import Selvage.SumcheckRbr
+import Selvage.FiatShamir
 
 namespace Minidregg.Selvage
 
@@ -102,6 +103,36 @@ theorem basefoldSumcheck_source_iff (hm : 0 < m)
     (basefoldSumcheckRbr hm table z).err i st δ =
       (2 : ℝ) / Fintype.card F := rfl
 
+/-! ## The compiled leg
+
+The point of building a NATIVE `RbrKnowledgeSoundness` object rather than a
+standalone probability bound is that Selvage's Fiat–Shamir keystone consumes
+exactly that object, unconditionally (`fsKeystone_proved`, discharged from
+[OB-2a] in `Selvage/Depth.lean`).  Without the theorem below the instance is an
+island: `basefoldSumcheckRbr` had no consumer, while the operational bound of
+`Selvage/BaseFoldIor.lean` reached the ledger by a different route. -/
+
+/-- ⭐ **BaseFold's sumcheck leg, Fiat–Shamir compiled.**  Straightline, loss-free,
+with the grinding factor named: a `t`-query ROM adversary that outputs a WRONG
+claimed total and has its FS-compiled transcript accepted succeeds with
+probability at most `(t + m) · 2/|F|`.
+
+⚠ Read the content exactly.  This reduction's witness type is `Unit`
+(`sumcheckReduction`'s `W`), so `FsStraightlineKnowledgeSoundness` here is
+straightline *soundness* with a trivial extractor, not extraction of the
+committed table: `R` is `claimedValue = mle table z`, a statement predicate.
+Extracting the committed multilinear is the commitment layer's job
+(`MleEvalClaim`, Merkle binding, `[COMMIT-CR]`), not this leg's. -/
+theorem basefoldSumcheck_fs_sound (hm : 0 < m)
+    (table : (Fin m → Bool) → F) (z : Fin m → F) :
+    FsStraightlineKnowledgeSoundness (basefoldSumcheckReduction hm table z)
+      Set.univ
+      (fun _s t _δ => ((t : ℝ) + (m : ℝ)) * (2 / Fintype.card F)) :=
+  fsKeystone_proved.sound _ (basefoldSumcheckRbr hm table z) Set.univ
+    (fun _ => (2 : ℝ) / Fintype.card F)
+    (fun _ _ => by positivity)
+    (fun i st _ δ _ => le_of_eq (basefoldSumcheckRbr_err hm table z i st δ))
+
 namespace BaseFoldRbrExample
 
 open BaseFoldExample ProximityExample
@@ -135,9 +166,30 @@ theorem rbrF5_err (i : Fin 1)
   rw [rbrF5, basefoldSumcheckRbr_err, ZMod.card]
   norm_num
 
+/-- The compiled leg on the landed F5 instance: a `t`-query Fiat–Shamir
+adversary claiming a wrong total is accepted with probability at most
+`(t + 1) · 2/5`.  A live finite-field number, not an uninstantiated
+interface. -/
+theorem fs_sound_f5 :
+    FsStraightlineKnowledgeSoundness
+      (basefoldSumcheckReduction (by decide) table ![3]) Set.univ
+      (fun _s t _δ => ((t : ℝ) + 1) * (2 / 5)) := by
+  have h := basefoldSumcheck_fs_sound (m := 1) (by decide) table ![3]
+  have hfun : (fun (_s t : ℕ) (_δ : ℝ) =>
+        ((t : ℝ) + ((1 : ℕ) : ℝ)) * (2 / (Fintype.card (ZMod 5) : ℝ)))
+      = fun (_s t : ℕ) (_δ : ℝ) => ((t : ℝ) + 1) * (2 / 5) := by
+    funext s t δ
+    rw [ZMod.card]
+    norm_num
+  rwa [hfun] at h
+
 end BaseFoldRbrExample
 
 /-- info: 'Minidregg.Selvage.basefoldSumcheckRbr' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms basefoldSumcheckRbr
+/-- info: 'Minidregg.Selvage.basefoldSumcheck_fs_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms basefoldSumcheck_fs_sound
+/-- info: 'Minidregg.Selvage.BaseFoldRbrExample.fs_sound_f5' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms BaseFoldRbrExample.fs_sound_f5
 
 end Minidregg.Selvage

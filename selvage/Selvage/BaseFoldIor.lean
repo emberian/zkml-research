@@ -20,6 +20,7 @@ sampled Merkle openings live in `HalfThresholdFriTranscript`; their query-miss
 and binding costs are not hidden in the bound proved here.
 -/
 import Selvage.BaseFoldRbr
+import Selvage.OutOfDomain
 
 namespace Minidregg.Selvage
 
@@ -119,6 +120,29 @@ theorem exists_basefoldTable_of_mem_code (T : FoldingTower F ι m)
     simpa using hp
   refine ⟨tableOfPoly m p, funext fun i => ?_⟩
   rw [hword i, booleanMobiusPolynomial_tableOfPoly m p hp']
+
+omit [Fintype F] in
+/-- ⭐ **The committed word pins the value.**  Two strict BaseFold claims over the
+SAME top word and the same point carry the SAME value, as soon as the commitment
+domain holds the degree window.  This is the exact statement
+`BaseFoldCompleteness`'s teeth left open: `raw_commit_terminal_differs_f5` shows
+that passing the descent does not pin the value, because the two words there are
+DIFFERENT words.  At one fixed word there is no ambiguity at all, and the proof
+consumes nothing probabilistic — interpolant uniqueness on the domain plus Möbius
+injectivity.  Its companion at the commitment layer is
+`MleEvalClaim.value_unique`, which pins the word from the root. -/
+theorem basefoldExactClaim_value_unique [Fintype (ι 0)] (T : FoldingTower F ι m)
+    (hcard : 2 ^ m ≤ Fintype.card (ι 0)) (z : Fin m → F) {H H' : F}
+    {word : ι 0 → F} (h : BaseFoldExactClaim T z H word)
+    (h' : BaseFoldExactClaim T z H' word) : H = H' := by
+  obtain ⟨f, hwf, hHf⟩ := h
+  obtain ⟨g, hwg, hHg⟩ := h'
+  have hpoly : booleanMobiusPolynomial m f = booleanMobiusPolynomial m g :=
+    eq_of_degreeLT_of_agree (T.dom 0) hcard
+      (degree_booleanMobiusPolynomial_lt m f)
+      (degree_booleanMobiusPolynomial_lt m g)
+      (fun i => congrFun (hwf.symm.trans hwg) i)
+  rw [hHf, booleanMobiusPolynomial_injective m hpoly, hHg]
 
 /-- The finite set of challenge tuples accepted by the full-word IOR for fixed
 statement, word, and adaptive prover. -/
@@ -304,11 +328,83 @@ theorem arbitrary_word_bound_f5
   norm_num at h ⊢
   exact h
 
+/-! ### The completeness lane's two-commitment ambiguity, closed
+
+`BaseFoldCompleteness.raw_commit_terminal_differs_f5` exhibits two commitments of
+the "same" one-variable data — the honest Möbius packing of `table` and the raw
+coefficient reading `rawPoly` — that BOTH pass the whole low-degree descent at
+every challenge and terminate at `4` and `2` respectively.  Read as a soundness
+worry it says: does acceptance pin the value?  These three theorems answer it.
+
+The raw word is not junk and not a forgery: it is an honest commitment to a
+DIFFERENT table (`tableOfPoly 1 rawPoly = [1, 3]`), whose MLE at `3` really is
+`2`.  So the two descents are two statements, not two answers to one.  What the
+soundness leg must forbid — and does — is selling the raw commitment as an
+opening to the honest value `4`. -/
+
+/-- The raw-coefficient commitment IS a strict BaseFold claim: at `2`, the MLE of
+the table it actually encodes. -/
+theorem mle_tableOfPoly_rawPoly : mle (tableOfPoly 1 rawPoly) ![3] = 2 := by
+  rw [mle]
+  simp only [tableOfPoly_rawPoly]
+  decide
+
+theorem raw_commit_exact_claim_f5 :
+    BaseFoldExactClaim ldtTower ![3] 2
+      (fun i => rawPoly.eval (ldtTower.dom 0 i)) := by
+  refine ⟨tableOfPoly 1 rawPoly, ?_, mle_tableOfPoly_rawPoly.symm⟩
+  rw [booleanMobiusPolynomial_tableOfPoly 1 rawPoly rawPoly_degree]
+
+/-- ⭐ **The ambiguity is excluded, deterministically.**  The raw commitment is not
+a claim at the honest value `4` at all: one word admits one value, by
+`basefoldExactClaim_value_unique`.  No challenge, no probability. -/
+theorem raw_commit_not_exact_claim_at_honest_f5 :
+    ¬ BaseFoldExactClaim ldtTower ![3] (mle table ![3])
+        (fun i => rawPoly.eval (ldtTower.dom 0 i)) := by
+  intro h
+  have hval := basefoldExactClaim_value_unique ldtTower
+    (by norm_num [levels] : 2 ^ 1 ≤ Fintype.card (levels 0)) ![3] h
+    raw_commit_exact_claim_f5
+  have h4 : mle table (![3] : Fin 1 → ZMod 5) = 4 := by decide
+  rw [h4] at hval
+  exact absurd hval (by decide)
+
+/-- ⭐ **And probabilistically, against an adaptive prover.**  Completeness accepts
+the raw commitment's descent at EVERY challenge; the assembled IOR accepts it as an
+opening to the honest value `4` on at most `2` challenges in `5`.  This is the
+`raw_commit_terminal_differs_f5` boundary crossed: acceptance of the descent alone
+did not pin the value, acceptance of the braided verifier does. -/
+theorem raw_commit_wrong_value_bound_f5
+    (prover : (ℕ → ZMod 5) → ℕ → Polynomial (ZMod 5))
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (χ : ℕ → ZMod 5) (i : ℕ), i < 1 →
+      (prover χ i).degree < ((2 + 1 : ℕ) : WithBot ℕ)) :
+    uniformProb (Fin 1 → ZMod 5) (fun r =>
+      BaseFoldIorAccepts ldtTower ![3] (mle table ![3])
+        (fun i => rawPoly.eval (ldtTower.dom 0 i)) prover r) ≤ 2 / 5 := by
+  letI : Nonempty (levels 1) := ⟨(⟨0, by decide⟩ : Fin 2)⟩
+  have hwrong : mle table (![3] : Fin 1 → ZMod 5) ≠ mle (tableOfPoly 1 rawPoly) ![3] := by
+    rw [mle_tableOfPoly_rawPoly]
+    decide
+  have h := basefoldIor_wrong_value_sound ldtTower (tableOfPoly 1 rawPoly) ![3]
+    (mle table ![3]) prover hwrong hpm hdeg
+  rw [booleanMobiusPolynomial_tableOfPoly 1 rawPoly rawPoly_degree, ZMod.card] at h
+  norm_num at h ⊢
+  exact h
+
 end BaseFoldIorExample
 
 /-- info: 'Minidregg.Selvage.basefoldIor_wrong_value_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms basefoldIor_wrong_value_sound
 /-- info: 'Minidregg.Selvage.basefoldIor_exact_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms basefoldIor_exact_sound
+/-- info: 'Minidregg.Selvage.basefoldExactClaim_value_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms basefoldExactClaim_value_unique
+/-- info: 'Minidregg.Selvage.BaseFoldIorExample.raw_commit_not_exact_claim_at_honest_f5' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+  #print axioms BaseFoldIorExample.raw_commit_not_exact_claim_at_honest_f5
+/-- info: 'Minidregg.Selvage.BaseFoldIorExample.raw_commit_wrong_value_bound_f5' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+  #print axioms BaseFoldIorExample.raw_commit_wrong_value_bound_f5
 
 end Minidregg.Selvage

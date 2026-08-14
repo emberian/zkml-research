@@ -167,6 +167,26 @@ theorem wrong_value_refused_f5 :
   rw [hv]
   decide
 
+/-- **The two-commitment teeth, at the root layer.**  `BaseFoldCompleteness`'s
+`raw_commit_terminal_differs_f5` runs the descent on two words that both pass and
+terminate at `4` and `2`.  Those two words have DIFFERENT roots, so `value_unique`
+is never asked to reconcile them: they are two claims, not two values of one.  What
+would be a break — one root, two values — is what `value_unique` forbids, and the
+deterministic exclusion of the raw word at the honest value is
+`BaseFoldIorExample.raw_commit_not_exact_claim_at_honest_f5`. -/
+theorem raw_root_ne_honest_root_f5 :
+    (idealCommitment (ZMod 5) (Fin 4)).commit
+        (basefoldWord (ldtTower.dom 0) (tableOfPoly 1 rawPoly))
+      ≠ (idealCommitment (ZMod 5) (Fin 4)).commit
+        (basefoldWord (ldtTower.dom 0) table) := by
+  intro h
+  have ht := basefoldWord_injective (idealCommitment (ZMod 5) (Fin 4))
+    (ldtTower.dom 0) (by norm_num) h
+  have h1 := congrFun ht (fun _ => true)
+  rw [tableOfPoly_rawPoly] at h1
+  revert h1
+  decide
+
 end MleEvalClaimExample
 
 /-- info: 'Minidregg.Selvage.basefoldWord_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -179,5 +199,8 @@ end MleEvalClaimExample
 #guard_msgs (whitespace := lax) in #print axioms MleEvalClaimExample.honestClaim_holds
 /-- info: 'Minidregg.Selvage.MleEvalClaimExample.wrong_value_refused_f5' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms MleEvalClaimExample.wrong_value_refused_f5
+/-- info: 'Minidregg.Selvage.MleEvalClaimExample.raw_root_ne_honest_root_f5' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+  #print axioms MleEvalClaimExample.raw_root_ne_honest_root_f5
 
 end Minidregg.Selvage
