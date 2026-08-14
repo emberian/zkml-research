@@ -275,8 +275,7 @@ theorem programPrefixes_terminalPrimitiveFreshTo_returns_rate
               cases message with
               | nil =>
                   change rateCoins = [] ∧ capacityCoins = [] ∧
-                    rateCoin = terminalRate ∧ primitive.lookup key = none at
-                    hterminal
+                    rateCoin = terminalRate ∧ primitive.lookup key = none at hterminal
                   obtain ⟨hrates, hcapacities, hrateCoin, hedge⟩ := hterminal
                   subst rateCoins
                   subst capacityCoins
