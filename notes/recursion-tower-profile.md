@@ -301,9 +301,18 @@ A 386 → 175 chip is `Δwidth 211` and `Δ⌈w/8⌉ 27`, so:
 | 2 | in-circuit reduced-opening Horner over opened columns | `q · Σw` | `211/3738` = **5.64%** of the Horner term |
 | 3 | in-circuit OOD constraint evaluation of the chip's gates — **once** | `O(1)` in `q` | 2,668 → 2,246 field ops, one evaluation, against `Alu 441,684` |
 
-⚠ **What channel 1 does not touch: the Merkle PATH.** Most in-circuit permutations are 2-to-1
-compressions along `q` paths of depth `log₂(LDE rows)` — a function of the child's *height* and
-*blowup*, never its width. Applying channel 1 to the main commitment round (`q · Σ⌈w/8⌉ = 19 × 469 =
+⚠ **What channel 1 does not touch: the Merkle PATH.** ~~Most in-circuit permutations are 2-to-1
+compressions along `q` paths of depth `log₂(LDE rows)`~~ — a function of the child's *height* and
+*blowup*, never its width.
+
+> ### ⚠ **CORRECTED 2026-08-14 by `notes/leaf-vs-recursion.md` §2: the Merkle PATH term is 5.9%, not "most".**
+> A blowup sweep at fixed `q` measures `Δperms/Δm = 209 = 19 × 11` **exactly constant** across
+> `m ∈ [9, 16]` — so paths are `q · (11m − 36) = 2,242` of 38,168. **94.1% of in-circuit
+> permutations scale with the child's committed WIDTH, not its height.** The struck sentence was a
+> model carried in, not a count; this section's own `8,911 = 23.3%` was already the leaf-hashing
+> term and nothing here ever priced the paths. The lever is width.
+
+Applying channel 1 to the main commitment round (`q · Σ⌈w/8⌉ = 19 × 469 =
 8,911` of the wrap's 38,168 in-circuit permutations, i.e. 23.3%), narrowing removes
 `19 × 27 = 513` — **1.34% of the wrap's poseidon2 table.** Channel 2 removes ≈ 2% of `HornerAcc`.
 
@@ -391,6 +400,12 @@ factor is applied to both sides, so it cancels in every ratio below.
 > * the drop **saves 0.934** leaf-proves at L0 (6,177,520 → 405,741);
 > * the drop **costs 2.328 × 26.05 = 60.6** leaf-proves at L1;
 > * **net +59.7 leaf-proves — a ≈ 65× loss** — per turn, before layers 2/3/4.
+
+⚠ **READ THAT LAST LINE PRECISELY — it has been misquoted twice.** `65×` is the ratio of the
+**loss to the saving**. The per-turn **total** goes from `1 + 26.05 = 27.05` leaf-proves to
+`0.066 + 86.65 = 86.72` — **×3.21**, and `leaf-vs-recursion.md` §4b's independent grid puts it at
+**×2.96**. It is *not* "65× worse per turn"; that reading has now appeared in this note's own §8
+summary and in a downstream lane brief. The trade is still firmly negative; the magnitude is 3×.
 
 ### 5c. ⚠ The conditional, because it is the whole verdict
 
