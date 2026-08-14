@@ -33,6 +33,9 @@ set_option autoImplicit false
 
 noncomputable section
 
+noncomputable instance ext4Fintype : Fintype E :=
+  Fintype.ofFinite _
+
 abbrev DigestTail := {lane : Fin 8 // lane ≠ 0} → F
 
 abbrev AcceptedDigest := {seed : Digest // seed 0 ≠ 0}
@@ -200,11 +203,11 @@ theorem acceptedSeedContextEquiv_coordinates {A : Type}
   · rfl
   · exact acceptedSeedFamilyEquiv_coordinates hell value.2
 
+set_option maxHeartbeats 1600000 in
 /-- Joint uniformity is stable in the presence of an arbitrary independent
 finite context.  In the BaseFold application this context is the complete
 algebraic challenge vector, so this theorem rules out an illicit independence
 shortcut when transporting the raw soundness event. -/
-set_option maxHeartbeats 1600000 in
 theorem acceptedSeedCoordinates_uniform_with_context
     {A : Type} [Fintype A] {ell queryCount : Nat} (hell : ell ≤ 28)
     (event : A × QueryCoordinateFamily ell queryCount → Prop) :
