@@ -118,7 +118,7 @@ theorem wrong_value_bound_f5
       BaseFoldIorAccepts ldtTower ![3] H
         (fun i => (booleanMobiusPolynomial 1 table).eval (ldtTower.dom 0 i))
         prover r) ≤ 2 / 5 := by
-  letI : Nonempty (levels 1) := ⟨0⟩
+  letI : Nonempty (levels 1) := ⟨(⟨0, by decide⟩ : Fin 2)⟩
   have h := basefoldIor_wrong_value_sound ldtTower table ![3] H prover
     hwrong hpm hdeg
   rw [ZMod.card] at h
