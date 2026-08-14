@@ -36,13 +36,36 @@ instance modulusPrime : Fact (Nat.Prime modulus) := ⟨by
 /-- The exact polynomial named by the Dregg2 suite's extension codec. -/
 def extensionPolynomial : BabyBear[X] := X ^ 4 - C 11
 
+/-- Repeated squaring as a small kernel computation.  This keeps the Euler
+witness proof logarithmic instead of asking normalization to expand a
+billionth power. -/
+def squareN : Nat → BabyBear → BabyBear
+  | 0, value => value
+  | n + 1, value => (squareN n value) ^ 2
+
+theorem squareN_eq_pow_two (n : Nat) (value : BabyBear) :
+    squareN n value = value ^ (2 ^ n) := by
+  induction n with
+  | zero => simp [squareN]
+  | succ n ih =>
+      rw [squareN, ih, ← pow_mul]
+      congr 1
+      simp [pow_succ]
+
 theorem eleven_euler_witness :
     (11 : BabyBear) ^ halfOrder = -1 := by
-  norm_num [BabyBear, modulus, halfOrder]
+  calc
+    (11 : BabyBear) ^ halfOrder = ((11 : BabyBear) ^ 15) ^ (2 ^ 26) := by
+      rw [← pow_mul]
+      norm_num [halfOrder]
+    _ = squareN 26 ((11 : BabyBear) ^ 15) := by
+      rw [squareN_eq_pow_two]
+    _ = -1 := by decide
 
 theorem neg_eleven_euler_witness :
     (-11 : BabyBear) ^ halfOrder = -1 := by
-  norm_num [BabyBear, modulus, halfOrder]
+  rw [neg_pow]
+  simpa [halfOrder] using eleven_euler_witness
 
 /-- An Euler witness `a^((p-1)/2) = -1` rules out a square root in BabyBear. -/
 private theorem nonsquare_of_euler_witness (a : BabyBear)
@@ -53,8 +76,7 @@ private theorem nonsquare_of_euler_witness (a : BabyBear)
     subst b
     have azero : a = 0 := by simpa using square.symm
     subst a
-    have zero_ne_neg_one : (0 : BabyBear) ≠ -1 := by
-      norm_num [BabyBear, modulus]
+    have zero_ne_neg_one : (0 : BabyBear) ≠ -1 := by decide
     exact zero_ne_neg_one (by simpa [halfOrder] using witness)
   have fermat : b ^ (modulus - 1) = 1 := by
     simpa [BabyBear, modulus] using
@@ -67,8 +89,7 @@ private theorem nonsquare_of_euler_witness (a : BabyBear)
         norm_num [modulus, halfOrder]
       _ = a ^ halfOrder := congrArg (· ^ halfOrder) square
       _ = -1 := witness
-  have one_ne_neg_one : (1 : BabyBear) ≠ -1 := by
-    norm_num [BabyBear, modulus]
+  have one_ne_neg_one : (1 : BabyBear) ≠ -1 := by decide
   exact one_ne_neg_one impossible
 
 theorem eleven_not_square (b : BabyBear) : b ^ 2 ≠ 11 :=
