@@ -26,10 +26,14 @@ landed (`minidregg@bf0b311`, `Selvage/HashFamily.lean`).
    for Poseidon2. Where it is not, a traditional hash wins immediately.
 
 **And that makes one thing actionable today, at zero cryptanalytic risk** (§4):
-the **top layer of the tower is arithmetized by nobody**, so its native hash is a
-free choice worth **1.5×–2.3×** at zero in-circuit cost — independently
-corroborated at **1.69× ST / 1.26× MT** by the Binius paper's own Plonky3
-measurement.
+our **standalone proofs that a NATIVE Rust verifier consumes** — 18 such entry
+points in `circuit-prove/src/` — pay the full 2.78× Poseidon2 premium and **receive
+nothing for it**, because no circuit ever re-executes their hash. Worth
+**1.5×–2.3×** each at zero in-circuit cost, independently corroborated at
+**1.69× ST / 1.26× MT** by the Binius paper's own Plonky3 measurement.
+⚠ *My first draft named the apex as the free layer; reading the code refuted that
+(gnark consumes it, and it is already correctly `Poseidon2Bn254`). §4 carries the
+retraction and the corrected class.*
 
 > ### ⚠ I set out to show the binary field dissolves the Poseidon2 justification. It does not. The measurement says the justification is recursion, and recursion survives the field change.
 
@@ -366,28 +370,64 @@ names which literature each claim comes from.**
 
 ## 4. ⚑ THE ONE THING ACTIONABLE TODAY, AT ZERO CRYPTANALYTIC RISK
 
-The crossover analysis assumes every layer's hash is re-verified in-circuit. **For
-one layer that is false, by construction.**
+The crossover analysis assumes every proof's hash is re-verified in-circuit. **For
+a whole class of our proofs that is false, by construction.**
 
-> **A layer's native hash needs to be SNARK-friendly only if that layer gets
-> WRAPPED. The top of the tower is wrapped by nobody.**
+> **A proof's hash must be SNARK-friendly only if a CIRCUIT consumes it. Where a
+> NATIVE verifier consumes it, the SNARK-friendliness buys literally nothing and
+> the 2.78× native premium is pure loss.**
 
-The apex proof's own Merkle commitment is re-executed by the light client
-**natively**, never as constraints. Its in-circuit Poseidon2 (53.98% of its cells)
-verifies its *child* and must stay. But its **own** native hash is a completely
-free choice.
+### ⚠ FIRST, A RETRACTION — my draft named the wrong layer
+
+I wrote that the **apex/outer** layer is the free one because "nobody wraps the
+apex." **That is wrong, and reading `circuit-prove/src/dregg_outer_config.rs`
+refuted it.** The outer layer is consumed by the **gnark BN254 Groth16 wrapper**,
+which arithmetizes its Merkle compression — which is exactly why that layer already
+runs `Poseidon2Bn254<3>` with `OuterCompress = TruncatedPermutation<Poseidon2Bn254<3>, 2, 1, 3>`
+as the twin of gnark's `Poseidon2Bn254Compress`. **The tower already applies this
+principle at its top, deliberately, and got the 90–145× swing in
+`WRAP-NATIVE-HASH-DECISION.md` from doing so.** My "free apex" was a guess that the
+code answers *no* to.
+
+### ⚑ The class that IS free — and it is bigger than the layer I guessed
+
+**Standalone application proofs that are verified NATIVELY in Rust and never enter
+the recursion tower.** `circuit-prove/src/` carries **18 files** with native
+`pub fn verify_zk` / `verify_*_proof_bytes` entry points — `descent_census`,
+`dark_amm_private`, `dark_bazaar_private`, `cert_f`, `cert_qp`, `deco_leaf`, and
+others.
+
+Direct evidence, `circuit-prove/src/descent_census.rs`:
+
+```
+HIDING_VERIFIER_MANIFEST = "descent-custody-census-fixed8-v2|BabyBear|Poseidon2-state16|
+                            exact-fields-v2|HidingFriPcs|salt=4|random-codewords=4"
+```
+
+with `pub fn verify_zk(proof, statement)` verifying it **in Rust, natively**.
+
+> ### **These proofs pay the full 2.78× native Poseidon2 premium and receive NOTHING for it, because no circuit ever re-executes their hash.**
 
 | | value |
 |---|---|
-| **win** | **1.54× – 2.27×** on the apex layer's own proving (the leaf-only row of §2) |
+| **win** | **1.54× – 2.27×** per such proof (the leaf-only row of §2) |
 | **in-circuit cost** | **zero** — `R` does not appear; nothing arithmetizes it |
-| **cryptanalytic risk** | **zero new** — Blake3 is already in our TCB (`docs/ASSURANCE.md` row 2: "BLAKE3 collision-resistance … out-of-circuit content/transcript hash") |
-| **what it re-emits** | the apex VK and the light-client verify path. A rebuild. |
+| **verifier win** | **larger** — FRI verification is ~100% hashing (`fast-systems-recon.md`) |
+| **cryptanalytic risk** | **zero new** — Blake3 is already in our TCB (`docs/ASSURANCE.md` row 2) |
+| **what it re-emits** | each such proof's VK / verifier-manifest fingerprint. A rebuild. |
 
-This is precisely the move RISC0 and SP1 already make in the other direction —
-`WRAP-NATIVE-HASH-DECISION.md` documents inserting a shrink layer *whose hash
-field is chosen to match its consumer*. **The same reasoning applied at the top of
-the tower selects Blake3, and we have never applied it there.**
+### The audit that has to happen, and its exact method
+
+**Per proof, one question: does any circuit consume this proof's Merkle hash?**
+Concretely — is this config's proof ever passed to a wrap/recursion entry point, or
+only to a native `verify_*`? That is a call-graph question, answerable by reading,
+and **nobody has asked it proof by proof.** Every proof that answers *no* is a free
+1.5–2.3×.
+
+⚠ **I have NOT completed that audit** and the class size above is an
+entry-point count, not an audit result. Some of those 18 may be wrapped on paths I
+did not follow. **What is established is that the class is non-empty and the
+principle is the tree's own** — not that all 18 qualify.
 
 ### ⚑ Independently corroborated, and by an unfriendly witness
 
