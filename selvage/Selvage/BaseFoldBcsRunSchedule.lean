@@ -254,7 +254,7 @@ theorem paddedWorkPrefix_mono {m queryCount : Nat}
     exact Or.inl hle
   rcases hpref with ⟨suffix, hsuffix⟩
   unfold paddedWorkPrefix
-  rw [hsuffix, List.sum_append]
+  rw [← hsuffix, List.sum_append]
   omega
 
 /-! ## The eager runner reads the same static cost -/
@@ -637,6 +637,8 @@ theorem paddedSegmentHead_le_last {m queryCount : Nat}
   unfold paddedSegmentHead paddedSegmentLast
   have hstep := paddedWorkPrefix_strictMono_step statement receipt round
     round.isLt
+  change paddedWorkPrefix statement receipt round ≤
+    paddedWorkPrefix statement receipt (round + 1) - 1
   omega
 
 /-- Earlier and later static work segments are disjoint and ordered. -/
@@ -648,8 +650,10 @@ theorem paddedSegmentLast_lt_head_of_lt {m queryCount : Nat}
       paddedSegmentHead statement receipt later := by
   have hmono := paddedWorkPrefix_mono statement receipt
     (Nat.succ_le_of_lt hlt)
-  have hlast := paddedSegmentLast_succ statement receipt earlier
-  unfold paddedSegmentHead
+  have hstep := paddedWorkPrefix_strictMono_step statement receipt earlier
+    earlier.isLt
+  change paddedWorkPrefix statement receipt (earlier + 1) - 1 <
+    paddedWorkPrefix statement receipt later
   omega
 
 /-- One unconditional whole-vector involution swaps the deferred segment head
@@ -743,7 +747,9 @@ theorem paddedSegmentReindex_head {m queryCount : Nat}
         (List.take_append_drop ((round : Nat) + 1) program).symm
       _ = (program.take round ++ [program.get ⟨round, hroundProgram⟩]) ++
           program.drop ((round : Nat) + 1) := by
-        rw [List.take_concat_get']
+        exact congrArg
+          (fun prefix => prefix ++ program.drop ((round : Nat) + 1))
+          (List.take_concat_get' program round hroundProgram).symm
       _ = program.take round ++
           paddedSegmentSwapMove statement receipt round ::
             program.drop ((round : Nat) + 1) := by
@@ -755,9 +761,10 @@ theorem paddedSegmentReindex_head {m queryCount : Nat}
     intro earlier hearlier values
     obtain ⟨index, rfl⟩ := List.get_of_mem hearlier
     have hindexLt : (index : Nat) < round := by
-      have h := index.isLt
-      rw [List.length_take, hprogramLength] at h
-      omega
+      have hlength : (program.take round).length = round := by
+        rw [List.length_take, hprogramLength]
+        omega
+      simpa only [hlength] using index.isLt
     let earlierRound : Fin (m + queryCount) :=
       ⟨index, Nat.lt_trans hindexLt round.isLt⟩
     have hget :
@@ -768,21 +775,24 @@ theorem paddedSegmentReindex_head {m queryCount : Nat}
     have hsep := paddedSegmentLast_lt_head_of_lt statement receipt
       earlierRound round hindexLt
     have hearlierHead := paddedSegmentHead_le_last statement receipt earlierRound
+    have hroundHead := paddedSegmentHead_le_last statement receipt round
     apply paddedSegmentSwapMove_apply_of_ne statement receipt earlierRound
-    · intro heq
-      have := congrArg Fin.val heq
-      omega
-    · intro heq
-      have := congrArg Fin.val heq
-      omega
+    · exact (Fin.ne_of_lt (lt_of_le_of_lt hearlierHead
+        (lt_of_lt_of_le hsep hroundHead))).symm
+    · exact (Fin.ne_of_lt (lt_of_lt_of_le hsep hroundHead)).symm
   have hafter : ∀ later ∈ program.drop ((round : Nat) + 1), ∀ values,
       later.apply values (paddedSegmentHead statement receipt round) =
         values (paddedSegmentHead statement receipt round) := by
     intro later hlater values
     obtain ⟨index, rfl⟩ := List.get_of_mem hlater
     have hindexBound : (round : Nat) + 1 + index < m + queryCount := by
-      have h := index.isLt
-      rw [List.length_drop, hprogramLength] at h
+      have hlength :
+          (program.drop ((round : Nat) + 1)).length =
+            m + queryCount - ((round : Nat) + 1) := by
+        rw [List.length_drop, hprogramLength]
+      have h : (index : Nat) <
+          m + queryCount - ((round : Nat) + 1) := by
+        simpa only [hlength] using index.isLt
       omega
     let laterRound : Fin (m + queryCount) :=
       ⟨(round : Nat) + 1 + index, hindexBound⟩
@@ -796,14 +806,12 @@ theorem paddedSegmentReindex_head {m queryCount : Nat}
       omega
     have hsep := paddedSegmentLast_lt_head_of_lt statement receipt
       round laterRound hroundLt
+    have hroundHead := paddedSegmentHead_le_last statement receipt round
+    have hlaterHead := paddedSegmentHead_le_last statement receipt laterRound
     apply paddedSegmentSwapMove_apply_of_ne statement receipt laterRound
-    · intro heq
-      have := congrArg Fin.val heq
-      omega
-    · intro heq
-      have hlaterHead := paddedSegmentHead_le_last statement receipt laterRound
-      have := congrArg Fin.val heq
-      omega
+    · exact Fin.ne_of_lt (lt_of_le_of_lt hroundHead hsep)
+    · exact Fin.ne_of_lt
+        (lt_of_le_of_lt hroundHead (lt_of_lt_of_le hsep hlaterHead))
   unfold paddedSegmentReindex
   rw [show paddedSegmentSwapProgram statement receipt = program by rfl,
     hdecomp]
