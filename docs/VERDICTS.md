@@ -233,6 +233,36 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   real object is Poseidon2 over the field-element encoding, at a leaf
   granularity the circuit opens, in the layout the prover reads.
 
+## 5a. The matmul contraction (landed)
+
+- **The `foldl → Finset.sum` bridge is built**, in two *named* steps so the
+  discard point is a line you can point at (`foldl_add_eq_listSum` →
+  `listSum_finRange_eq_sum` → `foldl_finRange_eq_sum` → `denote_matmul_sum`).
+- ⚑ **My brief named the wrong property: the load-bearing one is
+  ASSOCIATIVITY, not commutativity.** IEEE-754 addition *is* commutative and
+  is *not* associative. And step 2 has **no counterexample at all** —
+  `Finset.sum` over `Fin k` cannot be *written* without commutativity, so its
+  refutation is a **type error, not a number.** A saturating scalar reading
+  refutes the bridge on the real denotation (`run … = 5` while its own
+  `Finset.sum` is `9`, kernel-decided).
+- **Padding needs NO `Theory/` change** — correcting a recorded fork (a `pad`
+  op vs non-dyadic MLE machinery): **neither.** Zero-extension is a fact about
+  *tables*, so no `TOp` constructor moves and no denotation theorem changes
+  shape. The pad becomes a commitment-layer obligation.
+- **The contraction face**: `mle₂_contraction` (`Ĉ(x,y) = Σ_p Â(x,p)·B̂(p,y)`
+  at **every** `(x,y)`), two-block Schwartz–Zippel, and
+  `matmul_sumcheck_soundness ≤ (μ+ν)/|F| + κ·3/|F|`. It needs **no `eq`
+  factor** (outer indices bound first) and is **degree 2 on a degree-3 wire**.
+  A forged output table is exhibited *surviving* at `x=1`, so the `(μ+ν)/|F|`
+  event is nonempty.
+- ⚑ **Measured** (`[2,1024]·[1024,128]`, MNIST layer 1 padded): transcript
+  **51 field elements = 408 bytes** against the AIR route's **314,000 gates /
+  ≈27 MB descriptor**. But: output 6.4 ms · **bind-outer 9.6 ms · sumcheck
+  rounds 0.5 ms** — **the sumcheck is 5% of the prover.** *The lever is the
+  partial evaluation, not the rounds.* ⚠ And the 408 bytes **omits two
+  multilinear openings that do not exist yet**, so it is a ratio for the
+  *relation*, not for a system.
+
 ## 5b. Verifiable training (first pieces landed)
 
 - ✅ **The rank-1 gradient check is PROVED and BUILT**
