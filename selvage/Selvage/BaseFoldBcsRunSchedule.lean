@@ -743,6 +743,118 @@ theorem paddedDeferredWorkStep_constr_semantics {m queryCount : Nat}
     (coins (paddedSegmentHead statement receipt round)) hmove hfresh']
   rw [← hmessage, hremaining, List.drop_drop, hwork, hsize', ← hprefixStep]
 
+/-- The public answer attached to each deferred segment head. -/
+def paddedSegmentHeadAnswerSchedule {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    Fin (m + queryCount) → SpAnswer Rate Cap :=
+  fun round => .rate (coins (paddedSegmentHead statement receipt round)).1
+
+/-- Full recursive deferred semantic invariant.  After every public prefix,
+the answer trace is exactly the segment-head trace, the construction-only
+schedule has left the primitive simulator empty, and every later public full
+message is still fresh in the RO. -/
+theorem paddedDeferredStateNat_head_semantics {m queryCount round : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hsafe : PaddedFullMessageRoutingSafe statement receipt)
+    (hround : round ≤ m + queryCount) :
+    ∃ state,
+      paddedDeferredStateNat statement receipt verdict coins round hround =
+          .ok state ∧
+        state.core.ans =
+          (List.ofFn
+            (paddedSegmentHeadAnswerSchedule statement receipt coins)).take
+              round ∧
+        state.core.sim = Oracle.empty ∧
+        (∀ future : Fin (m + queryCount), round ≤ future →
+          state.core.ro.lookup
+            (paddedPublicMessageSchedule statement receipt future) = none) ∧
+        state.work = paddedWorkPrefix statement receipt round ∧
+        state.remaining = (List.ofFn coins).drop
+          (paddedWorkPrefix statement receipt round) := by
+  induction round with
+  | zero =>
+      refine ⟨DeferredWorkState.initial coins, rfl, ?_, ?_, ?_, ?_, ?_⟩
+      · simp [DeferredWorkState.initial]
+      · rfl
+      · intro future _
+        exact Oracle.lookup_empty _
+      · simp [DeferredWorkState.initial]
+      · simp [DeferredWorkState.initial]
+  | succ round ih =>
+      have hprev : round ≤ m + queryCount :=
+        Nat.le_trans (Nat.le_succ round) hround
+      obtain ⟨state, hstate, hans, hsim, hfuture, hwork, hremaining⟩ :=
+        ih hprev
+      have hroundLt : round < m + queryCount := Nat.lt_of_succ_le hround
+      let current : Fin (m + queryCount) := ⟨round, hroundLt⟩
+      have hansLength : state.core.ans.length = current := by
+        rw [hans, List.length_take, List.length_ofFn]
+        dsimp [current]
+        omega
+      have hcurrentFresh : state.core.ro.lookup
+          (paddedPublicMessageSchedule statement receipt current) = none :=
+        hfuture current (by simp [current])
+      let next : DeferredWorkState Rate Cap :=
+        ⟨⟨(state.core.ro.respond
+              (paddedPublicMessageSchedule statement receipt current)
+              (coins (paddedSegmentHead statement receipt current)).1).2,
+            state.core.sim,
+            state.core.ans ++
+              [paddedSegmentHeadAnswerSchedule statement receipt coins current]⟩,
+          (List.ofFn coins).drop
+            (paddedWorkPrefix statement receipt (round + 1)),
+          paddedWorkPrefix statement receipt (round + 1)⟩
+      have hstep : deferredWorkStep
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) state current = .ok next := by
+        simpa [next, paddedSegmentHeadAnswerSchedule] using
+          (paddedDeferredWorkStep_constr_semantics statement receipt verdict
+            coins current state hansLength (by simpa [current] using hwork)
+            (by simpa [current] using hremaining) hcurrentFresh)
+      refine ⟨next, ?_, ?_, ?_, ?_, rfl, rfl⟩
+      · unfold paddedDeferredStateNat
+        rw [hstate]
+        exact hstep
+      · have hindex : round <
+            (List.ofFn
+              (paddedSegmentHeadAnswerSchedule statement receipt coins)).length :=
+          by simpa using hroundLt
+        have htake :
+            (List.ofFn
+              (paddedSegmentHeadAnswerSchedule statement receipt coins)).take
+                (round + 1) =
+              (List.ofFn
+                (paddedSegmentHeadAnswerSchedule statement receipt coins)).take
+                  round ++
+                [paddedSegmentHeadAnswerSchedule statement receipt coins
+                  current] := by
+          rw [List.take_add_one, List.getElem?_eq_getElem hindex,
+            List.getElem_ofFn]
+          rfl
+        dsimp [next]
+        rw [hans, htake]
+      · simpa [next] using hsim
+      · intro future hfutureIndex
+        have hcurrentLt : (current : Nat) < future := by
+          dsimp [current]
+          omega
+        have hroundNe : current ≠ future := Fin.ne_of_lt hcurrentLt
+        have hnotPrefix := hsafe current future hroundNe
+        have hmessageNe :
+            paddedPublicMessageSchedule statement receipt future ≠
+              paddedPublicMessageSchedule statement receipt current := by
+          intro equal
+          apply hnotPrefix
+          rw [← equal]
+        dsimp [next]
+        rw [Oracle.lookup_respond_ne _ hmessageNe]
+        exact hfuture future (by omega)
+
 /-- Last coordinate of the same nonempty work segment.  In the eager prefix
 hybrid, this is the fresh rate coin assigned to the full padded message. -/
 def paddedSegmentLast {m queryCount : Nat}
