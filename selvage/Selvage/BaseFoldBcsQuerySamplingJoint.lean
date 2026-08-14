@@ -163,13 +163,133 @@ theorem acceptedSeedCoordinates_uniform {ell queryCount : Nat}
         (A := QuerySlackFamily ell queryCount)
         (B := QueryCoordinateFamily ell queryCount) event
 
+/-! ## Keep an independent challenge/context coordinate -/
+
+/-- Reassociate the accepted-seed factorization so all nuisance coordinates
+sit on the left and an arbitrary independent context remains paired with the
+uniform query-coordinate family. -/
+def acceptedSeedContextEquiv (A : Type) (ell queryCount : Nat)
+    (hell : ell ≤ 28) :
+    A × AcceptedSeedFamily queryCount ≃
+      ((Fin queryCount → DigestTail) × QuerySlackFamily ell queryCount) ×
+        (A × QueryCoordinateFamily ell queryCount) where
+  toFun value :=
+    let split := acceptedSeedFamilyEquiv ell queryCount hell value.2
+    ((split.1, split.2.1), (value.1, split.2.2))
+  invFun value :=
+    (value.2.1,
+      (acceptedSeedFamilyEquiv ell queryCount hell).symm
+        (value.1.1, (value.1.2, value.2.2)))
+  left_inv value := by
+    apply Prod.ext
+    · rfl
+    · exact (acceptedSeedFamilyEquiv ell queryCount hell).symm_apply_apply value.2
+  right_inv value := by
+    obtain ⟨nuisance, context⟩ := value
+    obtain ⟨tails, slack⟩ := nuisance
+    obtain ⟨a, coordinates⟩ := context
+    simp only
+    rw [(acceptedSeedFamilyEquiv ell queryCount hell).apply_symm_apply]
+
+theorem acceptedSeedContextEquiv_coordinates {A : Type}
+    {ell queryCount : Nat} (hell : ell ≤ 28)
+    (value : A × AcceptedSeedFamily queryCount) :
+    (acceptedSeedContextEquiv A ell queryCount hell value).2 =
+      (value.1, acceptedSeedCoordinates hell value.2) := by
+  apply Prod.ext
+  · rfl
+  · exact acceptedSeedFamilyEquiv_coordinates hell value.2
+
+/-- Joint uniformity is stable in the presence of an arbitrary independent
+finite context.  In the BaseFold application this context is the complete
+algebraic challenge vector, so this theorem rules out an illicit independence
+shortcut when transporting the raw soundness event. -/
+set_option maxHeartbeats 1600000 in
+theorem acceptedSeedCoordinates_uniform_with_context
+    {A : Type} [Fintype A] {ell queryCount : Nat} (hell : ell ≤ 28)
+    (event : A × QueryCoordinateFamily ell queryCount → Prop) :
+    uniformProb (A × AcceptedSeedFamily queryCount)
+        (fun value => event (value.1, acceptedSeedCoordinates hell value.2)) =
+      uniformProb (A × QueryCoordinateFamily ell queryCount) event := by
+  letI : Nonempty (Fin (querySlackSize ell)) :=
+    ⟨⟨0, querySlackSize_pos ell⟩⟩
+  letI : Nonempty DigestTail := ⟨fun _ => 0⟩
+  calc
+    uniformProb (A × AcceptedSeedFamily queryCount)
+        (fun value => event (value.1, acceptedSeedCoordinates hell value.2)) =
+      uniformProb
+        (((Fin queryCount → DigestTail) × QuerySlackFamily ell queryCount) ×
+          (A × QueryCoordinateFamily ell queryCount))
+        (fun split => event split.2) := by
+          simpa only [acceptedSeedContextEquiv_coordinates] using
+            (uniformProb_equiv
+              (acceptedSeedContextEquiv A ell queryCount hell)
+              (fun split => event split.2))
+    _ = uniformProb (A × QueryCoordinateFamily ell queryCount) event :=
+      uniformProb_prod_snd
+        (A := (Fin queryCount → DigestTail) ×
+          QuerySlackFamily ell queryCount)
+        (B := A × QueryCoordinateFamily ell queryCount) event
+
+/-! ## The exact raw-IOR transport -/
+
+open Polynomial
+
+/-- The raw committed-IOR bound may consume the strict sampler's complete
+accepted digest family directly.  The challenge vector and the entire query
+batch have exactly the same joint law as the existing theorem's native sample
+space; no coordinatewise-independence premise is added. -/
+theorem acceptedSeedRawCommittedIor_coherent_exact_sound
+    {ell m queryCount : Nat}
+    (T : FoldingTower E (PowerTwoFriLevels ell) m)
+    (st : RawFriAdaptiveTranscript
+      (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)))
+    (hell : ell ≤ 28) (hmell : m ≤ ell)
+    (z : Fin m → E) (H : E)
+    (word : PowerTwoFriLevels ell 0 → E)
+    (prover : (Nat → E) → Nat → Polynomial E)
+    {tau : Real} (htau1 : tau ≤ 1)
+    (htau : ∀ j : Fin m,
+      tau ≤ 1 /
+        (Fintype.card (PowerTwoFriLevels ell (j + 1)) : Real))
+    (hword0 : st.word 0 (fun i => i.elim0) = word)
+    (hfalse : ¬ BaseFoldExactClaim T z H word)
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (chi : Nat → E) (i : Nat), i < m →
+      (prover chi i).degree < ((2 + 1 : Nat) : WithBot Nat)) :
+    uniformProb
+      ((Fin m → E) × AcceptedSeedFamily queryCount)
+      (fun sample =>
+        BaseFoldRawCommittedIorAccepts
+          (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) T st
+          z H prover queryCount sample.1
+          (powerTwoCoherentSchedule hmell
+            (acceptedSeedCoordinates hell sample.2)))
+      ≤ (m : Real) * (3 / Fintype.card E) + (1 - tau) ^ queryCount +
+        uniformProb
+          ((Fin m → E) × QueryCoordinateFamily ell queryCount)
+          (fun sample =>
+            FriRawAdaptiveEquivocates
+              (fun n => BinaryMerkle.openingScheme hashSuite (ell - n))
+              T st sample.1 queryCount
+              (powerTwoCoherentSchedule hmell sample.2)) := by
+  rw [acceptedSeedCoordinates_uniform_with_context hell]
+  exact basefoldRawCommittedIor_coherent_exact_sound
+    (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) T st hmell
+    z H word prover queryCount htau1 htau hword0 hfalse hpm hdeg
+
 #check @acceptedDigestEquiv
 #check @acceptedSeedFamilyEquiv
 #check @acceptedSeedCoordinates_uniform
+#check @acceptedSeedCoordinates_uniform_with_context
+#check @acceptedSeedRawCommittedIor_coherent_exact_sound
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsQuerySamplingJoint.acceptedSeedCoordinates_uniform' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms acceptedSeedCoordinates_uniform
+/-- info: 'Minidregg.Selvage.BaseFoldBcsQuerySamplingJoint.acceptedSeedRawCommittedIor_coherent_exact_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms acceptedSeedRawCommittedIor_coherent_exact_sound
 
 end
 
