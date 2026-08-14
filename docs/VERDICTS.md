@@ -81,6 +81,46 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   ρ=1/64 already bought the expensive half. Four of five production systems
   refuse the capacity conjecture; we are the outlier. Measured price of the
   proven regime elsewhere: ~2× proof size, ~4% time.
+- ⚑ **The grind is 46.3% of our proven soundness, and `pow=16` is OPTIMAL.**
+  `pow` is **additive and regime-free**; a query is **multiplicative and
+  regime-bound** (0.9776 bits at UDR, 3 at JBR, 6 at withdrawn CBR at lb=6).
+  **At UDR — the only regime still standing — the 16 grind bits are 46.3% of
+  the deployed 34.58-bit column.** Exchange rate **17 / 6 / 3 queries**,
+  two-sided. ⚠ *A cost argument that says "the grind replaces N queries"
+  without naming its regime has quoted one of those three — and the flattering
+  one is the withdrawn regime.* The closed-form optimum is **p\* = 15.97** on
+  the wire-bytes/verify-ms axis dregg actually optimizes — **`pow=16` is
+  optimal for the same reason the blowup was, and nobody had computed it.**
+  (Also checked rather than assumed: `sample_bits` delivers **15.999953**
+  bits, not 16.)
+- ⚑⚑ **OUR OWN HARDENING COMMIT REMOVED THE GRIND'S PARALLELISM.** `90680ee7d`
+  swapped upstream's `find_map_any` for **`find_map_first`** so the PoW
+  witness would stop racing — correct, every byte-parity gate needs it — but
+  `find_first` must prove no *lower* candidate exists. Measured critical path:
+  **1 thread 20,766 batches; 12 threads 20,766. Scale 1.00.** Wall clock gets
+  *worse* (24.4 → 28.9 ms) and total work rises **5.9×** as eleven workers
+  scan above the answer and lose the `min`. **The hardening-commit-disarms-a-
+  guard class, in our own tree, found by measuring rather than reading.**
+  **Fix — windowed parallel `min`**: scan a bounded window fully in parallel,
+  reduce with `min`; the first non-empty window's minimum **is** the global
+  minimum, so it returns **byte-for-byte the same witness** (same predicate,
+  query indices, proof bytes, VK). **7.49× on the critical path at 12
+  threads**, and **at c=8 the work is literally fixed — the "fixed-work
+  alternative" without a VDF.** *Do not lower a security parameter to fix a
+  scheduling bug that has a free fix* — and the fix moves p\* **up** ~3 bits,
+  making 16 comfortably right rather than marginally right.
+  ⚠ Refuted by construction: *"move the grind off the critical path"* — its
+  input is the completed FRI commit-phase transcript, which does not exist
+  earlier; grinding anything earlier binds less and is a weaker protocol.
+- **Variance, measured over 256 transcripts**: mean 12.8 ms, **p99 52.6 ms,
+  worst-of-256 75.5 ms against a 69 ms whole-prove budget**; tail matches
+  `e^−k` to two decimals. The 40.8 ms draw that manufactured a false optimum
+  was the **p96**.
+- ⚠ **A tooth that did not exist**: the six `InvalidPowWitness` rejections in
+  `deployed_refines_verifier_teeth.rs` are all **transcript desyncs** —
+  nothing ever mutated the witness. A constructive falsifier now exists
+  (`find_map_first` returns the *minimal* valid witness, so `w−1` provably
+  fails): tamper in place, refuse, restore, accept.
 - ⚑ **"`lb=6` is 2.9× off the optimum" is REFUTED — it was a grind draw.**
   `query_proof_of_work_bits=16` is **~25% of a deployed prove** (47,917
   permutations / 8.2 ms), depends on **neither blowup nor trace**, and is
