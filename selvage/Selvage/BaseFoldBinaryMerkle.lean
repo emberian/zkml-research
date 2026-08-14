@@ -23,6 +23,12 @@ set_option autoImplicit false
 variable {F Digest : Type} [Field F]
 variable {ell m : Nat}
 
+/-- A collision together with the concrete FRI level at which its two
+preimages were exposed. -/
+structure LocatedMerkleCollision (H : HashSuite F Digest) (m : Nat) : Prop where
+  level : Fin (m + 1)
+  collision : Collision H
+
 /-- A raw adaptive BaseFold equivocation against the executable binary-Merkle
 scheme exposes a concrete collision at one named FRI level. -/
 theorem friRawAdaptiveEquivocates_binaryMerkle_collision
@@ -34,7 +40,7 @@ theorem friRawAdaptiveEquivocates_binaryMerkle_collision
     (Q : FriIndependentQuerySchedule (PowerTwoFriLevels ell) m qCount)
     (hequiv : FriRawAdaptiveEquivocates
       (fun n => openingScheme H (ell - n)) T st r qCount Q) :
-    ∃ n : Fin (m + 1), Collision H := by
+    LocatedMerkleCollision H m := by
   rcases hequiv with ⟨j, opening, a, _hopen, hquery⟩
   rcases hquery with hleft | hright | hnext
   · exact ⟨⟨j, lt_trans j.isLt (Nat.lt_succ_self m)⟩,

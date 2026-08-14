@@ -49,7 +49,7 @@ variable {Value Digest : Type*} (H : HashSuite Value Digest)
 /-- Root of a perfect tree on the canonical LSB-first Boolean cube. -/
 def cubeRoot : {k : Nat} → ((Fin k → Bool) → Value) → Digest
   | 0, word => H.leaf (word fun i => i.elim0)
-  | k + 1, word =>
+  | _ + 1, word =>
       H.node
         (cubeRoot (fun tail => word (Fin.cases false tail)))
         (cubeRoot (fun tail => word (Fin.cases true tail)))
