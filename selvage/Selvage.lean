@@ -123,3 +123,4 @@ import Selvage.BaseFoldBcsFiatShamir -- exact BaseFold root/sumcheck/challenge/q
 import Selvage.BaseFoldBcsSpongeGame -- the exact receipt query schedule is a SpongeIndiffWorkGame distinguisher with transcriptPrimitiveWork as a proved PrimitiveWorkBound
 import Selvage.BaseFoldBcsQuerySampling -- reject zero, factor nonzero BabyBear exactly, and derive uniform power-of-two BaseFold query coordinates
 import Selvage.BaseFoldBcsQuerySamplingJoint -- exact whole-batch factorization: accepted digest families split into unused lanes, slack, and a jointly uniform independent BaseFold query-coordinate vector
+import Selvage.BaseFoldBcsStrictRomLedger -- the exact receipt work-indexed sponge advantage and fail-closed q/p query-seed rejection term inhabit one explicit ROM/sampling ledger
