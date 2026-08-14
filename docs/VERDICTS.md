@@ -160,9 +160,36 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   committed felts (59.9%) carry no nonlinearity, so carrying them as
   expressions gives **352 → 157 felts, 352 → 141 constraints, 2.11× prove,
   2.34× committed cells, at identical `max_constraint_degree = 7`** —
-  strictly Pareto, no trade to price. **And the ratio GROWS as α falls**
-  (2.24× BabyBear → 2.83× KoalaBear w16), so the field question gets a second
-  answer pointing the same way. ⚠ The `map_write_chip` 227 ms "corroboration"
+  strictly Pareto, no trade to price. ⚠ The "ratio grows as α falls" reading is **refuted** — see §1b: it grew
+  because the *baseline* grew with `R_P`, and absolute committed felts get
+  4.5% worse.
+  ✅ **LANDED 2026-08-14** (`permEmissionNarrow`, `daa207ae7`): **352 → 141
+  gates**, ops/row 2,668 → 2,246, and `max_constraint_degree` **7 on both
+  arms — pinned on both EMITTED objects** (`the_degree_is_seven_on_both_arms`),
+  since identical degree is the half of a Pareto claim a virtualization gets
+  wrong. All 11 deployed table-AIR artifacts re-emitted **byte-identical**;
+  nothing deployed moved.
+  **The relating theorem, and it is an identity over ℤ rather than a
+  congruence** — so nothing hides in a modulus: the `j`-th wide internal gate
+  body is `c_j·δ` for the *one* narrow body, `c_j = 1` on fifteen lanes and
+  `p−1` on lane 0, with `lane_zero_multiplier_is_a_unit` cancelling `p−1` ⇒
+  **the one narrow gate holds iff all sixteen wide ones do.** Then
+  `narrow_accepts_exactly_the_wide_witnesses`, stated against an arbitrary
+  block — **deliberately not an ∃-over-a-witness.**
+  ⚑ **A finding the brief did not have: the sharing node is a PRECONDITION
+  here, not an optimization.** The narrow arm has **no tree spelling** — one
+  internal round multiplies a tree state ~16×, so thirteen is ~5·10^18 nodes
+  — which means **§6b's tree-vs-DAG agreement oracle has no narrow
+  counterpart by construction.** An instrument is lost, not just a cost saved.
+  ⚑ **AND THE WIN IS NOT BANKED: the blocker is Rust witness-gen.**
+  `poseidon2_permute_aux_witness` writes 352 values/perm and the narrow layout
+  needs 141. **"The Lean is landed" ≠ routable** — the standing house lesson,
+  firing again.
+  ⚠ Honestly undone: that the narrow emission's literal gate list, *resolved
+  through `shareVals`*, **is** the equation system the theorems reason about
+  — needs a `shareVals` prefix lemma plus a fold invariant (~a day), **and it
+  would close the same gap for the WIDE arm, which never had it either.**
+  Currently case-checked on six row windows and labelled as case-testing. ⚠ The `map_write_chip` 227 ms "corroboration"
   **was not one** — it is a chip-table present-vs-absent comparison.
 - **The degree-3 rung is LANDED** (`Assurance/AirSumcheckCubic.lean`):
   `cubicForm E A B C D = Ê·(Â·B̂ + Ĉ·D̂)`, soundness `≤ m·3/|F|`. **Both
