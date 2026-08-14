@@ -53,6 +53,15 @@ at BabyBear. KoalaBear is NOT recommended on this evidence** until the
 recursion engine is profiled and plonky3's own `R_P = 20 vs 85` docblock
 discrepancy is settled.
 
+> ✅ **08-14: the first two are DONE (§7.0).** The third is **priced, not
+> landed**: in exact permutation counts the drop is **prover ÷15.2 · verifier
+> ×2.28 · wire ×~2.4 · UDR +20 bits · row ceiling ×16**, which is a genuine
+> two-sided trade rather than a free win, and the per-descriptor knob it really
+> wants needs a `num_queries` pin in the recursion verifier first.
+> `notes/blowup-drop.md`. ⚠ **The "13.13× at 4096 rows" quoted below is wall
+> clock on a contended box** — the same case re-measured today reads 7.78×. Use
+> the counts.
+
 **Deployed, both trees: BabyBear** (2013265921 = 15·2²⁷+1), challenge **Ext4**,
 hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
 **recommended, unexecuted** migration target.
@@ -409,19 +418,37 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
 
 ## 7. Genuinely open
 
-0. ⚑⚑ **WE FROZE AN UPSTREAM BUG AS A LAW.** The "degree-7 S-box needs
-   `log_blowup ≥ 3`" floor is **a one-line bug in `p3-fri`**, not mathematics:
-   `get_evaluations_on_domain`'s extrapolation path applies `bit_reverse_rows()`
-   once too many (fast path returns natural order, slow path bit-reversed) —
-   right values, wrong rows, wrong quotient, a well-formed proof the verifier
-   rejects. **Reproduced standalone**: degree-7 AIR gives `OodEvaluationMismatch`
-   at lb=2 and `Ok` at lb=3; with one inserted call it verifies at lb=2 while a
-   corrupted trace still rejects. Live on upstream `main`; introduced by the
-   same commit that deleted the guarding `assert!`; the test covering that
-   branch takes the other branch. **PR #1982 (6h old) is this exact fix.**
-   ⚑ **And `circuit/tests/fri_blowup_global_knob_survey.rs:685-690` asserts the
-   refusal MUST happen — our own gate goes red when the bug is fixed.**
-   *Fix the bug, repair the gate, then drop the blowup at BabyBear.*
+0. ✅ **CLOSED 2026-08-14 — the bug is fixed, the gate is repaired, the drop is
+   priced. The config flip is NOT landed and the reason is in the note.**
+   `notes/blowup-drop.md`; `breadstuffs` `4e6089484` + `26b33a37a`, `minidregg`
+   `4889368`. What it was: the "degree-7 S-box needs `log_blowup ≥ 3`" floor was
+   **one `.bit_reverse_rows()` too many** in `p3-fri`'s
+   `get_evaluations_on_domain` extrapolation path — right values, wrong rows,
+   wrong quotient, a well-formed proof the verifier rejects — **and
+   `fri_blowup_global_knob_survey.rs:685-690` asserted that the refusal MUST
+   happen, so our gate would have gone red when the bug was fixed.**
+   - **Fixed** in the `[patch]`ed `vendor/plonky3-fri-82cfad73`. **PR #1982 is
+     the same change and is STILL OPEN / CHANGES_REQUESTED** (checked 08-14), so
+     we carry it with the provenance recorded.
+   - **Gate inverted** to assert the correct behaviour, and **all twelve survey
+     descriptors — chip-bearing and chip-free — now prove AND self-verify at
+     `(2,57)`.** The per-descriptor "floor" column reads `log_blowup 2` for all.
+   - **Verified by construction**, not by outcome: both PCS paths against an
+     independent coset DFT (with the buggy answer built constructively and
+     asserted to differ), a degree-7 AIR verifying at `lb=2`, **and a corrupted
+     trace still rejecting** — `circuit/tests/fri_extrapolation_row_order.rs`.
+   - ⚑ **The win, in exact permutation counts** (this box was at load 30–52; wall
+     clock here is not evidence): **prover 15.19× fewer**, and the 38 extra
+     queries cost it **five permutations**. **Verifier 2.28× MORE** — which
+     reproduces the 2026-08-04 "why 6 stays" verdict exactly. The trade is real
+     and two-sided; the note's §7 says what the flip needs first (a
+     **`num_queries` pin in the recursion verifier**, which is a soundness hole
+     on its own).
+   - ⚑ **A model calibrated on a censored sample.** §1b's byte predictor was
+     fitted only on descriptors that *could be measured* at `(2,57)` — i.e. with
+     every chip-bearing one excluded by the bug — and missed them by up to
+     **99%**. Refitted with a chip indicator: error **76–99% → 0.0–4.3%**, and
+     adding the term moved the other two coefficients by **0.01%**.
 
 1. ~~Is the prover hash-bound?~~ **SETTLED — HASH-BOUND AT EVERY FEASIBLE
    BLOWUP.** Measured per-phase on a real IR-v2 proof: `hash/arith` = 1.01 at
