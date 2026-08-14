@@ -32,6 +32,7 @@ variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
 
 /-! ## Transcript execution -/
 
+omit [Fintype F] [DecidableEq F] in
 /-- The prover claim after a chronological list of completed sumcheck rounds.
 The fold is memoryless: each round replaces the incoming claim by `g(r)`. -/
 def scRunClaim (H : F) : List (Polynomial F × F) → F
@@ -47,6 +48,7 @@ def scRunValid (d : ℕ) : F → List (Polynomial F × F) → Prop
       g.eval 0 + g.eval 1 = H ∧
       scRunValid d (g.eval r) rs
 
+omit [Fintype F] [DecidableEq F] in
 @[simp] theorem scRunClaim_append_single (H : F)
     (rs : List (Polynomial F × F)) (g : Polynomial F) (r : F) :
     scRunClaim H (rs ++ [(g, r)]) = g.eval r := by
@@ -56,6 +58,7 @@ def scRunValid (d : ℕ) : F → List (Polynomial F × F) → Prop
       rcases e with ⟨g', r'⟩
       simpa [scRunClaim] using ih (g'.eval r')
 
+omit [Fintype F] [DecidableEq F] in
 theorem scRunValid_append_single (d : ℕ) (H : F)
     (rs : List (Polynomial F × F)) (g : Polynomial F) (r : F) :
     scRunValid d H (rs ++ [(g, r)]) ↔
@@ -70,16 +73,19 @@ theorem scRunValid_append_single (d : ℕ) (H : F)
       rw [ih]
       tauto
 
+omit [Fintype F] [DecidableEq F] in
 /-- Read the completed challenges as a total stream, padded by zero. -/
 def scSchedule (rs : List (Polynomial F × F)) : ℕ → F :=
   fun j => (rs[j]?.map Prod.snd).getD 0
 
+omit [Fintype F] [DecidableEq F] in
 theorem scSchedule_append_lt (rs : List (Polynomial F × F))
     (e : Polynomial F × F) {j : ℕ} (hj : j < rs.length) :
     scSchedule (rs ++ [e]) j = scSchedule rs j := by
   unfold scSchedule
   rw [List.getElem?_append_left hj]
 
+omit [Fintype F] [DecidableEq F] in
 theorem scSchedule_append_self (rs : List (Polynomial F × F))
     (g : Polynomial F) (r : F) :
     scSchedule (rs ++ [(g, r)]) rs.length = r := by
@@ -87,11 +93,13 @@ theorem scSchedule_append_self (rs : List (Polynomial F × F))
   rw [List.getElem?_append_right (le_refl _), Nat.sub_self]
   rfl
 
+omit [Fintype F] [DecidableEq F] in
 /-- The honest polynomial selected at the next round of a prefix. -/
 def scHonestAt (honest : (ℕ → F) → ℕ → Polynomial F)
     (rs : List (Polynomial F × F)) : Polynomial F :=
   honest (scSchedule rs) rs.length
 
+omit [Fintype F] [DecidableEq F] in
 /-- The honest truth after a completed prefix. -/
 def scTruthAfter (S : F) (honest : (ℕ → F) → ℕ → Polynomial F)
     (rs : List (Polynomial F × F)) : F :=
@@ -99,6 +107,7 @@ def scTruthAfter (S : F) (honest : (ℕ → F) → ℕ → Polynomial F)
 
 /-- Appending a round evaluates the honest polynomial selected by the earlier
 challenge prefix at the new challenge. -/
+omit [Fintype F] [DecidableEq F] in
 theorem scTruthAfter_append_single {S : F}
     {honest : (ℕ → F) → ℕ → Polynomial F}
     (hpm : PrefixMeasurable honest) (rs : List (Polynomial F × F))
@@ -113,6 +122,7 @@ theorem scTruthAfter_append_single {S : F}
 
 /-- Prefix-measurability transports the next honest polynomial from a list
 schedule to any total challenge stream agreeing below the next round. -/
+omit [Fintype F] [DecidableEq F] in
 theorem scHonestAt_eq_of_prefix
     {honest : (ℕ → F) → ℕ → Polynomial F}
     (hpm : PrefixMeasurable honest) (rs : List (Polynomial F × F))
@@ -122,6 +132,7 @@ theorem scHonestAt_eq_of_prefix
 
 /-- The truth after a list prefix is unchanged when both the honest prover and
 challenge stream are transported to an agreeing total schedule. -/
+omit [Fintype F] [DecidableEq F] in
 theorem scTruthAfter_eq_of_prefix {S : F}
     {honest : (ℕ → F) → ℕ → Polynomial F}
     (hpm : PrefixMeasurable honest) (rs : List (Polynomial F × F))
@@ -138,6 +149,7 @@ theorem scTruthAfter_eq_of_prefix {S : F}
 
 /-! ## The reduction and knowledge state -/
 
+omit [Fintype F] [DecidableEq F] in
 /-- The state proposition at every transcript shape.  A pending message is
 checked but not yet evaluated; therefore adding it can never turn `false` into
 `true`. -/
@@ -239,6 +251,7 @@ noncomputable def sumcheckKState (k d : ℕ) (hk : 0 < k) (S : F)
       · rw [if_neg hv] at hver
         contradiction
 
+omit [DecidableEq F] in
 open Classical in
 /-- The state field, exposed for round proofs. -/
 theorem sumcheckKState_state_eq (k d : ℕ) (hk : 0 < k) (S : F)

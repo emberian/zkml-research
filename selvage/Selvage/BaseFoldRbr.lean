@@ -37,9 +37,11 @@ noncomputable def basefoldSumcheckReduction (hm : 0 < m)
 
 /-- A finite RBR transcript prefix, restricted to `Fin m`, induces the same
 zero-padded schedule expected by the landed BaseFold sumcheck theorems. -/
+omit [Fintype F] [DecidableEq F] in
 def basefoldPrefixChallenges (rs : List (Polynomial F × F)) : Fin m → F :=
   fun j => scSchedule rs j
 
+omit [Fintype F] [DecidableEq F] in
 theorem scSchedule_eq_chalOf_prefix (rs : List (Polynomial F × F))
     (h : rs.length < m) :
     ∀ j, j < rs.length →
@@ -51,6 +53,7 @@ theorem scSchedule_eq_chalOf_prefix (rs : List (Polynomial F × F))
 
 /-- The landed BaseFold family satisfies the list-prefix degree obligation of
 the generic RBR construction. -/
+omit [Fintype F] [DecidableEq F] in
 theorem basefoldRbr_honest_degree (table : (Fin m → Bool) → F)
     (z : Fin m → F) (rs : List (Polynomial F × F)) (h : rs.length < m) :
     (scHonestAt (basefoldHonest table z) rs).degree <
@@ -59,6 +62,7 @@ theorem basefoldRbr_honest_degree (table : (Fin m → Bool) → F)
 
 /-- The landed BaseFold Boolean-sum theorem, transported from its padded
 `Fin m` challenge tuple to RBR's finite transcript prefix. -/
+omit [Fintype F] [DecidableEq F] in
 theorem basefoldRbr_honest_check (table : (Fin m → Bool) → F)
     (z : Fin m → F) (rs : List (Polynomial F × F)) (h : rs.length < m) :
     (scHonestAt (basefoldHonest table z) rs).eval 0 +
@@ -83,6 +87,7 @@ noncomputable def basefoldSumcheckRbr (hm : 0 < m)
     (basefoldRbr_honest_check table z)
 
 /-- The source relation is exactly the public BaseFold evaluation claim. -/
+omit [DecidableEq F] in
 theorem basefoldSumcheck_source_iff (hm : 0 < m)
     (table : (Fin m → Bool) → F) (z : Fin m → F) (H : F)
     (y : Fin (basefoldSumcheckReduction hm table z).n →
@@ -105,6 +110,22 @@ open BaseFoldExample ProximityExample
 noncomputable def rbrF5 :
     RbrKnowledgeSoundness (basefoldSumcheckReduction (by decide) table ![3]) :=
   basefoldSumcheckRbr (by decide) table ![3]
+
+/-- The exact public evaluation claim as a native statement. -/
+noncomputable def stF5 :
+    Stmt (basefoldSumcheckReduction (by decide) table ![3]) :=
+  ⟨(), mle table ![3], fun _ => ()⟩
+
+/-- **Premise inhabitation:** the native knowledge state is true on the exact
+F5 claim at the empty transcript and a nonzero relaxation radius. -/
+theorem rbrF5_state_alive :
+    rbrF5.kstate.state (1 / 2) stF5 Transcript.empty () = true := by
+  refine (rbrF5.kstate.empty_iff (1 / 2) ?_ stF5 ()).mpr ?_
+  · change (1 / 2 : ℝ) ∈ Set.Ioo 0 1
+    norm_num
+  · refine ⟨stF5.y, rfl, ?_⟩
+    rw [fracHamming_self]
+    norm_num
 
 /-- Its round price computes to `2/5`; this is a live finite-field instance,
 not an uninstantiated interface. -/
