@@ -51,3 +51,13 @@
   scratchpad/ft/YEAR-NUM.txt + heads.tsv. ⚠ IoTeX filenames swap 858/861.
 - **Scratchpad is shared across concurrent lanes** — generic filenames
   collide (a lane's file was clobbered mid-task). Use unique prefixes.
+- ⚑ **NEVER pipe `cargo` into `head`/`grep -m`** (found 2026-08-14, cost ~25
+  min and one phantom "it built but produced no binary"). `head -N` exits at
+  N lines → SIGPIPE → **cargo dies mid-build with exit 0 through the
+  pipeline**, leaving a `.d` file and no test binary. And `| tail -N` is the
+  opposite trap: it buffers everything, so a live build looks *hung* and gets
+  killed. Redirect to a file (`cargo … > log 2>&1 &`) and grep the file.
+- **breadstuffs `target/` has ONE cargo lock across all lanes.** "Blocking
+  waiting for file lock on build directory" means another lane's `cargo`/
+  `cargo nextest` owns it (a `fhegg-fhe --release` GPU suite held it for
+  many minutes). It is not a hang — wait, do not kill.
