@@ -44,7 +44,8 @@ theorem constructionDistinguisher_rom_and_rejection_bound
     {m queryCount : Nat}
     (hrom : romConstructionTarget)
     (statement : Statement m) (receipt : Receipt m queryCount)
-    (verdict : List (SpAnswer Rate Cap) → Bool) :
+    (verdict : List (SpAnswer BaseFoldBcsFiatShamir.Rate
+      BaseFoldBcsFiatShamir.Cap) → Bool) :
     |realProb (constructionDistinguisher statement receipt verdict) (0, 0) -
         idealProb (constructionDistinguisher statement receipt verdict) (0, 0)| +
         uniformProb (Fin queryCount → Digest) QuerySeedRejection
