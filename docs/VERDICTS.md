@@ -498,6 +498,63 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   derivative; conv (a correlation, unexamined); the data; and exactness over a
   million accumulating steps.
 
+## 5c. Low-rank updates (landed) — and the break-even is not where I expected
+
+`Assurance/ZkmlLowRankUpdate.lean` (758 lines, no `sorry`, 21 clean axiom pins,
+`c060efa`) + a counts-only Rust pricer (`3ffa609`, **no clock in the file**).
+
+⚑ **My question — "is rank-`r` literally `rankK_sound`?" — answered as a
+CORRECTION: yes, for ONE of two designs, and they are not the same protocol.**
+- **`r`-openings design** (`A,B` as `2r` separately-opened vectors): the
+  summand **is** `rankK`'s summand *by `rfl`*, giving `(μ+ν)/|F|` with no `κ`.
+  **But it does not save the commitment** — which was the entire point.
+- **One-commitment design** (the one that saves `2rd` felts): the verifier
+  holds one opening of each and **cannot evaluate the inner sum**, so it must
+  sumcheck `κ = log₂ r` variables — **`(μ+ν)/|F| + κ·3/|F|`, which DOES grow
+  with `r`.**
+⚠ **And the honest counter-cut**: that sumcheck is **128 field ops at r=64**.
+*The correction is real in the error bound (under 1 bit at every usable rank)
+and nothing at all in the cost.*
+
+**Both proofs are instantiations, not twins**: `lowRank_delta_is_the_matmul_
+output` shows `W' − W` **is** `matmulTable A B`, so the landed contraction
+argument transfers with nothing re-derived, and `matmulTable_rank_one`
+collapses `κ=0` to the outer product — **the rank-1 rung is the `r=1`
+instance.**
+
+**The inference side, which is the genuinely new part** (`matVec` did not exist
+anywhere in the tree): `matVec_matmulTable` proves `(A·B)v = A(Bv)` — *the
+cheap order is legal* — and `matVec_chainUpdate` is what makes the **chain**
+cheap: **the `d²` term appears ONCE for a list of any length.** (Nicely, *"the
+base does not depend on A,B"* is `rfl` and is deliberately **not** dressed up
+as a theorem.)
+
+**Pricing — calibrated, not asserted**: the tree law reproduces
+`phase-profile.md`'s measured Merkle column to a constant 2 at all five rungs,
+**and the binary refuses to print if it stops doing so.** At d=4096: full `W'`
+= 16,777,216 felts / 8,404,991 perms; low-rank r=16 = 131,072 / 65,662 —
+**128× on both**, blowup-independent.
+- ⚑ **Break-even rank is `d/2` = 2048.** Nobody uses a rank near that, so
+  **the commitment is never the reason to stop.**
+- ⚑ **The break-even that BINDS is in STEPS**: merging deltas back costs one
+  recommit, so `T·2rd > d²` gives **T = 128 steps at d=4096, r=16.** *That is
+  the real design constraint, and it is not the one I briefed.*
+- ⚑ **The natural `d×r` layout of `A` costs 2.0× more PERMUTATIONS than
+  transposing it** at r=8, for **identical felts** — only the wide layout
+  reaches `d/(2r)`. **Invisible in a felt count**, and the same shape as the
+  LDE's per-call/per-narrow-matrix finding.
+
+**Teeth**: the vacuity to fear was *"certifies low rank"* vs *"certifies THIS
+delta"* — `lowRank_refuses_another_low_rank_update` refuses a genuinely
+different rank-2 delta. **Gauge freedom exhibited nonempty** (`A,B` bound only
+up to `GL_r`). 9/25 false accepts against the theorem's 10/25 — nearly
+attained.
+
+⚠ **Undone, and the chain theorem makes one of them MORE urgent**: `A,B` is
+not verified to be the *correct* projection; the nonlinearity; **accumulated
+exactness over many steps** — which matters more now that the chain is cheap;
+the positional `OpeningScheme`; Fiat–Shamir; and `r` must be a power of two.
+
 ## 6. Method
 
 - **No absence claim without**: grep `~/paperbin` first (now full-text
