@@ -261,10 +261,16 @@ theorem basefoldRawCommittedIor_coherent_exact_sound
     basefoldRawCommittedIor_toIdeal_or_equivocation SP T st z H prover
       qCount x.1 (powerTwoCoherentSchedule hmell x.2) hacc) ?_
   refine le_trans (uniformProb_or_le idealAccept equivocation) ?_
-  apply add_le_add_right
-  exact basefoldCommittedIor_coherent_exact_sound
-    (fun n => idealCommitment F (PowerTwoFriLevels ell n)) T st.toIdeal hmell
-    z H word prover qCount htau1 htau hword0 hfalse hpm hdeg
+  have hideal : uniformProb
+      ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1)) idealAccept
+      ≤ (m : ℝ) * (3 / Fintype.card F) + (1 - tau) ^ qCount := by
+    simpa [idealAccept] using basefoldCommittedIor_coherent_exact_sound
+      (fun n => idealCommitment F (PowerTwoFriLevels ell n)) T st.toIdeal
+      hmell z H word prover qCount htau1 htau hword0 hfalse hpm hdeg
+  have hadd := add_le_add_right hideal
+    (uniformProb
+      ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1)) equivocation)
+  simpa [equivocation] using hadd
 
 end CoherentSoundness
 
