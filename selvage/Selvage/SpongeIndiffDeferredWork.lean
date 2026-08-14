@@ -361,6 +361,11 @@ end SpongeDeferredWorkExample
 #guard_msgs (whitespace := lax) in #print axioms deferredWorkStep_work_exact
 /-- info: 'Minidregg.Selvage.deferredWorkStep_ans_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms deferredWorkStep_ans_length
+/-- info: 'Minidregg.Selvage.deferredWorkStep_constr_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms deferredWorkStep_constr_exact
+/-- info: 'Minidregg.Selvage.deferredIdealStepWithCoin_constr_fresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms deferredIdealStepWithCoin_constr_fresh
 /-- info: 'Minidregg.Selvage.deferredWorkStep_exists_of_need_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms deferredWorkStep_exists_of_need_le

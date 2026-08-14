@@ -36,6 +36,34 @@ def paddedPublicMessageSchedule {m queryCount : Nat}
     (paddedChallengeMessage statement receipt)
     (paddedQueryMessage statement receipt)
 
+/-- Every entry of the fixed padded schedule is a construction query for
+exactly its advertised full public message. -/
+theorem paddedConstructionQuerySchedule_is_constr {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount)) :
+    ∃ x xs,
+      paddedConstructionQuerySchedule statement receipt round = .constr x xs ∧
+        paddedPublicMessageSchedule statement receipt round = x :: xs := by
+  refine Fin.addCases (motive := fun round =>
+    ∃ x xs,
+      paddedConstructionQuerySchedule statement receipt round = .constr x xs ∧
+        paddedPublicMessageSchedule statement receipt round = x :: xs) ?_ ?_
+      round
+  · intro challenge
+    exact ⟨challengeDomain,
+      challengeBody statement receipt challenge ++ [paddingBlock], by
+        simp [paddedConstructionQuerySchedule,
+          paddedChallengeConstructionQuery], by
+        simp [paddedPublicMessageSchedule, paddedChallengeMessage, padMessage,
+          challengeMessage]⟩
+  · intro query
+    exact ⟨queryDomain,
+      queryBody statement receipt query ++ [paddingBlock], by
+        simp [paddedConstructionQuerySchedule,
+          paddedQueryConstructionQuery], by
+        simp [paddedPublicMessageSchedule, paddedQueryMessage, padMessage,
+          queryMessage]⟩
+
 /-- No public full message may already occur as a prefix of a different
 public message.  Under this structural property, the simple segment-last to
 segment-head reindexing below is the correct public full-message routing.
@@ -603,6 +631,98 @@ def paddedSegmentHead {m queryCount : Nat}
     have hstep := paddedWorkPrefix_strictMono_step statement receipt round
       round.isLt
     omega⟩
+
+/-- Dropping the completed static prefix exposes the current segment head as
+the first remaining work coin. -/
+theorem paddedCoins_drop_prefix {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount))
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    (List.ofFn coins).drop (paddedWorkPrefix statement receipt round) =
+      coins (paddedSegmentHead statement receipt round) ::
+        (List.ofFn coins).drop
+          (paddedWorkPrefix statement receipt round + 1) := by
+  have hlength : paddedWorkPrefix statement receipt round <
+      (List.ofFn coins).length := by
+    simpa using (paddedSegmentHead statement receipt round).isLt
+  rw [List.drop_eq_getElem_cons hlength, List.getElem_ofFn]
+  rfl
+
+/-- On a fresh fixed-receipt message, one deferred BaseFold round consumes
+the static segment head and appends precisely its rate coordinate.  This is
+the semantic half of the later segment-head/segment-last coupling. -/
+theorem paddedDeferredWorkStep_constr_semantics {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (round : Fin (m + queryCount))
+    (state : DeferredWorkState Rate Cap)
+    (hans : state.core.ans.length = round)
+    (hwork : state.work = paddedWorkPrefix statement receipt round)
+    (hremaining : state.remaining =
+      (List.ofFn coins).drop (paddedWorkPrefix statement receipt round))
+    (hfresh : state.core.ro.lookup
+      (paddedPublicMessageSchedule statement receipt round) = none) :
+    deferredWorkStep
+        (paddedConstructionDistinguisher statement receipt verdict)
+        (0, 0) state round =
+      .ok ⟨
+        ⟨(state.core.ro.respond
+            (paddedPublicMessageSchedule statement receipt round)
+            (coins (paddedSegmentHead statement receipt round)).1).2,
+          state.core.sim,
+          state.core.ans ++
+            [.rate (coins (paddedSegmentHead statement receipt round)).1]⟩,
+        (List.ofFn coins).drop
+          (paddedWorkPrefix statement receipt (round + 1)),
+        paddedWorkPrefix statement receipt (round + 1)⟩ := by
+  obtain ⟨x, xs, hquery, hmessage⟩ :=
+    paddedConstructionQuerySchedule_is_constr statement receipt round
+  have hmove :
+      (paddedConstructionDistinguisher statement receipt verdict).move
+          state.core.ans = .constr x xs := by
+    rw [paddedConstructionDistinguisher_move_at_length statement receipt
+      verdict state.core.ans (by omega)]
+    exact hquery
+  have hsize : xs.length + 1 =
+      paddedRoundPrimitiveWork statement receipt round := by
+    simp [paddedRoundPrimitiveWork, hquery]
+  have hprefixStep := paddedWorkPrefix_succ statement receipt round round.isLt
+  have hprefixLe :=
+    paddedWorkPrefix_le_final statement receipt (round + 1)
+  let tail := (List.ofFn coins).drop
+    (paddedWorkPrefix statement receipt round + 1)
+  have hremainingCons : state.remaining =
+      coins (paddedSegmentHead statement receipt round) :: tail := by
+    rw [hremaining, paddedCoins_drop_prefix]
+  have htailLength : xs.length ≤ tail.length := by
+    dsimp [tail]
+    rw [List.length_drop, List.length_ofFn]
+    omega
+  have hused : state.remaining.take (xs.length + 1) =
+      coins (paddedSegmentHead statement receipt round) ::
+        tail.take xs.length := by
+    rw [hremainingCons]
+    rfl
+  have husedLength :
+      (coins (paddedSegmentHead statement receipt round) ::
+        tail.take xs.length).length = xs.length + 1 := by
+    simp [List.length_take, htailLength]
+  have hfresh' : state.core.ro.lookup (x :: xs) = none := by
+    rw [← hmessage]
+    exact hfresh
+  rw [deferredWorkStep_constr_exact
+    (paddedConstructionDistinguisher statement receipt verdict)
+    (0, 0) state round x xs
+    (coins (paddedSegmentHead statement receipt round))
+    (tail.take xs.length) hmove hused husedLength]
+  rw [deferredIdealStepWithCoin_constr_fresh
+    (paddedConstructionDistinguisher statement receipt verdict)
+    (0, 0) state.core round x xs
+    (coins (paddedSegmentHead statement receipt round)) hmove hfresh']
+  rw [← hmessage, hremaining, List.drop_drop, hwork, hsize, ← hprefixStep]
 
 /-- Last coordinate of the same nonempty work segment.  In the eager prefix
 hybrid, this is the fresh rate coin assigned to the full padded message. -/
