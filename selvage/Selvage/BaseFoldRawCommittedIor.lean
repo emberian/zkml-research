@@ -35,7 +35,7 @@ open Polynomial
 /-- A prover strategy carrying only executable commitment/opening operations.
 Unlike `FriAdaptiveTranscript`, no perfect-binding field is present. -/
 structure RawFriAdaptiveTranscript
-    {F : Type*} {ι : ℕ → Type*} {Root Op : ℕ → Type*}
+    {F : Type} {ι : ℕ → Type} {Root Op : ℕ → Type}
     (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n)) where
   word : ∀ n, (Fin n → F) → ι n → F
   root : ∀ n, (Fin n → F) → Root n
@@ -43,7 +43,7 @@ structure RawFriAdaptiveTranscript
 
 namespace RawFriAdaptiveTranscript
 
-variable {F : Type*} {ι : ℕ → Type*} {Root Op : ℕ → Type*}
+variable {F : Type} {ι : ℕ → Type} {Root Op : ℕ → Type}
 variable {S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n)}
 variable {m : ℕ}
 
@@ -92,7 +92,7 @@ end RawFriAdaptiveTranscript
 /-! ## The raw sampled verifier and its retained equivocation event -/
 
 variable {F : Type} [Field F]
-variable {ι : ℕ → Type*} {Root Op : ℕ → Type*} {m : ℕ}
+variable {ι : ℕ → Type} {Root Op : ℕ → Type} {m : ℕ}
 
 /-- Exact sampled consistency at one round, using only the raw verifier. -/
 def RawFriAdaptiveRoundQueriesAccept
@@ -150,7 +150,7 @@ def FriRawAdaptiveEquivocates
       (r j) (Q j)
 
 private def idealFriQueryOpening
-    {ι κ : Type*} {dom : ι ↪ F} {domSq : κ ↪ F}
+    {ι κ : Type} {dom : ι ↪ F} {domSq : κ ↪ F}
     (D : FoldingData F dom domSq) (w : ι → F) (w' : κ → F)
     (k : κ) : FriQueryOpening F Unit Unit where
   left := w (D.sec k)
@@ -161,7 +161,7 @@ private def idealFriQueryOpening
   nextPath := ()
 
 private theorem idealFriQueryOpening_accepts
-    {ι κ : Type*} {dom : ι ↪ F} {domSq : κ ↪ F}
+    {ι κ : Type} {dom : ι ↪ F} {domSq : κ ↪ F}
     (D : FoldingData F dom domSq) (w : ι → F) (w' : κ → F)
     (alpha : F) (k : κ) (hpin : w' k = fold D w alpha k) :
     OpenedFriQuery (idealCommitment F ι) (idealCommitment F κ) D
@@ -217,7 +217,7 @@ theorem basefoldRawCommittedIor_toIdeal_or_equivocation
 section CoherentSoundness
 
 variable [Fintype F] [DecidableEq F]
-variable {ell : ℕ} {RootP OpP : ℕ → Type*}
+variable {ell : ℕ} {RootP OpP : ℕ → Type}
 
 /-- ⭐ **Raw sampled BaseFold soundness with the CR event exposed.**  The
 algebraic and coherent-query terms are inherited without loss from the ideal
