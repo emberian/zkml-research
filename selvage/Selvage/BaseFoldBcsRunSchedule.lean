@@ -855,6 +855,35 @@ theorem paddedDeferredStateNat_head_semantics {m queryCount round : Nat}
         rw [Oracle.lookup_respond_ne _ hmessageNe]
         exact hfuture future (by omega)
 
+/-- Terminal form of the deferred invariant: the complete construction-only
+run returns exactly the segment-head answer vector and consumes the entire
+fixed work ledger. -/
+theorem paddedDeferredWorkRun_head_semantics {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hsafe : PaddedFullMessageRoutingSafe statement receipt) :
+    ∃ state,
+      deferredWorkRun
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) coins = .ok state ∧
+        state.core.ans = List.ofFn
+          (paddedSegmentHeadAnswerSchedule statement receipt coins) ∧
+        state.core.sim = Oracle.empty ∧
+        state.work = paddedTranscriptPrimitiveWork statement receipt ∧
+        state.remaining = [] := by
+  obtain ⟨state, hstate, hans, hsim, _, hwork, hremaining⟩ :=
+    paddedDeferredStateNat_head_semantics statement receipt verdict coins
+      hsafe (Nat.le_refl (m + queryCount))
+  refine ⟨state, ?_, ?_, hsim, ?_, ?_⟩
+  · rw [← paddedDeferredStateNat_full_eq_run]
+    exact hstate
+  · simpa using hans
+  · simpa [paddedWorkPrefix_final] using hwork
+  · rw [hremaining, paddedWorkPrefix_final]
+    simp
+
 /-- Last coordinate of the same nonempty work segment.  In the eager prefix
 hybrid, this is the fresh rate coin assigned to the full padded message. -/
 def paddedSegmentLast {m queryCount : Nat}
@@ -1077,6 +1106,51 @@ theorem paddedSegmentReindex_head {m queryCount : Nat}
     (paddedSegmentLast statement receipt round)
     (paddedSegmentHead statement receipt round)
     hbefore (paddedSegmentSwapMove_head statement receipt round) hafter coins
+
+/-- The public answer attached to each eager full-message coordinate. -/
+def paddedSegmentLastAnswerSchedule {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    Fin (m + queryCount) → SpAnswer Rate Cap :=
+  fun round => .rate (coins (paddedSegmentLast statement receipt round)).1
+
+/-- The composed coordinate program turns the complete deferred head-answer
+schedule into the original eager segment-last answer schedule pointwise. -/
+theorem paddedSegmentHeadAnswerSchedule_reindex {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    paddedSegmentHeadAnswerSchedule statement receipt
+        (paddedSegmentReindex statement receipt coins) =
+      paddedSegmentLastAnswerSchedule statement receipt coins := by
+  funext round
+  simp [paddedSegmentHeadAnswerSchedule, paddedSegmentLastAnswerSchedule,
+    paddedSegmentReindex_head]
+
+/-- Complete deferred semantic half of the run-specific coupling.  Under the
+proved routing premise, running the deferred world on the reindexed vector
+returns exactly the original vector's eager full-message coordinates. -/
+theorem paddedDeferredWorkRun_reindexed_semantics {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hsafe : PaddedFullMessageRoutingSafe statement receipt) :
+    ∃ state,
+      deferredWorkRun
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) (paddedSegmentReindex statement receipt coins) = .ok state ∧
+        state.core.ans = List.ofFn
+          (paddedSegmentLastAnswerSchedule statement receipt coins) ∧
+        state.core.sim = Oracle.empty ∧
+        state.work = paddedTranscriptPrimitiveWork statement receipt ∧
+        state.remaining = [] := by
+  obtain ⟨state, hrun, hans, hsim, hwork, hremaining⟩ :=
+    paddedDeferredWorkRun_head_semantics statement receipt verdict
+      (paddedSegmentReindex statement receipt coins) hsafe
+  refine ⟨state, hrun, ?_, hsim, hwork, hremaining⟩
+  rw [hans, paddedSegmentHeadAnswerSchedule_reindex]
 
 /-- The run-specific segment program preserves exact uniform counting
 measure on the entire primitive-work vector. -/
