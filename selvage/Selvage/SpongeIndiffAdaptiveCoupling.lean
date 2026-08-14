@@ -325,6 +325,9 @@ end SpongeAdaptiveCouplingExample
 #guard_msgs (whitespace := lax) in #print axioms prefixMeasurable_swap_stable
 /-- info: 'Minidregg.Selvage.uniformProb_eq_of_guardedProgram' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms uniformProb_eq_of_guardedProgram
+/-- info: 'Minidregg.Selvage.guardedProgramReindex_apply_at_single' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms guardedProgramReindex_apply_at_single
 /-- info: 'Minidregg.Selvage.SpongeAdaptiveCouplingExample.adaptiveTailEvent_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SpongeAdaptiveCouplingExample.adaptiveTailEvent_probability
