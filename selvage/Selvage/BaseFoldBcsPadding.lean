@@ -19,7 +19,10 @@ import Selvage.BaseFoldBcsSpongeGame
 
 namespace Minidregg.Selvage.BaseFoldBcsPadding
 
+open BabyBearExt4
 open Minidregg.Selvage
+open Minidregg.Selvage.BaseFoldPoseidon2
+open Minidregg.Selvage.BaseFoldPoseidon2Rom
 open Minidregg.Selvage.BaseFoldBcsFiatShamir
 
 set_option autoImplicit false
@@ -198,7 +201,10 @@ private theorem sum_map_add_one (values : List Nat) :
     (values.map fun value => value + 1).sum = values.sum + values.length := by
   induction values with
   | nil => simp
-  | cons head tail ih => omega
+  | cons head tail ih =>
+      simp only [List.map_cons, List.sum_cons, List.length_cons]
+      rw [ih]
+      omega
 
 /-- The padding price is exact, not an asymptotic estimate: one additional
 primitive call for each of the `m + queryCount` public draws. -/
@@ -214,13 +220,13 @@ theorem paddedTranscriptPrimitiveWork_eq_add_draws {m queryCount : Nat}
       (List.ofFn fun j : Fin m =>
         (challengeMessage statement receipt j).length).map
           (fun value => value + 1) by
-        rw [List.map_ofFn],
+        simp only [List.map_ofFn, Function.comp_apply],
     show (List.ofFn fun a : Fin queryCount =>
         (queryMessage statement receipt a).length + 1) =
       (List.ofFn fun a : Fin queryCount =>
         (queryMessage statement receipt a).length).map
           (fun value => value + 1) by
-        rw [List.map_ofFn],
+        simp only [List.map_ofFn, Function.comp_apply],
     sum_map_add_one, sum_map_add_one]
   simp only [List.length_ofFn]
   omega
