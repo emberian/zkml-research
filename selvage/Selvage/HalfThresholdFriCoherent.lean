@@ -181,7 +181,8 @@ theorem friAdaptive_coherent_query_miss
   letI : Nonempty (PowerTwoFriLevels ell (j + 1)) :=
     ⟨⟨0, by positivity⟩⟩
   change uniformProb (Fin qCount → PowerTwoFriLevels ell (j + 1))
-    (FriRoundQueriesAccept (S j) (S (j + 1)) (T.data j j.isLt)
+    (FriRoundQueriesAccept (S j).toOpeningScheme
+      (S (j + 1)).toOpeningScheme (T.data j j.isLt)
       (st.rootAt r j (Nat.le_of_lt j.isLt))
       (st.rootAt r (j + 1) (Nat.succ_le_iff.mpr j.isLt)) (r j))
       ≤ (1 - tau) ^ qCount

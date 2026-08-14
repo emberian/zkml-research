@@ -169,7 +169,8 @@ theorem friRound_query_miss_uniform
     (alpha : F) (qCount : ℕ) {tau : ℝ}
     (hfar : tau ≤ relDist w' (fold D w alpha)) :
     uniformProb (Fin qCount → κ)
-        (FriRoundQueriesAccept Sbig Ssmall D rt rt' alpha)
+        (FriRoundQueriesAccept Sbig.toOpeningScheme Ssmall.toOpeningScheme
+          D rt rt' alpha)
       ≤ (1 - tau) ^ qCount := by
   classical
   unfold uniformProb
@@ -333,7 +334,8 @@ theorem friAdaptive_allRound_query_miss
     letI : Nonempty (ι (j + 1)) :=
       hnonempty (j + 1) (Nat.succ_le_iff.mpr j.isLt)
     change uniformProb (Fin qCount → ι (j + 1))
-      (FriRoundQueriesAccept (S j) (S (j + 1)) (T.data j j.isLt)
+      (FriRoundQueriesAccept (S j).toOpeningScheme
+        (S (j + 1)).toOpeningScheme (T.data j j.isLt)
         (st.rootAt r j (Nat.le_of_lt j.isLt))
         (st.rootAt r (j + 1) (Nat.succ_le_iff.mpr j.isLt)) (r j))
         ≤ (1 - tau) ^ qCount
