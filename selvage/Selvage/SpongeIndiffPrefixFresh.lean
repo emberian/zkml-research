@@ -23,6 +23,7 @@ def lastRateCoin : List Rate → Rate
   | [rate] => rate
   | _ :: next :: rest => lastRateCoin (next :: rest)
 
+omit [DecidableEq Rate] in
 @[simp] theorem lastRateCoin_append_singleton (rates : List Rate)
     (rate : Rate) :
     lastRateCoin (rates ++ [rate]) = rate := by
@@ -244,7 +245,6 @@ theorem prefixHybridStep_constr_of_primitivePathFresh {q : Nat}
     rw [hquery, hcoins]
     dsimp only
     rw [if_pos hcounts, hprogram]
-    rfl
   · simp [next, hrate]
 
 /-- The fixed work-stream adapter preserves the fresh-path output theorem for
@@ -274,7 +274,8 @@ theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
           (x :: xs).length ∧
         ((state.remaining.take (xs.length + 1)).map Prod.snd).length =
           (x :: xs).length := by
-    constructor <;> simp [hlength]
+    constructor <;>
+      simp only [List.length_map, hlength, List.length_cons] <;> omega
   obtain ⟨coreNext, hcore, hans⟩ :=
     prefixHybridStep_constr_of_primitivePathFresh D iv
       (fun _ => .construction
