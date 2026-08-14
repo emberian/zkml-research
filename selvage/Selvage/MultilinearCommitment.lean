@@ -65,7 +65,6 @@ section Binding
 variable [Field F] [DecidableEq F] [Fintype ι] [DecidableEq ι]
 
 /-- The honest claim is true by construction. -/
-omit [DecidableEq F] [Fintype ι] [DecidableEq ι] in
 theorem MleEvalClaim.holds_of_commit (S : BindingCommitment Root F ι Op)
     (dom : ι ↪ F) (table : (Fin m → Bool) → F) (pt : Fin m → F) :
     MleEvalClaim.Holds S dom
@@ -75,7 +74,6 @@ theorem MleEvalClaim.holds_of_commit (S : BindingCommitment Root F ι Op)
 /-- Binding of the vector commitment fixes the encoded Boolean table, provided the
 commitment domain is large enough for the BaseFold degree window.  This is the exact
 place where vector-root binding becomes multilinear-value binding. -/
-omit [DecidableEq ι] in
 theorem basefoldWord_injective (S : BindingCommitment Root F ι Op)
     (dom : ι ↪ F) (hcard : 2 ^ m ≤ Fintype.card ι) :
     Function.Injective (fun table : (Fin m → Bool) → F =>
@@ -161,7 +159,8 @@ theorem wrong_value_refused_f5 :
           (basefoldWord (ldtTower.dom 0) table), ![3], 0⟩ := by
   refine MleEvalClaim.wrong_value_refused _ _ (by norm_num) table ![3] ?_
   have hv : mle table ![3] = 4 := by
-    have h := mobius_descent_terminal (0 : levels 1)
+    have h := mobius_descent_terminal
+      (⟨0, by norm_num [levels]⟩ : levels 1)
     rw [basefold_terminal_is_mle] at h
     exact h
   rw [hv]
