@@ -119,6 +119,29 @@ Three corrections to what is written above.
 phase whose milliseconds are 99% movement cannot be improved by a win denominated in
 multiplications, and the model above has no column that would have caught that.
 
+### ⚠ Denominator disclosure — answering a lane's challenge to my own figures
+
+A lane reported that my relayed **"grind is 18% at b=6 / 63% at b=3"** does not
+reproduce against `26b33a37a`, which says **23% at (lb 6, q 19)** and **82% at
+(lb 2, q 57)**, and correctly asked whoever holds 18/63 to state its
+denominator. **It is mine, and here it is:**
+
+- **My denominator is HASH WORK ONLY** — the sum of Merkle-commit + FRI-fold
+  Merkle + challenger + grind permutations from `notes/phase-profile.md`'s
+  count table. It excludes field arithmetic entirely (which we cannot count
+  yet). **A share of hash work is not a share of prove.**
+- **My second point is b=3, not lb=2** — a different configuration from
+  theirs, and at lb=2 the Merkle count roughly halves again, which accounts
+  for most of 63% vs 82%.
+- **The 23% vs 18% gap I cannot resolve from here** and do not average away.
+  Both are permutation-count figures; the denominators differ by ~57,000
+  perms, which is larger than any single phase I can name. **Whoever
+  reconciles it should state the phase set on both sides.**
+
+**Rule this produces: a percentage without its denominator is not a
+measurement.** Every share in this file now names its phase set, and the two
+above are the first to do so.
+
 ### The methodology that follows
 
 - **Operation counts are the primary instrument.** They are exact,
