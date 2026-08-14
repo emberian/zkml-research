@@ -1183,8 +1183,13 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 #check @paddedWorkHybridRun_classify
 #check @paddedDeferredWork_need_exact
 #check @paddedDeferredWorkRun_exact
+#check @paddedDeferredWorkStep_constr_semantics
+#check @paddedDeferredStateNat_head_semantics
+#check @paddedDeferredWorkRun_head_semantics
 #check @paddedSegmentSwapMove_head
 #check @paddedSegmentReindex_head
+#check @paddedSegmentHeadAnswerSchedule_reindex
+#check @paddedDeferredWorkRun_reindexed_semantics
 #check @uniformProb_paddedSegmentReindex
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedConstructionDistinguisher_move_answer_independent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -1202,6 +1207,15 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedDeferredWorkRun_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedDeferredWorkRun_exact
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedDeferredWorkStep_constr_semantics' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedDeferredWorkStep_constr_semantics
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedDeferredStateNat_head_semantics' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedDeferredStateNat_head_semantics
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedDeferredWorkRun_reindexed_semantics' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedDeferredWorkRun_reindexed_semantics
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedSegmentReindex_head' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedSegmentReindex_head
