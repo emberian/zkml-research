@@ -137,8 +137,16 @@ factor on top of that choice.
 **Blocking specific pillars:**
 6. **H1** — does the 61-bit joint-representation point survive a 2.4-bit
    margin? H2 collapsed *into* H1, so this is now the whole question.
-7. **Cross-limb binding** for ct×ct (the vFHE #1 hole; single-prime would
-   dissolve it, and single-prime is gated on H1).
+7. ⚑ **Cross-limb binding — EXHIBITED 2026-08-14, and it was TWO holes.**
+   `notes/cross-limb-binding.md`; `breadstuffs` `5b653ba5d`. **A** = provenance
+   (`∀i∃source` vs `∃source∀i`; the accepted output is a value no honest pair
+   produces). **B** = expressibility (`⌊t·x/Q⌉` reads the CRT reconstruction, so
+   there is no per-limb equation to bind). ⚑ The first-named fix, a CRT-consistency
+   relation, is a **tautology** — the CRT map is a bijection. **ct×pt narrower than
+   recorded**: B absent, A alive at `K^L` not `(K²)^L`, and a singleton pool closes
+   it. **The fix is a layout choice and costs +0 felts / +0 perms**; the bill is the
+   2-felt BabyBear bridge it forces. Remaining: no closure for B, and no ct×ct
+   arithmetization exists to fix — single-prime (gated on H1) dissolves both.
 8. **ε_chk instantiation** — the audit theorem's checker is abstract. Tier 2
    and 3 soundness are parameters until it is instantiated, with two named
    transport obligations.

@@ -230,6 +230,12 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   H1 — they are not independent gates.**
 - The deployed noise expansion is the **proven δ_R = N**, not the heuristic
   2√N (measured to 0.02 bits).
+- ⚑ **The coefficient-matmul route's provable noise budget and its freedom from
+  the cross-limb expressibility hole are THE SAME PROPERTY** (2026-08-14): a
+  public integer scalar acts coefficientwise, which is why `stepR_noise_le`
+  carries no `δ_R` factor AND why limb `i`'s output is a function of limb `i`'s
+  input (`Bfv.scalarStep_limb_local`). One property, two payoffs. The provenance
+  half of the hole survives there anyway — see §7.5.
 
 ## 4. Proof-system design
 
@@ -667,7 +673,43 @@ the positional `OpeningScheme`; Fiat–Shamir; and `r` must be a power of two.
    verified, and checking it is cheaper than building what depends on it.*
 4. **τ for the ring hash** — τ=2 leads (challenge space kills τ=1, integral
    cryptanalysis punishes τ=4); one named experiment settles it.
-5. **Cross-limb binding** for ct×ct.
+5. ⚑ **Cross-limb binding — EXHIBITED 2026-08-14, and it was TWO holes under one
+   name.** `notes/cross-limb-binding.md`; `breadstuffs` `5b653ba5d`
+   (`metatheory/Bfv/CrossLimb.lean`, `#assert_namespace_axioms Bfv` 90 → **113**).
+   - **HOLE A — provenance.** The checked system is `∀ i, ∃ source`; the honest one
+     is `∃ source, ∀ i`. A quantifier swap, invisible to every completeness test.
+     `perLimb_not_imp_bound` exhibits limbs from different ciphertexts satisfying
+     every per-limb equation, and the accepted output reconstructs to a value **no
+     honest pair can produce** — a wrong ANSWER, not an unbound proof.
+   - **HOLE B — expressibility.** `rescale_not_limb_local`: `⌊t·x/Q⌉` reads the CRT
+     reconstruction, so there is no per-limb equation to bind. Independent of A.
+   - ⚑ **The candidate fix this file named first is a TAUTOLOGY.** "A
+     CRT-consistency relation over the limbs" can never refuse — the CRT map is a
+     **bijection**, and the exhibited forgery is itself CRT-consistent. And
+     `perLimb_pins_modProd` shows the hole is not in the arithmetic at all: with
+     the operands fixed, the per-limb conjunction IS the mod-Q relation.
+   - ⚑ **Why nobody had exhibited it:** every Lean BFV carrier in the tree makes
+     the attack unrepresentable — `DarkBazaarSameOpeningPoly.lean:45` says so in
+     its own residual list. Documented ≠ detected, in our own tree.
+   - **ct×pt is NARROWER than this file recorded.** Hole B **absent**
+     (`scalarStep_limb_local` — the same public-integer-scalar property
+     `stepR_noise_le` runs on); Hole A alive at `K^L` not `(K²)^L` (6-of-8 vs
+     60-of-64 forgeries at the deployed tower). A **singleton pool closes it
+     outright** — the hole is a function of how many ciphertexts the transcript
+     exposes, not of the operation. ⚠ Deployed depth 2 + 132 results/multiply is
+     exactly the many-ciphertext regime, so it is live for the deployed workload.
+   - **The fix is a LAYOUT decision and the right one is FREE.** Interleave the
+     limbs into one row and the row IS the shared opening: **+0 committed felts,
+     +0 permutations** (`boundMul_iff_sharedSelector`). The bill is the 2-felt
+     BabyBear bridge that sharing a row forces (`mle_gpu.rs:479`, already
+     deployed): **+220,201–294,912 perms per ciphertext at lb=6**. The RLC
+     alternative (`rlc_binds`, error `(L−1)/|F|`) costs +293,601 more and buys only
+     a probabilistic binding; keeping per-limb-native tables costs ~4× that again.
+     ⚑ **So the soundness argument and the field-choice lane converge: per-limb-
+     native proving is what makes cross-limb binding expensive.**
+   - **Still open:** Hole B has an exhibit and no closure; there is **no ct×ct
+     arithmetization in the tree** to fix (the hole is in the design); and `ε_chk`
+     **cannot be instantiated limb-locally**, which is new information for item 6.
 6. **ε_chk instantiation** and **ε_beacon** — the audit theorem's checker is
    abstract, and we hold the grinding mechanism but no beacon model.
 7. **Does the virtualization threshold beat committing on Poseidon2?**
