@@ -172,6 +172,80 @@ theorem workHybridStep_ok_or_hybrid_of_need_le {q : Nat}
       refine Or.inr ⟨error, ?_⟩
       simp [hstep]
 
+/-- On an exact-length segment, the only prefix-hybrid error which can escape
+the work adapter is a genuine construction consistency mismatch.  Coin-shape
+and coin-count errors are impossible because `SpQuery.prefixCoins` is derived
+from the selected query itself. -/
+theorem workHybridStep_hybrid_error_eq_constructionMismatch {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (st : WorkHybridState Rate Cap) (j : Fin q)
+    (hneed : (D.move st.core.ans).primitiveCalls ≤ st.remaining.length)
+    (error : PrefixHybridError)
+    (herror : workHybridStep D iv st j = .error (.hybrid error)) :
+    error = .constructionMismatch := by
+  have hlength :
+      (st.remaining.take
+          (D.move st.core.ans).primitiveCalls).length =
+        (D.move st.core.ans).primitiveCalls := by
+    rw [List.length_take]
+    omega
+  unfold workHybridStep at herror
+  dsimp only at herror
+  rw [if_pos hlength] at herror
+  cases hquery : D.move st.core.ans with
+  | constr x xs =>
+      rw [hquery] at hlength herror
+      simp only [SpQuery.primitiveCalls] at hlength
+      simp only [SpQuery.prefixCoins, prefixHybridStep] at herror
+      rw [hquery] at herror
+      dsimp only at herror
+      have hcounts :
+          (st.remaining.take (xs.length + 1)).map Prod.fst |>.length =
+              (x :: xs).length ∧
+            (st.remaining.take (xs.length + 1)).map Prod.snd |>.length =
+              (x :: xs).length := by
+        simp [hlength]
+      rw [if_pos hcounts] at herror
+      split at herror
+      · contradiction
+      · injection herror
+  | fwd s =>
+      rw [hquery] at hlength herror
+      simp only [SpQuery.primitiveCalls] at hlength
+      cases hused : st.remaining.take 1 with
+      | nil => simp [hused] at hlength
+      | cons coin rest =>
+          cases rest with
+          | nil => simp [hused, SpQuery.prefixCoins, prefixHybridStep, hquery] at herror
+          | cons coin' rest => simp [hused] at hlength
+  | inv t =>
+      rw [hquery] at hlength herror
+      simp only [SpQuery.primitiveCalls] at hlength
+      cases hused : st.remaining.take 1 with
+      | nil => simp [hused] at hlength
+      | cons coin rest =>
+          cases rest with
+          | nil => simp [hused, SpQuery.prefixCoins, prefixHybridStep, hquery] at herror
+          | cons coin' rest => simp [hused] at hlength
+
+/-- Sufficient work therefore gives a sharp one-step alternative: success or
+the single named construction-consistency mismatch. -/
+theorem workHybridStep_ok_or_constructionMismatch_of_need_le {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (st : WorkHybridState Rate Cap) (j : Fin q)
+    (hneed : (D.move st.core.ans).primitiveCalls ≤ st.remaining.length) :
+    (∃ next, workHybridStep D iv st j = .ok next) ∨
+      workHybridStep D iv st j =
+        .error (.hybrid .constructionMismatch) := by
+  rcases workHybridStep_ok_or_hybrid_of_need_le D iv st j hneed with
+    hnext | herror
+  · exact Or.inl hnext
+  · obtain ⟨error, herror⟩ := herror
+    right
+    rw [← workHybridStep_hybrid_error_eq_constructionMismatch
+      D iv st j hneed error herror]
+    exact herror
+
 /-- Execute all public rounds against one fixed primitive-work vector. -/
 noncomputable def workHybridRun {q work : Nat}
     (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
