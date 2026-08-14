@@ -104,6 +104,65 @@ rather than reading clean*). Exemption is by home module, not a name list;
 `...DeployedBcs` still build on the retracted admission module and are vacuous
 for the same reason — deleting all four together is the next step.
 
+## ✅ STEP 1 LANDED: BaseFold on the additive tower
+
+`Selvage/AdditiveBaseFold.lean` — **838 lines, 0 `sorry`, 13 axiom pins all
+clean, whole tree green (8,992 jobs)**, `b5da623`.
+
+**The vacuity was avoided structurally, not by luck**: **not one declaration
+takes a `FoldingData`, `FoldingTower`, `fold`, `proximityTest` or `chalExt` as
+an argument** — the descent operator is `Theory.friFold`. Independently
+confirmed by the sibling lane's detector: **0 vacuous across 29,263
+declarations with this module in the tree.**
+
+**Classification:**
+- **Ports verbatim (cited, not reproved)**: the entire Boolean-Möbius /
+  coefficient layer — *these are statements about coefficient VECTORS, so no
+  characteristic enters.*
+- **Genuinely different**: the fold operator — **not inconvenient,
+  uninhabited.**
+- **Char-2 analogue**: `friFold_eval_decomp`; `novelPack`, the LCH novelpoly
+  packing — ⚑ **its recursion is literally `parityInterleave` with
+  `expand F 2` replaced by `.comp (foldPoly (β 0))`**; and `lchLevelWord_succ`,
+  where the new moving part is that **the ordered basis is STATE and folds
+  alongside the word.**
+- **Already proved additively (cited)**: the distance bound, unconditional
+  below `(1−ρ)/3`.
+
+**The terminal identity landed in its STRONG form** — `lchLevelWord_terminal`
+for *every* `p` in the window, plus `exists_unique_table_novelPack`, with
+**`novelPack` proved a bijection of the window** (surjective via
+`foldPoly_decompose`, injective by a parity-of-degree argument).
+
+## ⚑⚑ A SOUNDNESS GAP IN OUR OWN TRANSCRIPT, FOUND BY PORTING
+
+`keystone_basis_ambiguity` at **GF(16)**: `X² + X` on the four-point domain
+`span{1, x₁}` is the commitment of `X²` under basis `(1, x₁)` **and** of
+`C(1+x₁)·X + X²` under `(x₁, 1)` — **same span, same evaluation points, same
+Merkle leaves, both orderings proved independent, different tables, different
+terminal constants.**
+
+> **An additive-FRI transcript that binds the DOMAIN but not the ORDERED BASIS
+> does not determine the committed multilinear.**
+
+**There is no multiplicative counterpart** — there the packing basis *is* the
+monomial basis and the domain gets no vote. **So this is a hazard that only
+exists on the binary side, and it was invisible until someone ported.**
+
+⚠ **And it was measured, not speculated**:
+`Compiler/Tower256AdditiveFriController.lean` and its Raw sibling **bind a
+sponge `domainId`, not a basis.** *Named, not repaired* — the fix is a
+transcript change in a cone the lane did not read.
+
+⚠ **A second convention hazard**: `AdditiveFriTower.lean` folds the **reversed
+basis** while the multilinear layer peels **LSB-first**. **Two additive tower
+conventions now coexist and will disagree**; unifying them needs the deployed
+index layout, and the lane declined to decide it silently.
+
+⚠ Correction to my brief: `Theory/AdditiveNTTTransform.lean` **had already
+closed `[ANTT-transform]`** and already carried the fold machinery — *"part of
+'port the machinery' was 'discover it exists.'"*
+
 ## The short path — and it is not Ligerito
 
 **BaseFold on the additive tower → then ring-switching.**
