@@ -295,7 +295,6 @@ theorem programPrefixes_terminalPrimitiveFreshTo_returns_rate
                     ?_, ?_⟩
                   · simp only [programPrefixes]
                     rw [show (state.1 + block, state.2) = key by rfl, hedge]
-                    simp [nextPrefix, key, roReply, programmed, primitiveReply]
                   · change primitiveReply.1.1 = terminalRate
                     rw [hprimitiveReply]
                     exact hroReply
