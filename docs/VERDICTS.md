@@ -164,7 +164,45 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   1.4×**. The published lb=3 point paid 40.8 ms of grind against lb=4's 10.1 —
   **that 30 ms of coin flip *was* the reported optimum.** (The published
   `prove` column also included a full self-verify.)
-- **`num_queries` is unpinned in the recursion verifier** — read from the
+- ✅ **`num_queries` PINNED 2026-08-14** (`52e1fab` in `~/dev/plonky3-recursion`)
+  — at the chokepoint, as an **equality** mirroring native (more queries than
+  configured is refused too, or Fiat–Shamir diverges), checked before the
+  challenger sampling loop so an attacker-chosen count never drives
+  `sample_bits`. Both constructors take it positionally, so **all 12 call sites
+  were arity errors** — none could silently keep the old behaviour.
+  ⚑ **The falsifier proved the hole was REAL**: with the pin disarmed, a
+  **one-query proof verified** (`Ok(())` — *that* is the finding, not the
+  failed assert). Re-armed, 8/8 green. It also caught a drift the pin creates:
+  `test_fri_verifier_rejects_zero_query_proof` would have been short-circuited
+  by the new check and **gone on passing while testing something else.**
+  **Soundness delta: 16 → 34 bits at UDR** — the only unconditionally proven
+  regime. (19→73 is the *idealised* Johnson column, 22→130 the *withdrawn*
+  capacity one; the exported ledger carries only those two and **has no UDR
+  column at all**.) Query column only; `ε_C` untouched and deliberately not
+  composed.
+  ⚑⚑ **ACTION FOR EMBER: the pin does NOT reach breadstuffs yet.**
+  `breadstuffs/Cargo.toml:370-373` pins `rev = "fc3c6df"`. It needs `52e1fab`
+  **pushed** and those four lines bumped — pushing is outward-facing so the
+  lane correctly left it. **Until then the hole is still open in breadstuffs.**
+  ⚑ **A NEW hole found by the same mechanism, deliberately NOT fixed and NOT
+  quantified**: **`max_log_arity` is unpinned.** `FriProofTargets::new` reads
+  `log_arities` off the proof; native enforces `1 ≤ log_arity ≤ max`. The
+  *sum* is pinned transitively but **the partition is attacker-chosen and
+  `log_arity = 0` is unrejected** — a zero-arity phase leaves `cumulative_bits`
+  unadvanced, so `folded_height_after` repeats and the roll-in `position()`
+  lookup can route to the wrong phase. **The lane states it has not derived
+  direction or magnitude and that no number should be quoted.** ⚠ Sequencing
+  note it left: `test_fri_verifier_rejects_per_query_schedule_mismatch` tampers
+  by `log_arity += 1` under `max_log_arity = 1`, so a native check fires first
+  and **that test stops exercising what it names.**
+  **Family audit**: `log_blowup`, `log_final_poly_len`, `commit_pow_bits`,
+  `query_pow_bits`, MMCS-on — all pinned; `cap_height` derived from the
+  commitment exactly as native does.
+  ⚠ **And a CI job has been unrunnable for two months**: `recursion/examples/
+  common/mod.rs` has 43 `E0004`s since `ccebf66` (2026-06-13), and
+  `.github/workflows/ci.yml:106` *runs* `--example recursive_aggregation`.
+  **Fail-open gate class.**
+- ~~`num_queries` is unpinned in the recursion verifier~~ (original entry) — read from the
   inner proof, never checked against a configured count. A child minting one
   query drops the column to 19 bits (JBR) / 16 (UDR). *The field wall is
   compiled into the verifier; the query wall is carried in the proof.*
