@@ -538,7 +538,28 @@ new theory.
   vacuous" is discharged at an instance where the verifier accepts everything.** That is a `P → P`
   witness with extra steps, and unlike the other two it is *not* disclosed. **Flag it.**
 
-### 8d. The interface, stated
+### 8d. The interface — ✅ LANDED
+
+`minidregg/Selvage/HeteroComposition.lean`, commit `e403725`. 0 `sorry`, 4 axiom pins, registered
+in `Selvage.lean`; import boundary OK, `check-proof-hygiene.sh` PASS (473 files, 216 guarded axiom
+footprints), `check-char2-vacuity.sh` **0 vacuous**.
+
+**Proved:** `rung_sound` (B knowledge-sound + `VerifierEmbedding A B` ⇒ an accepting B-proof yields
+an accepting A-proof; *A never verifies anything*) · `ivc_tower_sound` (unbounded depth, and it
+needs a **self**-embedding — a cycle, not a chain; a one-way embedding gives exactly one rung, which
+is the formal content of "bounded-depth aggregation is where heterogeneity is free") ·
+`bwd_forces_range`.
+
+**Teeth, both directions:** `canonicalEmbedding` — SATISFIABLE, and deliberately *free*, which is
+the point: the embedding is not where recursion is hard, `KnowledgeSound` of the canonical system
+is. `widened_relation_refuses_embedding` — **REFUTABLE**: `IsEmpty (VerifierEmbedding strictSystem
+widenedSystem)`, i.e. **the type refuses a verifier gadget that accepts strictly more than the
+verifier it stands for**, whatever `encStmt`/`encProof` are chosen. That is the wound §8c catalogues
+three instances of, refused by construction rather than by review.
+
+**Named, not proved:** `ComposeErrorBound`, `ComposeFixedPoint`.
+
+The shape, and why it cannot be a `Reduction`:
 
 The shape the heterogeneous stack needs, and the reason it cannot be a `Reduction`:
 
@@ -574,10 +595,10 @@ Three obligations, named and refutable — each must be **satisfiable, refutable
 * `[COMPOSE-fixedpoint]` — unbounded IVC needs `VerifierEmbedding B B`, a **cycle**; a one-way
   embedding gives one rung only (§6a).
 
-⚑ **This is new construction, not a refactor** — the type-level obstruction in §8b(2) means no
-existing declaration can be generalised into it. And §7a says the *payoff* of getting it is small
-for cost and large for correctness: it is the object that would let a heterogeneous stack be
-*checked*, not the object that would make one *cheap*.
+⚑ **This was new construction, not a refactor** — the type-level obstruction in §8b(2) means no
+existing declaration could be generalised into it. And §7a says the *payoff* is small for cost and
+large for correctness: it is the object that lets a heterogeneous stack be *checked*, not the object
+that makes one *cheap*.
 
 ---
 
