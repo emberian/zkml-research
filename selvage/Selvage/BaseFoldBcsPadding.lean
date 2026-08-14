@@ -238,10 +238,110 @@ theorem paddedTranscriptPrimitiveWork_eq_add_draws {m queryCount : Nat}
   simp only [List.length_ofFn]
   omega
 
+/-! ## The padded schedule in the work-indexed sponge game -/
+
+/-- The exact public schedule for the padded profile. -/
+def paddedConstructionQuerySchedule {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    Fin (m + queryCount) → SpQuery Rate Cap :=
+  Fin.append
+    (fun j => paddedChallengeConstructionQuery statement receipt j)
+    (fun a => paddedQueryConstructionQuery statement receipt a)
+
+theorem paddedConstructionQueries_eq_ofFn {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    paddedConstructionQueries statement receipt =
+      List.ofFn (paddedConstructionQuerySchedule statement receipt) := by
+  simp [paddedConstructionQueries, paddedConstructionQuerySchedule]
+
+/-- A fixed candidate receipt viewed through the padded construction profile.
+As in the original adapter, the verdict is kept abstract because the raw-IOR
+acceptance predicate lives at the next proof layer. -/
+def paddedConstructionDistinguisher {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool) :
+    Distinguisher Rate Cap (m + queryCount) where
+  move answers :=
+    if h : answers.length < m + queryCount then
+      paddedConstructionQuerySchedule statement receipt ⟨answers.length, h⟩
+    else
+      .fwd (0, 0)
+  out := verdict
+
+theorem paddedConstructionDistinguisher_move {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (answers : Fin (m + queryCount) → SpAnswer Rate Cap)
+    (j : Fin (m + queryCount)) :
+    (paddedConstructionDistinguisher statement receipt verdict).move
+        ((List.ofFn answers).take j) =
+      paddedConstructionQuerySchedule statement receipt j := by
+  simp [paddedConstructionDistinguisher, List.length_take]
+
+/-- Every hypothetical answer trace is charged by the exact padded receipt
+ledger, including its terminal marker on every public draw. -/
+theorem paddedConstructionDistinguisher_primitiveWorkOn_exact
+    {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (answers : Fin (m + queryCount) → SpAnswer Rate Cap) :
+    (paddedConstructionDistinguisher statement receipt verdict).primitiveWorkOn
+        answers = paddedTranscriptPrimitiveWork statement receipt := by
+  unfold Distinguisher.primitiveWorkOn paddedTranscriptPrimitiveWork
+  conv_rhs =>
+    rw [paddedConstructionQueries_eq_ofFn, List.map_ofFn, List.ofFn_eq_map]
+  rw [bind_pure_comp]
+  change
+    (List.map
+      (fun j =>
+        ((paddedConstructionDistinguisher statement receipt verdict).move
+          ((List.ofFn answers).take j)).primitiveCalls)
+      (List.map Fin.val (List.finRange (m + queryCount)))).sum = _
+  rw [List.map_map]
+  apply congrArg List.sum
+  apply List.map_congr_left
+  intro j _
+  simp only [Function.comp_apply]
+  rw [paddedConstructionDistinguisher_move]
+
+theorem paddedConstructionDistinguisher_workBound {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool) :
+    PrimitiveWorkBound
+      (paddedConstructionDistinguisher statement receipt verdict)
+      (paddedTranscriptPrimitiveWork statement receipt) := by
+  intro answers
+  rw [paddedConstructionDistinguisher_primitiveWorkOn_exact]
+
+/-- The existing named ROM premise specializes to the padded profile at the
+larger exact work ledger.  This still does not idealize deployed Poseidon2. -/
+theorem paddedConstructionDistinguisher_romBound
+    {m queryCount : Nat}
+    (hrom : BaseFoldPoseidon2Rom.romConstructionTarget)
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool) :
+    |realProb
+        (paddedConstructionDistinguisher statement receipt verdict) (0, 0) -
+        idealProb
+          (paddedConstructionDistinguisher statement receipt verdict) (0, 0)|
+      ≤ BaseFoldPoseidon2Rom.romError
+          (paddedTranscriptPrimitiveWork statement receipt) := by
+  have bound := hrom (m + queryCount)
+    (paddedTranscriptPrimitiveWork statement receipt)
+    (paddedConstructionDistinguisher statement receipt verdict)
+    (paddedConstructionDistinguisher_workBound statement receipt verdict)
+  unfold BaseFoldPoseidon2Rom.romError
+  simp only [
+    BaseFoldPoseidon2Rom.capacity_card,
+    BaseFoldPoseidon2Rom.state_card, Nat.cast_pow] at bound
+  simpa only [Nat.cast_pow] using bound
+
 #check @padMessage_injective
 #check @PaddedDrawsExact
 #check @paddedChallengeMessage_eq_of_samePrefix
 #check @paddedTranscriptPrimitiveWork_eq_add_draws
+#check @paddedConstructionDistinguisher_primitiveWorkOn_exact
+#check @paddedConstructionDistinguisher_romBound
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsPadding.padMessage_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -249,6 +349,9 @@ theorem paddedTranscriptPrimitiveWork_eq_add_draws {m queryCount : Nat}
 /-- info: 'Minidregg.Selvage.BaseFoldBcsPadding.paddedTranscriptPrimitiveWork_eq_add_draws' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedTranscriptPrimitiveWork_eq_add_draws
+/-- info: 'Minidregg.Selvage.BaseFoldBcsPadding.paddedConstructionDistinguisher_romBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedConstructionDistinguisher_romBound
 
 end
 

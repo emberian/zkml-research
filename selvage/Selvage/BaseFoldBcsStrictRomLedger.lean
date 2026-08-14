@@ -16,6 +16,7 @@ term is exactly the landed union bound `q / BabyBear.modulus`.
 
 import Selvage.BaseFoldBcsSpongeGame
 import Selvage.BaseFoldBcsQuerySamplingJoint
+import Selvage.BaseFoldBcsPadding
 
 namespace Minidregg.Selvage.BaseFoldBcsStrictRomLedger
 
@@ -27,6 +28,7 @@ open Minidregg.Selvage.BaseFoldBcsFiatShamir
 open Minidregg.Selvage.BaseFoldBcsSpongeGame
 open Minidregg.Selvage.BaseFoldBcsQuerySampling
 open Minidregg.Selvage.BaseFoldBcsQuerySamplingJoint
+open Minidregg.Selvage.BaseFoldBcsPadding
 
 set_option autoImplicit false
 
@@ -54,6 +56,25 @@ theorem constructionDistinguisher_rom_and_rejection_bound
           (transcriptPrimitiveWork statement receipt) queryCount := by
   exact add_le_add
     (constructionDistinguisher_romBound hrom statement receipt verdict)
+    (querySeedRejection_le queryCount)
+
+/-- The same ROM-plus-rejection ledger for the distinct injectively padded
+profile.  Its work argument includes the exact `m + queryCount` marker cost. -/
+theorem paddedConstructionDistinguisher_rom_and_rejection_bound
+    {m queryCount : Nat}
+    (hrom : romConstructionTarget)
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer BaseFoldBcsFiatShamir.Rate
+      BaseFoldBcsFiatShamir.Cap) → Bool) :
+    |realProb
+          (paddedConstructionDistinguisher statement receipt verdict) (0, 0) -
+        idealProb
+          (paddedConstructionDistinguisher statement receipt verdict) (0, 0)| +
+        uniformProb (Fin queryCount → Digest) QuerySeedRejection
+      ≤ strictRomSamplingError
+          (paddedTranscriptPrimitiveWork statement receipt) queryCount := by
+  exact add_le_add
+    (paddedConstructionDistinguisher_romBound hrom statement receipt verdict)
     (querySeedRejection_le queryCount)
 
 /-- An arithmetic composition rule for the next proof layer.  Any raw-IOR
@@ -133,10 +154,67 @@ theorem strictAcceptedRawRomLedger
   · exact constructionDistinguisher_rom_and_rejection_bound
       hrom statement receipt verdict
 
+/-- The combined accepted-query/raw-IOR ledger with the `.pad1` construction
+schedule.  Compared with `strictAcceptedRawRomLedger`, only the sponge-game
+profile and its exact work argument change; algebraic, miss, retained Merkle
+equivocation, and `q / p` rejection terms remain the same. -/
+theorem strictPaddedAcceptedRawRomLedger
+    {ell m queryCount : Nat}
+    (hrom : romConstructionTarget)
+    (T : FoldingTower E (PowerTwoFriLevels ell) m)
+    (st : RawFriAdaptiveTranscript
+      (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)))
+    (hell : ell ≤ 28) (hmell : m ≤ ell)
+    (z : Fin m → E) (H : E)
+    (word : PowerTwoFriLevels ell 0 → E)
+    (prover : (Nat → E) → Nat → Polynomial E)
+    {tau : Real} (htau1 : tau ≤ 1)
+    (htau : ∀ j : Fin m,
+      tau ≤ 1 /
+        (Fintype.card (PowerTwoFriLevels ell (j + 1)) : Real))
+    (hword0 : st.word 0 (fun i => i.elim0) = word)
+    (hfalse : ¬ BaseFoldExactClaim T z H word)
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (chi : Nat → E) (i : Nat), i < m →
+      (prover chi i).degree < ((2 + 1 : Nat) : WithBot Nat))
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer BaseFoldBcsFiatShamir.Rate
+      BaseFoldBcsFiatShamir.Cap) → Bool) :
+    uniformProb
+      ((Fin m → E) × AcceptedSeedFamily queryCount)
+      (fun sample =>
+        BaseFoldRawCommittedIorAccepts
+          (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) T st
+          z H prover queryCount sample.1
+          (powerTwoCoherentSchedule hmell
+            (acceptedSeedCoordinates hell sample.2))) +
+      |realProb
+          (paddedConstructionDistinguisher statement receipt verdict) (0, 0) -
+        idealProb
+          (paddedConstructionDistinguisher statement receipt verdict) (0, 0)| +
+      uniformProb (Fin queryCount → Digest) QuerySeedRejection
+      ≤ (m : Real) * (3 / Fintype.card E) +
+          (1 - tau) ^ queryCount +
+          uniformProb
+            ((Fin m → E) × QueryCoordinateFamily ell queryCount)
+            (fun sample =>
+              FriRawAdaptiveEquivocates
+                (fun n => BinaryMerkle.openingScheme hashSuite (ell - n))
+                T st sample.1 queryCount
+                (powerTwoCoherentSchedule hmell sample.2)) +
+          strictRomSamplingError
+            (paddedTranscriptPrimitiveWork statement receipt) queryCount := by
+  apply add_rawFailure_le_strictLedger
+  · exact acceptedSeedRawCommittedIor_coherent_exact_sound
+      T st hell hmell z H word prover htau1 htau hword0 hfalse hpm hdeg
+  · exact paddedConstructionDistinguisher_rom_and_rejection_bound
+      hrom statement receipt verdict
+
 #check @strictRomSamplingError
 #check @constructionDistinguisher_rom_and_rejection_bound
 #check @add_rawFailure_le_strictLedger
 #check @strictAcceptedRawRomLedger
+#check @strictPaddedAcceptedRawRomLedger
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsStrictRomLedger.constructionDistinguisher_rom_and_rejection_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -144,6 +222,9 @@ theorem strictAcceptedRawRomLedger
 /-- info: 'Minidregg.Selvage.BaseFoldBcsStrictRomLedger.strictAcceptedRawRomLedger' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms strictAcceptedRawRomLedger
+/-- info: 'Minidregg.Selvage.BaseFoldBcsStrictRomLedger.strictPaddedAcceptedRawRomLedger' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms strictPaddedAcceptedRawRomLedger
 
 end
 
