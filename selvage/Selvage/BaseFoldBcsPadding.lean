@@ -22,7 +22,6 @@ namespace Minidregg.Selvage.BaseFoldBcsPadding
 open BabyBearExt4
 open Minidregg.Selvage
 open Minidregg.Selvage.BaseFoldPoseidon2
-open Minidregg.Selvage.BaseFoldPoseidon2Rom
 open Minidregg.Selvage.BaseFoldBcsFiatShamir
 
 set_option autoImplicit false
