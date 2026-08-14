@@ -291,6 +291,68 @@ antecedent is satisfiable.
 - **The `Phalanx` in `~/paperbin` is the wrong paper** (FHE ciphertext
   packing); the right one is eprint 2021/1263.
 
+## ✅ THE TOP OF THE STACK: Spartan is three things to COMPOSE, and the third isn't a reduction
+
+`Assurance/SpartanR1CS.lean` — **883 lines, 56 decls, 20 axiom pins, no
+`sorry`**, tree green.
+
+| Spartan piece | verdict |
+|---|---|
+| Zerocheck randomization | **HAVE, proved** |
+| Outer sumcheck (deg 3) | engine HAVE; R1CS instance **now built** |
+| Inner sumcheck (deg 2) | engine HAVE; **now built** |
+| Witness PCS opening | claim object HAVE, **protocol absent** (the Ligerito lane's) |
+| Sparse matrix eval (SPARK) | **absent entirely** |
+
+⚑ **The reframing: the inner sumcheck is not the hard part.** Its three claims
+are literally three `Selvage.LinearConstraint` values on the witness word, so
+**the landed γ-batching lemma retires them at `2/|F|` with nothing new
+proved.** What is actually absent is **a commitment scheme for sparse
+multilinears — and that is a COST obligation, not a soundness one.**
+
+⚑ **And the cheapest path does NOT go through SPARK.** SuperSpartan's `ñext`
+is **soundness-neutral in the IOP** *and removes the indexer-honesty
+assumption* — **so the route is uniformity**, whose only prerequisite is a
+trace/row/transition notion `Compiler/Air.lean` lacks. *That reroutes the one
+piece listed as absent-entirely.*
+
+**Two theorems worth naming:**
+- **`spartanTerminal_eq_honest` is the hand-off AS A THEOREM** — phase 2's
+  obligation is *exactly three values*, and the `eq` factor is not one of them.
+  **That is the object the Ligerito and ring-switching lanes can aim at.**
+- **`spartan_sound` composes against the DEPLOYED verifier**:
+  `SpartanOuterRealAccepts` contains no honest side. ⚑ *"Without
+  `outerReal_iff_sumcheckAccepts` every bound would have been about an
+  idealized verifier — a vacuity that survives a green build and passes axiom
+  pins."*
+
+**Optimization classification** (criterion: does the verifier's *check*, the
+*relation*, or the *bound* change?):
+- **Free**: Gruen §4, the Speedup line §3–§6, **and Binius64's byte tables —
+  which are NOT a lookup argument** (the section is titled *"Prover
+  Algorithm"*; `grep -ci logup` = 0).
+- **Protocol changes needing re-proof**: Gruen §3, the univariate skip,
+  Dao–Thaler constraint packing (**needs a tower-basis linear-independence
+  lemma**), BDT Alg. 4.
+- **Relation change**: **Phalanx SIMD R1CS — and its own folding soundness has
+  no explicit bound.**
+⚠ **This supersedes an earlier triage that treated the whole
+Gruen/Dao–Thaler/BDT line as "all prover-cost, soundness unchanged." Three of
+them are protocol changes with new bounds.**
+
+⚑ **The vacuity tooth it wrote against itself**: `composed_bound_is_vacuous_at_f7`
+proves **`8/7 > 1`** — **characteristic-freedom buys the PROOFS, not the
+PARAMETERS.** *That is the concrete reason ring-switching is load-bearing
+rather than merely elegant.*
+
+⚠ **Honest scope**, seven items, the sharpest being **M5: all these theorems
+quantify over a GIVEN witness, and Spartan is an argument of KNOWLEDGE.**
+
+⚑ **And a twin caught by the LINKER, not the file**: the lane's first draft
+defined `matVec`, which `ZkmlLowRankUpdate.lean` already had. **`lake build
+Assurance.SpartanR1CS` was GREEN — the two never met. Only the umbrella build
+saw it.** ***A per-file green cannot see a twin, by construction.***
+
 ## Who else is doing this
 
 **Exactly one group: ArkLib + CompPoly** (EF-funded, Quang Dao, active this
