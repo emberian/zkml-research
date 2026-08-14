@@ -66,6 +66,17 @@ theorem deferredIdealStepWithCoin_eq_idealStep {q : Nat}
     deferredIdealStepWithCoin D iv state j coin =
       idealStep D iv (fun _ => workCoinAsIdeal coin) state j := rfl
 
+omit [DecidableEq Rate] in
+/-- Every deferred semantic step delivers exactly one public answer, just as
+the landed ideal step does. -/
+theorem deferredIdealStepWithCoin_ans_length {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (state : IdealState Rate Cap) (j : Fin q) (coin : Rate × Cap) :
+    (deferredIdealStepWithCoin D iv state j coin).ans.length =
+      state.ans.length + 1 := by
+  unfold deferredIdealStepWithCoin idealStep
+  cases D.move state.ans <;> simp
+
 /-- One public round consumes the exact segment selected by its adaptive
 primitive cost.  The segment head drives the deferred ideal step; the rest is
 reserved randomness which the eager world may move to later reveal points. -/
@@ -117,6 +128,25 @@ theorem deferredWorkStep_remaining_exact {q : Nat}
     · injection h with hnext
       subst next
       rfl
+  · contradiction
+
+omit [DecidableEq Rate] in
+/-- A successful work-indexed deferred step also advances the public-prefix
+length by exactly one.  This is the induction invariant that connects a
+runner's numeric round with a static receipt schedule. -/
+theorem deferredWorkStep_ans_length {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (state next : DeferredWorkState Rate Cap) (j : Fin q)
+    (h : deferredWorkStep D iv state j = .ok next) :
+    next.core.ans.length = state.core.ans.length + 1 := by
+  unfold deferredWorkStep at h
+  dsimp only at h
+  split at h
+  · split at h
+    · contradiction
+    · injection h with hnext
+      subst next
+      exact deferredIdealStepWithCoin_ans_length D iv state.core j _
   · contradiction
 
 /-- Execute every public round against one fixed work vector. -/
@@ -255,6 +285,8 @@ end SpongeDeferredWorkExample
 
 /-- info: 'Minidregg.Selvage.deferredWorkStep_work_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms deferredWorkStep_work_exact
+/-- info: 'Minidregg.Selvage.deferredWorkStep_ans_length' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms deferredWorkStep_ans_length
 /-- info: 'Minidregg.Selvage.SpongeDeferredWorkExample.revealed_prefix_answer' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SpongeDeferredWorkExample.revealed_prefix_answer
