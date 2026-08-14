@@ -332,9 +332,8 @@ theorem paddedWorkHybridStateNat_classify {m queryCount round : Nat}
         state.core.work = paddedWorkPrefix statement receipt round ∧
         state.remaining = (List.ofFn coins).drop
           (paddedWorkPrefix statement receipt round)) ∨
-      ∃ error,
-        paddedWorkHybridStateNat statement receipt verdict coins round hround =
-          .error (.hybrid error) := by
+      paddedWorkHybridStateNat statement receipt verdict coins round hround =
+        .error (.hybrid .constructionMismatch) := by
   induction round with
   | zero =>
       exact Or.inl ⟨WorkHybridState.initial coins, rfl, rfl,
@@ -363,7 +362,7 @@ theorem paddedWorkHybridStateNat_classify {m queryCount round : Nat}
                 state.core.ans).primitiveCalls ≤ state.remaining.length := by
           rw [hremaining, List.length_drop, List.length_ofFn, hneed]
           omega
-        rcases workHybridStep_ok_or_hybrid_of_need_le
+        rcases workHybridStep_ok_or_constructionMismatch_of_need_le
             (paddedConstructionDistinguisher statement receipt verdict)
             (0, 0) state ⟨round, hroundLt⟩ henough with hnext | herror
         · obtain ⟨next, hnext⟩ := hnext
@@ -376,15 +375,13 @@ theorem paddedWorkHybridStateNat_classify {m queryCount round : Nat}
               hwork, hneed, hprefixStep]
           · rw [workHybridStep_remaining_exact _ _ state next _ hnext,
               hremaining, hneed, List.drop_drop, ← hprefixStep]
-        · obtain ⟨error, herror⟩ := herror
-          refine Or.inr ⟨error, ?_⟩
+        · refine Or.inr ?_
           unfold paddedWorkHybridStateNat
           rw [hstate]
           exact herror
-      · obtain ⟨error, herror⟩ := hfailure
-        refine Or.inr ⟨error, ?_⟩
+      · refine Or.inr ?_
         unfold paddedWorkHybridStateNat
-        rw [herror]
+        rw [hfailure]
         rfl
 
 /-- A complete eager run on the exact BaseFold ledger therefore either
@@ -402,10 +399,9 @@ theorem paddedWorkHybridRun_classify {m queryCount : Nat}
         state.core.ans.length = m + queryCount ∧
         state.core.work = paddedTranscriptPrimitiveWork statement receipt ∧
         state.remaining = []) ∨
-      ∃ error,
-        workHybridRun
-          (paddedConstructionDistinguisher statement receipt verdict)
-          (0, 0) coins = .error (.hybrid error) := by
+      workHybridRun
+        (paddedConstructionDistinguisher statement receipt verdict)
+        (0, 0) coins = .error (.hybrid .constructionMismatch) := by
   rcases paddedWorkHybridStateNat_classify statement receipt verdict coins
       (Nat.le_refl (m + queryCount)) with hsuccess | hfailure
   · obtain ⟨state, hrun, hans, hwork, hremaining⟩ := hsuccess
@@ -415,10 +411,9 @@ theorem paddedWorkHybridRun_classify {m queryCount : Nat}
     · simpa [paddedWorkPrefix_final] using hwork
     · rw [hremaining, paddedWorkPrefix_final]
       simp
-  · obtain ⟨error, hrun⟩ := hfailure
-    refine Or.inr ⟨error, ?_⟩
+  · refine Or.inr ?_
     rw [← paddedWorkHybridStateNat_full_eq_run]
-    exact hrun
+    exact hfailure
 
 /-! ## The deferred runner reads the same static cost -/
 
