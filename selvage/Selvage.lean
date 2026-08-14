@@ -125,5 +125,5 @@ import Selvage.BaseFoldBcsQuerySampling -- reject zero, factor nonzero BabyBear 
 import Selvage.BaseFoldBcsQuerySamplingJoint -- exact whole-batch factorization: accepted digest families split into unused lanes, slack, and a jointly uniform independent BaseFold query-coordinate vector
 import Selvage.BaseFoldBcsStrictRomLedger -- the exact receipt work-indexed sponge advantage and fail-closed q/p query-seed rejection term inhabit one explicit ROM/sampling ledger
 import Selvage.BaseFoldBcsPadding -- a separate injectively padded rate-block transcript profile, with exactly one additional primitive call per public draw
-import Selvage.BaseFoldBcsByteCodec -- strict four-byte BabyBear words and a lawful lane-major 32-byte Poseidon2 rate-block codec
+import Selvage.BaseFoldBcsByteCodec -- strict four-byte BabyBear words, a lawful lane-major 32-byte rate codec, and a lawful complete padded-message codec
 import Selvage.BaseFoldBcsRunSchedule -- a fixed receipt's padded public moves are answer-independent and partition the exact ROM work ledger into static nonempty segments

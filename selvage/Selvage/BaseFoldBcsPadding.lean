@@ -10,9 +10,10 @@ cannot become equal through this padding layer.
 
 The padded construction queries are literal `SpQuery.constr` values.  Their
 primitive-work ledger is exact: the profile costs one additional permutation
-call per public draw, hence `m + queryCount` calls per receipt.  This closes
-rate-block padding only.  Canonical bytes-to-field packing, a decoder, and the
-deployed Poseidon2 permutation boundary remain separate obligations.
+call per public draw, hence `m + queryCount` calls per receipt.  This module
+closes rate-block padding only; the adjacent byte-codec and run-schedule
+modules close canonical message bytes and fixed-receipt deferred execution.
+The deployed Poseidon2 permutation boundary remains separate.
 -/
 
 import Selvage.BaseFoldBcsSpongeGame
