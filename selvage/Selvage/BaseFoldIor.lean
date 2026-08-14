@@ -95,6 +95,148 @@ theorem basefoldIor_wrong_value_sound [Nonempty (ι m)]
     basefoldIor_wrong_value_implies_acceptsFalse T table z H prover r hwrong hacc) ?_
   exact basefold_sumcheck_soundness hpm hdeg
 
+/-! ## Arbitrary top words: the exact-membership `3/|F|` cone -/
+
+/-- The strict source relation for the full-word IOR: the top word is the
+BaseFold encoding of one table and the claimed value is that table's MLE at
+the public point. -/
+def BaseFoldExactClaim (T : FoldingTower F ι m) (z : Fin m → F) (H : F)
+    (word : ι 0 → F) : Prop :=
+  ∃ table : (Fin m → Bool) → F,
+    word = (fun i => (booleanMobiusPolynomial m table).eval (T.dom 0 i)) ∧
+    H = mle table z
+
+omit [Fintype F] [DecidableEq F] in
+/-- Every degree-window RS codeword has a definite BaseFold table.  This is
+the codeword-level extraction bridge used by the arbitrary-word theorem. -/
+theorem exists_basefoldTable_of_mem_code (T : FoldingTower F ι m)
+    {word : ι 0 → F}
+    (hmem : word ∈ reedSolomonCode (T.dom 0) (basefoldDegSched m 0)) :
+    ∃ table : (Fin m → Bool) → F,
+      word = fun i => (booleanMobiusPolynomial m table).eval (T.dom 0 i) := by
+  obtain ⟨p, hp, hword⟩ := mem_reedSolomonCode_iff.mp hmem
+  have hp' : p.degree < ((2 ^ m : ℕ) : WithBot ℕ) := by
+    simpa using hp
+  refine ⟨tableOfPoly m p, funext fun i => ?_⟩
+  rw [← hword i, booleanMobiusPolynomial_tableOfPoly m p hp']
+
+/-- The finite set of challenge tuples accepted by the full-word IOR for fixed
+statement, word, and adaptive prover. -/
+noncomputable def basefoldIorAcceptSet (T : FoldingTower F ι m)
+    (z : Fin m → F) (H : F) (word : ι 0 → F)
+    (prover : (ℕ → F) → ℕ → Polynomial F) : Finset (Fin m → F) :=
+  @Finset.filter (Fin m → F)
+    (fun r => BaseFoldIorAccepts T z H word prover r)
+    (Classical.decPred _) Finset.univ
+
+omit [Fintype F] [DecidableEq F] in
+theorem mem_basefoldIorAcceptSet {T : FoldingTower F ι m}
+    {z : Fin m → F} {H : F} {word : ι 0 → F}
+    {prover : (ℕ → F) → ℕ → Polynomial F} {r : Fin m → F} :
+    r ∈ basefoldIorAcceptSet T z H word prover ↔
+      BaseFoldIorAccepts T z H word prover r := by
+  simp [basefoldIorAcceptSet]
+
+omit [Fintype F] [DecidableEq F] in
+/-- IOR acceptance is contained in the underlying proximity-test event. -/
+theorem basefoldIorAcceptSet_subset (T : FoldingTower F ι m)
+    (z : Fin m → F) (H : F) (word : ι 0 → F)
+    (prover : (ℕ → F) → ℕ → Polynomial F) :
+    basefoldIorAcceptSet T z H word prover ⊆
+      acceptSet T (basefoldDegSched m) word := by
+  intro r hr
+  exact mem_acceptSet.mpr (mem_basefoldIorAcceptSet.mp hr).2.2.1
+
+private theorem uniformProb_eq_card_filter (C : Type) [Fintype C]
+    (p : C → Prop) [DecidablePred p] :
+    uniformProb C p =
+      ((Finset.univ.filter p).card : ℝ) / (Fintype.card C : ℝ) := by
+  unfold uniformProb
+  congr 2
+  rw [Nat.card_eq_fintype_card, Fintype.card_subtype]
+
+/-- A top word outside the BaseFold RS window can pass the full-word IOR only
+through the unconditional exact-membership fold-distance event, at
+`m/|F|`. -/
+theorem basefoldIor_noncodeword_sound [∀ n, Fintype (ι n)]
+    (T : FoldingTower F ι m) (z : Fin m → F) (H : F) (word : ι 0 → F)
+    (prover : (ℕ → F) → ℕ → Polynomial F)
+    (hne : ∀ n, n ≤ m → Nonempty (ι n))
+    (hnotmem : word ∉ reedSolomonCode (T.dom 0) (basefoldDegSched m 0)) :
+    uniformProb (Fin m → F) (fun r =>
+      BaseFoldIorAccepts T z H word prover r) ≤
+      (m : ℝ) / Fintype.card F := by
+  classical
+  letI : Nonempty (ι 0) := hne 0 (Nat.zero_le _)
+  have hfar : ¬ close 0
+      (reedSolomonCode (T.dom 0) (basefoldDegSched m 0)) word := by
+    rintro ⟨u, hu, hdist⟩
+    by_cases heq : word = u
+    · exact hnotmem (heq ▸ hu)
+    · have hfloor := one_div_card_le_relDist (ι := ι 0) heq
+      have hpos : (0 : ℝ) < 1 / (Fintype.card (ι 0) : ℝ) := by positivity
+      linarith
+  have hfold : ∀ j (hj : j < m),
+      FoldDistancePreserving (T.data j hj)
+        (basefoldDegSched m j) (basefoldDegSched m (j + 1)) 0 1 := by
+    intro j hj
+    letI : Nonempty (ι (j + 1)) := hne (j + 1) (Nat.succ_le_iff.mpr hj)
+    have h := foldDistancePreserving_of_lt_inv_card (T.data j hj)
+      (basefoldDegSched m (j + 1)) (by norm_num : (0 : ℝ) ≤ 0)
+      (by positivity : (0 : ℝ) < 1 / (Fintype.card (ι (j + 1)) : ℝ))
+    rwa [← basefoldDegSched_halving m j hj] at h
+  have hcard : (basefoldIorAcceptSet T z H word prover).card ≤
+      (acceptSet T (basefoldDegSched m) word).card :=
+    Finset.card_le_card (basefoldIorAcceptSet_subset T z H word prover)
+  have hprox := proximity_sound_prob T (basefoldDegSched m)
+    (by norm_num : (0 : ℝ) ≤ 0) hfold hfar
+  rw [show uniformProb (Fin m → F) (fun r =>
+      BaseFoldIorAccepts T z H word prover r) =
+      ((basefoldIorAcceptSet T z H word prover).card : ℝ) /
+        (Fintype.card F : ℝ) ^ m by
+    rw [uniformProb_eq_card_filter]
+    simp only [basefoldIorAcceptSet, Fintype.card_fun, Fintype.card_fin]]
+  refine le_trans ?_ hprox
+  have hden : (0 : ℝ) < (Fintype.card F : ℝ) ^ m := by positivity
+  exact (div_le_div_iff_of_pos_right hden).mpr (by exact_mod_cast hcard)
+
+/-- ⭐ **Arbitrary-word exact-membership BaseFold soundness.**  If a fixed top
+word and claimed value do not form a strict BaseFold claim, the full-word IOR
+accepts with probability at most `m·3/|F|`: one fold-distance root plus two
+sumcheck roots per round.  This is the theorem behind the `3/|F|` per-opening
+term used by the linear-layer ledger. -/
+theorem basefoldIor_exact_sound [∀ n, Fintype (ι n)]
+    (T : FoldingTower F ι m) (z : Fin m → F) (H : F) (word : ι 0 → F)
+    (prover : (ℕ → F) → ℕ → Polynomial F)
+    (hne : ∀ n, n ≤ m → Nonempty (ι n))
+    (hfalse : ¬ BaseFoldExactClaim T z H word)
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (χ : ℕ → F) (i : ℕ), i < m →
+      (prover χ i).degree < ((2 + 1 : ℕ) : WithBot ℕ)) :
+    uniformProb (Fin m → F) (fun r =>
+      BaseFoldIorAccepts T z H word prover r) ≤
+      (m : ℝ) * (3 / Fintype.card F) := by
+  classical
+  by_cases hmem : word ∈ reedSolomonCode (T.dom 0) (basefoldDegSched m 0)
+  · obtain ⟨table, hword⟩ := exists_basefoldTable_of_mem_code T hmem
+    have hwrong : H ≠ mle table z := by
+      intro heq
+      exact hfalse ⟨table, hword, heq⟩
+    letI : Nonempty (ι m) := hne m le_rfl
+    have h := basefoldIor_wrong_value_sound T table z H prover hwrong hpm hdeg
+    rw [hword]
+    refine le_trans h ?_
+    have hF : (0 : ℝ) < (Fintype.card F : ℝ) := by positivity
+    have hm0 : (0 : ℝ) ≤ (m : ℝ) := by positivity
+    gcongr
+    norm_num
+  · have h := basefoldIor_noncodeword_sound T z H word prover hne hmem
+    refine le_trans h ?_
+    have hF : (0 : ℝ) < (Fintype.card F : ℝ) := by positivity
+    have hm0 : (0 : ℝ) ≤ (m : ℝ) := by positivity
+    rw [div_eq_mul_inv, div_eq_mul_inv]
+    nlinarith [inv_pos.mpr hF]
+
 namespace BaseFoldIorExample
 
 open BaseFoldExample ProximityExample
