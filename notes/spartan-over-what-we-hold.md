@@ -151,9 +151,16 @@ construction's weak point over binary fields.
 
 ## 2. Spartan as a Lean object — `Assurance/SpartanR1CS.lean` [BUILT]
 
-`/Users/ember/dev/minidregg/Assurance/SpartanR1CS.lean`, 612 lines, 44 declarations, no `sorry`,
-axiom-pinned, registered in `Assurance.lean`, `lake build Assurance.SpartanR1CS` green, committed
-as `8fba211`. `scripts/check-proof-hygiene.sh` PASS.
+`/Users/ember/dev/minidregg/Assurance/SpartanR1CS.lean` — **883 lines, 56 declarations, 20 axiom
+pins, no `sorry`**, registered in `Assurance.lean`. `lake build Assurance` builds the whole library
+(8834 jobs) green with it in; `scripts/check-proof-hygiene.sh` PASS (472 tracked Lean files).
+Commits `8fba211` · `b3fbde8` · `ef12ccf` · `323a7b3`.
+
+⚠ Verification note: I built the working tree, not a detached clone. That is sound *here* because
+`git status` over `Assurance/ Selvage/ Theory/ Compiler/` is **empty** — my entire dependency
+closure is committed — and HEAD's copy of the new file is byte-identical to disk (md5 checked).
+Concurrent lanes' uncommitted work is confined to `Compiler.lean` and `prover/`, neither in the
+closure.
 
 Binders throughout: `{F : Type} [Field F] [Fintype F] [DecidableEq F]`, `{s t : ℕ}` — `s` indexes
 the constraint cube, `t` the variable cube. **No characteristic hypothesis anywhere.**
