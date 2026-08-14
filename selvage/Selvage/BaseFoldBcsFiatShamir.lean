@@ -291,7 +291,7 @@ theorem transcriptPrimitiveWork_exact {m queryCount : Nat}
         (queryMessage statement receipt a).length).sum := by
   unfold transcriptPrimitiveWork constructionQueries
   rw [List.map_append, List.sum_append, List.map_ofFn, List.map_ofFn]
-  congr 1
+  apply congrArg₂ (· + ·)
   · apply congrArg List.sum
     apply List.ofFn_inj.mpr
     funext j
