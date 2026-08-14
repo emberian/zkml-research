@@ -67,8 +67,8 @@ variable {dom : ι ↪ F} {domSq : κ ↪ F}
 The verifier authenticates `f(sec k)`, `f(neg (sec k))`, and the alleged
 next word at `k`, then checks the literal FRI fold equation. -/
 def OpenedFriQuery
-    (Sbig : BindingCommitment RootBig F ι OpBig)
-    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+    (Sbig : OpeningScheme RootBig F ι OpBig)
+    (Ssmall : OpeningScheme RootSmall F κ OpSmall)
     (D : FoldingData F dom domSq) (rt : RootBig) (rt' : RootSmall)
     (alpha : F) (k : κ) (o : FriQueryOpening F OpBig OpSmall) : Prop :=
   Sbig.verifyOpen rt (D.sec k) o.left o.leftPath ∧
@@ -79,8 +79,8 @@ def OpenedFriQuery
 
 /-- Honest committed words always have a valid exact fibre opening. -/
 theorem openedFriQuery_honest
-    (Sbig : BindingCommitment RootBig F ι OpBig)
-    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+    (Sbig : OpeningScheme RootBig F ι OpBig)
+    (Ssmall : OpeningScheme RootSmall F κ OpSmall)
     (D : FoldingData F dom domSq) (w : ι → F) (alpha : F) (k : κ) :
     ∃ o : FriQueryOpening F OpBig OpSmall,
       OpenedFriQuery Sbig Ssmall D (Sbig.commit w)
@@ -95,6 +95,68 @@ theorem openedFriQuery_honest
   refine ⟨Sbig.verifyOpen_commit _ _, Sbig.verifyOpen_commit _ _,
     Ssmall.verifyOpen_commit _ _, ?_⟩
   rfl
+
+/-- A raw accepted FRI fibre that is not attached to the two committed words
+retains an explicit equivocation at one of its three authenticated symbols.
+The submitted value and path are not rewritten away by an ideal binding
+assumption. -/
+def FriQueryEquivocation
+    (Sbig : OpeningScheme RootBig F ι OpBig)
+    (Ssmall : OpeningScheme RootSmall F κ OpSmall)
+    (D : FoldingData F dom domSq) (rt : RootBig) (rt' : RootSmall)
+    (w : ι → F) (w' : κ → F) (k : κ)
+    (o : FriQueryOpening F OpBig OpSmall) : Prop :=
+  Sbig.PositionEquivocation rt (D.sec k) o.left o.leftPath w ∨
+  Sbig.PositionEquivocation rt (D.neg (D.sec k)) o.right o.rightPath w ∨
+  Ssmall.PositionEquivocation rt' k o.next o.nextPath w'
+
+/-- **Raw verifier split.**  Against roots produced from fixed words, every
+accepted opened fibre either pins the literal fold equation to those words or
+exhibits a retained position equivocation.  No binding property is assumed.
+This is the exact branch point at which a deployed Merkle implementation pays
+its collision-resistance term. -/
+theorem openedFriQuery_pins_or_equivocation
+    (Sbig : OpeningScheme RootBig F ι OpBig)
+    (Ssmall : OpeningScheme RootSmall F κ OpSmall)
+    (D : FoldingData F dom domSq)
+    {w : ι → F} {w' : κ → F} {rt : RootBig} {rt' : RootSmall}
+    (hrt : rt = Sbig.commit w) (hrt' : rt' = Ssmall.commit w')
+    {alpha : F} {k : κ} {o : FriQueryOpening F OpBig OpSmall}
+    (hopen : OpenedFriQuery Sbig Ssmall D rt rt' alpha k o) :
+    w' k = fold D w alpha k ∨
+      FriQueryEquivocation Sbig Ssmall D rt rt' w w' k o := by
+  rcases hopen with ⟨hleft, hright, hnext, heq⟩
+  by_cases hl : o.left = w (D.sec k)
+  · by_cases hr : o.right = w (D.neg (D.sec k))
+    · by_cases hn : o.next = w' k
+      · left
+        rw [← hn, heq, hl, hr]
+        rfl
+      · right
+        exact Or.inr (Or.inr ⟨hnext,
+          Ssmall.verifyOpen_of_commit_eq hrt' k, hn⟩)
+    · right
+      exact Or.inr (Or.inl ⟨hright,
+        Sbig.verifyOpen_of_commit_eq hrt (D.neg (D.sec k)), hr⟩)
+  · right
+    exact Or.inl ⟨hleft, Sbig.verifyOpen_of_commit_eq hrt (D.sec k), hl⟩
+
+/-- A pair of perfectly position-binding schemes makes the equivocation
+branch of the raw split impossible. -/
+theorem not_friQueryEquivocation
+    (Sbig : BindingCommitment RootBig F ι OpBig)
+    (Ssmall : BindingCommitment RootSmall F κ OpSmall)
+    (D : FoldingData F dom domSq) (rt : RootBig) (rt' : RootSmall)
+    (w : ι → F) (w' : κ → F) (k : κ)
+    (o : FriQueryOpening F OpBig OpSmall) :
+    ¬ FriQueryEquivocation Sbig Ssmall D rt rt' w w' k o := by
+  rintro (hleft | hright | hnext)
+  · exact Sbig.not_positionEquivocation rt (D.sec k)
+      o.left o.leftPath w hleft
+  · exact Sbig.not_positionEquivocation rt (D.neg (D.sec k))
+      o.right o.rightPath w hright
+  · exact Ssmall.not_positionEquivocation rt' k
+      o.next o.nextPath w' hnext
 
 /-- **Binding reattaches the opened equation to the committed pair.**  A
 valid opened fibre forces the statement-committed next word to equal the

@@ -171,6 +171,27 @@ theorem OpeningScheme.verifyOpen_of_commit_eq (S : OpeningScheme Root F ι Op)
     ∀ i, S.verifyOpen rt i (w i) (S.openAt w i) :=
   fun i => hrt.symm ▸ S.verifyOpen_commit w i
 
+/-- A retained position-level equivocation attempt: the submitted value and
+the honest value of `word` both verify at the same root and position, but the
+two values differ.  This is the binding-free event a concrete Merkle
+collision reduction consumes; unlike a `BindingCommitment` premise, it keeps
+the adversary's value and opening path visible. -/
+def OpeningScheme.PositionEquivocation (S : OpeningScheme Root F ι Op)
+    (rt : Root) (i : ι) (value : F) (opening : Op) (word : ι → F) : Prop :=
+  S.verifyOpen rt i value opening ∧
+    S.verifyOpen rt i (word i) (S.openAt word i) ∧ value ≠ word i
+
+/-- Perfect position binding refutes the retained equivocation event.  A
+deployed short-root scheme pays for this implication through its collision-
+resistance reduction rather than constructing `BindingCommitment` for free. -/
+theorem BindingCommitment.not_positionEquivocation
+    (S : BindingCommitment Root F ι Op) (rt : Root) (i : ι)
+    (value : F) (opening : Op) (word : ι → F) :
+    ¬ S.toOpeningScheme.PositionEquivocation rt i value opening word := by
+  rintro ⟨hvalue, hword, hne⟩
+  exact hne (S.binding rt i value (word i) opening (S.openAt word i)
+    hvalue hword)
+
 /-! ## The inhabitation — the honest floor is a BUILT object
 
 A binding scheme EXISTS: the identity/injective commitment, `Root := ι → F`,
