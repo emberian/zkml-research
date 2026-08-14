@@ -110,7 +110,32 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   *worse* (24.4 → 28.9 ms) and total work rises **5.9×** as eleven workers
   scan above the answer and lose the `min`. **The hardening-commit-disarms-a-
   guard class, in our own tree, found by measuring rather than reading.**
-  **Fix — windowed parallel `min`**: scan a bounded window fully in parallel,
+  ✅ **LANDED 2026-08-14** (`11cff8852`, `00b2cf2d5`, `81ddc8566`) — **all five
+  grind sites**, and the safety argument is structural rather than tested:
+  `windowed_find_map_first` reduces by **lowest unit index**, making it
+  *`find_map_first` with the early exit deleted.* **Byte-for-byte verified four
+  ways with no clock**, including minimality checked against the *definition*
+  exhaustively (476,286 candidates below the returned witnesses, all invalid,
+  so the differential oracle cannot drift into agreement) and window invariance
+  across nine sizes from 1 to 2^24. **Nothing re-emits: no wire format,
+  descriptor, VK, or re-genesis.**
+  **Measured, latency and work in separate columns**: critical path **10.6×
+  mean / 11.8× p99** at T=12, **total work +12.6%**; BN254 outer **9.49×**
+  (28,954 → 3,147 calls, +13% work). Window `c = 1/4` chosen by **minimax over
+  the one constant counts cannot see** (a 7.1 µs per-window barrier), not at a
+  point estimate — and **`c = 8` is REFUTED** (8.29× work at twice the p99).
+  ⚑ **And the honest inversion: this fix RAISES grind's share of prover WORK**
+  (23.2% → 25.4% at lb=6). It buys latency, *a share-of-work percentage cannot
+  show that*, and the latency share is not computable from anything measured —
+  so the lane declined to quote one.
+  ⚑ **Two findings beyond the brief**: **rayon leaves `Range<u64>`
+  unindexed**, so the first version's window split only on steal and delivered
+  **2.47×, not ~10×** — *a parallel primitive whose parallelism is conditional
+  on scheduling luck passes every correctness test*, and it was caught only
+  because derived and counted numbers were both printed. And
+  **`apex_shrink_bn254_tooth` had been RED since 2026-08-08**, `#[ignore]`d as
+  `"SLOW"` — its sibling got a mint-split fix and the twin did not; now fixed.
+  **Original prototype note — fix:** windowed parallel `min`: scan a bounded window fully in parallel,
   reduce with `min`; the first non-empty window's minimum **is** the global
   minimum, so it returns **byte-for-byte the same witness** (same predicate,
   query indices, proof bytes, VK). **7.49× on the critical path at 12
