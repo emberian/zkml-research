@@ -160,8 +160,12 @@ theorem paddedWorkPrefix_le_final {m queryCount : Nat}
   have hsplit : schedule.take round ++ schedule.drop round = schedule :=
     List.take_append_drop round schedule
   have hle : (schedule.take round).sum ≤ schedule.sum := by
-    rw [← hsplit, List.sum_append]
-    omega
+    calc
+      (schedule.take round).sum ≤
+          (schedule.take round).sum + (schedule.drop round).sum := by omega
+      _ = (schedule.take round ++ schedule.drop round).sum := by
+        rw [List.sum_append]
+      _ = schedule.sum := congrArg List.sum hsplit
   change (schedule.take round).sum ≤ _
   calc
     (schedule.take round).sum ≤ schedule.sum := hle
