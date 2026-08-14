@@ -289,7 +289,17 @@ theorem transcriptPrimitiveWork_exact {m queryCount : Nat}
         (challengeMessage statement receipt j).length).sum +
       (List.ofFn fun a : Fin queryCount =>
         (queryMessage statement receipt a).length).sum := by
-  simp [transcriptPrimitiveWork, constructionQueries]
+  unfold transcriptPrimitiveWork constructionQueries
+  rw [List.map_append, List.sum_append, List.map_ofFn, List.map_ofFn]
+  congr 1
+  · apply congrArg List.sum
+    apply List.ofFn_inj.mpr
+    funext j
+    exact challengeQuery_primitiveCalls statement receipt j
+  · apply congrArg List.sum
+    apply List.ofFn_inj.mpr
+    funext a
+    exact queryQuery_primitiveCalls statement receipt a
 
 /-! ## Openings retained after query derivation -/
 
