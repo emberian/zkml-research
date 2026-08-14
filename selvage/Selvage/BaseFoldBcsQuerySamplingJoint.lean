@@ -34,7 +34,8 @@ set_option autoImplicit false
 noncomputable section
 
 noncomputable instance ext4Fintype : Fintype E :=
-  Fintype.ofFinite _
+  Fintype.ofEquiv
+    (Fin extensionPolynomial.natDegree → BabyBear) coefficients.symm.toEquiv
 
 abbrev DigestTail := {lane : Fin 8 // lane ≠ 0} → F
 
@@ -276,7 +277,18 @@ theorem acceptedSeedRawCommittedIor_coherent_exact_sound
               (fun n => BinaryMerkle.openingScheme hashSuite (ell - n))
               T st sample.1 queryCount
               (powerTwoCoherentSchedule hmell sample.2)) := by
-  rw [acceptedSeedCoordinates_uniform_with_context hell]
+  let event :
+      (Fin m → E) × QueryCoordinateFamily ell queryCount → Prop :=
+    fun sample =>
+      BaseFoldRawCommittedIorAccepts
+        (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) T st
+        z H prover queryCount sample.1
+        (powerTwoCoherentSchedule hmell sample.2)
+  change
+    uniformProb ((Fin m → E) × AcceptedSeedFamily queryCount)
+        (fun sample => event
+          (sample.1, acceptedSeedCoordinates hell sample.2)) ≤ _
+  rw [acceptedSeedCoordinates_uniform_with_context hell event]
   exact basefoldRawCommittedIor_coherent_exact_sound
     (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) T st hmell
     z H word prover queryCount htau1 htau hword0 hfalse hpm hdeg
