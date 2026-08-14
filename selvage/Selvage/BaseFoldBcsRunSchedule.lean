@@ -241,6 +241,22 @@ theorem paddedWorkPrefix_le_final {m queryCount : Nat}
       unfold paddedPrimitiveWorkSchedule paddedTranscriptPrimitiveWork
       rw [paddedConstructionQueries_eq_ofFn]
 
+/-- Static cumulative work is monotone even after `List.take` saturates at the
+terminal boundary. -/
+theorem paddedWorkPrefix_mono {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    Monotone (paddedWorkPrefix statement receipt) := by
+  intro left right hle
+  have hpref :
+      (paddedPrimitiveWorkSchedule statement receipt).take left <+:
+        (paddedPrimitiveWorkSchedule statement receipt).take right := by
+    rw [List.take_isPrefix_take]
+    exact Or.inl hle
+  rcases hpref with ⟨suffix, hsuffix⟩
+  unfold paddedWorkPrefix
+  rw [hsuffix, List.sum_append]
+  omega
+
 /-! ## The eager runner reads the same static cost -/
 
 /-- Whenever the eager prefix-programmed runner is at a valid public-prefix
@@ -613,6 +629,29 @@ theorem paddedSegmentLast_succ {m queryCount : Nat}
     round.isLt
   omega
 
+theorem paddedSegmentHead_le_last {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount)) :
+    (paddedSegmentHead statement receipt round : Nat) ≤
+      paddedSegmentLast statement receipt round := by
+  unfold paddedSegmentHead paddedSegmentLast
+  have hstep := paddedWorkPrefix_strictMono_step statement receipt round
+    round.isLt
+  omega
+
+/-- Earlier and later static work segments are disjoint and ordered. -/
+theorem paddedSegmentLast_lt_head_of_lt {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (earlier later : Fin (m + queryCount))
+    (hlt : (earlier : Nat) < later) :
+    (paddedSegmentLast statement receipt earlier : Nat) <
+      paddedSegmentHead statement receipt later := by
+  have hmono := paddedWorkPrefix_mono statement receipt
+    (Nat.succ_le_of_lt hlt)
+  have hlast := paddedSegmentLast_succ statement receipt earlier
+  unfold paddedSegmentHead
+  omega
+
 /-- One unconditional whole-vector involution swaps the deferred segment head
 with the eager full-message coordinate. -/
 noncomputable def paddedSegmentSwapMove {m queryCount : Nat}
@@ -641,6 +680,22 @@ theorem paddedSegmentSwapMove_head {m queryCount : Nat}
   simp [paddedSegmentSwapMove, GuardedInvolution.apply,
     guardedWorkReindex, permuteWorkCoins]
 
+/-- Away from its two segment endpoints, one unconditional segment swap fixes
+the selected coordinate. -/
+theorem paddedSegmentSwapMove_apply_of_ne {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount))
+    (index : Fin (paddedTranscriptPrimitiveWork statement receipt))
+    (hhead : index ≠ paddedSegmentHead statement receipt round)
+    (hlast : index ≠ paddedSegmentLast statement receipt round)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    (paddedSegmentSwapMove statement receipt round).apply coins index =
+      coins index := by
+  simp [paddedSegmentSwapMove, GuardedInvolution.apply,
+    guardedWorkReindex, permuteWorkCoins,
+    Equiv.swap_apply_of_ne_of_ne hhead hlast]
+
 /-- The concrete fixed-receipt program contains one exact coordinate swap per
 public construction draw. -/
 noncomputable def paddedSegmentSwapProgram {m queryCount : Nat}
@@ -657,6 +712,108 @@ noncomputable def paddedSegmentReindex {m queryCount : Nat}
     (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap) ≃
       (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap) :=
   guardedProgramReindex (paddedSegmentSwapProgram statement receipt)
+
+/-- The composed program, not merely its isolated round move, places each
+eager full-message coin at the corresponding deferred segment head. -/
+theorem paddedSegmentReindex_head {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount))
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    paddedSegmentReindex statement receipt coins
+        (paddedSegmentHead statement receipt round) =
+      coins (paddedSegmentLast statement receipt round) := by
+  let program := paddedSegmentSwapProgram statement receipt
+  have hprogramLength : program.length = m + queryCount := by
+    simp [program, paddedSegmentSwapProgram]
+  have hroundProgram : (round : Nat) < program.length := by
+    simpa [hprogramLength] using round.isLt
+  have hselected :
+      program.get ⟨round, hroundProgram⟩ =
+        paddedSegmentSwapMove statement receipt round := by
+    simp [program, paddedSegmentSwapProgram]
+  have hdecomp :
+      program =
+        program.take round ++
+          paddedSegmentSwapMove statement receipt round ::
+            program.drop ((round : Nat) + 1) := by
+    calc
+      program = program.take ((round : Nat) + 1) ++
+          program.drop ((round : Nat) + 1) :=
+        (List.take_append_drop ((round : Nat) + 1) program).symm
+      _ = (program.take round ++ [program.get ⟨round, hroundProgram⟩]) ++
+          program.drop ((round : Nat) + 1) := by
+        rw [List.take_concat_get']
+      _ = program.take round ++
+          paddedSegmentSwapMove statement receipt round ::
+            program.drop ((round : Nat) + 1) := by
+        rw [hselected]
+        simp [List.append_assoc]
+  have hbefore : ∀ earlier ∈ program.take round, ∀ values,
+      earlier.apply values (paddedSegmentLast statement receipt round) =
+        values (paddedSegmentLast statement receipt round) := by
+    intro earlier hearlier values
+    obtain ⟨index, rfl⟩ := List.get_of_mem hearlier
+    have hindexLt : (index : Nat) < round := by
+      have h := index.isLt
+      rw [List.length_take, hprogramLength] at h
+      omega
+    let earlierRound : Fin (m + queryCount) :=
+      ⟨index, Nat.lt_trans hindexLt round.isLt⟩
+    have hget :
+        (program.take round).get index =
+          paddedSegmentSwapMove statement receipt earlierRound := by
+      simp [program, paddedSegmentSwapProgram, earlierRound]
+    rw [hget]
+    have hsep := paddedSegmentLast_lt_head_of_lt statement receipt
+      earlierRound round hindexLt
+    have hearlierHead := paddedSegmentHead_le_last statement receipt earlierRound
+    apply paddedSegmentSwapMove_apply_of_ne statement receipt earlierRound
+    · intro heq
+      have := congrArg Fin.val heq
+      omega
+    · intro heq
+      have := congrArg Fin.val heq
+      omega
+  have hafter : ∀ later ∈ program.drop ((round : Nat) + 1), ∀ values,
+      later.apply values (paddedSegmentHead statement receipt round) =
+        values (paddedSegmentHead statement receipt round) := by
+    intro later hlater values
+    obtain ⟨index, rfl⟩ := List.get_of_mem hlater
+    have hindexBound : (round : Nat) + 1 + index < m + queryCount := by
+      have h := index.isLt
+      rw [List.length_drop, hprogramLength] at h
+      omega
+    let laterRound : Fin (m + queryCount) :=
+      ⟨(round : Nat) + 1 + index, hindexBound⟩
+    have hget :
+        (program.drop ((round : Nat) + 1)).get index =
+          paddedSegmentSwapMove statement receipt laterRound := by
+      simp [program, paddedSegmentSwapProgram, laterRound]
+    rw [hget]
+    have hroundLt : (round : Nat) < laterRound := by
+      dsimp [laterRound]
+      omega
+    have hsep := paddedSegmentLast_lt_head_of_lt statement receipt
+      round laterRound hroundLt
+    apply paddedSegmentSwapMove_apply_of_ne statement receipt laterRound
+    · intro heq
+      have := congrArg Fin.val heq
+      omega
+    · intro heq
+      have hlaterHead := paddedSegmentHead_le_last statement receipt laterRound
+      have := congrArg Fin.val heq
+      omega
+  unfold paddedSegmentReindex
+  rw [show paddedSegmentSwapProgram statement receipt = program by rfl,
+    hdecomp]
+  exact guardedProgramReindex_apply_at_single
+    (program.take round)
+    (paddedSegmentSwapMove statement receipt round)
+    (program.drop ((round : Nat) + 1))
+    (paddedSegmentLast statement receipt round)
+    (paddedSegmentHead statement receipt round)
+    hbefore (paddedSegmentSwapMove_head statement receipt round) hafter coins
 
 /-- The run-specific segment program preserves exact uniform counting
 measure on the entire primitive-work vector. -/
