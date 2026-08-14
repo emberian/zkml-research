@@ -162,6 +162,70 @@ theorem acceptedScalar_coordinate_uniform {ell : Nat} (hell : ell ≤ 28)
   exact (uniformProb_equiv (acceptedScalarEquiv ell hell)
     (fun pair => event pair.2)).trans (uniformProb_prod_snd event)
 
+/-! ## The explicit rejection price -/
+
+private theorem babyBear_zero_probability :
+    uniformProb F (fun value => value = 0) = 1 / (modulus : Real) := by
+  classical
+  unfold uniformProb
+  rw [show Nat.card {value : F // value = 0} = 1 by
+    rw [Nat.card_eq_fintype_card]
+    exact Fintype.card_subtype_eq 0,
+    Nat.cast_one]
+  congr 2
+  norm_num [F, BabyBear, modulus]
+
+/-- A batch rejects when any query-seed digest has zero in the lane consumed
+by the exact factorization. The other seven digest lanes remain present and
+uniform; they are marginalized, not silently deleted from the coin space. -/
+def QuerySeedRejection {queryCount : Nat}
+    (seeds : Fin queryCount → Digest) : Prop :=
+  ∃ a, seeds a 0 = 0
+
+private theorem one_query_seed_rejection_probability {queryCount : Nat}
+    (a : Fin queryCount) :
+    uniformProb (Fin queryCount → Digest) (fun seeds => seeds a 0 = 0) =
+      1 / (modulus : Real) := by
+  let QueryRest := {b : Fin queryCount // b ≠ a} → Digest
+  let LaneRest := {lane : Fin 8 // lane ≠ 0} → F
+  letI : Nonempty QueryRest := ⟨fun _ => 0⟩
+  letI : Nonempty LaneRest := ⟨fun _ => 0⟩
+  calc
+    uniformProb (Fin queryCount → Digest) (fun seeds => seeds a 0 = 0) =
+        uniformProb (QueryRest × Digest) (fun split => split.2 0 = 0) := by
+      simpa [QueryRest] using
+        (uniformProb_equiv (splitCoord a)
+          (fun split : QueryRest × Digest => split.2 0 = 0))
+    _ = uniformProb Digest (fun seed => seed 0 = 0) :=
+      uniformProb_prod_snd _
+    _ = uniformProb (LaneRest × F) (fun split => split.2 = 0) := by
+      simpa [Digest, LaneRest] using
+        (uniformProb_equiv (splitCoord (0 : Fin 8))
+          (fun split : LaneRest × F => split.2 = 0))
+    _ = uniformProb F (fun value => value = 0) :=
+      uniformProb_prod_snd _
+    _ = 1 / (modulus : Real) := babyBear_zero_probability
+
+/-- For independent uniform ideal query-seed digests, fail-closed unbiased
+decoding costs at most one BabyBear point per query. This term must be added
+when the ideal random-oracle construction is instantiated; no retry policy is
+assumed. -/
+theorem querySeedRejection_le (queryCount : Nat) :
+    uniformProb (Fin queryCount → Digest) QuerySeedRejection ≤
+      (queryCount : Real) / (modulus : Real) := by
+  unfold QuerySeedRejection
+  calc
+    uniformProb (Fin queryCount → Digest) (fun seeds => ∃ a, seeds a 0 = 0) ≤
+        ∑ a : Fin queryCount,
+          uniformProb (Fin queryCount → Digest) (fun seeds => seeds a 0 = 0) :=
+      uniformProb_exists_le _
+    _ = ∑ _a : Fin queryCount, (1 : Real) / (modulus : Real) := by
+      apply Finset.sum_congr rfl
+      intro a _
+      exact one_query_seed_rejection_probability a
+    _ = (queryCount : Real) / (modulus : Real) := by
+      simp [div_eq_mul_inv]
+
 /-! ## Fail-closed BaseFold schedule -/
 
 def QuerySeedsAccepted {m queryCount : Nat}
@@ -253,11 +317,15 @@ theorem unbiasedAccepts_to_rawCommittedIor {ell m queryCount : Nat}
 #check @babyBear_nonzero_factorization
 #check @acceptedScalarEquiv
 #check @acceptedScalar_coordinate_uniform
+#check @querySeedRejection_le
 #check @unbiasedAccepts_to_rawCommittedIor
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsQuerySampling.acceptedScalar_coordinate_uniform' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms acceptedScalar_coordinate_uniform
+/-- info: 'Minidregg.Selvage.BaseFoldBcsQuerySampling.querySeedRejection_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms querySeedRejection_le
 /-- info: 'Minidregg.Selvage.BaseFoldBcsQuerySampling.unbiasedAccepts_to_rawCommittedIor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms unbiasedAccepts_to_rawCommittedIor
