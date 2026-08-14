@@ -156,8 +156,9 @@ open BaseFoldExample ProximityExample HalfThresholdFriTranscriptExample
 
 def queryScheduleZero : FriIndependentQuerySchedule levels 1 1 := by
   intro j _
-  fin_cases j
-  exact 0
+  have hj : j = (0 : Fin 1) := Subsingleton.elim _ _
+  subst j
+  exact (0 : Fin 2)
 
 /-- The complete sampled-commitment verifier fires on the landed F5 opening
 at challenge `3` and one coherent zero-coordinate query. -/
