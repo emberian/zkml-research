@@ -107,9 +107,34 @@ theorem constructionDistinguisher_workBound {m queryCount : Nat}
   intro answers
   rw [constructionDistinguisher_primitiveWorkOn_exact]
 
+/-- Instantiating the named BaseFold ROM target now uses the exact receipt
+ledger automatically.  This is conditional on the still-open generic
+indifferentiability target and does not idealize the deployed permutation. -/
+theorem constructionDistinguisher_romBound
+    {m queryCount : Nat}
+    (hrom : BaseFoldPoseidon2Rom.romConstructionTarget)
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool) :
+    |realProb (constructionDistinguisher statement receipt verdict) (0, 0) -
+        idealProb (constructionDistinguisher statement receipt verdict) (0, 0)|
+      ≤ BaseFoldPoseidon2Rom.romError
+          (transcriptPrimitiveWork statement receipt) := by
+  have bound := hrom (m + queryCount)
+    (transcriptPrimitiveWork statement receipt)
+    (constructionDistinguisher statement receipt verdict)
+    (constructionDistinguisher_workBound statement receipt verdict)
+  simpa [BaseFoldPoseidon2Rom.romError,
+    BaseFoldPoseidon2Rom.capacity_card,
+    BaseFoldPoseidon2Rom.state_card] using bound
+
 #check @constructionQueries_eq_ofFn
 #check @constructionDistinguisher_primitiveWorkOn_exact
 #check @constructionDistinguisher_workBound
+#check @constructionDistinguisher_romBound
+
+#print axioms constructionDistinguisher_primitiveWorkOn_exact
+#print axioms constructionDistinguisher_workBound
+#print axioms constructionDistinguisher_romBound
 
 end
 
