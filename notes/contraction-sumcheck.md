@@ -193,9 +193,12 @@ Two findings the split decides, neither obvious before measuring:
 * **`[MATMUL-pcs]`** — the two openings. While this lane ran, a concurrent lane
   (`0c17553`, `Selvage/MultilinearCommitment.lean`) gave them the correct hash-based shape
   (`MleEvalClaim = (root, point, value)` with `value_unique`) over the existing positional
-  `OpeningScheme` and updated this file's residual paragraph directly. The remaining gap it
-  names is the braided BaseFold `Reduction`/`RbrKnowledgeSoundness` instance and its BCS
+  `OpeningScheme` and edited that residual paragraph in my file directly. The remaining gap
+  it names is the braided BaseFold `Reduction`/`RbrKnowledgeSoundness` instance and its BCS
   query realization. In *this* lane's Rust the openings are still handed in by a closure.
+  ⚠ **and that file does not compile at HEAD** — see §6. So the residual paragraph now in
+  `ZkmlMatmulSumcheck.lean` describes an object that is currently red; read it as a plan,
+  not as landed machinery.
 * **`[MATMUL-fs]`** — `(x,y)` and the round challenges are drawn uniformly; Fiat–Shamir is
   `[PROVER-fs]`, open.
 * **`[MATMUL-pad]`** — proved as a table fact; that the *committed* table is zero outside
@@ -222,6 +225,22 @@ git diff HEAD on every path I touched  → empty
 detached extraction; the **Lean** was not (a detached Lean build needs a cold `.lake`).
 What was checked instead is that `git diff HEAD` is empty for every Lean path, so the green
 build ran on byte-identical content.
+
+### ⚠ The DEFAULT target is RED at HEAD, and not because of this lane
+
+`[measured]` `lake build` (the default `Minidregg` target) **fails**, on
+`Selvage/MultilinearCommitment.lean` — the concurrent lane's file from `0c17553`. Three
+independent problems in it: two `unexpected token 'omit'` syntax errors (an `omit … in`
+placed between a docstring and its declaration — a docstring must be immediately followed
+by the declaration), an `OfNat (levels 1) 0` instance failure, and a **`sorryAx`** in
+`wrong_value_refused_f5` that its own axiom pin catches.
+
+It is independent of this lane by construction: it is a `Selvage/` file, the import
+boundary forbids it from seeing `Assurance/`, and it imports nothing this lane added.
+`Minidregg.lean` reaches it through the `Selvage` root; `Assurance.lean` does not import
+that root, which is why `lake build Assurance` is green at 8818 jobs while `lake build` is
+red. Recorded here rather than left for the next reader to trip over: **a red umbrella is
+exactly the state in which the next real break becomes invisible.**
 
 ## 7. An elaboration finding worth keeping
 
