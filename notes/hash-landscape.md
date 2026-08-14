@@ -443,36 +443,54 @@ staircase, not a line**, and the first step is free.
 
 ⏳ *The full cryptanalysis sweep is in flight.* What is already ours and checked:
 
-### 🔴 FIRST: our own "+286 bits" is not sourceable, and the number is wrong
+### ⚠ FIRST — a refutation I nearly published, and why it was wrong
 
-`notes/poseidon2-audit-verdict.md` and `hash-verdict.md` both carry **"+286-bit
-margin at α=7"**. A targeted sweep of eprint **2019/458, 2023/323, 2024/347,
-2025/259, 2025/954, 2025/1893, 2025/2040, 2026/306, 2026/1271**, the Khovratovich
-SPRING2026 deck, the 2026 bounty spec, `~/paperbin` full text, and four web queries
-found **no `286` anywhere except bibliography page ranges and digits inside round
-constants.**
+A literature sweep reported our **"+286-bit margin at α=7"** as **not found in any
+paper** and offered replacement figures (+203 collision / +248 preimage at α=7,
++106.6 at α=3). I was about to record that as a correction. **Reading
+`notes/poseidon2-audit-verdict.md` at source refutes the refutation**, and the
+lesson is the recorded one: *read the blocker before you relay it.*
 
-⚑ **And the deeper problem: neither Poseidon nor Poseidon2 EVER states a security
-margin in bits, at any α.** The published margin is a round count, and it is
-explicitly arbitrary — eprint 2019/458 §3, verbatim: *"we **arbitrarily** decided
-to add: two more rounds with full S-Box layers (+2 R_F); 7.5% more rounds with
-partial S-Box layers (+7.5% R_P)."* ⚠ And Poseidon2 §7.3 **misstates even that** as
-12.5%; the co-designers correct it to 7.5% in 2025/1893 footnote 11.
+**Our number was never a published figure. It is OUR derivation, and the note says
+so on its face:**
 
-**What is derivable** (from 2026/306 §5.3's own formulas at the designers'
-conservative ω=2, computed independently and confirmed by a second sweep):
+| instance | attack | cost | bar | margin |
+|---|---|---|---|---|
+| **BabyBear t=16, α=7, R_F=8, R_P=13, Merkle compress** | **2026/306 Lem 4.5** | **2^409.9** | **2^123.6** | **+286.3** |
 
-| parameter set | attack | complexity | **margin over 128** |
-|---|---|---|---:|
-| **α=7**, R_P=15 | collision | 2^331.3 | **+203.3** |
-| α=7, R_P=15 | sponge preimage | 2^376.2 | +248.2 |
-| **α=3**, R_P=23 (Plonky3 KoalaBear) | collision | 2^234.6 | **+106.6** |
-| α=3, R_P=23 | sponge preimage | 2^237.7 | +109.7 |
+`409.9 − 123.6 = 286.3` ✓. **The sweep searched for the literal string "286" in
+papers — but the claim was never that a paper prints it.** And the two figures
+differ for two identifiable reasons, neither of which is an error:
 
-> **The "halving" is RIGHT (ratio 1.91–2.26). The magnitude is not: it is ≈ +203
-> (collision) or +248 (preimage), never +286.** Neither figure is *printed*
-> anywhere; both are derived. ⚑ **Our notes state a derived number as if it were
-> published, and got it wrong by 40–80 bits. Fix the source notes.**
+1. **Different bar.** Ours is **2^123.6** — the real 8-BabyBear-limb capacity bound
+   — not the generic 128. That is 4.4 bits of the gap.
+2. **Different parameter sets.** The sweep's α=7 figure is at **R_P=15** (the
+   Poseidon2b *binary* set); ours is our deployed **R_P=13, t=16 Merkle compress**.
+   Not comparable, and neither refutes the other.
+
+⚑ **And on the α=3 side the two derivations AGREE TO THE DIGIT.** Independently:
+the sweep gets **2^234.6** for α=3 collision; `poseidon2-audit-verdict.md` already
+records **t=24 collision 2^234.6 (+110.9)** and **t=16 compression 2^253.6 (+130)**.
+**Two instruments, same number.** The "halving at α=3" in the brief is confirmed by
+both.
+
+**What IS a real and useful correction from the sweep:**
+
+- ⚑ **Neither Poseidon nor Poseidon2 ever states a security margin in bits, at any
+  α.** The published margin is a round count, and it is explicitly arbitrary —
+  2019/458 §3, verbatim: *"we **arbitrarily** decided to add: two more rounds with
+  full S-Box layers (+2 R_F); 7.5% more rounds with partial S-Box layers."* **So any
+  "+N bits" is somebody's derivation and must travel with its bar and parameter
+  set** — ours does; not everyone's will.
+- ⚠ **Poseidon2 §7.3 misstates its own margin as 12.5%**; the co-designers correct
+  it to **7.5%** in 2025/1893 footnote 11.
+- ⚑ **CICO is measurably the wrong metric, and the bounty still measures it.**
+  2026/306 Table 1 at α=7, ω=2: the attack gains **39.3 bits on CICO but 67.4 on
+  3-to-1 preimage.** Our own audit already shows this shape — our cico-4 margin is
+  **+83.7**, far tighter than the +286 compression figure. **Quoting +286 without
+  saying "Merkle-compress mode" is quoting the flattering member of a pair**, which
+  is the sin this repo has a standing rule about. `hash-verdict.md`'s one-line
+  *"carry a +286-bit margin"* does exactly that and should name the mode.
 
 ### ⚑⚑ AND THE α COST/SECURITY TRADE INVERTS — my draft had it backwards
 
@@ -924,10 +942,12 @@ hashes are one import-boundary decision away from being instances.**
    algebraic advantage falls from ~30× to ~1.3×) and the **de-welding** of hash
    from field that Flock names. **It does not buy an escape from Poseidon2 in the
    recursion layers** and should stop being sold that way — including by me.
-6. 🔴 **Fix `poseidon2-audit-verdict.md` and `hash-verdict.md`: the "+286 bits" is
-   not sourceable and is wrong** (§3). Derived correctly it is ≈ +203 collision /
-   +248 preimage at α=7. And **no Poseidon paper states a bits-margin at all** — the
-   published margin is "+2 R_F, +7.5% R_P, *arbitrarily* decided."
+6. ⚠ **Make `hash-verdict.md` name the MODE on its "+286-bit margin" line** (§3).
+   The figure is ours, correctly derived, and correct — but it is the **Merkle-
+   compress** margin; the **cico-4** margin at the same parameters is **+83.7**.
+   Quoting the larger of a pair without its mode is the flattering-number habit this
+   repo has a rule about. **No Poseidon paper states a bits-margin at all**, so every
+   such figure must travel with its bar and parameter set."
 7. ⚠ **If we ever do leave the AO family, choose SHA-256 or Keccak-24, not Blake3,
    IF the reason is the analysis record** — Blake3 has **zero** cryptanalysis papers
    in the eprint corpus and 7 rounds against ancestors broken to 7.5–8, and SHA-256
