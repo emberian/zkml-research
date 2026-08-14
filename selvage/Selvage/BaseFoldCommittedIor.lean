@@ -215,8 +215,9 @@ theorem friAdaptive_terminal_ne_implies_transition_ne
         simpa using hzero
     | succ n ih =>
         intro hn
-        rw [hno ⟨n, hn⟩, ih (Nat.le_of_succ_le hn),
-          T.word_succ, chalExt, dif_pos hn]
+        have hnlt : n < m := hn
+        rw [hno ⟨n, hnlt⟩, ih (Nat.le_of_succ_le hn),
+          T.word_succ, chalExt, dif_pos hnlt]
   exact hterminal (hlevels m le_rfl)
 
 section CoherentSoundness
