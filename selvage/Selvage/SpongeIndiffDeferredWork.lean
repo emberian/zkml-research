@@ -150,6 +150,47 @@ theorem deferredWorkStep_ans_length {q : Nat}
   · contradiction
 
 omit [DecidableEq Rate] in
+/-- On a construction query, an explicitly identified exact segment exposes
+the precise head coin used by the deferred semantic step. -/
+theorem deferredWorkStep_constr_exact {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (state : DeferredWorkState Rate Cap) (j : Fin q)
+    (x : Rate) (xs : List Rate) (coin : Rate × Cap)
+    (rest : List (Rate × Cap))
+    (hquery : D.move state.core.ans = .constr x xs)
+    (hused : state.remaining.take (xs.length + 1) = coin :: rest)
+    (hlength : (coin :: rest).length = xs.length + 1) :
+    deferredWorkStep D iv state j =
+      .ok ⟨deferredIdealStepWithCoin D iv state.core j coin,
+        state.remaining.drop (xs.length + 1),
+        state.work + (xs.length + 1)⟩ := by
+  unfold deferredWorkStep
+  dsimp only
+  rw [hquery]
+  simp only [SpQuery.primitiveCalls]
+  rw [show (state.remaining.take (xs.length + 1)).length =
+      xs.length + 1 by rw [hused, hlength]]
+  rw [hused]
+  rfl
+
+omit [DecidableEq Rate] in
+/-- If the selected full construction message is fresh in the deferred RO,
+its segment-head rate is exactly the appended public answer; construction
+queries leave the primitive simulator log unchanged. -/
+theorem deferredIdealStepWithCoin_constr_fresh {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (state : IdealState Rate Cap) (j : Fin q)
+    (x : Rate) (xs : List Rate) (coin : Rate × Cap)
+    (hquery : D.move state.ans = .constr x xs)
+    (hfresh : state.ro.lookup (x :: xs) = none) :
+    deferredIdealStepWithCoin D iv state j coin =
+      ⟨(state.ro.respond (x :: xs) coin.1).2, state.sim,
+        state.ans ++ [.rate coin.1]⟩ := by
+  unfold deferredIdealStepWithCoin idealStep
+  rw [hquery]
+  rw [Oracle.respond_fresh_fst hfresh]
+
+omit [DecidableEq Rate] in
 /-- The deferred runner has no semantic failure mode once enough work coins
 remain.  Positivity of `SpQuery.primitiveCalls` also rules out the nominal
 empty-segment error. -/
