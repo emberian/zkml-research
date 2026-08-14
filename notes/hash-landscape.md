@@ -321,12 +321,29 @@ staircase, not a line**, and the first step is free.
   (transpose to `M̄_ε = M₄ ⊗ P_{t/4}`) is free, same fast matmul, and **not
   shipped in any Plonky3**. It does not justify a flag day; it should ride one.
 - ⚑ **Poseidon was NOT broken, and the EF pivot is not an institutional artifact.**
-  The "Goodbye, Poseidon! … in hindsight the key was not SNARK-friendly hashes,
-  but hash-friendly SNARKs" quote is real and accurately attributed to a senior EF
-  researcher — but **there is no EF publication behind it**, and the Poseidon
-  Cryptanalysis Initiative is still scheduled through December 2026 with live
-  bounties. "Reaches its dream conclusion" means Poseidon **survived**; the pivot
-  is performance-and-conservatism driven. (`notes/binaryspartan-position.md` §10.3)
+  Source located and verified: **Justin Drake, X, `x.com/drakefjustin/status/2087905684180418733`,
+  ~2026-08-12** — *"Goodbye, Poseidon! … The Ethereum Foundation is abandoning
+  Poseidon for L1, pivoting to SHA or BLAKE"* and *"In hindsight the key was not
+  SNARK-friendly hashes, but hash-friendly SNARKs."* Targets named are **SHA-2 and
+  BLAKE2s** (notably *not* Keccak); timeline leanVM 2027, consensus/data/execution
+  2028.
+  ⚠ **This is one EF researcher on social media, amplified by trade press. There is
+  no blog.ethereum.org post, no ethresear.ch post, and no institutional EF
+  publication carrying it** — a targeted sweep found none. Cite it as *a senior EF
+  researcher's public statement*, never as *"the EF published"*. "Reaches its dream
+  conclusion" means Poseidon **survived**.
+- ⚑ **The Initiative's own pivot is CONFIRMED at source, and it is Poseidon2 →
+  Poseidon1.** Khovratovich's *State of the Art* deck, slide 6: *"Why We Moved from
+  Poseidon2: Round Skipping Attack"* → **"Poseidon Initiative pivots to Poseidon1
+  (KoalaBear, MDS matrix) for Bounty 2026."** >$1.5M committed, Phase 2 closing
+  Dec 2026. **The brief's claim was right**, and it makes §3's MDS-transpose item
+  the direction the bounty runners themselves took.
+- ⚠ **And the erosion is real, not rhetorical.** The Poseidon1/KoalaBear zero-test
+  record advanced **RP 6 → 12 in under three months** (2026-06-03 → 2026-07-27),
+  and a **q=3 partial collision was claimed 2026-04-06** against the $992K prize.
+  ⚑ **So the honest story of the pivot is that BOTH pressures arrived at once**:
+  algebraic cryptanalysis eroding the margin *and* binary-field provers closing the
+  performance gap. Reading it as purely performance-driven understates it.
 - ⚠ **And leanVM today is KoalaBear — a 31-bit PRIME field**, not a binary-field
   system. The binary-field framing is aspirational relative to what is in the repo.
 - **Oddity on the record**: the EF's $992K Poseidon Collision Prize and the
@@ -372,10 +389,29 @@ This is precisely the move RISC0 and SP1 already make in the other direction —
 field is chosen to match its consumer*. **The same reasoning applied at the top of
 the tower selects Blake3, and we have never applied it there.**
 
-> ⚠ **I have not measured this and I am not going to pretend otherwise.** It is a
-> derivation from committed shares plus a structural fact about who verifies the
-> apex. The measurement is cheap — swap the outer config's hash and time one
-> apex — and it is the next thing to do.
+### ⚑ Independently corroborated, and by an unfriendly witness
+
+The Binius paper (eprint 2023/1784, §5.4, Tables 5–6) benchmarks **Plonky3 against
+itself with only the Merkle hash swapped** — same field, same protocol, **identical
+4.010 MiB proof** — on 8,192 Keccak-f permutations:
+
+| Plonky3 BabyBear, Merkle hash | prove ST | prove MT | verify |
+|---|---:|---:|---:|
+| Poseidon | 120 s | 17.4 s | 0.639 s |
+| **Keccak-256** | **71.2 s** | **13.8 s** | **0.527 s** |
+
+> ### **1.69× ST, 1.26× MT, in a PRIME field, from swapping only the Merkle hash.**
+
+That is *"hash-friendly beats SNARK-friendly"* demonstrated inside Plonky3, by a
+paper arguing for binary fields, in the field we are already in — **because
+nothing in that benchmark is recursed.** It is the same effect §4 predicts, at the
+same size (my derivation says 1.54–2.27×), from an entirely independent instrument.
+
+> ⚠ **I have still not measured it on OUR apex, and I am not going to pretend
+> otherwise.** The §4 figure is a derivation from committed shares plus a structural
+> fact about who verifies the apex; the table above is someone else's workload. The
+> measurement is cheap — swap the outer config's hash and time one apex — and it is
+> the next thing to do.
 
 ---
 
