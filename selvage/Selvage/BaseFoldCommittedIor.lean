@@ -38,10 +38,10 @@ noncomputable def derivedFriAdaptiveTranscript
     (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
     (T : FoldingTower F ι m) (word0 : ι 0 → F) :
     FriAdaptiveTranscript S where
-  word := fun n prefix =>
-    if hn : n ≤ m then T.word word0 (chalExt prefix) n hn else 0
-  root := fun n prefix => (S n).commit
-    (if hn : n ≤ m then T.word word0 (chalExt prefix) n hn else 0)
+  word := fun n pfx =>
+    if hn : n ≤ m then T.word word0 (chalExt pfx) n hn else 0
+  root := fun n pfx => (S n).commit
+    (if hn : n ≤ m then T.word word0 (chalExt pfx) n hn else 0)
   root_eq_commit := fun _ _ => rfl
 
 /-- Reading the derived adaptive transcript with a full challenge tuple gives
@@ -154,8 +154,10 @@ namespace BaseFoldCommittedIorExample
 
 open BaseFoldExample ProximityExample HalfThresholdFriTranscriptExample
 
-def queryScheduleZero : FriIndependentQuerySchedule levels 1 1 :=
-  fun _ _ => 0
+def queryScheduleZero : FriIndependentQuerySchedule levels 1 1 := by
+  intro j _
+  fin_cases j
+  exact 0
 
 /-- The complete sampled-commitment verifier fires on the landed F5 opening
 at challenge `3` and one coherent zero-coordinate query. -/
