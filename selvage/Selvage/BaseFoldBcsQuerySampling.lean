@@ -26,6 +26,7 @@ open Minidregg.Selvage.BaseFoldPoseidon2
 open Minidregg.Selvage.BaseFoldBcsFiatShamir
 
 set_option autoImplicit false
+set_option maxRecDepth 100000
 
 noncomputable section
 
@@ -172,8 +173,7 @@ private theorem babyBear_zero_probability :
     rw [Nat.card_eq_fintype_card]
     exact Fintype.card_subtype_eq 0,
     Nat.cast_one]
-  congr 2
-  norm_num [F, BabyBear, modulus]
+  rw [Nat.card_eq_fintype_card, ZMod.card]
 
 /-- A batch rejects when any query-seed digest has zero in the lane consumed
 by the exact factorization. The other seven digest lanes remain present and
@@ -182,6 +182,7 @@ def QuerySeedRejection {queryCount : Nat}
     (seeds : Fin queryCount → Digest) : Prop :=
   ∃ a, seeds a 0 = 0
 
+set_option maxHeartbeats 800000 in
 private theorem one_query_seed_rejection_probability {queryCount : Nat}
     (a : Fin queryCount) :
     uniformProb (Fin queryCount → Digest) (fun seeds => seeds a 0 = 0) =
