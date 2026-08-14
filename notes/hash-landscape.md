@@ -567,13 +567,17 @@ hashes are one import-boundary decision away from being instances.**
    *and* in a binary one. Not from inertia: `R` is 6.8–15.2× above the crossover in
    BabyBear and still 2.8–6.3× above it in a binary field, on our own numbers and
    the best same-system measurement that exists.
-2. ⚑ **Take the free apex win** (§4): **1.5–2.3×** at zero in-circuit cost and zero
-   new cryptanalytic surface, corroborated at 1.69× ST / 1.26× MT by an independent
-   published measurement. One config swap and one timing. **Do this first.**
-3. ⚑ **Then audit the whole tower for the same shape.** §4 is one instance of a
-   general rule — *a layer's hash must be SNARK-friendly only if that layer is
-   re-verified in-circuit* — and nobody has walked the tower asking that question
-   layer by layer. Any layer whose hash is not arithmetized is a free 1.5–2.3×.
+2. ⚑ **Run the consumer audit** (§4), which is reading, not measuring: for each of
+   the 18 native `verify_*` entry points in `circuit-prove/src/`, does any circuit
+   consume that proof's Merkle hash? Every *no* is a free **1.5–2.3×** at zero
+   in-circuit cost and zero new cryptanalytic surface — corroborated at 1.69× ST /
+   1.26× MT by an independent published measurement. **Do this first; it is cheap
+   and it is the only win on this page that needs no new mathematics.**
+3. ⚑ **State the rule where it will be seen:** *a proof's hash must be
+   SNARK-friendly only if a CIRCUIT consumes it.* `WRAP-NATIVE-HASH-DECISION.md`
+   already applies it at the top of the tower and got 90–145× from it; nothing
+   applies it anywhere else, and my own first draft got the layer wrong for want of
+   it being written down.
 4. **Re-scope the binary-field programme onto what it actually buys.** It buys the
    **proving** collapse (§1d finding 1: Grøstl out-proves Vision by 3.56×, and the
    algebraic advantage falls from ~30× to ~1.3×) and the **de-welding** of hash
