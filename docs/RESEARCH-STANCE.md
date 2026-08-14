@@ -39,11 +39,29 @@ label** — real, cosmetic, or trap — not a system that beats a benchmark.
 
 ⚑ **We are hash-bound at 5.0–7.2×, and we chose our hash for a reason that
 only holds in a prime field.** Poseidon2 is cheap in-circuit and expensive
-natively; traditional hashes are the reverse; **in a binary field they are
-cheap in both.** So the binary-field work is not about competing with
-BinarySpartan's benchmark — ***it attacks our own dominant term.*** That is
-why the five binary lanes matter more than the rate comparison, and it is a
-connection I only made when the design stopped being fixed.
+natively; traditional hashes are the reverse.
+
+⚠⚠ **AND MY NEXT SENTENCE — "in a binary field they are cheap in both" — IS
+REFUTED, MEASURED (2026-08-14).** I said it twice. eprint 2025/1893's
+same-system table: **proving converges** (Grøstl *out-proves* Vision by 3.56×),
+**but VERIFICATION stays 12.7–24.7× apart** — ***and recursion cost IS verifier
+cost***, which our own wrap identity established (38,168 ≡ 38,168).
+**Recursion pins the hash choice in BOTH characteristics.** The binary field is
+not the escape hatch for our dominant term; it never was.
+
+**And the map says keep Poseidon2 — now for a measured reason instead of an
+inherited one.** Measured on one pinned checkout, both directions:
+**in-circuit** `p3-blake3-air` **9,168** cells/compression, `p3-keccak-air`
+**63,192**, our Poseidon2 **300** ⇒ Poseidon2 wins **30.6×–210×**. **Native**,
+same AIR same field, only the Merkle hash swapped: 40,195 ms vs 6,907 ms ⇒
+Keccak wins **5.82×**. **Crossover from our own shares: `R* = 2.0–4.5×`.
+Measured `R` is 30.6×. Poseidon2 wins by 6.8–15.2× of margin. Not close.**
+
+⚑ **THE ONE LEVER THAT CROSSES `R*` IS THE ARITHMETIZATION, NOT THE FIELD AND
+NOT THE HASH.** The same two primitives cost **102× in R1CS**, ~31–56× in a
+bit-decomposed AIR, and **~3.2× under a LOOKUP ARGUMENT — inside the band.**
+***`R` is a property of how you arithmetize.*** **And we already hold LogUp.**
+That is the highest-value open measurement on this axis.
 
 ## And the corresponding honesty about rates
 
