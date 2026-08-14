@@ -8,7 +8,7 @@ the current construction is fresh, while only the complete public message
 must still be fresh in the RO.  Under exactly those conditions, successful
 prefix programming returns the final supplied rate coin.
 -/
-import Selvage.SpongeIndiffPrefixProgramming
+import Selvage.SpongeIndiffWorkStream
 
 namespace Minidregg.Selvage
 
@@ -22,6 +22,14 @@ def lastRateCoin : List Rate → Rate
   | [] => 0
   | [rate] => rate
   | _ :: next :: rest => lastRateCoin (next :: rest)
+
+@[simp] theorem lastRateCoin_append_singleton (rates : List Rate)
+    (rate : Rate) :
+    lastRateCoin (rates ++ [rate]) = rate := by
+  induction rates with
+  | nil => rfl
+  | cons first rates =>
+      cases rates <;> simp_all [lastRateCoin]
 
 /-- Recursive execution predicate saying that every primitive edge selected
 by this construction path is absent immediately before it is programmed.
@@ -207,9 +215,89 @@ theorem programConstruction_fresh_final_rate
   refine ⟨result, ?_, hrate⟩
   simp [programConstruction, hnonempty, hrun]
 
+/-- The adaptive prefix-hybrid step exposes the same final rate coin under the
+fresh-path predicate. -/
+theorem prefixHybridStep_constr_of_primitivePathFresh {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (roundCoins : Fin q → PrefixHybridCoins Rate Cap)
+    (state : PrefixHybridState Rate Cap) (j : Fin q)
+    (x : Rate) (xs rateCoins : List Rate) (capacityCoins : List Cap)
+    (hquery : D.move state.ans = .constr x xs)
+    (hcoins : roundCoins j = .construction rateCoins capacityCoins)
+    (hcounts : rateCoins.length = (x :: xs).length ∧
+      capacityCoins.length = (x :: xs).length)
+    (hfresh : PrimitivePathFresh state.ro state.primitive iv [] (x :: xs)
+      rateCoins capacityCoins)
+    (hro : state.ro.lookup (x :: xs) = none) :
+    ∃ next,
+      prefixHybridStep D iv roundCoins state j = .ok next ∧
+        next.ans = state.ans ++ [.rate (lastRateCoin rateCoins)] := by
+  obtain ⟨result, hprogram, hrate⟩ :=
+    programConstruction_fresh_final_rate iv state.ro state.primitive
+      (x :: xs) rateCoins capacityCoins (by simp) hfresh hro
+  let next : PrefixHybridState Rate Cap :=
+    ⟨result.ro, result.primitive,
+      state.ans ++ [.rate result.state.1],
+      state.work + (x :: xs).length⟩
+  refine ⟨next, ?_, ?_⟩
+  · unfold prefixHybridStep
+    rw [hquery, hcoins]
+    dsimp only
+    rw [if_pos hcounts, hprogram]
+    rfl
+  · simp [next, hrate]
+
+/-- The fixed work-stream adapter preserves the fresh-path output theorem for
+an exact construction segment. -/
+theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (state : WorkHybridState Rate Cap) (j : Fin q)
+    (x : Rate) (xs : List Rate)
+    (hquery : D.move state.core.ans = .constr x xs)
+    (henough : xs.length + 1 ≤ state.remaining.length)
+    (hfresh : PrimitivePathFresh state.core.ro state.core.primitive iv []
+      (x :: xs)
+      ((state.remaining.take (xs.length + 1)).map Prod.fst)
+      ((state.remaining.take (xs.length + 1)).map Prod.snd))
+    (hro : state.core.ro.lookup (x :: xs) = none) :
+    ∃ next,
+      workHybridStep D iv state j = .ok next ∧
+        next.core.ans = state.core.ans ++
+          [.rate (lastRateCoin
+            ((state.remaining.take (xs.length + 1)).map Prod.fst))] := by
+  have hlength :
+      (state.remaining.take (xs.length + 1)).length = xs.length + 1 := by
+    rw [List.length_take]
+    omega
+  have hcounts :
+      ((state.remaining.take (xs.length + 1)).map Prod.fst).length =
+          (x :: xs).length ∧
+        ((state.remaining.take (xs.length + 1)).map Prod.snd).length =
+          (x :: xs).length := by
+    constructor <;> simp [hlength]
+  obtain ⟨coreNext, hcore, hans⟩ :=
+    prefixHybridStep_constr_of_primitivePathFresh D iv
+      (fun _ => .construction
+        ((state.remaining.take (xs.length + 1)).map Prod.fst)
+        ((state.remaining.take (xs.length + 1)).map Prod.snd))
+      state.core j x xs
+      ((state.remaining.take (xs.length + 1)).map Prod.fst)
+      ((state.remaining.take (xs.length + 1)).map Prod.snd)
+      hquery rfl hcounts hfresh hro
+  refine ⟨⟨coreNext, state.remaining.drop (xs.length + 1)⟩, ?_, hans⟩
+  unfold workHybridStep
+  dsimp only
+  rw [hquery]
+  simp only [SpQuery.primitiveCalls]
+  rw [if_pos hlength]
+  simp only [SpQuery.prefixCoins]
+  rw [hcore]
+
 #check @programPrefixes_some_of_primitivePathFresh
 #check @programPrefixes_fresh_final_rate
 #check @programConstruction_fresh_final_rate
+#check @prefixHybridStep_constr_of_primitivePathFresh
+#check @workHybridStep_constr_of_primitivePathFresh
 
 /-- info: 'Minidregg.Selvage.programPrefixes_some_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -220,6 +308,12 @@ theorem programConstruction_fresh_final_rate
 /-- info: 'Minidregg.Selvage.programConstruction_fresh_final_rate' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms programConstruction_fresh_final_rate
+/-- info: 'Minidregg.Selvage.prefixHybridStep_constr_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms prefixHybridStep_constr_of_primitivePathFresh
+/-- info: 'Minidregg.Selvage.workHybridStep_constr_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms workHybridStep_constr_of_primitivePathFresh
 
 end PrefixFresh
 
