@@ -12,6 +12,12 @@
 - **Kernel landmines** (CyclotomicInertia lane): the CommRing/Field Semiring
   diamond DIVERGES at ZMod p for our primes — state helpers over [Field R].
   Never route `Splits` through X^q−X (kernel normalizes a 2^31+-degree poly).
+- ⚑ **`git commit --only` LEAVES THE INDEX STALE** (found 2026-08-14, a *new
+  route* to the recorded mass-revert hazard). After committing with `--only`,
+  the files still showed `MM` — **the index held pre-`rustfmt` versions, so a
+  bare `git commit` by any lane would have reverted part of the work.**
+  **After an `--only` commit, re-add your own paths** so the index matches
+  what you committed.
 - ⚑ **`--only` gives NO STANDING PROTECTION AGAINST A LATER `--amend`** (found
   2026-08-13, cost: four of another lane's staged deletions swept into a
   commit titled for something else). `--only` protects **the invocation you
