@@ -1,5 +1,14 @@
 # The PoW grind — what 16 bits buy, what they cost, and what to do about the variance
 
+> ⚑ **§3's defect and §6's proposal are FIXED AND LANDED — see `notes/grind-fix.md` (2026-08-14,
+> `11cff8852` / `00b2cf2d5`).** All five grind sites now use the windowed parallel min; the witness
+> is bit-for-bit unchanged (checked against integers recorded here); critical path down 10.6× mean /
+> 11.8× p99 at 12 threads for +12.6% work. Two corrections to this note live there: the `c = 8`
+> "fixed-work, low-variance option" of §6 is **refuted** (8.29× work, constant latency twice the p99
+> of `c = 1/4`), and §6's "variance essentially zero" does not hold at small `c` — the absolute p99
+> falls 11.8× but `p99/mean` barely moves (4.09 → 3.68). The window landed at `c = 1/4`, not §6's
+> `c = 1`.
+
 **Measured 2026-08-13/14.** Companion to `notes/phase-profile.md` §4, which named the phase:
 `query_proof_of_work_bits = 16` is **47,917 Poseidon2 permutations, ~25% of a deployed IR-v2
 prove**, depends on **neither blowup nor trace size**, and drew `0.04 / 8.2 / 10.1 / 31.9 / 40.0 /
