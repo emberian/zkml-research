@@ -209,8 +209,8 @@ theorem workHybridStep_hybrid_error_eq_constructionMismatch {q : Nat}
       rw [if_pos hcounts] at herror
       cases hprogram : programConstruction iv st.core.ro st.core.primitive
           (x :: xs)
-          ((st.remaining.take (xs.length + 1)).map Prod.fst)
-          ((st.remaining.take (xs.length + 1)).map Prod.snd) with
+          ((st.remaining.map Prod.fst).take (xs.length + 1))
+          ((st.remaining.map Prod.snd).take (xs.length + 1)) with
       | none => simpa [hprogram] using herror.symm
       | some result => simp [hprogram] at herror
   | fwd s =>
