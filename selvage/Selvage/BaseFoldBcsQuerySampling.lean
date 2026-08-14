@@ -58,6 +58,31 @@ theorem queryIndexSize_pos (ell : Nat) : 0 < queryIndexSize ell := by
 theorem querySlackSize_pos (ell : Nat) : 0 < querySlackSize ell := by
   simp [querySlackSize]
 
+theorem packedQuerySeed_lt_modulus {ell : Nat} (hell : ell ≤ 28)
+    (slack : Fin (querySlackSize ell))
+    (coordinate : PowerTwoFriLevels ell 1) :
+    slack.val * queryIndexSize ell + coordinate.val + 1 < modulus := by
+  have hfactor := babyBear_nonzero_factorization hell
+  have hslack : slack.val + 1 ≤ querySlackSize ell :=
+    Nat.succ_le_iff.mpr slack.isLt
+  have hcoordLt := coordinate.isLt
+  change coordinate.val < queryIndexSize ell at hcoordLt
+  have hcoord : coordinate.val + 1 ≤ queryIndexSize ell :=
+    Nat.succ_le_iff.mpr hcoordLt
+  have hmul := Nat.mul_le_mul_right (queryIndexSize ell) hslack
+  have hleft :
+      slack.val * queryIndexSize ell + coordinate.val + 1 ≤
+        (slack.val + 1) * queryIndexSize ell := by
+    rw [Nat.add_mul]
+    omega
+  have hmodulus : 0 < modulus := by norm_num [modulus]
+  calc
+    slack.val * queryIndexSize ell + coordinate.val + 1 ≤
+        (slack.val + 1) * queryIndexSize ell := hleft
+    _ ≤ querySlackSize ell * queryIndexSize ell := hmul
+    _ = modulus - 1 := hfactor.symm
+    _ < modulus := by omega
+
 /-- Every nonzero BabyBear element is uniquely a slack coordinate paired with
 one power-of-two BaseFold coordinate. The second projection is literally
 `(x.val - 1) % 2^(ell-1)`. -/
@@ -77,12 +102,8 @@ def acceptedScalarEquiv (ell : Nat) (hell : ell ≤ 28) :
   invFun pair :=
     let raw := pair.1.val * queryIndexSize ell + pair.2.val + 1
     ⟨(raw : F), by
-      have hfactor := babyBear_nonzero_factorization hell
-      have hslack := pair.1.isLt
-      have hcoord := pair.2.isLt
       have hraw : raw < modulus := by
-        dsimp only [raw]
-        omega
+        exact packedQuerySeed_lt_modulus hell pair.1 pair.2
       intro hzero
       have hval := congrArg ZMod.val hzero
       rw [ZMod.val_cast_of_lt hraw, ZMod.val_zero] at hval
@@ -99,21 +120,22 @@ def acceptedScalarEquiv (ell : Nat) (hell : ell ≤ 28) :
       omega
     rw [hrebuild, ZMod.natCast_zmod_val]
   right_inv pair := by
-    have hfactor := babyBear_nonzero_factorization hell
-    have hslack := pair.1.isLt
     have hcoord := pair.2.isLt
+    change pair.2.val < queryIndexSize ell at hcoord
     have hraw :
         pair.1.val * queryIndexSize ell + pair.2.val + 1 < modulus := by
-      omega
+      exact packedQuerySeed_lt_modulus hell pair.1 pair.2
     apply Prod.ext
     · apply Fin.ext
       dsimp only
       rw [ZMod.val_cast_of_lt hraw, Nat.add_sub_cancel,
+        Nat.mul_comm pair.1.val,
         Nat.mul_add_div (queryIndexSize_pos ell), Nat.div_eq_of_lt hcoord,
         Nat.add_zero]
     · apply Fin.ext
       dsimp only
-      rw [ZMod.val_cast_of_lt hraw, Nat.add_sub_cancel, Nat.mul_add_mod,
+      rw [ZMod.val_cast_of_lt hraw, Nat.add_sub_cancel,
+        Nat.mul_comm pair.1.val, Nat.mul_add_mod,
         Nat.mod_eq_of_lt hcoord]
 
 /-- The accepted decoder is the second projection of the exact factorization. -/
@@ -129,20 +151,14 @@ def unbiasedQueryCoordinate {ell : Nat} (hell : ell ≤ 28)
 /-- Conditional on accepting the nonzero field lane, every BaseFold query
 coordinate is exactly uniform. This is equality for every event, not a
 pointwise-bias estimate. -/
+set_option maxHeartbeats 800000 in
 theorem acceptedScalar_coordinate_uniform {ell : Nat} (hell : ell ≤ 28)
     (event : PowerTwoFriLevels ell 1 → Prop) :
     uniformProb {x : F // x ≠ 0}
         (fun x => event (acceptedScalarEquiv ell hell x).2) =
       uniformProb (PowerTwoFriLevels ell 1) event := by
-  calc
-    uniformProb {x : F // x ≠ 0}
-        (fun x => event (acceptedScalarEquiv ell hell x).2) =
-        uniformProb
-          (Fin (querySlackSize ell) × PowerTwoFriLevels ell 1)
-          (fun pair => event pair.2) :=
-      uniformProb_equiv (acceptedScalarEquiv ell hell) _
-    _ = uniformProb (PowerTwoFriLevels ell 1) event :=
-      uniformProb_prod_snd event
+  exact (uniformProb_equiv (acceptedScalarEquiv ell hell)
+    (fun pair => event pair.2)).trans (uniformProb_prod_snd event)
 
 /-! ## Fail-closed BaseFold schedule -/
 
