@@ -20,7 +20,7 @@ import Selvage.QuadraticSumcheck
 
 namespace Minidregg.Selvage
 
-variable {F : Type} [Field F] [Fintype F] [DecidableEq F] {m : ℕ}
+variable {F : Type} [Field F] {m : ℕ}
 
 /-- The second table in BaseFold's product sumcheck: the equality basis at the
 public evaluation point. -/
@@ -34,7 +34,6 @@ noncomputable def basefoldHonest (table : (Fin m → Bool) → F)
 
 /-- The public evaluation claim is exactly the Boolean total walked by the
 BaseFold sumcheck. -/
-omit [Fintype F] [DecidableEq F] in
 theorem basefold_claim_eq_sum (table : (Fin m → Bool) → F) (z : Fin m → F) :
     ∑ b, (table b * basefoldEqTable z b - 0) = mle table z := by
   rw [mle]
@@ -42,13 +41,11 @@ theorem basefold_claim_eq_sum (table : (Fin m → Bool) → F) (z : Fin m → F)
     simp only [basefoldEqTable, sub_zero]
 
 /-- The BaseFold honest family is prefix-measurable. -/
-omit [Fintype F] [DecidableEq F] in
 theorem basefoldHonest_prefixMeasurable (table : (Fin m → Bool) → F)
     (z : Fin m → F) : PrefixMeasurable (basefoldHonest table z) :=
   quadHonest_prefixMeasurable table (basefoldEqTable z) (fun _ => 0)
 
 /-- Every BaseFold sumcheck message has degree at most two. -/
-omit [Fintype F] [DecidableEq F] in
 theorem basefoldHonest_degree (table : (Fin m → Bool) → F) (z : Fin m → F)
     (χ : ℕ → F) (i : ℕ) (hi : i < m) :
     (basefoldHonest table z χ i).degree < ((2 + 1 : ℕ) : WithBot ℕ) :=
@@ -91,7 +88,8 @@ theorem basefold_sumcheck_complete (table : (Fin m → Bool) → F)
 
 /-- The adaptive degree-two soundness bound specialized to the BaseFold claim.
 Only the adversarial prover's prefix/degree obligations remain. -/
-theorem basefold_sumcheck_soundness {table : (Fin m → Bool) → F}
+theorem basefold_sumcheck_soundness [Fintype F] [DecidableEq F]
+    {table : (Fin m → Bool) → F}
     {z : Fin m → F} {prover : (ℕ → F) → ℕ → Polynomial F} {H : F}
     (hpm : PrefixMeasurable prover)
     (hdeg : ∀ (χ : ℕ → F) (i : ℕ), i < m →
@@ -107,7 +105,6 @@ theorem basefold_sumcheck_soundness {table : (Fin m → Bool) → F}
 
 /-- `chalOf` (sumcheck) and `chalExt` (folding tower) are the same padded
 challenge stream.  The braid does not silently sample twice. -/
-omit [Fintype F] [DecidableEq F] in
 theorem chalOf_eq_chalExt (r : Fin m → F) : chalOf r = chalExt r := rfl
 
 /-- ⭐ The algebraic braid: the sumcheck terminal and the RS descent terminal
