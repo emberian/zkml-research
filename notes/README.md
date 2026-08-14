@@ -61,6 +61,7 @@ something it never said.
 - `zkml-landscape.md`, `zkml-integration-architecture.md`, `catgrad-seam.md` — the open position, and where the pillar lives
 - `attestable-calibration.md` — the overhead number is a baseline choice, not a measurement
 - `audit-sampling-prior-art.md`, `audit-theorem-statement.md`, `impl-readiness.md` — the audit game: prior art, the Lean spec, and what is mechanically verified
+- `rank1-gradient-check.md` — a linear layer's gradient is CHECKED, not proved: the MLE of an outer product factors, so no sumcheck round at all; Lean-authored, measured at 4096×4096, and honest that it removes the n² proof but not the n² commitment
 
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its

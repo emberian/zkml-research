@@ -271,6 +271,29 @@ Exit codes captured directly, never through a pipe.
 | `scripts/check-import-boundary.sh` | **exit 0** |
 | `scripts/check-proof-hygiene.sh` | **exit 0** |
 | `grep sorry` on the new Lean | none |
+| `cargo test` from a DETACHED `git archive HEAD` extraction | **exit 0**, same counts |
+
+Landed as `bb78437` in `~/dev/minidregg` — 6 files, 1456 insertions, **0
+deletions**, so no foreign hunks were swept from a tree carrying three other
+lanes' uncommitted work. `prover/src/lib.rs` was staged as a single extracted
+hunk (`git apply --cached`) because another lane's uncommitted `include!` of an
+untracked generated file sits five lines above mine; committing the file
+wholesale would have broken the build at HEAD for everyone.
+
+⚠ **No delta is claimed on the proof-hygiene counter.** It reports "153 guarded
+axiom footprints" before and after, because it counts `#print axioms` at LINE
+START and the repo's idiom is the inline `#guard_msgs (whitespace := lax) in
+#print axioms foo`. The gate itself (which fails on a BARE footprint) passes and
+the new file's pins are real; the printed number simply does not see them. The
+degree-3 lane's log records an amend-cascade that started with exactly this
+statistic being reasoned about instead of read.
+
+⚠ **The Lean side was NOT verified from a detached extraction.** A detached Lean
+build needs a cold `.lake` (mathlib fetch), not worth the wall-clock here. What
+was checked instead: `git diff HEAD` is empty for both Lean paths, so the green
+`lake build Selvage` ran on byte-identical content, and the file imports only
+`Selvage.MultilinearZeroTest`, unmodified at HEAD. That is weaker than a detached
+build and is stated as such.
 
 ---
 
