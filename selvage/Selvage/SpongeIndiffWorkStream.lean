@@ -316,6 +316,9 @@ end SpongeWorkStreamExample
 
 /-- info: 'Minidregg.Selvage.workHybridStep_work_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms workHybridStep_work_exact
+/-- info: 'Minidregg.Selvage.workHybridStep_ok_or_hybrid_of_need_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms workHybridStep_ok_or_hybrid_of_need_le
 /-- info: 'Minidregg.Selvage.SpongeWorkStreamExample.fixed_work_stream_replays' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms SpongeWorkStreamExample.fixed_work_stream_replays

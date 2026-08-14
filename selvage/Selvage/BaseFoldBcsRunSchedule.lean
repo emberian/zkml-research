@@ -683,6 +683,7 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 #check @paddedFullMessageRoutingSafe
 #check @paddedWorkPrefix_succ
 #check @paddedWorkPrefix_final
+#check @paddedWorkHybridRun_classify
 #check @paddedDeferredWork_need_exact
 #check @paddedDeferredWorkRun_exact
 #check @paddedSegmentSwapMove_head
@@ -697,6 +698,9 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkPrefix_final' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedWorkPrefix_final
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridRun_classify' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedWorkHybridRun_classify
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedDeferredWorkRun_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedDeferredWorkRun_exact
