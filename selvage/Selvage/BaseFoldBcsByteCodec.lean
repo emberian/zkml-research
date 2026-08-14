@@ -73,7 +73,7 @@ def encodeField (value : F) : List UInt8 :=
 def decodeField (bytes : List UInt8) : Option F :=
   if bytes.length = 4 then
     let value := Bignum.denoteNat 256 (bytes.map UInt8.toNat)
-    if canonical : value < modulus then some (value : F) else none
+    if value < modulus then some (value : F) else none
   else none
 
 @[simp] theorem encodeField_length (value : F) :
@@ -211,7 +211,7 @@ def encodePaddedMessage (message : List Rate) : List UInt8 :=
   rw [encodePaddedMessage, List.length_flatMap]
   simp only [encodeRate_length, List.map_const', List.sum_replicate,
     padMessage_length]
-  simpa [nsmul_eq_mul, Nat.mul_comm]
+  simp [nsmul_eq_mul, Nat.mul_comm]
 
 #check @decodeField_encodeField
 #check @decodeField_modulus_rejected
