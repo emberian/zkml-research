@@ -233,6 +233,44 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   real object is Poseidon2 over the field-element encoding, at a leaf
   granularity the circuit opens, in the layout the prover reads.
 
+## 5b. Verifiable training (first pieces landed)
+
+- ✅ **The rank-1 gradient check is PROVED and BUILT**
+  (`Selvage/Rank1GradientCheck.lean`, 545 lines, no `sorry`).
+  `mle_outerTable` gives `(δ⊗x)^(r) = δ̂(r_row)·x̂(r_col)` over **any
+  `CommRing`**, from three Mathlib facts. `rank1_sound`: a wrong `G` survives
+  with probability **≤ (mᵢ+mⱼ)/|F|**, by the defect argument. **The
+  two-variable case cost zero extra work** — splitting `r` into halves is a
+  fact about the check, not about the measure.
+- ⚑ **The sharp tooth is FREE**: `rank1_sound` carries **no rank hypothesis**,
+  so *every other rank-1 matrix* is priced at the same bound —
+  `rank1_refuses_other_outer_products`. **The "certifies some outer product"
+  vacuity is excluded by theorem, not by testing.**
+- **`rankK_sound`**: the batch shape costs K verifier multiplications and
+  **the bound does not grow with K**.
+- **`sgd_step_sound`** (five lines): **the whole SGD step for a linear layer
+  is three openings at one common point, zero rounds — and the gradient is
+  never committed.**
+- **Measured at 4096×4096 (m=24)**: **2.5×10⁴ ops for the check vs 1.7×10⁹
+  for the circuit ≈ 7×10⁴×**, `O(2^{m/2})` vs `O(2^m)`.
+- ⚠ **THE HONEST HALF, and it is the useful finding**: the check removes the
+  n² **proof**, not the n² **commitment**. The step still commits 2^24 felts
+  for `W'` (263 ms hash proxy vs 116 µs for δ and x). **Once the gradient
+  proof is 10⁴× cheaper, the commitment IS the step** — which is direct
+  evidence for the low-rank-update route (`DARK-TRAINING.md` §3), where the
+  committed object per step is 2rd instead of d².
+- ⚠ **And the bound stated plainly**: `24/2^31 ≈ 2^-26.1` **is not a security
+  level.** The fix is the **field** (degree-4 extension ≈ 116 bits), never the
+  layer size — the bound is logarithmic in n.
+- ⚠ Teeth limit the lane found itself: **the counting teeth cannot see a
+  transposed row/column convention** (the wrong gradient's accepting set is
+  symmetric). An asymmetric accept/refuse pair is the real index-order
+  detector and is carried on both sides.
+- **Not covered**: δ is not verified to be the correct backpropagated error
+  (that is the chain, and needs a real sumcheck); the nonlinearity's
+  derivative; conv (a correlation, unexamined); the data; and exactness over a
+  million accumulating steps.
+
 ## 6. Method
 
 - **No absence claim without**: grep `~/paperbin` first (now full-text
