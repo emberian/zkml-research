@@ -195,7 +195,7 @@ theorem workHybridStep_hybrid_error_eq_constructionMismatch {q : Nat}
   cases hquery : D.move st.core.ans with
   | constr x xs =>
       rw [hquery] at hlength herror
-      simp only [SpQuery.primitiveCalls] at hlength
+      simp only [SpQuery.primitiveCalls] at hlength herror
       simp only [SpQuery.prefixCoins, prefixHybridStep] at herror
       rw [hquery] at herror
       dsimp only at herror
@@ -204,7 +204,8 @@ theorem workHybridStep_hybrid_error_eq_constructionMismatch {q : Nat}
                 (x :: xs).length ∧
             ((st.remaining.take (xs.length + 1)).map Prod.snd).length =
                 (x :: xs).length := by
-        simp [hlength]
+        constructor <;> simpa only [List.length_map, List.length_cons] using
+          hlength
       rw [if_pos hcounts] at herror
       split at herror
       · contradiction
