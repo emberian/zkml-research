@@ -128,7 +128,8 @@ theorem paddedChallengeMessage_eq_of_samePrefix {m queryCount : Nat}
 noncomputable def paddedDerivedChallengeRate {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
     (j : Fin m) : Rate :=
-  sponge permutePair (0, 0) (paddedChallengeMessage statement receipt j)
+  sponge BaseFoldPoseidon2Rom.permutePair (0, 0)
+    (paddedChallengeMessage statement receipt j)
 
 noncomputable def paddedDerivedChallenge {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
@@ -138,7 +139,8 @@ noncomputable def paddedDerivedChallenge {m queryCount : Nat}
 noncomputable def paddedDerivedQuerySeed {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
     (a : Fin queryCount) : Digest :=
-  sponge permutePair (0, 0) (paddedQueryMessage statement receipt a)
+  sponge BaseFoldPoseidon2Rom.permutePair (0, 0)
+    (paddedQueryMessage statement receipt a)
 
 /-- Candidate draws are checked against the padded profile, never silently
 against the unpadded profile. -/
@@ -149,7 +151,7 @@ def PaddedDrawsExact {m queryCount : Nat}
 
 @[simp] theorem padded_challenge_realAnswer_exact {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount) (j : Fin m) :
-    realAnswer permutePair id (0, 0)
+    realAnswer BaseFoldPoseidon2Rom.permutePair id (0, 0)
         (paddedChallengeConstructionQuery statement receipt j) =
       .rate (paddedDerivedChallengeRate statement receipt j) := by
   rfl
@@ -157,7 +159,7 @@ def PaddedDrawsExact {m queryCount : Nat}
 @[simp] theorem padded_query_realAnswer_exact {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
     (a : Fin queryCount) :
-    realAnswer permutePair id (0, 0)
+    realAnswer BaseFoldPoseidon2Rom.permutePair id (0, 0)
         (paddedQueryConstructionQuery statement receipt a) =
       .rate (paddedDerivedQuerySeed statement receipt a) := by
   rfl
@@ -219,13 +221,19 @@ theorem paddedTranscriptPrimitiveWork_eq_add_draws {m queryCount : Nat}
       (List.ofFn fun j : Fin m =>
         (challengeMessage statement receipt j).length).map
           (fun value => value + 1) by
-        simp only [List.map_ofFn, Function.comp_apply],
+        rw [List.map_ofFn]
+        apply List.ofFn_inj.mpr
+        funext j
+        rfl,
     show (List.ofFn fun a : Fin queryCount =>
         (queryMessage statement receipt a).length + 1) =
       (List.ofFn fun a : Fin queryCount =>
         (queryMessage statement receipt a).length).map
           (fun value => value + 1) by
-        simp only [List.map_ofFn, Function.comp_apply],
+        rw [List.map_ofFn]
+        apply List.ofFn_inj.mpr
+        funext a
+        rfl,
     sum_map_add_one, sum_map_add_one]
   simp only [List.length_ofFn]
   omega
