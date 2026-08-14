@@ -62,8 +62,9 @@ def MleEvalClaim.Holds [Field F] (S : BindingCommitment Root F ι Op)
 
 section Binding
 
-variable [Field F] [DecidableEq F] [Fintype ι] [DecidableEq ι]
+variable [Field F] [DecidableEq F] [Fintype ι]
 
+omit [DecidableEq F] [Fintype ι] in
 /-- The honest claim is true by construction. -/
 theorem MleEvalClaim.holds_of_commit (S : BindingCommitment Root F ι Op)
     (dom : ι ↪ F) (table : (Fin m → Bool) → F) (pt : Fin m → F) :
