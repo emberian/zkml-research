@@ -126,4 +126,4 @@ import Selvage.BaseFoldBcsQuerySamplingJoint -- exact whole-batch factorization:
 import Selvage.BaseFoldBcsStrictRomLedger -- the exact receipt work-indexed sponge advantage and fail-closed q/p query-seed rejection term inhabit one explicit ROM/sampling ledger
 import Selvage.BaseFoldBcsPadding -- a separate injectively padded rate-block transcript profile, with exactly one additional primitive call per public draw
 import Selvage.BaseFoldBcsByteCodec -- strict four-byte BabyBear words, a lawful lane-major 32-byte rate codec, and a lawful complete padded-message codec
-import Selvage.BaseFoldBcsRunSchedule -- a fixed receipt's padded public moves are answer-independent and partition the exact ROM work ledger into static nonempty segments
+import Selvage.BaseFoldBcsRunSchedule -- fixed padded receipt: static exact work partition, total deferred run, and a uniform whole-vector segment reindexing program
