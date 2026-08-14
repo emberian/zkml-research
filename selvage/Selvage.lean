@@ -116,3 +116,4 @@ import Selvage.ZkmlSuiteRegistry -- exact source/payload/checker identity for th
 import Selvage.BabyBearExt4 -- the deployed X^4-11 power-basis challenge carrier is a proved field, not an abstract same-cardinality stand-in
 import Selvage.BinaryMerkle -- executable perfect-tree openings; equivocation reduces to an exact leaf-or-node collision
 import Selvage.BaseFoldBinaryMerkle -- the raw BaseFold commitment event becomes a concrete binary-Merkle collision
+import Selvage.BaseFoldPoseidon2 -- source-derived BabyBear Poseidon2 plus the separately named Ext4 BaseFold leaf profile
