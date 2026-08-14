@@ -105,9 +105,9 @@ def scTruthAfter (S : F) (honest : (ℕ → F) → ℕ → Polynomial F)
     (rs : List (Polynomial F × F)) : F :=
   scChain S (honest (scSchedule rs)) (scSchedule rs) rs.length
 
+omit [Fintype F] [DecidableEq F] in
 /-- Appending a round evaluates the honest polynomial selected by the earlier
 challenge prefix at the new challenge. -/
-omit [Fintype F] [DecidableEq F] in
 theorem scTruthAfter_append_single {S : F}
     {honest : (ℕ → F) → ℕ → Polynomial F}
     (hpm : PrefixMeasurable honest) (rs : List (Polynomial F × F))
@@ -120,9 +120,9 @@ theorem scTruthAfter_append_single {S : F}
     (fun j hj => scSchedule_append_lt rs (g, r) hj)
   rw [hh]
 
+omit [Fintype F] [DecidableEq F] in
 /-- Prefix-measurability transports the next honest polynomial from a list
 schedule to any total challenge stream agreeing below the next round. -/
-omit [Fintype F] [DecidableEq F] in
 theorem scHonestAt_eq_of_prefix
     {honest : (ℕ → F) → ℕ → Polynomial F}
     (hpm : PrefixMeasurable honest) (rs : List (Polynomial F × F))
@@ -130,9 +130,9 @@ theorem scHonestAt_eq_of_prefix
     scHonestAt honest rs = honest χ rs.length := by
   exact hpm (scSchedule rs) χ rs.length hpre
 
+omit [Fintype F] [DecidableEq F] in
 /-- The truth after a list prefix is unchanged when both the honest prover and
 challenge stream are transported to an agreeing total schedule. -/
-omit [Fintype F] [DecidableEq F] in
 theorem scTruthAfter_eq_of_prefix {S : F}
     {honest : (ℕ → F) → ℕ → Polynomial F}
     (hpm : PrefixMeasurable honest) (rs : List (Polynomial F × F))

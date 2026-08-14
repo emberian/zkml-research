@@ -35,9 +35,9 @@ noncomputable def basefoldSumcheckReduction (hm : 0 < m)
     (table : (Fin m → Bool) → F) (z : Fin m → F) : Reduction :=
   sumcheckReduction m 2 hm (mle table z) (basefoldHonest table z)
 
+omit [Fintype F] [DecidableEq F] in
 /-- A finite RBR transcript prefix, restricted to `Fin m`, induces the same
 zero-padded schedule expected by the landed BaseFold sumcheck theorems. -/
-omit [Fintype F] [DecidableEq F] in
 def basefoldPrefixChallenges (rs : List (Polynomial F × F)) : Fin m → F :=
   fun j => scSchedule rs j
 
@@ -51,18 +51,18 @@ theorem scSchedule_eq_chalOf_prefix (rs : List (Polynomial F × F))
   rw [chalOf, dif_pos (lt_trans hj h)]
   rfl
 
+omit [Fintype F] [DecidableEq F] in
 /-- The landed BaseFold family satisfies the list-prefix degree obligation of
 the generic RBR construction. -/
-omit [Fintype F] [DecidableEq F] in
 theorem basefoldRbr_honest_degree (table : (Fin m → Bool) → F)
     (z : Fin m → F) (rs : List (Polynomial F × F)) (h : rs.length < m) :
     (scHonestAt (basefoldHonest table z) rs).degree <
       ((2 + 1 : ℕ) : WithBot ℕ) :=
   basefoldHonest_degree table z (scSchedule rs) rs.length h
 
+omit [Fintype F] [DecidableEq F] in
 /-- The landed BaseFold Boolean-sum theorem, transported from its padded
 `Fin m` challenge tuple to RBR's finite transcript prefix. -/
-omit [Fintype F] [DecidableEq F] in
 theorem basefoldRbr_honest_check (table : (Fin m → Bool) → F)
     (z : Fin m → F) (rs : List (Polynomial F × F)) (h : rs.length < m) :
     (scHonestAt (basefoldHonest table z) rs).eval 0 +
@@ -86,8 +86,8 @@ noncomputable def basefoldSumcheckRbr (hm : 0 < m)
     (basefoldRbr_honest_degree table z)
     (basefoldRbr_honest_check table z)
 
-/-- The source relation is exactly the public BaseFold evaluation claim. -/
 omit [DecidableEq F] in
+/-- The source relation is exactly the public BaseFold evaluation claim. -/
 theorem basefoldSumcheck_source_iff (hm : 0 < m)
     (table : (Fin m → Bool) → F) (z : Fin m → F) (H : F)
     (y : Fin (basefoldSumcheckReduction hm table z).n →
