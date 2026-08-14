@@ -112,10 +112,8 @@ noncomputable def extBlock (value : E) : Rate := leafBlock value
 
 /-- Interpret the first four output lanes in that same power basis. -/
 noncomputable def rateChallenge (block : Rate) : E :=
-  coefficients.symm fun i => block ⟨i.val, by
-    have hi := i.isLt
-    rw [extensionPolynomial_natDegree] at hi
-    omega⟩
+  coefficients.symm fun i =>
+    block (Fin.castAdd 4 (Fin.cast extensionPolynomial_natDegree i))
 
 @[simp] theorem rateChallenge_extBlock (value : E) :
     rateChallenge (extBlock value) = value := by
@@ -287,8 +285,10 @@ noncomputable def transcriptPrimitiveWork {m queryCount : Nat}
 theorem transcriptPrimitiveWork_exact {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount) :
     transcriptPrimitiveWork statement receipt =
-      (∑ j : Fin m, (challengeMessage statement receipt j).length) +
-      ∑ a : Fin queryCount, (queryMessage statement receipt a).length := by
+      (List.ofFn fun j : Fin m =>
+        (challengeMessage statement receipt j).length).sum +
+      (List.ofFn fun a : Fin queryCount =>
+        (queryMessage statement receipt a).length).sum := by
   simp [transcriptPrimitiveWork, constructionQueries]
 
 /-! ## Openings retained after query derivation -/
