@@ -959,6 +959,7 @@ theorem paddedRateSegment_lastRateCoin {m queryCount : Nat}
     change paddedWorkPrefix statement receipt round + (work - 1) =
       paddedWorkPrefix statement receipt (round + 1) - 1
     rw [hprefixStep]
+    omega
   have htake : remaining.take work =
       remaining.take (work - 1) ++
         [remaining.get ⟨work - 1, hindex⟩] := by
@@ -969,9 +970,11 @@ theorem paddedRateSegment_lastRateCoin {m queryCount : Nat}
       _ = remaining.take (work - 1) ++
           [remaining.get ⟨work - 1, hindex⟩] := by
         rw [List.take_add_one, List.getElem?_eq_getElem hindex]
+        simp
   change lastRateCoin ((remaining.take work).map Prod.fst) = _
   rw [htake, List.map_append]
-  simp [hget]
+  simp only [List.map_singleton, lastRateCoin_append_singleton]
+  exact congrArg Prod.fst hget
 
 /-- One good eager BaseFold construction round returns exactly its static
 segment-last rate coin.  The premise permits shared proper RO prefixes but
@@ -1017,11 +1020,19 @@ theorem paddedWorkHybridStep_constr_fresh_semantics {m queryCount : Nat}
   have hsize : xs.length + 1 =
       paddedRoundPrimitiveWork statement receipt round := by
     simp [paddedRoundPrimitiveWork, hquery]
+  have hsize' : xs.length + 1 =
+      paddedRoundPrimitiveWork statement receipt
+        ⟨round, round.isLt⟩ := by
+    convert hsize using 1
   have henough : xs.length + 1 ≤ state.remaining.length := by
-    rw [hremaining, List.length_drop, List.length_ofFn, hsize]
+    rw [hremaining, List.length_drop, List.length_ofFn, hsize']
     have hprefixLe :=
       paddedWorkPrefix_le_final statement receipt (round + 1)
-    have hprefixStep :=
+    have hprefixStep :
+        paddedWorkPrefix statement receipt (round + 1) =
+          paddedWorkPrefix statement receipt round +
+            paddedRoundPrimitiveWork statement receipt
+              ⟨round, round.isLt⟩ :=
       paddedWorkPrefix_succ statement receipt round round.isLt
     omega
   have hpath' : PrimitivePathFresh state.core.ro state.core.primitive
