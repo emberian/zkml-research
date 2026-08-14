@@ -128,3 +128,4 @@ import Selvage.BaseFoldBcsStrictRomLedger -- the exact receipt work-indexed spon
 import Selvage.BaseFoldBcsPadding -- a separate injectively padded rate-block transcript profile, with exactly one additional primitive call per public draw
 import Selvage.BaseFoldBcsByteCodec -- strict four-byte BabyBear words, a lawful lane-major 32-byte rate codec, and a lawful complete padded-message codec
 import Selvage.BaseFoldBcsRunSchedule -- fixed padded receipt: static exact work partition, total deferred run, and a uniform whole-vector segment reindexing program
+import Selvage.LigeritoInterleaved -- Ligerito (BinarySpartan's PCS) stated: the interleaved code C^m with DG24 column distance, proved EQUAL to WHIR correlated agreement transposed; both error-bound errata named and corrected; DG24 Thm 3.1 / Def 2.3 and the Ligerito guarantees left as obligation Props [LIGERITO-interleaved]
