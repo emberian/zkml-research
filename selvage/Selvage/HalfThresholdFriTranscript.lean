@@ -476,10 +476,12 @@ theorem spike_allOpened_at_three :
   intro j hj k
   have hj0 : j = 0 := by omega
   subst j
-  change ∃ o, OpenedFriQuery (idealSchemes 0) (idealSchemes 1) data0
+  change ∃ o, OpenedFriQuery (idealSchemes 0).toOpeningScheme
+    (idealSchemes 1).toOpeningScheme data0
     ((idealSchemes 0).commit spikeWord)
     ((idealSchemes 1).commit (fold data0 spikeWord 3)) 3 k o
-  exact openedFriQuery_honest (idealSchemes 0) (idealSchemes 1)
+  exact openedFriQuery_honest (idealSchemes 0).toOpeningScheme
+    (idealSchemes 1).toOpeningScheme
     data0 spikeWord 3 k
 
 /-- The committed transcript ACCEPTS at challenge `3`. -/
