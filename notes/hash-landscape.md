@@ -432,13 +432,93 @@ staircase, not a line**, and the first step is free.
 
 ⏳ *The full cryptanalysis sweep is in flight.* What is already ours and checked:
 
-- **Poseidon2 at our parameters carries a +286-bit margin.** The 2026/306
-  round-skipping attack was audited to **no action needed**: our BabyBear
-  t=16/t=24 instances cannot be reached even if every skippable round were free
-  (`notes/poseidon2-audit-verdict.md`). ⚑ **The margin halves at α=3** — which is
-  exactly the KoalaBear migration's S-box — so the 1.82× in-circuit win at
-  KoalaBear is **partly bought with security margin**, and that trade is not
-  visible in any cost table.
+### 🔴 FIRST: our own "+286 bits" is not sourceable, and the number is wrong
+
+`notes/poseidon2-audit-verdict.md` and `hash-verdict.md` both carry **"+286-bit
+margin at α=7"**. A targeted sweep of eprint **2019/458, 2023/323, 2024/347,
+2025/259, 2025/954, 2025/1893, 2025/2040, 2026/306, 2026/1271**, the Khovratovich
+SPRING2026 deck, the 2026 bounty spec, `~/paperbin` full text, and four web queries
+found **no `286` anywhere except bibliography page ranges and digits inside round
+constants.**
+
+⚑ **And the deeper problem: neither Poseidon nor Poseidon2 EVER states a security
+margin in bits, at any α.** The published margin is a round count, and it is
+explicitly arbitrary — eprint 2019/458 §3, verbatim: *"we **arbitrarily** decided
+to add: two more rounds with full S-Box layers (+2 R_F); 7.5% more rounds with
+partial S-Box layers (+7.5% R_P)."* ⚠ And Poseidon2 §7.3 **misstates even that** as
+12.5%; the co-designers correct it to 7.5% in 2025/1893 footnote 11.
+
+**What is derivable** (from 2026/306 §5.3's own formulas at the designers'
+conservative ω=2, computed independently and confirmed by a second sweep):
+
+| parameter set | attack | complexity | **margin over 128** |
+|---|---|---|---:|
+| **α=7**, R_P=15 | collision | 2^331.3 | **+203.3** |
+| α=7, R_P=15 | sponge preimage | 2^376.2 | +248.2 |
+| **α=3**, R_P=23 (Plonky3 KoalaBear) | collision | 2^234.6 | **+106.6** |
+| α=3, R_P=23 | sponge preimage | 2^237.7 | +109.7 |
+
+> **The "halving" is RIGHT (ratio 1.91–2.26). The magnitude is not: it is ≈ +203
+> (collision) or +248 (preimage), never +286.** Neither figure is *printed*
+> anywhere; both are derived. ⚑ **Our notes state a derived number as if it were
+> published, and got it wrong by 40–80 bits. Fix the source notes.**
+
+### ⚑⚑ AND THE α COST/SECURITY TRADE INVERTS — my draft had it backwards
+
+I wrote that KoalaBear's 1.82× in-circuit win is "partly bought with security
+margin." **Held at equal cost, that is false, and the paper that exists to answer
+this question says the opposite.**
+
+**eprint 2025/1920, *ALFOMs and the Moirai*** (Boeuf & Perrin, Inria, Nov 2025) —
+the only rigorous framework for security-per-constraint — derives, as R_P→∞:
+
+`η_R1CS(α) → log₂(α)/ℓ(α)` and `η_AIR(α) → log₂(α)/α`
+
+| α | η_R1CS | η_AIR | AIR, relative |
+|---|---:|---:|---:|
+| **3** | **0.792** | **0.528** | **1.00** |
+| 5 | 0.774 | 0.464 | 0.88 |
+| 7 | 0.702 | 0.401 | **0.76** |
+
+**Monotonically decreasing in α, in both arithmetizations. α=3 delivers 32% more
+security per AIR constraint than α=7.** At equal security, α=5 costs 8–19% more in
+R1CS and 22–33% more in AIR than α=3. The round count over-compensates: KoalaBear
+d=3 at t=16 is 28 rounds / **296 mults**; BabyBear d=7 is 21 rounds / **564 mults**
+— **−25% rounds, +90% multiplications.**
+
+⚑ **And 2025/954 (a Poseidon co-designer), Observation 3:** *"The number of rounds
+needed to resist the FW-GB w/ subspace attack is **almost the same across all
+considered α ∈ {3,6,7}**… the number of linearizable rounds (i.e. t−2) dominates."*
+**Against the attack that actually dominates at small fields, α buys nothing — the
+attack is governed by state width `t`, not α.**
+
+> ### **So α=3 is the efficiency-adjusted OPTIMUM, not a compromise. My "bought with margin" was wrong.**
+
+⚠ **The honest two-sided version.** What d=3 *does* lose is **observed** margin, and
+that loss is real: the 2026 bounty frontier against Poseidon1/KoalaBear/d=3 moved
+the zero-test record **R_P 6 → 12 in under three months** (2026-06-03 → 2026-07-27)
+and CICO 6 → 10, while the 2025 d=5/d=7 targets went **entirely unclaimed ($40K
+left on the table)**. **Efficiency-adjusted security favors α=3; measured
+adversarial progress favors α=7.** Those are different claims and both are true.
+⚠ And **it is moot for us**: BabyBear *forces* α=7 (§1a). α=3 is a KoalaBear
+migration, not a knob.
+
+### The round-skipping attack itself
+
+- **2026/306 (Merz & Rodríguez García)** exploits the **non-MDS internal matrix**
+  `Mε = P_{t/4} ⊗ M4`, chosen for circuit efficiency; its branch number `b < t+1`
+  creates invariant unconstrained subspaces. Speed-up **2^106** on one recommended
+  128-bit set. **First algebraic preimage attack easier than the corresponding
+  CICO problem**; first collision attack outperforming its preimage counterpart.
+- **Authors' own verdict**: *"due to the algebraic security margin this does not
+  mean the primitive falls short of its claimed security level"*, and *"the
+  complexity of our attacks surpasses 2^128 whenever α ≥ 3."*
+- ⚠ **The disclosure already moved a spec**: *"the number of external rounds in
+  [Poseidon2b] was increased after disclosing a preliminary report of our findings
+  to Ethereum's Poseidon initiative."*
+- ⚑ **CICO is measurably the wrong metric, and the bounty still measures it.**
+  2026/306 Table 1: at α=7, ω=2, the attack gains **39.3 bits on CICO but 67.4 on
+  3-to-1 preimage.** Priority for the phenomenon is **2025/954** on Neptune.
 - ⚑ **A free fix that rides a flag day**: 2026/306 attacks Poseidon2's non-MDS
   internal linear layer and **our deployed shape is the attacked one**. The fix
   (transpose to `M̄_ε = M₄ ⊗ P_{t/4}`) is free, same fast matmul, and **not
