@@ -1427,6 +1427,56 @@ def PaddedEagerLastRateRun {m queryCount : Nat}
         ((state.remaining.take
           (paddedRoundPrimitiveWork statement receipt round)).map Prod.snd)
 
+/-- Replay-compatible structural event to be priced.  Proper-prefix edges may
+replay consistently; the current construction's terminal edge must be fresh. -/
+def PaddedEagerTerminalFreshRun {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) : Prop :=
+  ∀ (round : Fin (m + queryCount)) (state : WorkHybridState Rate Cap),
+    paddedWorkHybridStateNat statement receipt verdict coins round
+        (Nat.le_of_lt round.isLt) = .ok state →
+      TerminalPrimitiveFreshTo
+        (lastRateCoin ((state.remaining.take
+          (paddedRoundPrimitiveWork statement receipt round)).map Prod.fst))
+        state.core.ro state.core.primitive (0, 0) []
+        (paddedPublicMessageSchedule statement receipt round)
+        ((state.remaining.take
+          (paddedRoundPrimitiveWork statement receipt round)).map Prod.fst)
+        ((state.remaining.take
+          (paddedRoundPrimitiveWork statement receipt round)).map Prod.snd)
+
+/-- Prefix-free routing supplies full-message RO freshness, so the structural
+terminal-fresh event implies the exact last-rate event. -/
+theorem paddedEagerLastRateRun_of_terminalFresh
+    {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hsafe : PaddedFullMessageRoutingSafe statement receipt)
+    (hterminal : PaddedEagerTerminalFreshRun statement receipt verdict coins) :
+    PaddedEagerLastRateRun statement receipt verdict coins := by
+  intro round state hstate
+  have hro := (paddedWorkHybridStateNat_success_routing statement receipt
+    verdict coins hsafe (Nat.le_of_lt round.isLt) hstate).2 round
+      (Nat.le_refl _)
+  have hnonempty :
+      paddedPublicMessageSchedule statement receipt round ≠ [] := by
+    obtain ⟨x, xs, _, hmessage⟩ :=
+      paddedConstructionQuerySchedule_is_constr statement receipt round
+    rw [hmessage]
+    simp
+  exact constructionReturnsLastRate_of_terminalPrimitiveFresh
+    (0, 0) state.core.ro state.core.primitive
+    (paddedPublicMessageSchedule statement receipt round)
+    ((state.remaining.take
+      (paddedRoundPrimitiveWork statement receipt round)).map Prod.fst)
+    ((state.remaining.take
+      (paddedRoundPrimitiveWork statement receipt round)).map Prod.snd)
+    hnonempty (hterminal round state hstate) hro
+
 /-- Strong all-edge-fresh witness retained for compatibility.  It is
 sufficient but not the final priced event because ordinary causal messages
 may consistently replay shared proper-prefix edges. -/
@@ -1763,6 +1813,29 @@ theorem paddedEagerDeferredRun_lastRate_agreement {m queryCount : Nat}
   refine ⟨eager, deferred, heager, hdeferred, ?_⟩
   rw [heagerAnswers, hdeferredAnswers]
 
+/-- Structural replay-compatible coupling: prefix-free routing plus fresh
+terminal primitive edges yields equal complete eager/deferred transcripts. -/
+theorem paddedEagerDeferredRun_terminalFresh_agreement
+    {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hsafe : PaddedFullMessageRoutingSafe statement receipt)
+    (hterminal : PaddedEagerTerminalFreshRun statement receipt verdict coins) :
+    ∃ eager deferred,
+      workHybridRun
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) coins = .ok eager ∧
+        deferredWorkRun
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) (paddedSegmentReindex statement receipt coins) =
+            .ok deferred ∧
+        eager.core.ans = deferred.core.ans :=
+  paddedEagerDeferredRun_lastRate_agreement statement receipt verdict coins
+    hsafe (paddedEagerLastRateRun_of_terminalFresh statement receipt verdict
+      coins hsafe hterminal)
+
 /-- Compatibility wrapper for the stronger all-edge-fresh witness. -/
 theorem paddedEagerDeferredRun_fresh_agreement {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
@@ -1832,6 +1905,8 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 #check @paddedWorkHybridStep_constr_lastRate_semantics
 #check @paddedWorkHybridStateNat_success_routing
 #check @PaddedEagerLastRateRun
+#check @PaddedEagerTerminalFreshRun
+#check @paddedEagerLastRateRun_of_terminalFresh
 #check @PaddedEagerPrimitivePathFreshRun
 #check @PaddedEagerFreshRun
 #check @paddedEagerFreshRun_of_primitivePathFresh
@@ -1851,6 +1926,7 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 #check @paddedSegmentHeadAnswerSchedule_reindex
 #check @paddedDeferredWorkRun_reindexed_semantics
 #check @paddedEagerDeferredRun_lastRate_agreement
+#check @paddedEagerDeferredRun_terminalFresh_agreement
 #check @paddedEagerDeferredRun_fresh_agreement
 #check @paddedEagerDeferredRun_primitivePathFresh_agreement
 #check @uniformProb_paddedSegmentReindex
@@ -1876,6 +1952,9 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridStateNat_success_routing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedWorkHybridStateNat_success_routing
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedEagerLastRateRun_of_terminalFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedEagerLastRateRun_of_terminalFresh
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridStateNat_lastRate_semantics' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedWorkHybridStateNat_lastRate_semantics
@@ -1894,6 +1973,9 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedEagerDeferredRun_lastRate_agreement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedEagerDeferredRun_lastRate_agreement
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedEagerDeferredRun_terminalFresh_agreement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedEagerDeferredRun_terminalFresh_agreement
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedEagerDeferredRun_primitivePathFresh_agreement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedEagerDeferredRun_primitivePathFresh_agreement
