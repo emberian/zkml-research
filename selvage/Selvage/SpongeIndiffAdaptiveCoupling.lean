@@ -132,6 +132,7 @@ theorem prefixMeasurable_swap_stable {work boundary : Nat}
     intro equal
     subst j
     omega
+  change coins ((Equiv.swap i j) k) = coins k
   rw [Equiv.swap_apply_of_ne_of_ne hki hkj]
 
 /-- A prefix decision may therefore guard a swap wholly in the unobserved
@@ -242,12 +243,16 @@ def fixedTailEvent (coins : Fin 3 → Bool × Bool) : Prop :=
 theorem adaptiveTailEvent_reindex (coins : Fin 3 → Bool × Bool) :
     adaptiveTailEvent (tailSwap.reindex coins) ↔ fixedTailEvent coins := by
   by_cases hguard : earlyGuard coins
-  · simp [GuardedInvolution.reindex, GuardedInvolution.apply, tailSwap,
-      guardedWorkReindex, hguard, earlyGuard, adaptiveTailEvent,
-      fixedTailEvent, permuteWorkCoins, tailSwapPermutation, tailSwapIndex]
-  · simp [GuardedInvolution.reindex, GuardedInvolution.apply, tailSwap,
-      guardedWorkReindex, hguard, earlyGuard, adaptiveTailEvent,
-      fixedTailEvent]
+  · change adaptiveTailEvent (tailSwap.apply coins) ↔ fixedTailEvent coins
+    rw [show tailSwap.apply coins =
+        permuteWorkCoins tailSwapPermutation coins by
+      simp [GuardedInvolution.apply, tailSwap, guardedWorkReindex, hguard]]
+    simp [adaptiveTailEvent, fixedTailEvent, permuteWorkCoins,
+      tailSwapPermutation, tailSwapIndex, earlyGuard] at hguard ⊢
+  · change adaptiveTailEvent (tailSwap.apply coins) ↔ fixedTailEvent coins
+    rw [show tailSwap.apply coins = coins by
+      simp [GuardedInvolution.apply, tailSwap, guardedWorkReindex, hguard]]
+    simp [adaptiveTailEvent, fixedTailEvent, earlyGuard] at hguard ⊢
 
 /-- A prefix-dependent choice of which later coin to reveal has exactly the
 same probability as reading a fixed later coordinate.  The proof is a global
