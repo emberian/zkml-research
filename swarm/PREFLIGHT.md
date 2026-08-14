@@ -68,6 +68,14 @@
   Lean archive is missing.
 - **zsh**: `for f in $VAR` does not word-split — use xargs. Backticks in
   double-quoted commit messages get command-substituted — `commit -F file`.
+- ⚑ **THE FULL EPRINT MIRROR IS AT `~/dev/gh/forks/IACR-eprint-mirror/`** —
+  complete archive as PDFs, 1996 → present, **2026 running to 1053+**, with a
+  resumable `update.py`. ⚠ **PDFs only, no `.txt` sidecars** — `pdftotext` what
+  you need. **The scratchpad full-text cache (`.../scratchpad/ft/`) stops at
+  2026/777**, so every "absent from the corpus" claim made against that cache
+  is missing ~276 recent 2026 papers. **Use the mirror for anything after 777,
+  and `~/paperbin` first for anything already extracted (all 1,218 PDFs have
+  full text).**
 - ⚑ **CORPUS BLINDNESS — the biggest instrument failure so far.** The IACR
   mirror is **cryptology papers only, and not even all of them.** It cannot
   see: arXiv (cs.LG/CL/PL/LO/AR/DC — where ML systems, formal methods and
