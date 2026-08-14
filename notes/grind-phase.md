@@ -5,12 +5,35 @@
 prove**, depends on **neither blowup nor trace size**, and drew `0.04 / 8.2 / 10.1 / 31.9 / 40.0 /
 40.8 ms` across one parity ladder — a spread that manufactured a false optimum.
 
+**The four answers, up front.**
+
+1. **The 16 grind bits are 46% of the deployed UDR query column** — nearly half of the only
+   *unconditionally proven* query-phase soundness the shipped batch has — and they cost **17 queries
+   at UDR, 6 at JBR, 3 at the withdrawn CBR**. Two-sided theorems, §1.
+2. **The cost's p99 is 53 ms against a mean of 12.8 and a whole-prove budget of 69**, measured
+   exactly with no clock, §2.
+3. ⚑ **The grind has no parallelism at all.** Its critical path is *identical* at 1 thread and 12
+   (20,766 batches, scale 1.00) while burning 5.9× the total work — because our own byte-determinism
+   fix swapped `find_map_any` for `find_map_first`, and a cost verdict in the tree still describes
+   the old one. §3.
+4. **Keep `pow = 16` and fix the schedule.** The closed-form optimum lands at **15.97** at the
+   weighting dregg actually uses; the fix is a windowed parallel `min` that returns byte-for-byte the
+   same witness, is 7.5× on the critical path measured, and can be made literally fixed-work. §5–§6.
+
 Instruments:
-* `breadstuffs/circuit/tests/grind_phase_measure.rs` (§G1–§G5), new.
-* `minidregg/Assurance/TwoRegimeQueryBudget.lean` §7, new — the exchange rate as named two-sided
-  theorems over exact ℚ, kernel-checked.
+* `breadstuffs/circuit/tests/grind_phase_measure.rs` (§G1–§G5), new — landed `38167d522`. All five
+  ran; the epistemic status of every column is stated where it appears, and the two columns that
+  need no quiet box (§G2's trial counts, §G3's `crit`) are flagged as such.
+* `minidregg/Assurance/TwoRegimeQueryBudget.lean` §7, new (`2b79d97`) — the exchange rate as named
+  two-sided theorems over exact ℚ, kernel-checked, `#print axioms`-clean, no `native_decide`.
 * Code reading of `vendor/plonky3-challenger-82cfad73/src/grinding_challenger.rs` and
   `vendor/plonky3-fri-82cfad73/src/prover.rs`.
+
+⚠ **Box conditions:** Apple M2 Max, 12 cores, 39 login sessions, **load average 79–198 throughout**,
+with the shared `breadstuffs/target` cargo lock contended by another lane the whole session. Every
+wall-clock number below is min-of-N with N stated and should be read as an upper bound; the
+structural numbers (permutation counts, trial counts, critical paths, window counts, proof bytes)
+are exact and unaffected.
 
 ---
 
@@ -498,6 +521,15 @@ this is delicate.
 
 At `c = 1`, `E[windows] = 1.58`: total work rises 1.58× while latency falls ~7.6× on the mean and
 ~11× on the p99, on a 12-core box.
+
+### The stale cost verdict is corrected, not just reported
+
+`circuit/tests/commit_pow_cost_measure.rs` now carries the refutation of its own old paragraph, the
+measured 1.00×, and the consequence: its seconds column is **correct as measured** (do not multiply
+it by anything) but is **not a hardware floor** — a windowed grind divides every figure in it by ~T,
+making `commit_proof_of_work_bits` about 3.6 bits cheaper than that test currently prices it. The
+header word "whole machine" is now "achieved". Leaving the old sentence in place would have been
+keeping a cost verdict whose premise is refuted, which is worse than having no comment.
 
 ### The same pathology, two more sites
 
