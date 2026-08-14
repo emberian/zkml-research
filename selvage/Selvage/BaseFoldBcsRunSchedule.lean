@@ -138,8 +138,13 @@ theorem paddedWorkPrefix_final {m queryCount : Nat}
       paddedTranscriptPrimitiveWork statement receipt := by
   unfold paddedWorkPrefix
   rw [show m + queryCount =
-      (paddedPrimitiveWorkSchedule statement receipt).length by simp,
-    List.take_all]
+      (paddedPrimitiveWorkSchedule statement receipt).length by simp]
+  have htake :
+      (paddedPrimitiveWorkSchedule statement receipt).take
+          (paddedPrimitiveWorkSchedule statement receipt).length =
+        paddedPrimitiveWorkSchedule statement receipt :=
+    (List.take_eq_self_iff _).2 (Nat.le_refl _)
+  rw [htake]
   unfold paddedPrimitiveWorkSchedule paddedTranscriptPrimitiveWork
   rw [paddedConstructionQueries_eq_ofFn]
 
