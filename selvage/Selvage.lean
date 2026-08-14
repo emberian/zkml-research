@@ -122,3 +122,4 @@ import Selvage.BaseFoldPoseidon2Rom -- the fixed leaf is the generic one-block s
 import Selvage.BaseFoldBcsFiatShamir -- exact BaseFold root/sumcheck/challenge/query/opening alphabet as Poseidon2 construction queries, with causal prefixes, distinct draw domains, and primitive-work accounting
 import Selvage.BaseFoldBcsSpongeGame -- the exact receipt query schedule is a SpongeIndiffWorkGame distinguisher with transcriptPrimitiveWork as a proved PrimitiveWorkBound
 import Selvage.BaseFoldBcsQuerySampling -- reject zero, factor nonzero BabyBear exactly, and derive uniform power-of-two BaseFold query coordinates
+import Selvage.BaseFoldBcsQuerySamplingJoint -- exact whole-batch factorization: accepted digest families split into unused lanes, slack, and a jointly uniform independent BaseFold query-coordinate vector
