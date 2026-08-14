@@ -222,6 +222,26 @@ verifier's per-query Merkle paths to the prover and makes the query axis look 1.
 the wrong side of the wire — which is exactly what the first draft of this note said before the
 assertion caught it.
 
+### ⚑ And the assertions caught a second, older thing: the counters are process-global
+
+The phase-totals map and both permutation counters are **one per process**, and **five** tests in
+that file bracket a `prove` with `reset_totals() … snapshot()`. Under the harness's *default*
+parallelism any two of them run at once, each zeroing the other's counters mid-flight. The file's
+header has prescribed `--test-threads=1` since it was written; **nothing enforced it**, so the
+corruption arrived as a plausible number rather than as a failure — latent in every number that
+file has ever printed from a default invocation.
+
+It surfaced as `q 19 → 57` reading **+5** permutations run alone and **thousands** run with the
+whole file, the difference being another test's prove. Fixed with a file-scoped
+`serialize_measurement()` mutex rather than by documenting harder: **a gate whose verdict depends on
+how the harness was invoked is not a gate.**
+
+> **The verification, and it is the methodological point:** all six tests pass under **default
+> parallelism**, and the §D/§D2 count table is **byte-identical** between the parallel whole-file
+> run and a serial single-test run. That identity is *why* counts are the instrument here and the
+> wall clocks are not — the same demonstration the sibling narrow-emission lane made with
+> debug-vs-release.
+
 ### The grind-free measurement pair
 
 A wall-clock comparison at `pow = 16` is dominated by grind, which is blowup-independent (12.8 ms
@@ -252,10 +272,35 @@ fewer as `ρ` grows.
 | **blowup alone** `(6,19,p0) → (2,19,p0)` | 217,150 → 14,290 | **15.20× fewer** |
 | queries alone `(2,19,p0) → (2,57,p0)` | 14,290 → 14,295 | 1.0003× more |
 | **⚑ net, grind-free** `(6,19,p0) → (2,57,p0)` | 217,150 → **14,295** | **15.19× fewer** |
+| *(same, one rung up)* `(6,19,p0) → (3,19,p0)` | 217,150 → 27,814 | 7.81× fewer |
 
 Per phase, the whole reduction is where it should be: `Merkle-commit` **211,965 → 13,245** and
 `FRI fold Merkle` **4,413 → 273`** — the Merkle tree is built over an LDE of `n·2^lb` rows, so it
 halves per rung, exactly.
+
+### ⚑ Reconciliation: "15.19×" and "3.50×" are the same measurement
+
+Two numbers for the blowup drop are in circulation and they look like a contradiction. They are
+not — they differ in **which rung** and in **whether the blowup-independent grind sits in both
+sides of the ratio**. Reproduced against the sibling figures (`b=6` total 265,031, `b=3` total
+75,695, grind 47,917):
+
+| move | grind-free, prover only | with a fixed 47,917-perm grind |
+|---|---:|---:|
+| `lb 6 → 3` | **7.81×** | **3.50×** |
+| `lb 6 → 2` | **15.19×** | **4.26×** |
+
+**The `3.50×` is exact and so is the `15.19×`.** My totals are `265,067` at `b=6` and `75,731` at
+`b=3` against the sibling's `265,031` / `75,695` — **a constant offset of 36 permutations at both
+blowups**, which is the `FRI commit other` (3) + `query/open` (3) + `prove residual` (30) that my
+table itemizes and the sibling's folds away. Two instruments, same artifact, agreeing to 36
+permutations out of a quarter million.
+
+⚑ **So always say which convention.** A ratio with the grind inside it is a *system* ratio and is
+bounded above by `1/grind_share`; a ratio with it outside is a *phase* ratio. Quoting `15.19×`
+where a reader will hear "the prover gets 15× faster" is the *phase-ratio-as-system-ratio* error,
+and quoting `3.50×` as "the blowup lever" undersells the lever by charging it for work the lever
+does not touch.
 
 ### ⚠ The grind is a SAMPLE, and it is not a comparator
 
@@ -460,8 +505,10 @@ For whoever lands `(2, 57)` — global or per-descriptor:
 | the censored-sample refit | `fri_blowup_global_knob_survey.rs` §1/§1b — 3rd regressor, all 132 goldens priced |
 | **not** landed | the global config flip — §7 |
 
-Commits: `4e6089484` (fix + gate + by-construction + refit), `26b33a37a` (counts) in `breadstuffs`;
-`4889368` in `minidregg` (the query re-derivation).
+| the process-global counter fix | `circuit/tests/ir2_phase_profile.rs` — `serialize_measurement()`, five call sites |
+
+Commits: `4e6089484` (fix + gate + by-construction + refit), `26b33a37a` (counts), `010201bb0`
+(counter serialization) in `breadstuffs`; `4889368` in `minidregg` (the query re-derivation).
 
 ---
 
