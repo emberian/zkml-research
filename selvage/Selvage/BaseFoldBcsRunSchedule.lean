@@ -14,7 +14,7 @@ remaining off-bad semantic agreement or the random-permutation switch.
 -/
 
 import Selvage.BaseFoldBcsPadding
-import Selvage.SpongeIndiffDeferredWork
+import Selvage.SpongeIndiffAdaptiveCoupling
 
 namespace Minidregg.Selvage.BaseFoldBcsRunSchedule
 
@@ -334,11 +334,109 @@ theorem paddedDeferredWorkRun_exact {m queryCount : Nat}
   · rw [hremaining, paddedWorkPrefix_final]
     simp
 
+/-! ## A concrete segment-wise eager/deferred reindexing program -/
+
+/-- First coordinate of one public round's primitive-work segment. -/
+def paddedSegmentHead {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount)) :
+    Fin (paddedTranscriptPrimitiveWork statement receipt) :=
+  ⟨paddedWorkPrefix statement receipt round, by
+    have hnext := paddedWorkPrefix_le_final statement receipt (round + 1)
+    have hstep := paddedWorkPrefix_strictMono_step statement receipt round
+      round.isLt
+    omega⟩
+
+/-- Last coordinate of the same nonempty work segment.  In the eager prefix
+hybrid, this is the fresh rate coin assigned to the full padded message. -/
+def paddedSegmentLast {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount)) :
+    Fin (paddedTranscriptPrimitiveWork statement receipt) :=
+  ⟨paddedWorkPrefix statement receipt (round + 1) - 1, by
+    have hnext := paddedWorkPrefix_le_final statement receipt (round + 1)
+    have hstep := paddedWorkPrefix_strictMono_step statement receipt round
+      round.isLt
+    omega⟩
+
+theorem paddedSegmentLast_succ {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount)) :
+    (paddedSegmentLast statement receipt round : Nat) + 1 =
+      paddedWorkPrefix statement receipt (round + 1) := by
+  unfold paddedSegmentLast
+  have hstep := paddedWorkPrefix_strictMono_step statement receipt round
+    round.isLt
+  omega
+
+/-- One unconditional whole-vector involution swaps the deferred segment head
+with the eager full-message coordinate. -/
+noncomputable def paddedSegmentSwapMove {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount)) :
+    GuardedInvolution
+      (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap) :=
+  guardedWorkReindex
+    (Equiv.swap (paddedSegmentHead statement receipt round)
+      (paddedSegmentLast statement receipt round))
+    (by intro index; simp)
+    (fun _ => True)
+    (fun _ => inferInstance)
+    (by intro; simp)
+
+/-- The move places the eager full-message coin at the coordinate consumed by
+the deferred round.  Singleton segments reduce to the identity. -/
+theorem paddedSegmentSwapMove_head {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin (m + queryCount))
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) :
+    (paddedSegmentSwapMove statement receipt round).apply coins
+        (paddedSegmentHead statement receipt round) =
+      coins (paddedSegmentLast statement receipt round) := by
+  simp [paddedSegmentSwapMove, GuardedInvolution.apply,
+    guardedWorkReindex, permuteWorkCoins]
+
+/-- The concrete fixed-receipt program contains one exact coordinate swap per
+public construction draw. -/
+noncomputable def paddedSegmentSwapProgram {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    List (GuardedInvolution
+      (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap)) :=
+  List.ofFn fun round : Fin (m + queryCount) =>
+    paddedSegmentSwapMove statement receipt round
+
+/-- Composition of the segment swaps is an actual equivalence of the whole
+fixed work-vector space, not a marginal-distribution argument. -/
+noncomputable def paddedSegmentReindex {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap) ≃
+      (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap) :=
+  guardedProgramReindex (paddedSegmentSwapProgram statement receipt)
+
+/-- The run-specific segment program preserves exact uniform counting
+measure on the entire primitive-work vector. -/
+theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (event :
+      (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap) →
+        Prop) :
+    uniformProb
+        (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap)
+        (fun coins => event (paddedSegmentReindex statement receipt coins)) =
+      uniformProb
+        (Fin (paddedTranscriptPrimitiveWork statement receipt) → Rate × Cap)
+        event :=
+  uniformProb_guardedProgram
+    (paddedSegmentSwapProgram statement receipt) event
+
 #check @paddedConstructionDistinguisher_move_answer_independent
 #check @paddedWorkPrefix_succ
 #check @paddedWorkPrefix_final
 #check @paddedDeferredWork_need_exact
 #check @paddedDeferredWorkRun_exact
+#check @paddedSegmentSwapMove_head
+#check @uniformProb_paddedSegmentReindex
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedConstructionDistinguisher_move_answer_independent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -349,6 +447,9 @@ theorem paddedDeferredWorkRun_exact {m queryCount : Nat}
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedDeferredWorkRun_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedDeferredWorkRun_exact
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.uniformProb_paddedSegmentReindex' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms uniformProb_paddedSegmentReindex
 
 end
 
