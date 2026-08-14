@@ -79,8 +79,7 @@ private theorem nonsquare_of_euler_witness (a : BabyBear)
     subst b
     have azero : a = 0 := by simpa using square.symm
     subst a
-    have zero_ne_neg_one : (0 : BabyBear) ≠ -1 := by decide
-    exact zero_ne_neg_one (by simpa [halfOrder] using witness)
+    simp [halfOrder] at witness
   have fermat : b ^ (modulus - 1) = 1 := by
     simpa [BabyBear, modulus] using
       (FiniteField.pow_card_sub_one_eq_one b bne)
