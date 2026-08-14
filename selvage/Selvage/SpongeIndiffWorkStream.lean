@@ -200,10 +200,10 @@ theorem workHybridStep_hybrid_error_eq_constructionMismatch {q : Nat}
       rw [hquery] at herror
       dsimp only at herror
       have hcounts :
-          (st.remaining.take (xs.length + 1)).map Prod.fst |>.length =
-              (x :: xs).length ∧
-            (st.remaining.take (xs.length + 1)).map Prod.snd |>.length =
-              (x :: xs).length := by
+          ((st.remaining.take (xs.length + 1)).map Prod.fst).length =
+                (x :: xs).length ∧
+            ((st.remaining.take (xs.length + 1)).map Prod.snd).length =
+                (x :: xs).length := by
         simp [hlength]
       rw [if_pos hcounts] at herror
       split at herror
