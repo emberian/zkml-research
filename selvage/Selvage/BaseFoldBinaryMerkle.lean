@@ -39,12 +39,14 @@ theorem friRawAdaptiveEquivocates_binaryMerkle_collision
   rcases hquery with hleft | hright | hnext
   · exact ⟨⟨j, lt_trans j.isLt (Nat.lt_succ_self m)⟩,
       positionEquivocation_implies_collision H (ell - j)
-        (st.rootAt r j (Nat.le_of_lt j.isLt)) (Q j a).left
+        (st.rootAt r j (Nat.le_of_lt j.isLt))
+        ((T.data j j.isLt).sec (Q j a))
         (opening a).left (opening a).leftPath
         (st.wordAt r j (Nat.le_of_lt j.isLt)) hleft⟩
   · exact ⟨⟨j, lt_trans j.isLt (Nat.lt_succ_self m)⟩,
       positionEquivocation_implies_collision H (ell - j)
-        (st.rootAt r j (Nat.le_of_lt j.isLt)) (Q j a).right
+        (st.rootAt r j (Nat.le_of_lt j.isLt))
+        ((T.data j j.isLt).neg ((T.data j j.isLt).sec (Q j a)))
         (opening a).right (opening a).rightPath
         (st.wordAt r j (Nat.le_of_lt j.isLt)) hright⟩
   · exact ⟨⟨j + 1, Nat.succ_lt_succ j.isLt⟩,
