@@ -111,6 +111,31 @@ theorem scTruthAfter_append_single {S : F}
     (fun j hj => scSchedule_append_lt rs (g, r) hj)
   rw [hh]
 
+/-- Prefix-measurability transports the next honest polynomial from a list
+schedule to any total challenge stream agreeing below the next round. -/
+theorem scHonestAt_eq_of_prefix
+    {honest : (ℕ → F) → ℕ → Polynomial F}
+    (hpm : PrefixMeasurable honest) (rs : List (Polynomial F × F))
+    (χ : ℕ → F) (hpre : ∀ j, j < rs.length → scSchedule rs j = χ j) :
+    scHonestAt honest rs = honest χ rs.length := by
+  exact hpm (scSchedule rs) χ rs.length hpre
+
+/-- The truth after a list prefix is unchanged when both the honest prover and
+challenge stream are transported to an agreeing total schedule. -/
+theorem scTruthAfter_eq_of_prefix {S : F}
+    {honest : (ℕ → F) → ℕ → Polynomial F}
+    (hpm : PrefixMeasurable honest) (rs : List (Polynomial F × F))
+    (χ : ℕ → F) (hpre : ∀ j, j < rs.length → scSchedule rs j = χ j) :
+    scTruthAfter S honest rs = scChain S (honest χ) χ rs.length := by
+  unfold scTruthAfter
+  cases hlen : rs.length with
+  | zero => rfl
+  | succ n =>
+      rw [scChain, scChain]
+      have hn : n < rs.length := by omega
+      rw [hpm (scSchedule rs) χ n
+        (fun j hj => hpre j (lt_trans hj hn)), hpre n hn]
+
 /-! ## The reduction and knowledge state -/
 
 /-- The state proposition at every transcript shape.  A pending message is
