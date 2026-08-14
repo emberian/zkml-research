@@ -221,10 +221,36 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   internal round multiplies a tree state ~16×, so thirteen is ~5·10^18 nodes
   — which means **§6b's tree-vs-DAG agreement oracle has no narrow
   counterpart by construction.** An instrument is lost, not just a cost saved.
-  ⚑ **AND THE WIN IS NOT BANKED: the blocker is Rust witness-gen.**
-  `poseidon2_permute_aux_witness` writes 352 values/perm and the narrow layout
-  needs 141. **"The Lean is landed" ≠ routable** — the standing house lesson,
-  firing again.
+  ✅ **UNBLOCKED 2026-08-14** (`f1718d513`): `poseidon2_permute_aux_witness_narrow`
+  writes the 141, and `poseidon2_wide_aux_from_narrow` is
+  **`narrowSat_forces_the_trace` as a program** — rebuilding all 352 from seed
+  + 141 **without calling `poseidon2_trace`**. The AIR stayed in Lean (existing
+  gate lists wrapped in a `TableAir`; **no gate authored**), and the eleven
+  deployed artifacts are untouched because it does not route through
+  `EmitTableAirs`.
+  ⚑ **Measured in COUNTS, and the counts correct the circulating figure:**
+  per-chip **2.3439× committed cells but only 1.9733× prover permutations**
+  (flat in height to four figures) — *the widely-quoted "2.11× prove" is a
+  wall-clock number*; cells fall 2.34× while hashing falls 1.97×, because the
+  quotient and FRI terms do not follow the width. **Per-batch: 1.0763×.**
+  ⚑ **And a flattering layer one level ABOVE the per-chip/per-batch split**:
+  the prover commits **three rounds**, and narrowing the chip shrinks only the
+  first (the bus interface is unchanged so the LogUp trace stays 12 wide;
+  degree is unchanged at 7 so the quotient stays 32 wide). **Stopping at main
+  traces reports 1.1023×** — a third number, flattering, and reachable by an
+  honest-looking choice of denominator.
+  ✅ **Cross-validated**: the `main + LogUp` row reproduces the independent
+  span-dump census *exactly* (22,992 cells, 2,936 leaf perms, 13.35% chip
+  share) — **two instruments, two days, same numbers.** And debug and release
+  produced **byte-identical tables**, which is the counts methodology
+  demonstrating its own contention-immunity.
+  ⚑ **Where this actually pays: 13.35% is the THINNEST chip workload.** The
+  recursion tower is ~75% in-circuit Poseidon2, where the factor approaches
+  the full **1.97×**. The per-batch 1.08× is a floor, not a ceiling.
+  ⚠ Named seam: **no provenance gate binds the two checked-in fixtures to the
+  Lean emission** — same shape as `table-airs/` being invisible to
+  `verify_provenance`. The shape pin and witness/falsifier pair stand
+  meanwhile; that is a check, not a hash.
   ⚠ Honestly undone: that the narrow emission's literal gate list, *resolved
   through `shareVals`*, **is** the equation system the theorems reason about
   — needs a `shareVals` prefix lemma plus a fold invariant (~a day), **and it
