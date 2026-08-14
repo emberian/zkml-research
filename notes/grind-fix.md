@@ -406,6 +406,42 @@ prove, a verify, and the tamper-rejection step, all green through the new schedu
   still what comes back, which is why §2 can compare against integers recorded before this change.
 * **Not the position of the grind.** `grind-phase.md` §0 shows the grind cannot move off the
   critical path without weakening what the witness binds. Still true.
+* ⚑ **Not the grind's SHARE OF PROVER WORK — that goes UP.** See §7b; it is the trap this whole note
+  keeps flagging, and it applies to the fix's own headline.
+
+### 7b. ⚑ The grind's share of the prover, and why this fix does not reduce it
+
+Read at source in `26b33a37a` (*"profile: the blowup drop in EXACT permutation counts"*), whose
+counts are deterministic permutation counts, not milliseconds:
+
+| config | prover perms, grind-free | grind at the mean (`2^16`) | **grind's share of prover work** |
+|---|---:|---:|---:|
+| **(lb 6, q 19)** — deployed | 217,150 | 65,536 | **23.2%** |
+| (lb 2, q 57) — the blowup-drop candidate | 14,295 | 65,536 | **82.1%** |
+
+That commit states it as *"grind's share of the prover goes 23% → 82%, which is why this change and
+the windowed-grind fix are not independent."* Correct, and it is the strongest argument for having
+done this lane: **if the blowup drop lands, the grind becomes four fifths of the prover's hashing.**
+
+⚠ **But this fix does not shrink that share — it grows it by a hair.** The windowed min raises total
+work 1.126×, so:
+
+| | before | after |
+|---|---:|---:|
+| grind share of prover work at (6,19) | 23.2% | **25.4%** |
+| grind share of prover work at (2,57) | 82.1% | **83.8%** |
+
+**What this lane bought is prover LATENCY on a multicore box, not prover work**, and a share-of-work
+percentage is exactly the wrong instrument to show it. The corresponding *latency* share cannot be
+computed from anything measured here: it needs the critical path of the rest of the prover, which
+this lane did not measure and which `26b33a37a` does not report either. **Stating a latency win as a
+share-of-work reduction would be the compose-two-units error, and it would be a fabrication.**
+
+> ⚠ **A relayed figure I did not adopt.** I was handed "grind is ~18% of hash work at b=6 and ~63% at
+> b=3". The source commit says **23% at (lb 6, q 19)** and **82% at (lb 2, q 57)** — different
+> percentages *and* a different second config (lb 2, not 3). I could not reproduce 18/63 from the
+> table, so the numbers above are the source's and the discrepancy is recorded rather than averaged
+> away. Whoever holds the 18/63 figure should say what its denominator is.
 
 ---
 
