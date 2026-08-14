@@ -261,11 +261,34 @@ The module they cover, `tfhe_blind_rotation_ntt_wgpu`, **is** covered by a passi
 1.43 s. So the gap is not "an unverified module"; it is "the deployed 918×918 envelope and the
 high-level `FheUint32` path unverified at deployed scale." The one of the five that bears most
 directly on this change is `deployed_918_by_918_dense_pbs_matches_tfhe_and_reuses_device_keys` —
-**device-key reuse across calls is exactly the lifetime consolidation altered.** It is running
-detached at the time of writing; its log is
-`…/scratchpad/tfhe-918-detached.log`, and the honest state of this lane is that **its result is not
-in evidence yet.** Reading a `PASS` there closes the gap; reading a real assertion failure reopens
-the TFHE half of this change. Do not read a `SIGTERM` line as either.
+**device-key reuse across calls is exactly the lifetime consolidation altered.**
+
+Run detached, it survived past every previous kill point and then hit a **fourth** stopping
+condition, a different one:
+
+```
+TIMEOUT [3600.150s] (1/1) …deployed_918_by_918_dense_pbs_matches_tfhe_and_reuses_device_keys
+Summary [3600.155s] 1 test run: 0 passed, 1 timed out, 449 skipped
+```
+
+⚑ **That is nextest's own `slow-timeout` (`period = "60s" × terminate-after = 60` = 3600 s) in
+`profile.full`, hit to the millisecond** — and note nextest labels it **`TIMEOUT`**, a *different
+word* from the `SIGTERM` the harness kills produced. Three stopping conditions, three labels, one
+summary line: **`1 failed` / `error: test run failed` means "harness killed it", "runner timed it
+out", or "the code is wrong", and only the per-test label tells you which.**
+
+And the cap was **my** mistake, not the test's: its own `#[ignore]` message documents the invocation
+as `cargo test -p fhegg-fhe --test tfhe_wgpu_pbs_deployed_envelope -- --ignored`, which has **no
+timeout at all**. I reached for `nextest --profile full` out of habit and imposed an hour cap on a
+deliberately quadratic 918×918 baseline that was never written to run under one. It is relaunched
+the documented way, detached, at `…/scratchpad/tfhe-918-cargotest.log`.
+
+⚠ **The honest state of this lane: that test's result is not in evidence.** A `PASS` in that log
+closes the gap; a real assertion failure reopens the TFHE half of this change. A `SIGTERM` or
+`TIMEOUT` line is neither — read the label, not the count. What can be said without it is that the
+change to this module is an initializer swap plus a mutex that is *uncontended* under
+`--test-threads 1`, and that the module's behaviour is carried by
+`blind_rotate_extract_and_keyswitch_matches_tfhe_exactly`, which passes in 1.43 s.
 
 ---
 
