@@ -440,6 +440,16 @@ Exit codes captured directly, never through a pipe.
 | falsifier: inference identity's adapter swapped | **exit 1** |
 | `grep sorry` on the new Lean | none |
 | axiom pins | 21, all `[propext, Classical.choice, Quot.sound]` |
+| `scripts/check-import-boundary.sh` | **exit 0** |
+| `scripts/check-proof-hygiene.sh` | ⚠ **exit 1 — NOT this lane** (see below) |
+
+⚠ **`check-proof-hygiene.sh` is RED on the tree, and it is not this lane's.** It
+reports two bare `#print axioms` at `Selvage/BaseFoldBcsPadding.lean:238–239`,
+introduced by a concurrent lane in `a696378 disambiguate padded BaseFold profile
+types`. This file has **zero** bare footprints — all 21 pins use the repo's inline
+`#guard_msgs (whitespace := lax) in #print axioms` idiom. Recorded rather than
+silently absorbed, because "red as steady state hides everything" and the next
+lane to run this gate should know which two lines to look at.
 
 Two commits, both `--only` on named paths with the index re-added afterwards (the
 2026-08-14 PREFLIGHT entry): `c060efa` (Lean, 2 files, 759 insertions, **0
