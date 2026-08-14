@@ -569,6 +569,46 @@ theorem spike_committed_rejects_one :
 def queryZero : Fin 1 → Fin 2 := fun _ => 0
 def queryOne : Fin 1 → Fin 2 := fun _ => 1
 
+/-- The binding-free verifier shape at the F5 tooth: every root is `Unit` and
+every submitted path verifies.  This is an executable opening scheme, but it
+cannot be upgraded to a binding commitment. -/
+def equivocalSchemes (n : ℕ) :
+    OpeningScheme Unit (ZMod 5) (levels n) Unit where
+  commit := fun _ => ()
+  openAt := fun _ _ => ()
+  verifyOpen := fun _ _ _ _ => True
+  verifyOpen_commit := fun _ _ => trivial
+
+/-- Without binding, the wrong-challenge batch at the differing coordinate
+really accepts: the source symbols and the claimed next symbol can all be
+authenticated under the same unit roots. -/
+theorem spike_wrongChallenge_equivocal_accepts :
+    FriRoundQueriesAccept (equivocalSchemes 0) (equivocalSchemes 1) data0
+      () () 1 queryOne := by
+  obtain ⟨opening, hopen⟩ := openedFriQuery_honest
+    (equivocalSchemes 0) (equivocalSchemes 1)
+    data0 spikeWord 1 (1 : Fin 2)
+  refine ⟨fun _ => opening, fun a => ?_⟩
+  simpa [queryOne] using hopen
+
+/-- **The collision branch is inhabited.**  Reading the same accepted batch
+against the fixed statement word folded at challenge `3` yields a retained
+position equivocation, because its submitted next symbol is the fold at
+challenge `1`. -/
+theorem spike_wrongChallenge_equivocates :
+    FriRoundQueriesEquivocate (equivocalSchemes 0) (equivocalSchemes 1)
+      data0 () () spikeWord (fold data0 spikeWord 3) 1 queryOne := by
+  have hsplit := friRoundQueries_pin_or_equivocation
+    (equivocalSchemes 0) (equivocalSchemes 1) data0
+    (w := spikeWord) (w' := fold data0 spikeWord 3)
+    (rt := ()) (rt' := ()) rfl rfl 1 queryOne
+    spike_wrongChallenge_equivocal_accepts
+  rcases hsplit with hpinned | hequiv
+  · have hne : fold data0 spikeWord 3 (1 : Fin 2)
+        ≠ fold data0 spikeWord 1 (1 : Fin 2) := by decide
+    exact False.elim (hne (by simpa [queryOne] using hpinned 0))
+  · exact hequiv
+
 /-- The wrong-challenge committed round still passes if the verifier happens
 to query the coordinate on which the two folded words agree.  Thus the query
 miss event is genuinely inhabited. -/
@@ -639,16 +679,17 @@ end HalfThresholdFriTranscriptExample
 
 /-
 * CLOSED: statement-first committed words/roots; exact selected-query
-  verification; binding pinning at every selected coordinate; all-position
+  verification; the binding-free pin-or-retained-equivocation split for one
+  fibre and a whole sampled batch; binding pinning at every selected coordinate; all-position
   committed tower = derived tower; committed acceptance containment; the
   unconditional half-threshold challenge bound; canonical FS-oracle event
   transport; an accepting and rejecting fixed-root tooth.
-* `[HALF-FRI-query]`: from only `q` selected coordinates, prove that a
-  committed deviation survives with probability at most
-  `(1-delta/2)^q`, using `column_sampling_bridge_pr`, and compose across
-  adaptive committed rounds.
-* `[COMMIT-CR]`: instantiate `BindingCommitment` with the deployed Merkle /
-  sponge commitment rather than the proved ideal commitment.
+* CLOSED DOWNSTREAM: `HalfThresholdFriQuery` proves the adaptive sampled
+  multi-round bound `m*b/|F| + (1-tau)^q`; `HalfThresholdFriCoherent` proves
+  the runtime-shaped coherent-path marginals and preserves the same bound.
+* `[COMMIT-CR]`: map the retained `PositionEquivocation` (now inhabited by the
+  unit-root tooth) to a collision in the deployed Merkle/sponge commitment,
+  rather than pretending a short-root `BindingCommitment` is unconditional.
 * `[HALF-FRI-FS]`: encode this committed FRI verifier as a `Reduction` and
   compose its event with the landed straightline/ROM theorem.  The exact
   `fsOracle` evaluation bridge is proved above; no ROM theorem is asserted
