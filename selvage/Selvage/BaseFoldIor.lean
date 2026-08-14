@@ -43,6 +43,7 @@ def BaseFoldIorAccepts (T : FoldingTower F ι m) (z : Fin m → F) (H : F)
     scChain H (prover (chalOf r)) (chalOf r) m =
       T.word word (chalExt r) m le_rfl k * eqMle z r
 
+omit [Fintype F] [DecidableEq F] in
 /-- ⭐ Perfect completeness of the assembled IOR verifier, for every challenge
 vector.  Both legs use the same `r`. -/
 theorem basefoldIor_complete (T : FoldingTower F ι m)
@@ -56,6 +57,7 @@ theorem basefoldIor_complete (T : FoldingTower F ι m)
   · intro k
     exact basefold_braid_terminal T table z r k
 
+omit [Fintype F] [DecidableEq F] in
 /-- Operational acceptance of a wrong value for an exact BaseFold codeword is
 contained in the adaptive false-sumcheck event for that codeword's table. -/
 theorem basefoldIor_wrong_value_implies_acceptsFalse
@@ -116,6 +118,7 @@ theorem wrong_value_bound_f5
       BaseFoldIorAccepts ldtTower ![3] H
         (fun i => (booleanMobiusPolynomial 1 table).eval (ldtTower.dom 0 i))
         prover r) ≤ 2 / 5 := by
+  letI : Nonempty (levels 1) := ⟨0⟩
   have h := basefoldIor_wrong_value_sound ldtTower table ![3] H prover
     hwrong hpm hdeg
   rw [ZMod.card] at h
