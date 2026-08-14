@@ -165,9 +165,12 @@ theorem workHybridStep_ok_or_hybrid_of_need_le {q : Nat}
   rw [if_pos hlength, hcoins]
   cases hstep : prefixHybridStep D iv (fun _ => roundCoins) st.core j with
   | ok next =>
-      exact Or.inl ⟨⟨next,
-        st.remaining.drop (D.move st.core.ans).primitiveCalls⟩, rfl⟩
-  | error error => exact Or.inr ⟨error, rfl⟩
+      refine Or.inl ⟨⟨next,
+        st.remaining.drop (D.move st.core.ans).primitiveCalls⟩, ?_⟩
+      simp [hstep]
+  | error error =>
+      refine Or.inr ⟨error, ?_⟩
+      simp [hstep]
 
 /-- Execute all public rounds against one fixed primitive-work vector. -/
 noncomputable def workHybridRun {q work : Nat}
