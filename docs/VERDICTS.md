@@ -248,8 +248,40 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   and wins only at α ≤ 3.** The layer budget is **0.42–0.71 layers at α=7**,
   1.49–1.66 at α=3. ⚠ Every plan priced against 78–308× (C2, C5, C7) needs
   re-pricing.
-- **The multilinear seam is ONE `RbrKnowledgeSoundness` instance, not a new
-  abstraction.** No hash-based multilinear PCS is indexed by an evaluation
+- ✅ **THE SEAM IS CLOSED (2026-08-14).** S3 (`Selvage/QuadraticSumcheck.lean`)
+  and S4 (`SumcheckRbr.lean` + `BaseFoldRbr.lean`, `basefoldSumcheckRbr`) both
+  landed, plus four layers past them. **No new commitment abstraction was
+  built — `OpeningScheme` is reused**, as the landscape verdict predicted.
+  ⚑ **And the `raw_commit_terminal_differs_f5` ambiguity dissolved — it was
+  never a value ambiguity.** The raw word is an *honest commitment to a
+  DIFFERENT table*: `rawPoly = 1 + 2X` reads the values `[1,2]` as
+  *coefficients*, its table is `[1,3]`, and that table's MLE at 3 genuinely
+  **is** 2. **Two statements, not two answers to one.** Proved, all axiom-
+  pinned, no `sorry`, no obligations needed:
+  `basefoldExactClaim_value_unique` (two strict claims over the *same* word
+  and point carry the *same* value — **nothing probabilistic**, just
+  interpolant uniqueness plus Möbius injectivity) · `raw_commit_not_exact_
+  claim_at_honest_f5` (deterministic) · `raw_commit_wrong_value_bound_f5`
+  (against an adaptive prover it survives on **at most 2 challenges in 5**,
+  where completeness accepted its descent at *every* challenge — **that is the
+  boundary crossed**) · `raw_root_ne_honest_root_f5` (**different roots, so
+  `value_unique` is never asked to reconcile them** — pinning has two halves,
+  root→word and word→value, and **both are theorems**).
+  ⚑ **S4 was an ISLAND** — `basefoldSumcheckRbr` had **zero consumers**; the
+  ledger path ran through the *operational* `basefoldIor_exact_sound` instead.
+  Now wired to Selvage's unconditional FS keystone, giving straightline
+  `(t + m)·2/|F|`. *A landed theorem nothing consumes is the
+  gating-defaults-to-silence class in Lean.*
+  ⚠ **NOT proved, stated in the docstrings and the commit**: the reduction's
+  witness type is `Unit`, so this is **straightline soundness with a TRIVIAL
+  EXTRACTOR — not extraction of the committed table**, which is the commitment
+  layer's job and is composed by no theorem. The RS/proximity leg is still not
+  product-composed into the knowledge state. And **there are now two
+  accountings of one leg** (operational IOR bound vs RBR instance) agreeing at
+  `m·2/|F|`; one should be *derived* from the other — flagged, deliberately
+  not collapsed unilaterally.
+- ~~The multilinear seam is ONE `RbrKnowledgeSoundness` instance~~ (predicted,
+  and it held) No hash-based multilinear PCS is indexed by an evaluation
   point; the commitment is a Merkle vector commitment to a codeword — our
   existing `OpeningScheme`, unchanged. Route: **BaseFold at RS in our own
   unconditional (1−ρ)/3 band.** Five new items, no conjecture, no new
@@ -543,6 +575,23 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
    do not guess.**
 
 ---
+
+## 7a. ⚑ A specimen that justifies the axiom-pin discipline
+
+While a lane worked, **HEAD was red inside a live sibling's file**
+(`Selvage/BaseFoldBcsQuerySamplingJoint.lean` at `69a2ecd`): a **parse error**
+— `omit`/`set_option … in` placed after a docstring — truncated a declaration,
+and **the theorem downstream elaborated with `sorry` IN ITS STATEMENT.** The
+printed signature read `… ≤ ↑m * (3 / sorry) + …`.
+
+**It was caught by the `#guard_msgs`-pinned `#print axioms`, on `sorryAx`.**
+Nothing else would have: the file compiled, the theorem existed, its name was
+right, and a reader skimming would have seen a bound. **A `sorry` in a
+STATEMENT is invisible to every check except an axiom pin** — and this is the
+first time we have seen one in the wild rather than reasoned about it.
+(The sibling fixed it in-session; `lake build Selvage` is green at 2,486 jobs.
+⚠ Anyone holding a green claim about `acceptedSeedRawCommittedIor_coherent_
+exact_sound` should re-check it at that lane's settled commit.)
 
 ## 7b. Two instrument defects worth more than most findings
 
