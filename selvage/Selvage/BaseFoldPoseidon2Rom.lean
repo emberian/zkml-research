@@ -74,17 +74,24 @@ theorem leafCollision_iff_spongeLeafCollision :
     exact hashes
   · rintro ⟨left, right, different, hashes⟩
     refine ⟨left, right, different, ?_⟩
+    change hashLeaf left = hashLeaf right
     rw [← spongeLeaf_eq_hashLeaf, ← spongeLeaf_eq_hashLeaf]
     exact hashes
 
 /-- Exact size of the eight-BabyBear-lane capacity alphabet. -/
 theorem capacity_card : Fintype.card Cap = modulus ^ 8 := by
-  simp [Cap, Digest, F, BabyBear, modulus]
+  change Fintype.card (Fin 8 → ZMod modulus) = modulus ^ 8
+  rw [Fintype.card_fun, ZMod.card, Fintype.card_fin]
 
 /-- Exact size of the complete width-16 primitive state. -/
 theorem state_card : Fintype.card (Rate × Cap) = modulus ^ 16 := by
-  rw [Fintype.card_prod, capacity_card, capacity_card, ← pow_add]
-  norm_num
+  calc
+    Fintype.card (Rate × Cap) =
+        Fintype.card Rate * Fintype.card Cap := by rw [Fintype.card_prod]
+    _ = modulus ^ 8 * modulus ^ 8 :=
+      congrArg₂ (· * ·) capacity_card capacity_card
+    _ = modulus ^ (8 + 8) := (pow_add modulus 8 8).symm
+    _ = modulus ^ 16 := by norm_num
 
 /-- The correct unrestricted ROM target is indexed by primitive work, not
 external construction calls.  This proposition is deliberately not asserted
