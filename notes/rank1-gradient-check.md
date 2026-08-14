@@ -19,6 +19,13 @@ an inner index and therefore no sumcheck round at all.** A wrong gradient surviv
 with probability at most `(mi + mj)/|F|`, i.e. `2·log₂ n/|F|`, which is `24/2^31`
 at `n = 4096` over BabyBear.
 
+⚠ **And the real number, out loud: `24/2^31 ≈ 2^-26.1` is NOT a security level.**
+One point of the BASE field buys 26 bits. The fix is the FIELD, not the layer —
+`Selvage/SmallField.lean`'s `securityBits` puts a degree-4 BabyBear extension at
+~116 bits, and repetition multiplies. Since the bound is logarithmic in `n`,
+growing the layer costs almost nothing and sampling `r` from the base field costs
+everything. Any deployment of this check draws its challenge from an extension.
+
 That is strictly better than the matmul boundary, which needs a sumcheck over the
 contracted index `k`. The rank-1 case needs none — that asymmetry is the whole
 point, and it is now a theorem rather than an observation.
