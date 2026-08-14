@@ -9,6 +9,50 @@ file disagree, **this file wins** and the note is history.
 
 ## 1. Fields and hashes
 
+### 1b. ⚑ The KoalaBear case is REFUTED on this evidence (2026-08-13)
+
+**Measured ≈1.05× on the leaf prover, not 3.36×.** All three factors fail, and
+each fails differently:
+- **Hash rate 1.33× is counted multiplications**; in wall clock it is **~1.02×**.
+- **Blowup 2× was already inside the floor lane's 3.4×** — in its own sentence.
+  And it belongs to the descriptor degree budget plus the §7.0 bug, not to the
+  field.
+- ⚑ **The narrowing ratio INVERTS.** Both published figures reproduce exactly
+  from `R_P = 13 → 20`: `16·(1+8+R_P)` gives 352/464 and `16+128+R_P` gives
+  157/164 — **so 2.24→2.83 grew because the BASELINE grew. Absolute committed
+  felts go 157 → 164: 4.5% WORSE.** (Chip share of committed width is 13.35%,
+  which also re-scopes the "2.11× prove" figure to **1.08× on the deployed
+  batch.**)
+
+**Other findings that change the record:**
+- ⚑ **The soundness sign is backwards in our notes: LOWERING blowup BUYS
+  soundness** (ε_C ∝ ρ^−3/2·|D⁰|²) — composite λ rises **+2 (leaf) to +13.5
+  (wrap)**. At UDR-100, proof size varies 1.13× and verify 1.29× across
+  lb=2…8 while **prove varies 39×**. Measured: `(6,19)→(2,57)` is **13.13×
+  faster at 4096 rows**, 1.74× at 64 — **the lever scales with trace height,
+  and zkML is 2^16–2^20.**
+- **KoalaBear MANDATES lb ≤ 3** (two-adicity 24 against a 2^21 wrap), so with
+  the floor at 3 it pins lb=3 exactly.
+- ⚑ **Our commit bound is five years stale — worth +17–21 real bits.** The d=5
+  tension resolves: both `d`s are the *extension* degree, there is no
+  `p3-security` crate (it is `uni-stark/src/security.rs`), and their
+  KoalaBear/128 line is **WHIR's quintic at ρ=1/4 on a 2025 bound** while ours
+  is **FRI on BCIKS20 (2020)**. Both true. **That staleness is worth more than
+  the extension-degree flag day PROVEN-120 was buying.** ⚠ Citation-strength
+  caveat: BCSS25 states no FRI theorem and its Thm 4.3 plugs into a personal
+  communication.
+- **Flag day: two items are a REDESIGN, not a swap.** 450 files / 4,216
+  literals / **50 independent modulus declarations** in metatheory (minidregg
+  has 1). ⚑ **Ext6 stops existing** (`3 ∤ p_KB−1`, so no binomial degree-6
+  extension — 11 files plus ErrorBudget120's 137-bit target), and ⚑ **`X⁴−11`
+  becomes reducible** — leave it and the "quartic field" is **a ring with zero
+  divisors, silently.**
+
+**Recommendation: fix the `p3-fri` bug, repair our own gate, drop the blowup
+at BabyBear. KoalaBear is NOT recommended on this evidence** until the
+recursion engine is profiled and plonky3's own `R_P = 20 vs 85` docblock
+discrepancy is settled.
+
 **Deployed, both trees: BabyBear** (2013265921 = 15·2²⁷+1), challenge **Ext4**,
 hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
 **recommended, unexecuted** migration target.
@@ -204,13 +248,27 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
 
 ## 7. Genuinely open
 
+0. ⚑⚑ **WE FROZE AN UPSTREAM BUG AS A LAW.** The "degree-7 S-box needs
+   `log_blowup ≥ 3`" floor is **a one-line bug in `p3-fri`**, not mathematics:
+   `get_evaluations_on_domain`'s extrapolation path applies `bit_reverse_rows()`
+   once too many (fast path returns natural order, slow path bit-reversed) —
+   right values, wrong rows, wrong quotient, a well-formed proof the verifier
+   rejects. **Reproduced standalone**: degree-7 AIR gives `OodEvaluationMismatch`
+   at lb=2 and `Ok` at lb=3; with one inserted call it verifies at lb=2 while a
+   corrupted trace still rejects. Live on upstream `main`; introduced by the
+   same commit that deleted the guarding `assert!`; the test covering that
+   branch takes the other branch. **PR #1982 (6h old) is this exact fix.**
+   ⚑ **And `circuit/tests/fri_blowup_global_knob_survey.rs:685-690` asserts the
+   refusal MUST happen — our own gate goes red when the bug is fixed.**
+   *Fix the bug, repair the gate, then drop the blowup at BabyBear.*
+
 1. ~~Is the prover hash-bound?~~ **SETTLED — HASH-BOUND AT EVERY FEASIBLE
    BLOWUP.** Measured per-phase on a real IR-v2 proof: `hash/arith` = 1.01 at
    b=3 → 1.86 at b=8, **no crossover in range** (extrapolates to b≈2.9, and
    **b=2 does not exist for this circuit** — a degree-7 S-box needs
-   `log_blowup ≥ 3`). The blowup knob moves the mixture 1.8× across its whole
-   range and never flips it. ⇒ **the field/hash migration is worth its ~3.4×
-   on the dominant term**, and the KoalaBear case strengthens.
+   `log_blowup ≥ 3` — ⚠ **which is the bug in §7.0, not a law**). The blowup
+   knob moves the mixture 1.8× across its whole range and never flips it.
+   ⚠ **But the "~3.4× migration" does NOT follow — see §1b.**
 2. **H1** — does the 61-bit design point survive a 2.4-bit margin? Now carries
    the whole joint-representation question.
 3. **Can we choose the FHE modulus?** Both Zama predecessors set q_FHE = the
