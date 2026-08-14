@@ -63,6 +63,16 @@ proof field (the Zama 2026/027 / GBFV convergence)?
 **Why it gates everything:** ⚑ **If yes, the cross-limb binding problem —
 our #1 named soundness hole, the thing that makes proving BFV multiplication
 hard — does not exist.** Cross-limb binding is an artifact of having limbs.
+
+> ⚑ **REFINED 2026-08-14** (`notes/cross-limb-binding.md`, `breadstuffs`
+> `5b653ba5d`). The hole is now exhibited in Lean and it is **two** holes:
+> **provenance** (a quantifier swap) and **expressibility** (`⌊t·x/Q⌉` reads the
+> CRT reconstruction). Single-prime does dissolve **both** — that claim survives.
+> But the sequencing changes: **the provenance half closes for +0 felts / +0
+> permutations** by interleaving the limbs into one row, so it need not wait on
+> H1. What waits on H1 is the expressibility half. And the cost that single-prime
+> avoids is now measured: the 2-felt BabyBear bridge that row-sharing forces is
+> **+220,201–294,912 perms per ciphertext at lb=6**.
 One prime, no limbs, no CRT reconstruction to bind, no
 rounding-across-moduli that lives in no single field. It also deletes the
 RNS-emulation-in-circuit cost that dominates every published vFHE result.
