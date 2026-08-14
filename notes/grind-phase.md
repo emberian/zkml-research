@@ -365,16 +365,26 @@ instrument (**the entire query/open phase is 0.05–0.07 ms for all 19 queries**
 Naming which column of my own run is garbage is the point of running two arms.
 
 ⚑ **And `pow` is free on the wire, measured:** across the whole ladder the two arms' proof sizes
-differ by **at most 2 bytes** (190,654 vs 190,652) — the witness is one field element under a
-varint codec. Against 5,826 B per query, that is the entire wire cost of 16 soundness bits.
+differ by **at most 4 bytes**, and the sign *flips* — `+2, −4, −4, −4` at `pow = 8/12/16/20`, exactly
+0 at `pow = 0`. The witness is one field element under a varint codec, so its encoded length wobbles
+by a byte or two with the value drawn and nothing systematic accumulates. Against **5,826 B per
+query**, that is the entire wire cost of 16 soundness bits: three orders of magnitude apart.
+
+| `pow` | queries | arm A bytes | arm B bytes | Δ |
+|---:|---:|---:|---:|---:|
+| 0 | 36 | 237,262 | 237,262 | 0 |
+| 8 | 28 | 190,652 | 190,654 | +2 |
+| 12 | 24 | 167,354 | 167,350 | −4 |
+| 16 | 19 | 138,224 | 138,220 | −4 |
+| 20 | 15 | 114,918 | 114,914 | −4 |
 
 ⚠ *That 2-byte fact is how the first §G4 run ended: its final assertion demanded proof bytes be
 **exactly** equal between the arms and went red at 190,654 vs 190,652. The assertion was wrong, not
 the prover — `rmp-serde` varint-encodes the witness, so a `≈2^16` witness costs a byte or two more
 than `F::ZERO`. It now asserts `|Δ| ≤ 8 B` and prints the worst observed Δ. Every number in the
 tables above is from that run and is unaffected; they are printed before the assertion. The
-corrected assertion is committed and compile-checked, but its re-run has not landed — the shared
-`breadstuffs/target` lock has been held by another lane's `fhegg-fhe --release` build since.*
+corrected assertion has since re-run green (`test result: ok. 1 passed`, 11.52 s), and the worst
+observed Δ over the full ladder is **4 B**, not the 2 B the first run happened to trip on.*
 
 Putting it together, all relative to the deployed point (`E[grind] = 2^pow/4 × 758 ns`; this
 session's contended rate measured 914 ns, and the quieter 758 ns from `phase-profile` is used —
