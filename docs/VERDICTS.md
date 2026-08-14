@@ -430,6 +430,57 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   real object is Poseidon2 over the field-element encoding, at a leaf
   granularity the circuit opens, in the layout the prover reads.
 
+## 4c. ⚑ THE RECURSION TOWER, MEASURED — and it refutes two of our claims
+
+`notes/recursion-tower-profile.md`, harness `circuit-prove/tests/recursion_tower_profile.rs`.
+
+**⚑ First, the instrument, because I briefed the wrong one.** *A permutation
+counter is BLIND to in-circuit Poseidon2 by construction* — an in-circuit
+permutation is an **AIR row**, not a `permute_mut` call, so pointing §D at a
+tower layer reports that layer's *native* hashing and **zero** for the thing
+the 75% claim was about. And it cannot be pointed there anyway: **layers 1–3
+are monomorphic** in `DreggRecursionConfig` via three independent welds.
+`p3_recursion::prove_next_layer<SC,…>` *is* generic; **the weld is ours.**
+The primary instrument is the **circuit op census** instead.
+
+**⚑ THE IDENTITY, measured twice with no shared code path**: the child's
+**native verify** permutations = **38,168**. The leaf wrap's **in-circuit**
+`poseidon2_perm` ops = **38,168**. Identical to the unit.
+> **A wrap's biggest table IS its child's verifier, row for row.**
+So *"verifier ×2.28" is a PROVE price, paid one layer up, as trace.* Verifier
+cost and prover cost are the same quantity at different layers.
+
+**The four answers, denominators named:**
+1. **In-circuit Poseidon2 share: leaf wrap 36.45%** of `cells(main+prep)`
+   (48.36% of `cells(main)`, 11.00% of rows); **apex-shrink 53.98%**. ⚠ **NOT
+   ~75% at any denominator** — the estimate every "the tower is where this
+   pays" claim rested on. The 36.45% is invariant across two unrelated
+   children.
+2. ⚑ **`permEmissionNarrow`'s tower factor is 1.000×.** The tower's Poseidon2
+   is **upstream `p3-poseidon2-circuit-air`, not the Lean
+   `CHIP_TABLE_AIR_JSON`** — *a display-name collision inside a cost model.*
+   Its only reach is via the child's width: a 1.3–2.1% cut that
+   **power-of-two padding absorbs whole.** At the deployed leaf it is
+   **1.077×**, independently reproducing `narrow-witness-gen.md`'s 1.076× by a
+   different route. **The hypothesis I dispatched this lane on is refuted.**
+3. ⚑ **The blowup trade is NET ≈65× WORSE PER TURN.** On the deployed rotated
+   child: prover ÷15.23, **verifier ×2.351** — and the wrap grows **×3.268 in
+   cells** while costing **26.05× the leaf**. **The leaf's blowup is a TOWER
+   knob, and every grid we have priced one layer of five.** (The decision not
+   to flip was already right; this is a much stronger reason.)
+4. **Hash-bound in the tower too, at Y/X ≈ 3.1–3.3×** (vs the leaf's 5.0–7.2×).
+   **The whole difference is `log₂h`.** ⚠ `Y` does **not** transfer to the
+   BN254 layer 4 — stated, not assumed.
+
+**Reds found and reported rather than routed around**:
+`rotation_batchstark_leaf_smoke.rs` is **RED at HEAD with no `#[ignore]` and no
+gate** (width 1896 vs `GRAD_ROT_WIDTH` 1841 vs its own comment 1647);
+`apex_shrink_trace_anatomy.rs` uses `LOG_BLOWUP = 6` against a deployed 3, so
+**its model is 8× the deployed cost**; two decision docs carry wrong numbers
+(`[9,9,15,14,15]` measures `[9,9,16,15,15]`; ~11,000 in-circuit perms hardcodes
+`q=19` where measured is **22,626**). **And there is no `2^20` in the tower at
+all — height is a property of the child.**
+
 ## 5a. The matmul contraction (landed)
 
 - **The `foldl → Finset.sum` bridge is built**, in two *named* steps so the
