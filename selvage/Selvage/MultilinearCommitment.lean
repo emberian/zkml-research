@@ -65,6 +65,7 @@ section Binding
 variable [Field F] [DecidableEq F] [Fintype ι] [DecidableEq ι]
 
 /-- The honest claim is true by construction. -/
+omit [DecidableEq F] [Fintype ι] [DecidableEq ι] in
 theorem MleEvalClaim.holds_of_commit (S : BindingCommitment Root F ι Op)
     (dom : ι ↪ F) (table : (Fin m → Bool) → F) (pt : Fin m → F) :
     MleEvalClaim.Holds S dom
@@ -74,6 +75,7 @@ theorem MleEvalClaim.holds_of_commit (S : BindingCommitment Root F ι Op)
 /-- Binding of the vector commitment fixes the encoded Boolean table, provided the
 commitment domain is large enough for the BaseFold degree window.  This is the exact
 place where vector-root binding becomes multilinear-value binding. -/
+omit [DecidableEq ι] in
 theorem basefoldWord_injective (S : BindingCommitment Root F ι Op)
     (dom : ι ↪ F) (hcard : 2 ^ m ≤ Fintype.card ι) :
     Function.Injective (fun table : (Fin m → Bool) → F =>
@@ -158,14 +160,24 @@ theorem wrong_value_refused_f5 :
       ⟨(idealCommitment (ZMod 5) (Fin 4)).commit
           (basefoldWord (ldtTower.dom 0) table), ![3], 0⟩ := by
   refine MleEvalClaim.wrong_value_refused _ _ (by norm_num) table ![3] ?_
-  norm_num [BaseFoldExample.table, mle, chiEval, cubePt]
+  have hv : mle table ![3] = 4 := by
+    have h := mobius_descent_terminal (0 : levels 1)
+    rw [basefold_terminal_is_mle] at h
+    exact h
+  rw [hv]
+  decide
 
 end MleEvalClaimExample
 
+/-- info: 'Minidregg.Selvage.basefoldWord_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms basefoldWord_injective
+/-- info: 'Minidregg.Selvage.MleEvalClaim.holds_iff_of_committed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms MleEvalClaim.holds_iff_of_committed
+/-- info: 'Minidregg.Selvage.MleEvalClaim.value_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms MleEvalClaim.value_unique
+/-- info: 'Minidregg.Selvage.MleEvalClaimExample.honestClaim_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms MleEvalClaimExample.honestClaim_holds
+/-- info: 'Minidregg.Selvage.MleEvalClaimExample.wrong_value_refused_f5' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms MleEvalClaimExample.wrong_value_refused_f5
 
 end Minidregg.Selvage
