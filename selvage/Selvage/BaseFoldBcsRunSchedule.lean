@@ -365,6 +365,9 @@ theorem paddedSegmentLast_succ {m queryCount : Nat}
     (paddedSegmentLast statement receipt round : Nat) + 1 =
       paddedWorkPrefix statement receipt (round + 1) := by
   unfold paddedSegmentLast
+  change
+    (paddedWorkPrefix statement receipt (round + 1) - 1) + 1 =
+      paddedWorkPrefix statement receipt (round + 1)
   have hstep := paddedWorkPrefix_strictMono_step statement receipt round
     round.isLt
   omega
