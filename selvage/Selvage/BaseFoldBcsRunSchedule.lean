@@ -51,7 +51,7 @@ def PaddedFullMessageRoutingSafe {m queryCount : Nat}
 diverge at padding versus challenge-result tags, query messages use distinct
 bounded labels, and the two domains differ in their first block. -/
 theorem paddedFullMessageRoutingSafe {m queryCount : Nat}
-    (hcount : queryCount ≤ modulus)
+    (hcount : queryCount ≤ BabyBearExt4.modulus)
     (statement : Statement m) (receipt : Receipt m queryCount) :
     PaddedFullMessageRoutingSafe statement receipt := by
   intro left
