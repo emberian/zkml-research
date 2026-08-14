@@ -82,16 +82,7 @@ theorem constructionDistinguisher_primitiveWorkOn_exact
   unfold Distinguisher.primitiveWorkOn transcriptPrimitiveWork
   conv_rhs =>
     rw [constructionQueries_eq_ofFn, List.map_ofFn, List.ofFn_eq_map]
-  rw [show
-    List.flatMap (fun j : Fin (m + queryCount) => pure (j : Nat))
-        (List.finRange (m + queryCount)) =
-      List.map (fun j : Fin (m + queryCount) => (j : Nat))
-        (List.finRange (m + queryCount)) by
-    simpa only [Function.comp_apply] using
-      (List.flatMap_pure_eq_map
-        (fun j : Fin (m + queryCount) => (j : Nat))
-        (List.finRange (m + queryCount)))]
-  rw [List.map_map]
+  rw [bind_pure_comp, List.map_map]
   apply congrArg List.sum
   apply List.map_congr_left
   intro j _
