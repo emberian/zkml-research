@@ -243,7 +243,11 @@ theorem paddedTranscriptPrimitiveWork_eq_add_draws {m queryCount : Nat}
 #check @paddedChallengeMessage_eq_of_samePrefix
 #check @paddedTranscriptPrimitiveWork_eq_add_draws
 
+/-- info: 'Minidregg.Selvage.BaseFoldBcsPadding.padMessage_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
 #print axioms padMessage_injective
+/-- info: 'Minidregg.Selvage.BaseFoldBcsPadding.paddedTranscriptPrimitiveWork_eq_add_draws' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
 #print axioms paddedTranscriptPrimitiveWork_eq_add_draws
 
 end
