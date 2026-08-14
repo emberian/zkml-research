@@ -879,7 +879,15 @@ theorem paddedDeferredWorkRun_head_semantics {m queryCount : Nat}
   refine ⟨state, ?_, ?_, hsim, ?_, ?_⟩
   · rw [← paddedDeferredStateNat_full_eq_run]
     exact hstate
-  · simpa using hans
+  · have htake :
+        (List.ofFn
+          (paddedSegmentHeadAnswerSchedule statement receipt coins)).take
+            (m + queryCount) =
+          List.ofFn
+            (paddedSegmentHeadAnswerSchedule statement receipt coins) :=
+      (List.take_eq_self_iff _).2 (by simp)
+    rw [htake] at hans
+    exact hans
   · simpa [paddedWorkPrefix_final] using hwork
   · rw [hremaining, paddedWorkPrefix_final]
     simp
