@@ -24,6 +24,17 @@ landed (`minidregg@bf0b311`, `Selvage/HashFamily.lean`).
 4. ⚑ **So the real lever is not the hash and not the field — it is WHICH LAYERS
    GET RECURSED OVER.** Where a layer's hash is re-executed as constraints, pay
    for Poseidon2. Where it is not, a traditional hash wins immediately.
+5. ⚑⚑ **AND ONE LEVER DOES CROSS `R*`: the ARITHMETIZATION.** Same two primitives
+   priced three ways — **102× in R1CS, ~31–56× in a bit-decomposed AIR, ~3.2× under
+   a LOOKUP argument** (§2). **`R` is not a property of the hash. It is a property
+   of how you arithmetize it**, and the lookup route lands *inside* the crossover
+   band. **That is the honest answer to this note's title**, and it is a measurement
+   we have not taken.
+
+**Both halves of the trade are now measured by me on ONE pinned checkout** —
+in-circuit **30.6×** in Poseidon2's favour (`p3-blake3-air` 9,168 cells vs 300), and
+native **5.82×** against it (same AIR, same field, only the Merkle hash swapped:
+40,195 ms vs 6,907 ms). **Neither side of this trade is folklore any more.**
 
 **And that makes one thing actionable today, at zero cryptanalytic risk** (§4):
 our **standalone proofs that a NATIVE Rust verifier consumes** — 18 such entry
@@ -903,11 +914,25 @@ hashes are one import-boundary decision away from being instances.**
    already applies it at the top of the tower and got 90–145× from it; nothing
    applies it anywhere else, and my own first draft got the layer wrong for want of
    it being written down.
-4. **Re-scope the binary-field programme onto what it actually buys.** It buys the
+4. ⚑⚑ **Price a LOOKUP-based Blake3 AIR in our own unit — this is the highest-value
+   open measurement on the page** (§2). Blowup-cells including the lookup table and
+   multiplicity columns, against Poseidon2's 1,192. **Under ~4,000 and this entire
+   verdict flips**, because the arithmetization is worth a 27× swing where the hash
+   and the field are worth 2–7× each. We already hold LogUp machinery.
+5. **Re-scope the binary-field programme onto what it actually buys.** It buys the
    **proving** collapse (§1d finding 1: Grøstl out-proves Vision by 3.56×, and the
    algebraic advantage falls from ~30× to ~1.3×) and the **de-welding** of hash
    from field that Flock names. **It does not buy an escape from Poseidon2 in the
    recursion layers** and should stop being sold that way — including by me.
+6. 🔴 **Fix `poseidon2-audit-verdict.md` and `hash-verdict.md`: the "+286 bits" is
+   not sourceable and is wrong** (§3). Derived correctly it is ≈ +203 collision /
+   +248 preimage at α=7. And **no Poseidon paper states a bits-margin at all** — the
+   published margin is "+2 R_F, +7.5% R_P, *arbitrarily* decided."
+7. ⚠ **If we ever do leave the AO family, choose SHA-256 or Keccak-24, not Blake3,
+   IF the reason is the analysis record** — Blake3 has **zero** cryptanalysis papers
+   in the eprint corpus and 7 rounds against ancestors broken to 7.5–8, and SHA-256
+   is *also* cheaper in-circuit (7,728 vs 9,168 cells). **If the reason is cost,
+   Blake3 is fine — say which reason it is.**
 5. **Land a second `HashFamily` instance from a real traditional hash.** The
    mathematics is done; the boundary plumbing is not. Until a second instance
    exists, "the swap is an instantiation" is a claim with one witness. **Two
@@ -917,9 +942,12 @@ hashes are one import-boundary decision away from being instances.**
    moved **Poseidon2 → Poseidon1 (KoalaBear, MDS)** over exactly this attack — so
    this is not a cosmetic fix, it is the direction the people running the bounty
    went.
-7. ⚠ **Watch the α=3 trade.** The KoalaBear migration's 1.82× in-circuit win is
-   partly bought with security margin (§3). Price it as a security decision, not
-   only a cost one.
+8. ✅ **Stop worrying that KoalaBear's α=3 buys its speed with margin — held at
+   equal cost it is the OPTIMUM** (§3, eprint 2025/1920: α=3 gives 32% more security
+   per AIR constraint than α=7). ⚠ But **do** track that the 2026 bounty frontier is
+   moving fast against d=3 specifically (R_P 6→12 in a quarter) while d=5/d=7
+   targets went unclaimed. Efficiency-adjusted security and observed adversarial
+   progress point opposite ways; both are true.
 
 ---
 
