@@ -37,7 +37,48 @@ multiplying them:
 - **A measured "13.13× faster" is a phase ratio, not a system ratio.** Grind
   alone (25%, blowup-independent) caps any blowup-only speedup at 4×.
 
-## ⚑ And then the model failed to populate — which is the real finding
+## ✅ POPULATED (2026-08-14) — the data was in `notes/phase-profile.md` all along
+
+**Deployed point, b=6, pow=16, IR-v2 descriptor batch** (ms, min-of-21,
+contended box — ratios are the deliverable):
+
+| phase | ms | share | kind |
+|---|---:|---:|---|
+| **Merkle-commit** | **42.509** | **51.3%** | hash |
+| LDE quotient-eval | 12.925 | 15.6% | arith |
+| **grind (pow=16)** | **12.800** | **15.5%** | hash |
+| LDE commit | 7.710 | 9.3% | arith |
+| open arith | 3.545 | 4.3% | arith |
+| everything else | 3.352 | 4.0% | — |
+| **TOTAL** | **82.84** | | |
+
+⚠ **My guessed share for grind was 25%; it is 15% at b=6** — and *b-dependent*,
+because grind alone does not scale with blowup: **41% at b=4, 56% at b=3.**
+The "~25%" in circulation was true at *some* b and quoted as if global.
+
+### The composition, computed rather than guessed
+
+| configuration | ms | vs deployed |
+|---|---:|---:|
+| deployed (b=6, pow=16) | 82.84 | — |
+| blowup 6→3 only | 22.92 | **3.61×** |
+| grind fix only (at b=6) | 71.75 | 1.15× |
+| **both** | **11.83** | **7.00×** |
+
+- **The prove-only part moves 6.92× but the system moves 3.61×**, because
+  grind does not shrink. *A phase ratio is not a system ratio.*
+- ⚑ **Order matters by 1.68×**: the grind fix is worth **1.15× alone** and
+  **1.94× after the blowup drop**, because the drop takes grind's share from
+  15% to **56%**.
+- ⚑ **The query increase is nearly free** — `query/open` is **0.068 ms, 0.08%
+  of prove.** Tripling queries to hold soundness at lower blowup costs
+  essentially nothing. *That is why the blowup trade is good, and it is not
+  visible anywhere in the soundness discussion.*
+- ⚠ The separately-measured "13.13× at 4096 rows" is a **different workload**
+  (trace height, not the descriptor batch) — do not compose the two without
+  reconciling the shapes.
+
+## ⚑ The model failing to populate at first — which is the real finding
 
 **I could not fill in the phase shares from our own notes.** They record
 *conclusions* ("hash-bound", "25% is grind", "13.13× faster at 4096 rows")
