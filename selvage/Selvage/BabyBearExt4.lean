@@ -15,10 +15,11 @@ two-billion-element base field is used.
 -/
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.KummerExtension
+import Mathlib.Tactic.NormNum.Prime
 
 namespace Minidregg.Selvage.BabyBearExt4
 
-open Polynomial
+open Polynomial IntermediateField AdjoinRoot
 
 set_option autoImplicit false
 
@@ -37,11 +38,11 @@ def extensionPolynomial : BabyBear[X] := X ^ 4 - C 11
 
 theorem eleven_euler_witness :
     (11 : BabyBear) ^ halfOrder = -1 := by
-  native_decide
+  norm_num [BabyBear, modulus, halfOrder]
 
 theorem neg_eleven_euler_witness :
     (-11 : BabyBear) ^ halfOrder = -1 := by
-  native_decide
+  norm_num [BabyBear, modulus, halfOrder]
 
 /-- An Euler witness `a^((p-1)/2) = -1` rules out a square root in BabyBear. -/
 private theorem nonsquare_of_euler_witness (a : BabyBear)
@@ -52,7 +53,9 @@ private theorem nonsquare_of_euler_witness (a : BabyBear)
     subst b
     have azero : a = 0 := by simpa using square.symm
     subst a
-    norm_num at witness
+    have zero_ne_neg_one : (0 : BabyBear) ≠ -1 := by
+      norm_num [BabyBear, modulus]
+    exact zero_ne_neg_one (by simpa [halfOrder] using witness)
   have fermat : b ^ (modulus - 1) = 1 := by
     simpa [BabyBear, modulus] using
       (FiniteField.pow_card_sub_one_eq_one b bne)
@@ -64,7 +67,9 @@ private theorem nonsquare_of_euler_witness (a : BabyBear)
         norm_num [modulus, halfOrder]
       _ = a ^ halfOrder := congrArg (· ^ halfOrder) square
       _ = -1 := witness
-  norm_num at impossible
+  have one_ne_neg_one : (1 : BabyBear) ≠ -1 := by
+    norm_num [BabyBear, modulus]
+  exact one_ne_neg_one impossible
 
 theorem eleven_not_square (b : BabyBear) : b ^ 2 ≠ 11 :=
   nonsquare_of_euler_witness 11 eleven_euler_witness b
@@ -92,12 +97,12 @@ theorem extensionPolynomial_irreducible : Irreducible extensionPolynomial := by
           congrArg degree
             (minpolyExact.symm.trans (dif_neg notIntegral))
       apply neg_eleven_not_square (Algebra.norm BabyBear b)
-      rw [← map_pow, square, ← adjoin.powerBasis_gen integral,
+      rw [← map_pow, square, ← IntermediateField.adjoin.powerBasis_gen integral,
         Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly]
       simp [minpoly_gen, minpolyExact])
   simpa [extensionPolynomial] using quartic
 
-instance extensionPolynomialIrreducible : Fact extensionPolynomial.Irreducible :=
+instance extensionPolynomialIrreducible : Fact (Irreducible extensionPolynomial) :=
   ⟨extensionPolynomial_irreducible⟩
 
 /-- The actual degree-four challenge carrier, with the quotient's power basis. -/
@@ -114,6 +119,8 @@ theorem extensionPolynomial_natDegree : extensionPolynomial.natDegree = 4 := by
   simp [extensionPolynomial]
 
 theorem ext4_finrank : Module.finrank BabyBear Ext4 = 4 := by
+  change Module.finrank BabyBear
+    (BabyBear[X] ⧸ Ideal.span {extensionPolynomial}) = 4
   rw [finrank_quotient_span_eq_natDegree]
   exact extensionPolynomial_natDegree
 
