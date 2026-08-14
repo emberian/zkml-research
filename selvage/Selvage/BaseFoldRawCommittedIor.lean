@@ -182,21 +182,21 @@ theorem friRawAdaptiveEquivocates_flatHash_collision
     (Q : FriIndependentQuerySchedule ι m qCount)
     (hequiv : FriRawAdaptiveEquivocates
       (fun n => roScheme F (ι n) (Hsh n)) T st r qCount Q) :
-    ∃ n : ℕ, ∃ hn : n ≤ m, ∃ x y : ι n → F,
+    ∃ n : Fin (m + 1), ∃ x y : ι n → F,
       x ≠ y ∧ Hsh n x = Hsh n y := by
   rcases hequiv with ⟨j, opening, a, _hopen, hquery⟩
   rcases hquery with hleft | hright | hnext
   · obtain ⟨hne, hhash⟩ :=
       roScheme_positionEquivocation_collision (Hsh j) hleft
-    exact ⟨j, Nat.le_of_lt j.isLt, (opening a).leftPath,
+    exact ⟨⟨j, lt_trans j.isLt (Nat.lt_succ_self m)⟩, (opening a).leftPath,
       st.wordAt r j (Nat.le_of_lt j.isLt), hne, hhash⟩
   · obtain ⟨hne, hhash⟩ :=
       roScheme_positionEquivocation_collision (Hsh j) hright
-    exact ⟨j, Nat.le_of_lt j.isLt, (opening a).rightPath,
+    exact ⟨⟨j, lt_trans j.isLt (Nat.lt_succ_self m)⟩, (opening a).rightPath,
       st.wordAt r j (Nat.le_of_lt j.isLt), hne, hhash⟩
   · obtain ⟨hne, hhash⟩ :=
       roScheme_positionEquivocation_collision (Hsh (j + 1)) hnext
-    exact ⟨j + 1, Nat.succ_le_iff.mpr j.isLt, (opening a).nextPath,
+    exact ⟨⟨j + 1, Nat.succ_lt_succ j.isLt⟩, (opening a).nextPath,
       st.wordAt r (j + 1) (Nat.succ_le_iff.mpr j.isLt), hne, hhash⟩
 
 private def idealFriQueryOpening
