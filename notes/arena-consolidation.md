@@ -216,7 +216,31 @@ SIGTERM [3017.811s] (9/10) …tfhe_wgpu_pbs_deployed_envelope deployed_918_by_91
 in the summary line from a real one. I came within one command of reporting a regression in a module
 whose diff is a pure initializer swap. This is the *"refusal renders as the expected verdict"* /
 *"the wrapper answers for the work"* class: **read the per-test line, never the summary count.**
-It happened **twice**, at 3017.8 s and 3137.0 s, on two different tests.
+It happened **three times**, at 3017.8 s, 3137.0 s and 3106.0 s.
+
+### ⚑ Three "failures" at the same wall-clock, and the wrapper that caused all three
+
+Those three numbers are within **2% of each other**, on two different tests, across two sessions.
+That is not slowness and it is not flakiness — it is a **limit, fired reproducibly**. Chasing it
+found the limit is **not in the code and not in the test runner**:
+
+* nextest's `full` profile sets `slow-timeout = { period = "60s", terminate-after = 60 }` — a 3600 s
+  hard terminate. **3106 s never reached it**, and `grep -n 'pbs\|tfhe\|envelope' .config/nextest.toml`
+  returns nothing, so no tighter per-test override applies either.
+* The wrapper subshell's trailing `echo "EXIT=$?"` **never wrote a line** — so `cargo nextest` never
+  returned at all. The clean `Summary` and `error: test run failed` in the log are nextest's SIGTERM
+  handler reporting on its way down, not a verdict.
+
+So the killer is **the agent harness stopping a backgrounded bash job at ~50 minutes**, and the test
+simply takes longer than that. Every one of the three "1 failed" lines is that, wearing a verdict's
+clothes.
+
+⚠ **The lesson generalises past this repo:** a test longer than the harness's background-job lifetime
+is *unrunnable* from a background job, and it does not report itself as unrunnable — it reports as
+**failed**, at a plausible-looking duration, with a summary line that reads exactly like a real
+assertion failure. Anything hour-scale must be launched **detached from the process group**
+(`start_new_session=True` from Python; macOS has no `setsid`) or it can never pass, no matter how
+correct the code is.
 
 ### What is confirmed, and the one thing that is not
 
@@ -228,17 +252,20 @@ Confirmed post-migration, every kernel in the inventory covered by at least one 
 | featured TFHE / private-book | **9/9** — `private_book_bfv_wgpu_matrix` ×3, `tfhe_wgpu_blind_rotation`, `tfhe_wgpu_cmux`, `tfhe_wgpu_ntt_crossover` ×2, `tfhe_wgpu_parity`, **`tfhe_wgpu_pbs_extract_keyswitch` (1.43 s)** |
 
 ⚠ **Not confirmed: 5 `#[ignore]`-gated hour-scale tests** — 4 in `tfhe_high_level_wgpu`, 1 in
-`tfhe_wgpu_pbs_deployed_envelope`. Each runs **>52 minutes** (both SIGTERMs above landed at ~3100 s
-*inside a single test*), so the set is ~4.5 hours serialized. They have never *failed*; two separate
-runs were killed, once by ENOSPC and once by a session death.
+`tfhe_wgpu_pbs_deployed_envelope`. Each runs **>52 minutes** (all three SIGTERMs above landed at
+~3100 s *inside a single test*), so the set is ~4.5 hours serialized. **They have never failed** —
+one run died to ENOSPC and three to the ~50-minute background-job limit described above.
 
 The module they cover, `tfhe_blind_rotation_ntt_wgpu`, **is** covered by a passing tooth —
 `blind_rotate_extract_and_keyswitch_matches_tfhe_exactly`, which is a plain `#[test]` and passed in
 1.43 s. So the gap is not "an unverified module"; it is "the deployed 918×918 envelope and the
 high-level `FheUint32` path unverified at deployed scale." The one of the five that bears most
 directly on this change is `deployed_918_by_918_dense_pbs_matches_tfhe_and_reuses_device_keys` —
-**device-key reuse across calls is exactly the lifetime consolidation altered** — and it was run to
-completion rather than reasoned about.
+**device-key reuse across calls is exactly the lifetime consolidation altered.** It is running
+detached at the time of writing; its log is
+`…/scratchpad/tfhe-918-detached.log`, and the honest state of this lane is that **its result is not
+in evidence yet.** Reading a `PASS` there closes the gap; reading a real assertion failure reopens
+the TFHE half of this change. Do not read a `SIGTERM` line as either.
 
 ---
 
