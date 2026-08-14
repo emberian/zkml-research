@@ -324,6 +324,42 @@ theorem programConstruction_preserves_ro_fresh_of_not_prefix
       (programPrefixes_preserves_ro_fresh_of_not_prefix ro primitive iv []
         hrun hfresh (by simpa using hnotPrefix))
 
+/-- A successful construction step changes only RO keys that are prefixes of
+the current full message. -/
+theorem prefixHybridStep_constr_preserves_ro_fresh_of_not_prefix {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (roundCoins : Fin q → PrefixHybridCoins Rate Cap)
+    (state next : PrefixHybridState Rate Cap) (j : Fin q)
+    (x : Rate) (xs rateCoins : List Rate) (capacityCoins : List Cap)
+    (target : List Rate)
+    (hquery : D.move state.ans = .constr x xs)
+    (hcoins : roundCoins j = .construction rateCoins capacityCoins)
+    (hstep : prefixHybridStep D iv roundCoins state j = .ok next)
+    (hfresh : state.ro.lookup target = none)
+    (hnotPrefix : ¬ (target <+: x :: xs)) :
+    next.ro.lookup target = none := by
+  unfold prefixHybridStep at hstep
+  rw [hquery, hcoins] at hstep
+  dsimp only at hstep
+  by_cases hcounts :
+      rateCoins.length = (x :: xs).length ∧
+        capacityCoins.length = (x :: xs).length
+  · rw [if_pos hcounts] at hstep
+    cases hprogram : programConstruction iv state.ro state.primitive
+        (x :: xs) rateCoins capacityCoins with
+    | none =>
+        rw [hprogram] at hstep
+        contradiction
+    | some result =>
+        rw [hprogram] at hstep
+        injection hstep with hnext
+        subst next
+        exact programConstruction_preserves_ro_fresh_of_not_prefix
+          iv state.ro state.primitive (x :: xs) rateCoins capacityCoins
+          hprogram hfresh hnotPrefix
+  · rw [if_neg hcounts] at hstep
+    contradiction
+
 /-- The adaptive prefix-hybrid step exposes the same final rate coin under the
 fresh-path predicate. -/
 theorem prefixHybridStep_constr_of_primitivePathFresh {q : Nat}
@@ -402,13 +438,48 @@ theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
   simp only [SpQuery.prefixCoins]
   rw [hcore]
 
+/-- The fixed work adapter inherits the same RO frame property from a
+successful construction step. -/
+theorem workHybridStep_constr_preserves_ro_fresh_of_not_prefix {q : Nat}
+    (D : Distinguisher Rate Cap q) (iv : Rate × Cap)
+    (state next : WorkHybridState Rate Cap) (j : Fin q)
+    (x : Rate) (xs : List Rate) (target : List Rate)
+    (hquery : D.move state.core.ans = .constr x xs)
+    (hstep : workHybridStep D iv state j = .ok next)
+    (hfresh : state.core.ro.lookup target = none)
+    (hnotPrefix : ¬ (target <+: x :: xs)) :
+    next.core.ro.lookup target = none := by
+  unfold workHybridStep at hstep
+  dsimp only at hstep
+  rw [hquery] at hstep
+  simp only [SpQuery.primitiveCalls] at hstep
+  split at hstep
+  · simp only [SpQuery.prefixCoins] at hstep
+    split at hstep
+    · rename_i coreNext hcore
+      injection hstep with hnext
+      subst next
+      exact prefixHybridStep_constr_preserves_ro_fresh_of_not_prefix
+        D iv
+        (fun _ => .construction
+          ((state.remaining.take (xs.length + 1)).map Prod.fst)
+          ((state.remaining.take (xs.length + 1)).map Prod.snd))
+        state.core coreNext j x xs
+        ((state.remaining.take (xs.length + 1)).map Prod.fst)
+        ((state.remaining.take (xs.length + 1)).map Prod.snd)
+        target hquery rfl hcore hfresh hnotPrefix
+    · contradiction
+  · contradiction
+
 #check @programPrefixes_some_of_primitivePathFresh
 #check @programPrefixes_fresh_final_rate
 #check @programPrefixes_preserves_ro_fresh_of_not_prefix
 #check @programConstruction_fresh_final_rate
 #check @programConstruction_preserves_ro_fresh_of_not_prefix
+#check @prefixHybridStep_constr_preserves_ro_fresh_of_not_prefix
 #check @prefixHybridStep_constr_of_primitivePathFresh
 #check @workHybridStep_constr_of_primitivePathFresh
+#check @workHybridStep_constr_preserves_ro_fresh_of_not_prefix
 
 /-- info: 'Minidregg.Selvage.programPrefixes_some_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
@@ -425,12 +496,18 @@ theorem workHybridStep_constr_of_primitivePathFresh {q : Nat}
 /-- info: 'Minidregg.Selvage.programConstruction_preserves_ro_fresh_of_not_prefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms programConstruction_preserves_ro_fresh_of_not_prefix
+/-- info: 'Minidregg.Selvage.prefixHybridStep_constr_preserves_ro_fresh_of_not_prefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms prefixHybridStep_constr_preserves_ro_fresh_of_not_prefix
 /-- info: 'Minidregg.Selvage.prefixHybridStep_constr_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms prefixHybridStep_constr_of_primitivePathFresh
 /-- info: 'Minidregg.Selvage.workHybridStep_constr_of_primitivePathFresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms workHybridStep_constr_of_primitivePathFresh
+/-- info: 'Minidregg.Selvage.workHybridStep_constr_preserves_ro_fresh_of_not_prefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms workHybridStep_constr_preserves_ro_fresh_of_not_prefix
 
 end PrefixFresh
 
