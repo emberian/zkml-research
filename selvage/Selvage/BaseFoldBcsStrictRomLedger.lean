@@ -26,6 +26,7 @@ open Minidregg.Selvage.BaseFoldPoseidon2Rom
 open Minidregg.Selvage.BaseFoldBcsFiatShamir
 open Minidregg.Selvage.BaseFoldBcsSpongeGame
 open Minidregg.Selvage.BaseFoldBcsQuerySampling
+open Minidregg.Selvage.BaseFoldBcsQuerySamplingJoint
 
 set_option autoImplicit false
 
@@ -74,13 +75,75 @@ theorem add_rawFailure_le_strictLedger
           strictRomSamplingError receiptWork queryCount := by
   linarith
 
+/-! ## One explicit raw-IOR + ROM + sampling ledger -/
+
+open Polynomial
+
+/-- The strict accepted-seed raw-IOR theorem, exact receipt work ledger, sponge
+game hop, and `q / p` rejection price compose into one formula.  The retained
+equivocation probability remains visible and `hrom` remains the honest open
+ideal-permutation premise. -/
+theorem strictAcceptedRawRomLedger
+    {ell m queryCount : Nat}
+    (hrom : romConstructionTarget)
+    (T : FoldingTower E (PowerTwoFriLevels ell) m)
+    (st : RawFriAdaptiveTranscript
+      (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)))
+    (hell : ell ≤ 28) (hmell : m ≤ ell)
+    (z : Fin m → E) (H : E)
+    (word : PowerTwoFriLevels ell 0 → E)
+    (prover : (Nat → E) → Nat → Polynomial E)
+    {tau : Real} (htau1 : tau ≤ 1)
+    (htau : ∀ j : Fin m,
+      tau ≤ 1 /
+        (Fintype.card (PowerTwoFriLevels ell (j + 1)) : Real))
+    (hword0 : st.word 0 (fun i => i.elim0) = word)
+    (hfalse : ¬ BaseFoldExactClaim T z H word)
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (chi : Nat → E) (i : Nat), i < m →
+      (prover chi i).degree < ((2 + 1 : Nat) : WithBot Nat))
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer BaseFoldBcsFiatShamir.Rate
+      BaseFoldBcsFiatShamir.Cap) → Bool) :
+    uniformProb
+      ((Fin m → E) × AcceptedSeedFamily queryCount)
+      (fun sample =>
+        BaseFoldRawCommittedIorAccepts
+          (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) T st
+          z H prover queryCount sample.1
+          (powerTwoCoherentSchedule hmell
+            (acceptedSeedCoordinates hell sample.2))) +
+      |realProb (constructionDistinguisher statement receipt verdict) (0, 0) -
+        idealProb (constructionDistinguisher statement receipt verdict) (0, 0)| +
+      uniformProb (Fin queryCount → Digest) QuerySeedRejection
+      ≤ (m : Real) * (3 / Fintype.card E) +
+          (1 - tau) ^ queryCount +
+          uniformProb
+            ((Fin m → E) × QueryCoordinateFamily ell queryCount)
+            (fun sample =>
+              FriRawAdaptiveEquivocates
+                (fun n => BinaryMerkle.openingScheme hashSuite (ell - n))
+                T st sample.1 queryCount
+                (powerTwoCoherentSchedule hmell sample.2)) +
+          strictRomSamplingError
+            (transcriptPrimitiveWork statement receipt) queryCount := by
+  apply add_rawFailure_le_strictLedger
+  · exact acceptedSeedRawCommittedIor_coherent_exact_sound
+      T st hell hmell z H word prover htau1 htau hword0 hfalse hpm hdeg
+  · exact constructionDistinguisher_rom_and_rejection_bound
+      hrom statement receipt verdict
+
 #check @strictRomSamplingError
 #check @constructionDistinguisher_rom_and_rejection_bound
 #check @add_rawFailure_le_strictLedger
+#check @strictAcceptedRawRomLedger
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsStrictRomLedger.constructionDistinguisher_rom_and_rejection_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms constructionDistinguisher_rom_and_rejection_bound
+/-- info: 'Minidregg.Selvage.BaseFoldBcsStrictRomLedger.strictAcceptedRawRomLedger' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms strictAcceptedRawRomLedger
 
 end
 
