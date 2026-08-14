@@ -273,9 +273,42 @@ theorem wrong_value_bound_f5
   norm_num at h ⊢
   exact h
 
+/-- The F5 spike cannot form a strict BaseFold claim at any value: it is not
+in the degree-two RS window. -/
+theorem spike_not_exact_claim_f5 (H : ZMod 5) :
+    ¬ BaseFoldExactClaim ldtTower ![3] H spikeWord := by
+  rintro ⟨t, hword, hval⟩
+  apply spikeWord_notMem
+  rw [hword]
+  simpa using evalOnDomain_mem_reedSolomonCode (ldtTower.dom 0)
+    (booleanMobiusPolynomial 1 t) (degree_booleanMobiusPolynomial_lt 1 t)
+
+/-- **Arbitrary-word premise inhabitation:** the strict theorem fires on the
+landed non-codeword spike and reports the concrete one-round `3/5` bound. -/
+theorem arbitrary_word_bound_f5
+    (H : ZMod 5)
+    (prover : (ℕ → ZMod 5) → ℕ → Polynomial (ZMod 5))
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (χ : ℕ → ZMod 5) (i : ℕ), i < 1 →
+      (prover χ i).degree < ((2 + 1 : ℕ) : WithBot ℕ)) :
+    uniformProb (Fin 1 → ZMod 5) (fun r =>
+      BaseFoldIorAccepts ldtTower ![3] H spikeWord prover r) ≤ 3 / 5 := by
+  have hne : ∀ n, n ≤ 1 → Nonempty (levels n) := by
+    intro n hn
+    interval_cases n
+    · exact ⟨(⟨0, by decide⟩ : Fin 4)⟩
+    · exact ⟨(⟨0, by decide⟩ : Fin 2)⟩
+  have h := basefoldIor_exact_sound ldtTower ![3] H spikeWord prover hne
+    (spike_not_exact_claim_f5 H) hpm hdeg
+  rw [ZMod.card] at h
+  norm_num at h ⊢
+  exact h
+
 end BaseFoldIorExample
 
 /-- info: 'Minidregg.Selvage.basefoldIor_wrong_value_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms basefoldIor_wrong_value_sound
+/-- info: 'Minidregg.Selvage.basefoldIor_exact_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms basefoldIor_exact_sound
 
 end Minidregg.Selvage
