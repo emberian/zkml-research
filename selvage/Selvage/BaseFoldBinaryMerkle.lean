@@ -25,7 +25,7 @@ variable {ell m : Nat}
 
 /-- A collision together with the concrete FRI level at which its two
 preimages were exposed. -/
-structure LocatedMerkleCollision (H : HashSuite F Digest) (m : Nat) : Prop where
+structure LocatedMerkleCollision (H : HashSuite F Digest) (m : Nat) where
   level : Fin (m + 1)
   collision : Collision H
 
