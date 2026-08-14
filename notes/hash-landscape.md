@@ -91,10 +91,36 @@ Harness: `notes/hash-landscape-scripts/crossover.py`.
 | **Blake3** | `p3-blake3-air` | **1** (`num_rows = inputs.len()`) | 9,168 | **9,168** | **30.6×** |
 | **Keccak-f** | `p3-keccak-air` | **24** (`NUM_ROUNDS`) | 2,633 | **63,192** | **210.6×** |
 
-⚑ **Blake3 is 6.9× cheaper in-circuit than Keccak in a prime field.** "Traditional
-hash" is not one number — Blake3's 32-bit ARX structure lands two 16-bit limbs per
-word and **one row per compression**, where Keccak needs 24. Any analysis that
-prices "a bitwise hash" from the Keccak figure over-charges Blake3 by ~7×.
+Filled out across every hash and field in the pinned tree (two independent
+derivations — my `size_of` readout and a lane's standalone `rustc` compile of the
+`#[repr(C)]` structs — **agreed exactly on every overlapping cell**):
+
+| hash | field / config | cols | degree | LDE blowup | **blowup-cells** |
+|---|---|---:|---:|---:|---:|
+| Poseidon2 t=16 | **KoalaBear α=3** | **164** | 3 | 4 | **656** |
+| Poseidon2 t=16 | BabyBear α=7, REG=1 | 298 | 3 | 4 | 1,192 |
+| Poseidon2 t=16 | BabyBear α=7, **REG=0** | **157** | **7** | **8** | **1,256** |
+| Poseidon2 t=16 | Mersenne31 α=5, REG=0 | 158 | 5 | 8 | 1,264 |
+| **SHA-256** | any 31-bit prime | **7,728** | 3 | 4 | 30,912 |
+| **Blake3** | any 31-bit prime | **9,168** | 3 | 4 | 36,672 |
+| **Keccak-f** | any 31-bit prime | **63,192** | 3 | 4 | 252,768 |
+
+⚑ **Three findings in that table that a cells-only view hides.**
+
+1. **Blake3 is 6.9× cheaper in-circuit than Keccak**, and **SHA-256 is cheaper
+   still** (7,728 vs 9,168). "Traditional hash" is not one number — Blake3's 32-bit
+   ARX lands two 16-bit limbs per word and **one row per compression**, where Keccak
+   needs 24. Pricing "a bitwise hash" from the Keccak figure over-charges Blake3 ~7×.
+2. ⚑ **The narrow degree-7 BabyBear AIR is WORSE than the wide degree-3 one once
+   the LDE blowup is charged** — 157 cols at blowup 8 = **1,256** against 298 cols
+   at blowup 4 = **1,192**. A width comparison inverts a cost comparison.
+3. ⚑⚑ **KoalaBear α=3 beats every BabyBear configuration by 1.8–1.9×** on
+   blowup-cells (656 vs 1,192–1,256), and **the S-box exponent is not a knob — the
+   prime forces it.** `gcd(α, p−1) = 1` gives: **BabyBear ⇒ α=7 forced** (3 and 5
+   both divide `p−1 = 15·2²⁷`), **KoalaBear ⇒ α=3** (`p−1 = 127·2²⁴`), M31 ⇒ α=5,
+   Goldilocks ⇒ α=7, binary towers ⇒ α=7 forced. ⚠ **So "α=3 vs α=7" is a FIELD
+   choice, not a parameter choice**, and "switch BabyBear to α=3" is not an option
+   that exists.
 
 #### ⚑ Cross-checked by a second, independent instrument
 
@@ -116,6 +142,28 @@ a wider table costs more than its cell count through per-row and per-column
 constants, which is the same effect `field-op-counts.md` Finding 3 measured on the
 width-4 quotient chunks. **I use the cell ratio because it is ours and exact; the
 throughput ratio says the cell ratio is, if anything, generous to the swap.**
+
+#### ⚑ And the cell ratio is BRACKETED by wall clock, on these exact AIRs
+
+`bench-hash-in-snark` (Han Ju; i9-13900K, 24 threads, Plonky3, rate ½, 256 queries)
+benchmarks **`p3-blake3-air`, `p3-keccak-air` and `p3-poseidon2-air` at KoalaBear
+t=16 α=3** — i.e. the exact 9,168-col and 164-col AIRs above:
+
+| trace height | Poseidon2 | Blake3 | **P2 : Blake3** |
+|---|---:|---:|---:|
+| 2¹² | 578 K perms/s | 28.9 K/s | **20.0×** |
+| 2¹⁴ | 1.47 M/s | 21.7 K/s | 67.8× |
+| 2¹⁶ | 1.84 M/s | 15.8 K/s | 116× |
+| 2¹⁹ | 1.71 M/s | 12.9 K/s | **133×** |
+| 2²⁰ | 1.60 M/s | **OOM** | — |
+
+**The wall-clock ratio brackets the 55.9× KoalaBear cell ratio from both sides and
+crosses it at ~2¹³–2¹⁴.** Below that, the fixed 256-query FRI cost swamps a small
+trace and Poseidon2 looks *worse* than cells predict; above it, Blake3's 9,168
+columns go bandwidth-bound and Poseidon2 looks *better*. ⚑ **And there is a memory
+wall, not only a time one: peak RSS at 2¹⁹ is 0.713 GB vs 36.21 GB — 50.8× — and
+Blake3 OOMs at 2²⁰ where Poseidon2 is comfortable.** That is a hard operational
+constraint no cost table shows.
 
 **The invocation ratio is 1:1 where it matters.** At a 256-bit digest a 2-to-1
 Merkle node is *one* Poseidon2-w16 permutation **or** *one* Blake3 compression, so
@@ -459,6 +507,48 @@ and **nobody has asked it proof by proof.** Every proof that answers *no* is a f
 entry-point count, not an audit result. Some of those 18 may be wrapped on paths I
 did not follow. **What is established is that the class is non-empty and the
 principle is the tree's own** — not that all 18 qualify.
+
+### ⚑⚑ MEASURED, BY ME, ON OUR OWN PINNED PLONKY3 — 5.82×
+
+The §4 claim is no longer a derivation. Our pinned checkout ships two examples that
+**prove the identical AIR over the identical field and differ in exactly one thing —
+the Merkle/challenger hash**:
+
+- `keccak-air/examples/prove_goldilocks_poseidon2.rs` — Merkle hash `Poseidon2Goldilocks<8>`
+- `keccak-air/examples/prove_goldilocks_keccak.rs` — Merkle hash `Keccak-256`
+
+Same `KeccakAir`, same Goldilocks, same `NUM_HASHES = 1365`, same FRI parameters.
+**This is the native-hash swap, isolated.** Wall clock, whole binary, this laptop:
+
+| Merkle/challenger hash | runs | **min** | spread |
+|---|---:|---:|---|
+| **Poseidon2Goldilocks\<8\>** | 6 | **40,195 ms** | 40,195 – 60,864 (load-sensitive) |
+| **Keccak-256** | 5 | **6,907 ms** | 6,907 – 7,024 (**1.7%**) |
+
+> ## ⚑ **5.82× — swapping ONLY the native Merkle hash, in a prime field, in the prover we actually use.**
+
+**Reproduce:** `CARGO_TARGET_DIR=<dir> cargo build --release -p p3-keccak-air
+--example prove_goldilocks_poseidon2 --example prove_goldilocks_keccak`, then time
+both binaries.
+
+⚠ **Honest reading, and it matters.** (a) Contended box — load averaged 17–63; the
+Poseidon2 arm's 43% spread is contention, and it converged to 40.2 s as load fell,
+so 40,195 ms is a **min-of-6 upper bound**, not a calibrated figure. Keccak's 1.7%
+spread on the same box is itself informative. (b) This is **Goldilocks
+Poseidon2-w8**, not our BabyBear w16, and a **Keccak-AIR** workload, which is far
+more hash-heavy than our descriptor batch. **So 5.82× is an upper bound on the
+effect and our geometry will show less** — my §2 derivation says 1.54–2.27× at our
+shares. (c) Shape and sign are what I claim; the sign is unambiguous.
+
+⚑ **The two halves of the trade are now BOTH measured by me on ONE pinned checkout,
+which is the cleanest statement of this whole map:**
+
+| direction | measurement | who wins |
+|---|---|---|
+| **in-circuit** (§1a) | Poseidon2 300 cells vs Blake3 9,168 vs Keccak 63,192 | **Poseidon2, 30.6×–210×** |
+| **native** (here) | Poseidon2-Merkle 40,195 ms vs Keccak-Merkle 6,907 ms | **Keccak, 5.82×** |
+
+**That is the trade, in one table, from one source tree. Neither side is folklore.**
 
 ### ⚑ Independently corroborated, and by an unfriendly witness
 
