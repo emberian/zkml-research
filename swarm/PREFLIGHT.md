@@ -24,6 +24,17 @@
   files). `git status` first; commit `--only` named paths; never `add -A`,
   never stash. `--only` is PATH-granular — a dirty shared file sweeps foreign
   hunks.
+- ⚑ **DISK: the boot volume hit 0 bytes free twice on 2026-08-13**, killing a
+  build and costing another lane a measurement cell. Recovered to 136 GiB on
+  its own (APFS purgeable). **Where it goes, measured**:
+  `breadstuffs/metatheory/.lake` **7.3 G** · `breadstuffs/target` **5.8 G** ·
+  `~/.cargo/registry` 4.9 G · `minidregg/.lake` 1.2 G. **Reclaimable without
+  touching our work** (ember's other projects, cargo rebuilds them):
+  `~/src/continuwuity-recon/target` 3.1 G, `~/src/xilem/target` 1.8 G,
+  `~/src/conduit/target` 1.7 G. ⚠ **Deleting `~/.cargo/registry/cache` is
+  safe** (`.crate` archives, re-downloaded on demand — a lane did this and
+  cargo re-fetched without incident); **`registry/src` is NOT** — that is the
+  unpacked source everything builds against.
 - **hbox**: builds via `swarm-build` ONLY (memory cgroup). The shared scratch
   (`/tank/dregg-build/minidregg-checks/scratch/*`) is an evidence-corrupting
   race for verification — detached clone at the committed SHA is the gate.
