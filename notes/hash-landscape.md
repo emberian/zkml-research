@@ -65,7 +65,10 @@ makes you pay both.
 
 ## 1. ⚑ THE THREE-COLUMN MAP
 
-The third column is the point: it is where "SNARK-friendly" stops being necessary.
+The third column was supposed to be the point — the place where "SNARK-friendly"
+stops being necessary. **It is where the claim gets tested and comes back half
+true** (§1d): the *proving* advantage collapses there, the *verifier* advantage
+does not, and a recursion tower is priced on the verifier.
 
 > ⚠ **UNITS ARE THE MAIN WAY THIS TABLE GOES WRONG.** R1CS constraints, Plonkish
 > gates and AIR cells (rows × columns) are different units and are not
