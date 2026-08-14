@@ -80,6 +80,45 @@ survives a busy box.)
    fix is worth 1.94× after the blowup drop" was a **latency claim dressed as
    a throughput one, computed on a machine that cannot measure latency.**
 
+### ⚑ RESOLVED 2026-08-14 — the arithmetic hook exists; the work claim holds and the premise above was backwards
+
+Built: `breadstuffs/circuit/tests/ir2_field_op_counts.rs`. Full write-up:
+**`notes/field-op-counts.md`**. Read that before quoting anything in this file.
+
+Three corrections to what is written above.
+
+1. **"Hash-bound at every feasible blowup" is PROVEN as a work claim, and the demotion can be
+   lifted for that claim only.** It is now count-vs-count with one measured constant:
+   *hash-bound iff `Y > X`*, where `X = (M + 0.803·A)/P` is exact and hardware-free and
+   `Y = t_perm/t_mul` is the only quantity a clock touches. Measured `X` = **178** at b=3 falling
+   to **124** at b=7; measured `Y` = **890** at a 16 MB working set, 898 at the primary estimator,
+   1161 in cache. **Margin 5.0×–7.2×, no crossover in `b ∈ {3..7}`.** Every approximation in `X`
+   points the same way (it over-states arithmetic).
+
+2. ⚑ **"The ratios are safe is false" is right, but for the OPPOSITE reason to the one given
+   above.** The premise was that hash work is memory-bound and field arithmetic cache-resident.
+   Measured: the permutation count explains **80%** of the hash phase's measured time and **84%**
+   of the open phase's, while the field-op count explains **25%** of LDE-commit's and **0.6%** of
+   LDE-quotient-eval's. **The hash side behaves like its count; the LDE does not.** So the phase
+   labelled "arith" in the table above is ~80% *not arithmetic* — and no clock can see that,
+   because a clock cannot separate expensive arithmetic from cheap arithmetic wrapped in expensive
+   movement. Also measured: `Y` moves only 1.3× across a 512× change in working set, so the
+   cache-vs-DRAM hazard on the conversion constant is real but small and bounded.
+
+3. **The `LDE (coset NTT) — 2^b — arith` row of the model is mis-typed, and one of its
+   sub-phases is mis-diagnosed.** `get_evaluations_on_domain`'s slow path is *never taken* — zero
+   `coset_idft_batch` and zero `coset_dft_batch` calls at every blowup. What the profiler labels
+   "LDE quotient-eval" is the **twelve width-4 quotient-CHUNK LDE commits**, carrying **3.5% of
+   the LDE's arithmetic and 63% of its measured time**; per call the two LDE phases cost 1.285 ms
+   and 1.077 ms while their per-call work differs by 27×. **The cost is per-CALL and
+   per-narrow-matrix, so the fix is a layout change (batch twelve width-4 commits into three of
+   width 8/8/32), not an arithmetic one.** An arithmetic optimisation aimed at that phase buys
+   essentially nothing.
+
+**Rule 2 of this file needs a companion:** a proposed win must name its phase *and* its unit. A
+phase whose milliseconds are 99% movement cannot be improved by a win denominated in
+multiplications, and the model above has no column that would have caught that.
+
 ### The methodology that follows
 
 - **Operation counts are the primary instrument.** They are exact,
@@ -89,8 +128,10 @@ survives a busy box.)
   quiet machine, which we do not have.
 - **Never compose a work claim with a latency claim.** Report them in separate
   columns.
-- **Build the arithmetic op-count hook.** It is the missing half of the only
-  instrument that works here.
+- ~~**Build the arithmetic op-count hook.**~~ **DONE 2026-08-14** —
+  `circuit/tests/ir2_field_op_counts.rs`, write-up `notes/field-op-counts.md`.
+  See the RESOLVED block above: the work claim holds by 5–7×, and the phase
+  taxonomy in the table at the top of this file needs a UNIT column.
 
 *Everything below this line was computed from the contended clock and is
 retained as history, not as evidence.*
