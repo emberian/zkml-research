@@ -247,12 +247,12 @@ theorem adaptiveTailEvent_reindex (coins : Fin 3 → Bool × Bool) :
     rw [show tailSwap.apply coins =
         permuteWorkCoins tailSwapPermutation coins by
       simp [GuardedInvolution.apply, tailSwap, guardedWorkReindex, hguard]]
-    simp [adaptiveTailEvent, fixedTailEvent, permuteWorkCoins,
-      tailSwapPermutation, tailSwapIndex, earlyGuard] at hguard ⊢
+    simp_all [adaptiveTailEvent, fixedTailEvent, permuteWorkCoins,
+      tailSwapPermutation, tailSwapIndex, earlyGuard]
   · change adaptiveTailEvent (tailSwap.apply coins) ↔ fixedTailEvent coins
     rw [show tailSwap.apply coins = coins by
       simp [GuardedInvolution.apply, tailSwap, guardedWorkReindex, hguard]]
-    simp [adaptiveTailEvent, fixedTailEvent, earlyGuard] at hguard ⊢
+    simp_all [adaptiveTailEvent, fixedTailEvent, earlyGuard]
 
 /-- A prefix-dependent choice of which later coin to reveal has exactly the
 same probability as reading a fixed later coordinate.  The proof is a global
