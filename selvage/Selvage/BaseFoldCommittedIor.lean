@@ -216,7 +216,7 @@ theorem friAdaptive_terminal_ne_implies_transition_ne
     | succ n ih =>
         intro hn
         rw [hno ⟨n, hn⟩, ih (Nat.le_of_succ_le hn),
-          T.word_succ, chalExt_coe]
+          T.word_succ, chalExt, dif_pos hn]
   exact hterminal (hlevels m le_rfl)
 
 section CoherentSoundness
