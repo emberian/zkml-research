@@ -136,8 +136,12 @@ theorem paddedWorkPrefix_final {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount) :
     paddedWorkPrefix statement receipt (m + queryCount) =
       paddedTranscriptPrimitiveWork statement receipt := by
-  simp [paddedWorkPrefix, paddedPrimitiveWorkSchedule,
-    paddedTranscriptPrimitiveWork, paddedConstructionQueries_eq_ofFn]
+  unfold paddedWorkPrefix
+  rw [show m + queryCount =
+      (paddedPrimitiveWorkSchedule statement receipt).length by simp,
+    List.take_all]
+  unfold paddedPrimitiveWorkSchedule paddedTranscriptPrimitiveWork
+  rw [paddedConstructionQueries_eq_ofFn]
 
 /-! ## The deferred runner reads the same static cost -/
 
