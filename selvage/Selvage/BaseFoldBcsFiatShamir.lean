@@ -330,6 +330,134 @@ noncomputable def proofBlocks {m queryCount : Nat}
       (List.ofFn fun a : Fin queryCount =>
         openingFrame j a (receipt.opening j a)).flatten).flatten
 
+/-! ## Reflection into the existing raw committed IOR event -/
+
+open Polynomial
+
+/-- The literal degree-two polynomial carried by one round frame. -/
+noncomputable def RoundMessage.polynomial (message : RoundMessage) :
+    Polynomial E :=
+  C (message.sumcheckCoefficients 0) +
+    C (message.sumcheckCoefficients 1) * X +
+    C (message.sumcheckCoefficients 2) * X ^ 2
+
+/-- Read the finite submitted transcript as the prover family expected by the
+interactive IOR predicate.  Values beyond the declared round count are zero
+and are never read by the verifier. -/
+noncomputable def submittedProver {m queryCount : Nat}
+    (receipt : Receipt m queryCount) : (Nat → E) → Nat → Polynomial E :=
+  fun _ index => if h : index < m then (receipt.round ⟨index, h⟩).polynomial
+    else 0
+
+/-- Root `n`, with the terminal root occupying the unique index `m`. -/
+def receiptLevelRoot {m queryCount : Nat} (receipt : Receipt m queryCount)
+    (n : Fin (m + 1)) : Digest :=
+  if h : (n : Nat) < m then receipt.round ⟨n, h⟩ |>.levelRoot
+  else receipt.terminalRoot
+
+/-- The current modulo decoder is deterministic and fail-closed at the type
+boundary, but no uniformity theorem is claimed for it.  A production codec
+may replace it with a proved rejection sampler. -/
+def queryCoordinate {ell : Nat} (seed : Digest) : PowerTwoFriLevels ell 1 :=
+  ⟨(seed 0).val % (2 ^ (ell - 1)), Nat.mod_lt _ (by positivity)⟩
+
+def querySchedule {ell m queryCount : Nat} (hmell : m ≤ ell)
+    (receipt : Receipt m queryCount) :
+    FriIndependentQuerySchedule (PowerTwoFriLevels ell) m queryCount :=
+  powerTwoCoherentSchedule hmell fun a => queryCoordinate (receipt.querySeed a)
+
+def Opening.toFri (opening : Opening) :
+    FriQueryOpening E (List Digest) (List Digest) where
+  left := opening.left
+  right := opening.right
+  next := opening.next
+  leftPath := opening.leftPath
+  rightPath := opening.rightPath
+  nextPath := opening.nextPath
+
+/-- Every absorbed root is exactly the root read from the adaptive statement
+at the checked challenge prefix. -/
+def RootsExact {ell m queryCount : Nat}
+    (st : RawFriAdaptiveTranscript
+      (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)))
+    (receipt : Receipt m queryCount) : Prop :=
+  ∀ (n : Nat) (hn : n ≤ m),
+    receiptLevelRoot receipt ⟨n, Nat.lt_succ_of_le hn⟩ =
+      st.rootAt receipt.challenge n hn
+
+/-- The submitted opening objects—not existential replacements—pass every
+sampled binary-Merkle and fold check at the derived coherent coordinates. -/
+def SubmittedOpeningsAccept {ell m queryCount : Nat}
+    (T : FoldingTower E (PowerTwoFriLevels ell) m) (hmell : m ≤ ell)
+    (receipt : Receipt m queryCount) : Prop :=
+  ∀ (j : Fin m) (a : Fin queryCount),
+    OpenedFriQuery
+      (BinaryMerkle.openingScheme hashSuite (ell - j))
+      (BinaryMerkle.openingScheme hashSuite (ell - (j + 1)))
+      (T.data j j.isLt)
+      (receiptLevelRoot receipt j.castSucc)
+      (receiptLevelRoot receipt j.succ)
+      (receipt.challenge j) ((querySchedule hmell receipt) j a)
+      (receipt.opening j a).toFri
+
+/-- The construction-level BCS/FS verifier.  It checks exact draws, root
+attribution, degree/recurrence equations, the submitted authenticated FRI
+fibres, terminal code membership, and the braided terminal equation. -/
+def Accepts {ell m queryCount : Nat}
+    (T : FoldingTower E (PowerTwoFriLevels ell) m)
+    (st : RawFriAdaptiveTranscript
+      (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)))
+    (hmell : m ≤ ell) (statement : Statement m)
+    (receipt : Receipt m queryCount) : Prop :=
+  DrawsExact statement receipt ∧
+  RootsExact st receipt ∧
+  (∀ i, i < m →
+    (submittedProver receipt (chalOf receipt.challenge) i).degree <
+      ((2 + 1 : Nat) : WithBot Nat)) ∧
+  (∀ i, i < m →
+    (submittedProver receipt (chalOf receipt.challenge) i).eval 0 +
+        (submittedProver receipt (chalOf receipt.challenge) i).eval 1 =
+      scChain statement.claimedValue (submittedProver receipt)
+        (chalOf receipt.challenge) i) ∧
+  SubmittedOpeningsAccept T hmell receipt ∧
+  st.wordAt receipt.challenge m le_rfl ∈
+    reedSolomonCode (T.dom m) (basefoldDegSched m m) ∧
+  ∀ k : PowerTwoFriLevels ell m,
+    scChain statement.claimedValue (submittedProver receipt)
+        (chalOf receipt.challenge) m =
+      st.wordAt receipt.challenge m le_rfl k *
+        eqMle statement.evaluationPoint receipt.challenge
+
+/-- The new construction verifier is a strengthening of the existing raw
+committed IOR event on the exact same roots, challenges, query schedule, and
+submitted openings.  Therefore its false-claim event inherits the existing
+algebraic/query/equivocation split without inventing a parallel theorem. -/
+theorem accepts_to_rawCommittedIor {ell m queryCount : Nat}
+    (T : FoldingTower E (PowerTwoFriLevels ell) m)
+    (st : RawFriAdaptiveTranscript
+      (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)))
+    (hmell : m ≤ ell) (statement : Statement m)
+    (receipt : Receipt m queryCount)
+    (accepted : Accepts T st hmell statement receipt) :
+    BaseFoldRawCommittedIorAccepts
+      (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) T st
+      statement.evaluationPoint statement.claimedValue
+      (submittedProver receipt) queryCount receipt.challenge
+      (querySchedule hmell receipt) := by
+  refine ⟨accepted.2.2.1, accepted.2.2.2.1, ?_, accepted.2.2.2.2.2.2⟩
+  refine ⟨?_, accepted.2.2.2.2.2.1⟩
+  intro j
+  refine ⟨fun a => (receipt.opening j a).toFri, ?_⟩
+  intro a
+  have hopen := accepted.2.2.2.2.1 j a
+  have rootJ := accepted.2.1 j (Nat.le_of_lt j.isLt)
+  have rootNext := accepted.2.1 (j + 1) (Nat.succ_le_iff.mpr j.isLt)
+  simpa [show receiptLevelRoot receipt j.castSucc =
+        st.rootAt receipt.challenge j (Nat.le_of_lt j.isLt) by simpa using rootJ,
+    show receiptLevelRoot receipt j.succ =
+        st.rootAt receipt.challenge (j + 1)
+          (Nat.succ_le_iff.mpr j.isLt) by simpa using rootNext] using hopen
+
 /-! ## The named ROM boundary -/
 
 def romTarget : Prop := SpongeIndiffWorkGame Rate Cap (0, 0)
@@ -340,6 +468,7 @@ theorem romTarget_eq_construction_target :
 #check @DrawsExact
 #check @challengeMessage_eq_of_samePrefix
 #check @transcriptPrimitiveWork_exact
+#check @accepts_to_rawCommittedIor
 #check @romTarget
 
 end
