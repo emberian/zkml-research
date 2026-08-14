@@ -93,6 +93,7 @@ theorem constructionDistinguisher_primitiveWorkOn_exact
   apply congrArg List.sum
   apply List.map_congr_left
   intro j _
+  simp only [Function.comp_apply]
   rw [constructionDistinguisher_move]
 
 /-- The precise ledger is therefore a valid `PrimitiveWorkBound` witness for
