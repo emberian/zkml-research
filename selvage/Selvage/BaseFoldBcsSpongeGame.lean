@@ -134,8 +134,14 @@ theorem constructionDistinguisher_romBound
 #check @constructionDistinguisher_workBound
 #check @constructionDistinguisher_romBound
 
+/-- info: 'Minidregg.Selvage.BaseFoldBcsSpongeGame.constructionDistinguisher_primitiveWorkOn_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
 #print axioms constructionDistinguisher_primitiveWorkOn_exact
+/-- info: 'Minidregg.Selvage.BaseFoldBcsSpongeGame.constructionDistinguisher_workBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
 #print axioms constructionDistinguisher_workBound
+/-- info: 'Minidregg.Selvage.BaseFoldBcsSpongeGame.constructionDistinguisher_romBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
 #print axioms constructionDistinguisher_romBound
 
 end
