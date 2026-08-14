@@ -1259,6 +1259,102 @@ def paddedSegmentLastAnswerSchedule {m queryCount : Nat}
     Fin (m + queryCount) → SpAnswer Rate Cap :=
   fun round => .rate (coins (paddedSegmentLast statement receipt round)).1
 
+/-- Every successfully reached eager prefix has the expected transcript length,
+and prefix-free public routing keeps every not-yet-issued full message fresh.
+This is deterministic: it does not assume primitive-path freshness. -/
+theorem paddedWorkHybridStateNat_success_routing
+    {m queryCount round : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hsafe : PaddedFullMessageRoutingSafe statement receipt)
+    (hround : round ≤ m + queryCount)
+    {state : WorkHybridState Rate Cap}
+    (hstate : paddedWorkHybridStateNat statement receipt verdict coins round
+      hround = .ok state) :
+    state.core.ans.length = round ∧
+      ∀ future : Fin (m + queryCount), round ≤ future →
+        state.core.ro.lookup
+          (paddedPublicMessageSchedule statement receipt future) = none := by
+  induction round with
+  | zero =>
+      simp only [paddedWorkHybridStateNat] at hstate
+      injection hstate with hstateEq
+      subst state
+      constructor
+      · rfl
+      · intro future _
+        exact Oracle.lookup_empty _
+  | succ round ih =>
+      have hprev : round ≤ m + queryCount :=
+        Nat.le_trans (Nat.le_succ round) hround
+      unfold paddedWorkHybridStateNat at hstate
+      cases hprevRun : paddedWorkHybridStateNat statement receipt verdict coins
+          round hprev with
+      | error error =>
+          rw [hprevRun] at hstate
+          contradiction
+      | ok previous =>
+          rw [hprevRun] at hstate
+          have hstep : workHybridStep
+              (paddedConstructionDistinguisher statement receipt verdict)
+              (0, 0) previous ⟨round, Nat.lt_of_succ_le hround⟩ =
+                .ok state := by
+            simpa using hstate
+          obtain ⟨hanswers, hfuture⟩ := ih hprev hprevRun
+          let current : Fin (m + queryCount) :=
+            ⟨round, Nat.lt_of_succ_le hround⟩
+          obtain ⟨x, xs, hquerySchedule, hmessage⟩ :=
+            paddedConstructionQuerySchedule_is_constr statement receipt current
+          have hmove :
+              (paddedConstructionDistinguisher statement receipt verdict).move
+                  previous.core.ans = .constr x xs := by
+            calc
+              (paddedConstructionDistinguisher statement receipt verdict).move
+                    previous.core.ans =
+                  paddedConstructionQuerySchedule statement receipt
+                    ⟨previous.core.ans.length, by omega⟩ :=
+                paddedConstructionDistinguisher_move_at_length statement receipt
+                  verdict previous.core.ans (by omega)
+              _ = paddedConstructionQuerySchedule statement receipt current := by
+                congr 1
+                exact Fin.ext hanswers
+              _ = .constr x xs := hquerySchedule
+          constructor
+          · rw [workHybridStep_ans_length _ _ previous state current hstep,
+              hanswers]
+          · intro future hfutureIndex
+            have hcurrentLt : (current : Nat) < future := by
+              dsimp [current]
+              omega
+            have hnotPrefix := hsafe future current
+              (Fin.ne_of_lt hcurrentLt).symm
+            rw [hmessage] at hnotPrefix
+            exact workHybridStep_constr_preserves_ro_fresh_of_not_prefix
+              (paddedConstructionDistinguisher statement receipt verdict)
+              (0, 0) previous state current x xs
+              (paddedPublicMessageSchedule statement receipt future)
+              hmove hstep (hfuture future (by omega)) hnotPrefix
+
+/-- Probabilistic off-bad premise after removing deterministic public-message
+routing: only primitive edges on actually reached construction paths must be
+fresh. -/
+def PaddedEagerPrimitivePathFreshRun {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap) : Prop :=
+  ∀ (round : Fin (m + queryCount)) (state : WorkHybridState Rate Cap),
+    paddedWorkHybridStateNat statement receipt verdict coins round
+        (Nat.le_of_lt round.isLt) = .ok state →
+      PrimitivePathFresh state.core.ro state.core.primitive (0, 0) []
+        (paddedPublicMessageSchedule statement receipt round)
+        ((state.remaining.take
+          (paddedRoundPrimitiveWork statement receipt round)).map Prod.fst)
+        ((state.remaining.take
+          (paddedRoundPrimitiveWork statement receipt round)).map Prod.snd)
+
 /-- Explicit off-bad premise for the eager fixed-receipt execution.  It asks
 only that each state actually reached by a successful prefix has a fresh
 primitive construction path and a fresh complete public message.  Proper RO
@@ -1279,6 +1375,22 @@ def PaddedEagerFreshRun {m queryCount : Nat}
             (paddedRoundPrimitiveWork statement receipt round)).map Prod.snd) ∧
         state.core.ro.lookup
           (paddedPublicMessageSchedule statement receipt round) = none
+
+/-- Prefix-free routing supplies the RO-fresh conjunct deterministically, so a
+primitive-path-fresh run satisfies the earlier combined premise. -/
+theorem paddedEagerFreshRun_of_primitivePathFresh
+    {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hsafe : PaddedFullMessageRoutingSafe statement receipt)
+    (hpath : PaddedEagerPrimitivePathFreshRun statement receipt verdict coins) :
+    PaddedEagerFreshRun statement receipt verdict coins := by
+  intro round state hstate
+  refine ⟨hpath round state hstate, ?_⟩
+  exact (paddedWorkHybridStateNat_success_routing statement receipt verdict
+    coins hsafe (Nat.le_of_lt round.isLt) hstate).2 round (Nat.le_refl _)
 
 /-- Under the explicit fresh-run premise, every eager prefix succeeds with
 the exact segment-last public transcript and the static work counters. -/
@@ -1407,6 +1519,28 @@ theorem paddedWorkHybridRun_fresh_semantics {m queryCount : Nat}
   · rw [hremaining, paddedWorkPrefix_final]
     simp
 
+/-- Terminal eager semantics with only the genuine primitive-path bad event
+left as an assumption. -/
+theorem paddedWorkHybridRun_primitivePathFresh_semantics
+    {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hsafe : PaddedFullMessageRoutingSafe statement receipt)
+    (hpath : PaddedEagerPrimitivePathFreshRun statement receipt verdict coins) :
+    ∃ state,
+      workHybridRun
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) coins = .ok state ∧
+        state.core.ans = List.ofFn
+          (paddedSegmentLastAnswerSchedule statement receipt coins) ∧
+        state.core.work = paddedTranscriptPrimitiveWork statement receipt ∧
+        state.remaining = [] :=
+  paddedWorkHybridRun_fresh_semantics statement receipt verdict coins
+    (paddedEagerFreshRun_of_primitivePathFresh statement receipt verdict coins
+      hsafe hpath)
+
 /-- The composed coordinate program turns the complete deferred head-answer
 schedule into the original eager segment-last answer schedule pointwise. -/
 theorem paddedSegmentHeadAnswerSchedule_reindex {m queryCount : Nat}
@@ -1471,6 +1605,29 @@ theorem paddedEagerDeferredRun_fresh_agreement {m queryCount : Nat}
   refine ⟨eager, deferred, heager, hdeferred, ?_⟩
   rw [heagerAnswers, hdeferredAnswers]
 
+/-- Run-level eager/deferred agreement after deterministic routing has removed
+complete-message RO freshness from the probabilistic premise. -/
+theorem paddedEagerDeferredRun_primitivePathFresh_agreement
+    {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (verdict : List (SpAnswer Rate Cap) → Bool)
+    (coins : Fin (paddedTranscriptPrimitiveWork statement receipt) →
+      Rate × Cap)
+    (hsafe : PaddedFullMessageRoutingSafe statement receipt)
+    (hpath : PaddedEagerPrimitivePathFreshRun statement receipt verdict coins) :
+    ∃ eager deferred,
+      workHybridRun
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) coins = .ok eager ∧
+        deferredWorkRun
+          (paddedConstructionDistinguisher statement receipt verdict)
+          (0, 0) (paddedSegmentReindex statement receipt coins) =
+            .ok deferred ∧
+        eager.core.ans = deferred.core.ans :=
+  paddedEagerDeferredRun_fresh_agreement statement receipt verdict coins hsafe
+    (paddedEagerFreshRun_of_primitivePathFresh statement receipt verdict coins
+      hsafe hpath)
+
 /-- The run-specific segment program preserves exact uniform counting
 measure on the entire primitive-work vector. -/
 theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
@@ -1494,9 +1651,13 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 #check @paddedWorkHybridRun_classify
 #check @paddedRateSegment_lastRateCoin
 #check @paddedWorkHybridStep_constr_fresh_semantics
+#check @paddedWorkHybridStateNat_success_routing
+#check @PaddedEagerPrimitivePathFreshRun
 #check @PaddedEagerFreshRun
+#check @paddedEagerFreshRun_of_primitivePathFresh
 #check @paddedWorkHybridStateNat_fresh_semantics
 #check @paddedWorkHybridRun_fresh_semantics
+#check @paddedWorkHybridRun_primitivePathFresh_semantics
 #check @paddedDeferredWork_need_exact
 #check @paddedDeferredWorkRun_exact
 #check @paddedDeferredWorkStep_constr_semantics
@@ -1507,6 +1668,7 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 #check @paddedSegmentHeadAnswerSchedule_reindex
 #check @paddedDeferredWorkRun_reindexed_semantics
 #check @paddedEagerDeferredRun_fresh_agreement
+#check @paddedEagerDeferredRun_primitivePathFresh_agreement
 #check @uniformProb_paddedSegmentReindex
 
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedConstructionDistinguisher_move_answer_independent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
@@ -1524,12 +1686,21 @@ theorem uniformProb_paddedSegmentReindex {m queryCount : Nat}
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridStep_constr_fresh_semantics' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedWorkHybridStep_constr_fresh_semantics
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridStateNat_success_routing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedWorkHybridStateNat_success_routing
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridRun_fresh_semantics' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedWorkHybridRun_fresh_semantics
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedWorkHybridRun_primitivePathFresh_semantics' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedWorkHybridRun_primitivePathFresh_semantics
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedEagerDeferredRun_fresh_agreement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedEagerDeferredRun_fresh_agreement
+/-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedEagerDeferredRun_primitivePathFresh_agreement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+#print axioms paddedEagerDeferredRun_primitivePathFresh_agreement
 /-- info: 'Minidregg.Selvage.BaseFoldBcsRunSchedule.paddedDeferredWorkRun_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in
 #print axioms paddedDeferredWorkRun_exact
