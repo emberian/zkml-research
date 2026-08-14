@@ -506,6 +506,25 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
 
 ---
 
+## 7b. Two instrument defects worth more than most findings
+
+- ⚑ **A MODEL CALIBRATED ON A SAMPLE THE BUG HAD CENSORED.** A byte predictor
+  was fitted on the descriptors that *could be measured* at (2,57) — i.e. with
+  **every chip-bearing one excluded by the `p3-fri` bug** — and then missed
+  those by up to **99%**, *while reporting a tidy ±63% confidence about a
+  population it had never seen.* Refitted with a chip indicator: error
+  **76–99% → 0.0–4.3%**, and adding the term moved the other two coefficients
+  by **0.01%** — *the tell that it is structure, not curve-fitting.*
+  **The general form: a bug that silently filters your sample corrupts every
+  model fitted downstream, and the model's own error bars will look fine.**
+- ⚑ **Phase counters were process-global and only the HEADER said so.** Five
+  tests bracket a `prove` with a shared counter; `--test-threads=1` was
+  *documented and never enforced*, so **every default invocation was silently
+  corruptible.** Fixed with a file-scoped mutex — and verified the way that
+  matters: **all six pass under default parallelism with a count table
+  byte-identical to the serial run**, the same contention-immunity
+  demonstration the narrow-emission lane made with debug-vs-release.
+
 ## 8. The through-line, 2026-08-13/14
 
 **Every measurement lane found that the thing we were optimizing was not the
