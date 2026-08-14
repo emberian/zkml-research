@@ -425,3 +425,30 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
    128; our `PROVEN-120-CONFIG.md` says d=5 cannot reach 120. **Probably a
    scope difference** (RS proximity leg vs whole apex composite) — **check,
    do not guess.**
+
+---
+
+## 8. The through-line, 2026-08-13/14
+
+**Every measurement lane found that the thing we were optimizing was not the
+cost, and the actual cost was somewhere nobody had looked.** Six for six:
+
+| we believed | measured |
+|---|---|
+| the sumcheck is the prover | **2–17% of it** |
+| matmul's cost is the sumcheck | **5%** — the lever is the partial evaluation |
+| virtualize Poseidon2 with a sumcheck | **the sumcheck loses**; in-AIR narrowing wins |
+| the exchange rate is 78–308× | **~5× in wall clock** — the unit was never converted |
+| the blowup floor is mathematics | **a one-line upstream bug we froze as a law** |
+| the rank-1 check removes the n² cost | **removes the n² PROOF; the COMMITMENT becomes the step** |
+| grinding is a small tax | **25% of prove, 46% of proven soundness, and our own hardening commit un-parallelised it** |
+
+And the *shape* of the error is consistent: **a plausible cost model, never
+converted into the unit that bills.** Counted multiplications instead of
+nanoseconds. Asymptotics instead of constants at our sizes. A ratio for a
+relation quoted as a ratio for a system. A distribution's tail read as a mean.
+
+**The rule that falls out**: *before optimizing a term, measure its share.*
+Every lane that measured first found the target somewhere else; every estimate
+we carried without a measurement was wrong in the same direction — flattering
+the thing we had already decided to work on.
