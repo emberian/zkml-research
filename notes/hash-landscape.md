@@ -6,21 +6,32 @@ landed (`minidregg@bf0b311`, `Selvage/HashFamily.lean`).
 
 ---
 
-## ⚑ THE HEADLINE, IN THREE LINES
+## ⚑ THE HEADLINE, IN FOUR LINES
 
 1. **The crossover is `R* = 2.0×–4.5×`**, computed from our own measurements
-   (§2). Below that in-circuit ratio, a traditional hash wins outright everywhere
-   in the tower; above it, Poseidon2 wins.
-2. **In a prime field we are not near the crossover — we are 1–2 orders of
-   magnitude from it.** So the honest answer to *"are we stuck with Poseidon2?"*
-   is **in a prime field, effectively yes, and it is not a close call.**
-3. ⚑ **But the escape is not a different hash — it is a different FIELD.** In a
-   binary field `R` collapses toward 1 or below, and the entire justification
-   evaporates. **The hash question is a field question wearing a hash costume.**
+   (§2). Below that in-circuit ratio a traditional hash wins outright everywhere
+   in the tower; above it, Poseidon2 wins. `R` = the candidate's in-circuit cost
+   ÷ Poseidon2's.
+2. **Measured `R` in a prime field, from our own pinned Plonky3: Blake3 = 30.6×,
+   Keccak-f = 210.6×** (§1a). Against `R* = 2.0–4.5×` that is **6.8×–15.2× of
+   margin for Blake3** and 47×–105× for Keccak. **Poseidon2 wins, and it is not
+   close.**
+3. ⚑⚑ **AND THE BINARY FIELD DOES NOT RESCUE IT — this refutes the thesis I
+   started with.** The only same-system head-to-head (eprint 2025/1893) puts the
+   algebraic advantage on the *verifier* axis at **12.7×–24.7× even in a binary
+   field**. The binary field roughly halves `R`; **it does not cross R\*.**
+   **What pins us to an algebraic hash is RECURSION, in BOTH characteristics.**
+4. ⚑ **So the real lever is not the hash and not the field — it is WHICH LAYERS
+   GET RECURSED OVER.** Where a layer's hash is re-executed as constraints, pay
+   for Poseidon2. Where it is not, a traditional hash wins immediately.
 
-**And one thing is actionable today, at zero cryptanalytic risk** (§4): the
-**top layer of the tower is never arithmetized by anyone**, so its native hash is
-a free choice worth **1.5×–2.3×** with no in-circuit cost whatsoever.
+**And that makes one thing actionable today, at zero cryptanalytic risk** (§4):
+the **top layer of the tower is arithmetized by nobody**, so its native hash is a
+free choice worth **1.5×–2.3×** at zero in-circuit cost — independently
+corroborated at **1.69× ST / 1.26× MT** by the Binius paper's own Plonky3
+measurement.
+
+> ### ⚠ I set out to show the binary field dissolves the Poseidon2 justification. It does not. The measurement says the justification is recursion, and recursion survives the field change.
 
 ---
 
@@ -58,7 +69,33 @@ The third column is the point: it is where "SNARK-friendly" stops being necessar
 > **not comparable across fields** — the same hash costs differently in BabyBear,
 > Goldilocks and BN254, by up to 90× (§1c).
 
-### 1a. Our own in-circuit numbers, which are the only ones I trust unreservedly
+### 1a. ⚑ THE PRIME-FIELD COLUMN, MEASURED — not quoted
+
+I replaced my first draft's literature-quoted range ("Keccak is 20k–50k R1CS")
+with a **measurement from our own pinned Plonky3 (`rev 82cfad7`)**, because that
+checkout ships an AIR for all three hashes and therefore prices them **in one
+unit, in one field, at one arithmetization**. Widths are `size_of::<*Cols<u8>>()`
+read out of the crates; rows per invocation read from each `generation.rs`.
+Harness: `notes/hash-landscape-scripts/crossover.py`.
+
+| hash | AIR | rows/invocation | main cols | **cells/invocation** | **R** |
+|---|---|---:|---:|---:|---:|
+| **Poseidon2-w16** | ours, deployed | 1 | **300** | **300** | **1.0×** |
+| **Blake3** | `p3-blake3-air` | **1** (`num_rows = inputs.len()`) | 9,168 | **9,168** | **30.6×** |
+| **Keccak-f** | `p3-keccak-air` | **24** (`NUM_ROUNDS`) | 2,633 | **63,192** | **210.6×** |
+
+⚑ **Blake3 is 6.9× cheaper in-circuit than Keccak in a prime field.** "Traditional
+hash" is not one number — Blake3's 32-bit ARX structure lands two 16-bit limbs per
+word and **one row per compression**, where Keccak needs 24. Any analysis that
+prices "a bitwise hash" from the Keccak figure over-charges Blake3 by ~7×.
+
+**The invocation ratio is 1:1 where it matters.** At a 256-bit digest a 2-to-1
+Merkle node is *one* Poseidon2-w16 permutation **or** *one* Blake3 compression, so
+the cell ratio **is** `R` for the recursion column — which is Merkle-path
+dominated. Bulk *absorption* credits Blake3 2× (64 B/compression against a rate-8
+sponge's ~31 B), so an absorb-heavy workload sees `R/2`.
+
+### 1b. The other in-circuit numbers we hold
 
 | hash | field | unit | cost | source |
 |---|---|---|---|---|
@@ -70,37 +107,84 @@ The third column is the point: it is where "SNARK-friendly" stops being necessar
 | Poseidon2-w24 | BabyBear emulated in BN254 | R1CS/perm | **27,213** | same |
 | Poseidon2 | **BN254 native** | R1CS/perm | **187** | same (gnark std) |
 
-### 1b. ⚑ The 90× in that table is a FIELD-MATCH effect, not a hash effect
+### 1c. ⚑ The 90× in that table is a FIELD-MATCH effect, not a hash effect
 
 **16,837 → 187 R1CS for the same hash.** Nothing about Poseidon2 changed; only
 whether its field matched the proof system's. That is the single largest ratio
 anywhere in this document, and it is the map's central lesson in miniature:
 **hash choice is a second-order term on top of field match.**
 
-### 1c. The binary-field column — where the argument inverts
+### 1d. ⚑⚑ THE BINARY-FIELD COLUMN — and the refutation of my own thesis
 
-Our own derived rate, and the published ones we can compare it to:
+**I started this lane believing the binary field dissolves the argument. The best
+available measurement says it does not, and the correction is the most valuable
+thing here.**
 
-| system | hash | field/arithmetization | rate | source |
+The decisive source is **eprint 2025/1893** (*Poseidon(2)b*, Grassi–**Khovratovich
+(EF)**–Koschatko–Rechberger–Schofnegger–Schröppel–Wu, peer-reviewed in CiC),
+Table 4. It is the **only same-system, same-machine, same-arithmetization
+head-to-head of algebraic vs standard hashes in a binary field that exists**:
+Binius v0, AMD Ryzen 9 7900X 12-core, normalized to **seconds per ~1 MB hashed**,
+so the columns are directly comparable.
+
+| permutation | kind | prove MT (s/MB) | **verify (ms)** | `R_proxy` |
+|---|---|---:|---:|---:|
+| Grøstl-P | **standard** | **0.170** | 114.97 | **31.8×** |
+| Keccak-f | **standard** | 0.425 | 45.70 | **12.7×** |
+| Vision-32b | algebraic | 0.605 | 10.12 | 2.8× |
+| Anemoi | algebraic | 0.499 | 12.28 | 3.4× |
+| Poseidon-bπ (n=32) | algebraic | 0.150–0.129 | 4.66 | 1.3× |
+| Poseidon-bπ (n=64) | algebraic | 0.143 | **3.61** | 1.0× |
+
+**Two findings, and they point in opposite directions.**
+
+1. ✅ **On PROVING, the thesis is right and then some.** Grøstl — a SHA-3 finalist,
+   not a SNARK hash — **out-proves Vision Mark-32 by 3.56×**, a hash *designed* for
+   binary towers, and beats Keccak by 1.42×. The algebraic proving advantage in a
+   binary field is **~1.3×, not the 30–500× it is in a prime field.** That collapse
+   is real and it is the strongest datum for the whole binary-field programme.
+2. ⚑⚑ **On VERIFICATION it does NOT converge — it stays 12.7×–24.7× apart.** And
+   **recursion cost *is* verifier-circuit cost.** So the quantity my crossover
+   calls `R` sits at ~12.7–24.7× in a binary field against ~30.6× in a prime field:
+   **the binary field roughly halves `R`. It does not cross `R* = 2.0–4.5×`.**
+
+> ### ⚑ **THE THESIS IS HALF RIGHT, AND THE HALF THAT SURVIVES IS THE PROVING HALF.** In a binary field a traditional hash becomes competitive to **prove**. It does **not** become competitive to **verify inside another proof**. Poseidon-bπ wins *both* axes at once, which is the cleanest available refutation of "SNARK-friendly hashes become unnecessary."
+
+⚠ **Stated inadequacy of `R_proxy`:** verify *time* is a proxy for in-circuit cost,
+not the same quantity — it carries proof-size-dependent terms a recursive verifier
+pays differently. It is the honest available proxy, both sides from one table, and
+it agrees in sign and rough size with the prime-field cell measurement in §1a.
+**Treat 12.7–24.7× as a shape, not a calibration.**
+
+### The throughput comparison, kept but demoted
+
+| system | hash | field | rate | source |
 |---|---|---|---|---|
-| **ours (derived)** | **Poseidon2** | BabyBear prime | **~17,700 perms proven/sec** (38,168 in-circuit ops ÷ a 2.16 s wrap) | `docs/RESEARCH-STANCE.md` |
-| Flock | **BLAKE3** | binary | **82k compressions/sec**, 1 M4 Max core; >660k on ten | eprint 2026/1329, abstract verified verbatim |
+| **ours (derived)** | **Poseidon2** | BabyBear prime | **~17,700 perms proven/sec** | `docs/RESEARCH-STANCE.md` |
+| Flock | **BLAKE3** | binary | **82k/sec**, 1 M4 Max core; >660k on ten | arXiv 2607.27491 / eprint 2026/1329 |
 | Flock | SHA-256 | binary | 42k/sec, 1 core | same |
-| Flock | Keccak | binary | 30k/sec, 1 core | same |
-| BinarySpartan | BLAKE3 | binary | 410k/sec on 12 P-cores = **34.2k/core** | EF slide; see `notes/binaryspartan-position.md` for the scrutiny |
+| Flock | Keccak | binary | 30.7k/sec, 1 core | same |
+| BinarySpartan | BLAKE3 | binary | 410k/sec on 12 P-cores = **34.2k/core** | EF slide; scrutiny in `notes/binaryspartan-position.md` |
 
-⚑ **A traditional hash proven in a binary field runs 2–5× FASTER than our
-algebraic hash proven in a prime field.** The advantage does not merely shrink —
-**it reverses.**
+⚠ **I previously read this table as showing `R` inverts. It does not — it is a
+different quantity.** It shows that *end-to-end proving throughput* of a standard
+hash in a binary field beats ours in a prime field, which is finding 1 above, not
+finding 2. **Conflating proving throughput with in-circuit ratio was my error and
+the 2025/1893 table is what caught it.** Different systems, different hardware,
+different workloads: a **shape-and-sign** claim only.
 
-> ⚠ **Honest caveats on that comparison, all load-bearing.** Different systems,
-> different hardware (M4 Max vs our contended M2 Max), different workloads
-> (batch throughput vs one wrap), and our 17,700 is *derived* from a wrap time,
-> not measured as a hash rate. It is a **shape-and-sign** claim, not a calibrated
-> ratio. What survives the caveats is the sign, and the sign is what decides the
-> design.
+⚑ **Flock states the thesis better than the tweet does**, and its reasoning is
+worth quoting because it is an argument about *coupling*, not speed:
 
-### 1d. The rest of the space
+> *"a SNARK-friendly hash is cheap to prove only inside a proof system built over
+> the single field it was designed for: it **enshrines that field**… it forces the
+> application designer into a false choice."*
+
+That is the real cost of Poseidon2 and it is not on any of my cost tables: **it
+welds the hash to the field**, so a field migration and a hash migration stop being
+independent moves. Our `HashFamily` (§5) is precisely the de-welding.
+
+### 1e. The rest of the space
 
 ⏳ *The prime-field and binary-field literature sweeps for Poseidon1, Rescue-Prime,
 Vision, Griffin, Anemoi, Monolith, Skyscraper, Reinforced Concrete, Tip5, and the
@@ -166,25 +250,37 @@ arithmetic** — so a work model under-charges it and a clock model over-charges
 Averaging them would be the sin `COST-MODEL.md` rule 5 names. The band is the
 honest object, and **the verdict below does not depend on which end is right.**
 
-### ⚑ Where prime-field reality actually sits, against R\* = 2–4.5
+### ⚑ WHERE REALITY SITS, AGAINST R\* — in both characteristics
 
-Poseidon2 is **~300 AIR cells/permutation** in our own tower. Every prime-field
-number for a bitwise hash is one to two orders of magnitude above that —
-Keccak-f is quoted at **20k–50k R1CS** in our own notes precisely *because it is
-bitwise* (`notes/ring-hash-build-verdict.md`). Even allowing generously for the
-R1CS-vs-AIR unit gap, **`R` lands at roughly 50–150×, against a crossover of
-2–4.5×.**
+`R` measured (§1a for prime, §1d for binary), against `R* = 2.0–4.5×`:
 
-> ### **The prime-field verdict is not close. It is off by 10–50× of margin.**
-> This is not "Poseidon2 narrowly wins." It is "the crossover is nowhere near
-> the operating point, and no amount of tuning the trade moves it." **Poseidon2
-> is not a preference we inherited and could casually drop; in a prime field it
-> is load-bearing by more than an order of magnitude.**
+| candidate | field | **`R`** | margin above `R*` | verdict |
+|---|---|---:|---|---|
+| **Blake3** | BabyBear prime | **30.6×** | **6.8× – 15.2×** | Poseidon2 wins |
+| Keccak-f | BabyBear prime | 210.6× | 47× – 105× | Poseidon2 wins, hugely |
+| Keccak-f | binary (verify proxy) | **12.7×** | **2.8× – 6.3×** | Poseidon-b wins |
+| Grøstl-P | binary (verify proxy) | **24.7×** | **5.5× – 12.3×** | Poseidon-b wins |
 
-⚠ **And say the unflattering half out loud**: this means the 2.78× we pay
-natively is *cheap* for what it buys. Our own map vindicates the inherited choice
-in the field we are in — which is not the answer the question was hoping for, and
-is the answer.
+> ### **The verdict is not close in EITHER characteristic, and that is the finding.**
+> A prime field puts Blake3 **6.8–15.2×** above the crossover. A binary field cuts
+> that to **2.8–6.3×** — a real, roughly 2× improvement — **and still does not
+> cross.** The trade Plonky3 handed us is *correct*, and it stays correct when the
+> field changes.
+
+⚑ **What that isolates is the actual cause.** Every term in `R*` except `f_circ`
+is about *native* cost, and the field change fixes native cost handsomely. `R`
+stays high because `R` is about **re-executing a hash as constraints**, and that
+is a property of **recursion**, not of the field. So:
+
+> ### **RECURSION is the thing that pins us to an algebraic hash. Not the prime field, and not inertia.**
+
+⚠ **And say the unflattering halves out loud, both of them.** First: the 2.78× we
+pay natively is *cheap* for what it buys, so **our own map vindicates the choice we
+inherited** — not the answer the question was hoping for. Second: **I set out with
+a thesis and the measurement refuted it.** The binary-field programme remains
+valuable for the reasons §1d's finding 1 gives, but *"it dissolves the Poseidon2
+justification"* is not one of them, and I had written that sentence before I
+measured it.
 
 ### ⚑ The staircase — why small `R` is exactly free
 
@@ -391,19 +487,34 @@ hashes are one import-boundary decision away from being instances.**
 
 ## 6. WHAT THIS MAP SAYS TO DO
 
-1. **Keep Poseidon2 in the prime-field tower.** Not from inertia — the crossover
-   says it wins by 10–50× of margin, and our own numbers say so.
-2. ⚑ **Take the free apex win** (§4): 1.5–2.3× at zero in-circuit cost and zero
-   new cryptanalytic surface. Measure it first; it is one config swap and one timing.
-3. ⚑ **Understand that the binary-field work is not a benchmark race — it attacks
-   our own dominant term.** We are hash-bound at 5.0–7.2×, and we chose our hash
-   for a reason that **only holds in a prime field**. That is the connection this
-   map exists to make legible.
-4. **Land a second `HashFamily` instance from a real traditional hash.** The
+1. **Keep an algebraic hash wherever a layer is recursed over** — in a prime field
+   *and* in a binary one. Not from inertia: `R` is 6.8–15.2× above the crossover in
+   BabyBear and still 2.8–6.3× above it in a binary field, on our own numbers and
+   the best same-system measurement that exists.
+2. ⚑ **Take the free apex win** (§4): **1.5–2.3×** at zero in-circuit cost and zero
+   new cryptanalytic surface, corroborated at 1.69× ST / 1.26× MT by an independent
+   published measurement. One config swap and one timing. **Do this first.**
+3. ⚑ **Then audit the whole tower for the same shape.** §4 is one instance of a
+   general rule — *a layer's hash must be SNARK-friendly only if that layer is
+   re-verified in-circuit* — and nobody has walked the tower asking that question
+   layer by layer. Any layer whose hash is not arithmetized is a free 1.5–2.3×.
+4. **Re-scope the binary-field programme onto what it actually buys.** It buys the
+   **proving** collapse (§1d finding 1: Grøstl out-proves Vision by 3.56×, and the
+   algebraic advantage falls from ~30× to ~1.3×) and the **de-welding** of hash
+   from field that Flock names. **It does not buy an escape from Poseidon2 in the
+   recursion layers** and should stop being sold that way — including by me.
+5. **Land a second `HashFamily` instance from a real traditional hash.** The
    mathematics is done; the boundary plumbing is not. Until a second instance
-   exists, "the swap is an instantiation" is a claim with one witness.
-5. **Ride the 2026/306 MDS transpose on the next flag day.** Free, and our
-   deployed shape is the attacked one.
+   exists, "the swap is an instantiation" is a claim with one witness. **Two
+   candidates are one import-boundary decision away** (§5).
+6. **Ride the 2026/306 MDS transpose on the next flag day.** Free, and our
+   deployed shape is the attacked one. ⚠ And note the EF's Poseidon Initiative
+   moved **Poseidon2 → Poseidon1 (KoalaBear, MDS)** over exactly this attack — so
+   this is not a cosmetic fix, it is the direction the people running the bounty
+   went.
+7. ⚠ **Watch the α=3 trade.** The KoalaBear migration's 1.82× in-circuit win is
+   partly bought with security margin (§3). Price it as a security decision, not
+   only a cost one.
 
 ---
 
