@@ -648,8 +648,12 @@ theorem paddedSegmentLast_lt_head_of_lt {m queryCount : Nat}
     (hlt : (earlier : Nat) < later) :
     (paddedSegmentLast statement receipt earlier : Nat) <
       paddedSegmentHead statement receipt later := by
-  have hmono := paddedWorkPrefix_mono statement receipt
+  have hmono' := paddedWorkPrefix_mono statement receipt
     (Nat.succ_le_of_lt hlt)
+  have hmono :
+      paddedWorkPrefix statement receipt ((earlier : Nat) + 1) ≤
+        paddedWorkPrefix statement receipt later := by
+    simpa using hmono'
   have hstep := paddedWorkPrefix_strictMono_step statement receipt earlier
     earlier.isLt
   change paddedWorkPrefix statement receipt (earlier + 1) - 1 <
@@ -748,7 +752,7 @@ theorem paddedSegmentReindex_head {m queryCount : Nat}
       _ = (program.take round ++ [program.get ⟨round, hroundProgram⟩]) ++
           program.drop ((round : Nat) + 1) := by
         exact congrArg
-          (fun prefix => prefix ++ program.drop ((round : Nat) + 1))
+          (fun initial => initial ++ program.drop ((round : Nat) + 1))
           (List.take_concat_get' program round hroundProgram).symm
       _ = program.take round ++
           paddedSegmentSwapMove statement receipt round ::
