@@ -123,9 +123,11 @@ theorem constructionDistinguisher_romBound
     (transcriptPrimitiveWork statement receipt)
     (constructionDistinguisher statement receipt verdict)
     (constructionDistinguisher_workBound statement receipt verdict)
-  simpa [BaseFoldPoseidon2Rom.romError,
+  unfold BaseFoldPoseidon2Rom.romError
+  simp only [
     BaseFoldPoseidon2Rom.capacity_card,
-    BaseFoldPoseidon2Rom.state_card] using bound
+    BaseFoldPoseidon2Rom.state_card, Nat.cast_pow] at bound
+  convert bound using 1 <;> ring
 
 #check @constructionQueries_eq_ofFn
 #check @constructionDistinguisher_primitiveWorkOn_exact
