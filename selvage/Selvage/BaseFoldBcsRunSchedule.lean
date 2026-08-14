@@ -47,6 +47,52 @@ def PaddedFullMessageRoutingSafe {m queryCount : Nat}
     ¬ (paddedPublicMessageSchedule statement receipt left <+:
       paddedPublicMessageSchedule statement receipt right)
 
+/-- The canonical-range bound closes every routing case: challenge messages
+diverge at padding versus challenge-result tags, query messages use distinct
+bounded labels, and the two domains differ in their first block. -/
+theorem paddedFullMessageRoutingSafe {m queryCount : Nat}
+    (hcount : queryCount ≤ modulus)
+    (statement : Statement m) (receipt : Receipt m queryCount) :
+    PaddedFullMessageRoutingSafe statement receipt := by
+  intro left
+  refine Fin.addCases (motive := fun left =>
+    ∀ right, left ≠ right →
+      ¬ (paddedPublicMessageSchedule statement receipt left <+:
+        paddedPublicMessageSchedule statement receipt right)) ?_ ?_ left
+  · intro challenge right
+    refine Fin.addCases (motive := fun right =>
+      Fin.castAdd queryCount challenge ≠ right →
+        ¬ (paddedPublicMessageSchedule statement receipt
+            (Fin.castAdd queryCount challenge) <+:
+          paddedPublicMessageSchedule statement receipt right)) ?_ ?_ right
+    · intro challenge' hne
+      have hchallenge : challenge ≠ challenge' := by
+        intro equal
+        subst challenge'
+        exact hne rfl
+      simpa [paddedPublicMessageSchedule, Fin.append_left] using
+        padded_challenge_not_prefix_of_ne statement receipt challenge
+          challenge' hchallenge
+    · intro query _
+      simpa [paddedPublicMessageSchedule, Fin.append_left, Fin.append_right]
+        using padded_challenge_query_not_prefix statement receipt challenge query
+  · intro query right
+    refine Fin.addCases (motive := fun right =>
+      Fin.natAdd m query ≠ right →
+        ¬ (paddedPublicMessageSchedule statement receipt (Fin.natAdd m query) <+:
+          paddedPublicMessageSchedule statement receipt right)) ?_ ?_ right
+    · intro challenge _
+      simpa [paddedPublicMessageSchedule, Fin.append_left, Fin.append_right]
+        using padded_query_challenge_not_prefix statement receipt challenge query
+    · intro query' hne
+      have hquery : query ≠ query' := by
+        intro equal
+        subst query'
+        exact hne rfl
+      simpa [paddedPublicMessageSchedule, Fin.append_right] using
+        padded_query_not_prefix_of_ne hcount statement receipt query query'
+          hquery
+
 /-! ## The public move is answer-independent -/
 
 /-- At any valid public prefix length, the fixed-receipt adapter selects the

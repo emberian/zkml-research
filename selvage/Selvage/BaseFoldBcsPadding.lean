@@ -199,6 +199,115 @@ theorem padded_query_not_prefix_of_ne {m queryCount : Nat}
   exact hprefix.eq_of_length
     (paddedQueryMessage_length_eq statement receipt left right)
 
+/-! ### Causal challenge messages are prefix-free -/
+
+/-- Blocks shared by challenge `round` and every later challenge, stopping
+immediately before that round's reabsorbed challenge result. -/
+noncomputable def paddedChallengeCommon {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin m) : List Rate :=
+  challengeDomain ::
+    (statementBlocks statement ++
+      ((completedRoundFrames receipt).take round).flatten ++
+      roundFrame round (receipt.round round))
+
+theorem paddedChallengeMessage_eq_common {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (round : Fin m) :
+    paddedChallengeMessage statement receipt round =
+      paddedChallengeCommon statement receipt round ++ [paddingBlock] := by
+  simp [paddedChallengeMessage, padMessage, challengeMessage, challengeBody,
+    paddedChallengeCommon, List.append_assoc]
+
+/-- A later causal challenge contains the earlier round frame followed by the
+distinct challenge-result frame before continuing. -/
+theorem paddedChallengeCommon_challengeFrame_prefix {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (earlier later : Fin m) (hlt : (earlier : Nat) < later) :
+    paddedChallengeCommon statement receipt earlier ++
+        challengeFrame earlier (receipt.challenge earlier) <+:
+      paddedChallengeMessage statement receipt later := by
+  have htake :
+      (completedRoundFrames receipt).take ((earlier : Nat) + 1) <+:
+        (completedRoundFrames receipt).take later := by
+    rw [List.take_isPrefix_take]
+    exact Or.inl (by omega)
+  have hflatten := htake.flatten
+  have hfront :=
+    (List.prefix_append_right_inj
+      (challengeDomain :: statementBlocks statement)).2 hflatten
+  have hfull := hfront.prefix_append_of_prefix
+    (roundFrame later (receipt.round later) ++ [paddingBlock])
+  have hindex : (earlier : Nat) < (completedRoundFrames receipt).length := by
+    simp [completedRoundFrames, earlier.isLt]
+  have htakeOne :
+      (completedRoundFrames receipt).take ((earlier : Nat) + 1) =
+        (completedRoundFrames receipt).take earlier ++
+          [(completedRoundFrames receipt).get ⟨earlier, hindex⟩] := by
+    rw [List.take_add_one, List.getElem?_eq_getElem hindex]
+    rfl
+  simpa [paddedChallengeCommon, paddedChallengeMessage, padMessage,
+    challengeMessage, challengeBody, htakeOne, completedRoundFrames,
+    roundStepFrame, List.append_assoc] using hfull
+
+theorem paddedChallengeMessage_length_strict {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (earlier later : Fin m) (hlt : (earlier : Nat) < later) :
+    (paddedChallengeMessage statement receipt earlier).length <
+      (paddedChallengeMessage statement receipt later).length := by
+  have hpref := paddedChallengeCommon_challengeFrame_prefix statement receipt
+    earlier later hlt
+  have hle := hpref.length_le
+  rw [paddedChallengeMessage_eq_common statement receipt earlier]
+  simp [challengeFrame] at hle ⊢
+  omega
+
+theorem padded_challenge_not_prefix_of_ne {m queryCount : Nat}
+    (statement : Statement m) (receipt : Receipt m queryCount)
+    (left right : Fin m) (hne : left ≠ right) :
+    ¬ (paddedChallengeMessage statement receipt left <+:
+      paddedChallengeMessage statement receipt right) := by
+  intro hprefix
+  rcases lt_or_gt_of_ne (Fin.val_ne_of_ne hne) with hlt | hgt
+  · let common := paddedChallengeCommon statement receipt left
+    have hearlier := paddedChallengeMessage_eq_common statement receipt left
+    have hlater := paddedChallengeCommon_challengeFrame_prefix statement receipt
+      left right hlt
+    have hleftIndex : common.length <
+        (paddedChallengeMessage statement receipt left).length := by
+      rw [hearlier]
+      simp
+    have hlaterIndex : common.length <
+        (common ++ challengeFrame left (receipt.challenge left)).length := by
+      simp [challengeFrame]
+    have hpublic := hprefix.getElem hleftIndex
+    have hcausal := hlater.getElem hlaterIndex
+    have hpadding :
+        (paddedChallengeMessage statement receipt left)[common.length] =
+          paddingBlock := by
+      rw [hearlier]
+      simp
+    have hresult :
+        (common ++ challengeFrame left (receipt.challenge left))[common.length]
+          = challengeResultTag := by
+      simp [challengeFrame]
+    have impossible : paddingBlock = challengeResultTag := by
+      calc
+        paddingBlock =
+            (paddedChallengeMessage statement receipt left)[common.length] :=
+          hpadding.symm
+        _ = (paddedChallengeMessage statement receipt right)[common.length] :=
+          hpublic
+        _ = (common ++
+            challengeFrame left (receipt.challenge left))[common.length] :=
+          hcausal.symm
+        _ = challengeResultTag := hresult
+    exact (by decide : paddingBlock ≠ challengeResultTag) impossible
+  · have hstrict := paddedChallengeMessage_length_strict statement receipt
+      right left hgt
+    have hle := hprefix.length_le
+    omega
+
 noncomputable def paddedDerivedChallengeRate {m queryCount : Nat}
     (statement : Statement m) (receipt : Receipt m queryCount)
     (j : Fin m) : Rate :=
