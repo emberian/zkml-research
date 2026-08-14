@@ -265,6 +265,7 @@ theorem friRoundQueries_pin_or_equivocation
     · exact False.elim (ha hpinned)
     · exact hequiv
 
+omit [DecidableEq F] [Fintype κ] [Nonempty κ] in
 /-- Perfect binding refutes the retained batch-equivocation branch. -/
 theorem not_friRoundQueriesEquivocate
     (Sbig : BindingCommitment RootBig F ι OpBig)
