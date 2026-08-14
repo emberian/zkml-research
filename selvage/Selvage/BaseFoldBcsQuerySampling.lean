@@ -148,15 +148,17 @@ def unbiasedQueryCoordinate {ell : Nat} (hell : ell ≤ 28)
     (unbiasedQueryCoordinate hell seed accepted : Nat) =
       ((seed 0).val - 1) % (2 ^ (ell - 1)) := rfl
 
+set_option maxHeartbeats 800000 in
 /-- Conditional on accepting the nonzero field lane, every BaseFold query
 coordinate is exactly uniform. This is equality for every event, not a
 pointwise-bias estimate. -/
-set_option maxHeartbeats 800000 in
 theorem acceptedScalar_coordinate_uniform {ell : Nat} (hell : ell ≤ 28)
     (event : PowerTwoFriLevels ell 1 → Prop) :
     uniformProb {x : F // x ≠ 0}
         (fun x => event (acceptedScalarEquiv ell hell x).2) =
       uniformProb (PowerTwoFriLevels ell 1) event := by
+  letI : Nonempty (Fin (querySlackSize ell)) :=
+    ⟨⟨0, querySlackSize_pos ell⟩⟩
   exact (uniformProb_equiv (acceptedScalarEquiv ell hell)
     (fun pair => event pair.2)).trans (uniformProb_prod_snd event)
 
