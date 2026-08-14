@@ -43,7 +43,8 @@ def basefoldPrefixChallenges (rs : List (Polynomial F × F)) : Fin m → F :=
 theorem scSchedule_eq_chalOf_prefix (rs : List (Polynomial F × F))
     (h : rs.length < m) :
     ∀ j, j < rs.length →
-      scSchedule rs j = chalOf (basefoldPrefixChallenges rs) j := by
+      scSchedule rs j =
+        chalOf (basefoldPrefixChallenges (m := m) rs) j := by
   intro j hj
   rw [chalOf, dif_pos (lt_trans hj h)]
   rfl
@@ -63,7 +64,7 @@ theorem basefoldRbr_honest_check (table : (Fin m → Bool) → F)
     (scHonestAt (basefoldHonest table z) rs).eval 0 +
         (scHonestAt (basefoldHonest table z) rs).eval 1 =
       scTruthAfter (mle table z) (basefoldHonest table z) rs := by
-  let r := basefoldPrefixChallenges rs
+  let r : Fin m → F := basefoldPrefixChallenges (m := m) rs
   have hpre : ∀ j, j < rs.length → scSchedule rs j = chalOf r j :=
     scSchedule_eq_chalOf_prefix rs h
   rw [scHonestAt_eq_of_prefix (basefoldHonest_prefixMeasurable table z) rs
@@ -111,6 +112,7 @@ theorem rbrF5_err (i : Fin 1)
     (st : Stmt (basefoldSumcheckReduction (by decide) table ![3])) (δ : ℝ) :
     rbrF5.err i st δ = 2 / 5 := by
   rw [rbrF5, basefoldSumcheckRbr_err, ZMod.card]
+  norm_num
 
 end BaseFoldRbrExample
 
