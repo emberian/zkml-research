@@ -110,3 +110,69 @@ for nm, p in (("leaf wrap", perms_leaf), ("apex/shrink", perms_apex)):
     pad = 1 << math.ceil(math.log2(p))
     print(f"  {nm:12s} {p:,} rows -> padded 2^{int(math.log2(pad))} = {pad:,}"
           f"   headroom {pad/p:.3f}x in ROWS before the table costs one more rung")
+
+
+# ============================================================================
+# R, MEASURED -- from our OWN pinned Plonky3 (rev 82cfad7), not quoted.
+# Widths are `size_of::<*Cols<u8>>()` read out of the pinned crates; rows per
+# invocation read from each crate's generation.rs.
+#   blake3-air : num_rows = inputs.len()                -> 1 row / compression
+#   keccak-air : num_rows = inputs.len() * NUM_ROUNDS   -> 24 rows / permutation
+# Poseidon2 side is OUR deployed tower table, notes/recursion-tower-profile.md 3a.
+# ALL THREE ARE AIR MAIN CELLS OVER A 31-BIT PRIME FIELD -- one unit, no conversion.
+# ============================================================================
+P2_MAIN_COLS = 300          # poseidon2_perm/baby_bear_d4_w16, main width, 1 row/perm
+BLAKE3_COLS  = 9168         # NUM_BLAKE3_COLS, 1 row/compression
+KECCAK_COLS  = 2633         # NUM_KECCAK_COLS
+KECCAK_ROWS  = 24           # NUM_ROUNDS
+
+print("\n" + "=" * 78)
+print("R, MEASURED IN A PRIME FIELD (AIR main cells per invocation, pinned p3 82cfad7)")
+print("=" * 78)
+cands = {
+    "Poseidon2-w16 (ours, deployed)": P2_MAIN_COLS,
+    "Blake3 (p3-blake3-air)": BLAKE3_COLS,
+    "Keccak-f (p3-keccak-air)": KECCAK_COLS * KECCAK_ROWS,
+}
+for nm, c in cands.items():
+    print(f"  {nm:34s} {c:>8,} cells/invocation   R = {c/P2_MAIN_COLS:7.1f}x")
+
+print("\n  Merkle NODE ratio is 1:1 in invocations (a 2-to-1 node is one Poseidon2-w16")
+print("  perm OR one Blake3 compression at a 256-bit digest), so the cell ratio IS R")
+print("  for the recursion column, which is Merkle-path dominated.")
+print("  Bulk ABSORB credits Blake3 2x (64 B/compression vs a rate-8 ~31 B), so an")
+print("  absorb-heavy workload sees R/2.")
+
+print("\n" + "=" * 78)
+print("VERDICT: measured R against the crossover band")
+print("=" * 78)
+band_lo, band_hi = min(alls), max(alls)
+for nm, c in cands.items():
+    if nm.startswith("Poseidon2"):
+        continue
+    R = c / P2_MAIN_COLS
+    print(f"\n  {nm}:  R = {R:.1f}x   vs  R* = {band_lo:.2f}x..{band_hi:.2f}x")
+    print(f"    margin above crossover: {R/band_hi:.1f}x (best case for the swap)"
+          f" .. {R/band_lo:.1f}x (worst case)")
+    print(f"    -> Poseidon2 WINS" if R > band_hi else "    -> candidate wins")
+
+print("\n" + "=" * 78)
+print("BINARY FIELD: the same ratio, from the only same-system head-to-head")
+print("eprint 2025/1893 Table 4 (Binius v0, Ryzen 9 7900X, per ~1 MB hashed)")
+print("VERIFY time is the in-circuit/recursion proxy: recursion cost IS verifier cost.")
+print("=" * 78)
+bin_verify_ms = {
+    "Grostl-P (standard)": 114.97,
+    "Keccak-f (standard)": 45.70,
+    "Vision-32b (algebraic)": 10.12,
+    "Anemoi (algebraic)": 12.28,
+    "Poseidon-b pi (algebraic)": 4.66,
+    "Poseidon-b pi n=64 (algebraic)": 3.61,
+}
+base = bin_verify_ms["Poseidon-b pi n=64 (algebraic)"]
+for nm, v in bin_verify_ms.items():
+    print(f"  {nm:32s} verify {v:7.2f} ms   R_proxy = {v/base:6.1f}x")
+print(f"\n  Grostl / Poseidon-b(n=32) = {114.97/4.66:.1f}x ;"
+      f"  Keccak / Poseidon-b(n=64) = {45.70/3.61:.1f}x")
+print(f"  -> R_proxy in a BINARY field is ~12.7x..24.7x, STILL ABOVE R* = {band_hi:.1f}x.")
+print("  The binary field shrinks R by ~2x (from ~30x for Blake3), it does NOT close it.")
