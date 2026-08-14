@@ -154,7 +154,8 @@ def listToRate? (values : List F) : Option Rate :=
   simp only [listToRate?, List.length_ofFn, ↓reduceDIte]
   apply congrArg some
   funext lane
-  simp
+  change (List.ofFn block).get lane = block lane
+  exact List.get_ofFn block lane
 
 /-- Lane-major bytes: lane zero first, four little-endian bytes per lane. -/
 def encodeRate (block : Rate) : List UInt8 :=
@@ -210,7 +211,7 @@ def encodePaddedMessage (message : List Rate) : List UInt8 :=
   rw [encodePaddedMessage, List.length_flatMap]
   simp only [encodeRate_length, List.map_const', List.sum_replicate,
     padMessage_length]
-  rw [nsmul_eq_mul, Nat.mul_comm]
+  simpa [nsmul_eq_mul, Nat.mul_comm]
 
 #check @decodeField_encodeField
 #check @decodeField_modulus_rejected
