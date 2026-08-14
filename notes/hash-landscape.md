@@ -365,6 +365,46 @@ valuable for the reasons §1d's finding 1 gives, but *"it dissolves the Poseidon
 justification"* is not one of them, and I had written that sentence before I
 measured it.
 
+### ⚑⚑ THE ONE ROUTE THAT ACTUALLY CROSSES R\* — and it is not a hash and not a field
+
+Every `R` above is for a **bit-decomposed** arithmetization: each XOR and each
+modular-add carry becomes booleanity-constrained field elements. That is *why*
+Blake3 costs 9,168 cells. **Under a LOOKUP argument it does not.**
+
+Reinforced Concrete (eprint 2021/1038) Table 1, same paper, same unit —
+**Plookup gates per invocation**:
+
+| hash | Plookup gates | ratio |
+|---|---:|---:|
+| Poseidon | **633** | 1.0× |
+| Blake2s | **2,000** | **3.16×** |
+
+> ## ⚑⚑ **`R ≈ 3.2×` under a lookup argument — INSIDE the crossover band `R* = 2.0×–4.5×`.**
+
+**Same two primitives. 27× swing from the arithmetization alone** (102× in R1CS,
+~31–56× in a bit-decomposed AIR, ~3× in Plookup). ⚑ **The quantity this whole
+document turns on is not a property of the hash. It is a property of how you
+arithmetize it.**
+
+**So the honest answer to this note's title — *what would it take to leave?* — is:
+not a different hash, and not a different field. A lookup-based arithmetization of
+the traditional hash.** That is the only lever measured anywhere on this page that
+moves `R` across `R*` rather than merely shrinking it.
+
+⚠ **Caveats, and they are real.** (a) Blake2s, not Blake3 — close relatives,
+not the same function. (b) Plookup gates are **not** AIR cells; the 633 for Poseidon
+is not our 300, and I have **not** reconciled the units. (c) A lookup argument has
+its own committed cost (the table, the multiplicity columns, the LogUp sumcheck)
+which this ratio may or may not carry. **This is a POINTER, not a result** — but it
+is a pointer at the one place the crossover is reachable, and **we already hold
+LogUp machinery** (`hash-verdict.md` §4 prices Monolith "granting LogUp").
+
+⚑ **The measurement that would settle it is small and specific**: price a
+lookup-based Blake3 AIR in *our* unit — blowup-cells, including the lookup table
+and multiplicity columns — against Poseidon2's 1,192. If it lands under ~4,000, the
+crossover is reached and this entire verdict flips. **That is the highest-value
+open measurement on this page**, and nothing else here comes close to it.
+
 ### ⚑ The staircase — why small `R` is exactly free
 
 In-circuit tables are padded to powers of two. The leaf wrap's Poseidon2 table is
