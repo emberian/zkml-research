@@ -265,6 +265,56 @@ is the reason.
 > **Anyone spending the next hour on prover speed should spend it there, not on
 > more layout work.**
 
+### ✅ THE RIG EXISTS, ON HBOX — and it refuses to produce the number I was quoting
+
+`circuit/tests/hbox_rig.rs`, run from a detached clone at a pinned SHA, 5/5
+green. **The four rules above are now enforced BY CONSTRUCTION rather than by
+exhortation**: `Counts` has no duration field and `Timing` has no count field
+(*a measurement fact — the counter's 217,114 atomics land in exactly the phase
+being measured*); `Conditions` is captured before **and after** every cell with
+no path that omits it; **`Share` cannot render without its denominator**; and
+**`compose()` returns `Err` on a work/latency mixed set.**
+
+**Self-check**: `P(b) = 3381·2^b + 766` reproduces the entire prover
+permutation column **to the unit**, decomposing into named phases. Three ways
+to go red (SHAPE / PREDICTION / PIN), **red-capability proved by a prover-free
+unit test and then fired for real on the first hbox run.**
+
+## ⚑⚑ THE COMPOSED NUMBER — and my "four landed wins" was wrong
+
+**Of the four, the two that are landed are LATENCY claims; the two carrying
+WORK claims are NOT CUT OVER** — `IR2_FRI_LOG_BLOWUP` is still **6**,
+`CHIP_WIDTH` is still **386**.
+
+> **work `1.0000×` · latency `1.4554×` · and the columns may not be added.**
+
+**Naive multiplication gives 38.8× — a 26.6× OVERSTATEMENT.** `compose()`
+**refuses the mixed set rather than returning a number**, which is the rig
+working exactly as intended, against its author.
+
+## ⚑ Four findings the rig produced immediately
+
+1. **Thread scaling TURNS OVER**: **T=16 is 1.54× WORSE than T=8** at b=6 —
+   hbox's `taskset -c 0-15` is 8 P-cores × SMT, so a 16-thread pool **fights
+   itself**. *The optimum is 4–8 and the default is a pessimization.*
+2. ⛔ **hbox was running the SCALAR Poseidon2** — no `-C target-cpu=native`,
+   packing width **1 instead of 8**. **Counts unaffected; every clock
+   several-fold wrong on the hash side.** ⚑ ***The primary instrument stayed
+   correct while the secondary silently lied*** — which is the whole
+   counts-primary argument, demonstrated rather than asserted.
+3. ⚑ **Its own grind cell had STOPPED FALSIFYING** — same transcript three
+   times, printing `spread 1.00×`, *the opposite of its purpose.* Real spread
+   is **6.00×**. And the repair paid: **every draw is a multiple of 16,384 =
+   2^16/4 — the rig re-derived the deployed grind window from counts alone.**
+4. **The count arm reproduces the recorded tables TO THE UNIT on different
+   hardware**, at load 4 against the laptop's 16–95. *That is the
+   contention-immunity claim, finally proved rather than argued.*
+
+⚠ **Two caveats it did not resolve**: the latency figure's phase shares are
+still laptop-derived and pre-batching, and **`ThreadPool::install` measures
+1.14–1.80× here, not the advertised 2.2–2.5×.** Also: **hbox `/` is 100%
+full.**
+
 ### The methodology that follows
 
 - **Operation counts are the primary instrument.** They are exact,
