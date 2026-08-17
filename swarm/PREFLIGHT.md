@@ -84,7 +84,10 @@
   resumable `update.py`. ⚠ **PDFs only, no `.txt` sidecars** — `pdftotext` what
   you need. **The scratchpad full-text cache (`.../scratchpad/ft/`) stops at
   2026/777**, so every "absent from the corpus" claim made against that cache
-  is missing ~276 recent 2026 papers. **Use the mirror for anything after 777,
+  is missing ~276 recent 2026 papers. ⚠ **the shared ft cache was found EMPTY on 2026-08-17** (a lane checked
+  `…ca67a4c1…/scratchpad/ft/` against this record and found nothing — scratchpads
+  are session-scoped and evaporate). **Treat `~/paperbin` (persistent, full text)
+  as the only durable extracted corpus.** **Use the mirror for anything after 777,
   and `~/paperbin` first for anything already extracted (all 1,218 PDFs have
   full text).**
 - ⚑ **CORPUS BLINDNESS — the biggest instrument failure so far.** The IACR
