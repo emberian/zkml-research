@@ -1210,3 +1210,53 @@ security analysis, a generalized-FreeLunch argument, a CheapLunch modeling
 that validates its own conjecture, and no full-round attack. That is more
 cryptanalytic age than any candidate we could author, and the `HashRelation`
 spine is where it should land.
+
+
+---
+
+## ADDENDUM 5 (2026-08-17): the post-Weft gate run — the fallback killed, the alignment redeemed, the slot dissolved
+
+`notes/post-weft-hash.md` (full charting) + `ring-ro-hash@04d0d95` (tooling +
+logs) + `minidregg` `Selvage/HashRelationInverse.lean` (the relation spine
+ADDENDUM 4 asked for, landed and pinned).
+
+> ⚑ **The dissolve-check came FIRST and closes the slot**: terminal binary
+> proofs keep cSHAKE256; wrap-recursed binary proofs take the deployed
+> Poseidon2 + a ~1.03–1.94× packing codec (ring-switching is same-
+> characteristic BY DEFINITION and cannot carry the hash across); and the
+> only scenario needing a char-2 hash — char-2-native recursion — has NO
+> substrate (no char-2 AIR/circuit prover in either tree, routability-grepped).
+> **No new hash gets built now.**
+
+Gate results (branch numbers BEFORE any other analysis, the Weft rule):
+
+- ☠ **The dense-composed fallback is KILLED by measurement**:
+  branch(D·E) ≤ 11, branch(E·D) ≤ 21 vs Cauchy-D alone at 25 — composition
+  destroys the invariant flag but LOSES branch at higher cost.
+- ⭐ **The alignment thesis is REDEEMED by Mark-32's own §3.3 construction**:
+  the systematic-RS matrix `A = V₂·V₁⁻¹` — the killed Weft transform
+  interpolated on its window and evaluated on a DISJOINT set — is **MDS by
+  the RS theorem** (branch 25, instrument agrees, flag destroyed), on the
+  same proved butterflies, basis- and normalization-free. Weft died by
+  evaluating inside its own interpolation window; one point-set decision away
+  sat the theorem-carrying form. *(The live `weft2.md` lane's coset repair is
+  the one-transform cousin — results pending there.)*
+- ⭐ **RPO/XHash8's 12×12 Goldilocks MDS: branch = 13 EXACT, fully certified**
+  (two-sided k ≤ 6 minor sweep, 3,557,930 minors) — an independent
+  certification of the deployed matrix.
+- ⚑ **XHash-M31's published matrix has a TYPO** (2024/1635 Eq. 16, entry 14
+  drops a leading digit — formula (14) re-derived at λ = 2, 31/32 exact) —
+  and its geometry is t = 24 / rate 16 / capacity 8 at 31 bits, *exactly*
+  Weft's. ⚠ Method law: **the branch passes are a floor instrument, not an
+  identity instrument** — the typo'd matrix also floors at 25; certification
+  = re-derive from the defining formula, THEN gate.
+
+**Recommendation if the char-2 slot ever opens: adopt Vision Mark-32**
+(t=24/GF(2³²)/r16/c8, x⁻¹ + the systematic-RS MDS) with its obligations
+discharged first — coeffgroup for its exact `B` (three Frobenius terms,
+adjacent exponents), the integral bound, a post-FreeLunch round audit.
+XHash8/XHash-M31 stay the adopt-answer for Goldilocks/M31-shaped stacks
+(record now: Perrin + Rijmen audits, FreeLunch 2^214, CheapLunch validated —
+ADDENDUM 4), which ours are not. The S-box relations for BOTH are graph-sound
+in Lean (`invWitnessed`/`invSystem`/`powRootWitnessed`/π₂ =
+`pow7Witnessed`@GF(p³), axiom-pinned, teeth included).

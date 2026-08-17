@@ -309,6 +309,15 @@ place," which is precisely the brief's question.
   of diffusion. **The fallback clause below is now the only live form** (dense
   layer composed in ⇒ the one-proved-linear-object consequence is lost);
   [WEFT-integral]/[WEFT-groebner] should not be run against the dead layer.
+  ⚑ **UPDATE 2026-08-17 (`post-weft-hash.md`): the composed fallback is now
+  MEASURED-KILLED too** — branch(D·E) ≤ 11, branch(E·D) ≤ 21 against D alone
+  at 25 (`ring-ro-hash@04d0d95`): composition destroys the flag but LOSES
+  branch points at higher cost. **And the one-proved-linear-object prize is
+  RECOVERED by a different construction**: the systematic-RS form
+  `A = V₂·V₁⁻¹` (interpolate on the window, evaluate on a DISJOINT point set —
+  Mark-32's own §3.3 MDS) is branch-25-by-theorem on the same proved
+  butterflies. The successor design, if the char-2 slot ever opens, is
+  Mark-32-adopted — see `post-weft-hash.md` §3–4, §7.
   *(Original statement, kept for the record:)* The additive-NTT butterfly
   network is sparse and structured — 2-point butterflies over F2-affine
   cosets. The recurring AO death is exactly a structured-for-cost linear layer
@@ -529,7 +538,10 @@ just ring identities.
    and the answer was bad: branch 6/25, plus a 4-deep round-invariant lane-
    subspace flag (§3d, `k16-proof-and-weft.md` §2). The sketch as written is
    killed; only the dense-composed fallback survives, re-priced without the
-   one-linear-object prize.**
+   one-linear-object prize.** ~~fallback~~ — **the fallback is ALSO killed by
+   measurement (2026-08-17, `post-weft-hash.md` §2), and the prize returns via
+   the systematic-RS form instead (§3 there); the whole slot is moreover
+   DISSOLVED for now by the recursion-scenario check (§1 there).**
 4. **The job-split is answered: leave the transcript alone** (§4). Any future
    "cheaper FS" idea must attack absorbed VOLUME (jagged/width), not the
    primitive.
