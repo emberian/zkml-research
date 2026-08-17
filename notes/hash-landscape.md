@@ -1133,3 +1133,32 @@ measured shut.
   theorem (the split-chunking equality admits no decomposition), refutable
   over every field, per GUARD-DISCIPLINE; the all-accepting oracle refuted;
   three obligations named, not built.
+
+
+---
+
+## ADDENDUM 3 (2026-08-17): [WEFT-subspace] SETTLED — the sketch is killed, exactly
+
+`~/src/ring-ro-hash/weft_branch.py` (`737ea7b`), method from
+`design_branch_frontier.py` with a duality trick — **`branch(M) =
+branch(M⁻¹)`**, so four exact passes exhaust every codeword with min-side ≤ 2
+and the answer **self-certifies. EXACT, not certified-to-w.**
+
+> **branch(Weft, t=24) = 6** — against MDS **25**, and against Poseidon2's own
+> layer at **8 (exact, t=16) / ≤10 (t=24)**.
+
+**And worse than the number**: the mixing matrix is **block-triangular along
+the subspace flag** — lanes ≥ 2ᵇ map into themselves for b = 1..4, and the
+0-fixing lane-wise `x⁻¹` S-box **preserves them** — a **4-deep chain of
+round-invariant lane subspaces, the 2026/306 subspace-trail shape BY
+CONSTRUCTION.**
+
+> ***The alignment thesis imports the code's triangularity, and triangularity
+> is the opposite of diffusion.***
+
+The Chaghri caveat is answered the other way: the mixing spends **zero**
+Frobenius terms, so this is the **Starkad/HADES structured-layer death**, not
+Chaghri's. **Verdict: killed as specified**; only the dense-composed fallback
+survives (losing the one-proved-linear-object prize); [WEFT-integral] and
+[WEFT-groebner] should not be run against the dead layer. Basis-independent
+(three random domain bases identical); random-matrix control reads 25.
