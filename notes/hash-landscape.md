@@ -1162,3 +1162,51 @@ Chaghri's. **Verdict: killed as specified**; only the dense-composed fallback
 survives (losing the one-proved-linear-object prize); [WEFT-integral] and
 [WEFT-groebner] should not be run against the dead layer. Basis-independent
 (three random domain bases identical); random-matrix control reads 25.
+
+
+---
+
+## ADDENDUM 4 (2026-08-17): the Kagi sweep — three papers we did not have, read at source
+
+⚑⚑ **"XHash8 is FreeLunch-UNMODELABLE" is superseded, and the replacement is
+STRONGER evidence — the reframe matters more than the fact.**
+
+**CheapLunch (eprint 2025/2040, Bak–Bariant–Boeuf–Briaud–Øygarden–Phanse)
+extends FreeLunch beyond CICO-1 to multiple outputs, and REACHES XHash8** —
+*"we apply our framework to Poseidon, Neptune and XHash8, where our
+assumptions are experimentally verified, and theory matches practice."* It
+proves `7³⁰ ≤ D_I ≤ 7^{24+6k}` for CICO-(12−k,k), **validating XHash's own
+Conjecture 1 in that context**, and confirms round-skips apply (*"XHash falls
+exactly in this framework"* — first `(F)` layer plus 8 S-boxes at CICO-1).
+
+> ⚑ **"Unmodelable" was an ABSENCE OF ANALYSIS wearing a security costume.**
+> *Modeled-by-the-strongest-current-framework-and-surviving-at-full-rounds* is
+> a strictly better epistemic position — and that is what XHash8 now has:
+> **"our results do not threaten the security of any full-round hash
+> function."**
+
+**And there is a dedicated analysis we never had**: **Perrin, eprint
+2024/605**, on *both* the padding scheme and algebraic attacks. Verdict: the
+only padding vulnerability is *"plausibly applicable only in the multi-rate
+setting — for which the authors make no claim"*; and on the algebraic side it
+**generalizes FreeLunch itself**, concluding *"XHash8 and XHash12 are safe
+against such attacks"* — with the SAGE-validated conjecture's bound **not
+tight, i.e. it UNDER-estimates their security.** ⚑ Its methodological lesson
+is ours too: *base the security argument on the ELIMINATION step, not on
+computing the Gröbner basis — the latter is hard to estimate and "sometimes
+literally non-existent."*
+
+**Two collateral confirmations, at source**: Griffin *"several full-round
+instances have been broken in the k=1 case"* (our recorded 2^51–64 stands),
+and ⚑ **for our DEPLOYED Poseidon: "even with ω = 2, we found no attacks on
+full Poseidon with its security margin for realistic security levels
+(80 ≤ λ ≤ 256)"** — though their analysis *does* outperform the designers' at
+some 256-bit instances **without margin** (2^253.59). **A fourth independent
+confirmation of the Poseidon2 verdict, from the attack side this time.**
+
+⚑ **Consequence for the post-Weft successor**: option (c) — *adopt, do not
+design* — is **strengthened, not weakened.** XHash8 carries a dedicated
+security analysis, a generalized-FreeLunch argument, a CheapLunch modeling
+that validates its own conjecture, and no full-round attack. That is more
+cryptanalytic age than any candidate we could author, and the `HashRelation`
+spine is where it should land.

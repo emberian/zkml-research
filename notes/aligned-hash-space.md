@@ -293,17 +293,31 @@ place," which is precisely the brief's question.
 
 ### 3d. The named security obligations — none waived, one loud
 
-- **[WEFT-subspace] ⚑ THE LOUD ONE.** The additive-NTT butterfly network is
-  sparse and structured — 2-point butterflies over F2-affine cosets. The
-  recurring AO death is exactly a structured-for-cost linear layer (Starkad,
-  HADES, Poseidon2's `Mε` — three for three, `hash-landscape.md` §3). **The
-  alignment thesis wants the mixing layer to be the encoder; the attack record
-  says structured linear layers are where these designs die. These pull in
-  opposite directions and only the measurement settles it**: branch number of
-  the concrete 24-point transform, and an invariant/subspace-trail search of
-  the 2026/306 shape. If the branch number is bad, Weft composes the transform
-  with a cheap dense layer and loses some of the sharing — that fallback must
-  be priced, not assumed away.
+- **[WEFT-subspace] ⚑ THE LOUD ONE — ⛔ RESOLVED 2026-08-17: KILLED AS
+  SPECIFIED.** Measured (`~/src/ring-ro-hash/weft_branch.py` @737ea7b, exact
+  and certified, method + numbers in `notes/k16-proof-and-weft.md` §2):
+  **branch(novel-eval mixing, t = 24, GF(2³²)) = 6** against the MDS bound 25 —
+  below even Poseidon2's non-MDS external layer (8 at t=16 EXACT, ≤10 at t=24).
+  Witness: span{X̂₁₆, X̂₂₀} = s₄·(s₂−c), 20 of 24 points zeroed;
+  basis-independent (3 random domain bases identical). Worse than the number:
+  the evaluation matrix is **block-triangular along the subspace flag** — the
+  lane subspaces {lanes ≥ 2^b} for b = 1..4 map into themselves, and the
+  lane-wise x⁻¹ S-box (0 ↦ 0) preserves them too, so the round carries a
+  **4-deep nested chain of invariant lane subspaces** up to round constants —
+  the 2026/306 subspace-trail shape present by construction. The alignment
+  thesis imports the code's triangularity, and triangularity is the opposite
+  of diffusion. **The fallback clause below is now the only live form** (dense
+  layer composed in ⇒ the one-proved-linear-object consequence is lost);
+  [WEFT-integral]/[WEFT-groebner] should not be run against the dead layer.
+  *(Original statement, kept for the record:)* The additive-NTT butterfly
+  network is sparse and structured — 2-point butterflies over F2-affine
+  cosets. The recurring AO death is exactly a structured-for-cost linear layer
+  (Starkad, HADES, Poseidon2's `Mε` — three for three, `hash-landscape.md`
+  §3). The alignment thesis wants the mixing layer to be the encoder; the
+  attack record says structured linear layers are where these designs die.
+  If the branch number is bad, Weft composes the transform with a cheap dense
+  layer and loses some of the sharing — that fallback must be priced, not
+  assumed away.
 - **[WEFT-integral]**: Beyne–Verbauwhede monotonicity (integral properties
   survive 1 round prime / 13 deg-2 / 20 deg-4) says a degree-2^k tower is the
   extreme point of the axis that punished the ring hash's τ=4. The x⁻¹ S-box's
@@ -511,10 +525,11 @@ just ring identities.
 2. ⚑ **The lookup measurement is now doubly selected** — cost (`hash-landscape`
    §2) and security (§0.3 here) independently pick it. It stays the
    highest-value open measurement; sibling lane's.
-3. **Run [WEFT-subspace] before any further Weft work** — branch number +
-   subspace trails of the concrete 24-point additive-NTT transform. It is the
-   design's load-bearing risk, it is a computation not a research program, and
-   a bad answer re-prices the whole sketch honestly.
+3. ~~**Run [WEFT-subspace] before any further Weft work**~~ — **DONE 2026-08-17,
+   and the answer was bad: branch 6/25, plus a 4-deep round-invariant lane-
+   subspace flag (§3d, `k16-proof-and-weft.md` §2). The sketch as written is
+   killed; only the dense-composed fallback survives, re-priced without the
+   one-linear-object prize.**
 4. **The job-split is answered: leave the transcript alone** (§4). Any future
    "cheaper FS" idea must attack absorbed VOLUME (jagged/width), not the
    primitive.

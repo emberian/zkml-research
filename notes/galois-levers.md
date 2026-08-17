@@ -296,11 +296,15 @@ Three structural reads off the grid:
 own native hashing falls in step (44.66M → 31.95M sponge perms at a4/K16, ×1.40) — the packing
 lever pays on the wrap's prover, not only on what the next layer verifies.
 
-⚠ **What this grid is NOT:** a proof run. The geometry is the prover's own extraction call, but
-no wrap has been PROVEN at K ≠ 2 in this repo (the fork's examples plumb
-`--horner-packed-steps`, `recursion/examples/recursive_keccak.rs:174`). The confirming
-end-to-end prove at the chosen point is the first follow-up tooth, and it is
-satisfiable-and-refutable by construction: it proves or it refuses.
+~~⚠ **What this grid is NOT:** a proof run.~~ ✅ **BANKED 2026-08-17**
+(`recursion_tower_profile.rs::k16_wrap_proves_and_a_corrupted_trace_refuses`, breadstuffs
+`a8e8842a5` + `44d0dea45`; `notes/k16-proof-and-weft.md` §1): the wrap **PROVES and
+production-verifies at `a4/K16/rec4`** — census control and the 28,971,008 / max-2¹⁶ geometry
+reproduced to the digit, VK rotation MEASURED (deployed `73f8dc7d…` ≠ K16 `6fdd7b64…`), and a
+forged committed chain-tail Horner cell **REFUSES** (`OodEvaluationMismatch{index:2}`, the Alu
+quotient) with the mutation asserted at the artifact level (forged proof bytes ≠ clean
+baseline). ⚠ Instrument lesson recorded there: a MID-chain Horner `out` is NOT a committed
+cell (`trace_to_matrix` recomputes intermediates) — the first falsifier died on exactly that.
 
 ### 3d. The dedicated-chain-table endpoint `[DERIVED, design estimate — labeled]`
 
@@ -402,9 +406,10 @@ is closed* (§1d, §4), which is what licenses spending everything on geometry.
 
 ### Follow-up teeth, in order
 
-1. **Prove a wrap at `a4/K16/rec4`** (end-to-end, then the VK re-mint chain of
-   `sumcheck-batched-opening.md` §3a). Refutable: it proves or it refuses. Until then §3c is
-   geometry, not a deployment.
+1. ~~**Prove a wrap at `a4/K16/rec4`**~~ ✅ **DONE 2026-08-17** — proves, production-verifies,
+   refuses when forged, VK rotation measured (§3c update; `notes/k16-proof-and-weft.md` §1).
+   Remaining from this item: the §3a re-mint chain itself (+ the rec4 caveat: max height
+   2¹⁸→2¹⁶ changes the PARENT verifier's shape, so the flip is coordinated, not per-layer).
 2. **Land the three Lean lemmas**: the minpoly-dvd equivalence and the conjugate-point refusal
    (§1d) in `minidregg/Theory/`; the chain-fold coordinate identity (§5) as the spec any future
    chain-table emitter refines. None blocks rank 1.
