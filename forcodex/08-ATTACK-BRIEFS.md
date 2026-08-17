@@ -47,10 +47,16 @@ Two candidates, both ours:
 1. **MITM / boomerang on the gadget-Feistel.** Our own note says *"the order-2
    differential does NOT die in one round"* and files this as the **first
    attack-me item**. It has never been run.
-2. **The τ=2 settling experiment**: Beyne–Verbauwhede's own notebook
+2. ✅ **CLOSED 2026-08-17 — RAN, guard passed, result below.** ~~The τ=2 settling experiment~~: Beyne–Verbauwhede's own notebook
    (eprint 2025/932, `SPN.ipynb`) **at our parameters**. Their result — integral
    properties survive **round 1 at prime, 13 at degree 2, 20 at degree 4** — is
-   what drove us off τ=4. **We chose τ=2 without running it at τ=2.**
+   what drove us off τ=4. ~~We chose τ=2 without running it at τ=2.~~ **RESULT: τ=1 dies at round 2,
+   τ=2 at round 24, τ=4 at ≥42. The ordering holds by execution; τ=4 is
+   INTEGRAL-INFEASIBLE. ⚑ But at identical (e,t) the paper's base 2³¹ gives 13
+   and our 2⁶⁴ gives 24 — we had chosen against a number understating us 1.85×
+   — and 24 is a FLOOR (the deployed σ-layer mixes weaker than the model),
+   leaving ~6 rounds against the borrowed budget. The round-count derivation
+   is now binding.**
 3. **Gröbner/CICO on σ-Poseidon**, with **Perrin's methodological rule**
    (2024/605, in paperbin): *base the argument on the **elimination step**, not
    on computing the Gröbner basis — the latter is "sometimes literally

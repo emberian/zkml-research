@@ -914,6 +914,57 @@ margin. With the price of zero age now measurable:
 on both sides; **structure / quotient / subfield / minpoly come first.** New
 obligation named: **[WEFT-multiround]**.
 
+## 5g. ⚑⚑ THE τ=2 SETTLING EXPERIMENT RAN — and "13" understated us by 1.85×
+
+The item we named in three notes and never executed is executed
+(`notes/ring-hash-scripts/integral_char_p_settling.sage`): Beyne–Verbauwhede's
+**verbatim** `SPN.ipynb` Newton-polytope machinery (eprint 2025/932) at **our**
+parameters. ⚑ **Falsification guard passed** — it reproduces their published
+table **exactly (1 / 13 / 20 / 21)** — *and caught a real bug in the first
+wrapper, which never advanced the round polytope. That is what the guard is
+for.*
+
+**At base ~2^64** (identical for the Frog modulus and the dual-mode 2⁶⁴−257):
+
+| τ | (e,t) | last round with a mod-q² integral property |
+|---|---|---|
+| 1 | (1,16) | **2** |
+| **2** | **(2,8)** | **24** |
+| 4 | (4,4) | **≥42**, still climbing when stopped |
+
+⚑ **The load-bearing comparison: at identical (e=2, t=8), the paper's base 2³¹
+gives round 13 and ours gives 24.** Same e, same t — **the ~1.85× is purely the
+base-prime effect the design note flagged as "unmeasured."** *We chose τ=2
+against a number that understated our own case by nearly 2×.*
+
+**Consequences, in order:**
+- **The τ ordering now holds BY EXECUTION, not inference. τ=2 remains the
+  pick**, and **τ=4 is not merely "worst" but INTEGRAL-INFEASIBLE** with any
+  sane round budget.
+- ⚠ **But the margin is thin and 24 is a FLOOR**: against the borrowed
+  RF=8/RP=22 = 30-round budget that is **~6 rounds** — and the deployed σ-layer
+  is only slot-MDS in *full* rounds, i.e. **weaker mixing than the model that
+  produced 24.** ⚑ **The §4.4 round-count derivation is now the BINDING open
+  item, not a formality.**
+- ⚑ **And the margin question is also a COST question**, which nobody had
+  connected: σ-Poseidon's 363,513 constraints assume 30 rounds. At 36 / 40 / 48
+  rounds it is **436K / 485K / 582K — i.e. 4.7× / 5.3× / 6.3× the
+  gadget-Feistel's 92,257**, whose round count this result does not drive.
+  ***Every round of repair widens the gap to the candidate that was already
+  ahead.***
+
+**This is the intended "costs a redesign now" outcome**: not a break, but a
+hopeful borrowed 13 converted into a measured floor of 24 with a named,
+priced debt. **Item #1 of `forcodex/08-ATTACK-BRIEFS.md` is closed; three
+remain** (the Feistel's order-2 differential / MITM-boomerang, the
+free-norm-check assumption, and a direct Gröbner/CICO under Perrin's
+elimination-step rule).
+
+⚠ **Operational note for ember**: amd64 emulation in the Docker VM now uses
+**qemu** instead of Rosetta (FLINT's matmul hit an unsupported instruction
+under Rosetta on this box). Correct but slower; a Docker Desktop restart
+restores Rosetta. **The arm64 `claude-sandbox` containers were untouched.**
+
 ## 6. Method
 
 - **No absence claim without**: grep `~/paperbin` first (now full-text
