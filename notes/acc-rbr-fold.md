@@ -185,3 +185,30 @@ The file: `~/dev/minidregg/Selvage/AccRbrFold.lean` (~1450 lines). The shape:
       hunk was staged surgically (`git apply --cached` of a filtered patch, then plain
       `git commit` of the index). HEAD verified by `git ls-tree` + `git show`: my file
       present, no dangling MultisetFingerprint import, all four imports tracked.
+
+
+---
+
+## ADDENDUM (2026-08-17): the norm-growth literature we were missing
+
+**`Improving LatticeFold+ with ℓ2-norm Checks` (eprint 2026/721, Osadnik)** —
+directly on our norm budget. Its framing confirms ours and prices the part we
+left as data: *"prover performance is still dominated by expensive ℓ∞ range
+checks used to control witness growth during folding and extraction."*
+⚑ **Our `budget b₀ T = b₀ + T·(ρ·B)` is an ℓ∞ budget — exactly the path that
+paper calls the dominant prover cost.** Its design combines **random-projection
+constraints (Rok and Roll, ASIACRYPT'25) with an exact shortening step (SALSAA,
+2025/2124) to recover the original ℓ2 bound at extraction time**, claiming
+*"iterative folding with controlled norm growth, preserved binding and
+knowledge-soundness goals, and substantially lower prover cost on the dominant
+norm-check path"* — and it is explicitly **modular, applicable to other
+lattice folding schemes.**
+
+**What this means for `AccRbrFold`**: our `T = 2⁴⁷` wall is an ℓ∞ result and
+stands; the open question it answers is the one we did not ask — **the COST of
+enforcing the budget**, which is where LatticeFold+ spends its prover. Two
+follow-ups: (a) state the budget field ℓ2-parametrically so an ℓ2 shortening
+step is an instantiation rather than a rewrite; (b) price our norm check
+against theirs. ⚠ Also newly on the map and unread: **LatticeBlindFold**
+(zero-knowledge lattice folding — the PQ analogue of NovaBlindFold we priced
+as "unpriced smudging tax").
