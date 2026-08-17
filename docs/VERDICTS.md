@@ -270,6 +270,56 @@ not need it.**
   proved), and the fold needs **6 named missing lemmas** — only one with real
   AG content.
 
+## 3c. ⚑ THE PQ-VEGA PATH — the surpass architecture, now priced
+
+From the Nebula/Vega read (`notes/nebula-vega-lessons.md`, both papers at
+source; Vega = eprint 2025/2094, **P-256+Hyrax/DL re-confirmed independently
+at §4.3/§7**):
+
+- **The DL dividend is ~10³× at the seam**: their Nova fold verifier ≈10,000
+  R1CS gates vs our wrap's 38,168 perms ≈ **9.5M constraint-equivalents by
+  their own conversion.** Mechanism: *Pedersen adds, Merkle opens* — plus the
+  shape change (fold now, verify once at the end).
+- ⚑ **THE PQ-VEGA PRICING `[DERIVED]`**: a Nova-shaped fold over the
+  **dual-mode MSIS commitment** ≈ **4–7×10³ R_q rows/step ≈ 4–8% of the
+  92,396-row FS bill it rides beside.** Ordering: **DL fold 1× < PQ fold
+  ~4–50× < Merkle wrap ~10³×.** γ-grinding under folding: negligible,
+  class-unchanged; the genuinely new term is `Q·ε_MSIS` per absorbed
+  commitment. **Neo's configuration is killed twice by the dual-mode**
+  (ring-native absorb at 27.4 rows/elt; the κ=24 commit-not-absorb cap).
+- ⚑ **The switchboard rides THIS path, not the deployed stack**: pay-per-use
+  requires a **free zero-commitment — true of Pedersen AND Ajtai, false of
+  Merkle.** (And Nebula's 30× is the *memory* technique; the 260× is the
+  *switchboard* — different mechanisms, do not conflate.)
+- ⚑ **Nebula's memory lemma IS our `TwistContinuity` keystone and is NOT
+  DL-bound** — Lemma 2 (multiset invariant ⟺ sequential consistency, both
+  directions) + fingerprint corollary + two-layer IVC. **Top-ranked transfer:
+  pure combinatorics, LogUp + roots-before-challenge machinery already on
+  shelf.** ⚠ Their model has no `free`; ours does.
+- **Their fold schedule IS `AccRbrBcsShifted`'s lagged-root residual** — and
+  folding at the commitment alphabet motivates a new `AccRbrFold`. **They
+  cannot state any concrete bound** (negl(λ) formalism), so our depth
+  refutation + repaired `(t+k)·ε` is expressible only on our side.
+- **NovaBlindFold**: dead on Merkle; transfers in shape to the dual-mode with
+  an **unpriced smudging tax**; vs our recorded VEIL ~3% it is **parity, not a
+  class gap.**
+- ⚠ **A printed formula bug found in Nebula** (p.23's input-consistency
+  direction would zero the global input; Lemma 3's proof and the worked
+  witness give the right one) — and the silent invariant named:
+  **block-support discipline**, which is *our widened-gadget wound* in their
+  notation.
+- **The surpass table, honest**: they win measured latency and memory
+  maturity; **we win PQ, formal content (their repos verified zero this
+  session, instruments named), and the depth bound**; transparency ties.
+
+**The composed architecture this yields**: dual-mode MSIS at the base →
+Nova-shaped PQ folding (4–8% overhead) → switchboard pay-per-use (Ajtai
+zero-commitment) → Nebula-style committed memory (Lemma 2 ⟺ TwistContinuity)
+→ **ember's EVM decompilation on top for the per-program prize.** Every layer
+either held or priced; two follow-ups queued: **formalize Lemma 2 ⟺
+`TwistContinuity`** (top-ranked, on-shelf machinery) and **`AccRbrFold`**
+(folding at the commitment alphabet).
+
 ## 4. Proof-system design
 
 - **The principle is `polynomial virtualization`** (Thaler 2025/2041), not
