@@ -554,9 +554,10 @@ defer the specializer.
    framing survives — stronger, in fact: the switchboard never shrank the
    structure at all, which is exactly the "machine still standing" the
    decompiler removes.
-3. Vega (2025/2094) is credentials, not EVM — the MSR-page 2026 "Nebula:
-   Proving Machine…" entry is left to the sibling lane covering Nebula/Vega at
-   source.
+3. Vega (2025/2094) is credentials, not EVM — independently re-confirmed by the
+   sibling lane's `notes/nebula-vega-lessons.md` (both papers at source), which
+   landed while this note was being written; the MSR-page 2026 "Nebula: Proving
+   Machine…" entry resolves there.
 4. powdr's verified-optimizer result (§3.2) is worth its own read by whoever
    picks up Stage 0 — their spec/proof split (500-line human spec, AI-generated
    proofs under CI) is the same shape our per-program TV would industrialize.
