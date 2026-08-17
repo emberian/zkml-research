@@ -397,6 +397,63 @@ proposed linear layer before pricing anything about it.*
 **Artifacts**: `notes/hash-landscape.md` Addendum 3 · `notes/k16-proof-and-weft.md`
 · `~/src/ring-ro-hash/weft_branch.py` (`737ea7b`).
 
+## 1.4d `[08-17]` The dual-mode ring object — the absorb matrix was a commitment key all along
+
+**Asked**: `04-DEAD-ENDS.md` §E9 / §1.7b says the ×2.13 lever dies because **a Merkle
+leaf supports no evaluation opening.** So: is there an evaluation-binding
+commitment that is neither a curve nor hash-based? And can it be *the same
+artifact* as the ring hash?
+
+**Found — yes, and the parameter set was found in the same session:**
+
+> ⚑ **One primitive, two modes.** The **linear mode** is the `P = 0`, round-0
+> projection of the gadget-Feistel — an **Ajtai/MSIS gadget commitment
+> `C = A·G⁻¹(v + a₀)`** — with the de-linearizer strictly *after* the read-out,
+> so **linear-mode openings never cross it.** The **full mode** is the FS hash.
+> *The hash's own absorb matrix is the commitment key.*
+
+**Parameters**, found by search this session: **q = 2⁶⁴ − 257** (γ = 257,
+`ord₃₂ = 2` so **τ = 2**, α = 7 legal since `q ≡ 4 mod 7`), `R_q = Z_q[X]/(X¹⁶+1)`,
+**d = 16, B = 2¹⁶, K = 4 planes, κ ≈ 24**, challenge space `q² = 2¹²⁸`.
+
+**Verdict, and it splits by world** — both halves earned:
+
+- ⚑ **The wrap transplant is DEAD, twice over, and by arithmetic not taste.**
+  Priced against the deployed wrap's Horner chains (216,330 ext4 MACs ≈ 2.16×10⁶
+  BabyBear-mult-equivalents) the lattice shape lands at **×0.7–×13 — parity at
+  the most favourable representation, an order worse at the deployed-style
+  one** — *and the comparison is already unfair in the lattice side's favour*
+  (it prices no witness generation and no substrate migration; the
+  `PROVEN-IN-LEAN ≠ ROUTABLE` grep test fails maximally here). ⚑ **And the
+  goalposts moved underneath it**: §1.7b's packing result means any wrap-side
+  case for a lattice PCS must now beat the **residual**, not the original — and
+  it does not beat even the original.
+- ✅ **The R_q-native artifact is coherent and cheap at the margin**: opening
+  verify **1.5–3.0×10⁴ R_q rows ≈ 16–33% of the gadget-Feistel FS bill (92,396
+  rows), ≈ 4–8% of the σ-Poseidon τ=2 bill (363,513)** `[DERIVED — structural
+  round-shape counts; no implementation exists]`. ⚑ **The opening verify is
+  ~95% transcript hashing**, so the hash choice moves it by ×3.8.
+
+⚠ **Said plainly, against inflation**: *"the modes do not share one
+assumption."* Linear-mode binding is **provable (MSIS)**; full-mode RO-likeness
+stays **the ideal-permutation heuristic it always was.** What they share is
+arithmetic, parameters, a cost table, and a one-way implication.
+
+⚠ **Correction carried from the brief, in place**: the σ-Poseidon bar figure
+**302,141 is the τ=4 point.** At the standing **τ=2** verdict the same table
+gives **363,513**. (`04-DEAD-ENDS.md` §D3's table quotes the τ=4 row.)
+
+**The residual that is a wall, not undone work**: **O2 — sponge
+indifferentiability of π is stated, not proved**, and *"it predates the
+question."* Everything else on the eight-item obligation list is transmutable;
+the un-run **lattice-estimator run for κ** (κ=24 is a root-Hermite *sketch*)
+matters because the field's "128-bit" labels have re-derived to ~98-bit
+core-SVP before.
+
+**Artifacts**: `notes/ring-hash-dual-mode.md` · `notes/ring-hash-tau-verdict.md`
+· `notes/ring-hash-scripts/dual_mode_costs.py`, `dual_mode_modsearch.py` ·
+`08-ATTACK-BRIEFS.md` BRIEF 3.
+
 ## 1.5 Polynomial commitment schemes
 
 **Asked**: what can we actually build on, and what is provable about it?
@@ -424,6 +481,46 @@ a SoK on hash-based PCS (Skatharoudis, 2026).
 `notes/multilinear-pcs-verdict.md` · `notes/ligerito-exploration.md` ·
 `minidregg/Selvage/LigeritoInterleaved.lean` · `docs/SELVAGE.md` §4.2, §5.2
 (corrected in place).
+
+## 1.5b `[08-17]` ECFFT and exotic evaluation domains — and the question it answered instead
+
+**Asked** (two questions, and the second one is ember's): would ECFFT / EC-FRI
+unlock **limb-native** proving over the 36/37-bit BFV limb primes, whose
+2-adicity was believed too low for classic FRI? And **is ECFFT
+post-quantum**, or does the elliptic curve cost us the PQ story?
+
+**The PQ answer is clean and was the easy half**: ⚑ **PQ-NEUTRAL, confirmed at
+source.** eprint 2022/1542 Remark 2: Kilian–Micali/BCS compilation is
+*"secure in the quantum random oracle model, and these generic transformations
+apply to all our results."* Nothing is committed in the curve group; soundness
+is information-theoretic on BCIKS proximity gaps; `Find_Curve`'s output is
+**advice depending only on `|F|` and `T`, deterministically checkable**, so
+there is no weak curve to plant. *"Not one assumption more, not one fewer."*
+**No hedge was needed.**
+
+**The useful answer is a dead end, and it is the good kind** — see
+`04-DEAD-ENDS.md` §E6 for the theorems. In one line: **it dies on REACH, not on
+price.** Constants would have been affordable (~4–6× on the LDE, ≈nil on a
+hash-bound prover); the *theorems* cap the trace height below what we need.
+
+⚑ **And the lane's real output is §1.1's**: it went looking for an exotic tool
+and found that the constraint it was routing around **is one we chose.**
+> ***ECFFT is the tool for fields imposed from outside (secp256k1, P-256). Our
+> limb fields are not imposed.***
+
+⚠ **Two of my own premises were wrong and are corrected at source**: the fold
+set is **degree 4096, not 8192**, and the measured limb 2-adicities are
+**13/14/17**, not "≥14."
+
+**If EC-FRI is ever wanted**: it reduces to plain RS over exotic domains, our
+cone is ready **at the definition level** (`FoldingData`'s `dom : ι ↪ F` is
+already domain-agnostic; **0 `IsPrimitiveRoot` tree-wide**, re-confirmed), and
+the fold needs **6 named missing lemmas — only one with real algebraic-geometry
+content** (Hasse + Vélu + 2-descent), *"and that one exists in no proof
+assistant I know of."*
+
+**Artifacts**: `notes/ecfft.md` · `docs/VERDICTS.md` §3b. No Lean was written —
+this lane read the cone rather than extending it.
 
 ## 1.6 Soundness accounting
 
@@ -904,6 +1001,66 @@ Three separate lanes had to correct the brief on ground truth:
 `notes/cross-limb-binding.md`, `notes/cross-limb-verdict.md` ·
 `metatheory/Bfv/Ring.lean` (the noise model lifted to the ring).
 
+## 2.4b `[08-17]` The Z_Q product-ring sumcheck — Hole A dissolves, Hole B closes against the approach
+
+**Asked**: run the sumcheck **natively over `Z_Q = F_q₀ × F_q₁ × F_q₂`** (the
+deployed BFV CRT tower), so the cross-limb forgery has **no per-limb slot to
+satisfy**. Does Selvage's Lean sumcheck cone survive the move from `Field` to a
+product ring?
+
+**Found**: *"the mathematics is real and small"* — and the two holes go opposite
+ways.
+
+- ⚑ **Hole A (provenance) is closed by UNSTATABILITY, which is the strongest
+  closure class there is.** `boundMul_iff_zqBound` makes the honest
+  `∃ pair, ∀ limb` relation **one ring equation**, and `zq_same_forgery_refused`
+  shows the identical CrossLimb frankenstein is **a flatly false ring
+  statement.** *The hole moves from "unchecked" to "unwritable."*
+- ⚑⚑ **Hole B (expressibility) is closed AGAINST THE WHOLE APPROACH, and this
+  half-refutes our own earlier hope.** `rescale_not_zq_polynomial`: polynomials
+  over a product ring compute **exactly the limb-local functions**, and
+  `⌊t·x/Q⌉` is not limb-local ⇒ **no `p ∈ Z_Q[X]` computes the rescale, ever.**
+  It is *nameable as a function, never arithmetizable as a Z_Q-polynomial
+  identity.* Any proof of the rescale must go through the **redundant-basis
+  witness** or the **single-prime** route.
+  > **Corroboration from the other side**: CCKP19 chose `Z_{p^e}` — *local, not
+  > a CRT product* — **precisely so that base-p rounding stays polynomial.**
+  > That is the contrapositive of our theorem, in someone else's design choice.
+- ⚑ **A negative control that forced a statement change**: **field-wide
+  Schwartz–Zippel is FALSE over `Z_Q`** — proved by exhibit
+  (`zq_fieldwide_sz_false`), repaired to `A`-relative counting
+  (`zq_agree_card_lt`). ⚑ **`Field` is load-bearing in exactly ONE lemma
+  tree-wide** (`Sumcheck.lean:77` ← `ReedSolomon.lean:122`) — **and the bite is
+  not cosmetic**: it is the statement, not the binder, that has to change.
+
+**The prices** — see `03-MEASUREMENTS.md` §1.14 for the ceiling and the
+amplification table. Headline: `|A| ≤ min qᵢ ≈ 2³⁶` is a **theorem**, not a
+design choice; **shared Ext4 (2¹⁴⁴) clears our ~124-bit bar and shared Ext2
+(2⁷²) does not.**
+
+⚠ **Corrections this lane made to its own brief, all in place**: *"3× the
+sumcheck work"* was priced against **the wrong baseline** (a single-limb field
+sumcheck **is not a sound rival — it IS the per-limb hole**); against the
+row-interleaved closure it is **~1× at count resolution**. *"36 bits/round"* is
+a **per-round error**, and **rounds ADD by union bound**, not compound. And
+*"extension of each factor"* vs *"one shared extension of Z_Q"* are **the same
+object** — getting that wrong means sampling three extension challenges
+independently, which **reopens a provenance-style seam one layer down.**
+
+⚠ **The live residual, and it is the shape of the original hole**: the
+**one-handle PCS obligation.** *If each limb had an independently-openable
+handle, per-limb selection reappears at the opening index.* `06-OPEN.md` §2,
+`08-ATTACK-BRIEFS.md` BRIEF 4.
+
+⚠ **And say the substrate**: `PROVEN-IN-LEAN ≠ ROUTABLE` applies at full
+strength. **Grep confirms no Z_Q witness-gen anywhere in Rust.** The Selvage
+protocol port is not done; §3 of the note is the exact work order, and its own
+blocker line reads *"Blocker: none mathematical."*
+
+**Artifacts**: `breadstuffs/metatheory/Bfv/ZqSumcheck.lean` (`c4c1e5835`,
+407 lines, 0 `sorry`; `#assert_namespace_axioms Bfv` **113 → 137 kernel-clean
+theorems**) · `notes/zq-sumcheck.md` · `notes/cross-limb-verdict.md` addendum.
+
 ## 2.5 The applied vFHE literature
 
 Read in depth: Laminate (2025/2285) · packed sumcheck over small
@@ -1325,6 +1482,26 @@ did not)
 (hours of work, "prices everything else", never done) · the `fhegg-rtl`
 word-level BitVec layer verdict · G3 ring noise lift · G4 CPA-D/determinism
 hinge.
+
+**`[08-17]` Newly stalled, or stalled in a new way**
+- ⚑ **An unreconciled contradiction BETWEEN TWO SIBLING NOTES of the same
+  night.** `notes/aligned-hash-space.md` §0.3 / §5 / §7.2 still asserts
+  `R ≈ 3.2×` for lookup-Blake2s as *"the one route that crosses `R*`"* and
+  calls the lookup measurement **"the highest-value open measurement."**
+  `notes/lasso-over-logup.md` §2.4 refutes exactly that figure and §6.1 asks
+  for the pointer to be marked RESOLVED. **Nobody made the edit.** ⟨inference⟩
+  This is the stall shape the campaign is worst at: two lanes running the same
+  night, one answering the other's open question, and no third pass to close
+  the loop. It cost nothing this time only because both notes are in the same
+  directory.
+- **The Selvage-side port of the Z_Q sumcheck** (§2.4b) — the note carries the
+  exact four-item work order and the line *"Blocker: none mathematical."*
+  Repo boundary, not difficulty: `Bfv` is in breadstuffs, `Selvage` in
+  minidregg.
+- ⚠ **Three committed Lean modules that `lake build` has never compiled** —
+  1,593 lines, rooted only by an uncommitted umbrella edit. See
+  `07-ARTIFACTS.md` O5; this is the gating-defaults-to-silence class, and only
+  one of the three was known.
 
 **Zero motion since first mention**
 - ⚑ **`zkQMC`** — "proving randomized computations via quasi-[Monte Carlo]",
