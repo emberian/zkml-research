@@ -320,6 +320,46 @@ either held or priced; two follow-ups queued: **formalize Lemma 2 ⟺
 `TwistContinuity`** (top-ranked, on-shelf machinery) and **`AccRbrFold`**
 (folding at the commitment alphabet).
 
+## 3d. EVM DECOMPILATION — real, unclaimed at the right granularity, staged
+
+`notes/evm-decompilation.md`. **The Futamura framing holds with two amendments
+that strengthen it**: (1) circuits have no loops, so residualization becomes
+**unroll (gas statically bounds every EVM loop) / fold (the IVC seam) /
+refuse** — and classical PE's "residual interpreter" **IS a switchboard**, so
+the two techniques are *the static/dynamic halves of one mixed computation*,
+priced per program point by the virtualization threshold. (2) ⚠ My 30×
+attribution was wrong at source: **Nebula's 30× is the MEMORY technique; the
+switchboard is the 260× at UNCHANGED structure — the switchboard never shrinks
+the machine at all.** Decompilation's case is stronger, not weaker.
+
+**Prior art, instruments named**: pieces exist — Buffet 2014 ("circuits are
+not universal"); ⚑ **powdr autoprecompiles = automatic PE of zkVM circuits
+per basic block WITH a Lean-4-verified optimizer** (closest neighbor —
+instruction-anchored and block-granular, not semantics-anchored);
+Singh–McKay PE-of-hardware 1998; **EquiVM is the front half alive in Lean**;
+EVMYulLean passes 22,330/22,332 Cancun tests. **The semantics-anchored,
+program-granular, no-machine-left version is unclaimed — and the back half
+(proved emission) is exactly `EmitByName`/`ZkmlEltwiseAir`.**
+
+**The shape**: a 10-constructor residual vocabulary (ERC20 transfer = **15–20
+semantic ops from 635 machine steps**; stack/PC/decode/static-RAM all die);
+correctness as `descriptor_means_semantics` **iff** + `encode_injective` =
+*"does ONLY that program"*, trusted base enumerated, **the decompiler itself
+UNTRUSTED via per-output translation validation**. Hard parts routed: jumps →
+refuse (Elipmoc: 99.5% of real contracts feasible); loops → gas-bounded unroll
+or `SelfEmbedding` fold; storage → `TwistContinuity` (⚠ **Nebula's memory does
+NOT port here** — it needs the free zero-commitment); calls → one
+`VerifierEmbedding` rung; gas → **refused with the premise visible.**
+
+**The prize `[derived, their unit]`**: ≈3–4K vs ≈0.25–0.43M active constraints
+— **~60–140× beyond the switchboard** — with three honesty clauses: keccak is
+a common ~100× elephant; the win **saturates at our proof floor**
+(`P(b)=3381·2^b+766` ⇒ batch transfers); and Merkle-root binding would eat
+the prize.
+
+**Stage 0, concrete**: *the eltAdd of EVM* —
+`CALLDATALOAD·CALLDATALOAD·ADD·MSTORE·RETURN`, end to end.
+
 ## 4. Proof-system design
 
 - **The principle is `polynomial virtualization`** (Thaler 2025/2041), not
