@@ -1088,3 +1088,48 @@ Griffin 2^51–64, Anemoi ℓ=1 2^70, Rescue-Prime α=3 2^112 (α=5 *exactly*
   and the deployed BabyBear instance graph-sound by `ring`. ⚑ **The first
   build's axiom pin caught a `decide` degraded to `sorry`** — the tripwire
   class firing in the wild, again.
+
+
+---
+
+## ADDENDUM 2 (2026-08-16): ⚑ THE 3.2× LOOKUP LEVER IS REFUTED — measured, not argued
+
+`notes/lasso-over-logup.md` (`de7ab28`) + `Selvage/DecomposableTable.lean`
+(`feef028`). Grounded on **Stwo's DEPLOYED lookup/LogUp Blake AIR**, counted
+cell-by-cell (384 main + 260 interaction cells per round row, carries virtual,
+five xor tables at relation arity 3):
+
+> **Blake3 under lookups ≈ 4,680 cells/compression → R ≈ 15.7× vs our
+> 300-cell Poseidon2.** Lookups buy **1.96×, not the ~10× needed**; the §2
+> flip bar (<4,000 blowup-cells) is **missed 4.7×.**
+
+⚠ **The 3.16× figure was a fat-denominator artifact** — 7.9 gates/S-box for
+*their* Poseidon against our 2.1 cells/S-box. **I quoted it repeatedly as "the
+highest-value open measurement"; it is now the measured answer, and the answer
+is no.** Riders: 2^24 amortized table cells (break-even ~2^12 compressions),
+and the table relation lands at **98.7 bits at BabyBear⁴ without grinding** —
+below the bar on its own. Keccak under lookups: wash to negative.
+
+**Poseidon2's position is now triple-confirmed**: in-circuit 30.6×–210×
+directly, recursion pinning it in both characteristics, and the lookup escape
+measured shut.
+
+**What the lane established beyond the refutation:**
+- **The sparse vector never meets the PCS** — Spark reduces everything to
+  *dense* multilinear commitments, so **BaseFold RBR suffices in kind**; the
+  real gaps are extraction (`W = Unit`) and batched openings. ⚑ **Lasso's
+  "small elements" headline is MSM-denominated and COLLAPSES under a
+  hash-based PCS.**
+- **SPARK subsumption is definitional** — `spark_table_decomposes` makes
+  "sparse eval IS a decomposable lookup" a theorem; **one gap, not two**; and
+  `ñext` stands as the cheapest Spartan path now that Q2 removed the dual-use
+  driver.
+- **The full error expression, every term a root count, no Regime anywhere**
+  — with the one new shape feature a *precondition*, `m < char F` (which in
+  char 2 wears the multiplicity-cancellation costume `BinaryLookup` already
+  refutes). The two-regime calculator needs two knobs: a sumcheck leg and a
+  validity-precondition field; E3 is literally `LogUpCfg (K=α, H=m+M, R=3)`.
+- **Teeth**: `splitEq_not_decomposable` — a *general* non-decomposability
+  theorem (the split-chunking equality admits no decomposition), refutable
+  over every field, per GUARD-DISCIPLINE; the all-accepting oracle refuted;
+  three obligations named, not built.
