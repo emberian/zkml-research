@@ -385,6 +385,56 @@ theorem roundSum_last {i : Fin m} (hi : i.val + 1 = m) (g : (Fin m → F) → F)
   funext j
   rw [glue_apply, dif_neg (by have := j.isLt; omega)]
 
+/-! ## The residual claim — what a sumcheck that STOPS EARLY hands over
+
+`roundSum` already sums over `SuffixCube m (i+1)`: the partially folded object
+is the primitive, not a special case. Naming the level-`k` suffix sum makes it
+a CLAIM rather than an intermediate — `residualSum g r k` is a well-formed
+sum-claim over the `m − k` variables the sumcheck has not visited, of the same
+shape as the `k = 0` total it started from. That is the composition operator:
+`residualSum … 0` is the opening claim, `residualSum … m` is the final oracle
+evaluation, and every `k` in between is a hand-off point. -/
+
+/-- **The residual claim at level `k`**: `Σ_{b ∈ {0,1}^{m−k}} g(r₀,…,r_{k−1}, b)`
+— coordinates below `k` pinned to the challenges, the rest still summed. -/
+def residualSum (g : (Fin m → F) → F) (r : Fin m → F) (k : ℕ) : F :=
+  ∑ b : SuffixCube m k, g (glue r k b)
+
+/-- **Level 0 is the opening claim**: the whole hypercube sum, challenges
+unused. -/
+theorem residualSum_zero (g : (Fin m → F) → F) (r : Fin m → F) :
+    residualSum g r 0 = ∑ b : Fin m → Bool, g (cubePt b) :=
+  Fintype.sum_equiv (suffixCubeZero m) _ _ fun _ => rfl
+
+/-- **Level `m` is the final oracle evaluation**: every coordinate is pinned, so
+the suffix cube is a point and the residual is `g(r)`. This is why the partial
+statement REFINES the full one instead of forking from it. -/
+theorem residualSum_full (g : (Fin m → F) → F) (r : Fin m → F) :
+    residualSum g r m = g r := by
+  haveI : IsEmpty {j : Fin m // m ≤ j.val} :=
+    ⟨fun j => by have := j.1.isLt; have := j.2; omega⟩
+  rw [residualSum,
+    Fintype.sum_eq_single default fun x hx => absurd (Subsingleton.elim x _) hx]
+  congr 1
+  funext j
+  rw [glue_apply, dif_neg (by have := j.isLt; omega)]
+
+/-- **The verifier's round-`k` check target IS the level-`k` residual**:
+`g_k(0) + g_k(1) = residualSum g r k`. (`roundSum_fold`, renamed to the claim
+vocabulary — nothing new is proved.) -/
+theorem residualSum_eq_roundSum_bool {k : ℕ} (hk : k < m) (g : (Fin m → F) → F)
+    (r : Fin m → F) :
+    residualSum g r k = roundSum g r ⟨k, hk⟩ 0 + roundSum g r ⟨k, hk⟩ 1 :=
+  (roundSum_fold hk g r).symm
+
+/-- **One round advances the residual**: folding round `k`'s polynomial at the
+challenge `r_k` is exactly the level-`(k+1)` residual. The single step the
+partial-terminal theorems iterate. -/
+theorem residualSum_step {k : ℕ} (hk : k < m) (g : (Fin m → F) → F)
+    (r : Fin m → F) :
+    roundSum g r ⟨k, hk⟩ (r ⟨k, hk⟩) = residualSum g r (k + 1) := by
+  simp only [roundSum, residualSum, Function.update_eq_self]
+
 /-- Gluing commutes with pinning the running coordinate: the round variable
 rides OUTSIDE the glue. -/
 theorem glue_update {r : Fin m → F} {i : Fin m} (t : F)
@@ -504,51 +554,86 @@ theorem chalOf_restrict (r : Fin m → F) :
   funext fun j => chalOf_coe r j
 
 omit [Fintype F] [DecidableEq F] in
-/-- **`[SC-reshape]`'s `hHonest`, DISCHARGED.** The MLE partial-sum family
-satisfies the honest boolean-sum consistency along the truth chain anchored at
-the full hypercube sum `Σ_b f(b)`: round 0's check target is the claimed total
-(`roundSum_zero` + `mle_agrees`), and every later round's target is the
-previous round polynomial folded at the challenge (`roundSum_succ`). -/
-theorem mleHonest_boolean_sum (f : (Fin m → Bool) → F) (r : Fin m → F) :
+/-- **`[SC-reshape]`'s `hHonest`, DISCHARGED — stream form.** The MLE
+partial-sum family satisfies the honest boolean-sum consistency along the truth
+chain anchored at the full hypercube sum `Σ_b f(b)`: round 0's check target is
+the claimed total (`roundSum_zero` + `mle_agrees`), and every later round's
+target is the previous round polynomial folded at the challenge
+(`roundSum_succ`).
+
+Stated over a raw challenge STREAM `χ : ℕ → F` rather than a `Fin m`-tuple,
+because a run that stops at `k < m` rounds draws only `Fin k → F` and its
+`chalOf` is not the restriction of any `Fin m`-tuple. `mleHonest_boolean_sum` is
+this at `χ = chalOf r`. -/
+theorem mleHonest_boolean_sum_stream (f : (Fin m → Bool) → F) (χ : ℕ → F) :
     ∀ i, i < m →
-      (mleHonest f (chalOf r) i).eval 0 + (mleHonest f (chalOf r) i).eval 1
-        = scChain (∑ b, f b) (mleHonest f (chalOf r)) (chalOf r) i := by
+      (mleHonest f χ i).eval 0 + (mleHonest f χ i).eval 1
+        = scChain (∑ b, f b) (mleHonest f χ) χ i := by
   intro i hi
-  rw [mleHonest, dif_pos hi, chalOf_restrict,
-    roundPoly_eval (mle_multilinear f ⟨i, hi⟩) r 0,
-    roundPoly_eval (mle_multilinear f ⟨i, hi⟩) r 1]
+  rw [mleHonest, dif_pos hi,
+    roundPoly_eval (mle_multilinear f ⟨i, hi⟩) _ 0,
+    roundPoly_eval (mle_multilinear f ⟨i, hi⟩) _ 1]
   cases i with
   | zero =>
     show _ = ∑ b, f b
-    rw [roundSum_zero hi (mle f) r, ← mle_hypercube_sum]
+    rw [roundSum_zero hi (mle f) _, ← mle_hypercube_sum]
   | succ n =>
-    show _ = (mleHonest f (chalOf r) n).eval (chalOf r n)
+    show _ = (mleHonest f χ n).eval (χ n)
     have hn : n < m := Nat.lt_of_succ_lt hi
-    rw [mleHonest, dif_pos hn, chalOf_restrict,
-      roundPoly_eval (mle_multilinear f ⟨n, hn⟩) r (chalOf r n),
-      chalOf_coe r ⟨n, hn⟩]
-    exact roundSum_succ hi (mle f) r
+    rw [mleHonest, dif_pos hn,
+      roundPoly_eval (mle_multilinear f ⟨n, hn⟩) _ (χ n)]
+    exact roundSum_succ hi (mle f) _
 
 omit [Fintype F] [DecidableEq F] in
-/-- **The final oracle check, realized**: after all `m` rounds the honest truth
-chain's value IS the MLE at the challenge point — WHIR Def 4.5's terminal
-comparison `f̂(r)` (unweighted form; the factored `â(r)·f̂(r)` is the named
-residual). -/
+/-- **`[SC-reshape]`'s `hHonest`** at a full `Fin m` challenge tuple —
+`mleHonest_boolean_sum_stream` at `χ = chalOf r`. -/
+theorem mleHonest_boolean_sum (f : (Fin m → Bool) → F) (r : Fin m → F) :
+    ∀ i, i < m →
+      (mleHonest f (chalOf r) i).eval 0 + (mleHonest f (chalOf r) i).eval 1
+        = scChain (∑ b, f b) (mleHonest f (chalOf r)) (chalOf r) i :=
+  mleHonest_boolean_sum_stream f (chalOf r)
+
+omit [Fintype F] [DecidableEq F] in
+/-- **The partial terminal — the composition operator, degree 1.** After `k ≤ m`
+rounds the honest truth chain holds the level-`k` RESIDUAL claim
+`Σ_{b ∈ {0,1}^{m−k}} f̂(r₀,…,r_{k−1}, b)`, which is a sum-claim of the same shape
+as the one the run opened on. This is what lets a sumcheck stop early and hand
+the rest to another reduction.
+
+Note what is NOT weakened: the verifier still checks `g̃ᵢ(0)+g̃ᵢ(1) = claimᵢ` at
+every round `i < k` — that is `AcceptsFalse`'s first clause at `v := k`, and
+`sumcheck_soundness` / `adaptive_sumcheck_soundness` are already `{v}`-generic,
+so the soundness half of the partial protocol needs nothing new. The chain stops
+early; the check does not.
+
+The proof is a case split, not an induction: `scChain` is memoryless, so level
+`k+1` is one `residualSum_step`. -/
+theorem scChain_mleHonest_partial (f : (Fin m → Bool) → F) (χ : ℕ → F)
+    {k : ℕ} (hk : k ≤ m) :
+    scChain (∑ b, f b) (mleHonest f χ) χ k
+      = residualSum (mle f) (fun j : Fin m => χ j.val) k := by
+  cases k with
+  | zero =>
+    show ∑ b, f b = _
+    rw [residualSum_zero, ← mle_hypercube_sum]
+  | succ n =>
+    show (mleHonest f χ n).eval (χ n) = _
+    have hn : n < m := hk
+    rw [mleHonest, dif_pos hn,
+      roundPoly_eval (mle_multilinear f ⟨n, hn⟩) _ (χ n)]
+    exact residualSum_step hn (mle f) _
+
+omit [Fintype F] [DecidableEq F] in
+/-- **The final oracle check, realized** — WHIR Def 4.5's terminal comparison
+`f̂(r)` (unweighted form; the factored `â(r)·f̂(r)` is the named residual).
+
+A COROLLARY of `scChain_mleHonest_partial` at `k = m`, where `residualSum_full`
+collapses the empty suffix cube to the point `r`. The partial statement REFINES
+this one: there is one proof, not two. -/
 theorem scChain_mleHonest_final (f : (Fin m → Bool) → F) (r : Fin m → F) :
     scChain (∑ b, f b) (mleHonest f (chalOf r)) (chalOf r) m = mle f r := by
-  cases m with
-  | zero =>
-    show ∑ b, f b = mle f r
-    rw [mle]
-    refine Fintype.sum_congr _ _ fun b => ?_
-    rw [chiEval, Fintype.prod_empty, mul_one]
-  | succ n =>
-    show (mleHonest f (chalOf r) n).eval (chalOf r n) = mle f r
-    have hn : n < n + 1 := Nat.lt_succ_self n
-    rw [mleHonest, dif_pos hn, chalOf_restrict,
-      roundPoly_eval (mle_multilinear f ⟨n, hn⟩) r (chalOf r n),
-      chalOf_coe r ⟨n, hn⟩, roundSum_last rfl (mle f) r,
-      Function.update_eq_self]
+  rw [scChain_mleHonest_partial f (chalOf r) (le_refl m), chalOf_restrict,
+    residualSum_full]
 
 omit [Fintype F] [DecidableEq F] in
 /-- **Completeness of the realizer**: the honest MLE prover, run as both
@@ -678,6 +763,49 @@ theorem roundSum_and_chain1 :
 theorem roundSum_and_final :
     roundSum (mle fAnd) ![2, 3] 1 3 = mle fAnd ![2, 3] := by decide
 
+/-! ### Teeth for the PARTIAL terminal -/
+
+/-- The level-1 residual, computed: with `x₀` pinned to the challenge `2` and
+`x₁` still summed, `f̂_AND(2,0) + f̂_AND(2,1) = 0 + 2 = 2`. -/
+theorem residualSum_and_one : residualSum (mle fAnd) ![2, 3] 1 = 2 := by decide
+
+/-- **TEETH — the residual at `k < m` is GENUINELY different from the final
+value.** `residualSum … 1 = 2` but `residualSum … 2 = f̂_AND(2,3) = 1`, so
+`scChain_mleHonest_partial` is not `scChain_mleHonest_final` in disguise: it
+lands somewhere the full theorem cannot name. -/
+theorem residualSum_and_one_ne_full :
+    residualSum (mle fAnd) ![2, 3] 1 ≠ residualSum (mle fAnd) ![2, 3] 2 := by
+  decide
+
+/-- The partial terminal FIRES on data: after ONE round of the two-variable AND
+run, the honest chain holds `2` — the residual claim over the one remaining
+variable, not the final evaluation. -/
+theorem scChain_mleHonest_partial_fires :
+    scChain (∑ b, fAnd b) (mleHonest fAnd (chalOf ![2, 3])) (chalOf ![2, 3]) 1
+      = 2 := by
+  rw [scChain_mleHonest_partial fAnd (chalOf ![2, 3]) (by omega), chalOf_restrict]
+  decide
+
+/-- **TEETH — a partial sumcheck is NOT a partial verifier.** The constant
+prover `g̃₀ = 2` reaches exactly the honest level-1 residual, so its TERMINAL
+comparison passes; its claim `H = 3` is false (the true total is `1`). It is
+still refused, because round 0's boolean check `2 + 2 = 4 ≠ 3` fires. Stopping
+the chain early removes no check from the wire. -/
+theorem partial_terminal_agrees_but_check_bites :
+    scChain (3 : ZMod 5) (fun _ => C 2) (chalOf ![2]) 1
+        = scChain (∑ b, fAnd b) (mleHonest fAnd (chalOf ![2])) (chalOf ![2]) 1
+      ∧ ¬ AcceptsFalse (v := 1) (fun _ => C 2) (mleHonest fAnd (chalOf ![2]))
+          3 (∑ b, fAnd b) ![2] := by
+  constructor
+  · rw [scChain_mleHonest_partial fAnd (chalOf ![2]) (by omega)]
+    show (C (2 : ZMod 5)).eval (chalOf ![2] 0) = _
+    rw [eval_C]
+    decide
+  · rintro ⟨hchecks, -, -⟩
+    have h0 := hchecks 0 (by omega)
+    simp only [scChain, eval_C] at h0
+    exact absurd h0 (by decide)
+
 /-- Completeness fires on data: the honest MLE prover for the AND gate is
 accepted at `r = (2,3)` (and every other challenge). -/
 example : SumcheckAccepts (v := 2) (mleHonest fAnd (chalOf ![2, 3]))
@@ -746,5 +874,19 @@ theorem zero_word_retired :
   exact h
 
 end MLEExample
+
+/-! ## Axiom pins -/
+
+/-- info: 'Minidregg.Selvage.scChain_mleHonest_partial' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms scChain_mleHonest_partial
+/-- info: 'Minidregg.Selvage.scChain_mleHonest_final' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms scChain_mleHonest_final
+/-- info: 'Minidregg.Selvage.residualSum_full' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms residualSum_full
+/-- info: 'Minidregg.Selvage.MLEExample.partial_terminal_agrees_but_check_bites' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in
+  #print axioms MLEExample.partial_terminal_agrees_but_check_bites
+/-- info: 'Minidregg.Selvage.MLEExample.residualSum_and_one_ne_full' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms MLEExample.residualSum_and_one_ne_full
 
 end Minidregg.Selvage

@@ -168,49 +168,68 @@ anchored at the table claim `Σ_b (A b·B b − C b)`: round 0's check target is
 total (`roundSum_zero` + `prodDiff_cube_sum`), every later round's target is the previous
 round polynomial folded at the challenge (`roundSum_succ`) — the landed sum-splitting,
 cited, not re-derived. -/
-theorem quadHonest_boolean_sum (A B C : (Fin m → Bool) → F) (r : Fin m → F) :
+theorem quadHonest_boolean_sum_stream (A B C : (Fin m → Bool) → F) (χ : ℕ → F) :
     ∀ i, i < m →
-      (quadHonest A B C (chalOf r) i).eval 0 + (quadHonest A B C (chalOf r) i).eval 1
-        = scChain (∑ b, (A b * B b - C b)) (quadHonest A B C (chalOf r)) (chalOf r) i := by
+      (quadHonest A B C χ i).eval 0 + (quadHonest A B C χ i).eval 1
+        = scChain (∑ b, (A b * B b - C b)) (quadHonest A B C χ) χ i := by
   intro i hi
-  rw [quadHonest, dif_pos hi, chalOf_restrict, quadRoundPoly_eval, quadRoundPoly_eval]
+  rw [quadHonest, dif_pos hi, quadRoundPoly_eval, quadRoundPoly_eval]
   cases i with
   | zero =>
     show _ = ∑ b, (A b * B b - C b)
-    rw [roundSum_zero hi (prodDiff A B C) r, prodDiff_cube_sum]
+    rw [roundSum_zero hi (prodDiff A B C) _, prodDiff_cube_sum]
   | succ n =>
-    show _ = (quadHonest A B C (chalOf r) n).eval (chalOf r n)
+    show _ = (quadHonest A B C χ n).eval (χ n)
     have hn : n < m := Nat.lt_of_succ_lt hi
-    rw [quadHonest, dif_pos hn, chalOf_restrict, quadRoundPoly_eval,
-      chalOf_coe r ⟨n, hn⟩]
-    exact roundSum_succ hi (prodDiff A B C) r
+    rw [quadHonest, dif_pos hn, quadRoundPoly_eval]
+    exact roundSum_succ hi (prodDiff A B C) _
+
+omit [Fintype F] [DecidableEq F] in
+/-- **Boolean-sum consistency** at a full `Fin m` challenge tuple —
+`quadHonest_boolean_sum_stream` at `χ = chalOf r`. -/
+theorem quadHonest_boolean_sum (A B C : (Fin m → Bool) → F) (r : Fin m → F) :
+    ∀ i, i < m →
+      (quadHonest A B C (chalOf r) i).eval 0 + (quadHonest A B C (chalOf r) i).eval 1
+        = scChain (∑ b, (A b * B b - C b)) (quadHonest A B C (chalOf r)) (chalOf r) i :=
+  quadHonest_boolean_sum_stream A B C (chalOf r)
+
+omit [Fintype F] [DecidableEq F] in
+/-- **The partial terminal — the composition operator, degree 2.** After `k ≤ m` rounds the
+honest truth chain holds the level-`k` RESIDUAL claim
+`Σ_{b ∈ {0,1}^{m−k}} (Â·B̂ − Ĉ)(r₀,…,r_{k−1}, b)` — a sum-claim of the same shape as the one
+the run opened on, so it can be handed to another reduction instead of to an oracle.
+
+`AcceptsFalse`'s round checks at every `i < k` are untouched (see the degree-1 note on
+`scChain_mleHonest_partial`): the chain stops early, the verifier does not. -/
+theorem scChain_quadHonest_partial (A B C : (Fin m → Bool) → F) (χ : ℕ → F)
+    {k : ℕ} (hk : k ≤ m) :
+    scChain (∑ b, (A b * B b - C b)) (quadHonest A B C χ) χ k
+      = residualSum (prodDiff A B C) (fun j : Fin m => χ j.val) k := by
+  cases k with
+  | zero =>
+    show ∑ b, (A b * B b - C b) = _
+    rw [residualSum_zero, prodDiff_cube_sum]
+  | succ n =>
+    show (quadHonest A B C χ n).eval (χ n) = _
+    have hn : n < m := hk
+    rw [quadHonest, dif_pos hn, quadRoundPoly_eval]
+    exact residualSum_step hn (prodDiff A B C) _
 
 omit [Fintype F] [DecidableEq F] in
 /-- **The final oracle check, FACTORED**: after all `m` rounds the honest truth chain's value
 is `Â(r)·B̂(r) − Ĉ(r)` — the product of the two MLE openings minus the third, exactly the
 factored terminal comparison the degree-1 engine could not provide (the MLE of a product ≠
-the product of MLEs; the quadratic rounds make the factored check the honest one). -/
+the product of MLEs; the quadratic rounds make the factored check the honest one).
+
+A COROLLARY of `scChain_quadHonest_partial` at `k = m` (`residualSum_full` collapses the
+empty suffix cube to the point `r`, and `prodDiff` at `r` IS the factored value) — one
+proof, not two. -/
 theorem scChain_quadHonest_final (A B C : (Fin m → Bool) → F) (r : Fin m → F) :
     scChain (∑ b, (A b * B b - C b)) (quadHonest A B C (chalOf r)) (chalOf r) m
       = mle A r * mle B r - mle C r := by
-  cases m with
-  | zero =>
-    show ∑ b, (A b * B b - C b) = mle A r * mle B r - mle C r
-    have key : ∀ f : (Fin 0 → Bool) → F, mle f r = f default := by
-      intro f
-      rw [mle,
-        Fintype.sum_eq_single default fun b hb =>
-          absurd (Subsingleton.elim b default) hb,
-        chiEval, Fintype.prod_empty, mul_one]
-    rw [key A, key B, key C,
-      Fintype.sum_eq_single default fun b hb => absurd (Subsingleton.elim b default) hb]
-  | succ n =>
-    show (quadHonest A B C (chalOf r) n).eval (chalOf r n) = _
-    have hn : n < n + 1 := Nat.lt_succ_self n
-    rw [quadHonest, dif_pos hn, chalOf_restrict, quadRoundPoly_eval,
-      chalOf_coe r ⟨n, hn⟩, roundSum_last rfl (prodDiff A B C) r,
-      Function.update_eq_self]
-    rfl
+  rw [scChain_quadHonest_partial A B C (chalOf r) (le_refl m), chalOf_restrict,
+    residualSum_full]
+  rfl
 
 omit [Fintype F] [DecidableEq F] in
 /-- **Completeness of the quadratic realizer**: the honest family, run as both prover and
@@ -242,6 +261,10 @@ end QuadEngine
 
 /-- info: 'Minidregg.Selvage.quad_sumcheck_soundness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms quad_sumcheck_soundness
+/-- info: 'Minidregg.Selvage.scChain_quadHonest_partial' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms scChain_quadHonest_partial
+/-- info: 'Minidregg.Selvage.scChain_quadHonest_final' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms scChain_quadHonest_final
 
 end Minidregg.Selvage
 

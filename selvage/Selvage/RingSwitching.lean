@@ -61,13 +61,28 @@ degree-2 sumcheck.
   paper's `κ/|L|`**, discharged from `eqMle_zero_test`. This is the one
   probabilistic leg the compiler contributes that the tree could already prove.
 
-## What is NAMED, not proved (§6)
+## §6 states Theorem 3.5; §6b DISCHARGES both of its legs
 
-`RingSwitchSecure` — Theorem 3.5 in full. Its discharged parts are cited in its
-docstring; the undischarged part is the `ℓ′`-round **degree-2** sumcheck
-transfer over `h = A · t′`, which the tree's `sumcheck_soundness` covers in
-shape but which nothing here connects to the tensor-algebra identity (30). This
-is the honest remainder, and it is undone work, not a theorem of the model.
+`RingSwitchSecure` is Theorem 3.5's assembly step, and `ringSwitchSecure_holds`
+proves it. Its `2·ℓ′/|L|` sumcheck hypothesis is no longer hypothesized either:
+`ringSwitch_transfer_bound` supplies it from `Selvage/QuadraticSumcheck.lean`'s
+BUILT honest degree-2 realizer `quadHonest A t′ 0`, and `ringSwitch_joint_bound`
+composes the two with nothing left assumed but the adversary's own
+prefix-measurability and degree bound.
+
+⚑ The transfer is priced at **any stopping point `k ≤ ℓ′`**, not only at the
+end. What makes that statable is `scChain_quadHonest_partial`: the acceptance
+predicate at `v := k` compares the prover's chain against
+`scChain S (quadHonest …) … k`, and until that theorem nothing in the tree said
+what that quantity is for `k < ℓ′`. `ringSwitch_transfer_accepts_iff` names it —
+the level-`k` residual sum over the unvisited suffix cube — which is what lets
+the transfer hand off to a further reduction rather than only to an oracle.
+
+**Still undone, and it is undone work rather than a theorem of the model:** the
+connection to the tensor-algebra identity (30) — that the verifier's row
+function really is the row/column decomposition of `eq~(r″,·) ⊗ eq~(r′,·)`.
+`ringSwitch_transfer_bound` is generic in that row function, so instantiating it
+at the paper's `A` is the remaining step.
 
 ## §7 — the handoff nobody had written
 
@@ -83,6 +98,7 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Theory.ExtensionBasis
 import Selvage.MultilinearZeroTest
 import Selvage.SmallField
+import Selvage.QuadraticSumcheck
 
 namespace Minidregg.Selvage
 
@@ -393,35 +409,36 @@ theorem ringSwitchCommit_injective {K : Type} [Field K] [Algebra K L] {κ : ℕ}
   have := hS h
   rw [← unpack_packedTable b l t, ← unpack_packedTable b l u, this]
 
-/-- **Theorem 3.5, stated in full — a NAMED OBLIGATION, not a theorem.**
+/-- **Theorem 3.5's assembly step, stated in full.**
 
 For every large-field scheme `Π′` that is complete and extractable, every
 subfield basis, and every arity, the compiled scheme's adversary either has its
 `K`-witness extracted correctly or falls in a bad set of measure at most
 `(2·ℓ′ + κ)/|L|`.
 
-What is already discharged, and can be cited when this is attacked:
+What is discharged, and can be cited when this is attacked:
 
 * step 3 of the emulator — `emulator_unpack_unique` (and its `mle` form,
   `packed_mle_determines_source`);
 * the `κ/|L|` batching leg — `ringSwitch_batching_bound`;
 * the verifier's tensor-algebra evaluation being well-posed at all —
   `tensorMul_not_injective` says the cheaper single-`L`-element message cannot
-  substitute for `ŝ`.
+  substitute for `ŝ`;
+* ⚑ **this obligation itself — `ringSwitchSecure_holds` (§6b).** It was recorded
+  here as needing "the product-uniform marginalization and a union bound,
+  neither of which exists here"; both DO exist, in `Selvage/Depth.lean`
+  (`uniformProb_prod_le`, `uniformProb_or_le`), and the assembly is four lines
+  against them. The docblock was stale, not the mathematics;
+* ⚑ **the `ℓ′`-round degree-2 sumcheck transfer over `h = A · t′`, contributing
+  `2·ℓ′/|L|` — `ringSwitch_transfer_bound` (§6b),** the leg this paragraph used
+  to name as absent. It is `adaptive_sumcheck_soundness` at `d = 2` consumed
+  through `Selvage/QuadraticSumcheck.lean`'s BUILT honest realizer
+  `quadHonest A t′ 0`, at any stopping point `k ≤ ℓ′`.
 
-What is NOT: the `ℓ′`-round **degree-2** sumcheck transfer over
-`h = A · t′`, contributing `2·ℓ′/|L|`, and its connection to the tensor-algebra
-identity (30). `Selvage/Sumcheck.lean`'s `sumcheck_soundness` has the right
-shape (`v·d/|F|` at `d = 2`) but nothing in this tree connects it to `A`'s row
-and column decompositions. That connection is the remaining work, and it is
-work, not a boundary of the model.
-
-The statement below is the ASSEMBLY step, verbatim from the proof: given that
-acceptance forces one of the two bad events, and given the sumcheck's own
-bound, the accepting set over the verifier's joint randomness
-`(r″, r′) ← L^κ × L^{ℓ′}` is bounded by the sum. Discharging it needs the
-product-uniform marginalization and a union bound, neither of which exists
-here; `ringSwitch_batching_bound` already supplies the `κ/|L|` half.
+What is still NOT here: the connection to the tensor-algebra identity (30) —
+i.e. that the verifier's `A` really is the row/column decomposition of
+`eq~(r″, ·) ⊗ eq~(r′, ·)`. `ringSwitch_transfer_bound` is generic in the row
+function, so instantiating it at the paper's `A` is the remaining work.
 
 ⚠ This is deliberately NOT `∃ err, err ≤ bound` or any other shape that a
 reader could discharge by inspection: the hypotheses constrain a supplied
@@ -455,6 +472,202 @@ theorem ringSwitchSecure_hypotheses_inhabited {L : Type} [Field L] [Fintype L]
   positivity
 
 end Interface
+
+/-! ## §6b The two legs, SUPPLIED — Theorem 3.5's assembly and its sumcheck
+
+Both of §6's named gaps close here, and neither needed new mathematics.
+
+**The assembly** wanted "product-uniform marginalization and a union bound".
+`Selvage/Depth.lean` has had `uniformProb_prod_le` and `uniformProb_or_le` all
+along; the docblock that said otherwise was written before they were, and
+survived unchallenged.
+
+**The sumcheck transfer** wanted an `ℓ′`-round degree-2 bound tied to an honest
+prover over `h = A · t′`. `Selvage/QuadraticSumcheck.lean` builds exactly that
+honest prover (`quadHonest A t′ 0` — the paper's `h` is a product of two
+multilinears, i.e. `prodDiff` with the subtracted table zero), and
+`adaptive_sumcheck_soundness` is already `{v d}`-generic, so the bound is a
+consumption, not a construction.
+
+⚑ **What is genuinely new, and why this file is the consumer that closes it:**
+the transfer is priced *at any stopping point* `k ≤ ℓ′`, not only at `k = ℓ′`.
+`AdaptiveAcceptsFalse … r` at `v := k` contains the terminal comparison
+`scChain S (quadHonest A t′ 0 (chalOf r)) (chalOf r) k` — and until
+`scChain_quadHonest_partial` there was NOTHING in the tree that said what that
+quantity is for `k < ℓ′`. A `k`-round bound would have been a bound on an
+unnameable event. `ringSwitch_transfer_accepts_iff` names it: the level-`k`
+residual sum over the unvisited suffix cube, which is a well-formed evaluation
+claim the next reduction can take up. That is the composition operator doing
+the only thing a composition operator has to do.
+
+⚠ And note what the same theorem shows about the *verifier*: its first clause is
+still `∀ i, i < k`, every round check on the wire. The chain stops early; the
+check does not. -/
+
+section Transfer
+
+variable {L : Type} [Field L] [Fintype L]
+
+/-- First-factor marginalization. ⚠ The event `q` is taken EXPLICITLY with a
+pointwise `Iff` rather than as `fun c => ?p c.1`: the latter is not a Miller
+pattern and sends unification off a cliff (measured here — it was a `whnf`
+heartbeat timeout, not a slowdown). Same discipline, same reason, as
+`Assurance/ZkmlMatmulSumcheck.lean`'s `uniformProb_fst_le`, which this
+duplicates because `Selvage` may not import `Assurance`. -/
+private theorem uniformProb_marginal_fst {A B : Type} [Fintype A] [Fintype B]
+    (q : A × B → Prop) (p : A → Prop) (hq : ∀ c, q c ↔ p c.1)
+    {ε : ℝ} (hε : 0 ≤ ε) (h : uniformProb A p ≤ ε) :
+    uniformProb (A × B) q ≤ ε := by
+  rw [uniformProb_congr hq,
+    ← uniformProb_equiv (Equiv.prodComm B A) (fun c : A × B => p c.1)]
+  exact uniformProb_prod_le hε fun _ => h
+
+/-- **`RingSwitchSecure`, DISCHARGED.** Acceptance implies one of the two bad
+events (hypothesis); the batching event depends only on `r″` and is bounded by
+`ringSwitch_batching_bound` marginalized onto the first factor; the laundering
+event depends only on `r′` and is bounded by hypothesis, marginalized onto the
+second. A union bound adds them. No new probability toolkit: `uniformProb_mono`,
+`uniformProb_or_le`, `uniformProb_prod_le` and `uniformProb_equiv`, all from
+`Selvage/Depth.lean`. -/
+theorem ringSwitchSecure_holds : RingSwitchSecure L := by
+  intro κ l rowDiff hne launder accept hsplit hlaunder
+  have hnn : ∀ n : ℕ, (0 : ℝ) ≤ (n : ℝ) / Fintype.card L := fun n =>
+    div_nonneg (Nat.cast_nonneg n) (Nat.cast_nonneg _)
+  have hbatch : uniformProb ((Fin κ → L) × (Fin l → L))
+      (fun c => ∑ u, eqMle c.1 (cubePt u) * rowDiff u = 0)
+        ≤ (κ : ℝ) / Fintype.card L :=
+    uniformProb_marginal_fst _
+      (fun r'' => ∑ u, eqMle r'' (cubePt u) * rowDiff u = 0) (fun _ => Iff.rfl)
+      (hnn κ) (ringSwitch_batching_bound hne)
+  have hsnd : uniformProb ((Fin κ → L) × (Fin l → L)) (fun c => launder c.2)
+      ≤ (2 * l : ℝ) / Fintype.card L :=
+    uniformProb_prod_le
+      (by have := hnn (2 * l); rwa [Nat.cast_mul, Nat.cast_ofNat] at this)
+      fun _ => hlaunder
+  have hsum : (κ : ℝ) / Fintype.card L + (2 * l : ℝ) / Fintype.card L
+      = (2 * l + κ : ℝ) / Fintype.card L := by
+    rw [← add_div]; ring
+  calc uniformProb ((Fin κ → L) × (Fin l → L)) accept
+      ≤ uniformProb ((Fin κ → L) × (Fin l → L))
+          (fun c => (∑ u, eqMle c.1 (cubePt u) * rowDiff u = 0) ∨ launder c.2) :=
+        uniformProb_mono hsplit
+    _ ≤ uniformProb ((Fin κ → L) × (Fin l → L))
+          (fun c => ∑ u, eqMle c.1 (cubePt u) * rowDiff u = 0)
+        + uniformProb ((Fin κ → L) × (Fin l → L)) (fun c => launder c.2) :=
+        uniformProb_or_le _ _
+    _ ≤ (κ : ℝ) / Fintype.card L + (2 * l : ℝ) / Fintype.card L :=
+        add_le_add hbatch hsnd
+    _ = (2 * l + κ : ℝ) / Fintype.card L := hsum
+
+section Leg
+
+variable [DecidableEq L]
+
+open Polynomial
+
+omit [Fintype L] [DecidableEq L] in
+/-- The paper's summand `h = A · t′` has no subtracted table: `prodDiff A t′ 0`,
+whose hypercube sum is the plain inner product. -/
+theorem ringSwitch_summand_sum {l : ℕ} (Arow t' : (Fin l → Bool) → L) :
+    ∑ b, (Arow b * t' b - (0 : (Fin l → Bool) → L) b) = ∑ b, Arow b * t' b := by
+  simp
+
+/-- **Theorem 3.5's `2·ℓ′/|L|` leg, SUPPLIED — at any stopping point `k ≤ ℓ′`.**
+The honest side is not hypothesized: it is `quadHonest Arow t′ 0`, the BUILT
+degree-2 realizer, whose round polynomials are the actual partial sums of
+`Â·t̂′`. Any prefix-measurable degree-≤2 prover opening on a false total is
+accepted with probability at most `2k/|L|`.
+
+At `k = ℓ′` this is the paper's constant. At `k < ℓ′` it prices a transfer that
+stops early — and `ringSwitch_transfer_accepts_iff` says what the stopped run
+hands over. -/
+theorem ringSwitch_transfer_bound {l k : ℕ} (hk : k ≤ l)
+    (Arow t' : (Fin l → Bool) → L) (H : L)
+    {prover : (ℕ → L) → ℕ → Polynomial L}
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (χ : ℕ → L) (i : ℕ), i < k →
+      (prover χ i).degree < ((2 + 1 : ℕ) : WithBot ℕ)) :
+    uniformProb (Fin k → L)
+      (AdaptiveAcceptsFalse prover (quadHonest Arow t' 0) H
+        (∑ b, (Arow b * t' b - (0 : (Fin l → Bool) → L) b)))
+      ≤ (2 * k : ℝ) / Fintype.card L := by
+  have h := adaptive_sumcheck_soundness (v := k) (d := 2) (H := H)
+    hpm (quadHonest_prefixMeasurable Arow t' 0) hdeg
+    (fun χ i hi => quadHonest_degree Arow t' 0 χ i (lt_of_lt_of_le hi hk))
+    (fun r i hi =>
+      quadHonest_boolean_sum_stream Arow t' 0 (chalOf r) i (lt_of_lt_of_le hi hk))
+  calc uniformProb (Fin k → L)
+        (AdaptiveAcceptsFalse prover (quadHonest Arow t' 0) H
+          (∑ b, (Arow b * t' b - (0 : (Fin l → Bool) → L) b)))
+      ≤ (k : ℝ) * ((2 : ℝ) / Fintype.card L) := h
+    _ = (2 * k : ℝ) / Fintype.card L := by ring
+
+omit [Fintype L] [DecidableEq L] in
+/-- **The stopped transfer's acceptance event, with its terminal NAMED.**
+
+Unfolded, `AdaptiveAcceptsFalse … r` at `v := k` is: every round check `i < k`
+passes, the prover's chain at round `k` equals the honest chain at round `k`,
+and the opening total is false. `scChain_quadHonest_partial` identifies the
+honest chain at round `k` as the level-`k` RESIDUAL — the sum of `Â·t̂′` over the
+`ℓ′ − k` variables the transfer has not visited, with the visited ones pinned to
+the challenges. That is a sum-claim of the same shape the run opened on, which
+is exactly what "hand the rest to `Π′`, or to another reduction" needs.
+
+⚠ The first clause is still `∀ i, i < k`. Stopping the chain early removes no
+check from the wire. -/
+theorem ringSwitch_transfer_accepts_iff {l k : ℕ} (hk : k ≤ l)
+    (Arow t' : (Fin l → Bool) → L) (H : L)
+    (prover : (ℕ → L) → ℕ → Polynomial L) (r : Fin k → L) :
+    AdaptiveAcceptsFalse prover (quadHonest Arow t' 0) H
+        (∑ b, (Arow b * t' b - (0 : (Fin l → Bool) → L) b)) r
+      ↔ ((∀ i, i < k → (prover (chalOf r) i).eval 0 + (prover (chalOf r) i).eval 1
+              = scChain H (prover (chalOf r)) (chalOf r) i)
+          ∧ scChain H (prover (chalOf r)) (chalOf r) k
+              = residualSum (prodDiff Arow t' 0)
+                  (fun j : Fin l => chalOf r j.val) k
+          ∧ H ≠ ∑ b, (Arow b * t' b - (0 : (Fin l → Bool) → L) b)) := by
+  unfold AdaptiveAcceptsFalse AcceptsFalse
+  rw [scChain_quadHonest_partial Arow t' 0 (chalOf r) hk]
+
+omit [Fintype L] [DecidableEq L] in
+/-- **At `k = ℓ′` the residual IS the factored terminal** `Â(r′)·t̂′(r′)` — the
+pair the verifier compares, one factor computed by itself and one opened from
+`Π′`. The partial statement REFINES the full one: this is `residualSum_full`
+collapsing the empty suffix cube, not a second theorem. -/
+theorem ringSwitch_transfer_terminal {l : ℕ} (Arow t' : (Fin l → Bool) → L)
+    (r : Fin l → L) :
+    scChain (∑ b, (Arow b * t' b - (0 : (Fin l → Bool) → L) b))
+        (quadHonest Arow t' 0 (chalOf r)) (chalOf r) l
+      = mle Arow r * mle t' r := by
+  rw [scChain_quadHonest_final]
+  simp [mle]
+
+/-- **Theorem 3.5's joint bound with BOTH legs supplied — no sumcheck
+hypothesis left.** The `(2k + κ)/|L|` bound over the verifier's joint randomness
+`(r″, r′) ← L^κ × L^k`, with the laundering leg discharged by the BUILT degree-2
+realizer rather than assumed. At `k = ℓ′` this is Theorem 3.5's constant; at
+`k < ℓ′` it is the same statement for a transfer that stops early and hands the
+residual on. -/
+theorem ringSwitch_joint_bound {κ l k : ℕ} (hk : k ≤ l)
+    {rowDiff : (Fin κ → Bool) → L} (hne : rowDiff ≠ 0)
+    (Arow t' : (Fin l → Bool) → L) (H : L)
+    {prover : (ℕ → L) → ℕ → Polynomial L}
+    (hpm : PrefixMeasurable prover)
+    (hdeg : ∀ (χ : ℕ → L) (i : ℕ), i < k →
+      (prover χ i).degree < ((2 + 1 : ℕ) : WithBot ℕ))
+    (accept : (Fin κ → L) × (Fin k → L) → Prop)
+    (hsplit : ∀ c, accept c →
+      (∑ u, eqMle c.1 (cubePt u) * rowDiff u = 0)
+        ∨ AdaptiveAcceptsFalse prover (quadHonest Arow t' 0) H
+            (∑ b, (Arow b * t' b - (0 : (Fin l → Bool) → L) b)) c.2) :
+    uniformProb ((Fin κ → L) × (Fin k → L)) accept
+      ≤ (2 * k + κ : ℝ) / Fintype.card L :=
+  ringSwitchSecure_holds κ k rowDiff hne _ accept hsplit
+    (ringSwitch_transfer_bound hk Arow t' H hpm hdeg)
+
+end Leg
+
+end Transfer
 
 /-! ## §7 The handoff: what a characteristic-2 BaseFold must provide
 
@@ -562,6 +775,16 @@ end Handoff
 #guard_msgs (whitespace := lax) in #print axioms ringSwitchCommit_injective
 /-- info: 'Minidregg.Selvage.ringSwitchSecure_hypotheses_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms ringSwitchSecure_hypotheses_inhabited
+/-- info: 'Minidregg.Selvage.ringSwitchSecure_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ringSwitchSecure_holds
+/-- info: 'Minidregg.Selvage.ringSwitch_transfer_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ringSwitch_transfer_bound
+/-- info: 'Minidregg.Selvage.ringSwitch_transfer_accepts_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ringSwitch_transfer_accepts_iff
+/-- info: 'Minidregg.Selvage.ringSwitch_transfer_terminal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ringSwitch_transfer_terminal
+/-- info: 'Minidregg.Selvage.ringSwitch_joint_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms ringSwitch_joint_bound
 /-- info: 'Minidregg.Selvage.trivialTarget' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms trivialTarget
 
