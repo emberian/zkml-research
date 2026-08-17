@@ -25,8 +25,11 @@ rediscover.
 | `07-ARTIFACTS.md` | what is on disk, where, and what state it is in |
 | `08-ATTACK-BRIEFS.md` | ⚑ **four unrun attacks on our own novel constructions.** The price of being allowed to be novel — nothing custom ships until these have answers. |
 
-⚠ **Snapshot vs live.** `02`, `03`, `04`, `07` are snapshots from 2026-08-16;
-the tree moved ~42 commits after. `01`, `01b`, `05` are durable (steers and
+⚠ **Strata, not staleness.** `02`, `03`, `04`, `07` were folded current on
+2026-08-17: the 08-16 archaeology text is unmarked, every later addition is
+tagged **`[08-17]`** *at the section it belongs to*, and where a new finding
+contradicts an old entry **the old entry stays with the contradiction stated at
+it** — the two strata are informative. `01`, `01b`, `05` are durable (steers and
 error classes do not rot). `06` and `08` are current as of 08-17.
 **The LIVE documents are `~/dev/zkml-research/SLVG_THOUGHT.md` (the shape —
 what Selvage is, believes, intends) and `docs/VERDICTS.md` (the facts,

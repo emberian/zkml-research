@@ -3,8 +3,8 @@
 **Rewritten 2026-08-17** — the first version was written before the second half
 of the campaign and listed as open several things now closed. ⚠ **If you are
 reading a forcodex file other than this one, `08-ATTACK-BRIEFS.md`, or
-`00-ORIENTATION.md`, check its date: 02/03/04/07 are snapshots from 08-16 and
-the tree moved ~42 commits since.** Live documents are
+`00-ORIENTATION.md`, 02/03/04/07 were folded current on 08-17 and carry
+their additions tagged `[08-17]`.** Live documents are
 `~/dev/zkml-research/SLVG_THOUGHT.md` (shape) and `docs/VERDICTS.md` (facts).
 
 ## Closed since the first version — do NOT treat these as open
