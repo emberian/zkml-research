@@ -268,7 +268,47 @@ the additive-FRI transcript binds the ORDERED basis, not just the domain.**
 - ⚑ **And Diamond–Posen's own Corollary 4.5 is the same fact from the other
   side.**
 
-**That is overdetermined. Binding the ordered basis in the transcript is the
+✅ **CLOSED 2026-08-16** (`9679a16`, **minidregg** — ⚠ my brief had the path
+wrong; no such controller exists under `breadstuffs/metatheory` at all).
+
+⚑ **The diagnosis of WHY the hole existed is the finding.** Read at source:
+`challengeInput` was `envelope statementBytes ++ roots`, and **`grep beta`
+across both controllers returns nothing** — while **the `Clause` carries
+`basis`/`basisExact`/`offset`/`offsetExact` first-order.** *The statement HAD
+the ordered basis; no transcript function ever read it.* ⚠ And "`domainId`" is
+two different objects, **neither of them the basis**: one is a per-level label
+that is *a function of the level index alone — not even of `ell`*, the others
+are cSHAKE namespace separators. ⚑⚑ **The entire obligation lived in a
+DOCSTRING** on `statementBytes` (*"must include the complete manifest/clause
+statement encoding"*), **with no field and no theorem behind it — and the
+tree's only inhabitant sets it to nine constant bytes spelling
+`"minidregg"`.**
+
+**The binding**: `basisPrefix` encodes `ell`, `m`, `offset`, then the `ell`
+elements as **indexed frames in index order**, spliced into `challengeInput`
+*and* `queryPrefix` of *both* controllers — **positional by construction,
+since anything set-shaped would reintroduce the hole one level down.**
+
+**Closed both directions**: `table_unique_of_novelPack_eq`, and ⚑
+**`no_span_indexed_decoder` — NO function of `(additiveDomain, codeword)` is
+correct on honest commitments.** `transcript_determines_table` now holds in
+both controllers and **was FALSE before this commit**; **`Extractable` is
+discharged**, with `spanBoundPcs_not_extractable` proving it FALSE without the
+binding (satisfiable *and* refutable). The reordering tooth proves the bases
+differ **and** their `additiveDomain`s are **equal** — so the mutation is real
+and the old binding is provably blind to it.
+
+**Flag day: EMPTY** — zero Rust consumers, no `@[export]`, no golden bytes.
+⚠ Incidental: `transcriptControllerDigest` values are **hand-assigned registry
+naturals with no relation to the controller's actual bytes.**
+
+⚠ **Residuals, stated not absorbed**: `statementBytes` is closed only for the
+basis; **`Extractable` remains the zero-error idealization** — the handle is a
+polynomial, not a Merkle root, so **what is proved is that the decode map is
+WELL DEFINED, not that FRI proximity realizes it**; and the Raw deployment's
+accept-tooth is **vacuous at `m=0`**.
+
+~~That is overdetermined. Binding the ordered basis in the transcript is the
 next concrete piece of work on this path**, and it is a change to
 `Compiler/Tower256AdditiveFriController.lean`, which today binds a sponge
 `domainId`.
