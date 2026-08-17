@@ -172,6 +172,24 @@ would only revive on a variant that reintroduces linearized terms.
 
 ### 2f. VERDICT — [WEFT-subspace] resolved: the sketch AS WRITTEN is killed; the fallback is priced as the design
 
+> ⚑⚑ **CORRECTED SAME DAY — `notes/weft2.md` (`~/src/ring-ro-hash/weft2_structure.py`).
+> The kill STANDS. The reason below does NOT.** (1) **Branch 6 is not disqualifying**:
+> one active `x⁻¹` at GF(2³²) is worth 30 bits on *both* sides (δ=4 and |W| = 2^(n/2+1),
+> both measured exhaustively at n=8), so branch 6 = 180 bits per 2 rounds vs a 128-bit
+> bar — and **Poseidon2's own internal layer is branch 2 and ships**
+> (`ring-hash-design.md:326`). The Poseidon2 rows in §2c are also
+> **cross-characteristic** — `M_E`'s {1,2,3} entries collapse in char 2, and the char-2
+> reduction reads ≤ 8. (2) ⚑ **The flag is 5 deep, not 4**: `weft_branch.py:300` loops
+> `range(1, 5)`, and the skipped `b = 0` level is `row 0 of M = e₀` — **output lane 0
+> equals input lane 0**, an autonomous 32-bit quotient `x₀ ↦ x₀⁻¹ + c₀`. **Round
+> constants break invariant subspaces but NOT invariant quotients.** That is the actual
+> kill; `B_l = 2` (the linear branch, never computed here) is its shadow. (3) A third,
+> unrecorded defect: with `βⱼ = 2ʲ` every entry of M lies in **GF(2⁸)** (max 253), so
+> `(GF(2⁸))²⁴` = 2¹⁹² is round-invariant unless the *constants* leave GF(2⁸).
+> ⭐ (4) The fallback below is **not** the only live form: evaluating on an affine
+> **coset** (same butterflies, shifted twiddles, zero ops) gives `B_d = 8` EXACT with
+> zero invariant subspaces either side — **one transform, prize intact**.
+
 **Branch 6 against an MDS bound of 25, below even Poseidon2's non-MDS external layer at both
 widths (8 at t=16, ≤10 at t=24), with a 4-deep round-invariant lane-subspace flag aligned with
 the 0-fixing S-box.** The aligned-hash note's own fallback clause ("Weft composes the transform

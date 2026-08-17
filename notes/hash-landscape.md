@@ -1326,3 +1326,105 @@ XHash8/M31 only for a Goldilocks/M31 stack. **Dense-composed and Blake3-lookup
 are dead.**
 
 ⚠ The axiom pins caught a `sorryAx` degradation mid-development. **Again.**
+
+
+---
+
+## ADDENDUM 6 (2026-08-17): ⚑ WEFT RE-OPENED — the kill stands, its REASON does not, and the killer was inside the kill's own script
+
+`notes/weft2.md` + `~/src/ring-ro-hash/weft2_structure.py` (imports
+`weft_branch.py` and `mark32_sysrs_branch.py` unmodified; ~107 s, all parts).
+
+**ADDENDUM 3's headline is not the disqualifying fact.** Measured, exhaustively
+at the tower's GF(2⁸) level: `x⁻¹` has **δ = 4** and Walsh max **|W| = 2^(n/2+1)
+exactly**, so at n = 32 one active S-box is worth **30 bits on BOTH the
+differential and the linear side**. Branch 6 therefore buys **180 bits per 2
+rounds** against a 128-bit bar.
+
+> ⚑ **And Poseidon2's own internal layer is branch 2 and SHIPS** (our own
+> `ring-hash-design.md:326`). *A design that ships branch 2 in most of its rounds
+> cannot be killed on "6 < 25".* The MDS bound is the IDEAL, not the BAR.
+
+⚑ **The comparator was also cross-characteristic**: `M_E`'s entries {1,2,3}
+collapse to {1,0,1} in char 2 (the diagonal block factor 2 becomes **0**); the
+char-2 reduction is a different matrix and reads **branch ≤ 8 at t=24**.
+
+### What actually killed it — and it was in the kill's own code
+
+`weft_branch.py:300` loops `for b in range(1, 5)`. **The flag is 5 deep** (the
+exhaustive closed-set lattice: `[16,24) ⊂ [8,24) ⊂ [4,24) ⊂ [2,24) ⊂ [1,24)`),
+and the skipped level `b = 0` says `X̂ᵢ(0) = 0` for every `i ≥ 1`:
+
+> ***`row 0 of M = e₀`. Output lane 0 EQUALS input lane 0.*** The permutation
+> carries an autonomous 32-bit quotient `x₀ ↦ x₀⁻¹ + c₀`, for any number of
+> rounds. ⚑ **Round constants break invariant SUBSPACES; they do NOT break
+> invariant QUOTIENTS** — in the quotient a constant is just the small map's own
+> round constant. `B_l = 2` (EXACT — the linear branch, never computed) is the
+> shadow of this; the relation itself is probability 1, not a trail.
+
+**Third defect, unrecorded anywhere**: with the stated basis `βⱼ = 2ʲ` the points
+are the integers 0..23 ⊂ **GF(2⁸)**, so every matrix entry is (max entry 253) and
+`x⁻¹` preserves subfields ⇒ **`(GF(2⁸))²⁴` = 2¹⁹² is round-invariant** unless the
+round constants leave GF(2⁸) — and the sketch's transcript-tag constants, if small
+integers, **do not**.
+
+### ⭐ The repair is free, and it is upstream of everything
+
+Evaluate on an affine **coset** `x* + V` instead of the linear space: no point
+lies in any `V_b`, so no structural zero exists. Same butterfly network, shifted
+twiddles — **zero ops, zero constraints.** `[MEASURED]`: **`B_d = 8` EXACT**
+(certified: min-side ≤ 3 exhausted at 10, attained by a constructed min-side-4
+codeword `(s₄+a)(s₂+c)`), `B_l ∈ [8,10]`, dense, **zero** invariant subspaces on
+either side, diffusion depth **1**, no twisted-subfield structure (with a
+full-field `x*`), `deg(minpoly) = 24`, observability at **all 24** lanes. It is
+the **one-transform** cousin of ADDENDUM 5's systematic-RS form — 1.68× cheaper
+natively, at branch 8 instead of 25 (240 vs 750 bits per 2 rounds; both far over
+the bar). The trade is **theorem vs measured instance**, not margin.
+
+### ⚑ Two conditions ADDENDUM 5's MDS form does not carry
+
+Run through this lane's instruments: **`A = V₂V₁⁻¹` at the natural point split
+0..23/24..47 is STILL a GF(2⁸) matrix** — all 48 points lie in GF(2⁸), so the
+2¹⁹² set survives, and *superregularity says nothing about it*. Free repair:
+shift one point set by a full-field element (points stay distinct ⇒ RS/MDS
+untouched). And **`deg(minpoly A) = 6`; in the subfield-repaired form `A² = I`,
+an INVOLUTION** — so every S-box lane leaves an 18- or 22-lane subspace on which
+*partial* rounds are linear. ⚠ **Not a break of Mark-32** (8 full rounds, no
+partial rounds; involutory MDS is standard practice) — but it means the
+systematic-RS form **cannot serve an internal round** and the one-transform coset
+form can. Obligation for the adoption path: test Mark-32's actual point split,
+its linearized-affine `B` coefficients, and its round constants for **subfield
+membership** (one line each).
+
+### Weft-2 (structured-internal / dense-external) — evaluated and refused
+
+Backwards *and* cost-negative. The internal-round condition is **observability of
+`(eⱼᵀ, M_I)`**, not a branch number — and Weft-1's matrix fails it at **16 of 24
+lanes, worst case a 23-lane** linear subspace, i.e. the split puts the structured
+layer exactly where its defect binds. After the coset repair all 24 lanes pass, so
+**there is nothing left to split** — keep the transform in every round and the
+"ONE proved linear object" prize survives. And at `x⁻¹` (F₂-degree n−1) the round
+count is already ~8 all-full (Vision/Mark-32), so partial rounds have no long tail
+to make cheap: the split costs **+11% cells** and buys nothing.
+
+### The trade, and the brief's counterparty was wrong for this rung
+
+⚑ **On the binary rung there is no aged hash to adopt.** Vision / Vision Mark-32
+is *"none found — and nobody has looked"* (§ line 619). CheapLunch, Perrin and
+Rijmen are **prime-field** assets on XHash8/RPO, which ADDENDUM 5 already found
+does not fit us three ways. So the comparison is not *custom vs aged* but **our
+object vs a published object with the same skeleton, both unanalyzed** — and
+adopt still wins, for an **epistemic-flywheel** reason: a published design
+accumulates analysis, a private one does not. The alignment premium custom was
+supposed to buy is ≈ 0, because Mark-32 already *is* the aligned design.
+
+⚑ **The price of zero cryptanalytic age, now measurable rather than rhetorical:
+the base rate of "our own careful, tooled analysis missed a total break" is 1 for
+1 on this design.** The kill had an exact branch number, a duality certification,
+a basis-sensitivity arm, a random control and a structural-witness falsifier — and
+a `range(1, 5)` hid a fixed lane.
+
+**Gate amended** in `swarm/BRIEF-TEMPLATE.md` §7d: branch number is a ONE-ROUND
+quantity and goes **fifth**, on both sides; structure/quotient/subfield/minpoly go
+first. The 23-rotation family is the proof — it changes the structure completely
+and **moves neither branch number**.
