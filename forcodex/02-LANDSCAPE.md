@@ -57,6 +57,16 @@ family · p61 = 2⁶¹−2⁵⁴+1 · binary towers · the BFV RNS limbs as a pr
   sumcheck** — which is why the field question and the "are we still an
   FRI system?" question are entangled.
 
+⚑ **And a number that circulated and does not reproduce.** The KoalaBear-as-RNS-limb
+result was recovered from a transcript as **"77 candidate towers"**. The
+re-derivation found **479** in the honest search space — and, worse,
+**33 different unstated companion-exponent windows hit exactly 77.**
+`notes/koalabear-limb.md:69-84` says plainly: **"Do not quote 77 without the
+window."** The substance survived; the number was an artifact of an unstated
+parameter. ⟨inference⟩ This is the sharpest small instance of the campaign's
+characteristic error — a figure that is *reproducible-looking* because many
+wrong windows produce it.
+
 **Artifacts**: `docs/VERDICTS.md` §1b · `notes/field-choice-verdict.md` ·
 `notes/koalabear-limb.md`, `notes/koalabear-limb-verdict.md` ·
 `notes/koalabear-migration.md` · `minidregg/Theory/CyclotomicInertia.lean` (the
@@ -306,8 +316,20 @@ the χ vector of the address bits, not merely "boolean + sums to one").
 - `grep -rn 'IsPrimitiveRoot\|rootsOfUnity\|primitiveRoot\|nthRoots'` over
   minidregg → **0 hits, tree-wide.** Four distinct domain constructions, none
   multiplicative.
-- **BinarySpartan could not be verified to exist** as a public artifact by four
-  independent instruments. See `04-DEAD-ENDS.md`.
+- ⚑ **BinarySpartan: two lanes searched soundly and drew the wrong conclusion.**
+  `notes/binaryspartan-position.md` and `notes/neo-superneo-read.md` both say it
+  could not be verified to exist (five independent instruments, all ∅).
+  **`docs/BINARY-POSITION.md` corrects this: it EXISTS** — ember holds its title
+  page and abstract from the eprint *review queue*, plus an EF slide with its
+  benchmark table. It is awaiting publication, so **by construction it is in no
+  mirror and no author listing.** `docs/VERDICTS.md` is silent, so there is no
+  tiebreak from the file that normally wins. **The rule that came out of it:**
+  *absence from a published corpus is evidence about the corpus, never about
+  reality, and a paper described as unpublished is not evidence at all.*
+  What survives from the search either way: the name traces to **Irreducible's
+  Binius64 blueprint §1.2, "Why Not Binary Spartan?" — a rejected strawman.**
+  Irreducible considered this design and rejected it; Setty built it and it is
+  the fastest scheme in the EF client-side benchmark.
 
 **Artifacts**: `docs/BINARY-POSITION.md` · `notes/binaryspartan-position.md`
 (1,203 lines) · `notes/neo-superneo-read.md`, `notes/neo-verdict.md` ·
@@ -378,10 +400,10 @@ Three separate lanes had to correct the brief on ground truth:
 | Coefficient-encoded matmul | ✅ **built and measured** — 12 bits/matmul with split-sign, depth 2 after, 466 µs at 512×31 | `fhegg-fhe/src/bfv_coeff_matmul.rs`, `notes/coeff-matmul-landed.md` |
 | Single joint prime (H1/H2) | **net loss at 109 bits, wins at 61**; the deciding variable is the 64-bit machine word | `notes/h2-verdict.md`, `phase0/h2-rns-vs-single-prime/` |
 | The KPZ encoding fix | ⚑ **NO-OP** — already in force; the "fix" had nothing to fix | `notes/kpz-noop-and-the-model-gap.md` |
-| PIR for the embedding table | read 8 systems in full; verdict in the note | `notes/fhe-scout-verdicts.md` |
+| PIR for the embedding table | ⚑ **LIVE, not closed** — "PIR rotation keys cost **2.01 MB at our parameters** (12 keys × 0.33 MB at N=4096; the literature's **857 MB** horror is N=2^16). **The field's rotation-phobia does not transfer to us.**" Un-promoted to VERDICTS, so neither confirmed nor closed. | `notes/fhe-scout-verdicts.md:28-30` |
 | Circuit privacy / sanitization | **smudging does NOT give circuit privacy**, and the literature says so in as many words (2025/275) | `notes/fhe-core-theory.md` |
 | RLWE worst-case reductions vs our deployment | a √n hides in a convention gap between two normalizations | `notes/fhe-core-theory.md` |
-| Post-quantum status of our parameters | ⚑ **OPEN and unfavourable** — ~125.1 bits classical, `log q = 109` is 3 over the current recommended 106, and Apple ships N=4096 at **83 bits** for `.quantum128` | `docs/VERDICTS.md` §7.8 |
+| Post-quantum status of our parameters | ⚑ **OPEN and unfavourable.** `docs/VERDICTS.md` §7.8: it is a *classical*-line set nobody ships; Apple ships N=4096 at **83 bits** for `.quantum128`, and N=8192 / 148 bits when it wants log t ≈ 20. ⚠ **A sharper pair of figures exists only in a transcript and never reached the notes** — lane `a0cbd2ee` ("2024-26 attacks and parameters") concluded *"~125.1 bits — about 3 bits short — and `log q = 109` is 3 bits over the current recommended maximum of 106… we are sitting on the 2018 table's number."* **Not in any file.** The nearest recorded numbers are deployed **98.1 core-SVP / 119.9 MATZOV / 130.5 HE-standard** (`notes/koalabear-limb.md:145-152`) — a ~32-bit spread that is **the model, not the parameters.** | `docs/VERDICTS.md` §7.8 · transcript only |
 
 ## 2.4 ⚑ Cross-limb binding — the pillar's real finding
 
@@ -467,8 +489,15 @@ Ozaki-scheme limb splitting · unary lookup tables.
 - **Requantization is not eliminated by the good systems — it is promoted to a
   first-class protocol they pay for on every operator** (OpenLLM).
 - **ZIP (CCS'25) is the only IEEE-754 system and needs 37 hours for an
-  11M-parameter 4-layer mini-BERT.**
-- **Spain (OSDI'26)** is the best 2026 float system and **loses to quantized.**
+  11M-parameter 4-layer mini-BERT.** ⚑ **Transcript-only** — lane `a4e77a94`
+  ("Transformer ZK softmax/layernorm survey", session `3e64269c`). This figure
+  is **in no file in the repo**; ZIP appears three times in the notes and none
+  of those carries it. Re-source before publishing.
+- **Spain (OSDI'26)** is the best 2026 float system and **loses to quantized** —
+  by their own Figure 4, on the same workload (GPT-2, seq=32): prover 750 s vs
+  zkGPT's 64 s (**11.7×**), verifier 78 s vs 5.8 s, proof 1.6 MB vs 88 KB. Their
+  §8, unprompted: *"Spain's prover isn't the fastest in the literature; that
+  honor belongs to zkGPT."*
 
 **Artifacts**: `notes/zkml-landscape.md` · `notes/spain-celer-verdicts.md` ·
 `notes/ml-to-crypto-mappings.md` · `docs/PHASES-AND-TENSOR.md`.
