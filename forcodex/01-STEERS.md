@@ -2,8 +2,36 @@
 
 Every one of these changed the direction of the work. Written from the live
 context of the sessions; where the wording is ember's it is quoted. **A
-session-archaeology lane is recovering the ones from earlier windows** — this
-file is the part I held directly.
+session-archaeology lane recovered ~30 MORE in `01b-STEERS-RECOVERED.md` —
+read that FIRST.** Deduplicating 617 raw messages to 117 unique across 12
+sessions, it found that **several turning points I narrate below as my own
+noticing were ember's, earlier**:
+
+- ⚑ **The field question came a FULL DAY before the hash question** —
+  *"we're only using babybear because plonky3 already was"* (08-13 11:22). So
+  §10's "seven things I was treating as fixed" is a **late** recognition of a
+  pattern ember had been running for a day.
+- ⚑ **The phase-decomposition thesis is EMBER'S** — *"there are probably
+  different phases of the process that are bound differently right?"* — **six
+  hours before** the synthesis steer that §7 credits with producing
+  `COST-MODEL.md`.
+- **The origin steer carried a half nobody recorded**: *"isn't that the same
+  technique we used to accelerate one of the mina→dregg directions?"* —
+  **ember recognised commit-then-audit as ALREADY OURS**, which is *why* the
+  audit pillar existed at all.
+- **Why `zkml-research` exists is ETHICAL**: *"so we don't accidentally cast
+  shade on a 'competitor' (they're actually collaborators, in a way, in my
+  view of the worldsystem)."*
+
+⚑⚑ **Two method findings from the archaeology, and they belong at the top:**
+1. ***A mild "why are we doing X?" from ember is a stop-work order that has
+   not raised its voice yet.*** The Plonky3 question preceded the Plonky3
+   shout by **45 minutes** and was **ignored**.
+2. ***The only reliable detector of a lost result was ember's memory.*** She
+   ran `cv index` herself and said *"look again."* **No instrument of ours
+   found those.**
+
+The rest of this file is the part I held directly.
 
 ---
 
