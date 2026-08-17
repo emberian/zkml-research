@@ -316,9 +316,32 @@ at §4.3/§7**):
 Nova-shaped PQ folding (4–8% overhead) → switchboard pay-per-use (Ajtai
 zero-commitment) → Nebula-style committed memory (Lemma 2 ⟺ TwistContinuity)
 → **ember's EVM decompilation on top for the per-program prize.** Every layer
-either held or priced; two follow-ups queued: **formalize Lemma 2 ⟺
-`TwistContinuity`** (top-ranked, on-shelf machinery) and **`AccRbrFold`**
-(folding at the commitment alphabet).
+either held or priced; follow-ups: **Lemma 2 ⟺ `TwistContinuity`** in flight, and
+✅ **`AccRbrFold` LANDED (2026-08-17, `bc29222`, 1,448 lines, 16 pinned
+audits, no `sorryAx`)**:
+- **The norm budget is DATA**: `budget b₀ T = b₀ + T·(ρ·B)` — additive, the
+  Cyclo flat-fold regime — and the RBR knowledge state through a fold is a
+  genuine Def-4.1 instance. The one remaining obligation
+  (`[ACC-rbr-fold-resid](a)`) is exactly the per-absorbed-commitment
+  `ε_MSIS` home.
+- ⚑ **At our dual-mode parameters (q=2⁶⁴−257, B=2¹⁶): safe through
+  T = 2⁴⁷−2, binding lost UNCONDITIONALLY at T = 2⁴⁷−1** — tightness both
+  ways. *The norm wall exists and sits ~14 orders of magnitude past any
+  realistic fold count: the PQ-Vega folding depth is practically unbounded.*
+- ⚑ **The Z=∅ depth corner RECURS under additivity** (`foldOB2Unguarded_false`
+  re-run at a genuine fold instance) — **because it lives in the ERROR
+  algebra, not the message algebra.** Both halves theorems, as asked.
+- ⚑ **Bonus: the `AccRbrBcsShifted` lagged-root residual DISSOLVES at the
+  additive alphabet** — every fold root is verifier-computable, no inert
+  challenge; **the trade is that the norm budget is the new residual, now a
+  field of the structure instead of a comment.**
+- **Consumer wired three ways** into `VerifierEmbedding`, including the
+  fail-open hazard as an `IsEmpty` theorem
+  (`dropped_norm_check_refuses_embedding` — infinite kernel coset vs finite
+  norm ball).
+- Honest label: `MsisHardEx` is *nonexistence* — proved at the toy, expected
+  false at production sizes by pigeonhole; the computational reading is the
+  named residual `[FOLD-msis]`.
 
 ## 3d. EVM DECOMPILATION — real, unclaimed at the right granularity, staged
 
