@@ -294,7 +294,32 @@ place," which is precisely the brief's question.
 ### 3d. The named security obligations — none waived, one loud
 
 - **[WEFT-subspace] ⚑ THE LOUD ONE — ⛔ RESOLVED 2026-08-17: KILLED AS
-  SPECIFIED.** Measured (`~/src/ring-ro-hash/weft_branch.py` @737ea7b, exact
+  SPECIFIED.**
+  ⚑⚑ **RE-OPENED AND CORRECTED THE SAME DAY — `notes/weft2.md`
+  (`~/src/ring-ro-hash/weft2_structure.py`). The kill STANDS; its stated REASON
+  does not.** (a) **Branch 6 is not disqualifying**: at GF(2³²) one active `x⁻¹`
+  is worth 30 bits on *both* sides (measured: δ=4, |W| = 2^(n/2+1) exactly), so
+  branch 6 buys 180 bits per 2 rounds against a 128-bit bar — and Poseidon2's own
+  internal layer is **branch 2 and ships** (`ring-hash-design.md:326`). The
+  Poseidon2 comparator below is also **cross-characteristic** (M_E's {1,2,3}
+  entries collapse in char 2; the char-2 reduction reads ≤ 8, which the repair
+  matches). (b) **The flag is 5 deep, not 4** — `weft_branch.py:300` loops
+  `range(1,5)`, and the skipped level `b=0` is a **fixed lane**: `output lane 0 =
+  input lane 0`, an autonomous 32-bit quotient `x₀ ↦ x₀⁻¹ + c₀` that **round
+  constants cannot break** (constants break invariant *subspaces*, not invariant
+  *quotients*). That is the real kill, `B_l = 2` is its shadow, and **no branch
+  number sees it**. (c) A third defect, unrecorded: with `βⱼ = 2ʲ` every matrix
+  entry lies in **GF(2⁸)**, so `(GF(2⁸))²⁴` = 2¹⁹² is round-invariant unless the
+  constants leave GF(2⁸) — and small-integer transcript tags do not.
+  ⭐ (d) **The fallback clause below is NO LONGER the only live form**: evaluating
+  on an affine **coset** (same butterflies, shifted twiddles, **zero ops**) gives
+  `B_d = 8 EXACT`, `B_l ∈ [8,10]`, **zero** invariant subspaces either side,
+  diffusion depth 1, no twisted-subfield structure, and observability at all 24
+  lanes — **one transform, so the "ONE proved linear object" prize survives**.
+  See also `post-weft-hash.md` §3's two-transform systematic-RS form (MDS *by
+  theorem*, branch 25) — the stronger result and the more expensive one (1.68×
+  native), and ⚑ it is *still* a GF(2⁸) matrix at the natural point set.
+  Measured (`~/src/ring-ro-hash/weft_branch.py` @737ea7b, exact
   and certified, method + numbers in `notes/k16-proof-and-weft.md` §2):
   **branch(novel-eval mixing, t = 24, GF(2³²)) = 6** against the MDS bound 25 —
   below even Poseidon2's non-MDS external layer (8 at t=16 EXACT, ≤10 at t=24).
