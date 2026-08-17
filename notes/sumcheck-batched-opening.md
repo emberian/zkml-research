@@ -154,6 +154,13 @@ soundness one — the preprocessed columns are part of the VK, so a violation ca
 prover — but it converts a silent, undiagnosable break into a named refusal at build time. It also
 turns "I reasoned that the chains are separated" into "the build refuses if they are not."
 
+⚠ **And the guard had only ever been seen to ACCEPT** — it landed in the same commit as the
+emitter fix that stopped violating it, which is the shape of a gate that cannot go red. Four tests
+(`0ed1182`) make it satisfiable *and* refutable in both directions: a non-zero seed and two
+adjacent independent chains each refuse with the offending op index, and a well-formed chain and
+two chains separated by a single non-`HornerAcc` op each pass. The second refusal reproduces the
+exact op sequence the first draft emitted.
+
 ---
 
 ## 2. ⚑ MEASURED — the deployed leaf wrap, before and after
