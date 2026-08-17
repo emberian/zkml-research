@@ -34,8 +34,11 @@ mathematics:
 > AIR family.
 >
 > So the ×2.13 endpoint the sumcheck could not reach over two-adic FRI **is reachable in cells** —
-> by evaluation-order + table-geometry re-arrangement alone, VK-rotation only, child proof
-> byte-identical. The sumcheck was never the only road to its own number.
+> by table-geometry re-arrangement alone, VK-rotation only, child proof byte-identical. Measured
+> on the real circuit this session: the deployed `p1/a4/K2` packing is **×1.400 from its own
+> family's minimum** (`a4/K16`: wrap 40,554,496 → 28,971,008 cells, **×2.011 cumulative** against
+> the pre-split 58,249,216), and a dedicated chain table prices the rest of the way to ≈ **×2.23
+> cumulative** `[DERIVED]`. The sumcheck was never the only road to its own number.
 
 The five pathways, one line each (details in §1–§5, ranked in §6):
 
@@ -43,7 +46,7 @@ The five pathways, one line each (details in §1–§5, ranked in §6):
 |---|---|---|---|
 | 1 | Frobenius / minpoly quotient | **arithmetic ≤ 0; absorption already at its floor; the conjugate-point variant is UNSATISFIABLE (proved, §1d)** | closed |
 | 2 | deferred accumulation (Halo-style) | **factor 0 over Merkle-only commitments — the obligation cannot travel even one layer (§2b); the apex hop where it lands natively is already landed and marginal** | closed; PCS-conditional |
-| 3 | in-circuit ring-switching / packing | ⚑ **the live one: 90.5% of HornerAcc is (K-data × L-challenge); measured packing grid + designed table land ×1.2–1.45 further on wrap cells** | pure re-arrangement |
+| 3 | in-circuit ring-switching / packing | ⚑ **the live one: 90.1% of HornerAcc is (K-data × L-challenge); MEASURED in-family minimum ×1.400 further on wrap cells (×2.011 cumulative), designed table ≈ ×1.55 (×2.23)** | pure re-arrangement |
 | 4 | fold-orbit structure | **null AT SOURCE — the ±x orbit is already fully spent** (computed child seated into the leaf, 1 sibling/phase) | nothing to change |
 | 5 | trace/norm maps | **mathematically identical to #3's coordinate view; no separate terminal check has the collapsible shape** | subsumed by 3 |
 
@@ -239,22 +242,77 @@ knob**, before any new table is designed.
 
 New: `breadstuffs/circuit-prove/tests/recursion_tower_profile.rs::
 g_packing_grid_over_the_deployed_leaf_wrap` — ONE circuit build (op list packing-invariant, printed
-as the control), then `get_airs_and_degrees_with_prep` per `TablePacking` point. Every point is a
-**VK rotation, not a wire change** — the landed ×1.436's precedent class exactly.
+as the control: Alu 267,526 / HornerAcc 216,330 / perms 38,168 / recompose 160,263, all four
+reproducing the landed censuses to the digit), then `get_airs_and_degrees_with_prep` — the same
+call the prover makes — per `TablePacking` point. Every point is a **VK rotation, not a wire
+change** — the landed ×1.436's precedent class exactly.
 
-    RESULTS PENDING — grid running; this section is filled from the harness output below.
+| packing | Alu rows | Alu w (m+p) | Alu cells | **wrap cells** | vs landed | vs pre-split | p2 share | wrap native sponge perms |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| **a4/K2 (deployed)** | 2¹⁷ | 76+59 | 17,694,720 | **40,554,496** | 1.000 | ×1.436 | 52.4% | 44,662,784 |
+| a4/K4 | 2¹⁶ | 96+73 | 11,075,584 | 33,935,360 | ×1.195 | ×1.716 | 62.6% | 37,322,752 |
+| a4/K8 | 2¹⁵ | 136+101 | 7,766,016 | 30,625,792 | ×1.324 | ×1.902 | 69.3% | 33,652,736 |
+| **a4/K16** | **2¹⁴** | 216+157 | **6,111,232** | **28,971,008** | **×1.400** | **×2.011** | **73.3%** | 31,948,800 |
+| a2/K8 | 2¹⁶ | 104+75 | 11,730,944 | 34,590,720 | ×1.172 | ×1.684 | 61.4% | 37,847,040 |
+| a1/K8 | 2¹⁷ | 88+62 | 19,660,800 | 42,520,576 | ×0.954 ⚠ | ×1.370 | 49.9% | 45,711,360 |
+| a2/K16 | 2¹⁵ | 184+131 | 10,321,920 | 33,181,696 | ×1.222 | ×1.755 | 64.0% | 36,274,176 |
+| a4/K12 | 2¹⁵ | 176+129 | 9,994,240 | 32,854,016 | ×1.234 | ×1.773 | — | — |
+| a4/K24 | 2¹⁴ | 296+213 | 8,339,456 | 31,199,232 | ×1.300 | ×1.867 | — | — |
+| a4/K32 | 2¹⁴ | 376+269 | 10,567,680 | 33,427,456 | ×1.213 | ×1.742 | — | — |
+| a4/K64 | 2¹⁴ | 696+493 | 19,480,576 | 42,340,352 | ×0.958 ⚠ | ×1.376 | — | — |
+| a8/K16 | 2¹⁴ | 280+209 | 8,011,776 | 30,871,552 | ×1.314 | ×1.887 | — | — |
+| **a4/K16/rec4** | 2¹⁴ | 216+157 | 6,111,232 | **28,971,008** | ×1.400 | ×2.011 | 73.3% | + global max height **2¹⁸ → 2¹⁶** |
+
+**a4/K16 is the measured in-family minimum, and the grid explains why**: past K16 the rows pin at
+the non-Horner floor (⌈51,196/4 lanes⌉ = 12,799 → the 2¹⁴ rung) while the packed width keeps
+growing ~17 cells/step, so K24/K32/K64 climb back up; a8 halves the non-Horner floor but the
+chains then bind (13,520 rows) at a wider row. The interior optimum is where chains/K ≈
+others/lanes — 216,330/K = 51,196/4 gives **K ≈ 16.9** — and the grid's minimum sits exactly
+there.
+
+Three structural reads off the grid:
+
+* **The scheduler co-schedules** — `compute_schedule`'s `fill_row` packs non-chain ops into a
+  Horner row's idle lanes (`alu_air.rs:368-377`) — so rows ≈ max(chains/K, other/lanes), not the
+  sum; a4/K16 reaches the 2¹⁴ rung my sum-model said it would miss. Lanes below 4 are strictly
+  worse (a1/K8 is worse than deployed): the lanes serve the non-Horner ops, K serves the chains,
+  and the two knobs are nearly independent.
+* **The per-step marginal cost of the packed-Horner layout is ~17 cells** ((373−135)/14 from the
+  K2→K16 widths; at source: 8 main `(a_t, c_t)` + ~2 amortized intermediates + 7 prep,
+  `alu_columns.rs:26-37`) — so the family's asymptote is ≈ 216,330·17 ≈ 3.7M Alu cells, and K
+  runs into width-vs-rung diminishing returns past K16–K32 (run 2 of the grid, below).
+* **`recompose` npo_lanes = 4 moves no cells (1,572,864 either way) but drops its height 2¹⁸ →
+  2¹⁶** — with K16 that pulls the wrap's global max height from 2¹⁸ to 2¹⁶, shrinking the wrap's
+  own FRI envelope by two fold rounds: the wrap's prover LDEs shrink ×4, and whatever verifies
+  *this* wrap loses 2 Merkle-path units per query per tree (the 5.9% height-term class, small but
+  free). ⚠ Unlike the landed split, this DOES change the wrap's own FRI shape — the apex's
+  in-circuit verifier changes shape with it, so the re-mint chain includes the apex VK (it does
+  anyway).
+
+`[MEASURED]` above; run log `scratchpad/galois-grid-run.log`, reproduce block at §7. The wrap's
+own native hashing falls in step (44.66M → 31.95M sponge perms at a4/K16, ×1.40) — the packing
+lever pays on the wrap's prover, not only on what the next layer verifies.
+
+⚠ **What this grid is NOT:** a proof run. The geometry is the prover's own extraction call, but
+no wrap has been PROVEN at K ≠ 2 in this repo (the fork's examples plumb
+`--horner-packed-steps`, `recursion/examples/recursive_keccak.rs:174`). The confirming
+end-to-end prove at the chosen point is the first follow-up tooth, and it is
+satisfiable-and-refutable by construction: it proves or it refuses.
 
 ### 3d. The dedicated-chain-table endpoint `[DERIVED, design estimate — labeled]`
 
 Beyond the in-family knob: the R-chain op is `out = acc·α + c` with `a` always the zero witness
 (`pcs/fri/verifier.rs:1104-1108` — the multipoint `alpha_horner` passes `zero`), and `c` always a
-**base-embedded** value. A dedicated running-chain table in the `recompose` NPO mold (zero local
-constraints is not available here, but 1-base-data-cell steps are): ~3–5 cells/term against 66.
-Moving the q·N R-chain terms out at ~16 terms/row: ≈ 1.0M cells; Alu remainder (71,712 ops) at
-a4 ≈ 4.4M at the 2¹⁵ rung; wrap total ≈ **28.3M cells = ×1.43 beyond the landed ×1.436, ×2.06
-cumulative** — the ×2.13 figure, reached without a sumcheck, without a PCS, without touching the
-child. Poseidon2 share rises to ~75%, so the free-hash argument's precondition
-(`leaf-vs-recursion.md` decision 3) is met by cells alone: a free hash becomes worth ~×3.7.
+**base-embedded** value whose 4-limb ext slot carries one meaningful base cell. A dedicated
+running-chain table (NPO mold, like `recompose`) with 1-base-cell data slots: ~4–6 cells/term
+against the ALU family's ~17/step marginal and the deployed 66. Grid-corrected pricing `[DERIVED
+on the measured geometry]`: R-chains (194,902 terms) out of Alu at ~16 base slots/row ≈ 1.0M
+cells; the Alu remainder (51,196 non-Horner at 4 lanes + Q-chains packed) pins at its measured
+2¹⁴ × 135 ≈ 2.2M; wrap total ≈ 21.2M (p2) + 1.6M (rec) + 2.2M + 1.0M + 0.05M ≈ **26.1M cells =
+×1.55 beyond the landed ×1.436, ×2.23 cumulative** — through the ×2.13 figure, without a
+sumcheck, without a PCS, without touching the child. Poseidon2 share rises to ~81%, so the
+free-hash argument's precondition (`leaf-vs-recursion.md` decision 3) is met by cells alone: a
+free hash becomes worth ~×5.
 
 ⚠ **House law, said before any of this moves:** the dedicated table is a NEW AIR. It is authored
 in Lean or it does not exist (`project-lean-authored-air-law`); the existing `AluAir` is
@@ -325,8 +383,8 @@ Ranked by (measured share of the wrap touched) × (plausible factor), with the r
 
 | rank | pathway | share touched | factor | class |
 |---|---|---:|---:|---|
-| 1 | **#3 packing/geometry** — in-family `TablePacking` retune | Alu = 43.6% of wrap cells | grid-measured (§3c) | **pure re-arrangement, VK rotation only** — the landed ×1.436's class; authors nothing |
-| 2 | **#3 endpoint** — dedicated Lean-authored chain table | same 43.6% | ≈ ×1.43 further, ×2.06 cumulative `[DERIVED]` | re-arrangement of the accepted predicate; NEW AIR ⇒ **Lean statement moves first** (house law) |
+| 1 | **#3 packing/geometry** — in-family `TablePacking` retune to `a4/K16/rec4` | Alu = 43.6% of wrap cells | **×1.400 wrap, MEASURED** (§3c) + max-height 2¹⁸→2¹⁶ | **pure re-arrangement, VK rotation only** — the landed ×1.436's class; authors nothing; deploy = the `ProveNextLayerParams` default + the §3a re-mint chain of `sumcheck-batched-opening.md` |
+| 2 | **#3 endpoint** — dedicated Lean-authored chain table | same 43.6% | ≈ ×1.55 further, ×2.23 cumulative `[DERIVED]` | re-arrangement of the accepted predicate; NEW AIR ⇒ **Lean statement moves first** (house law) |
 | 3 | **#5** trace/coordinate identity | (inside #3) | — | the spec/lemma for rank 1–2's emitters |
 | 4 | **#1** Frobenius/minpoly | 29.2% (absorption) named, 0% real | ≤ ×1.0 | closed by proof (§1d); two one-lemma Lean facts worth landing as refusals |
 | 5 | **#4** fold-orbit | 5.9% named, 0% real | ×1.0 | null at source; nothing re-proves |
@@ -334,6 +392,39 @@ Ranked by (measured share of the wrap touched) × (plausible factor), with the r
 
 The through-line, for the horizon file when this lands: **the brief's suspicion was right, and the
 recoverable waste was hiding one level below the algebra** — not "the field ops are the wrong
-field ops" (they are K-linear-optimal already, §1/§5) but "each field op is billed ~66 committed
-cells for a 1-base-felt payload" (§3b). Galois theory's contribution is the *proof that the
-algebraic side is closed* (§1d, §4), which is what licenses spending everything on geometry.
+field ops" (the map is K-linear and gnark already evaluates it in coordinates, §3a/§5) but "each
+field op is billed ~66 committed cells for a 1-base-felt payload, in a packing whose optimum
+nobody had computed" (§3b–c). Galois theory's contribution is the *proof that the algebraic side
+is closed* (§1d, §4), which is what licenses spending everything on geometry.
+
+### Follow-up teeth, in order
+
+1. **Prove a wrap at `a4/K16/rec4`** (end-to-end, then the VK re-mint chain of
+   `sumcheck-batched-opening.md` §3a). Refutable: it proves or it refuses. Until then §3c is
+   geometry, not a deployment.
+2. **Land the three Lean lemmas**: the minpoly-dvd equivalence and the conjugate-point refusal
+   (§1d) in `minidregg/Theory/`; the chain-fold coordinate identity (§5) as the spec any future
+   chain-table emitter refines. None blocks rank 1.
+3. **The dedicated chain table** — Lean-authored from birth or not at all.
+
+## 7. Reproduce
+
+```bash
+cd ~/dev/breadstuffs
+P=/Users/ember/dev/p3rec-batched-ro
+G='patch."https://github.com/emberian/plonky3-recursion"'
+DREGG_REQUIRE_LEAN=0 cargo test -p dregg-circuit-prove --release \
+  --test recursion_tower_profile --no-run \
+  --config "$G.p3-recursion.path=\"$P/recursion\"" \
+  --config "$G.p3-circuit.path=\"$P/circuit\"" \
+  --config "$G.p3-circuit-prover.path=\"$P/circuit-prover\"" \
+  --config "$G.p3-poseidon2-circuit-air.path=\"$P/poseidon2-circuit-air\""
+RAYON_NUM_THREADS=4 ./target/release/deps/recursion_tower_profile-* \
+  g_packing_grid_over_the_deployed_leaf_wrap --ignored --nocapture --test-threads=1
+```
+
+One leaf prove + one circuit build + one shape extraction per grid point (~2 min total under
+load 150+; no wall clock above is evidence). The op census is the packing-invariant control and
+must print Alu 267,526 / HornerAcc 216,330 / perms 38,168 / recompose 160,263 before any
+geometry row is read. ethSTARK verification: `~/paperbin/ethstark-v1.2-grinding.pdf` §3.8.2
+(= eprint 2021/582, mirror copy `~/dev/gh/forks/IACR-eprint-mirror/2021/582.pdf`).
