@@ -357,8 +357,32 @@ a common ~100× elephant; the win **saturates at our proof floor**
 (`P(b)=3381·2^b+766` ⇒ batch transfers); and Merkle-root binding would eat
 the prize.
 
-**Stage 0, concrete**: *the eltAdd of EVM* —
-`CALLDATALOAD·CALLDATALOAD·ADD·MSTORE·RETURN`, end to end.
+✅ **STAGE 0 LANDED (2026-08-17, `8c5a732`)** — five opcodes end to end, and
+⚑ **the decompilation theorem is literally `rfl`**: with the program concrete
+and calldata symbolic, **the stack, PC, decode, MSTORE and RETURN reduce away
+DEFINITIONALLY** — `fragment_faithful : ∀ cd, evmRun … cd = .ok (beBytes
+(residual.denote cd))` costs the kernel nothing. *The Futamura claim, realized:
+specialize the interpreter at a program and the machine is not proved away —
+it reduces away.* Trust lives only in the per-output TV pair; no theorem
+quantifies over the decompiler.
+
+The chain: real 15-byte bytecode · **conformance vectors from a real EVM**
+(anvil/revm via `eth_call`, five kernel-decided named theorems including
+wraparound and past-the-end calldata) · a **refusing** symbolic-stack
+decompiler (STOP, data-dependent offsets, foreign opcodes all refused) ·
+**256-bit faced**: 16 limbs × 16 bits (⚑ 8×32 is IMPOSSIBLE — p < 2³²), with
+**the absent top-carry pin BEING the mod-2²⁵⁶ semantics** · soundness AND
+completeness with executable Lean witness-gen · the iff descriptor theorem +
+`encodeBoundary_injective` (the "does ONLY that program" half) · teeth
+mutation-first · **3,298 gates / 4,131 wires emitted** (231 KB JSON).
+
+⚠ Two flags: the design note's "≈3–4K per transfer" is **Nebula's R1CS unit —
+not comparable to these gates** (range checks, 768 wires, are the
+lookup-collapsible dominant term; re-derive at Stage 3). And
+`Compiler/EvmAddAir.lean` is **committed but unrooted from the committed
+umbrella** — `Compiler.lean` carries a sibling's uncommitted import of an
+untracked file, so the rooting line waits (said loudly; the
+gating-defaults-to-silence shape, declared this time).
 
 ## 4. Proof-system design
 
