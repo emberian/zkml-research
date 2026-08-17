@@ -970,3 +970,49 @@ sits in place:
 ⚑ **And the through-line all seven share**, from `docs/VERDICTS.md` §8: *"every
 estimate we carried without a measurement was wrong in the same direction —
 **flattering the thing we had already decided to work on.**"*
+
+
+---
+
+## ADDENDUM (2026-08-16): the anti-vacuity class, closed and gated
+
+The `real_engine_sound` vacuity is **fixed, not retracted** (`f42acad20`):
+`RealProof` is now `inductive | honest | forged`, **`acceptAll` is deleted —
+it had propagated into EIGHT files** — and `realVerify` refuses. Red-proofed
+by two mutants: restoring the old degeneracy goes RED at all five new teeth
+(**direct proof that none was provable at the old instance**), and a
+forgery-stops-forging mutant goes RED at the mutation-happened assertion.
+
+**Three refinements to the class definition, from verification at source:**
+1. ⚑ **"A `P → P` witness" mis-located the defect.** The satisfying witness
+   was *genuine*. The precise charge: **`EngineSound` could not be REFUTED
+   from the verify side at any aggregate** — so exhibiting a satisfying
+   instance established nothing. *The class test is refutability, not the
+   witness's sincerity.* The theorem to cite is now
+   `engineSound_is_a_real_boundary` (satisfiable ∧ refutable at one engine).
+2. ⚑ **A free conclusion, printed on every build, unread**: baseline
+   elaboration emitted `unnecessarySimpa` showing a light-client attestation
+   hypothesis was **discarded** — `simp` alone closed the theorem. Same shape
+   three more times. **The linter was reporting the vacuity all along.**
+3. **Two negative results promoted from prose to theorems**
+   (`zero_portal_chainBound_is_free` and twin): at the constant portal,
+   `ChainBound` holds for *every* step list — so the ordering guarantee there
+   was free.
+
+**The gate**: `scripts/check-anti-vacuity-witness.py` (breadstuffs), wired
+into `local-gates.sh`, gating on the finding against a ledger; both red arms
+verified to exit 1 **without a pipe** — ⚑ *the lane's own first check reported
+exit=0 because `head -5` was answering for the gate*, the exact PREFLIGHT
+hazard, self-caught. **Baseline: 37 rows, labelled UNTRIAGED because they
+are** — a detection surface, not absolution; each row is transmutable undone
+work.
+
+⚠ **Cross-repo citation hazard, new**: the brief cited
+`check-char2-vacuity.sh` as precedent without naming its repo; it lives in
+**minidregg** and the lane worked in **breadstuffs**, so the lane correctly
+reported it "does not exist" and modelled on `check-guard-discipline.py`
+instead. **A script citation without its repo is not a citation** — the two
+trees now carry sibling gates with different mechanics.
+
+⚠ **Perf note worth carrying**: multi-star line regexes over ~3k Lean files
+(long lines) did not finish in 6+ minutes; line-based scanning: **3.8 s**.
