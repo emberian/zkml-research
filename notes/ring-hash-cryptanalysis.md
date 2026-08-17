@@ -191,8 +191,11 @@ literally R_q.
 "no Chaghri-style degree stall at τ=1 or τ=2, degree grows multiplicatively" —
 still true, and now known to be **the wrong invariant**: degree growth does not
 bound the integral property. ⚠ Their base primes are 2^17–2^31 against our 2^64,
-so **round counts do not transfer**; the direction is solid, the magnitude at our
-parameters is unmeasured. `ring-hash-design.md` §4.5 names the experiment.
+so **round counts do not transfer** — and the transfer has now been **measured**
+(2026-08-17): running the authors' `SPN.ipynb` machinery at our base ~2^64, the
+τ=2 integral property survives to round **24** (vs the paper's 13 at the *same*
+e=2,t=8 but base 2^31 — a ~2× base-prime effect), τ=1 to round 2, τ=4 to ≥42.
+Run + script: `ring-hash-design.md` §4.5a, `notes/ring-hash-scripts/integral_char_p_settling.sage`.
 
 **And the invariant-subfield condition (C6) is a named published class, not our
 invention** — Marvellous, eprint **2019/426**, verbatim:
