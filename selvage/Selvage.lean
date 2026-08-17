@@ -122,6 +122,7 @@ import Selvage.BaseFoldBinaryMerkle -- the raw BaseFold commitment event becomes
 import Selvage.BaseFoldPoseidon2 -- source-derived BabyBear Poseidon2 plus the separately named Ext4 BaseFold leaf profile
 import Selvage.BaseFoldPoseidon2Rom -- the fixed leaf is the generic one-block sponge; the work-indexed ROM target remains explicit
 import Selvage.HashFamily -- the Merkle and transcript roles as ONE interface; Merkle binding factors through the family and never through the route, so a hash swap is an instantiation
+import Selvage.HashRelation -- the RELATION view: a circuit checks R(x,y) of bounded totalDegree with y witnessed, it never runs H. GraphSound is the NAMED obligation (slack view refutes acquiring it by construction), cubeRoot_asymmetry machine-checks the degree-3-relation/degree-7-function CCZ asymmetry over ZMod 11, pow7Witnessed is the deployed alpha=7 REG=1 S-box shape with graph-soundness by `ring` over any CommRing, and a relation that is the graph of NO function is refused
 import Selvage.BaseFoldBcsFiatShamir -- exact BaseFold root/sumcheck/challenge/query/opening alphabet as Poseidon2 construction queries, with causal prefixes, distinct draw domains, and primitive-work accounting
 import Selvage.BaseFoldBcsSpongeGame -- the exact receipt query schedule is a SpongeIndiffWorkGame distinguisher with transcriptPrimitiveWork as a proved PrimitiveWorkBound
 import Selvage.BaseFoldBcsQuerySampling -- reject zero, factor nonzero BabyBear exactly, and derive uniform power-of-two BaseFold query coordinates
