@@ -631,7 +631,8 @@ needing to clear round 20 rather than round 1 eats a large share of it.
 
 ⚠ **What this does NOT establish**: their base primes are 2^17–2^31 and ours is
 2^64; **the round counts do not transfer.** The *direction* is solid; the
-*magnitude at our parameters is unmeasured.*
+*magnitude at our parameters* was unmeasured — **now measured (§4.5a, 2026-08-17):
+at base ~2^64 the τ=2 survival is round 24, not the paper's 13 — ~2× longer.**
 
 ### 4.5 VERDICT (REVISED): do not commit to τ=4 — and τ=2 is now the leading candidate
 
@@ -649,7 +650,7 @@ out to be in a third place neither instrument looked.
 | | τ=1 (ℓ=16, F_q) | **τ=2 (ℓ=8, F_{q²})** | τ=4 (ℓ=4, F_{q⁴}) |
 |---|---|---|---|
 | challenge space (‖S‖=q^τ, §4.6) | 2^64 — **insufficient** | **2^128 — sufficient** | 2^256 — excess |
-| integral property survives to round (§4.4b) | **1 — best** | 13 | 20 — **worst** |
+| integral property survives to round (§4.5a, **measured at our 2^64**) | **2 — best** | 24 | ≥42 — **worst** |
 | slot-MDS cost, full rounds (§4.1) | 143.8/elt (5.0×) | **107.8/elt (6.7×)** | 89.8/elt (8.0×) — best |
 | S-box cryptanalysis | well-studied | thin | thin |
 
@@ -675,6 +676,51 @@ exact invariant that broke the first verdict. Needs a SageMath kernel (not
 installed; `brew install sagemath`, README pins 10.7; `latte_int` is only needed
 for `Feistel.ipynb`, not ours). **Run this before choosing τ.** Nothing else in
 §4 substitutes for it.
+
+### 4.5a ✅ EXECUTED (2026-08-17) — and the magnitude at our parameters is ~2× the paper's
+
+The experiment named above is done. The authors' own `SPN.ipynb` "SHARK-like
+properties with higher divisibility based on saturating sboxes" model, machinery
+copied **verbatim**, run under a SageMath kernel (none locally — via the
+`sagemath/sagemath` Docker image; on Apple Silicon force qemu for amd64 because
+Rosetta lacks a CPU extension FLINT's matmul uses). Script + full recipe:
+`notes/ring-hash-scripts/integral_char_p_settling.sage`.
+
+**Falsification guard passed**: the run reproduces the paper's published table
+**exactly** — last round carrying a mod-p² property = **1 / 13 / 20 / 21** for
+prime / deg-2 / deg-4 / deg-8. (An initial wrapper bug — the round polytope was
+never advanced — was *caught by this guard*, which is why the guard is there.)
+
+**At our base prime ~2^64** (identical for the Frog modulus 15912092521325583641
+*and* the dual-mode q = 2^64−257 — the count depends on field size + (e,t,d),
+not the specific ~2^64 prime), holding e·t = 16 = ring dimension:
+
+| regime | (e, t) | last round with a mod-q² integral property |
+|---|---|---|
+| τ=1 | (1, 16) | **2** |
+| τ=2 | (2, 8) | **24** |
+| τ=4 | (4, 4) | **≥42** (still climbing when stopped; degree-saturation ceiling ~91) |
+
+⚑ **The clean, controlled comparison is τ=2 at fixed (e=2, t=8): base 2^31 (the
+paper) → round 13; base 2^64 (ours) → round 24.** Same e, same t — the ~1.85×
+jump is *purely* the base-prime effect the note flagged as unmeasured. So the
+paper's "13" was an underestimate for us by nearly a factor of two.
+
+**What it means for the round budget.** This SHARK/x^7 model *is* the σ-Poseidon
+candidate. A **24-round** integral distinguisher at τ=2 leaves only ~**6 rounds**
+of margin over the borrowed RF=8/RP=22 = 30-round budget — thin — and the real
+σ-layer is only slot-MDS in *full* rounds, i.e. **weaker mixing than SHARK-MDS**,
+so 24 is a **lower bound** on survival for the deployed schedule. **The
+round-count derivation §4.4 owes is now urgent and quantified: σ-Poseidon at τ=2
+needs comfortably more than 24 rounds; the borrowed set does not have the margin.**
+
+**The verdict is not overturned — it is sharpened.** The ordering τ=1 < τ=2 < τ=4
+holds by execution (2 < 24 < ≥42); τ=1 stays eliminated on challenge-space
+grounds (§4.6); **τ=2 remains the pick**, now with a *measured* margin cost
+attached rather than a hopeful "13". And τ=4 is not merely "worst": a ≥42-round
+(likely 60–80) distinguisher would exceed any sane NR — τ=4 is **integral-
+infeasible** unless the round count is inflated far past the cost model, which
+independently confirms its withdrawal.
 
 ### 4.5b What §4.4b did not disturb
 

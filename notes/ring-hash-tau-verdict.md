@@ -37,6 +37,18 @@ lowered; the settling experiment is named (the authors' own `SPN.ipynb` at our
 parameters). The cryptanalysis lane's "keep τ=1" and the design lane's "τ=4"
 were **both** wrong, for different reasons.
 
+> ✅ **SETTLING EXPERIMENT EXECUTED (2026-08-17).** The authors' `SPN.ipynb`
+> machinery, run verbatim at our base ~2^64 (Frog *and* 2^64−257, identical),
+> holding e·t = 16: **τ=1 → round 2, τ=2 → round 24, τ=4 → ≥42** (guard: it
+> reproduces the paper's 1/13/20/21 exactly). The reframe's monotonicity holds by
+> execution, **but the magnitudes at our modulus are ~2× the paper's** — the τ=2
+> integral property survives to **24, not 13** (same e=2,t=8; pure base-prime
+> effect). Verdict unchanged (τ=2), but its round-count margin over the borrowed
+> 30-round budget is only ~6 rounds and 24 is a *lower* bound for the real
+> slot-MDS-in-full-rounds schedule. **Deriving the round count is now the binding
+> open item, not a formality.** Full record: `ring-hash-design.md` §4.5a; script
+> `notes/ring-hash-scripts/integral_char_p_settling.sage`.
+
 ## The two candidates, resolved
 
 - **σ-Poseidon is bounded by its own S-box, not by τ.** The S-box floor is
