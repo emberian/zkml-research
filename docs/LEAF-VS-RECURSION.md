@@ -60,8 +60,52 @@ are 2-to-1 compressions along query paths. Corrected at source.
 - **Extendability costs ×27.9 per turn, paid whether or not a chain is ever
   extended.** Bounded-depth aggregation is where heterogeneity is free;
   **unbounded IVC needs a cycle.**
-- ⚑ **The biggest untaken lever is neither field nor system: sumcheck-batch
-  the reduced opening — ×2.13 on the wrap, ×2.05 per turn.** And it is the
+- ⚑⚑ **THE ×2.13 LEVER IS NOT REACHABLE OVER TWO-ADIC FRI — and the reason
+  nobody took it was never written down.** A sumcheck over `Σ_k α^k v_k`
+  terminates in a claim about **the MLE of the opened values at a random
+  point**, which the verifier can discharge only by recomputing it (Θ(N), no
+  saving) or by opening it from a commitment to `V` — and **`V`'s only
+  commitment is a Merkle leaf, which supports no evaluation opening.** The
+  verifier already holds every value in the clear. ***Lever 3(b) is a PCS
+  REPLACEMENT, not a backend rewrite*** — the Jagged→BaseFold / Stacked→WHIR
+  move SP1 6.4 and OpenVM 2.0 both made. **The ×2.13 is the sumcheck endpoint.**
+  ⚠ And three docs carried three different verdicts on the same phrase
+  **about different circuits**, which nobody had noticed: pure upside · an
+  *ownership* obstruction ("it's in the fork") · and "now MARGINAL", true **of
+  gnark only.**
+- ✅ **What IS reachable, and landed** (`emberian/plonky3-recursion@0ed1182`):
+  the **algebraic half**. A matrix opened at `P` points was paying `P` Horner
+  chains per query **over the same opened row** — restructured `q·P·n →
+  q·n + P·n`. **Measured as a WORK claim with no latency column offered,
+  because none was measured**, controls identical:
+  **`HornerAcc` ×1.806 · `Alu` ×1.651 · ALU table 2¹⁸ → 2¹⁷ · wrap cells
+  58,249,216 → 40,554,496 = ×1.436** — and ⚑ **the Poseidon2 share moves
+  36.45% → 52.36%, so a free hash goes from ×1.57 to ×2.10.** Win grows with
+  `q` (×1.928 at q=57).
+  ⚑ **The falsifier fired exactly where predicted**: the old law
+  `HornerAcc = 20,564·q` had intercept **exactly 0**; the new one is
+  `10,306·q + 20,516`, still `max|resid| = 0.00`, and
+  **2·(20,564 − 10,306) = 20,516 exactly** — so **99.77% of the reduced
+  opening was the two-point case that nothing was sharing.**
+  **Verdict: VK rotation, not a wire change** — the child proof is untouched
+  bit for bit and the accepted predicate is identical (one expression
+  re-associated), but every in-circuit FRI verify emits a different op list.
+  ⚠ **The `Cargo.toml` pin was deliberately NOT moved**: the re-emit chain
+  ends at a **deployed on-chain verifier**, which is short-pause-list item 3.
+- ⚑ **A latent contract found en route, worth more than the 1.44×**:
+  `HornerAcc`'s accumulator is **not a constrained operand**, and
+  `compute_schedule` infers chains from **ADJACENCY** — so two independent
+  chains back to back produce an invalid trace whose *only* symptom is
+  `OodEvaluationMismatch { index: 2 }`, **naming neither op nor cause.** It
+  held only because the one emitter that produces `HornerAcc` happened to
+  satisfy it. Now a build-time refusal, **made refutable by four tests because
+  it had only ever been seen to ACCEPT.**
+- ⚠ **Substrate, said out loud**: the in-circuit FRI verifier is pre-existing
+  **Rust-authored** circuit logic — *debt by the house law.* This change
+  authored no constraint, and **nothing here is Lean-authored or verified.**
+- **Next lever, newly visible**: `recompose` now sets the wrap's global max
+  height — 2¹⁸ rows for 160,263 ops at `npo_lanes = 1`, 3.9% of its cells,
+  **and the lane count has never been priced.** And it is the
   **precondition** that makes the hashing argument true at all (a free hash
   goes ×1.57 → ×4.5). **Already named in `WRAP-NATIVE-HASH-DECISION.md` and
   never taken.**
