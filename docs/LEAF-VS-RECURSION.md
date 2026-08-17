@@ -103,6 +103,40 @@ are 2-to-1 compressions along query paths. Corrected at source.
 - ⚠ **Substrate, said out loud**: the in-circuit FRI verifier is pre-existing
   **Rust-authored** circuit logic — *debt by the house law.* This change
   authored no constraint, and **nothing here is Lean-authored or verified.**
+- ⚑⚑ **THE GALOIS SWEEP (2026-08-16): ember's challenge vindicated — the ×2.13
+  endpoint IS reachable, via PACKING, not the sumcheck.** Five pathways priced
+  (`notes/galois-levers.md`):
+  - **Frobenius/minpoly: CLOSED BY PROOF.** OOD absorption is already at the
+    information floor (`observe_ext` = exactly 4 base felts = one Ext4 value —
+    *the same object*), and the tempting conjugate-point move is
+    **unsatisfiable**: it needs `ord(g) | 4` and the trace generator has
+    `ord ≥ 16` — a two-line cyclic-group argument, Lean-statable. ⚠ And my
+    ethSTARK attribution was a misreading: §3.8.2 spends Frobenius to prove
+    **F_p-ness of committed columns** — a purpose our base-felt MMCS leaves
+    make *structural* — not to cut costs.
+  - **Deferred accumulation: CLOSED over Merkle-only commitments.** The MLE
+    obligation **cannot travel even one layer** (each layer holds exactly its
+    child's opened values; a univariate-at-ζ view cannot answer an MLE point
+    query); interior deferral costs 2N against the N it deletes; the one
+    native hop is already landed and marginal. **Live only with a multilinear
+    PCS — the SP1/OpenVM road.** ⚠ `ComposeErrorBound` is named-not-proved.
+  - ⚑ **RING-SWITCHING/PACKING: THE LIVE ONE.** **90.1% of `HornerAcc` is a
+    fixed K-linear map of base data** — gnark already evaluates it in
+    coordinate form; *the BabyBear wrap was the last rung manufacturing L×L
+    products.* **Measured on a new packing grid**: deployed `p1/a4/K2` is
+    ×1.400 from its own family's minimum `a4/K16` — **wrap 40,554,496 →
+    28,971,008 cells, ×2.011 cumulative vs pre-split** — optimum at
+    `chains/K ≈ others/lanes`, K ≈ 16.9; `rec4` additionally drops global max
+    height **2¹⁸ → 2¹⁶**. **Every point VK-rotation-only.** A dedicated
+    Lean-authored chain table prices the remainder to **≈×2.23 cumulative**
+    `[DERIVED]`. ⚠ Honest caveat: **no wrap has yet been PROVEN at K ≠ 2** —
+    follow-up tooth #1.
+  - **Fold-orbit: null at source** — p3 already spends the ±x orbit fully,
+    which *explains the measured null arity knob*.
+  - **Trace/norm: mathematically identical to packing** (`packEquiv`).
+  **The shape of the answer**: the waste was **geometric, not algebraic** —
+  and two pathways *closed by proof* are worth nearly as much as the one that
+  opened, because they will not be re-proposed.
 - **Next lever, newly visible**: `recompose` now sets the wrap's global max
   height — 2¹⁸ rows for 160,263 ops at `npo_lanes = 1`, 3.9% of its cells,
   **and the lane count has never been priced.** And it is the
