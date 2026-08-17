@@ -24,7 +24,8 @@ landed), `ring-hash-design.md` (the schedule table).
 1. **Branch 6 is NOT disqualifying on its own. The re-opening was right.** At GF(2³²)
    one active S-box is worth **30 bits on BOTH sides** (measured), so branch 6 buys 180
    differential bits per 2 rounds against a 128-bit bar — and ⚑ **Poseidon2's own
-   internal layer has branch 2 and ships in 22 of its 30 rounds.**
+   internal layer has branch 2 and ships in the majority of its rounds** (13 of 21 at
+   the deployed BabyBear t=16 geometry, R_F=8 / R_P=13).
 2. **The kill's verdict was right for a reason it never stated.** The flag is **5 deep,
    not 4** — `weft_branch.py:300` loops `range(1, 5)` and the level it skips, **b = 0**,
    is a *fixed lane*: output lane 0 **equals** input lane 0, so the permutation carries a
