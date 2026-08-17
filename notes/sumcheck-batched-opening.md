@@ -339,12 +339,28 @@ fork's own `52e1fab` tip; a pin bump should probably go to a rev that carries bo
    ×1.651 on `Alu`, ×1.806 on `HornerAcc`** — measured, one power-of-two rung.
 3. **The hashing-argument precondition moves but does not close.** A free hash goes ×1.57 → **×2.10**,
    not ×4.5. The remaining gap to ×4.5 is exactly the part that needs the PCS.
-4. **The gnark verdict does not transfer, in either direction.** `HORIZONLOG.md:18344` retired the
-   α-batching ask as MARGINAL after the `S_z − S_x` hoist — true, *of the gnark circuit*. The Rust
-   in-circuit verifier never got that hoist, and the point-sharing half of it was never taken
-   anywhere. ⚠ **And the gnark side may still have the point-sharing half open**:
-   `deriveOpenInputReducedNative` recomputes `S_x` per `(matrix, point)`, so the same 1.81× applies
-   to its ~0.32M `S_x` term. Small, but it is the same identity and it is right there.
+4. **The gnark verdict does not transfer — and the reason is better than I first wrote.**
+   `HORIZONLOG.md:18344` retired the α-batching ask as MARGINAL after the `S_z − S_x` hoist. True,
+   *of the gnark circuit*, and it never reached `plonky3-recursion`.
+   ⚠ **RETRACTION.** My first draft of this line said gnark *"may still have the point-sharing half
+   open — `deriveOpenInputReducedNative` recomputes `S_x` per `(matrix, point)`."* That was relayed
+   from a survey and **is false at source.** `chain/gnark/stark_open_input.go:445-465` computes
+   `sx` **once per matrix, outside the `for pt` loop**, and says so:
+
+   ```go
+   // S_x = Σ_k α^k·p(x)_k, shared by both opening points of this
+   // matrix (p(x) is the single Merkle-opened row).
+   ```
+
+   ⚑ Which inverts the finding and strengthens it: **gnark has had the full factorization — both
+   halves — since 2026-07-13, and the Rust in-circuit verifier was the only rung still paying `P`
+   chains per query.** The identity is therefore not something I derived; it is one this repo
+   already validates against a real proof, with a host reference twin
+   (`stark_open_input_ref.go::openInputReducedRef`) deliberately keeping the *pinned per-column
+   form* so parity crosses the two evaluation orders. That is a far better correctness argument
+   for the Rust change than my own reasoning was.
+   (`feedback-read-the-blocker-before-you-relay-it`, again, and it cost one wrong sentence in a
+   committed doc.)
 5. ⚑ **A latent contract in `p3-circuit` was found and closed** (§1c) — the `HornerAcc`
    implicit-accumulator chain was an unchecked emitter convention whose violation is invisible.
    That is arguably worth more than the 1.44×: it is what any *future* reduced-opening emitter
