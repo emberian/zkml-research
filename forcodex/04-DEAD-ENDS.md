@@ -561,8 +561,39 @@ layer.**
 gained a **branch-number-first design rule** — *compute the branch number of any
 proposed linear layer before pricing anything about it* — paid for by this lane.
 
+⚑⚑ **`[08-17, later the same night — `bc94ec6`]` AND THE THESIS UNDERNEATH IT
+WAS REDEEMED, WHICH CHANGES WHAT THIS DEAD END MEANS.** Found in **Vision
+Mark-32**: the killed transform, **interpolated on its window and evaluated on a
+DISJOINT point set, is systematic Reed–Solomon — MDS by theorem. Branch 25.
+Flag destroyed. Same proved butterflies. Basis-free.**
+
+> ***The structure was never the problem; the POINT SET was. Weft died one
+> point-set decision from the theorem-carrying form.***
+
+So the epitaph above indicts **Weft-1's point set**, not the alignment thesis —
+and the correct reading of this entry is *"we picked the wrong evaluation
+points"*, not *"aligning the hash with the code is a mistake."* ⚠ **Anyone
+quoting the triangularity line as a general argument against aligned hashes is
+quoting it past its scope.**
+
+⚑ **A method law from the same pass, and it generalizes past hashes**: **branch
+passes are a FLOOR instrument, not an IDENTITY instrument.** A published matrix
+typo was caught by re-derivation only because **the typo'd matrix floors
+identically** — *a branch number agreeing is not evidence you have the right
+matrix.* (`05-ERROR-CLASSES.md` material: an instrument that agrees on the
+wrong object.)
+
+**Where it leaves the successor**: **build nothing now**; if the char-2 hash
+slot opens, **adopt Vision Mark-32.** ⚑ And the slot **does not currently
+exist** — terminal binary proofs keep cSHAKE, wrap-recursed ones take deployed
+Poseidon2 plus a packing codec, and the only scenario needing a char-2 hash is
+**char-2-native recursion, for which no circuit prover exists in either tree.**
+⚠ **XHash8, §D2's `[08-17]` recommendation, "fits us in NONE of three ways"**
+when read at source.
+
 **[MEASURED, exact]** — `~/src/ring-ro-hash/weft_branch.py` (`737ea7b`),
-`notes/hash-landscape.md` Addendum 3, `notes/k16-proof-and-weft.md`.
+`notes/hash-landscape.md` Addendum 3, `notes/k16-proof-and-weft.md`,
+`notes/weft2.md` (sibling lane, live).
 
 ---
 
@@ -1432,6 +1463,15 @@ number and the epitaph; the contest is over what the number *means*:
 
 **Do not resolve this from this file.** The open question is a **new
 subspace-trail search on `r ∘ novelPack`**.
+
+⚑ **`[08-17, `bc94ec6`]` And the contest partly resolved while this file was
+being written, in the direction neither arm predicted**: the rotation route was
+overtaken by the **point-set** route. Evaluating the same transform on a
+**disjoint** point set gives systematic Reed–Solomon ⇒ **MDS by theorem, branch
+25, flag destroyed** — so the fix was never a rotation or a hybrid
+architecture. ⚠ **The dense-composed survivor named in §D7 died by measurement
+in minutes** in the same pass. **Recommendation: build nothing; adopt Vision
+Mark-32 if the slot opens; and the slot does not currently exist.**
 
 ## L10. `[08-17]` Two sibling notes that disagree and nobody reconciled
 
