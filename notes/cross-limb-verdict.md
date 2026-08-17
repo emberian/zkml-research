@@ -81,3 +81,58 @@ Hole B (expressibility) has an exhibit and **no closure**, unpriced —
 single-prime dissolves both, gated on H1. `A,B` correctness untouched;
 nonlinearity boundary unchanged; accumulated exactness over many steps still
 unstated.
+
+
+---
+
+## ADDENDUM (2026-08-16): the Z_Q algebraic closure — and an impossibility that sharpens Hole B
+
+`metatheory/Bfv/ZqSumcheck.lean` (`c4c1e5835`), `Bfv` namespace **113 → 137
+kernel-clean**. Full note: `notes/zq-sumcheck.md`.
+
+**Hole A now has TWO closures of ~equal cost.** The forgery is not refused
+over Z_Q — **it is unwritable**: `boundMul_iff_zqBound` shows the honest
+`∃∀` statement IS one ring equation (that quantifier shape is what a ring
+equation *means*), and `zq_same_forgery_refused` shows the identical
+frankenstein from `CrossLimb.lean` is over Z_Q **a flatly false sentence**.
+⚠ My "3×" price was against the wrong baseline — vs the row-interleaved
+closure it is **~1× in limb-mul counts** (3 limbs *replace* 2 bridge felts +
+a doubled table). Real deltas: a **one-handle PCS obligation** (else per-limb
+selection reappears at the opening index) and machinery that exists nowhere
+in Rust. **No product selection made**: both routes close Hole A, neither
+closes Hole B, and the limb-prime-swap route dissolves the comparison.
+
+⚑ **THE IMPOSSIBILITY, and it half-refutes my claim**: polynomials over a
+product ring compute **exactly the limb-local functions**
+(`ringHom_eval_comm`), so **NO Z_Q polynomial computes the rescale**
+(`rescale_not_zq_polynomial`). `⌊t·x/Q⌉` is *nameable as a function, never a
+polynomial identity over Z_Q*. **Hole B is not merely open — it is CLOSED to
+this entire approach**, and any proof of the rescale must go through the
+redundant-basis witness or the single-prime route. Corroboration from the
+other side: **CCKP19 chose `Z_{p^e}` (non-CRT) precisely to keep rounding
+polynomial.**
+
+**The mathematics, tightened against my brief:**
+- Soundness is `v·d/|A|` — **rounds ADD by union bound**; my "36 bits/round"
+  was a per-round *error*, not a rate.
+- `|A| ≤ min qᵢ ≈ 2³⁶` is a **theorem** (`deployed_sampling_ceiling`),
+  attained by the diagonal embedding.
+- ⚑ **"Extension of each factor" and "shared extension" are the SAME RING**
+  (CRT-lift: `Z_Q[y]/(y⁴−c)` for a simultaneous QNR `c`). **Shared Ext2
+  (2⁷²) does NOT clear the ~124-bit bar; shared Ext4 (2¹⁴⁴) does** —
+  repetition is dominated.
+- **`Field` is load-bearing in exactly ONE lemma** (root counting via
+  `IsDomain`) — **and the bite is NOT cosmetic**: field-wide Schwartz–Zippel
+  is *FALSE over Z_Q*, proved (`zq_fieldwide_sz_false` — distinct degree-<2
+  polynomials agreeing on 5 > 2 points). The repaired statement
+  (`zq_agree_card_lt`, A-relative counting via coordinate projection) is
+  proved.
+
+**Consequence for the zero-emulation architecture**: the limb-native-provers
+route (ECFFT note §8) has its cross-limb binding — Z_Q sumcheck at ~1× with
+shared-Ext4 challenges clearing the bar — **modulo the one-handle PCS
+obligation.**
+
+⚠ Hygiene find, recorded for the next lane: a missing
+`Mathlib.Algebra.Field.ZMod` import (+ `Fact (Nat.Prime p)`) presents as a
+**`whnf` heartbeat TIMEOUT, not a clean synth failure.**
