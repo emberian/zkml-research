@@ -869,3 +869,31 @@ global pool is set once.
 ⚠ **The agent harness stops backgrounded jobs at ~50 minutes and a killed test
 reports as `1 failed`, not as unrunnable.** Read the per-test label — `SIGTERM` /
 `TIMEOUT` / a panic — before reporting any failure. `swarm/PREFLIGHT.md`.
+
+---
+
+## ⚠ ADDENDUM (2026-08-16): two headline numbers of mine are UNCONDITIONED
+
+The lane's §5 flags nine figures whose conditions could not be recovered.
+**Two of them are claims I have repeated as headlines**, and a reader should
+know:
+
+- ⚑ **"The sumcheck is 2–17% of prover time."** I have used this to re-price
+  an entire literature. Its conditions are not recorded. **The conclusion may
+  well hold — the count-based decompositions point the same way — but it is
+  currently an unconditioned number and should be re-derived on the rig before
+  anyone leans on it again.**
+- ⚑ **`ρ_nat = 2.78`** (Poseidon2 : Blake3 native Merkle cost) — the anchor of
+  the whole "why Poseidon2" argument. Same problem. ⚠ Note the *separately
+  measured* in-circuit side (30.6×–210×) and the crossover (`R* = 2.0–4.5×`)
+  are far enough apart that the verdict survives a wide error bar on ρ_nat —
+  **but say that, rather than quoting 2.78 as if it were pinned.**
+
+Also from §5: the whole of `speedup-ledger.md` **Bin 1 is 17 third-party rows
+with no box, no size, no thread count, in four incompatible units.** Treat it
+as a bibliography, not as data.
+
+⚠ And a detector caveat worth carrying: **`check-char2-vacuity.sh`'s
+declaration count appears at THREE different values in our notes** (29,085 /
+29,263 / 29,276). **Quote it with its run or not at all** — I have used 29,263
+several times without one.

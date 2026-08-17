@@ -293,6 +293,15 @@ breadstuffs `CommitSurface`-injective apex floor (bind through FS-sampled α)
 
 ## The unclaimed-claims ledger
 
+> ⚠⚠ **RETRACTED WHOLESALE (2026-08-16).** *Essentially every entry in this
+> ledger was refuted* — MoE router binding, proof-aware QAT, the MX
+> exponent-spread measurement, the weight registry, the vacuity instruments,
+> the boundary principle, `fold_add`-as-one-opening, and the prime family.
+> **Four of the refuting papers were in our own `~/paperbin`.** The rows below
+> are kept as history; **do not cite any of them.** The framing itself was the
+> error: an agenda organized around "what is unclaimed" produces refutations;
+> one organized around "what would the best system do" produces artifacts.
+
 Verified absent from the literature (full-corpus mine, 25,765 papers, 26
 years, plus targeted sweeps):
 
