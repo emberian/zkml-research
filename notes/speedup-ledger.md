@@ -35,7 +35,7 @@ done, and things that exist on paper only.
    you can't reduce the *count* of committed activations; ring
    switching says you can shrink each one's *cost* to its bit-width. Nonlinear
    commitment is the measured 66–75% of prover time, so this attacks the
-   dominant term at its constant. Binius×ML: **zero papers in 7,090.**
+   dominant term at its constant. Binius×ML: **⚠ **RETRACTED — see `the-absence-problem.md`. Every absence claim we made was found by a crypto-shaped query, and four refuting papers were in our own paperbin. This one was never re-checked against the full mirror (2026→1053+) and must not be cited.** ~~zero papers in 7,090~~.**
 2. **Data-parallel sumcheck × transformer layer uniformity.** The primitive is
    Thaler '13 / 2024/143; folding L identical layers (and the batch dim) into
    the hypercube as log(L) extra variables is in nobody's system — all run
