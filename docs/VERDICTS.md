@@ -237,6 +237,39 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
   input (`Bfv.scalarStep_limb_local`). One property, two payoffs. The provenance
   half of the hole survives there anyway — see §7.5.
 
+## 3b. ⚑ ZERO-EMULATION vFHE: the limb primes are OURS, and that dissolves the problem
+
+The ECFFT exploration (2026-08-16, `notes/ecfft.md`) ended in the strongest
+shape: **the exotic tool is blocked by its own theorems, and the prize does
+not need it.**
+
+- **ECFFT is PQ-neutral, confirmed at source** (eprint 2022/1542 Remark 2:
+  QROM-secure compilation; nothing committed in the curve group; an
+  adversarially chosen curve is inert — the advice is deterministically
+  checkable, setup transparent). *Ember's question answered: no hedge needed.*
+- **But it dies on REACH, not price**: Thm 8/9 caps the 2-group at
+  `2^k ≤ 2√q`, so our 36-bit primes top out at trace height **2^18 < the 2^19
+  the family needs** — and Thm 13's error term **exceeds 1** at our
+  blocklengths with base-field challenges. (Constants would have been fine:
+  ~4–6× on the prover-relevant transform.)
+- ⚠ My premise was wrong twice: the fold set is **degree 4096, not 8192**, and
+  the measured limb 2-adicities are **13/14/17**, not "≥14."
+- ⚑⚑ **THE DOMINATING MOVE: the limb primes are GREENFIELD — pick better
+  ones.** Sieved: **68 candidate 36-bit and 151 candidate 37-bit primes with
+  2-adicity 24**; concrete triple `0xfed000001 / 0xfd9000001 / 0x1ff5000001`
+  lands **logQ = 108.978 vs deployed 109.000**. Then **classic FRI reaches
+  height 2^21 at blowup 8, over each limb's own prime, ZERO emulation** —
+  the measured 4.80× committed-element deletion — **at overhead 1.00×.**
+  Cost: **a re-genesis flag day + an H1 re-measure + an [UNRUN] fhe.rs smoke
+  test.** *The greenfield doctrine, paying exactly as written: the answer to
+  "what does it cost" is "a rebuild."*
+- ⚠ **Limb-native proving REOPENS the cross-limb provenance hole** that
+  row-interleaving closed — the Z_Q-sumcheck lane is the candidate binding.
+- **If EC-FRI is ever wanted**: it reduces to plain RS over exotic domains,
+  our cone is ready at the definition level (`dom : ι ↪ F` agnostic, UD gap
+  proved), and the fold needs **6 named missing lemmas** — only one with real
+  AG content.
+
 ## 4. Proof-system design
 
 - **The principle is `polynomial virtualization`** (Thaler 2025/2041), not
