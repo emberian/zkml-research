@@ -270,6 +270,15 @@ record? (Three papers were pulled that no earlier sweep had.)
   argument, a CheapLunch modeling that validates its own conjecture, and no
   full-round attack. **That is more cryptanalytic age than any candidate we
   could author**, and `Selvage/HashRelation.lean` is where it should land.
+  > ⚠ **`[08-17, later the same night — `bc94ec6`]` The *adopt* half stands and
+  > the *what to adopt* half changed.** XHash8 read at source **"has the
+  > strongest record on our books and fits us in NONE of three ways."** The
+  > successor recommendation is now **build nothing now; if the slot opens,
+  > adopt Vision Mark-32** — see §1.4c. ⚑ **And the slot does not currently
+  > exist**: the dissolve-check found that terminal binary proofs keep cSHAKE
+  > and wrap-recursed ones take deployed Poseidon2 plus a packing codec, so the
+  > only scenario needing a char-2 hash is **char-2-native recursion, and no
+  > char-2 circuit prover exists in either tree.**
 - **Collateral, from the norm-growth literature we were missing**:
   LatticeFold+ with ℓ2-norm checks says the **ℓ∞ range checks our budget uses
   are the dominant prover cost**, with a modular ℓ2 replacement. Our T = 2⁴⁷
@@ -394,8 +403,39 @@ linear/correlation side.**
 design gate**, paid for by exactly this lane — *compute the branch number of any
 proposed linear layer before pricing anything about it.*
 
+### ⚑⚑ `[08-17, later the same night — `bc94ec6`]` The alignment thesis is REDEEMED, and Weft died one decision from the theorem
+
+**This is the update that changes what the kill MEANS**, and it arrived hours
+after the kill:
+
+> **Found in Vision Mark-32: the killed transform, interpolated on its window
+> and evaluated on a DISJOINT point set, is systematic Reed–Solomon — and
+> therefore MDS BY THEOREM. Branch 25. Flag destroyed. Same proved butterflies.
+> Basis-free.**
+>
+> ***The structure was never the problem; the POINT SET was.***
+
+So the epitaph above — *"the alignment thesis imports the code's
+triangularity"* — is true of **Weft-1's point set** and **not of the alignment
+thesis.** Weft died **one point-set decision away from the theorem-carrying
+form** it was reaching for, and a sibling lane converged on the same axis
+independently.
+
+⚑ **A method law came out of the same pass, and it is a floor/identity
+distinction worth carrying**: **the branch passes are a FLOOR instrument, not
+an IDENTITY instrument** — a published matrix typo was caught by re-derivation
+only because the typo'd matrix **floors identically**. *A branch number
+agreeing is not evidence that you have the right matrix.*
+
+**Recommendation as it now stands**: **build nothing now**; if the char-2 hash
+slot opens, **adopt Vision Mark-32 — whose MDS is our transform's systematic
+form and whose geometry is Weft's.** (And per §1.3b, the slot does not
+currently exist.)
+
 **Artifacts**: `notes/hash-landscape.md` Addendum 3 · `notes/k16-proof-and-weft.md`
-· `~/src/ring-ro-hash/weft_branch.py` (`737ea7b`).
+· `notes/weft2.md` (sibling lane, live) · `~/src/ring-ro-hash/weft_branch.py`
+(`737ea7b`) — ⚠ **and the successor branch scripts are the untracked ones,
+`07-ARTIFACTS.md` O1.**
 
 ## 1.4d `[08-17]` The dual-mode ring object — the absorb matrix was a commitment key all along
 
