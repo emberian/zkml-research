@@ -17,8 +17,15 @@ paper described as unpublished is not evidence at all.*
 - **The EF harness (`privacy-ethereum/csp-benchmarks`) runs on an M1/8-core,
   not an M4 Max.** Measured there: Flock **33.93 ms**, Binius64 **67.29 ms** —
   and the slide's "Vega 44.2" corresponds to `spartan2` at **541.72 ms**.
-- ⚑ **"Vega" is P-256 + Hyrax — discrete-log, NOT post-quantum.** A
-  post-quantum comparison table with a discrete-log entry in it.
+- ⚠ **CORRECTED 2026-08-17 (paper read at source; our slide-era scrutiny
+  partly refuted)**: **"Vega 44.2" is the real Vega_MC, measured 44.23 ms —
+  NOT `spartan2` at 541 ms.** Our identification was wrong. Also dissolved:
+  the M1-vs-M4 harness discrepancy (all rows same-machine M4 Max through
+  Flock's pinned harness, best-of-five, disclosed) — *our scrutiny was
+  scrutiny of the SLIDE, and the paper is cleaner than the slide.* What
+  survives: **Flock-wins-in-aggregate, conceded and measured at 1.96× in the
+  paper's own Table 1**; residuals are peak-of-sweep reporting and an
+  "additive optimizations" claim eliding the JBR-vs-UDR regime difference.
 - ⚑ **Flock's own verified abstract (eprint 2026/1329) reports 82k BLAKE3/s on
   a SINGLE M4 Max core**, against BinarySpartan's 410k on twelve — **2.2–2.4×
   faster per core, and >660k on ten cores, i.e. it wins outright in
