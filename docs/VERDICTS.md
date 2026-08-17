@@ -808,6 +808,44 @@ not verified to be the *correct* projection; the nonlinearity; **accumulated
 exactness over many steps** — which matters more now that the chain is cheap;
 the positional `OpeningScheme`; Fiat–Shamir; and `r` must be a power of two.
 
+## 5d. ⚑ TWO INSTRUMENT DEFECTS FOUND WHILE FOLDING THE HANDOFF (2026-08-17)
+
+1. ⚑⚑ **THREE Lean modules are committed but UNROOTED from the default build
+   — 1,593 lines the umbrella `lake build` has never elaborated.**
+   `Compiler/EvmAddAir.lean` (722 L), `ZkmlTraceCheck.lean` (580 L),
+   `ZkmlEltwiseAir.lean` (291 L) — **two orphaned undetected since 08-13.**
+   Each landing commit shipped the callee and not the umbrella. *They were
+   built by explicit target, so the theorems exist; but no default build or
+   gate has ever walked them.* ⚠ **And the umbrella edit CANNOT be committed
+   to fix it** — `Compiler.lean` also imports two *untracked* files
+   (`UwueavePreoProjectionV2.lean`, `HashRelationInverse.lean`), so this needs
+   their author. **The gating-defaults-to-silence class, three deep, in the
+   file that is supposed to root everything.**
+2. ⚑ **`~/paperbin` is ~64% grep-invisible** — measured 1,104 PDFs against
+   518 extracted `.txt`. PREFLIGHT claimed *"all 1,218 PDFs have full text."*
+   **Every absence claim made by grepping paperbin is re-priced**, including
+   several I repeated. Corrected in PREFLIGHT.
+3. **The `MM` files in breadstuffs are a STALE INDEX, not partial work** —
+   worktree byte-identical to HEAD, staged/unstaged diffs exact inverses.
+   ⚠ **A bare `git commit` there would RESURRECT a 6-line-shorter measurement
+   harness**, not commit half of someone's work.
+4. **minidregg has no `#assert_axioms` machinery at all** — it pins with
+   `#guard_msgs … in #print axioms` while breadstuffs uses `#assert_all_clean`.
+   ⚠ **A cross-repo audit using one repo's grep reports a false zero.**
+
+## 5e. ⚑ E5 RE-OPENS: our own optimizations moved the number that closed it
+
+The verdict *"binary fields do not rescue in-circuit verifier cost"* was
+measured against a **36.45% hashing share**. **The batched reduced opening and
+the packing retune take that to 73.3% measured / ~81% derived — and the value
+of a free hash from ×1.57 to ~×5.**
+
+> **The advice may still stand; the number that made it a dead end does not.**
+
+*We optimized the arithmetic hard enough that the verifier became
+hash-dominated after all* — which is exactly the condition the binary-field
+case needed. **This should be re-derived before the dead end is cited again.**
+
 ## 6. Method
 
 - **No absence claim without**: grep `~/paperbin` first (now full-text
