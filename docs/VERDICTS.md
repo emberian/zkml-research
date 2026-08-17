@@ -846,6 +846,74 @@ of a free hash from ×1.57 to ~×5.**
 hash-dominated after all* — which is exactly the condition the binary-field
 case needed. **This should be re-derived before the dead end is cited again.**
 
+## 5f. ⚑⚑ WEFT RE-OPENED: the kill was right for the WRONG reason, and the repair is free
+
+`notes/weft2.md`. Ember asked *"why does Weft have to be dead?"* — both of my
+challenges held, and the lane found worse *and* better than either verdict.
+
+**Branch 6 was never disqualifying.** `x⁻¹` has δ = 4 and Walsh max
+`|W| = 2^(n/2+1)` **exactly** — both theorems in n — so at n=32 one active
+S-box is **30 bits on BOTH sides** (my arithmetic needed sharpening: 30 not 32,
+and the *linear* side is not better). Branch 6 → **180 bits per 2 rounds**.
+Three things kill the "6 < 25" verdict outright:
+⚑ **Poseidon2's own INTERNAL layer is branch 2 and ships** (our own note);
+⚑ **the comparator was CROSS-CHARACTERISTIC** — M_E's {1,2,3} entries collapse
+in char 2 (diagonal factor 2 → 0), and the measured char-2 reduction is
+**branch ≤ 8 at t=24**; and MDS is the ideal, not the bar.
+
+**⚑⚑ THE REAL BREAK, which the kill missed and which is total, not a trail:**
+> **The flag is 5 deep, not 4** — `weft_branch.py:300` loops `range(1,5)`, and
+> the skipped `b=0` level is **row 0 of M = e₀: output lane 0 EQUALS input lane
+> 0.** An autonomous 32-bit quotient `x₀ ↦ x₀⁻¹ + c₀` **for any round count.**
+>
+> ***Round constants break invariant subspaces; they do not break invariant
+> quotients.***
+
+`B_l = 2` (the linear branch, **never computed**) is its shadow. Second defect:
+with `βⱼ = 2ʲ` **every matrix entry lies in GF(2⁸)** → a `2¹⁹²` round-invariant
+unless the constants leave GF(2⁸) — *and small-integer transcript tags do not.*
+
+**And the rotation I proposed is verified but is the WRONG repair**: all 23
+non-trivial rotations destroy every invariant lane subspace — **but a rotation
+cannot move either branch number** (permutations preserve Hamming weight),
+*which is the cleanest available proof that branch number cannot see the
+property.*
+
+**⭐ THE FREE REPAIR — and it converges with the post-Weft lane independently**:
+evaluate on an affine **coset** (same butterflies, shifted twiddles, **zero
+ops**): **B_d = 8 EXACT and attained**, B_l ∈ [8,10], dense, **zero invariant
+subspaces on either side**, diffusion depth 1, no twisted-subfield structure,
+`deg(minpoly) = 24`, **observability at all 24 lanes**. ⚑ **One transform — so
+the "ONE proved linear object" prize survives.** (The sibling lane reached the
+same axis via a *disjoint point set* ⇒ systematic-RS ⇒ MDS. **Two lanes, one
+answer: the point set was the bug.**)
+
+**Weft-2's internal/external split is REFUSED, twice**: the internal-round
+condition is **observability, not branch** — Weft-1 fails it at 16/24 lanes —
+so the split would put the structured layer *exactly where its defect binds*;
+and after the repair all 24 lanes pass, so **there is nothing to split**
+(+11% cells, zero benefit, since `x⁻¹` at F₂-degree 31 is already ~8 all-full
+rounds with no tail to cheapen).
+
+⚠ **Two conditions the sibling's MDS repair does NOT carry**: `A = V₂V₁⁻¹` at
+the natural split is **still a GF(2⁸) matrix** (free fix: shift one point set),
+and **`deg(minpoly A) = 6` — repaired, `A² = I`, an involution** — so **no
+S-box lane can serve a partial round.** Not a break of Mark-32 (8 full rounds),
+but decisive for architecture.
+
+**The trade, stated honestly**: ⚑ **on the binary rung there is no aged hash to
+adopt** — Vision/Mark-32 is *"none found, and nobody has looked"* on our own
+books; CheapLunch/Perrin/Rijmen are **prime-field assets**. So it is not
+*custom vs aged* but **our object vs a published object with the same skeleton,
+both unanalyzed** — and adopt still wins, on the **epistemic flywheel**, not on
+margin. With the price of zero age now measurable:
+> ***The base rate of "our own tooled analysis missed a total break" is 1 for 1
+> on this design.***
+
+**The gate is amended by its own subject**: branch number moves to **FIFTH**,
+on both sides; **structure / quotient / subfield / minpoly come first.** New
+obligation named: **[WEFT-multiround]**.
+
 ## 6. Method
 
 - **No absence claim without**: grep `~/paperbin` first (now full-text
