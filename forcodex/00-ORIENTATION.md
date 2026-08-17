@@ -16,6 +16,7 @@ rediscover.
 | file | what it holds |
 |---|---|
 | `01-STEERS.md` | ⚑ **Ember's corrections, verbatim where possible.** The highest-signal file. Most of the campaign's turning points are here, and each one names a real failure mode. |
+| `01b-STEERS-RECOVERED.md` | ⚑ **~30 more steers, recovered from the transcripts** — the ones the live context no longer held, including the origin steer of the whole campaign. Read straight after `01`. |
 | `02-LANDSCAPE.md` | what was explored, and the verdict on each |
 | `03-MEASUREMENTS.md` | every number **with its conditions** — and the methodology that had to be retracted to get them |
 | `04-DEAD-ENDS.md` | priced, each with the number that closed it. *Months not spent.* |

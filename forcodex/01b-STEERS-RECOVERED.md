@@ -105,10 +105,13 @@ zkML-format pillar.
 
 ⚠ **And it is the one steer the campaign's own measurements went on to
 contradict.** Real floating point at transformer scale is priced in
-`04-DEAD-ENDS.md`: ZIP (CCS'25) is the only IEEE-754 system and needs **37
-hours for an 11M-parameter 4-layer mini-BERT**; the bf16 thesis measured
-**1.4×, not 4×** (`docs/PHASE0-RESULT.md`). ⟨inference⟩ The ambition was not
-wrong to hold — it was the right thing to *price*, and pricing it is a result.
+`04-DEAD-ENDS.md` §F2. The cleanest number is **Spain (OSDI'26) losing to
+quantized zkGPT by 11.7× on prover time — reported in Spain's own Figure 4** —
+and, on our side, **the bf16 thesis measured 1.4×, not 4×**
+(`docs/PHASE0-RESULT.md`). *(A widely-repeated "ZIP needs 37 hours for an
+11M-parameter mini-BERT" is **transcript-only** — lane `a4e77a94` — and appears
+in no file; see `04-DEAD-ENDS.md` §N.)* ⟨inference⟩ The ambition was not wrong
+to hold — it was the right thing to *price*, and pricing it is a result.
 
 ### 4. ⚑ The founding of `zkml-research`, and why
 
