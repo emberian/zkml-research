@@ -63,7 +63,17 @@ commitment to two DIFFERENT tables under two bases of that domain:
 `keystone_basis_ambiguity` exhibits it at GF(16) with β = (1, x₁) and
 β' = (x₁, 1) — same four-point domain, same univariate polynomial, different
 tables. **The additive-FRI transcript must bind the ordered basis, not just the
-domain.** Nothing in this tree does that today; that is named, not repaired here.
+domain.**
+
+⭐ **REPAIRED 2026-08-16, elsewhere: `Selvage/AdditiveBasisBinding.lean` and
+`Compiler/Tower256AdditiveFriController.lean`.** This file still only NAMES the
+hazard — deliberately, so the counterexample stays readable next to the descent
+it breaks. The repair is `basisPrefix` (the canonical positional encoding of the
+ordered basis, spliced into both controllers' sponge inputs) plus
+`table_unique_of_basis_agree` / `transcript_determines_table`, and the
+counterexample is now its SPECIFICATION: `no_span_indexed_decoder` proves no
+decoder indexed on the span can exist, and `spanBoundPcs_not_extractable` proves
+the unrepaired handle fails ring-switching's `Extractable`.
 -/
 import Selvage.AdditiveProximity
 import Selvage.BaseFoldCompleteness
@@ -440,7 +450,8 @@ theorem novelPack_eq_zero : ∀ (m : ℕ) (β : ℕ → F) (p : F[X]),
 the same LCH packing are equal — so the committed codeword determines the
 multilinear coefficients, GIVEN the basis. (That last clause is not decoration:
 `keystone_basis_ambiguity` below shows it fails across two bases of the same
-domain.) -/
+domain, and `Selvage/AdditiveBasisBinding.lean` is what makes "given the basis"
+something a transcript can actually supply.) -/
 theorem novelPack_injective_of_natDegree_lt {m : ℕ} {β : ℕ → F} {p q : F[X]}
     (hp : p.natDegree < 2 ^ m) (hq : q.natDegree < 2 ^ m)
     (h : novelPack β m p = novelPack β m q) : p = q := by
@@ -782,7 +793,14 @@ tables.
 This has no multiplicative counterpart: there the packing basis is the monomial
 basis, which the domain does not get a say in. **An additive-FRI transcript that
 binds the domain but not the ORDERED BASIS does not determine the committed
-multilinear.** Nothing in this tree binds it today. -/
+multilinear.**
+
+⭐ This is now the SPECIFICATION of the repair rather than an open wound:
+`Selvage/AdditiveBasisBinding.lean` closes it (`table_unique_of_basis_agree`,
+`lchRingSwitchTarget`) and `Compiler.Tower256AdditiveFriController.basisPrefix`
+puts the ordered basis in the sponge, so the pair below is no longer
+constructible against one transcript
+(`Tower256AdditiveFriController.transcript_determines_table`). -/
 theorem keystone_basis_ambiguity :
     novelPack keystoneBeta 2 preA = novelPack keystoneBetaSwap 2 preB
       ∧ additiveDomain keystoneBetaSwap 2 = additiveDomain keystoneBeta 2
