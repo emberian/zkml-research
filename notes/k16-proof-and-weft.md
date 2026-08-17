@@ -188,6 +188,13 @@ What survives of the alignment thesis:
 * a kill is a fine outcome; this one is sharp enough that no further Weft work should precede a
   redesign of §3b's mixing line, and [WEFT-integral]/[WEFT-groebner] should not be run against
   the dead layer.
+* ⚑ *(2026-08-17, successor lane)* — the composed fallback named above was then measured and
+  **also killed** (branch(D·E) ≤ 11, branch(E·D) ≤ 21 vs 25, `ring-ro-hash@04d0d95`); the
+  surviving form of the alignment is the **systematic-RS matrix** `V₂·V₁⁻¹` (the same
+  butterflies, evaluated on a DISJOINT point set — MDS by theorem, Mark-32's own §3.3
+  construction), and the char-2 hash slot itself is dissolved for now by the
+  recursion-scenario check. Do not act on this section's fallback clause;
+  see `notes/post-weft-hash.md`.
 
 ---
 
