@@ -30,8 +30,8 @@ mathematics:
 > ### ⚑ The per-query reduced opening is a **fixed K-linear map** `K^N → L` (N ≈ 10,258 base-field
 > opened values per query). Computing a K-linear map requires **zero** L×L products. The deployed
 > Horner evaluation order manufactures **N of them per query** — and then the deployed table
-> geometry charges each one ~67 committed cells against a packed-step floor of ~15 in the existing
-> AIR family.
+> geometry charges each one ~66 committed cells against a packed-step marginal of ~17 in the
+> existing AIR family.
 >
 > So the ×2.13 endpoint the sumcheck could not reach over two-adic FRI **is reachable in cells** —
 > by table-geometry re-arrangement alone, VK-rotation only, child proof byte-identical. Measured
@@ -208,7 +208,7 @@ the dual basis θ — this is where pathway 5 lands, see §5). Two exact evaluat
 
 | strategy | L×L mults | base-mults total (q = 19) | circuit ops |
 |---|---:|---:|---|
-| deployed Horner (per query) | q·N ≈ 195k | ≈ 200N·… (each ext-mul ≈ 9–12 base) | 1 HornerAcc/term, chain-adjacent |
+| deployed Horner (per query) | q·N ≈ 195k | ≈ 190N (19N ext-muls × ~10 base-mults each) | 1 HornerAcc/term, chain-adjacent |
 | coordinate/IP form | **N − 1, once** (the α-power ladder, shared by all queries AND all 4 coordinates via CSE) | 12N + 4Nq ≈ 88N | 1 MulAdd/term against a materialized αⁱ — **no adjacency contract** |
 
 Zero L×L products are *mathematically* required per query; the Horner order manufactures N.
@@ -280,7 +280,10 @@ Three structural reads off the grid:
 * **The per-step marginal cost of the packed-Horner layout is ~17 cells** ((373−135)/14 from the
   K2→K16 widths; at source: 8 main `(a_t, c_t)` + ~2 amortized intermediates + 7 prep,
   `alu_columns.rs:26-37`) — so the family's asymptote is ≈ 216,330·17 ≈ 3.7M Alu cells, and K
-  runs into width-vs-rung diminishing returns past K16–K32 (run 2 of the grid, below).
+  runs into width-vs-rung diminishing returns past K16–K32 (the K24/K32/K64 rows). ⚠ Model check:
+  the AIR-doc width formula predicts every measured width to the column (76+59 … 696+493); the
+  ROWS needed the real schedule, not the formula — a sum-of-terms row model over-predicts by up
+  to a rung because of co-scheduling.
 * **`recompose` npo_lanes = 4 moves no cells (1,572,864 either way) but drops its height 2¹⁸ →
   2¹⁶** — with K16 that pulls the wrap's global max height from 2¹⁸ to 2¹⁶, shrinking the wrap's
   own FRI envelope by two fold rounds: the wrap's prover LDEs shrink ×4, and whatever verifies
