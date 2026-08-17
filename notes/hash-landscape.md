@@ -1260,3 +1260,69 @@ XHash8/XHash-M31 stay the adopt-answer for Goldilocks/M31-shaped stacks
 ADDENDUM 4), which ours are not. The S-box relations for BOTH are graph-sound
 in Lean (`invWitnessed`/`invSystem`/`powRootWitnessed`/π₂ =
 `pow7Witnessed`@GF(p³), axiom-pinned, teeth included).
+
+
+---
+
+## ADDENDUM 5 (2026-08-17): the post-Weft lane — the SLOT dissolves, and the alignment thesis is REDEEMED
+
+`notes/post-weft-hash.md` (`0eae56c`) + `Selvage/HashRelationInverse.lean`
+(`bf45a61`, green, pinned) + tooling `ring-ro-hash@04d0d95`.
+
+### ⚑ The dissolve-check ran first and closed the slot
+
+**No new hash gets built now.** Terminal binary proofs keep the deployed
+**cSHAKE256** pin; wrap-recursed binary proofs take the **deployed Poseidon2**
+plus a ~1.03–1.94× packing codec. ⚠ **And my framing hid a category error:
+ring-switching (2024/504) is SAME-CHARACTERISTIC by definition and cannot
+carry a hash across the boundary.** The only scenario that needs a char-2 hash
+is **char-2-native recursion — and no char-2 circuit prover exists in either
+tree** (routability grep). *The Weft slot did not need filling because the slot
+does not yet exist.*
+**One early decision named**: the additive controllers' transcript hash must
+flip to wrap-native **before** anything builds on cSHAKE receipts.
+
+### ⚑⚑ THE ALIGNMENT THESIS IS REDEEMED — Weft died ONE POINT-SET DECISION from the theorem-carrying form
+
+Found in **Vision Mark-32 §3.3** and then gated: **the killed transform,
+interpolated on its window and evaluated on a DISJOINT point set**
+(`A = V₂·V₁⁻¹`, systematic Reed–Solomon) **is MDS BY THEOREM — branch 25, flag
+destroyed — on the same proved butterflies, basis- and normalization-free.**
+
+> ***The structure was never the problem. The point set was.*** Interpolate on
+> one set and evaluate on a *disjoint* one, and the same object that gave
+> branch 6 with a 4-deep invariant flag gives the MDS optimum with none.
+
+**And the sibling Weft-2 lane independently converged on the same axis**
+(coset variant) — cross-referenced both ways.
+
+### The gate held twice — and learned its own limit
+
+- **Survivor (a), dense-composed: killed by measurement in minutes** —
+  `branch(D·E) ≤ 11`, `branch(E·D) ≤ 21` against Cauchy-D alone at **25**.
+  *Composition destroys the flag but LOSES branch, at higher cost.*
+- ⚑ **A published matrix typo caught**: XHash-M31's Eq. 16 (exactly the Weft
+  geometry, t=24/r16/c8) **drops a leading digit in entry 14**; formula (14)
+  re-derived exactly at λ=2. ⚠ **Method law minted: the branch passes are a
+  FLOOR instrument, not an IDENTITY instrument** — the typo'd matrix *also*
+  floors at 25. **Certify by re-derivation, then gate.**
+
+### XHash8, read at source — and it does not fit us
+
+Goldilocks-only, rate 8 / capacity 4, RPO's MDS. **Record is the strongest on
+our books** (Perrin 2024/605 + Rijmen 2024/656 audits, FreeLunch 2^214,
+CheapLunch validating the designers' own conjecture, 2025/259 non-attack, a
+3,999-file mirror sweep — **zero breaks**). **Fit: NO, three ways — field,
+characteristic, need.** Its RPO MDS branch = **13 EXACT, fully certified**
+(3,557,930 minors, both sides — an independent certification of a published
+number).
+
+### Recommendation
+
+**Now: nothing.** If the char-2 slot ever opens: **adopt Vision Mark-32** with
+obligations discharged first — *highest alignment of any candidate, because its
+MDS **is** our transform's systematic-RS form and its geometry **is** Weft's*.
+XHash8/M31 only for a Goldilocks/M31 stack. **Dense-composed and Blake3-lookup
+are dead.**
+
+⚠ The axiom pins caught a `sorryAx` degradation mid-development. **Again.**
