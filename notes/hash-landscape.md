@@ -1034,3 +1034,57 @@ forward, not rewritten.
 be quoted as measured on that basis** — the mirror cannot see arXiv, ITP/CPP, or
 any grey literature, and that blindness has produced false absence claims here
 before.
+
+
+---
+
+## ADDENDUM (2026-08-16): the aligned-hash charting — the relation IS the attack surface
+
+`notes/aligned-hash-space.md` (545 lines) + `Selvage/HashRelation.lean`
+(`c2dd38c`, green, axiom-pinned teeth).
+
+⚑⚑ **My "cheap relation, not cheap function" pitch survives as ECONOMICS and
+splits as CRYPTOGRAPHY — and the attack papers say the symmetric half in
+their own words.** FreeLunch Remark 1, read at source: the Griffin attack's
+polynomial modelling *"was proposed by the authors of this algorithm for their
+initial security analysis"* — **the attackers used the designers' own
+verification relation and changed only the monomial order.** The entire
+sub-Poseidon prime-field band (R ≈ 0.3–0.6×) is **broken or unanalyzed**:
+Griffin 2^51–64, Anemoi ℓ=1 2^70, Rescue-Prime α=3 2^112 (α=5 *exactly*
+2^128), Vision zero papers.
+
+> **The sharpened target: a relation cheap in the PROOF SYSTEM'S operations
+> and expensive in the ADVERSARY'S algebra.** Lookups and dense linear layers
+> qualify; *witnessed low-degree relations do not — they hand the attacker
+> the model.*
+
+- ⚠ Correction: **Anemoi's checked relation is degree α, not 2** (Eq. 5 at
+  source); the family's only degree-2 verification is Vision's inverse S-box.
+- ⚑ **The char-2 question is answered by the record's own repair**: the
+  Chaghri fix *densified the linearized mixing layer* (one Frobenius term
+  broke it, three fixed it, the designers adopted it). And **`x⁻¹` is
+  simultaneously extremal** — F₂-degree n−1 (most Frobenius-opaque) *and*
+  relation degree 2–3 (cheapest) — **and is the one shape FreeLunch's authors
+  say they cannot directly model** (XHash8 survives at 2^214). *So the design
+  question "spend Frobenius in the linear layer only, keep the nonlinearity
+  opaque" has an affirmative existing witness.*
+- **The Weft sketch** (§3): mixing layer = the proved `novelPack`/additive-NTT
+  transform, `x⁻¹` S-box fitting the degree-3 rung, priced against the
+  measured 64.9% leaf-sponge share. **Five named obligations with
+  [WEFT-subspace] loud** — the alignment thesis and the AO attack record pull
+  *opposite ways* on structured linear layers, and **only the branch-number
+  computation settles it.** ⚠ The tooling for exactly that computation is the
+  now-versioned `~/src/ring-ro-hash/branch.py` + `design_branch_frontier.py`.
+  Additive-BaseFold rung only; not a deployment proposal.
+- ⚑ **The job-split is REFUTED three independent ways**: PRF-able jobs are
+  **2.2% of wrap perms** (absorption is compression at its information floor);
+  Legendre costs **4 R1CS/bit vs the sponge's 1.21 cells/bit**; and the
+  key-recovery record puts Ext4 at **~2^64.6 against our 2^123.6 bar** — a
+  128-bit key needs a degree-9 extension. Bonus corroboration: **Loquat's own
+  circuit is 93.5% hashing — the same ~94% shape as ours, independently.**
+- **Lean teeth**: `GraphSound` as a named-not-carried obligation
+  (`slack_not_graphSound` refutes the free lunch), a non-graph relation
+  refused, the degree-3-relation/degree-7-function asymmetry machine-checked,
+  and the deployed BabyBear instance graph-sound by `ring`. ⚑ **The first
+  build's axiom pin caught a `decide` degraded to `sorry`** — the tripwire
+  class firing in the wild, again.
