@@ -8,11 +8,37 @@ Surveyed 2026-08-16. Every path absolute. State is one of:
   this file exists for.
 - **superseded** — replaced by something better, kept as history.
 
+## ⚠ TWO STRATA — and this file's own headline changed
+
+Unmarked entries are the **2026-08-16** survey. Entries tagged **`[08-17]`**
+were re-measured on **2026-08-17**, after ~42 further commits.
+
+⚑⚑ **The single most important update: O1 was FIXED, and the class it belongs
+to RECURRED WITHIN A DAY.** `~/src/ring-ro-hash` is a git repository now — and
+it already holds **696 lines of untracked work written today.** The remediation
+worked and did not stick, which is the same shape O2 records about
+`IntegerFingerprint.lean` (found once, remediated with a table row).
+
+> ⚑ **And the orphan count went UP, not down.** O1 closed; **O5 is new and
+> larger** — **1,593 lines of committed Lean that `lake build` has never
+> compiled**, of which we knew about **one file of three.**
+
+**Second-stratum orphan ledger, in one place:**
+
+| | 08-16 | 08-17 |
+|---|---|---|
+| O1 `~/src/ring-ro-hash` not a git repo | ⚑ 25 files at risk | ✅ **fixed** (2 commits) — ⚠ **696 new untracked lines, same day** |
+| O2 `Theory/IntegerFingerprint.lean` | orphaned (in the build, no write-up) | **unchanged** |
+| O3 three claude.ai memos | URLs nowhere | **unchanged** |
+| O4 uncommitted units | 2 notes untracked, 3 files `MM` | ✅ notes committed; ⚠ **the `MM` was a STALE INDEX, not an edit** |
+| **O5 unrooted committed Lean** | *not detected* | ⚑ **3 modules, 1,593 lines, orphaned at HEAD** |
+
 ---
 
 # ⚑ Read this section first — the orphans
 
-Four kinds of orphan, in descending order of what is at risk.
+Four kinds of orphan, in descending order of what is at risk. **`[08-17]`** a
+fifth was found, and it is the largest.
 
 ## O1. `/Users/ember/src/ring-ro-hash/` — **not a git repository**
 
@@ -67,6 +93,48 @@ What the seven design scripts compute, since none of it is written up outside
 `~/src/ring-ro-hash`, or copy the remaining 15 files into
 `notes/ring-hash-scripts/`. Ten minutes. Currently one `rm -rf` from
 unreproducible.
+
+### ✅⚠ `[08-17]` DONE — and the class came straight back
+
+**`git init` happened.** Toplevel `/Users/ember/src/ring-ro-hash`, **2
+commits**: `7eeb35b` *"version the design scripts, which were one rm -rf from
+unreproducible"*, then `737ea7b` *"weft_branch: [WEFT-subspace] settled"*.
+**28 source files, 4,253 lines, 26 tracked entries.** `run_all.sh` and every
+script it invokes are now in it.
+
+⚑ **And the settling instrument for the Weft kill lives only here**:
+`/Users/ember/src/ring-ro-hash/weft_branch.py` — **456 lines, 20,794 bytes**,
+committed at `737ea7b`. **It exists nowhere else on the system** (searched
+`~/src` and `~/dev`). Every branch number in `03-MEASUREMENTS.md` §1.11 and
+`04-DEAD-ENDS.md` §D7 comes out of that one file in that one repo.
+
+⚠⚑ **THE CLASS RECURRED THE SAME DAY. Three files, 696 lines, untracked,
+written 2026-08-17 between 01:28 and 02:54:**
+
+| file | lines | what it is |
+|---|---:|---|
+| `post_weft_branch.py` | 332 | the successor-design branch work, after Weft died |
+| `xhash_m31_branch.py` | 258 | XHash-M31 — **the candidate §1.3b's Kagi sweep concluded we should ADOPT** |
+| `mark32_sysrs_branch.py` | 106 | Mark-32 / Vision-family branch numbers |
+
+> **The newest hash work in the campaign — including the measurements on the
+> family the Kagi sweep recommends adopting — is unversioned.** The
+> remediation for O1 was applied and then not repeated for the next four hours
+> of output. ⟨inference⟩ The lesson is not "run `git init`" — that was done —
+> it is that **a one-shot remediation does not create a habit**, and the only
+> durable fix is a commit step inside whatever loop produces these.
+
+⚠ **`[08-17]` And the "rescue copy" is now a TWIN, not a rescue.** All **10**
+of the shared files in `notes/ring-hash-scripts/` are **byte-identical copies
+(md5-verified)** of `ring-ro-hash` files: `costmodel`, `density_repricing`,
+`design_branch_frontier`, `design_branch_law_check`,
+`design_ceiling_decomposition`, `design_gadget_feistel`, `design_mds_interleave`,
+`design_subfield_invariance`, `design_tau_tradeoff`, `sigma_poseidon`. The only
+content unique to `zkml-research` is `dual_mode_costs.py` (40 L) and
+`dual_mode_modsearch.py` (31 L), committed at `297a389`.
+⚑ **Two shapes that agree today are two shapes that will disagree later** —
+the house doctrine, and it now applies to this directory. **Prefer deleting the
+copy and pointing at the repo.**
 
 ## O2. `/Users/ember/dev/minidregg/Theory/IntegerFingerprint.lean` — the 476-line file
 
@@ -127,6 +195,78 @@ outweighed, not refuted.
 | **The "uwueave preo projection v2" unit** — Lean spec + generated Rust + test, one coherent change | `minidregg/Compiler/UwueavePreoProjectionV2.lean` (113 L) · `prover/generated/uwueave_preo_projection_v2.rs` (49 L) · `prover/tests/uwueave_preo_projection_v2.rs` (117 L) — plus modified `Compiler.lean`, `Selvage/MultilinearExtension.lean`, `prover/src/lib.rs` | ⚑ **untracked, all mtime 2026-08-11 17:40–17:43, untouched for five days.** Appears in **no** zkml-research note. This is a complete unit sitting outside git since before the campaign proper started. |
 | Two notes from the last day | `zkml-research/notes/basis-binding.md` (95 L, 08-16 21:09) · `notes/sumcheck-batched-opening.md` (56 L, 08-16 21:12) | **untracked.** The newest content in the repo, written by live sibling lanes in the same three minutes as the first `forcodex/` commits. ⚑ `basis-binding.md`'s own first finding is that **its brief's file path was wrong.** |
 | Three partially-staged files (`MM`) | `breadstuffs/circuit-prove/tests/leaf_vs_recursion_sweep.rs` · `fhegg-fhe/src/bin/ntt_four_step_bench.rs` · `fhegg-fhe/tests/kpz_encoding_depth.rs` | **staged AND unstaged changes on top of the last commit**, in exactly the leaf-vs-recursion and FHE-NTT lanes. ⚠ A bare `git commit` by any lane commits the *staged* halves. |
+
+### `[08-17]` O4, re-measured — one row resolved, one row diagnosed
+
+- ✅ **The two untracked notes are committed.** `notes/basis-binding.md`
+  (`96a56e9`) and `notes/sumcheck-batched-opening.md`
+  (`b458936`…`0232918`). Both were complete, not cut off — which answers a
+  question the 08-16 survey left open at the bottom of this file.
+- ⚠⚑ **The three `MM` files are a STALE INDEX, not partial work — and that is
+  worse in a specific way.** Re-measured: **all three have worktree content
+  byte-identical to HEAD**, and the staged and unstaged diffs are **exact
+  inverses** (−12/+6 then +12/−6). Nothing is half-done; the index simply
+  never refreshed.
+  > **A bare `git commit` by any lane would not commit "the staged half of
+  > someone's work" — it would RESURRECT a 6-line-shorter variant of the
+  > measurement harness that nobody wrote today.** That is the recorded
+  > shared-index mass-revert hazard, in its quietest form: the diff is small,
+  > the file compiles either way, and the harness would just measure something
+  > slightly different.
+  **Left untouched** (a synthesis lane must not unstage another lane's index).
+
+## `[08-17]` O5. ⚑ 1,593 lines of committed Lean that `lake build` has never compiled
+
+**The largest orphan in the repo, and two thirds of it was undetected.**
+
+`minidregg`'s `lakefile.toml` sets `defaultTargets = ["Minidregg"]` and **no
+`lean_lib` declares `globs`** — so every library roots *solely* at its
+`<Name>.lean` umbrella file. A module the umbrella does not import is not built,
+not checked, and not in any axiom sweep. **At HEAD: 484 `.lean` files, 475
+reachable, 9 unreachable — 6 are intentionally standalone `scripts/*.lean`, and
+three are not.**
+
+| module | lines | committed | orphaned since |
+|---|---:|---|---|
+| `/Users/ember/dev/minidregg/Compiler/EvmAddAir.lean` | **722** | `8c5a732`, 2026-08-17 | landing day — **and it was declared at landing** (`docs/VERDICTS.md` §3d) |
+| `/Users/ember/dev/minidregg/Compiler/ZkmlTraceCheck.lean` | **580** | `3f90089`, 2026-08-13 | ⚑ **four days, undetected** |
+| `/Users/ember/dev/minidregg/Compiler/ZkmlEltwiseAir.lean` | **291** | `3f90089`, 2026-08-13 | ⚑ **four days, undetected** |
+
+⚑ **The mechanism is `minted-caller-committed-callee-not`, inverted**: the
+*callee* was committed and the *caller* was not. `git show HEAD:Compiler.lean |
+grep EvmAddAir` → **no match**; the worktree's `Compiler.lean:98` has the
+import. Commit `8c5a732` landed the module, `Theory.lean`,
+`Theory/EvmFragment.lean`, `Theory/EvmResidual.lean` and the descriptor JSON —
+**but never `Compiler.lean`.** `3f90089` did the same thing four days earlier,
+touching five files, none of them the umbrella.
+
+⚠ **And the umbrella edit CANNOT be committed on its own to fix it.** The dirty
+`Compiler.lean` adds **four** imports and the dirty `Selvage.lean` adds one; **two
+of those five point at untracked files**:
+
+- `Compiler.UwueavePreoProjectionV2` → `Compiler/UwueavePreoProjectionV2.lean`
+  (113 L, **untracked** — the same unit O4 records as sitting outside git since
+  2026-08-11)
+- `Selvage.HashRelationInverse` → `Selvage/HashRelationInverse.lean`
+  (303 L, **untracked**)
+
+> **Committing the umbrellas as-is breaks the build; committing them without
+> those files breaks the build; leaving them dirty leaves 1,593 lines
+> unchecked. The knot has to be untied with the two untracked files, and only
+> their author knows whether they are ready.**
+
+⚑ **Why this matters more than a missing import**: `ZkmlEltwiseAir.lean` holds
+`addDemoDescriptor_means_denotation`, and `EvmAddAir.lean` holds
+`evmAddDescriptor_means_semantics` and the kernel-decided shape theorem that
+`03-MEASUREMENTS.md` §1.12 quotes. **Those theorems are cited as landed and no
+default build has ever elaborated them.** A `sorry`, a broken import or a
+degraded `decide` in any of the three would be **invisible to every gate we
+have** — which is precisely the class `minted-behavioural-evidence-cannot-see-a-proof-hole`
+records, arriving through the build graph instead of through a proof.
+
+**Cheap detection, and it should be a gate**: compare the transitive import
+closure of the default target against the tracked `.lean` file list. It is one
+script, it runs in seconds, and it would have fired on 08-13.
 
 ---
 
@@ -320,6 +460,62 @@ miss `private`/`protected`/same-line-attribute declarations.
 | `Selvage/BinaryLookup.lean` | 165 | 11 | **landed** |
 | `Selvage/EqPolynomial.lean` | 155 | 11 | **landed** — came in at 11 theorems rather than the 3 estimated; the adjacent facts fell out free |
 
+## `[08-17]` The second stratum's Lean deliverables
+
+**All re-measured on disk at minidregg HEAD `820f0cb`. Every file below: 0
+`sorry`, committed, clean.** ⚠ The handful of raw `sorry` grep hits in
+`LigeritoInterleaved`, `SpartanR1CS` and `AirSumcheckCubic` are **docstring
+prose claiming "no `sorry`"** — checked line by line. `pins` = `#guard_msgs …
+in #print axioms` sites.
+
+| file | lines | pins | commit | state |
+|---|---:|---:|---|---|
+| `Selvage/AccRbrFold.lean` | **1,448** | 16 | `bc29222` 08-17 | **landed** — folding at the commitment alphabet; the norm wall tight both ways |
+| `Compiler/TwistMultisetInvariant.lean` | **679** | 8 | `820f0cb` 08-17 | **landed** — Nebula Lemma 2, both directions |
+| `Selvage/MultisetFingerprint.lean` | **372** | 5 | `820f0cb` 08-17 | **landed** — the sharp `max(\|A\|,\|B\|)·(k+1)/\|F\|` bound |
+| `Assurance/TwistMemoryFingerprintJoin.lean` | **238** | 4 | `820f0cb` 08-17 | **landed** — the join; sole importer of the Compiler file |
+| `Compiler/EvmAddAir.lean` | **722** | 5 | `8c5a732` 08-17 | ⚑ **ORPHANED — see O5** |
+| `Theory/EvmFragment.lean` | **281** | 3 | `8c5a732` 08-17 | **landed** |
+| `Theory/EvmResidual.lean` | **276** | 3 | `8c5a732` 08-17 | **landed** — the TV theorem is literally `rfl` |
+| `Selvage/AdditiveBasisBinding.lean` | **483** | 15 | `9679a16` 08-16 | **landed** — the ordered-basis binding, closed both directions |
+| `Compiler/Tower256AdditiveFriController.lean` | **718** (was 428) | 12 | `9679a16` 08-16 | **landed** — +300 lines, the `basisPrefix` splice |
+| `Compiler/Tower256AdditiveFriRawDeployment.lean` | **289** | — | `9679a16` 08-16 | **landed** |
+| `Selvage/HashRelation.lean` | **342** | — | `c2dd38c` 08-16 | **landed** — the relation view; its first build's pin caught a `decide` degraded to `sorry` |
+| `Selvage/DecomposableTable.lean` | **437** | 6 | `feef028` 08-16 | **landed** — Lasso's decomposition + a *general* non-decomposability theorem |
+| `Selvage/RingSwitching.lean` | **791** (was 568) | 19 | `37c6b33` 08-16 | **landed** |
+| `Assurance/AirSumcheckCubic.lean` | **650** | — | `37c6b33` 08-16 | **landed** — the cubic partial-sumcheck rung |
+| `prover/testdata/evm_stage0_add_descriptor.json` | 4,154 L / **231,487 B** | — | `8c5a732` 08-17 | **landed** — Lean-written, ⚠ **no Rust-side reader test yet** |
+
+⚑ **A convention correction that matters when you read any pin count in this
+directory**: **minidregg has NO `#assert_axioms` machinery at all.**
+`Kernel/Camera.lean:30` says so outright — *"minidregg has no `#assert_axioms`
+yet — that tool is Assurance-lane territory."* What minidregg uses is
+`#guard_msgs (whitespace := lax) in #print axioms`, which is equivalent in
+force and **invisible to any sweep that greps for `#assert_axioms`.**
+⚠ **breadstuffs is the other convention** — `metatheory/Bfv/*.lean` carry
+`#assert_all_clean` and `#assert_namespace_axioms`. **A cross-repo audit that
+uses one repo's grep on the other will report a false zero.**
+
+⚠ **`[08-17]` Two line counts in the table above this one are stale, and both
+grew rather than drifted**: `Selvage/AdditiveBaseFold.lean` is **856**, not 838
+(`9679a16` added 24, removed 6); `Selvage/RingSwitching.lean` is **791**, not
+the 568 it landed at. **The 838 and 568 are landing figures**, correct as
+history and wrong as inventory — which is the same two-strata problem this
+whole directory has, one level down.
+
+⚑ **Near-orphans — rooted, but with an umbrella as their ONLY importer and
+zero downstream consumers.** These are not broken; they are *unconsumed*, which
+is the state just before O2's: `Selvage/LigeritoInterleaved.lean` ·
+`Selvage/DecomposableTable.lean` · `Selvage/AccRbrFold.lean` ·
+`Assurance/SpartanR1CS.lean` · `Assurance/TwistMemoryFingerprintJoin.lean` ·
+`Compiler/TwistMultisetInvariant.lean` (whose sole importer is the Assurance
+join, **not `Compiler`**).
+
+⚠ **Rooted only via UNTRACKED files** — these vanish on a clean checkout while
+the umbrellas that need them get committed:
+`Selvage/HashRelationInverse.lean` (303 L) · `Compiler/UwueavePreoProjectionV2.lean`
+(113 L). See O5.
+
 ⚠ **`Theory/ZkmlOps.lean` does not exist.** The zkML vocabulary is spread
 across `Theory/ZkmlTensorOps.lean` (1,011 L, 27 thms — ⚑ **referenced from
 exactly one note**, `notes/zkml-build-log.md`, the thinnest pointer of the
@@ -388,6 +584,51 @@ other six (`Fold`, `Mul`, `Noise`, `NoWrap`, `Params`, `Smudging`) are July,
 pre-campaign. See `swarm/PREFLIGHT.md` for the corrected claim about which of
 them are in a build target — **the uncorrected version of that claim was
 quoted by a later lane before anyone checked.**
+
+### `[08-17]` breadstuffs, re-measured
+
+| file | lines | git | commit | `sorry` | pins |
+|---|---:|---|---|---:|---|
+| `metatheory/Bfv/Ring.lean` | 510 | clean | `36dd4578e` | 0 | 3 `#assert_all_clean` sites / **25 decls** |
+| `metatheory/Bfv/CrossLimb.lean` | 453 | clean | `5b653ba5d` | 0 | 3 sites / **23 decls** |
+| **`metatheory/Bfv/ZqSumcheck.lean`** | **407** | clean | `c4c1e5835` | 0 | 3 sites / **22 decls** |
+
+✅ **All three are FULLY ROOTED** — `Bfv` is a `defaultTarget`, `metatheory/Bfv.lean`
+imports all three, and **its import list is byte-identical in HEAD and
+worktree.** ⚑ *No orphan question here, in deliberate contrast to O5* — and the
+difference is that this repo's umbrella was committed in the same commit as its
+modules.
+
+⚑ **The `#assert_namespace_axioms Bfv` ladder is the campaign's cleanest
+progress metric**: **90 → 113** (CrossLimb, `5b653ba5d`) **→ 137**
+(ZqSumcheck, `c4c1e5835`) kernel-clean theorems.
+
+⚠ **But the namespace sweep still does not reach everything**: `Bfv/Mul.lean`
+and `Bfv/Smudging.lean` are **not imported by `Bfv.lean`** — orphans *within*
+the library, exactly as `swarm/PREFLIGHT.md`'s corrected entry describes. They
+are rooted through `Market` and carry their own per-file `#assert_all_clean`,
+so they are checked; the **namespace-wide** sweep is what is incomplete.
+
+**The Rust measurement harnesses, re-measured** — all committed, and cargo
+auto-discovers all five (no `autotests = false`, no `[[test]]` stanzas):
+
+| file | lines | `#[test]` | `#[ignore]` | runs by default |
+|---|---:|---:|---:|---:|
+| `circuit/tests/hbox_rig.rs` | 1,707 | 6 | 4 | 2 |
+| `circuit/tests/ir2_field_op_counts.rs` | 2,245 | 14 | **0** | **all 14** |
+| `circuit/tests/grind_phase_measure.rs` | 1,464 | 7 | 2 | 5 |
+| `circuit-prove/tests/recursion_tower_profile.rs` | **1,440** (was 939) | 5 | **5** | **0** |
+| `circuit-prove/tests/leaf_vs_recursion_sweep.rs` | 514 | 4 | **4** | **0** |
+
+⚑ **`recursion_tower_profile.rs` grew 939 → 1,440 lines** — that is the K16
+prove-and-refuse test (`a8e8842a5`, falsifier repaired `44d0dea45`), the only
+arm in the campaign that *proves and verifies through the production entry point
+and then forges a cell.*
+
+⚠ **Read the `#[ignore]` column before trusting a green CI**: **nine of the
+thirty-six tests across these five files never run by default**, including
+**every test in both `circuit-prove` harnesses.** The two files that carry the
+tower census and the K16 proof are **entirely opt-in.**
 
 ## `breadstuffs/sumcheck-toy/` — tracked, 698 lines, **superseded**
 
@@ -482,6 +723,37 @@ absence claim's evidence base. And note it is *not* the same thing as
 `~/dev/gh/forks/IACR-eprint-mirror/`, which is the complete eprint archive
 (2026→1053+) and is a separate, larger corpus.
 
+### `[08-17]` Re-measured — and the extraction gap is bigger than it looks
+
+**1,907 files · 1,269 PDFs · 616 `.txt`.** But ⚑ **only 452 PDFs have a
+matching extracted-text file — 817 PDFs have NO text at all**, and 164 of the
+`.txt` files are unpaired.
+
+> ⚠⚑ **This re-prices every absence claim made by grepping `~/paperbin`.**
+> `swarm/PREFLIGHT.md` calls paperbin *"the only durable extracted corpus"* and
+> says *"all 1,218 PDFs have full text."* **They do not: 64% of the PDFs are
+> grep-invisible.** A full-text sweep over this directory sees **452 papers**,
+> not 1,269. **State the extracted count, not the file count, with any absence
+> claim.** (`05-ERROR-CLASSES.md`'s corpus-blindness entry, one layer deeper:
+> the instrument is blind *inside* the corpus it does have.)
+
+**Twelve files newer than 2026-08-16 — 9 PDFs + 3 `.txt`**, and they are exactly
+the Kagi sweep's reading list (`02-LANDSCAPE.md` §1.3b) plus the BinarySpartan
+read: `2026-1656-binaryspartan-setty` · `cheaplunch-extending-freelunch-2025-2040`
+(+txt) · `latticefold-l2-norm-checks-2026-721` (+txt) ·
+`perrin-security-analysis-xhash-2024-605` ·
+`rijmen-cryptanalytic-audit-xhash-2024-656` ·
+`rpo-m31-xhash-m31-circle-starks-2024-1635` ·
+`rpo-rescue-prime-optimized-2022-1577` · `xhash-security-perrin-2024-605` (+txt)
+· `xhash8-xhash12-stark-friendly-2023-1045`.
+
+⚠ **Two of those are the same paper.** `perrin-security-analysis-xhash-2024-605.pdf`
+and `xhash-security-perrin-2024-605.pdf` are **byte-identical** (md5
+`54ba10fc…`, both 311,445 bytes) — eprint 2024/605 fetched twice under different
+names 19 minutes apart, **and only the second has extracted text.** A trivial
+instance of the class the file above documents, and a reminder that
+`~/paperbin`'s filenames are lane-chosen, not canonical.
+
 ---
 
 # 6. Other repos that matter
@@ -500,12 +772,29 @@ absence claim's evidence base. And note it is *not* the same thing as
   their `.git/config`.
 - **The live-vs-dead split of minidregg's 50 `sorry` tokens.** Raw grep;
   includes comments and strings.
-- **Whether `notes/basis-binding.md` and `notes/sumcheck-batched-opening.md`
-  are complete** or were cut off mid-write — they were being written by live
-  sibling lanes during this survey.
-- **Whether the `forcodex/` numbering gaps were intended.** `00`, `01`, `01b`,
-  `02`, `03`, `04`, `05`, `06`, `07` now exist; the numbering was sparse while
-  several lanes wrote in parallel.
+- ~~**Whether `notes/basis-binding.md` and `notes/sumcheck-batched-opening.md`
+  are complete**~~ ✅ **`[08-17]` ANSWERED: both complete, both committed**
+  (`96a56e9`; `b458936`…`0232918`). They grew substantially after this survey
+  saw them at 95 L and 56 L.
+- ~~**Whether the `forcodex/` numbering gaps were intended.**~~ ✅ **`[08-17]`
+  `08-ATTACK-BRIEFS.md` now exists**, so the run is `00`–`08` with `01b`. The
+  sparseness was parallel lanes, and it closed on its own.
 - **The contents of the three claude.ai memos.** I have their URLs and the
   one-line summaries their lanes returned. ⚑ **They can be read with WebFetch
   and should be, before anyone re-derives the field decision.**
+
+### `[08-17]` Still open after the re-measure
+
+- **Whether `Compiler/UwueavePreoProjectionV2.lean` and
+  `Selvage/HashRelationInverse.lean` are ready to commit.** They are untracked,
+  they are imported by dirty umbrellas, and **O5's 1,593 orphaned lines cannot
+  be rooted without resolving them.** Only their authors know. **This is the
+  one item in this file that blocks another item.**
+- **Whether the 817 text-less PDFs in `~/paperbin` were never extracted or
+  were extracted and lost.** The mtime distribution does not distinguish them,
+  and it changes whether the fix is `pdftotext` over a list or an
+  investigation.
+- **What `~/src/ring-ro-hash`'s three untracked scripts conclude.** They are
+  the newest hash measurements in the campaign — including on **XHash-M31, the
+  family the Kagi sweep recommends adopting** — and no note cites them. ⚑ *This
+  is O2's shape forming again in real time: work on disk, no pointer.*
