@@ -74,3 +74,42 @@ Sibling lanes' commits absorbed this lane's in-progress file **twice**
 (`05a06b1`, `edd474f`, `10e0104`). Nothing lost — verified in HEAD each time —
 authorship misattributed, not rewritten, per doctrine. **This is the
 `--only`-is-path-granular hazard firing in a hot shared file, as documented.**
+
+
+---
+
+## ADDENDUM (2026-08-16): the dual-mode composition — one artifact, both modes, one modulus
+
+`notes/ring-hash-dual-mode.md` (`297a389`). **The linear mode is the P=0,
+round-0 PROJECTION of the gadget-Feistel** — a standard Ajtai/MSIS gadget
+commitment `C = A·G⁻¹(v+a₀)` — with the de-linearizer sitting strictly *after*
+the commitment read-out, so **linear-mode openings never cross it, and the
+same invariant keeps the KRS25 hash-delegation attack unreachable.**
+
+- ⚑ **Parameter compatibility POSITIVE, with a better modulus found**:
+  **q = 2⁶⁴−257** at τ=2 (ord₃₂=2, α=7 legal, γ=257 — *strictly better
+  grinding margin than the τ=4 point 2⁶⁴−279*). One set serves both modes;
+  **the γ-ambiguity is asymmetric in our favor** — a grinding channel in hash
+  mode that *cannot* break binding.
+- **The verdict splits by world, both halves earned**: as a wrap transplant
+  **dead by arithmetic** (×0.7–×13 vs the post-split Horner chains, and the
+  Galois packing already banked ×2.011 of the ×2.13 target). **In the R_q
+  world: coherent and cheap** — 16–33% of the Feistel FS bill, and
+  commit-instead-of-absorb attacks the **VOLUME half of the bill that
+  delegation provably could not**, amortizing past κ=24 ring elements.
+- **Opening cost 1.5–3.0×10⁴ R_q rows, ~95% of it transcript hashing** — the
+  full mode prices its own commitment's openings. *Self-referential in the
+  right direction.*
+- ⚠ **Security-sharing stated honestly**: shared arithmetic, parameters, cost
+  table, and a one-way implication (a linear-core collision breaks both) —
+  **NOT one assumption.** MSIS provable; RO-likeness stays heuristic.
+  Corrected en route: the 302,141 bar was τ=4; **the standing τ=2 figure is
+  363,513.**
+- **Lean form**: `OpeningScheme` reused unchanged; **`Op` is a short-plane
+  SUBTYPE so an unchecked norm is unrepresentable** — the free-norm-check
+  hazard excluded structurally, where forgetting it makes binding vanish
+  fail-open. Eight obligations tabled; **O2 (sponge indifferentiability) the
+  only wall, and it predates the question.**
+- ⚠ Premise check: "absorb is R-SIS-linear" is true of the **Feistel candidate
+  specifically** — if its three caveats kill it, **the linear mode stands
+  alone as the multilinear-PCS-over-lattices answer.**
