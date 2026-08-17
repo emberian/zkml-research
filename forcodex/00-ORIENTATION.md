@@ -23,6 +23,14 @@ rediscover.
 | `05-ERROR-CLASSES.md` | ⚑ the recurring failure shapes, with instances |
 | `06-OPEN.md` | what is genuinely live |
 | `07-ARTIFACTS.md` | what is on disk, where, and what state it is in |
+| `08-ATTACK-BRIEFS.md` | ⚑ **four unrun attacks on our own novel constructions.** The price of being allowed to be novel — nothing custom ships until these have answers. |
+
+⚠ **Snapshot vs live.** `02`, `03`, `04`, `07` are snapshots from 2026-08-16;
+the tree moved ~42 commits after. `01`, `01b`, `05` are durable (steers and
+error classes do not rot). `06` and `08` are current as of 08-17.
+**The LIVE documents are `~/dev/zkml-research/SLVG_THOUGHT.md` (the shape —
+what Selvage is, believes, intends) and `docs/VERDICTS.md` (the facts,
+claim-by-claim).** Read SLVG_THOUGHT first; it is the shortest path in.
 
 ## The one-paragraph version
 
