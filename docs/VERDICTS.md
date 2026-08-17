@@ -316,7 +316,33 @@ at §4.3/§7**):
 Nova-shaped PQ folding (4–8% overhead) → switchboard pay-per-use (Ajtai
 zero-commitment) → Nebula-style committed memory (Lemma 2 ⟺ TwistContinuity)
 → **ember's EVM decompilation on top for the per-program prize.** Every layer
-either held or priced; follow-ups: **Lemma 2 ⟺ `TwistContinuity`** in flight, and
+either held or priced; follow-ups: ✅ **`TwistContinuity` DISCHARGED (2026-08-17, `820f0cb`)** —
+Nebula's Lemma 2 formalized **both directions** over our richer carriers:
+- ⚑ **`twistContinuity_iff_grandEquation`**: TC ⟺ frame-outside-dom ∧
+  ∃ stamps, `IS + WS = RS + FS` — the Spice-shaped list induction, Mathlib
+  multisets, none hand-rolled. (Target corrected: TC lives in
+  `Compiler/SparseAuthenticatedStateLogupBridge.lean:90`, not `Kernel/`; the
+  multiset side existed **nowhere** in the tree.)
+- ⚑ **The `free` gap ABSORBED as a theorem, not an obligation**: with
+  `Option`-valued cells, **`free` is a write of `none`** — the soundness
+  induction has *no free case split*, and `stale_read_after_free_refused`
+  exhibits the flagged hazard closed. *The model difference Nebula's read
+  warned about dissolved into the carrier choice.*
+- **The fingerprint at the SHARP bound** `max(|A|,|B|)·(k+1)/|F|` (not the
+  crude pairwise one), both legs from the one existing SZ lemma via a
+  bivariate-coefficient argument; injectivity honestly `Set.InjOn` — **global
+  is UNINHABITABLE for Nat-stamped tuples.**
+- **Nine teeth**, including the quantifier-order exhibit: **∀γ, a post-γ
+  forgery PASSES** — the γ-before-values ordering shown load-bearing, not
+  assumed — and a swap-cycle that *satisfies stampless accounting* yet is
+  refused with stamps for every prover stamp choice.
+- **One obligation remains**: `[TWIST-FP-BIND]`, six named legs (binding,
+  roots-before-γ, range→InjOn, row shapes, root-bound audit frame, positional
+  write stamps). Consumers wired **across module boundaries**, both poles.
+- ⚑ **Bonus: this engine IS the gap `[SPARTAN-sparse]` recorded** — SPARK's
+  combinatorial core now exists; its sparse-matrix instantiation does not.
+
+And
 ✅ **`AccRbrFold` LANDED (2026-08-17, `bc29222`, 1,448 lines, 16 pinned
 audits, no `sorryAx`)**:
 - **The norm budget is DATA**: `budget b₀ T = b₀ + T·(ρ·B)` — additive, the
