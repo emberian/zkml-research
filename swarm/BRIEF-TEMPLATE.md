@@ -55,6 +55,16 @@ with *"I cited this wrongly, including in file Y."* That location list was
 false accusation into a brief, and the next lane had to disprove it.
 **When a lane confesses, the WHERE is a claim too: grep it before propagating.**
 
+## 7d. HASH/LINEAR-LAYER DESIGN GATE (added 2026-08-17, paid for by Weft)
+**Compute the branch number FIRST — before any other analysis, before naming
+the candidate, before a single security argument.** It is four exact passes
+with tooling we own (`~/src/ring-ro-hash/weft_branch.py`, the
+`branch(M) = branch(M⁻¹)` duality making it self-certifying), and it would
+have killed Weft on day one instead of after a full obligations table.
+Corollary: **a linear layer inherited from another object (an encoding map, a
+fold operator) imports that object's structure — and structure is the
+opposite of diffusion.** Alignment lives in the proof toolkit, not the matrix.
+
 ## 8. STANDING ORDERS (copy verbatim into every brief)
 - Read theorem statements, not abstracts, for anything you call a bound.
 - Verify claimed absences with multiple spellings AND post-mirror via web.
