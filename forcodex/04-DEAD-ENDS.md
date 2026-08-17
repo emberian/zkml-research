@@ -22,6 +22,28 @@ determines how hard it is to re-open:
 says it wins, and in at least three cases below **a later note is right and
 VERDICTS is stale** — the rule is backwards for anything after 2026-08-13.
 
+## ⚠ TWO STRATA
+
+Everything unmarked is the **2026-08-16** archaeology pass. Everything tagged
+**`[08-17]`** was folded in afterwards, from the ~42 research commits that
+landed after that pass. Where a stratum-2 finding **contradicts** a stratum-1
+entry, the old entry is kept and the contradiction is stated **at it** — most
+sharply at **§L3** (now closed) and **§L6** (now resolved *against our own
+earlier scrutiny*).
+
+⚑ **Six closures were added in the second stratum, and they are among the most
+useful entries in this file** because each kills something a newcomer would
+otherwise re-propose within a week:
+
+| § | what died | what killed it |
+|---|---|---|
+| **E6** | **ECFFT** | its OWN theorems — a trace-height cap and an error term > 1 — **not constants** |
+| **D5** | **the 3.2× lookup arithmetization lever** | measured **1.96×**; the 3.2× was a fat-denominator artifact |
+| **D6** | **the job-split** (PRF-able transcript work) | refuted **three independent ways** |
+| **D7** | **Weft-1** | branch **6** + a 4-deep subspace flag (⚠ **killed as specified — Weft-2 is a live re-opening**) |
+| **E9** | **the ×2.13 sumcheck-batched opening** *over two-adic FRI* | it is a **PCS replacement**, not a backend rewrite |
+| **E10** | **deferred accumulation over Merkle-only commitments** | the MLE obligation **cannot travel even one layer** |
+
 ---
 
 # A. FHE
@@ -435,6 +457,113 @@ and it misstates its own ring) · our "2026/1127 fn.11" citation (footnote 11 is
 a bare URL) · "2025/1764 Keccacheck" against our local file, which is
 **2024/1764, a different paper with zero 'keccak' hits.**
 
+## D5. `[08-17]` ⚑ The lookup arithmetization lever — **REFUTED at 1.96×, and the 3.2× was ours**
+
+⚠ **This entry contradicts `03-MEASUREMENTS.md` §1.8**, which records *"the same
+two primitives price at ~3.2× under a lookup argument"* and — to its credit —
+flags it as **"a pointer, not a result"**. The pointer has now been measured and
+it does not hold.
+
+**The idea**: `R` (Blake3-in-AIR ÷ Poseidon2-in-AIR) is a property of the
+*arithmetization*, not of the hash. At 30.6× a bit-oriented hash is hopeless
+in-circuit; under a **lookup argument** the same pair was believed to price at
+~3.2×, which would put a standard hash within reach and delete the whole
+"why Poseidon2" argument.
+
+**The number that closed it**, counted cell-by-cell on **Stwo's DEPLOYED
+lookup/LogUp Blake AIR** (384 main + 260 interaction cells per round row,
+carries virtual, five xor tables at relation arity 3):
+
+> **Blake3 under lookups ≈ 4,680 cells/compression ⇒ R ≈ 15.7× against our
+> 300-cell Poseidon2. Lookups buy 1.96×, not the ~10× needed.** The flip bar
+> (< 4,000 blowup-cells) is **missed by 4.7×.**
+
+⚑ **Where the 3.16× came from, and it came from us**: it compared **7.9
+gates/S-box for *their* Poseidon against our 2.1 cells/S-box** — *a fat
+denominator*. **It had been quoted repeatedly as "the highest-value open
+measurement."** The measurement happened; the answer is no.
+
+**Riders that close it further**: the table costs **2²⁴ amortized cells**
+(break-even ~2¹² compressions), and the table relation lands at **98.7 bits at
+BabyBear⁴ without grinding — below the bar on its own.** Keccak under lookups:
+**a wash to negative.**
+
+⇒ **Poseidon2 is now triple-confirmed** (in-circuit 30.6–210× directly ·
+recursion pinning it in both characteristics · the lookup escape measured shut)
+— **four-fold with §D2's `[08-17]` Kagi addendum**, from the attack side.
+
+**[MEASURED]** — `notes/lasso-over-logup.md`, `minidregg/Selvage/DecomposableTable.lean`
+(`feef028`), `notes/hash-landscape.md` Addendum 2.
+
+## D6. `[08-17]` The job-split — **refuted three independent ways**
+
+**The idea**: not every hash invocation in the wrap needs an RO. Split the job —
+use a cheap PRF-like primitive (Legendre symbols were the candidate) wherever a
+full random oracle is not required, and pay for the RO only where the
+transcript genuinely needs one.
+
+**Three numbers, each sufficient on its own:**
+
+1. **PRF-able jobs are 2.2% of wrap permutations.** Absorption is compression
+   *at its information floor* — there is almost nothing in the wrap that a
+   weaker primitive is allowed to do.
+2. **Legendre costs 4 R1CS per bit against the sponge's 1.21 cells per bit.**
+   The "cheap" primitive is **3.3× more expensive in the unit that bills.**
+3. **The key-recovery record puts Ext4 at ~2^64.6 against our 2^123.6 bar** — a
+   128-bit key would need a **degree-9 extension.**
+
+**Bonus corroboration from outside**: **Loquat's own circuit is 93.5% hashing**
+— independently the same ~94% shape as ours, which is why there was no slack to
+find.
+
+**[DERIVED + THEIR PAPER]** — `notes/aligned-hash-space.md`,
+`notes/hash-landscape.md` Addendum 1.
+
+## D7. `[08-17]` ⚑ Weft-1 — **killed as specified, and the epitaph beats the number**
+
+⚠⚠ **Read the tag precisely: KILLED AS SPECIFIED, not "closed as a question."
+Weft-2 is a live re-opening** — `06-OPEN.md` §5 and `08-ATTACK-BRIEFS.md`
+BRIEF 2. Filing this as a settled dead end is exactly the mistake this line
+exists to prevent.
+
+**The idea** (from `02-LANDSCAPE.md` §1.4b): a hash whose **mixing layer is the
+already-proved `novelPack` / additive-NTT transform** — the "one proved linear
+object" prize — with a lane-wise `x⁻¹` S-box, which the attack record says is
+the one shape FreeLunch's authors cannot directly model.
+
+**The number**, exact and self-certifying (`branch(M) = branch(M⁻¹)` duality
+lets four exact passes exhaust every codeword with min-side ≤ 2):
+
+> **branch(Weft, t=24) = 6** — against **MDS 25**, and against **Poseidon2's own
+> layer at 8 (exact, t=16) / ≤10 (t=24)**.
+
+⚑ **And the structural finding is worse than the number, because branch number
+cannot see it**: the mixing matrix is **block-triangular along a subspace
+flag** — lanes ≥ 2ᵇ map into themselves for b = 1..4 — and the 0-fixing
+lane-wise `x⁻¹` S-box **preserves them.** That is a **4-deep chain of
+round-invariant lane subspaces: the 2026/306 subspace-trail shape BY
+CONSTRUCTION.**
+
+> ***The alignment thesis imports the code's triangularity, and triangularity
+> is the opposite of diffusion.***
+
+**The Chaghri caveat resolves the other way**: the mixing spends **zero**
+Frobenius terms, so this is the **Starkad/HADES structured-layer death**, not
+Chaghri's. Basis-independent (three random domain bases give the identical
+answer); the random-matrix control reads **25**.
+
+**What survives**: only the **dense-composed fallback**, which loses the
+one-proved-linear-object prize — i.e. the reason for building it. And
+`[WEFT-integral]` / `[WEFT-groebner]` **should not be run against the dead
+layer.**
+
+⚑ **The reusable output is a gate, not a verdict**: `swarm/BRIEF-TEMPLATE.md`
+gained a **branch-number-first design rule** — *compute the branch number of any
+proposed linear layer before pricing anything about it* — paid for by this lane.
+
+**[MEASURED, exact]** — `~/src/ring-ro-hash/weft_branch.py` (`737ea7b`),
+`notes/hash-landscape.md` Addendum 3, `notes/k16-proof-and-weft.md`.
+
 ---
 
 # E. Substrates and proof systems
@@ -583,6 +712,233 @@ landed** and the current recommendation is contested.
   is **arithmetic-bound — 36.45% hashing vs 60.75% arithmetic — so a free hash
   is worth only ×1.57.** *"The binary-field case must be argued on cryptanalytic
   surface, not on verifier cost."* Reached independently from the hash side.
+  > ⚠⚑ **`[08-17]` THIS ONE'S PREMISE MOVED, AND IT MOVED TOWARD RE-OPENING.**
+  > The arithmetic this entry calls dominant is **exactly what §E9's landed
+  > algebraic collapse and §1.10's packing retune deleted.** Poseidon2's share
+  > of the wrap goes **36.45% → 52.36% → 73.3% measured (~81% derived)**, so a
+  > free hash goes **×1.57 → ×2.10 → ~×5.** The wrap is no longer
+  > arithmetic-bound; at `a4/K16/rec4` it is decisively hash-bound.
+  > **The closure sentence — argue the binary case on cryptanalytic surface —
+  > still stands as ADVICE, but the number that made it a dead end does not.**
+  > *A cost verdict outliving its premise, caught here rather than six weeks
+  > out.* `03-MEASUREMENTS.md` §1.9, §1.10.
+
+## E6. `[08-17]` ⚑ ECFFT — **blocked by its OWN theorems, not by constants**
+
+**The idea**: our BFV RNS limb primes have low 2-adicity (measured **13 / 14 /
+17**), which is why the prover emulates them rather than proving over them.
+**ECFFT** replaces the multiplicative subgroup with an elliptic-curve
+isogeny domain and needs **no 2-adicity at all** — so limb-native, zero-emulation
+proving should follow.
+
+⚑ **The kill is unusual and worth the section: the tool is refused by the
+theorems in its own papers, at OUR parameters, before a single constant is
+compared.**
+
+**Closure 1 — the Hasse trace-height cap.** Part I Thm 4.9 / Part II Thm 8:
+curves with a 2^k subgroup are guaranteed only for
+
+```
+    2^k ≤ 2√q
+```
+
+(the Hasse interval has width `4√q`, so it contains a multiple of `2^k` only up
+to that point); `Find_Curve` demands `q ≥ 2^{2(k−1)}`; Part II Thm 1 states the
+IOP for computation length `T ≤ √|F|`. ⚑ **And the cap binds the group size ⇒
+Riemann–Roch dimension ⇒ TRACE HEIGHT, not the blocklength** — Thm 12's domain
+is `|T| = ρ⁻¹·2^ℓ`, so **blowup comes free as extra cosets and is
+unconstrained.** Instantiated: `q₀, q₁` sit below 2³⁶ ⇒ `k ≤ 18` ⇒ **max height
+2¹⁸**, and the 98,304-equation family pads to **2¹⁹ per limb.**
+
+> **Short by 2×, structurally, before any soundness or constants enter.** And
+> `q₂ ≈ 2³⁷` allows exactly 2¹⁹ **with zero margin** — no headroom for
+> degree-correction slack, masks, or growth, against a family size that is
+> *current*, not target.
+
+**Closure 2 — the error term exceeds 1.** The batched-FRI additive term is
+`O(ρ²|T|²/(ε⁷q))`. At height 2¹⁹, lb=3 ⇒ `|T| = 2²²`, over `q₂ ≈ 2³⁷` this
+carries `|T|²/q = 2⁴⁴/2³⁷ = 2⁷`: **the bound exceeds 1 outright with base-field
+challenges.** The theorem as stated gives *nothing* at our blocklengths over
+36/37-bit fields, and the rescue (extension challenges) **is not in the papers**,
+whose statements are base-field-challenge only.
+
+**And the constants would have been FINE**, which is what makes this a clean
+theorem-kill rather than a pricing one: ~4× the DFT multiply count ⇒ **≈4–6×
+the LDE**, and since DFT is 46–80% of prover *arithmetic* while the prover is
+**hash-bound by 5.0–7.2×**, that is **≤1.6× on arithmetic and ≈nil on the
+total.** ⚠ The one implementation datum in circulation —
+`wborgeaud/ecfft-bn254`, `n = 2¹⁴`, **ENTER 275.5 ms vs classic FFT 4.58 ms =
+60.2×** — is **the wrong op to quote for a prover**; per-layer EXTEND is
+≈60/14 ≈ **4–5× a same-size FFT**, and *nobody has published a tuned
+prover-grade number.*
+
+⚑⚑ **THE DOMINATING MOVE, and it is why this dead end is worth more than most
+live ones: THE LIMB PRIMES ARE GREENFIELD.**
+
+> ***ECFFT is the tool for fields imposed from outside (secp256k1, P-256). Our
+> limb fields are not imposed.*** `fhe.rs`'s `BfvParametersBuilder::set_moduli`
+> is a public API.
+
+Sieved: **68 candidate 36-bit and 151 candidate 37-bit primes with 2-adicity
+24.** Concrete triple `0xfed000001 / 0xfd9000001 / 0x1ff5000001` gives
+**log₂Q = 108.978 against the deployed 109.000 (Δ = −0.022 bits).** With those,
+**classic FRI reaches height 2²¹ at blowup 8, per limb, zero emulation, at
+overhead 1.00×** — banking the **4.80× committed-element deletion.** Cost: **a
+re-genesis flag day + an H1 re-measure + an `[UNRUN]` fhe.rs smoke test.**
+
+⚠ **Two of our own premises were wrong and are corrected at source**: the fold
+set is **degree 4096, not 8192**, and the 2-adicities are **13/14/17**, not
+"≥14." ⚠ **The circle-STARK route is refuted in the same breath**: all three
+limb primes have `v₂(q+1) = 1`, so `p+1` domains are out.
+
+⚠ **And it re-opens something**: limb-native proving **re-opens the cross-limb
+provenance hole** that row-interleaving closed. The Z_Q sumcheck (§`02` 2.4b) is
+the candidate binding, and it closes Hole A while closing Hole B *against
+itself*.
+
+**If EC-FRI is ever wanted**: it reduces to plain RS over exotic domains, our
+cone is agnostic at the definition level (`dom : ι ↪ F`; **0 `IsPrimitiveRoot`
+tree-wide**), and the fold needs **6 named missing lemmas — only one with real
+AG content** (Hasse + Vélu + 2-descent), *"and that one exists in no proof
+assistant I know of."*
+
+**[THEIR PAPER]** for both closures — *their theorems, our parameters* ·
+**[MEASURED]** for the 2-adicities and the prime sieve · **[DERIVED]** for the
+constants. `notes/ecfft.md` · `docs/VERDICTS.md` §3b.
+
+## E7. `[08-17]` Frobenius / minpoly levers on the in-circuit verifier — **CLOSED BY PROOF**
+
+Two of the five Galois pathways died to arguments rather than measurements,
+which is why they are here: **they will not be re-proposed.**
+
+- **OOD absorption is already at the information floor.** `observe_ext`
+  decomposes to exactly **4 base coefficients = one Ext4 value — the same
+  object.** The 82,256 absorbed base felts ≈ **10,282 of the 11,128
+  q-independent perms**, so the "absorb the minimal polynomial instead" idea has
+  **~846 perms (2.2%) to work with**, and minpoly form is **net negative**
+  anyway (adds 3 K-MACs/column/query to delete ~0.005% of `Alu`).
+- ⚑ **The tempting conjugate-point variant is UNSATISFIABLE.** It would delete
+  ~5,100 absorption perms (13% of wrap perms), but `ζ^{p^j} = ζ·g` requires
+  `ord(g) | 4` (j ∈ {1,3}) or `ord(g) | 2` (j=2), **and the trace generator has
+  `ord(g) = 2^k ≥ 16`.** A two-line cyclic-group argument, and Lean-statable.
+  ⚠ **Even if it were satisfiable** the sample space shrinks `~2¹²⁴ → ≤ p²−1 ≈
+  2⁶²`, giving a DEEP union bound of **2⁻⁴⁸ at degree 2¹⁴ — ~76 bits below the
+  ~124-bit capacity ledger.** *(The note quotes 2⁻⁴⁸, not any flattering
+  figure — worth noticing, given §M.)*
+- ⚠ **A misattribution of ours, retracted at source**: ethSTARK v1.2 §3.8.2
+  spends the conjugate quotient to prove **F_p-definedness of committed
+  columns** — a purpose our base-felt MMCS leaves make *structural* — **not to
+  cut costs.** The lever was read into the paper.
+- **Fold-orbit: null AT SOURCE.** p3 already spends the ±x orbit fully (the
+  prover supplies exactly `2^arity − 1` siblings per phase and the verifier
+  seats its own folded value before hashing). ⚑ **This explains the previously
+  measured null arity knob** (−2.0% perms, +0.3% Alu) rather than leaving it a
+  curiosity.
+- **Trace/norm: mathematically identical to packing** (`packEquiv`) — and a
+  probabilistic one-trace-check variant would carry a **1/p = 2⁻³¹** error term,
+  refused.
+
+**[DERIVED + PROOF]** — `notes/galois-levers.md` §1, §4, §5.
+
+## E8. `[08-17]` The job-split → see §D6
+
+Filed under hashes because the primitive is the transcript sponge, but it is a
+proof-system closure too: **PRF-able jobs are 2.2% of wrap permutations**, and
+the cheap primitive costs **3.3× more per bit** than the sponge it replaces.
+
+## E9. `[08-17]` ⚑⚑ Sumcheck-batching the reduced opening over two-adic FRI — **A PCS REPLACEMENT, NOT A BACKEND REWRITE**
+
+⚠ **This closes §L3 below.** It had been the single biggest named available win
+for days, and the reason nobody took it **had never been written down.**
+
+**The idea**: one sumcheck over `Σ_k α^k v_k` replaces ~14,300 per-column
+ExtMuls in the wrap's reduced opening. Priced at **×2.13 on the wrap / ×2.05 per
+turn.**
+
+**The obstruction, and it is structural:**
+
+> A sumcheck over the `q · Σw ≈ 390,716` opened values terminates in a single
+> claim about **the multilinear extension of those values at a random point,
+> `Ṽ(r)`.** The verifier can discharge it in exactly two ways:
+> 1. **Recompute `Ṽ(r)` from the values** — Θ(N) again. **No saving.** The
+>    sumcheck was free only if someone else answers the final claim.
+> 2. **Open it from a commitment to `V`** — but the only commitment the opened
+>    values have is **the Merkle leaf of the child's MMCS, and a Merkle root
+>    supports no evaluation opening.**
+>
+> ⚑ And the verifier **already holds every one of those values in the clear** —
+> it must, because it hashes them into the per-query leaf sponge (**64.9% of
+> in-circuit permutations**). The values are not hidden behind a commitment that
+> could be opened; they are **plaintext circuit witnesses that are separately
+> hashed.**
+
+> ⚑⚑ ***Batching the reduced opening with a sumcheck requires an
+> evaluation-binding commitment on the opened values. Two-adic FRI gives
+> univariate openings only. Lever 3(b) is a PCS REPLACEMENT, and its cost is a
+> new commitment scheme, not a backend rewrite.***
+
+**That is exactly why SP1 6.4 went Jagged → Stacked → BaseFold and OpenVM 2.0
+went Stacked → WHIR**: both are multilinear PCSs whose openings *are* MLE
+evaluations, so the terminal claim is answerable. **Ours cannot answer it.**
+
+⚠ **Consequence for our own docs**: `APEX-VERIFIER-AIR-REDUCTION.md`'s Lever D
+must be re-tagged **COORDINATION-REQUIRED → PCS-REQUIRED.** The obstruction was
+never ownership.
+
+⚑ **Three docs carried three different verdicts on the same phrase, about three
+different circuits, and nobody had noticed**: pure upside (`WRAP-NATIVE-HASH-DECISION.md:134`)
+· an *ownership* obstruction ("it's in the fork", `APEX-VERIFIER-AIR-REDUCTION.md:157`)
+· "now MARGINAL" (`HORIZONLOG.md:18343-18345`), **true of gnark only.**
+
+⚠ **A retraction inside the retraction, and it inverts the finding.** The first
+draft of the gnark line said gnark *"may still have the point-sharing half open
+— `deriveOpenInputReducedNative` recomputes `S_x` per `(matrix, point)`."*
+**False at source.** `chain/gnark/stark_open_input.go:445-465` computes `sx`
+**once per matrix, outside the `for pt` loop**, and says so in a comment.
+⚑ **Which strengthens the finding: gnark has had BOTH halves since 2026-07-13,
+and the Rust in-circuit verifier was the only rung still paying `P` chains per
+query.** *(`feedback-read-the-blocker-before-you-relay-it`, again, and it cost
+one wrong sentence in a committed doc.)*
+
+**What IS reachable was taken**: the purely algebraic half landed at **×1.436 on
+wrap cells** (`03-MEASUREMENTS.md` §1.9), and the **×2.13 endpoint was then
+reached by a different road entirely — packing, at ×2.011 measured** (§1.10).
+
+**[DERIVED, structural]** — `notes/sumcheck-batched-opening.md` §0a ·
+`docs/LEAF-VS-RECURSION.md`.
+
+## E10. `[08-17]` Deferred (Halo-style) accumulation over Merkle-only commitments — **factor 0**
+
+**The idea**: don't discharge each layer's opening claim in-circuit; **defer and
+accumulate**, discharging once at the end. It is the move that makes folding
+schemes cheap, and we hold every piece of the machinery.
+
+**The number that closed it**: the sumcheck endpoint claim per layer is over
+**`N·q ≈ 195,814` base values**, and interior deferral costs **2N** (N eq-tensor
+ext-mults + N MACs) **against the N-MAC α-Horner it replaces.** The sumcheck
+rounds themselves (~log N ≈ 18 ext-ops) are free — ⚑ ***the terminal claim is
+the whole bill***, which is the same shape as §E9 and for the same reason.
+
+> ⚑ **The MLE obligation cannot travel even ONE layer.** Each layer holds
+> exactly its child's opened values, and a univariate-at-ζ view **cannot answer
+> an MLE point query.** There is nowhere for a deferred claim to go.
+
+The one native hop that exists is **gnark's, already landed and already retired
+as MARGINAL** (the 0.32M-constraint residual). An accumulator binding site would
+cost ~19 ext = **10 perms/layer** — i.e. the binding is not the problem; the
+discharge is.
+
+**Live only with a multilinear PCS — the SP1/OpenVM road**, which is §E9's
+conclusion arriving from the other direction. **Two independent pathways, one
+obstruction.**
+
+⚠ **A named-not-proved dependency sits under any future attempt**:
+`ComposeErrorBound` (`Selvage/HeteroComposition.lean:230`). And
+`OB2_depth_composition_nonneg` composes **protocol ROUNDS, not stack LAYERS** —
+reading `(t+k)·ε` as a per-layer bound is a **category error**, recorded because
+it has been made.
+
+**[DERIVED]** — `notes/galois-levers.md` §2.
 
 ---
 
@@ -957,6 +1313,18 @@ These are the disagreements. **Do not resolve them from this file.**
 - **The open-items file has not caught up with the lane it dispatched.**
   ⚠ And that note is **untracked on disk** (`07-ARTIFACTS.md` O4).
 
+✅ **`[08-17]` CLOSED — and both halves of the disagreement resolved, in
+opposite directions.** The note won: the sumcheck route is a **PCS
+replacement** (§E9 now carries the full argument, and `06-OPEN.md` no longer
+lists it). But the *number* was then reached by a road neither side had
+considered — **packing, at ×2.011 measured** — so the open-items file's
+instinct that ×2.13-shaped value was sitting there was **right for the wrong
+reason.** ⚠ **The note is now committed** (`b458936`…`0232918`); the
+untracked-on-disk warning is stale.
+⚑ *This is the most useful shape in the file: a disagreement where **both**
+sides held a true half, and resolving it required a third measurement neither
+had proposed.*
+
 ## L4. "lb=6 is 2.9× off the optimum" — VERDICTS is right here
 
 `notes/what-remains.md:46` still lists it as a standing measurement; VERDICTS
@@ -982,6 +1350,52 @@ post-quantum**"*; and **Flock reports 82k BLAKE3/s on a SINGLE M4 Max core
 against BinarySpartan's 410k on twelve — 2.2–2.4× faster per core, >660k on
 ten cores, i.e. it wins outright in aggregate.**
 
+✅⚠ **`[08-17]` RESOLVED — the paper went public (eprint 2026/1656, Setty) and
+was read at source. It exists. And it refuted OUR SCRUTINY, not the other way
+round.** Taking the "stands either way" paragraph above line by line:
+
+| our claim | verdict at source |
+|---|---|
+| *"Vega 44.2 is `spartan2` at 541.72 ms"* | ⚑ **REFUTED.** It is the real **Vega_MC, measured 44.23 ms** at 2 KiB. **The mis-identification was ours, and it was the load-bearing step in the "the table is mislabelled" argument.** |
+| *"the harness runs on an M1/8-core"* | ⚑ **DISSOLVED.** All rows are **same-machine M4 Max** through Flock's pinned harness (`8790722`), **best-of-five, disclosed.** *"Our M1 data points are obsolete for this comparison."* |
+| *"Vega is P-256 + Hyrax, not post-quantum"* | ✅ **STANDS**, and is independently re-confirmed at §4.3/§7 by the Nebula/Vega read. ⚠ **Narrowed**: it applies to the SLIDE's framing; the paper never claims Vega is PQ. |
+| *"Flock wins in aggregate"* | ✅ **CONCEDED AND MEASURED BY THE PAPER ITSELF — 1.96× / 1.76× / 1.78× in its own Table 1.** |
+
+> ⚑⚑ ***"Our scrutiny was scrutiny of the SLIDE. The paper is cleaner than the
+> slide."*** That is the transferable lesson, and it belongs beside the
+> `[ABSENCE]` rule at the top of this file: **reading a preprint through its
+> conference deck manufactures errors that look exactly like findings.** Both
+> failures here — the mis-identified row and the wrong machine — came from the
+> deck, and both survived two lanes.
+
+**What survives as residual criticism** (real, but not the slide's class of
+error): peak-of-sweep + best-of-five is favourable-point reporting, disclosed;
+the gzip proof-size comparison is a proxy; and the "additive optimizations"
+claim **elides the JBR-vs-UDR regime difference — which is not an optimization
+one applies but a soundness-accounting choice.**
+
+⚑ **And the read found nothing that refutes us** — six specific contradictions
+were checked for, all negative. Two things it *corroborated* independently:
+Ligerito's corrected RS base (a printed-base bound would have credited ~2^−200
+rather than the paper's stated **2^−102.6**), and our **2²⁸ headroom** figure
+for §6.4's dropped `1/|F|` terms — **which is the paper's own stated validity
+ceiling, arrived at from the other side.** ⚑ *"The paper is, unknowingly, the
+second witness to both."*
+
+⚠ **One owed lemma DISSOLVED**: BinarySpartan's reference [10] is
+**eprint 2024/1210** (decomposed eq tables, protocol-neutral), **not 2024/1038**
+(constraint packing) — so the GF(2)-linear-independence lemma we thought we
+owed is **not owed**, and BinarySpartan is not evidence about it either way.
+
+⚠ **Structural facts about the paper, worth carrying**: **zero theorem
+environments** anywhere (the entire security argument is one paragraph), **no
+artifact and no repository URL** — while its own reference list links repos for
+Binius64, Plonky3, Hashcaster and Flock — and **the words "Fiat–Shamir",
+"transcript" and "challenge derivation" do not occur in it.** ⚑ Which means it
+is **silent at every layer on ring-switching's ordered basis** — the exact gap
+we closed on 08-16 (`docs/BINARY-POSITION.md`), and with no artifact **nobody
+can check which situation it is in.**
+
 ## L7. "The multilinear/GKR substrate is absent everywhere"
 
 `notes/archive/convergence-2026-08-13.md` headlines it as absent;
@@ -998,6 +1412,39 @@ source locations. *"Earlier notes recorded it as 'ternary' AND as 'CBD(10)';
 **both were misreadings.**"* ⚠ **`notes/fhe-core-theory.md` still carries stale
 derived figures** (the ~4.3-bit B_key gap, MATZOV ≈ 122), flagged as superseded
 pending a re-run. `docs/VERDICTS.md` carries the corrected label.
+
+## L9. `[08-17]` Weft — killed as specified, contested as a question
+
+The one entry in this file whose **own author is re-opening it.** §D7 has the
+number and the epitaph; the contest is over what the number *means*:
+
+- **The kill lane**: branch 6 against MDS 25 and Poseidon2's own 8, plus a
+  4-deep invariant subspace flag. *Killed as specified.*
+- **Weft-2** (`06-OPEN.md` §5, `08-ATTACK-BRIEFS.md` BRIEF 2): **branch 6 may
+  not be disqualifying** — our own differential accounting says branch 6 + `x⁻¹`
+  **clears 128 bits in two rounds** — and a **free lane rotation** breaks the
+  suffix-shaped flag, with `novelPack` confined to internal rounds and a dense
+  external layer (Poseidon2's own architecture).
+- ⚑ **The honest statement of where it sits**: *"We verified the rotation kills
+  THAT flag; killing one flag is not the absence of flags."* The structure is
+  **tower-triangular by construction**, so a second flag is the **expected**
+  finding, not a surprise. **And the linear/correlation side was never run.**
+
+**Do not resolve this from this file.** The open question is a **new
+subspace-trail search on `r ∘ novelPack`**.
+
+## L10. `[08-17]` Two sibling notes that disagree and nobody reconciled
+
+`notes/aligned-hash-space.md` §0.3 / §5 / §7.2 still asserts `R ≈ 3.2×` for
+lookup-Blake2s as *"the one route that crosses `R*`"* and calls the lookup
+measurement **"the highest-value open measurement."** `notes/lasso-over-logup.md`
+§2.4 **refutes exactly that figure** (§D5 here) and §6.1 asks for the pointer to
+be marked RESOLVED.
+
+**Both were written the same night. Neither was edited.** Listed here because
+the shape — *a lane answering a sibling's open question, with no third pass to
+close the loop* — is how a refuted number stays quotable, and this file exists
+to stop exactly that.
 
 ---
 
@@ -1055,3 +1502,24 @@ Named here so the gap is visible rather than absent.
 4. **Celer's eprint number (2026/1453)** — appears nowhere in the repo.
 5. **A standalone argument that amortized/batched bootstrapping does not
    apply** — does not exist separately from the depth-crossover sentence.
+
+### `[08-17]` Added
+
+6. **`κ = 24` for the dual-mode MSIS commitment** is a **root-Hermite sketch,
+   not a lattice-estimator run** — and this repo has already recorded the
+   lattice field's "128-bit" labels re-deriving to **~98-bit core-SVP.** The
+   estimator run is obligation **O6, un-run**, and §D3/§K's pricing inherits it.
+7. **"~250 constraints per hash"**, the constant that converts our 38,168 perms
+   into the ≈9.5M constraint-equivalents behind the *~10³ DL dividend* — it is
+   **Nebula's**, taken from their text, and we never re-derived it in our own
+   unit. The dividend's order of magnitude does not turn on it; the second digit
+   does.
+8. ⚑ **"Real keccak-f in R1CS ≈ 25–150K per permutation"**, the number that
+   decides whether the EVM decompilation prize is ~60–140× or something much
+   smaller — the note labels it *"recalled range, not measured."* With real
+   keccak the decompiled circuit moves **≈3–4K → ≈80–450K**, so **whoever
+   quotes §Pillar-7's prize is quoting the hash choice.**
+9. **The Weft mixing layer's evaluation points and basis** (`βⱼ = 2^j`, first 24
+   of the dim-5 enumeration) are **[ASSUMED-BY-THE-LANE]**, not read off a
+   specification — with a 3-random-basis sensitivity arm that came back
+   identical. The branch number is exact *for that instantiation*.
