@@ -5,6 +5,46 @@ includes **the directions that were explored and closed before anything was
 written down.** For each: what was asked, what came back, and where the
 artifact is now.
 
+---
+
+## ⚠ TWO STRATA — read this before anything below
+
+**Stratum 1 (2026-08-16)** is everything unmarked: the archaeology pass, written
+from the transcripts, covering 08-10 → 08-16.
+
+**Stratum 2 (2026-08-17)** is everything tagged **`[08-17]`**: the ~42 research
+commits that landed *after* the archaeology pass. They are folded in **at the
+pillar they belong to**, not appended, so this file reads as one landscape —
+but the tag is there so you can always tell which pass a sentence came from.
+Where stratum 2 **contradicts** stratum 1, the old text is kept and the
+contradiction is stated **at the old entry**. Both strata are informative: the
+first records what we believed, the second what measurement did to it.
+
+⚠ **This file is still a snapshot.** The live documents are
+`~/dev/zkml-research/SLVG_THOUGHT.md` (the shape) and `docs/VERDICTS.md` (the
+facts). Read SLVG_THOUGHT first.
+
+**Index of the `[08-17]` additions**, so the second stratum is findable as a
+unit:
+
+| where | what landed |
+|---|---|
+| §1.1 | ⚑ **the limb primes are greenfield** — 68/151 sieved candidates at 2-adicity 24, zero-emulation vFHE at overhead 1.00× |
+| §1.3b | the Kagi sweep — CheapLunch / Perrin / Griffin at source; **Poseidon2's fourth independent confirmation** |
+| §1.4b | the **aligned-hash space** charted — *the relation IS the attack surface* |
+| §1.4c | **Weft** — proposed and killed exactly, in one day (⚠ Weft-2 is a live re-opening) |
+| §1.4d | the **dual-mode ring object** — the absorb matrix was a commitment key all along |
+| §1.5b | **ECFFT** — blocked by its own theorems (see `04-DEAD-ENDS.md` §E6) |
+| §1.7b | the **Galois-lever sweep** and the batched reduced opening — the ×2.13 endpoint, reached by packing |
+| §1.8b | **Lasso-over-LogUp** — the 3.2× lookup lever refuted at 1.96× |
+| §1.9 | ⚑ **BinarySpartan read at source** — our own slide-era scrutiny partly refuted |
+| §1.11 | **Nebula & Vega** at source, and the **PQ-Vega** path priced layer by layer |
+| §1.12 | **PQ folding and committed memory** — `AccRbrFold`, `TwistContinuity` |
+| §2.4b | the **Z_Q product-ring sumcheck** against cross-limb Hole A / Hole B |
+| Pillar 7 | ⚑ **EVM decompilation into logic** — Futamura for circuits, Stage 0 landed |
+
+---
+
 ## Scale, so you can calibrate
 
 **369 top-level research/build lanes** across seven parent sessions,
@@ -25,6 +65,18 @@ second tier). Distribution:
 ⚠ **Sessions overlap heavily** because ember pruned context repeatedly and the
 harness forked. The same lane can appear in several transcripts. The table
 above counts each lane once, against the session that spawned it.
+
+**`[08-17]`** The count above stops at the archaeology pass. **~42 further
+research commits landed 08-16 21:30 → 08-17 02:50**, in a burst that is
+structurally different from the first six days: it is almost entirely
+*second-order* work — sweeps that price five pathways at once (Galois levers,
+the mathematics sweep), papers read **at source** to settle claims we had made
+from slides and abstracts (BinarySpartan, Nebula, Vega, CheapLunch, Perrin,
+Lasso), and Lean artifacts that *close* obligations named earlier
+(`AccRbrFold`, `TwistContinuity`, the ordered-basis binding). ⟨inference⟩ The
+shape is what you get when a campaign stops generating hypotheses and starts
+discharging them — which is also why the second stratum contains more
+retractions per commit than the first.
 
 ---
 
@@ -74,6 +126,34 @@ family law, with a 67-digit counterexample) · the BabyBear→KoalaBear flag-day
 census, split across four sweeps (450 files / 4,216 literals / **50
 independent modulus declarations** in `breadstuffs/metatheory`; minidregg has
 **1**).
+
+### `[08-17]` ⚑ The field question has a third answer nobody had asked for: **the limb primes are ours**
+
+The ECFFT lane (§1.5b) went looking for an exotic evaluation domain and came
+back with a much duller and much larger result. Every prior framing treated the
+**BFV RNS limb primes as given** — a fixed obstacle the prover had to emulate
+around. They are not given. **Nothing is deployed; the limb primes are
+greenfield, and choosing them differently deletes the emulation entirely.**
+
+- Sieved: **68 candidate 36-bit primes and 151 candidate 37-bit primes with
+  2-adicity 24.** Concrete triple `0xfed000001 / 0xfd9000001 / 0x1ff5000001`
+  lands **log₂Q = 108.978 against the deployed 109.000** — same bit sizes, no
+  FHE security change of consequence.
+- With those, **classic FRI reaches trace height 2²¹ at blowup 8, over each
+  limb's own prime, with ZERO emulation** — banking the measured **4.80×
+  committed-element deletion at overhead 1.00×**.
+- **Cost: a re-genesis flag day + an H1 re-measure + an `[UNRUN]` fhe.rs smoke
+  test.** *The greenfield doctrine paying exactly as written — the answer to
+  "what does it cost" is "a rebuild."*
+- ⚠ **It re-opens §2.4's cross-limb provenance hole**, which row-interleaving
+  had closed: limb-native proving means the limbs are no longer in one row. The
+  Z_Q-sumcheck lane (§2.4b) is the candidate binding, and its verdict is mixed.
+
+`docs/VERDICTS.md` §3b · `notes/ecfft.md`.
+
+⚠ **This does not resolve the KoalaBear-vs-BabyBear disagreement below** — it
+is orthogonal to it. It changes which *limb* primes we pick, not which *proof*
+field we prove over.
 
 ⚠ **A live disagreement, and it is the sharpest one in this handoff.** A
 decision memo published as a claude.ai artifact on 08-13 recommends
@@ -156,6 +236,48 @@ a **ring-native** hash of our own design.
 `notes/ring-hash-scripts/` · a decision memo as a claude.ai artifact
 (`1167978c-…`, `07-ARTIFACTS.md`).
 
+## 1.3b `[08-17]` The Kagi sweep — three papers we did not have, read at source
+
+**Asked**: is the AO security record we priced against actually the current
+record? (Three papers were pulled that no earlier sweep had.)
+
+**Found**:
+- ⚑ **"XHash8 is FreeLunch-UNMODELABLE" is superseded — and the replacement
+  is STRONGER evidence.** **CheapLunch (eprint 2025/2040)** extends FreeLunch
+  past CICO-1 to multiple outputs and **reaches XHash8**, proving
+  `7³⁰ ≤ D_I ≤ 7^{24+6k}` for CICO-(12−k,k) — **validating XHash's own
+  Conjecture 1** — and confirming round-skips apply. Its own conclusion:
+  *"our results do not threaten the security of any full-round hash function."*
+  > ⚑ **"Unmodelable" was an ABSENCE OF ANALYSIS wearing a security costume.**
+  > *Modeled-by-the-strongest-current-framework-and-surviving-at-full-rounds*
+  > is a strictly better epistemic position.
+- **Perrin (eprint 2024/605)** is a dedicated XHash analysis we never had. It
+  **generalizes FreeLunch itself** and concludes both variants safe, with the
+  SAGE-validated bound **under-estimating** their security; the only padding
+  vulnerability is *"plausibly applicable only in the multi-rate setting — for
+  which the authors make no claim."* ⚑ Its methodological rule is ours now
+  too: **base the argument on the ELIMINATION step, not on computing the
+  Gröbner basis** — the latter is hard to estimate and *"sometimes literally
+  non-existent."*
+- ⚑ **A fourth independent confirmation of Poseidon2, this time from the
+  attack side**: *"even with ω = 2, we found no attacks on full Poseidon with
+  its security margin for realistic security levels (80 ≤ λ ≤ 256)"* — though
+  the analysis does outperform the designers' at some 256-bit instances
+  **without margin** (2^253.59). Griffin's full-round k=1 breaks confirmed at
+  source (our recorded 2^51–64 stands).
+- **Consequence for the post-Weft successor: *adopt, do not design* is
+  STRENGTHENED.** XHash8 carries a dedicated analysis, a generalized-FreeLunch
+  argument, a CheapLunch modeling that validates its own conjecture, and no
+  full-round attack. **That is more cryptanalytic age than any candidate we
+  could author**, and `Selvage/HashRelation.lean` is where it should land.
+- **Collateral, from the norm-growth literature we were missing**:
+  LatticeFold+ with ℓ2-norm checks says the **ℓ∞ range checks our budget uses
+  are the dominant prover cost**, with a modular ℓ2 replacement. Our T = 2⁴⁷
+  wall (§1.12) stands; **what this answers is the question we never asked —
+  what *enforcing* the budget costs.** Now `06-OPEN.md` item 9.
+
+**Artifacts**: `notes/hash-landscape.md` Addendum 4 · `~/paperbin` (both papers).
+
 ## 1.4 The ring-native arithmetization-friendly hash
 
 ⚑ **The campaign's most original construction, and it survived cryptanalysis.**
@@ -183,7 +305,97 @@ versus **2,417,127** today. See `04-DEAD-ENDS.md`.
 
 **Artifacts**: `notes/ring-hash-design.md`, `notes/ring-hash-scripts/`, and
 ⚑ **`~/src/ring-ro-hash/design_*.py`, which is NOT a git repository** —
-see `07-ARTIFACTS.md`.
+see `07-ARTIFACTS.md`. **`[08-17]` ⚠ That last clause is now FALSE and the fix
+is the good news: `~/src/ring-ro-hash` was `git init`'d on 08-16 and the
+tooling is versioned.** See `07-ARTIFACTS.md` O1.
+
+## 1.4b `[08-17]` The aligned-hash space, charted — *the relation IS the attack surface*
+
+**Asked**: the standing pitch was **"design for a cheap verification
+*relation*, not a cheap *function*"** — is that a real design axis, and what
+does the attack literature say about it?
+
+**Found — it survives as ECONOMICS and splits as CRYPTOGRAPHY**, and the
+attack papers say the second half in their own words:
+
+- ⚑ **FreeLunch Remark 1, at source**: the Griffin attack's polynomial
+  modelling *"was proposed by the authors of this algorithm for their initial
+  security analysis"* — **the attackers used the designers' own verification
+  relation and changed only the monomial order.** A cheap relation is not a
+  free lunch; it is *the model you hand the attacker*.
+- The whole sub-Poseidon prime-field band (`R ≈ 0.3–0.6×`) is **broken or
+  unanalyzed**: Griffin 2^51–64 · Anemoi ℓ=1 2^70 · Rescue-Prime α=3 2^112
+  (α=5 *exactly* 2^128) · Vision **zero papers**.
+- > **The sharpened target: a relation cheap in the PROOF SYSTEM'S operations
+  > and expensive in the ADVERSARY'S algebra.** Lookups and dense linear
+  > layers qualify; **witnessed low-degree relations do not.**
+- ⚑ **`x⁻¹` is simultaneously extremal** — F₂-degree n−1 (most
+  Frobenius-opaque) *and* relation degree 2–3 (cheapest) — **and it is the one
+  shape FreeLunch's authors say they cannot directly model** (XHash8 survives
+  at 2^214). So "spend Frobenius in the linear layer, keep the nonlinearity
+  opaque" has an **affirmative existing witness**, which is what made Weft
+  (§1.4c) worth trying at all.
+- ⚠ **Correction to the record**: **Anemoi's checked relation is degree α, not
+  2** (Eq. 5 at source). The family's only degree-2 verification is Vision's
+  inverse S-box.
+- ⚑ **The char-2 question is answered by the record's own repair**: the
+  Chaghri fix **densified** the linearized mixing layer (one Frobenius term
+  broke it, three fixed it, the designers adopted it).
+
+**Artifacts**: `notes/aligned-hash-space.md` · `minidregg/Selvage/HashRelation.lean`
+(`c2dd38c`, green, axiom-pinned teeth: `GraphSound` as a named-not-carried
+obligation, `slack_not_graphSound` refuting the free lunch, the
+degree-3-relation/degree-7-function asymmetry machine-checked, the deployed
+BabyBear instance graph-sound `by ring`). ⚑ **That build's first axiom pin
+caught a `decide` degraded to a `sorry`** — the tripwire class firing in the
+wild again (`05-ERROR-CLASSES.md`).
+
+## 1.4c `[08-17]` Weft — proposed and killed exactly, inside one day
+
+**The proposal** (from §1.4b): a hash whose **mixing layer is the already-proved
+`novelPack` / additive-NTT transform** and whose S-box is lane-wise `x⁻¹` — the
+"one proved linear object" prize, priced against the measured 64.9%
+leaf-sponge share. Additive-BaseFold rung only; never a deployment proposal.
+
+**The kill, and it is exact rather than approximate** — `branch(M) = branch(M⁻¹)`
+duality lets four exact passes exhaust every codeword with min-side ≤ 2, so the
+answer **self-certifies**:
+
+> **branch(Weft, t=24) = 6**, against **MDS 25** and against **Poseidon2's own
+> layer at 8 (exact, t=16) / ≤10 (t=24)**.
+
+⚑ **And the structural epitaph is worth more than the number**: the mixing
+matrix is **block-triangular along a subspace flag** — lanes ≥ 2ᵇ map into
+themselves for b = 1..4 — and the 0-fixing lane-wise `x⁻¹` S-box **preserves
+them**. That is a **4-deep chain of round-invariant lane subspaces, the
+2026/306 subspace-trail shape BY CONSTRUCTION**, and *branch number does not
+see it*.
+
+> ***The alignment thesis imports the code's triangularity, and triangularity
+> is the opposite of diffusion.***
+
+The Chaghri caveat resolves the other way — the mixing spends **zero** Frobenius
+terms, so this is the **Starkad/HADES structured-layer death**, not Chaghri's.
+Basis-independent (three random domain bases identical); random-matrix control
+reads 25.
+
+⚠⚑ **Record this as KILLED-AS-SPECIFIED, not as a closed question.** **Weft-2
+is a live re-opening** (`06-OPEN.md` §5, `08-ATTACK-BRIEFS.md` BRIEF 2):
+`novelPack` in **internal rounds only**, dense in external (Poseidon2's own
+architecture), plus a **free lane rotation** — because the flag subspaces are
+contiguous *suffixes* and a rotation maps a suffix to a wrapped set. **We
+verified the rotation kills THAT flag; killing one flag is not the absence of
+flags**, and the structure is tower-triangular by construction, so a second
+flag is the expected finding. Also open: branch 6 + `x⁻¹` clears 128 bits in
+two rounds by our differential accounting — **and we never did the
+linear/correlation side.**
+
+⚑ **The reusable gate**: `swarm/BRIEF-TEMPLATE.md` gained a **branch-number-first
+design gate**, paid for by exactly this lane — *compute the branch number of any
+proposed linear layer before pricing anything about it.*
+
+**Artifacts**: `notes/hash-landscape.md` Addendum 3 · `notes/k16-proof-and-weft.md`
+· `~/src/ring-ro-hash/weft_branch.py` (`737ea7b`).
 
 ## 1.5 Polynomial commitment schemes
 
@@ -274,6 +486,78 @@ commit `52e1fab`.
 `breadstuffs/circuit-prove/tests/recursion_tower_profile.rs`,
 `.../leaf_vs_recursion_sweep.rs` · `docs/VERDICTS.md` §4c.
 
+## 1.7b `[08-17]` The reduced opening, and the Galois-lever sweep
+
+**Asked** (ember, 08-16): the ×2.13 sumcheck-batched reduced opening had been
+standing as *"the biggest measured available win"* for days and nobody had
+taken it. Why not — and is there another route to the same endpoint?
+
+**Both halves came back, and they came back opposite ways.**
+
+**(a) The sumcheck route is NOT reachable over two-adic FRI.** A sumcheck over
+`Σ_k α^k v_k` terminates in a claim about **the MLE of the opened values at a
+random point**, which the verifier can discharge only by recomputing it (Θ(N),
+no saving) or by opening it from a commitment to `V` — and **`V`'s only
+commitment is a Merkle leaf, which supports no evaluation opening.** The
+verifier already holds every value in the clear.
+
+> ***Lever 3(b) is a PCS REPLACEMENT, not a backend rewrite*** — the
+> Jagged→BaseFold / Stacked→WHIR move that SP1 6.4 and OpenVM 2.0 both made.
+> **The ×2.13 was the sumcheck endpoint, priced against an assumption that the
+> terminal claim is free. It is not free.**
+
+⚠ **And three of our own docs carried three different verdicts on the same
+phrase, about three different circuits, which nobody had noticed**: pure
+upside · an *ownership* obstruction ("it's in the fork") · and "now MARGINAL",
+true **of gnark only**. See `04-DEAD-ENDS.md` §E9 and `05-ERROR-CLASSES.md`.
+
+**(b) The algebraic half was reachable and LANDED** (`emberian/plonky3-recursion@0ed1182`):
+a matrix opened at `P` points was paying `P` Horner chains per query **over the
+same opened row**; restructured `q·P·n → q·n + P·n`. **`HornerAcc` ×1.806 ·
+`Alu` ×1.651 · wrap cells 58,249,216 → 40,554,496 = ×1.436** — see
+`03-MEASUREMENTS.md` §1.9 for conditions. ⚑ **The Poseidon2 share moves 36.45%
+→ 52.36%**, so "a free hash" goes from ×1.57 to ×2.10.
+
+**(c) `[08-17]` Then the Galois sweep found the endpoint by another road, and
+ember's challenge was vindicated: ×2.13 IS reachable — via PACKING, not the
+sumcheck.** Five pathways priced (`notes/galois-levers.md`), and *two of them
+closed by proof, which is worth nearly as much as the one that opened, because
+they will not be re-proposed*:
+
+| pathway | verdict |
+|---|---|
+| **Frobenius / minpoly** | **CLOSED BY PROOF.** OOD absorption is already at the information floor (`observe_ext` = exactly 4 base felts = one Ext4 value — *the same object*), and the conjugate-point move is **unsatisfiable**: it needs `ord(g) \| 4` and the trace generator has `ord ≥ 16`. A two-line cyclic-group argument, Lean-statable. ⚠ And our ethSTARK attribution was a misreading — §3.8.2 spends Frobenius to prove **F_p-ness of committed columns**, which our base-felt MMCS leaves make *structural*, not to cut costs. |
+| **Deferred accumulation** | **CLOSED over Merkle-only commitments** — see `04-DEAD-ENDS.md` §E10. |
+| ⚑ **Ring-switching / packing** | **THE LIVE ONE.** **90.1% of `HornerAcc` is a fixed K-linear map of base data**; gnark already evaluates it in coordinate form. *The BabyBear wrap was the last rung manufacturing L×L products.* |
+| **Fold-orbit** | **null at source** — p3 already spends the ±x orbit fully, which *explains the measured null arity knob* (§1.7). |
+| **Trace / norm** | **mathematically identical to packing** (`packEquiv`). |
+
+**The packing result, measured**: deployed `p1/a4/K2` is **×1.400 from its own
+family's minimum `a4/K16`** — **wrap 40,554,496 → 28,971,008 cells, ×2.011
+cumulative against pre-split** — optimum at `chains/K ≈ others/lanes`, K ≈ 16.9;
+`rec4` additionally drops the global max height **2¹⁸ → 2¹⁶**. **Every point is
+VK-rotation-only.** A dedicated Lean-authored chain table prices the remainder
+to **≈×2.23 cumulative `[DERIVED]`**. Then, later the same night, the wrap was
+**PROVEN at K16/rec4** through the deployed pipeline — the standing tooth
+closed. `03-MEASUREMENTS.md` §1.10.
+
+> ⚑ **The shape of the answer: the waste was GEOMETRIC, not ALGEBRAIC.** Every
+> Galois-theoretic lever we reached for was either already spent or provably
+> unavailable; the win was in how the cells were laid out.
+
+**Next lever, newly visible**: `recompose` now sets the wrap's global max
+height — 2¹⁸ rows for 160,263 ops at `npo_lanes = 1`, **3.9% of its cells, and
+the lane count has never been priced.**
+
+⚠ **Substrate, said out loud**: the in-circuit FRI verifier is pre-existing
+**Rust-authored** circuit logic — *debt by the house law*. The (b) change
+authored no constraint, and **nothing in this section is Lean-authored or
+verified.** The packing remainder in (c) is explicitly costed as a
+**Lean-authored** chain table.
+
+**Artifacts**: `notes/galois-levers.md` · `notes/sumcheck-batched-opening.md` ·
+`notes/k16-proof-and-weft.md` · `docs/LEAF-VS-RECURSION.md`.
+
 ## 1.8 Lookups and RAM
 
 **Explored**: LogUp · LogUp-GKR · logup* (2025/946) · Lasso · Twist & Shout ·
@@ -299,6 +583,56 @@ SWIRL · Ceno · RISC Zero · Nexus · ring-native lookups over Z_{2^k}.
 **Artifacts**: `notes/lookup-ram-verdicts.md` · `docs/SYSTEM.md` ·
 `minidregg/Selvage/BinaryLookup.lean` (proves the one-hot equality vector *is*
 the χ vector of the address bits, not merely "boolean + sums to one").
+
+## 1.8b `[08-17]` Lasso over LogUp — and the 3.2× lookup lever, refuted
+
+**Asked**: `03-MEASUREMENTS.md` §1.8 records that **`R` is a property of the
+arithmetization, not of the hash**, and that a lookup argument prices the
+Poseidon2-vs-Blake gap at **~3.2×** rather than 30.6× — flagged there as *"a
+pointer, not a result."* This lane turned the pointer into a measurement, by
+reading Lasso at source and counting a **deployed** lookup AIR.
+
+**Found — the lever is real and far too small**, counted cell-by-cell on
+**Stwo's deployed lookup/LogUp Blake AIR** (384 main + 260 interaction cells
+per round row, carries virtual, five xor tables at relation arity 3):
+
+> **Blake3 under lookups ≈ 4,680 cells/compression → R ≈ 15.7× against our
+> 300-cell Poseidon2.** Lookups buy **1.96×, not the ~10× needed**; the flip
+> bar (< 4,000 blowup-cells) is **missed by 4.7×.**
+
+⚠ ⚑ **The 3.16× figure was a FAT-DENOMINATOR ARTIFACT** — 7.9 gates/S-box for
+*their* Poseidon against our 2.1 cells/S-box. **It had been quoted repeatedly
+as "the highest-value open measurement"; it is now the measured answer, and
+the answer is no.** Riders: 2²⁴ amortized table cells (break-even ~2¹²
+compressions), and the table relation lands at **98.7 bits at BabyBear⁴
+without grinding** — below the bar on its own. Keccak under lookups: **wash to
+negative.**
+
+⇒ **Poseidon2's position is now TRIPLE-CONFIRMED**: in-circuit 30.6×–210×
+directly · recursion pinning it in both characteristics · **the lookup escape
+measured shut.** (`[08-17]` and with §1.3b's Kagi sweep, a fourth, from the
+attack side.)
+
+**What the lane established beyond the refutation:**
+- **The sparse vector never meets the PCS.** Spark reduces everything to
+  *dense* multilinear commitments, so **BaseFold RBR suffices in kind**; the
+  real gaps are extraction (`W = Unit`) and batched openings. ⚑ **Lasso's
+  "small elements" headline is MSM-denominated and COLLAPSES under a
+  hash-based PCS.**
+- **SPARK subsumption is definitional** — `spark_table_decomposes` makes
+  "sparse eval IS a decomposable lookup" a theorem: **one gap, not two.**
+- **The full error expression is root counts throughout, with no Regime
+  anywhere** — the one new shape feature is a *precondition*, `m < char F`,
+  which in char 2 wears the multiplicity-cancellation costume that
+  `BinaryLookup` already refutes. The two-regime calculator needs two more
+  knobs (a sumcheck leg, a validity-precondition field); **E3 is literally
+  `LogUpCfg (K=α, H=m+M, R=3)`.**
+- **Teeth**: `splitEq_not_decomposable`, a *general* non-decomposability
+  theorem refutable over every field (per `GUARD-DISCIPLINE`); the
+  all-accepting oracle refuted; three obligations named, not built.
+
+**Artifacts**: `notes/lasso-over-logup.md` · `minidregg/Selvage/DecomposableTable.lean`
+(`feef028`) · `notes/hash-landscape.md` Addendum 2.
 
 ## 1.9 Binary fields and the char-2 cone
 
@@ -331,6 +665,33 @@ the χ vector of the address bits, not merely "boolean + sums to one").
   Irreducible considered this design and rejected it; Setty built it and it is
   the fastest scheme in the EF client-side benchmark.
 
+  ⚠⚑ **`[08-17]` RESOLVED — the paper went public and was read at source, and
+  it refuted OUR OWN SCRUTINY, not just the absence claim.** Both directions
+  of the disagreement above are now settled, and the correction runs against
+  us:
+  - **"Vega 44.2" is the real Vega_MC, measured 44.23 ms — NOT `spartan2` at
+    541.72 ms.** *Our identification was wrong*, and it was the load-bearing
+    step in the "the benchmark table is mislabelled" argument.
+  - **The M1-vs-M4 harness discrepancy dissolves**: all rows are same-machine
+    M4 Max through Flock's pinned harness, best-of-five, disclosed.
+  - > ⚑ **Our scrutiny was scrutiny of the SLIDE. The paper is cleaner than
+    > the slide.** That is a general lesson about reading a preprint through
+    > its conference deck, and it is now `05-ERROR-CLASSES.md` material.
+  - **What survives**: **Flock-wins-in-aggregate is conceded and measured at
+    1.96× in the paper's own Table 1**; the residual criticisms are
+    peak-of-sweep reporting and an "additive optimizations" claim that elides
+    the **JBR-vs-UDR regime difference**.
+  - ⚠ **One earlier claim of ours is NOT refuted and should not be quietly
+    dropped**: `04-DEAD-ENDS.md` §L6 recorded *"'Vega' is P-256 + Hyrax —
+    discrete-log, NOT post-quantum."* Vega = eprint 2025/2094, and
+    **P-256 + Hyrax/DL is re-confirmed independently at §4.3/§7** by the
+    Nebula/Vega read (§1.11). **A post-quantum comparison table still has a
+    discrete-log entry in it.** What changed is *which row we mis-identified*,
+    not what Vega is.
+
+  **Artifacts**: `notes/binaryspartan-read.md` · `docs/BINARY-POSITION.md`
+  (corrected in place, with the retraction visible).
+
 **Artifacts**: `docs/BINARY-POSITION.md` · `notes/binaryspartan-position.md`
 (1,203 lines) · `notes/neo-superneo-read.md`, `notes/neo-verdict.md` ·
 `notes/char2-vacuity-census.md` · `notes/basefold-additive.md` ·
@@ -361,6 +722,119 @@ Nexus · Jolt (+ Akita) · Binius64 · leanMultisig · ezkl · Stwo.
 
 **Artifacts**: `notes/fast-systems-recon.md` · `notes/prover-floor.md` +
 a claude.ai artifact (`ea569fc8-…`) + `paper/scripts/prover_floor.py`.
+
+## 1.11 `[08-17]` Nebula and Vega at source — and the PQ-Vega path
+
+**Asked**: the fast folding-based systems are winning on measured latency. *Why*
+— and is the mechanism something we can have without giving up
+post-quantum security?
+
+**Found — the mechanism is named, and it is not cleverness, it is the group:**
+
+- ⚑ **The DL dividend is ~10³× at the seam.** Their Nova fold verifier is
+  ≈**10,000 R1CS gates**; our wrap's 38,168 permutations are ≈**9.5M
+  constraint-equivalents by their own conversion.** The mechanism is
+  *Pedersen adds, Merkle opens*, plus the shape change: **fold now, verify
+  once at the end.**
+- ⚑ **The switchboard rides THIS path, not the deployed stack**: pay-per-use
+  requires a **free zero-commitment — true of Pedersen AND Ajtai, false of
+  Merkle.**
+- ⚑ **Nebula's memory lemma IS our `TwistContinuity` keystone, and it is NOT
+  DL-bound** — Lemma 2 (multiset invariant ⟺ sequential consistency, both
+  directions) plus a fingerprint corollary and two-layer IVC. **Top-ranked
+  transfer: pure combinatorics, and the LogUp + roots-before-challenge
+  machinery was already on the shelf.** ⚠ Their model has no `free`; ours
+  does. (§1.12 — that gap dissolved.)
+- **Their fold schedule IS `AccRbrBcsShifted`'s lagged-root residual.** They
+  **cannot state any concrete bound** (negl(λ) formalism), so our depth
+  refutation and repaired `(t+k)·ε` are expressible *only on our side*.
+- ⚠ **A printed formula bug found in Nebula** (p.23's input-consistency
+  direction would zero the global input; Lemma 3's proof and the worked
+  witness give the right one) — and the silent invariant named:
+  **block-support discipline**, which is *our widened-gadget wound* in their
+  notation.
+- **NovaBlindFold**: dead on Merkle; transfers in shape to the dual-mode with
+  an **unpriced smudging tax**; against our recorded VEIL ~3% it is **parity,
+  not a class gap.**
+- ⚠ **Do not conflate Nebula's two numbers**: **the 30× is the MEMORY
+  technique; the 260× is the SWITCHBOARD** — different mechanisms. (Our own
+  earlier attribution had this wrong; see Pillar 7.)
+
+⚑ **THE PQ-VEGA PRICING `[DERIVED]`, which is the reason this section exists**:
+a Nova-shaped fold over the **dual-mode MSIS commitment** costs
+**≈4–7×10³ R_q rows/step ≈ 4–8% of the 92,396-row FS bill it rides beside.**
+Ordering: **DL fold 1× < PQ fold ~4–50× < Merkle wrap ~10³×.** γ-grinding under
+folding is negligible and class-unchanged; the genuinely new term is
+`Q·ε_MSIS` per absorbed commitment. **Neo's configuration is killed twice by
+the dual-mode** (ring-native absorb at 27.4 rows/element; the κ=24
+commit-not-absorb cap).
+
+**The surpass table, honest**: they win **measured latency and memory
+maturity**; we win **PQ, formal content** (their repos verified zero this
+session, instruments named), **and the depth bound**; transparency ties.
+
+**The composed architecture this yields** — every layer either held or priced:
+
+```
+EVM decompilation          ← Pillar 7; ~60–140× past the switchboard
+switchboard (pay-per-use)  ← needs the free zero-commitment
+committed memory           ← Nebula Lemma 2 ⟺ our TwistContinuity
+PQ folding                 ← Nova-shape over the dual-mode MSIS commitment
+dual-mode ring object      ← §1.4d; q = 2⁶⁴−257, τ = 2
+```
+
+**Artifacts**: `notes/nebula-vega-lessons.md` · `docs/VERDICTS.md` §3c ·
+`SLVG_THOUGHT.md` §III.
+
+## 1.12 `[08-17]` PQ folding and committed memory — two keystones discharged
+
+Both of these were **named obligations** in the first stratum and are now
+theorems. They are recorded here as *directions* because each changed what the
+architecture can assume.
+
+**`TwistContinuity` — DISCHARGED** (2026-08-17, minidregg `820f0cb`), Nebula's
+Lemma 2 formalized **both directions** over our richer carriers:
+- `twistContinuity_iff_grandEquation`: TC ⟺ frame-outside-dom ∧ ∃ stamps,
+  `IS + WS = RS + FS` — the Spice-shaped list induction over Mathlib multisets,
+  none hand-rolled.
+- ⚑ **The `free` gap was ABSORBED as a theorem rather than carried as an
+  obligation**: with `Option`-valued cells, **`free` is a write of `none`**, so
+  the soundness induction has *no free case split* at all.
+  *The model difference the Nebula read warned about dissolved into the carrier
+  choice.* `stale_read_after_free_refused` exhibits the flagged hazard closed.
+- The fingerprint lands at the **sharp** bound `max(|A|,|B|)·(k+1)/|F|` (not the
+  crude pairwise one); injectivity is honestly `Set.InjOn` — **global is
+  UNINHABITABLE for Nat-stamped tuples.**
+- **Nine teeth**, including a quantifier-order exhibit: **∀γ, a post-γ forgery
+  PASSES** — the γ-before-values ordering shown load-bearing, not assumed.
+- ⚑ **Bonus: this engine IS the gap `[SPARTAN-sparse]` recorded** — SPARK's
+  combinatorial core now exists; its sparse-matrix instantiation does not.
+- **One obligation remains**: `[TWIST-FP-BIND]`, six named legs. `06-OPEN.md` §3.
+
+**`AccRbrFold` — LANDED** (2026-08-17, minidregg `bc29222`), folding at the
+**commitment alphabet**:
+- **The norm budget is DATA**: `budget b₀ T = b₀ + T·(ρ·B)` — additive, the
+  Cyclo flat-fold regime — and the RBR knowledge state through a fold is a
+  genuine Def-4.1 instance.
+- ⚑ **The norm wall, tight both ways** (`03-MEASUREMENTS.md` §1.13).
+- ⚑ **The `AccRbrBcsShifted` lagged-root residual DISSOLVES at the additive
+  alphabet** — every fold root is verifier-computable, no inert challenge.
+  **The trade: the norm budget is the new residual, and it is now a field of
+  the structure instead of a comment.**
+- ⚑ **The Z=∅ depth corner RECURS under additivity** —
+  **because it lives in the ERROR algebra, not the message algebra.**
+- Consumer wired three ways into `VerifierEmbedding`, including the fail-open
+  hazard as an `IsEmpty` theorem (`dropped_norm_check_refuses_embedding`:
+  infinite kernel coset vs finite norm ball).
+- ⚠ **Honest label, and it is the one that matters**: `MsisHardEx` is
+  *nonexistence* — proved at a toy and **expected false at production sizes by
+  pigeonhole.** The computational reading is the named residual `[FOLD-msis]`,
+  and `08-ATTACK-BRIEFS.md` BRIEF 3 says plainly that **that gap is where a
+  real attack would live.**
+
+**Artifacts**: `notes/twist-continuity.md` · `notes/acc-rbr-fold.md` ·
+`minidregg/Selvage/AccRbrFold.lean`, `.../MultisetFingerprint.lean`,
+`Assurance/TwistMemoryFingerprintJoin.lean`, `Compiler/TwistMultisetInvariant.lean`.
 
 ---
 
@@ -709,6 +1183,105 @@ actually unique?
 minidregg surveyed as a *library of composable primitives*: 473 files, 16,097
 declarations, a name-blinded body-hash twin detector, an island detector) ·
 `docs/INGREDIENTS.md`.
+
+---
+
+# `[08-17]` Pillar 7 — EVM decompilation into logic
+
+⚑ **A genuinely new pillar, opened and taken to a landed Stage 0 in one day.**
+It is ember's steer, and it is the only direction in this file whose *prize* is
+stated in someone else's unit and still comes out two orders of magnitude
+ahead.
+
+**Asked**: a zkVM proves *"the machine ran"*. Why are we proving the machine at
+all, rather than specializing the interpreter at the program and proving only
+what the program means?
+
+**The framing — Futamura for circuits — holds, with two amendments that
+strengthen it:**
+
+1. **Circuits have no loops**, so residualization becomes **unroll / fold /
+   refuse**: gas statically bounds every EVM loop; the fold is the IVC seam;
+   everything else is refused. And classical PE's *"residual interpreter"* **IS
+   a switchboard** — so the two techniques are the **static and dynamic halves
+   of one mixed computation**, priced per program point by the virtualization
+   threshold (§1.7 / `SLVG_THOUGHT.md` §II.1).
+2. ⚠ **A self-correction at source**: our 30× attribution was wrong. **Nebula's
+   30× is the MEMORY technique; the switchboard is the 260×, at UNCHANGED
+   structure — the switchboard never shrinks the machine at all.**
+   *Decompilation's case is stronger for it, not weaker.*
+
+**Prior art, with instruments named** (this is an `[ABSENCE]`-shaped claim and
+was scoped accordingly): pieces exist — **Buffet 2014** (*"circuits are not
+universal"*) · ⚑ **powdr autoprecompiles = automatic PE of zkVM circuits per
+basic block, WITH a Lean-4-verified optimizer** (the closest neighbour, and
+it is **instruction-anchored and block-granular**, not semantics-anchored) ·
+**Singh–McKay PE-of-hardware, 1998** · **EquiVM is the front half alive in
+Lean** · **EVMYulLean passes 22,330/22,332 Cancun tests**. **The
+semantics-anchored, program-granular, no-machine-left version is unclaimed —
+and the back half (proved emission) is exactly `EmitByName` /
+`ZkmlEltwiseAir`, which we already hold.**
+
+**The shape**: a **10-constructor residual vocabulary** (an ERC20 transfer is
+**15–20 semantic ops from 635 machine steps**; stack, PC, decode and static RAM
+all die); correctness stated as `descriptor_means_semantics` **iff** plus
+`encode_injective` = *"does ONLY that program"*; trusted base enumerated; and
+⚑ **the decompiler itself UNTRUSTED, via per-output translation validation.**
+Hard parts routed rather than waved at: jumps → **refuse** (Elipmoc: 99.5% of
+real contracts still feasible) · loops → gas-bounded unroll or `SelfEmbedding`
+fold · storage → `TwistContinuity` (⚠ **Nebula's memory does NOT port here** —
+it needs the free zero-commitment) · calls → one `VerifierEmbedding` rung ·
+**gas → refused, with the premise visible.**
+
+**The prize `[DERIVED, their unit]`**: ≈3–4K vs ≈0.25–0.43M active constraints
+— **~60–140× beyond the switchboard** — with three honesty clauses stated up
+front: keccak is a common ~100× elephant; the win **saturates at our own proof
+floor** (`P(b) = 3381·2^b + 766` ⇒ batch transfers); and **Merkle-root binding
+would eat the prize.**
+
+## ✅ Stage 0 LANDED (2026-08-17, minidregg `8c5a732`) — five opcodes end to end
+
+⚑ **And the decompilation theorem is literally `rfl`.** With the program
+concrete and the calldata symbolic, **the stack, the PC, the decode, MSTORE and
+RETURN reduce away DEFINITIONALLY**:
+
+```
+fragment_faithful : ∀ cd, evmRun … cd = .ok (beBytes (residual.denote cd))
+```
+
+costs the kernel nothing.
+
+> ***The Futamura claim, realized: specialize the interpreter at a program and
+> the machine is not proved away — it reduces away.***
+
+Trust lives **only** in the per-output TV pair; **no theorem quantifies over
+the decompiler.**
+
+The chain, in order: real 15-byte bytecode · **conformance vectors from a real
+EVM** (anvil/revm via `eth_call`; five kernel-decided named theorems including
+wraparound and past-the-end calldata) · a **refusing** symbolic-stack
+decompiler (STOP, data-dependent offsets and foreign opcodes all refused) ·
+**256-bit faced as 16 limbs × 16 bits** (⚑ **8×32 is IMPOSSIBLE — `p < 2³²`**),
+with **the ABSENT top-carry pin BEING the mod-2²⁵⁶ semantics** · soundness
+*and* completeness with executable Lean witness-gen · the iff descriptor
+theorem + `encodeBoundary_injective` · teeth written mutation-first ·
+**3,298 gates / 4,131 wires emitted** (231 KB JSON).
+
+⚠ **Two flags carried at the landing, both said loudly:**
+- The design note's *"≈3–4K per transfer"* is **Nebula's R1CS unit — NOT
+  comparable to these gates.** Range checks (768 wires) are the
+  lookup-collapsible dominant term; **re-derive at Stage 3.** *(This is the
+  unit-mismatch class from `05-ERROR-CLASSES.md`, caught before it propagated
+  rather than after.)*
+- ⚑ **`Compiler/EvmAddAir.lean` is COMMITTED BUT UNROOTED from the committed
+  umbrella** — `Compiler.lean` carries a sibling lane's *uncommitted* import of
+  an untracked file, so the rooting line waits. **The
+  gating-defaults-to-silence shape, declared this time instead of discovered
+  later.** See `07-ARTIFACTS.md`.
+
+**Artifacts**: `notes/evm-decompilation.md` · `notes/evm-stage0.md` ·
+`docs/VERDICTS.md` §3d · `minidregg/Theory/EvmFragment.lean`,
+`Theory/EvmResidual.lean`, `Compiler/EvmAddAir.lean`.
 
 ---
 
