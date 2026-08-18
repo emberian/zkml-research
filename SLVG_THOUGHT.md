@@ -124,6 +124,69 @@ competitive on workloads we do not run. *If a decompiled transfer proves in a
 second, nobody cares that a SHA-256 benchmark would have been slower; if it
 takes ten minutes, no hash-rate improvement fixes that.*
 
+## IV-c. ⚑⚑ FIRST END-TO-END NUMBERS — and the axis finding that inverts the decompilation pitch
+
+**2026-08-18, measured on hbox at HEAD** (detached clone, zero dirty, conditions
+clean, packed Poseidon2 live at width 8.18) — *the first workload numbers this
+project has ever produced:*
+- **One dregg Transfer turn (leaf): 15.50 ms** (min-of-9, lb=6, T=8 in-pool,
+  spread 1.03×)
+- **One ETH finalized sync-committee update, prove+verify: 13.30 ms warm /
+  82.98 ms cold** — ⚑ **6.24× on warm-up alone, and the naive way to measure it
+  returns the 83.**
+
+⚑⚑ **THE AXIS FINDING: a 6.1× difference in padded trace cells buys 1.2× in
+time.** FRI floors every trace at 128 rows at lb=6, so **proof time is almost
+entirely fixed cost.**
+
+> ***This inverts the decompilation pitch.*** Killing the machine makes programs
+> **small** — and small is exactly where the fixed cost dominates. **The lever
+> is AMORTIZATION, not prover speed.** A decompiled ERC20 transfer being 60–140×
+> smaller in constraints does not make it 60–140× faster to prove; it makes it
+> **cheap to batch**, and the win has to be collected there.
+
+## IV-d. ⚠ E5 DID NOT RE-OPEN — I had the sign backwards
+
+I recorded that our optimizations raised the in-circuit hashing share and
+therefore *helped* the binary-field case. **Wrong direction.** `R*` — the
+crossover a candidate hash must beat — is **computed from** that very share:
+`R* = 1 + (1/m_leaf − 1)/f_circ`. The numerator is the native-side gain
+(untouched); the denominator is the **in-circuit penalty exposure** (what grew).
+**So `R*` FALLS: 2.49–4.52× → 1.74–2.75×**, and binary candidates (R = 12.7–24.7×)
+go from 2.8–9.9× above the bar to **4.6–14.2× above it.**
+
+***Raising the hash share raises the payoff of a FREE hash and the penalty of an
+EXPENSIVE one. It is a leverage increase, not a direction change.*** All three
+premises hold; the conclusion is **hardened**, not re-opened.
+
+⚑ **And the optimizations closed the LOOKUP door, not the binary one**:
+lookup-arithmetized `R = 3.2` was a **0.79× wrap WIN** at the old share and is a
+**1.15× LOSS** at the new one — *"the highest-value open measurement" crossed
+out of its own band.* Mechanism, in absolute cells with no shares: the Poseidon2
+half is constant at ~21.2M, so **the retune is worth ×1.400 with Poseidon2 and
+×1.018 with Blake3 — the optimization and the hash swap are mutually
+cannibalizing.**
+
+⚠ Three cited numbers corrected: **"~×5" was the DERIVED row** (an AIR that does
+not exist) — measured-and-proven **×3.75**, deployed **×2.10**; and **deployed
+`f_circ` is 52.36%, not 36.45%** (the "pin deliberately not moved" line is
+stale — `834a3f7` is an ancestor of the pinned rev).
+
+## IV-e. ⚑ THE THREE WORKLOADS ARE UNMEASURABLE, AND WHY
+
+- **EVM Stage 0**: its **descriptor reader and FRI backend were both deleted**
+  (`d55ef32`, `b297c7d`).
+- **vFHE**: the 466 µs is **homomorphic evaluation with ZERO proving** — *its own
+  test says so* — and no Lean AIR exists.
+- **SGD**: Lean-only, plus a 4-element F₅ table.
+
+⚑ **One Rust descriptor reader closes routability, the units question, and
+Stage-0 time-to-proof together.** *That is the single highest-leverage piece of
+plumbing in the tree.*
+(Null result, recorded so it is not re-proposed: **CSE on the Stage-0 descriptor
+removes nothing** — 3,298 → 3,298; the u256 adder is already a DAG, and its 768
+bit wires are irreducible by sharing.)
+
 ## V. Method, compressed to what survived
 
 Write the note first, incrementally. Read the binders, not the docstrings.
