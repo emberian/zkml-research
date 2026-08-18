@@ -338,6 +338,61 @@ something a designer had asserted.*
 > at thread counts, a point set nobody had varied, a round-allocation nobody had
 > differentiated. **None came from inventing anything.**
 
+## IV-k. ⚑⚑ DECIDABLE-BY-DESIGN: the ceiling, stated as a positive result
+
+`notes/decidable-by-design.md` (`1b94bed`) + four reproducing scripts.
+
+⚑⚑ **THE `x⁻¹` TENSION I FLAGGED DISSOLVES — it was never a tension.**
+***FreeLunch-modelable = Gröbner-decidable = attackable-with-known-cost is ONE
+property***, and un-modelable = non-decidable = conjecturally-secure-unproven is
+its complement.
+> **No (decidable ∧ secure) corner exists via this route: the certificate of
+> decidability IS the attacker's input.**
+`x⁻¹` full-inverse layers **refuse decidability on purpose** — and **2025/259 is
+the record of what happened to the designs that accepted it: Griffin, Arion,
+Anemoi and Rescue-512 all fell.**
+
+**The Gröbner leg does not collapse — it FACTORS**, and that is the result. The
+**decidable half is the ideal degree `D_I`** (corroborated at source by Perrin's
+own conclusion slide: *"the 'boring/fastest' step of PoSSo is the only one with
+a reliable complexity ⟹ security arguments based on `D_I` are the future!"*).
+The **argued half** is the exponent `ω′ ∈ [1,3]` in `cost ≈ D_I^{ω′}` (his open
+*"D_I vs D_2I?"*) **plus the minimization over models — the encoding-discovery
+problem, which is not decidable.**
+
+**And the trail→differential gap does not collapse for a KEYLESS hash — with
+the reason named.** Vaudenay's decorrelation bias bounds distinguisher advantage
+**as an average over a secret random key.** ⚑ **A hash permutation is keyless,
+so the averaging that would close the gap is unavailable. The gap is structural
+— it is exactly where keyless-ness bites.**
+
+**Answering my own Q1, and it kills the proposed gate item as stated**:
+**verifying regularity of arbitrary top-forms IS a Gröbner basis in disguise** —
+it moves the intractability and saves nothing. **Only the CONSTRUCTIVE FreeLunch
+certificate is cheap** (measured **6–45× faster** than the actual GB). So the
+gate item is ***"exhibit a FreeLunch order or prove none exists"***, not "test
+regularity" — ⚑ **and it can BLOCK a candidate but never BLESS one, because it
+decides a per-model upper bound and never a floor.** For **Bobbin**: its `xy=1`
+model is **not** directly FreeLunch (products chain-collide), so **its Gröbner
+leg is argued, not decided — the degree-2 cell bought no decidable floor.**
+⚑ **Consequence worth keeping: the cheapest in-circuit S-box and the
+FreeLunch-modelable S-box are DIFFERENT S-BOXES.**
+
+**The meta-rule the three mechanisms unify into**: ***the structure that makes a
+question decidable is the structure an attacker reads.***
+
+**And the ceiling, stated as a positive result — the honest maximal claim:**
+> **Assumption surface = {one ideal permutation}. Of seven attack classes:
+> FIVE decided by terminating computation, ONE decidable per-model as an upper
+> bound, ONE irreducibly argued** — each with its structural cause named.
+> **Not information-theoretically secure (that would be false). This is the
+> strongest true statement available for this class of primitive, and nobody
+> has written it down.**
+
+⚠ And the sketch built decidability-first (**SETT**) makes 5 of 7 legs decided
+and is **cost-dead on diffusion latency** while moving nothing on the binding
+leg — *"decidability-primary is a design LENS, not an OBJECTIVE."*
+
 ## V. Method, compressed to what survived
 
 Write the note first, incrementally. Read the binders, not the docstrings.
