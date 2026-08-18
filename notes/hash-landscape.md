@@ -1482,3 +1482,58 @@ recommended adopting carries the same shape.* **If the char-2 slot never opens**
 `cosetPack` survives as the **code's encoder on a shifted domain at zero extra
 ops**; everything hash-side dies. Standing verdict unchanged: **build nothing
 now.**
+
+
+---
+
+## ADDENDUM 7 (2026-08-18): the ideation lane — eight constructions, three kills, and a FALSE POSITIVE in our own gate
+
+`notes/hash-ideation.md` (`3eb669e`) + `~/src/ring-ro-hash/ideation_gate.py`.
+**The first genuine ideation since Weft** — the audit that prompted it found ~2
+of the prior 22 commits were generative, the rest reactive or Weft-iteration.
+
+**Eight distinct constructions**, each with sketch / cost target / where the win
+lands under the fixed-cost floor / **computable-vs-asserted gate items** / named
+killer: **Warp** (capacity into the key schedule — *the only idea attacking the
+92% leaf bucket's WIDTH*) · **Jacquard** (3×3×3 cube SPN with a wide-trail
+**theorem**) · **Bobbin** (Montgomery-batched inversion — cheapest S-box in both
+currencies) · **Heddle** (companion-of-irreducible: **every gate item a
+theorem**) · **Twine** (χ over F_p) · **Cleave** (split by role) · **Fulling**
+(proven k-wise independence) · **Broadloom** (wide-shallow α⁻¹).
+
+**The gate did its job — three kills and a flag:**
+- ⚑ **Jacquard/circ(2,1,1) died in 3.5 minutes**: **457/457 block-constant
+  trails collapse into a dim-2 invariant structure**, minpoly 10/27. Root cause:
+  **`circ(2,1,1) = I + J` — *the cheapest possible MDS is the most
+  structured*.** ⚑ **Branch number (4, exact) and the closed-set check were both
+  BLIND to it — a second independent vindication of putting branch fifth.**
+- **Jacquard/Cauchy** passes trails clean but carries a **robust 24/27 minpoly
+  deficit** surviving a second Cauchy instance *and* a fixed-point-free rotation
+  repair — **structural to the tensor architecture**, named `[JACQ-minpoly]`.
+- **Warp**: the gate fires **by construction**, minting a reusable law —
+  ⚑ ***capacity evicted from the datapath reappears as an autonomous
+  quotient.*** Its mortgage is related-key AO analysis: **unstudied anywhere,
+  but classical and computable.**
+- **Twine's sponge form is DEAD** — χ_p non-bijective, 15/15 brute-forced.
+
+⚠⚑ **AND A FALSE POSITIVE IN OUR OWN GATE**: **Heddle confirmed all its theorems
+and exposed 206 FALSE "stalls"** — the scan's **default 6-round horizon was
+shorter than the layer's diffusion diameter** (0 stalls at horizon 26, on a
+*provably invariant-free* layer). **Gate amendment: the horizon must exceed the
+layer's diffusion diameter, and be stated.** *An instrument that reports a
+property because it stopped looking early is worse than no instrument.*
+
+⚑ **Proposed sixth gate item — the first that would touch the GRÖBNER leg**: a
+**regular-sequence check on the CICO ideal's top-degree parts** (if regular, the
+degree of regularity is **known by construction via the Macaulay bound, not
+estimated**). **Bobbin is its first customer and was deliberately BLOCKED on it
+rather than shipped** — the criterion being used as intended. Relayed to the
+decidable-by-design lane. ⚠ **Open: is verifying regularity cheaper than
+computing the basis, or does it just move the intractability?**
+
+✅ **And Cleave's `[ASSUMED]` is CONFIRMED at source**: the grinding challenger
+is generic over `CryptographicPermutation` and **we instantiate it with
+Poseidon2 — grinding IS running the algebraic hash.** ⚑ **Two lanes have now
+converged independently on the grind swap** (the fastest-oracle lane: *"the one
+slot a traditional hash wins, because grinding is verified once, not
+per-query"* — ~8–14% of deployed prove for +9,168 one-time wrap cells).
