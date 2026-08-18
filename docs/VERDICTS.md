@@ -1200,6 +1200,56 @@ with a bigger verifier.**
 **Fixed-cost bound applied throughout**: hash wins compound at the **wrap/tower**
 layer, **not at small leaves.**
 
+## 5k. ⚑⚑ THE DECOMPOSITION WALL IS THE FAMILY'S, NOT OURS — "writable and unsolvable"
+
+`notes/feistel-classical-tooling.md`. The lane **corrected its own framing**, and
+the corrected version is strictly stronger than the one it replaced.
+
+**I had been recording *"no automated tool models base-B decomposition."* False.**
+⚑ **All three decomposition-hash designer papers WRITE exactly that constraint**
+— one degree-`B` vanishing polynomial per digit plane (**Monolith 2023/1025
+§B.3, Reinforced Concrete 2021/1038 §B.4, Skyscraper-v2 Eq. 21**) — ***and
+nobody can run it.*** Every solved data point in the literature is a **toy
+prime**: RC at p ∈ {41…127}, Monolith at p ∈ {13,29,61,113}, Skyscraper-v2 at
+≤16 bits, **Tip5 never run at all.** **Monolith calls full-size instances
+*"computationally intractable"* in its own words.**
+
+> ***"The encoding is writable and unsolvable" is strictly stronger than "no
+> tool models it."*** **Our crux is not a peculiarity of our design nor a gap in
+> our effort — it is the measured wall for this ENTIRE family, confirmed from
+> the designers' side with published numbers.**
+
+The MIQCP tool (**2024/2061**) requires *"degree α being a small integer"* and
+our layer is **degree 2¹⁶ per plane** — no. And **2026/1104 §3.1 extends the
+wall to the STATISTICAL instrument**: non-polynomial S-boxes need brute force,
+*"infeasible for large pⁿ."*
+
+⚑ **THE ONE ACTIONABLE ITEM, and it retargets attack-brief #1**: the only
+published technique that **does** reach a decomposition layer is **hand-built,
+not automated** — **Liu et al., eprint 2024/1900**, a **limb-wise carry-DDT
+automaton in C++ that routes around the S-box entirely** (*"Independent of the
+S-box"*; *"we do not know the high-degree expression of the S-box over F_p"*),
+reaching **3/5-round Tip5 and 2/6-round Monolith-64 collisions.** ***That, not
+"order-2 / boomerang", is what item #1 now means*** — the ring-hash lane is
+redirected.
+
+⚠ **And the epistemics it closed with, which should govern how we read all
+four**: **"NR = 16 remains precedent, not attack-tested. Four instruments now
+report nothing — which is ONE fact about our INSTRUMENTS, not four about the
+PRIMITIVE."**
+
+**Gate §7d-bis gains two items**: (7) ***"no tool models it" and "the model
+exists and nobody can run it" are DIFFERENT verdicts*** — ask who **writes** the
+encoding, then who has **run** it at real parameters; (8) **when every automated
+instrument refuses, go find the HAND-BUILT attack — the absence of an
+automatable model is not the absence of an attack.**
+
+⚠ **Two method traps paid for**: **a single-line grep is not evidence a quote is
+absent** (a verification missed a phrase **spanning a line break**); and a
+misattribution was killed where a **corrupt title index** paired "Opening the
+Blackbox" with **2024/270 — which is actually YPIR, a PIR paper.** Fetch by
+number, **verify the title on the first page.**
+
 ## 6. Method
 
 - **No absence claim without**: grep `~/paperbin` first (now full-text
