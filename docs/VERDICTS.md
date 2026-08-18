@@ -1250,6 +1250,74 @@ misattribution was killed where a **corrupt title index** paired "Opening the
 Blackbox" with **2024/270 — which is actually YPIR, a PIR paper.** Fetch by
 number, **verify the title on the first page.**
 
+## 5l. ⚑ THE RING-HASH ATTACK ITEMS RAN — reached at 2 rounds, margin thinner than believed
+
+`notes/ring-hash-attacks-2-3-4.md` (`19f24db`), six scripts each aborting on a
+dead guard. **No break. NR=16 is still not derived** — but three items now carry
+numbers and the fourth carries a forgery.
+
+**Item 1 — REACHED at 2 rounds, still OPEN.** ⚠ **Two corrections to my
+redirect, both verified at source**: *"Independent of the S-box"* is **§3 of
+2024/1900 — the BASELINE the paper BEATS**; the §4 carry-DDT **opens** the
+S-box and is maximally S-box-*dependent* (what it avoids is the high-degree
+polynomial over F_p). And **it runs at FULL parameters, cheaply** (15–32
+lookups/query) — ⚑ **so the "this family only runs at toy primes" pattern does
+NOT retire this instrument, which makes its verdict a fact about the PRIMITIVE
+rather than our budget.**
+**It cannot be stated against us, three ways**: adjacent-limb coupling;
+negacyclic convolution (no limb order gives a bounded-width state); and fatally,
+**the dense g/h mixing destroys the limb structure before recomposition, so
+`DDT_{i,j}` has no definition on our primitive.** Its carry half + an exact
+substitute **reach 2 rounds and stall.**
+⚑ **And the MITM leg stands, against a sibling lane's claim**: *"no published
+MITM model can be instantiated"* **does not survive at source** (2022/189
+handles expanding *and* contracting cells — *"this is the only required
+change"*). A model **was** instantiated: raw reach 3 rounds — but ⚑ **calibrated
+against two published 2-branch-Feistel targets it UNDERESTIMATES by 4×, giving
+12 rounds against NR=16: a 1.33× margin, not 4×.** ***"I nearly shipped the 4×
+and the calibration refuted it."***
+⚑ **New structural defect**: `P=2` never multiplies the top plane, so **`F_r` is
+exactly AFFINE in it — state-independent slope, probability 1 — meaning 25% of
+the state crosses every round on a purely linear path.** And **the reach is
+bounded by the density of `g_3`, not by NR**: at `g_3 = B³` the characteristic
+**chains without limit.**
+
+**Item 2 — PARTIAL, and it is the one that should GATE SHIPPING.** Exact
+counting law: **`s` bits of norm slack ⇒ `K·s` bits of forgery per coefficient
+⇒ 64·s per ring element.** Forgery **exhibited at deployment parameters** (two
+plane vectors, same ring element, outputs differing 16/16). ⚑ **One bit of slack
+turns the credited 2^52 grinding COST into 2^64 free CHOICES per absorbed
+element.** ⚠ **`O5` is filed as a COST row but it determines the enforced norm
+bound — hence whether the hash is a FUNCTION at all.** (Whether slack exists
+needs 2026/1127's schedule, not in our tree.)
+
+**Item 3 — CLOSED, clears by hundreds of bits.** Gröbner/CICO reaches ~4 rounds
+against the **24-round integral floor**; **integral remains binding, ~6-round
+margin unchanged — σ-Poseidon is NOT in the trouble I flagged.** Model
+reproduces CheapLunch Table 2 **4/4 to <0.1 bit** before being pointed at us,
+and **only the INVALID granularity produces a break** (2^106.7 — it undercounts
+S-boxes 8×). ⚠ **I mis-paraphrased Perrin**: what is *"sometimes literally
+non-existent"* is the **complexity of the Gröbner step**, not the basis.
+
+**Two findings en route**: **prime `q` genuinely kills 2023/822** (its
+Assumption 1 is unsatisfiable) ⚠ **but my framing was wrong** — its costly
+stages only strip Rubato's Gaussian noise, *which we never had*, and its cheap
+leg is modulus-agnostic; **the in-scope paper is 2025/932**, our ring class by
+name and the source of our own 24-round floor. And ⚑ **a new σ-Poseidon defect:
+14/30 rounds mix no CRT slots, including four CONSECUTIVE slot-diagonal rounds
+(8–11)** — S-box slot-wise, MDS slot-wise, both σ exponents trivial — **passing
+condition C3 only because C3 checks the whole schedule. A per-round condition is
+a zero-cost fix.**
+
+⚠ **House law: TWO guards went dead and were caught** (a norm-slack modulus
+guard that was a no-op on its test value; a carry-DDT falsifier that did not
+chain on the weakened design either). ***The brief warned about exactly this
+class and it recurred twice anyway.***
+
+> **The line to defend: four instruments have now been pointed at the
+> gadget-Feistel and only ONE reached it, for 2 rounds. That is one fact about
+> our instruments, not four about the primitive.**
+
 ## 6. Method
 
 - **No absence claim without**: grep `~/paperbin` first (now full-text
