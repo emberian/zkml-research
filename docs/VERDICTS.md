@@ -1244,6 +1244,25 @@ encoding, then who has **run** it at real parameters; (8) **when every automated
 instrument refuses, go find the HAND-BUILT attack — the absence of an
 automatable model is not the absence of an attack.**
 
+**Final delta from that lane, three items not previously recorded:**
+- ⚑ **Expressibility is YES, constructively** — 40/40 against the versioned
+  spec with a live guard. **But the cost is 14.5M components/round, and 97% of
+  it sits in ONE LINE of the spec** — *so the modeling bottleneck is a single
+  component, not the design.* That is a much more actionable shape than "it
+  cannot be expressed."
+- **The CLAASP-MP guard was proved live** — 6/6 published SIMON-32 rows, **all
+  refutable**, in 1.0 s. *Guard-before-target, as the dead-row lesson demands.*
+- ⚑ **The F₂ leg produced our FIRST computed lower bound: NR ≥ 2.** The only
+  integral property found is the **trivial 1-round Feistel branch copy — which
+  the harness DOES find (1024/1024 against a chance rate of 1)**, so the
+  instrument demonstrably works; **nothing above chance at r=2 or r=3.**
+
+> ⚑ **The honest framing of NR=16, which is better than "we don't know": every
+> measurable leg clears at 2, and we ship 8× that.** *That is a defensible
+> position if and only if the margin's purpose is UNKNOWN-attack risk rather
+> than known-attack slack — the distinction the formal-cryptanalysis lane made
+> and the one nobody states.*
+
 ⚠ **Two method traps paid for**: **a single-line grep is not evidence a quote is
 absent** (a verification missed a phrase **spanning a line break**); and a
 misattribution was killed where a **corrupt title index** paired "Opening the
