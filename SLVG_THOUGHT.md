@@ -87,6 +87,43 @@ grid (×2.011 cumulative measured, ×2.23 derived, **wrap at K≠2 not yet
 PROVEN** — the standing tooth). The leaf is too small (K = 26.9 vs their <1):
 the architectural lever is making the leaf carry more, not swapping systems.
 
+## IV-b. ⚑ WHAT WE ARE ACTUALLY BUILDING — and the metric error to stop repeating
+
+**2026-08-18, ember, correcting me mid-campaign**: *"we're not trying to do
+more Poseidon2/s, we're trying to do **something better**."*
+
+⚑ **Nobody wants Poseidon2 permutations.** That rate is our **Merkle-commitment
+overhead — internal accounting, not output.** I measured our own tax, compared
+it to a competitor's number about a task someone actually asked for, and called
+the gap a standing. **A hash-rate race is adopting their scoreboard for a race
+we are not in.**
+
+**What dregg is for, and who else has each:**
+
+| capability | anyone else |
+|---|---|
+| proving computation over **encrypted** data (vFHE) | **nobody** — Zama's own stated open problem |
+| **per-program** circuits carrying a refinement theorem **per output** | nobody — powdr is per-*instruction* and block-granular |
+| a **machine-checked compilation layer** | nobody — ArkLib's are `sorry`; Binius64, Flock, BinarySpartan: verified zero |
+| training where the **accumulator IS the model**, weights encrypted | nobody |
+
+Binius proving SHA-256 fast on a universal machine is a real achievement on a
+real axis, **and it is orthogonal to ours.**
+
+⚑⚑ **THE GAP THIS EXPOSED, which is worse than the metric error**: we have
+exquisite instrumentation on the **substrate** — exact permutation counts, exact
+field-op counts, phase shares, a rig that structurally refuses to mix units —
+and **ZERO end-to-end numbers for any workload a person would ask for.** Not
+one measurement of: a decompiled EVM program, an FHE operation with its audit,
+an SGD step. *Substrate metrics are correct for substrate decisions and were
+never a standing.*
+
+**The rule**: our per-hash rate is a **cost of doing business**. The question is
+whether it is **acceptable for the workloads we run** — not whether it is
+competitive on workloads we do not run. *If a decompiled transfer proves in a
+second, nobody cares that a SHA-256 benchmark would have been slower; if it
+takes ten minutes, no hash-rate improvement fixes that.*
+
 ## V. Method, compressed to what survived
 
 Write the note first, incrementally. Read the binders, not the docstrings.

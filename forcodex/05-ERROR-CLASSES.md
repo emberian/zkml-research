@@ -1016,3 +1016,29 @@ trees now carry sibling gates with different mechanics.
 
 ⚠ **Perf note worth carrying**: multi-star line regexes over ~3k Lean files
 (long lines) did not finish in 6+ minutes; line-based scanning: **3.8 s**.
+
+
+---
+
+## ADDENDUM (2026-08-18): measuring the tax and calling it a benchmark
+
+⚑ **A new class, and I committed it for days**: **optimizing and reporting an
+INTERNAL OVERHEAD metric as though it were output.** "Poseidon2 permutations
+proven per second" is our Merkle-commitment cost — *nobody asks for it*. I
+compared it to a competitor's throughput on a task users actually want,
+narrated the ratio as a standing, and briefed a lane to close the gap.
+
+**The tell, in hindsight, was available the whole time**: the metric was
+denominated in a unit **only our own implementation produces.** A real output
+metric survives a change of substrate; ours would have become meaningless the
+moment we swapped the hash — *which is a thing we were simultaneously
+considering.*
+
+**Detection**: for any performance number, ask **"who outside this repo would
+ask for this?"** If the answer is nobody, it is a substrate metric — correct
+for substrate decisions, never a standing, and never a race.
+
+⚠ **And the deeper finding it surfaced**: exquisite substrate instrumentation
+can *coexist with* zero end-to-end measurement, and the substrate numbers make
+the absence hard to see — they feel like measurement. **Ask what the last
+end-to-end number was, and when.**
