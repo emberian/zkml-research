@@ -253,6 +253,25 @@ orders of magnitude either. ⚑ Per `feedback-a-cost-verdict-outlives-its-premis
 re-derivable and it is not a cost estimate standing in for a constraint: it is what the verified
 construction emits.
 
+### 2.3 Why CLAASP-MP was NOT run on a shrunken instance of ours
+
+The obvious move is to shrink until it fits and report the number. **I deliberately did not**, and
+the reason is the vacuity discipline rather than effort.
+
+The structural invariants that make this primitive what it is are `n = K·b` (digits are exact
+bit-slices) and `d·B² < q` (plane products need no reduction). Solving those down to a
+~2,000-variable MILP forces `d = 1` — **ring degree one**, i.e. plain `Z_q` with the negacyclic
+convolution *gone*. An MP degree bound on that instance is a true statement about a **different
+object**, and reporting it as "we ran CLAASP-MP on the gadget-Feistel" is exactly the move this
+repo has a memory file about.
+
+The smallest instance that keeps `d = 4` is the one `fct5` verified: **11,495 components,
+147,490 wire bits** — already ~70× past the licence and far past what MP enumeration handles.
+
+⚑ **And it is moot**, because §3 computes the *exact* value of the quantity MP would have
+*bounded*, on the **real** primitive at **deployment** parameters. An exact degree beats an upper
+bound on a toy.
+
 ---
 
 ## 3. ⚑ The measurement that settles it anyway: the quantity is already saturated
