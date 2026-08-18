@@ -108,6 +108,60 @@ mechanism attached: **a linear layer inherited from another object imports that
 object's structure — and the import is through the POINT SET, which is free to
 change.**
 
+## ⚑ 7d-bis. BEFORE YOU CONCLUDE A PRIMITIVE CANNOT BE ANALYSED (2026-08-18, paid for by the gadget-Feistel)
+
+`notes/formal-cryptanalysis-pipeline.md` §4 concluded the gadget-Feistel was
+**structurally opaque to the algebraic instrument**, and left it there. That was
+half an answer. The follow-up lane
+(`notes/feistel-classical-tooling.md`) found the primitive is **perfectly
+expressible** to the bit-level classical toolchain — a full round was built as a
+CLAASP component graph and matches the versioned spec 40/40 — and that **the
+question "is it AO-shaped or classical-shaped?" does not predict anything**,
+because the answer was *both, in different layers*.
+
+**The question that predicts the outcome:**
+
+> ⚑ **IN WHICH LAYER DOES THE ODD-PRIME MODULUS SURVIVE?**
+
+Measured on the gadget-Feistel, per layer:
+- base-B decomposition, `B = 2¹⁶` over a 64-bit modulus → **bit-slicing, ZERO components.**
+- plane products `Y_j·Y_{j+1}`, where `d·B² = 2³⁶ ≪ q` → the modulus is **reduced away
+  before the layer**, so it is mod-2ⁿ exact and classical and free.
+- `F_r = Σ g·Y + Σ h·Z`, dense public constants **in R_q** → the modulus **survives**, and
+  this one line is **97% of the 14.5M components per round.**
+
+So, in this order:
+
+1. **Name the substrate of each LAYER separately**, not of the primitive. A layer whose
+   values are provably small relative to the modulus is a **classical layer** and should be
+   priced against bit-level tools (CLAASP/CLAASP-MP, SAT/SMT differential search), not
+   against algebraic ones.
+2. **Check the tool's arithmetic field before its capability list.** ⚑ **A `modulus`
+   parameter the models ignore is worse than an absent one.** CLAASP's MODADD accepts an odd
+   modulus, honours it in the *evaluator*, and models it as mod-2ⁿ everywhere else — the
+   constraint text is byte-identical and CLAASP-MP returns the *same ANF for a different
+   function*. Run the tool's own self-consistency check (`check_anf_correctness` or
+   equivalent) at **≥200 samples on a LOW-ORDER bit** before believing any output: on the
+   bit it tests by default the divergence rate was 0.030, so it misses with p = 0.54.
+3. **Before "the tool cannot be run", ask what QUANTITY it bounds and whether that quantity
+   is directly measurable.** CLAASP-MP bounds the F₂ algebraic degree; the exact degree is a
+   cube sum, and 2¹² evaluations × 10 base states settled in 4 minutes what a ~10⁹-variable
+   MILP would have reported. **A scale wall is not a verdict; the quantity behind it usually
+   is.**
+4. **One base state cannot tell a distinguisher from a coin.** Half the output bits balanced
+   over a cube is what a *random permutation* gives. Count bits balanced across N independent
+   base states, against the chance baseline `NOUT·2⁻ᴺ` — and make sure your grid contains a
+   **known-true** property the harness must find, or "we found nothing" means nothing. (Ours:
+   the 1-round Feistel branch copy, found at 1024/1024 against a baseline of 1.)
+5. ⚑ **"No published model can be instantiated" is UNDONE WORK, not a theorem.** State it
+   with the *specific requirement that fails*, and **eliminate the plausible-sounding
+   non-blockers by name** — for the gadget-Feistel, "it is a Feistel" and "it is unkeyed" are
+   both covered in the MITM literature and neither is the blocker. If you do not name them,
+   the next reader will cite them as reassurance.
+6. **Count the instruments, and do not add them up.** Three instruments reporting they see
+   nothing is **one** fact about our instruments, not three about the primitive
+   (`feedback-every-instrument-is-blind-to-the-next-wound`).
+
 ## 8. STANDING ORDERS (copy verbatim into every brief)
 - Read theorem statements, not abstracts, for anything you call a bound.
 - Verify claimed absences with multiple spellings AND post-mirror via web.
