@@ -447,3 +447,46 @@ state fixed POINTWISE by an MDS layer.**
   [M32-coeffgroup].
 - §1's verdict is **unchanged and reaffirmed**: build nothing now. The successor lane makes
   the object ready, not deployed.
+
+---
+
+## ⚑⚑ SUCCESSOR, 2026-08-18 — `notes/weft-c-spec.md` (DESIGN + ANALYSIS lane)
+
+**Three corrections to this note, all `[READ at source: eprint 2024/633]`, plus one
+obligation closed as a confirmed defect.**
+
+1. ⚑⚑ **`[M32-flag]` (§7's hand-off) is CLOSED, and it closes as a DEFECT OF THE DEPLOYED
+   MATRIX.** §3.3's Sage listing *and its prose* — *"the extrapolation matrix, which takes
+   the values of some polynomial of degree less than `m` on the set `ω₀, …, ω_{m−1}`, and
+   returns the evaluations … on `ω_m, …, ω_{2m−1}`"* — fix the split to the **natural**
+   one, `0..23 / 24..47`. §4's `[ASSUMED here: 0..23 / 24..47 — re-read Mark-32's Sage
+   listing before adopting verbatim]` was **right, and it was the load-bearing assumption.**
+   `[MEASURED]` Both halves are unions of cosets of `U₁`, `U₂` and `U₃`, so
+   `A = V₂V₁⁻¹` carries the **3-deep block-constant invariant flag dim 12 ⊃ 6 ⊃ 3**, has
+   **`deg(minpoly) = 6`**, and stalls **12/12** on the contiguous-pair family and **20/500**
+   on random irregular partitions — with a random-split control showing none of it.
+2. ⚑ **NEW `[M32-subfield]`**: all 48 points are integers `< 64`, hence in `T₃ = GF(2⁸)`, so
+   **Mark-32's MDS entries lie in GF(2⁸)** and `(GF(2⁸))²⁴` — a **2¹⁹²** set — is closed
+   under the mixing layer *and* the S-box layer. The escape depends entirely on the `B`
+   coefficients and round constants, **which 2024/633 does not publish.** `[MEASURED]`
+3. ⚑⚑ **CORRECTION to §4 `[M32-cells]` and to `weft2.md` §6c: Mark-32's "8 rounds" is 16
+   S-BOX LAYERS.** Algorithm 1 runs two `x⁻¹` layers per round, and §4.2 states it outright:
+   *"Single round … consists of 48 round constant additions, **48 tower-field inversions**,
+   48 affine linearized polynomial evaluations and 2 MDS matrix multiplications"* at
+   `t = 24`. **384 inversions, not 192.** The `~200–400 cells` estimate is wrong on two
+   counts (the 2× and the missing `B`-layer aux cells); the corrected shape-level range is
+   **384–1872 cells**, which is not a measurement — see the successor's §5d.
+4. ⚑ **NEW `[M32-floor]`**: `[READ at source: eprint 2019/426 §5]` the Marvellous strategy
+   Mark-32 cites recommends *"`2⌈n/5.5m⌉` rounds, **with a minimum of 10 rounds**"*. At
+   `m = 24, n = 128` the formula is vacuous (`5.5·m·N = 1056` bits at `N = 8`), so **the
+   floor of 10 was the whole round count — and Mark-32 ships 8.** ⭐ **The cheapest action
+   on the adoption path is therefore a round count, not a cryptanalysis: adopt at 10 rounds,
+   +25%, and the deviation disappears.**
+5. **NEW `[M32-mode]`**, ⚠ **not asserted**: §3.4's prose, read literally, has the capacity
+   *overwritten from the rate output* each block, which would make the construction a
+   chop-MD with a 256-bit chaining value rather than a sponge. **Text-only reading; Figure 2
+   is not machine-readable from the PDF.** Filed next to `[M32-indiff]`.
+
+**§7's ranking is not overturned** — an unanalyzed *published* design still accumulates
+analysis and an unanalyzed private one does not. What changed is that the adoption now
+carries **nine** named obligations, two of them measured defects of the shipped object.
