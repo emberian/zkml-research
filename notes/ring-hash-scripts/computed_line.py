@@ -147,7 +147,8 @@ print("  exhaustive instrument ([BV] SPN.ipynb machinery at our base ~2^64):")
 print("    tau=1 -> round  2")
 print("    tau=2 -> round 24")
 print("    tau=4 -> round >= 42")
-print("    (guard: reproduces the paper's 1/13/20/21 at their base exactly)")
+print("    (guard: reproduces the paper's 1/13/20 at their base exactly;")
+print("     the deg-8 row of that guard is UNSOURCED -- note Sec 8 C1)")
 for name, heur, comp in (("tau=2 vs degree-heuristic", 5, 24),):
     print(f"\n  {name}: computed line is {comp/heur:.1f}x FURTHER OUT than the heuristic.")
 print("  [BV]'s own word for the prior designer estimates: 'overly optimistic'.")
@@ -242,7 +243,12 @@ print("""  This is the one place the pipeline produces a bound in the DEFENSIVE
   of skipped S-boxes under this formulation'.  And Sec 5: 'GSR skips 2t-2k total
   S-boxes; exactly k fewer S-boxes than [6]s theoretical bound.'
 
-  THE ROUND CEILING IS OURS, AND IT IS THE USEFUL ONE.  A partial round carries
+  THE ROUND CEILING IS *** PUBLISHED *** (corrected 2026-08-18).
+  Grassi-Koschatko-Rechberger, eprint 2025/954 (ToSC 2025(2)) Sec 5.1: 'an
+  attacker can cover at most 0 <= t - (c + d) <= t - 2 rounds without exhausting
+  the degrees of freedom necessary to solve the CICO problem.'  Same argument,
+  different parameterization.  Only the k-round HEADROOM against GSR is ours.
+  The derivation below is retained because it is the GSR-specific instance.  A partial round carries
   exactly ONE S-box, so in the partial layer each skipped round costs exactly one
   DoF -- no MDS coincidence can buy two.  Reparameterizing absorbs one full layer
   free.  So:
@@ -265,8 +271,9 @@ print("""
      future, is 24 absorbed rounds.  GSR is at 23.  A design needs Rf0 >= 2 for
      an unrelated structural reason; given that, the family is blocked outright.
   => this is a bound on ATTACKS NOT YET WRITTEN, computed by counting, and it is
-     the single most valuable object the pipeline produces.  It is also the only
-     bound here that is plausibly MACHINE-CHECKABLE (Sec 5 of the note).
+     the only bound here that is plausibly MACHINE-CHECKABLE (Sec 5 of the
+     note) -- and formalizing GKR's PUBLISHED argument is a contribution, where
+     formalizing our own restatement of it would have been a twin.
 """)
 
 
@@ -384,4 +391,114 @@ print("""  From the sibling lane (notes/gsr-poseidon-2026-1692.md Sec 1c), compu
      exhausted -- there is no max to take, because neither family is about R.
      Under the infeasibility-region formulation the union is computable and the
      answer 'this axis is closed, pay on another one' falls out.
+""")
+
+
+banner("(13) A4 / CheapLunch -- OPEN ITEM 2 CLOSED, and it closes in favour")
+print("""  CheapLunch (eprint 2025/2040, ~/paperbin/cheaplunch-extending-freelunch-
+  2025-2040.txt), Sec on Poseidon, verbatim:
+
+    'The weighted Bezout bound yields:
+       D_I <= (d*delta^RF)^k * (d*delta^Rf1)^RP / (delta^(RP*Rf1) * d^k)
+            = delta^(k*RF) * d^RP.
+     We CONJECTURE that this bound is achieved.'
+
+  With d = delta = alpha this is D_I <= alpha^(k*RF + RP) -- the brief's form,
+  confirmed.  Abstract: 'our results do not threaten the security of any
+  full-round hash function' and 'our assumptions are experimentally verified,
+  and theory matches practice' (Poseidon/Neptune/XHash8).
+
+  ⚑ NOTE THE REGIME: 'We conjecture that this bound is achieved.'  A4 joins A5
+  in the CONJECTURED column.  Two of the three algebraic instruments we hold are
+  conjectural by their own authors' statement.
+
+  ⚑⚑ AND NOTE THE SHAPE: alpha^(k*RF + RP) has NO KINK.  Every partial round
+  buys one factor of alpha, everywhere.  So the claim '22 of 23 partial rounds
+  buy zero' is true OF GSR and FALSE across the union.  Which settles the
+  allocation question -- in the same direction:""")
+
+def cheaplunch_bits(alpha, k, RF, RP):
+    """D_I <= alpha^(k*RF + RP); report log2 of the ideal degree."""
+    return (k * RF + RP) * log2(alpha)
+
+t, a = P["t"], P["alpha"]
+budget = (P["Rf0"] + P["Rf1"]) * t + P["Rp"]
+print(f"\n  Poseidon KoalaBear t=24, alpha=3, budget t*RF+RP = {budget}, CICO-1:\n")
+print(f"    {'RF':>3} {'RP':>4} {'A4 log2 D_I':>12} {'A2 rounds above kink':>21}")
+print(f"    {'-'*3} {'-'*4} {'-'*12} {'-'*21}")
+for RF in (8, 6):
+    RP = budget - RF * t
+    tag = " <- DEPLOYED" if RF == 8 else " <- statistical floor"
+    print(f"    {RF:>3} {RP:>4} {cheaplunch_bits(a,1,RF,RP):>12.1f} "
+          f"{RP-(t-2):>21}{tag}")
+print(f"""
+  ⚑⚑ THE REALLOCATION IMPROVES BOTH FAMILIES AT ONCE.  A4's ideal degree goes
+     from 2^{cheaplunch_bits(a,1,8,budget-8*t):.1f} to 2^{cheaplunch_bits(a,1,6,budget-6*t):.1f}; A2's margin above the kink goes from 1
+     round to 49.  Open item 2 asked whether A4 prices R_P where A2 does not.
+     It does -- and that makes the case STRONGER, not weaker.
+
+  WHY, in one line: on the A4 axis a full round buys k*log2(alpha) bits for t
+  S-boxes and a partial round buys log2(alpha) bits for 1.  Partial rounds win
+  per S-box whenever k < t, which is every CICO instance.  ⚑ THE ONLY REASON TO
+  BUY FULL ROUNDS IS THE STATISTICAL FLOOR (RF >= 6) AND THE GSR STRUCTURAL GATE
+  (R_f0 >= 2, subsumed by it).  So the computed optimum is RF = 6 EXACTLY, and
+  Poseidon's arbitrary +2 is waste on BOTH algebraic axes simultaneously.
+
+  ⚠ Still not priced: Ashur et al.'s three corrected Groebner conditions
+     (2019/458 current Eq. 4), which involve (t-1)*RF + RP -- that one weights RF
+     by t-1, and could reverse this. NOT COMPUTED HERE. Named, not waved away.
+
+  ⚑ FOR THE SIBLING LANE: CheapLunch already saw a free skip at OUR width --
+    'We observed for instance that in the case t = 16, k = 1, TWO ROUNDS CAN BE
+     FREELY SKIPPED using the ME matrix from Poseidon2. We leave as an open
+     problem a further study of this phenomena.'  That open problem is what GSR
+     answered. Worth adding to gsr-poseidon-2026-1692.md as prior notice.
+""")
+
+
+banner("(14) A5 -- the THREE corrected Groebner conditions. Last unpriced leg.")
+print("""  Poseidon 2019/458 (current version) Eq. (4), verbatim: 'we obtain three
+  attacks which are faster than 2^M if EITHER condition is satisfied:
+      RF + RP <= log_a(2) * min{M, log2 p},
+      RF + RP <= t - 1 + log_a(2) * min{M/(t+1), log2(p)/2},
+      (t-1)RF + RP <= t - 2 + M.'
+  The third was ADDED after Ashur-Buschman-Mahzoun 2023/537 -- 'Eq. 5 requires
+  three constraints rather than two'.  Security needs ALL THREE TO FAIL.""")
+
+def poseidon_gb_margins(t, alpha, p_bits, M, RF, RP):
+    la2 = 1.0 / log2(alpha)
+    c1 = la2 * min(M, p_bits)
+    c2 = (t - 1) + la2 * min(M / (t + 1), p_bits / 2)
+    c3 = (t - 2) + M
+    return [("RF+RP",        RF + RP,              c1),
+            ("RF+RP",        RF + RP,              c2),
+            ("(t-1)RF+RP",   (t - 1) * RF + RP,    c3)]
+
+t, a, pb, M = P["t"], P["alpha"], P["p_bits"], 128
+budget = (P["Rf0"] + P["Rf1"]) * t + P["Rp"]
+print(f"\n  t={t}, alpha={a}, log2 p={pb}, M={M}, budget t*RF+RP={budget}\n")
+for RF in (8, 6):
+    RP = budget - RF * t
+    tag = "DEPLOYED" if RF == 8 else "statistical floor"
+    print(f"    RF={RF}, RP={RP:>3}  ({tag})")
+    for i, (name, lhs, rhs) in enumerate(poseidon_gb_margins(t, a, pb, M, RF, RP), 1):
+        ok = lhs > rhs
+        print(f"      cond {i}: {name:>11} = {lhs:>6.1f}  must exceed {rhs:>6.1f}"
+              f"  -> {'SAFE' if ok else '*** BROKEN ***'}   margin {lhs-rhs:+7.1f}")
+    print()
+print("""  ⚑ ALL THREE CONDITIONS PREFER THE REALLOCATION -- including condition 3,
+     which weights RF by (t-1) and is therefore the one that could have reversed
+     the verdict.  It does not: per S-box, RF buys (t-1)/t = 0.96 units and RP
+     buys 1.00.  RP wins on every single computable algebraic condition we hold.
+
+  ⚑⚑ OPEN ITEM 2 IS CLOSED.  Every family with a computable bound -- A2 (GSR),
+     A4 (CheapLunch), A5 (Poseidon's own three corrected conditions) -- prefers
+     spending the arbitrary +2 RF on RP instead, at t=24, alpha=3, CICO-1.  The
+     binding constraint on RF is the STATISTICAL floor RF >= 6 and nothing else.
+
+  ⚠ Regime, stated: A4 is CONJECTURED by its authors, A5 rests on Groebner
+     complexity estimates that Perrin calls 'hard to estimate -- and sometimes
+     litteraly non-existent', and A2 alone is exact closed-form arithmetic.  The
+     ALLOCATION verdict is unanimous across three instruments of which ONE is in
+     the proven regime.  Say that when quoting it.
 """)
