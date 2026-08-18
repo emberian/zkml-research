@@ -468,6 +468,16 @@ plausible excuses (Feistel, unkeyed) explicitly eliminated. The open leg is the 
 *reason* it is open is now specific: **it needs a colour-propagation rule for a nonlinearity that
 re-partitions its cell.** That is a statable research problem, not a gap.
 
+**One instrument from the brief not yet reported on.** The AO-specific MIQCP tool
+(*"Programming Equation Systems of Arithmetization-Oriented Primitives with Constraints"*,
+`dl.acm.org/doi/10.1007/978-981-95-6203-9_5`) was dispatched to a reader and had not returned when
+this note was finalised. ⚠ **Do not read its absence as a negative result.** The specific question
+put to it — *does any automated tool natively model "decompose a prime-field element into base-B
+digits"?* — is the one that would also decide Monolith (2023/1025), Tip5 and Reinforced Concrete
+(2021/1038), which share the exact obstruction. **If any tool does, it reaches this primitive where
+both instruments in this note do not, and that would be the most valuable single finding in the
+area.** It is the first thing to pick up.
+
 **Legs that remain precedent-only**, named as the brief requires:
 1. **MITM / order-2 / boomerang.** The binding one. No instrument reaches it.
 2. **Indifferentiability.** NR=16 rests on HKT's 14-round result for 2-branch Feistel **with ideal
