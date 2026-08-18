@@ -15,7 +15,16 @@
 #
 # WHY: ring-hash-design.md sec 4.5 / ring-hash-tau-verdict.md named this as THE
 #   experiment that converts the tau choice from argument into measurement.  The
-#   paper's published table (last round 1/13/20/21 for prime/deg-2/deg-4/deg-8)
+#   paper's published table (last round 1/13/20 for prime/deg-2/deg-4).
+#   *** 2026-08-18 CORRECTION: the deg-8 row below is NOT FROM THE PAPER. ***
+#   eprint 2025/932 uses exactly THREE fields -- 2^64-2^32+1 (e=1),
+#   (2^31-2^24+1)^2 (e=2), (2^17-1)^4 (e=4).  There is no degree-8 extension
+#   anywhere in it, and no published "21".  (The 21/22 that this number was
+#   taken from are COLUMN HEADERS in the divisibility-by-p block of Table 3,
+#   a DIFFERENT quantity, whose last rounds are 24/24/26.)  The deg-8 row is
+#   therefore an UNSOURCED self-comparison, not a falsification guard: it
+#   cannot go red against the paper because the paper says nothing about it.
+#   Rows 1-3 remain genuine and pass.  Do not quote "21-22 at degree 8".
 #   holds the FIELD size ~2^64 fixed by SHRINKING the base prime (2^64/2^31/2^17/
 #   2^8); our regime instead holds the BASE PRIME at ~2^64 and grows the field
 #   (tau=1/2/4 -> F_q / F_{q^2} / F_{q^4}), with e*t = 16 = ring dimension.  The
@@ -176,11 +185,11 @@ def report(label, p, e, t, expected=None, verbose=False):
     print(f"  {label:44s} last round = {lr}{tag}")
     return lr
 
-print("="*74); print("PHASE A -- reproduce Beyne-Verbauwhede (must be 1 / 13 / 20 / 21)"); print("="*74)
+print("="*74); print("PHASE A -- reproduce Beyne-Verbauwhede (must be 1 / 13 / 20;\n         the deg-8 row is UNSOURCED -- see the correction in the header)"); print("="*74)
 report("prime  2^64-2^32+1     e=1 t=8", 2**64-2**32+1, 1, 8, 1)
 report("deg-2  (2^31-2^24+1)^2 e=2 t=8", 2**31-2**24+1, 2, 8, 13)
 report("deg-4  (2^17-1)^4      e=4 t=8", 2**17-1,       4, 8, 20)
-report("deg-8  (2^8+1)^8       e=8 t=8", 2**8+1,        8, 8, 21)
+report("deg-8  (2^8+1)^8       e=8 t=8  [UNSOURCED]", 2**8+1, 8, 8, 21)
 
 print("\n" + "="*74); print("PHASE B -- OUR PARAMETERS (base prime ~2^64, e*t = 16)"); print("="*74)
 for qlabel, Q in [("Frog  q=15912092521325583641", 15912092521325583641),

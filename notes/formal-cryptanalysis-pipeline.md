@@ -12,10 +12,10 @@ The brief named the make-or-break and demanded it first. Here it is.
 
 ---
 
-## 0. THE MAKE-OR-BREAK, ANSWERED: the naive thesis is REFUTED — five times, none opposed
+## 0. THE MAKE-OR-BREAK, ANSWERED: the naive thesis is REFUTED — six times, none opposed
 
 **The level form of the thesis — "compute the line, ship fewer rounds" — is false for
-AO hashes, and we found FIVE independent instances of it being false in the same
+AO hashes, and we found SIX independent instances of it being false in the same
 direction and none in the other.** Every time someone replaced a heuristic estimate with a
 computed one, the line moved *outward*: the attack reached **further** than the designers
 believed, so the computed provisioning is **more** rounds, not fewer.
@@ -74,7 +74,7 @@ Poseidon of our width, that instrument says the full-element integral dies at **
 The exhaustive instrument — Beyne–Verbauwhede's propagation machinery (eprint 2025/932),
 run verbatim at our base ~2^64 by this repo on 2026-08-17
 (`ring-hash-scripts/integral_char_p_settling.sage`, guarded against the authors' own
-published 1/13/20/21 and it caught a real harness bug) — says the τ=2 property survives
+published 1/13/20 and it caught a real harness bug — but see §8) — says the τ=2 property survives
 to round **24**.
 
 **4.8× further out.** And B–V's own verdict on the estimates they replaced is that they
@@ -119,7 +119,7 @@ an attack.** That is the LEVEL claim being falsified by the ecosystem in real ti
 
 ### ⚑⚑⚑ The sign of the error is PREDICTED BY THE INSTRUMENT — this is the organizing fact
 
-Five instances outward, none inward, is a pattern that wants an explanation, and there is a
+Six instances outward, none inward, is a pattern that wants an explanation, and there is a
 clean one. Sort the families by whether a *provable defense-side bound exists at all*:
 
 | leg | is there an EXACT-DEFENSE bound? | direction of the designers' error | their own words |
@@ -176,8 +176,11 @@ So the honest pitch is not "we ship fewer rounds." It is:
 
 > **Everyone provisions rounds against guesswork — and the guess is not merely imprecise,
 > it is aimed at the wrong axis.** A computed line tells you *which axis is load-bearing*.
-> Nobody in the AO-hash space is pressing this, and that part of ember's framing is
-> exactly right; what is wrong is the expectation that the answer comes back cheaper.
+
+⚠ **The brief's "nobody in the AO-hash space is pressing this" is REFUTED — see §8 C2.**
+They are pressing it, and Perrin says so on a slide: *"security arguments based on D_I are
+the future!"* What is absent is narrower — the feasibility-region formulation, regime
+labels that travel, and machine checking. Do not make the broad claim.
 
 ### ⚑⚑ (C) THE VALUE FUNCTION IS KINKED — and that is the whole finding
 
@@ -268,7 +271,7 @@ computable. This is a **demonstration of the method** on the family we hold in c
 
 | claim | status | evidence |
 |---|---|---|
-| **LEVEL**: compute the line → ship *fewer* rounds | ⚑ **REFUTED** | GSR at t=24: 1.6–2.9× outward · integral: 4.8× · our own Poseidon2: 1.15× · Ashur et al. 2023/537: 1.6× · Poseidon initiative *already raised* R_F after 2026/306. **Five instances, same direction, none opposed.** |
+| **LEVEL**: compute the line → ship *fewer* rounds | ⚑ **REFUTED** | GSR at t=24: 1.6–2.9× outward · integral: 4.8× · our own Poseidon2: 1.15× · Ashur et al. 2023/537: 1.6× · Poseidon initiative *already raised* R_F after 2026/306 · resultants 2025/259 broke Rescue-512 and put Griffin/Arion/Anemoi below claim. **Six instances, same direction, none opposed.** |
 | **ALLOCATION**: compute the line → stop paying for rounds that buy nothing | **SUPPORTED** | 96% of Poseidon t=24's partial budget absorbed; **100%** of ours, at both widths |
 | **AXIS**: compute the line → learn which parameter is load-bearing | **SUPPORTED** | Poseidon t=24 is saved by R_F (statistically derived), not R_P (algebraically derived); the deployed margin defends by accident |
 | ⚑ **BUDGET**: compute the line → same cost, far more margin | **SUPPORTED, and it is the one to pitch** | 1 → 25 rounds above the kink at identical S-box budget; the kink is invisible to every multiplicative margin rule in the literature |
@@ -572,7 +575,7 @@ So the scope is small on purpose.
 
 | object | Lean-reachable? | why |
 |---|---|---|
-| **A3, the DoF ceiling `absorbed ≤ 1 + (t−k)`** | ⚑ **YES — and it is the one worth doing** | pure counting over a finite index set; no field arithmetic, no `Poseidon2` perm, no reduction bomb. It is a theorem about **attacks not yet written**. |
+| **A3, the DoF ceiling `absorbed ≤ 1 + (t−k)`** | ⚑ **YES — and it is still the one worth doing** | pure counting over a finite index set; no field arithmetic, no `Poseidon2` perm, no reduction bomb. It is a theorem about **attacks not yet written**. ⚠ The *bound* is GKR's (§8 C3), which makes it a better Lean target, not a worse one: formalizing a published DoF-counting argument is a contribution; formalizing our own restatement of it would have been a twin. |
 | **S2, branch numbers** | **YES** | already exhaustive and self-certifying via `branch(M)=branch(M⁻¹)`; the four-pass exhaustion is a finite check a `decide` can carry |
 | **T1/T4, minpoly irreducibility and `σ(c) ≠ c`** | **YES, cheap** | finite predicates over the deployed constants; `#assert_axioms`-clean |
 | **T2, invariant quotients** | **YES, and it should be** — our gate was vacuously green once | a decidable predicate stated as a named theorem cannot skip a level the way a Python loop did |
@@ -639,13 +642,13 @@ Per `feedback-a-brief-is-a-claim-and-lanes-execute-it`, every load-bearing claim
 | Poseidon initiative *raised* external rounds after disclosure | **[read at source]** 2026/306 §6 |
 | Poseidon2 margin stated as 7.5% (§3.2) and 12.5% (§7.3) | **[read at source]** 2023/323, 2024-02-08 copy |
 | Poseidon2 §7.1 *"this is a pessimistic estimate"* (statistical leg) | **[read at source]** 2023/323 |
-| τ=1→2, τ=2→24, τ=4→≥42 at base ~2^64 | ⚑ **[measured]** `integral_char_p_settling.sage`, guarded against 1/13/20/21 |
+| τ=1→2, τ=2→24, τ=4→≥42 at base ~2^64 | ⚑ **[measured]** `integral_char_p_settling.sage`, guarded against 1/13/20 — ⚠ its fourth guard row is UNSOURCED, see §8 |
 | integral dies at r≈5 under the degree heuristic | **[measured, prior lane]** `ring-hash-cryptanalysis.md` |
 | `dim Krylov(M_I,e₀)` full on our deployed constants; the pincer | **[measured, SIBLING LANE]** `gsr-poseidon-2026-1692.md` §1c |
 | our Poseidon2 repair `R_P 13→15`, +1.4% | **[computed, SIBLING LANE]** same note |
 | the kink `R_P = t−2k` and its value function | ⚑ **[derived here]** from GSR's closed form; reconciles the two lanes |
 | the 48:1 allocation ratio | ⚑ **[computed here, UNVERIFIED against A4]** — open item 2 |
-| the DoF round ceiling `1+(t−k)` and the k-round headroom | ⚑ **[derived here]** — the S-box ceiling `2t−k` is the papers' own; the *round* form is ours |
+| the DoF round ceiling `1+(t−k)` | ⚠ **[PUBLISHED — GKR 2025/954 §5.1]**, corrected in §8 C3; only the *k-round headroom against GSR* is ours |
 | skip family absorbs ≤1 round of the gadget-Feistel | ⚑ **[derived here + measured]** `computed_line.py` §8, 1019/2000 |
 | "the sign of the error is predicted by the instrument" | ⚑ **[inferred here]** from the five instances + the two verbatim direction-words |
 | Perrin's elimination-step rule + *"sometimes litteraly non-existent"* | **[read at source]** 2024/605 abstract |
@@ -655,3 +658,136 @@ Per `feedback-a-brief-is-a-claim-and-lanes-execute-it`, every load-bearing claim
 (`α^(k·R_F+R_P)`) is carried in §2 from the brief and marked *partial* in the held column. A
 second citation lane was running against it; fold its result in before §2 is quoted
 outward. Nothing else in this note rests on a claim I did not open.
+
+---
+
+## 8. Corrections — three, and one of them narrows the thesis
+
+A second citation lane swept the seven attack families against `~/paperbin` and the full
+IACR mirror. It returned three corrections **to this note and to the repo**, and they are
+worth more than the additions.
+
+### ⚑⚑ C1. "21–22 at degree 8" is not in Beyne–Verbauwhede, and it is inside a falsification guard
+
+`eprint 2025/932` uses **exactly three fields**: `2^64−2^32+1` (e=1), `(2^31−2^24+1)²`
+(e=2), `(2^17−1)⁴` (e=4). **There is no degree-8 extension anywhere in the paper and no
+published "21".** The 21/22 that the number was taken from are **column headers in the
+divisibility-by-`p` block** of Table 3 — a *different quantity*, whose last rounds are
+24/24/26.
+
+The claim is currently load-bearing in four places:
+
+| file | what it says |
+|---|---|
+| `ring-hash-cryptanalysis.md:186` | *"20 at degree 4, 21–22 at degree 8"* |
+| `ring-hash-design.md:618` | table row `degree-8 extension \| 21–22` |
+| `ring-hash-tau-verdict.md:43` | *"reproduces the paper's 1/13/20/21 exactly"* |
+| `ring-hash-scripts/integral_char_p_settling.sage:183` | ⚑ **the guard itself** |
+
+⚑ **The last one is the serious one.** Line 183 was
+`report("deg-8 (2^8+1)^8 e=8 t=8", 2**8+1, 8, 8, 21)` — a row of the **falsification
+guard** asserting an expected value the paper does not contain. **That row cannot go red
+against the paper, because the paper says nothing about it.** It is a self-comparison
+wearing a guard's clothes, and it reported `OK`, which is how "reproduces the paper's
+1/13/20/21 **exactly**" got written. This is `minted-a-falsifier-that-stopped-falsifying`
+and `feedback-a-documented-wound-is-not-a-detected-one` in one line of code.
+
+**Fixed here, minimally and without deleting evidence**: the row is relabelled
+`[UNSOURCED]`, the file header carries the correction, and Phase A's banner no longer says
+"must be 1 / 13 / 20 / 21". **Rows 1–3 are genuine, are verified against the paper, and
+pass — so the τ verdict and the τ=2 → 24 measurement stand.** Only the degree-8 figure
+must stop being quoted. The other three files are other lanes' and are flagged, not edited.
+
+### ⚑⚑ C2. "Nobody in the AO-hash space is pressing this" is REFUTED — they are, and they say so
+
+This was in the brief and I repeated it. It is wrong. Perrin, EC'26/SPRING 2026 slides
+(`~/paperbin/spring2026-perrin-slides.pdf`, slide 31, *"Potential directions for
+hardening"*):
+
+> *"**Ideal Degree** — The 'boring/fastest' step of PoSSo is the only with a reliable
+> complexity. ⟹ **security arguments based on D_I are the future!**"*
+
+That is our thesis, stated by the field, as a direction. And FreeLunch, CheapLunch and the
+resultant line are all *executions* of it — every one of them relocates the security
+argument onto the one quantity that can be bounded.
+
+⚑ **The unifying fact the sweep found, which is better than the claim it refutes: the
+elimination / root-finding leg is the ONLY step anybody can bound tightly, in every paper
+in the family.** FreeLunch: *"we are able to tightly estimate the complexity of polyDet"*
+but *"we do not have a clear estimate for matGen"*. Perrin: *"while the complexity of
+GröbFind can only be upperbounded (while we would need a lower bound anyway), that of FGLM
+is tight."* Everything upstream — GB computation, system generation, multiplication-matrix
+construction — is heuristic or open, everywhere.
+
+**So the honest positioning is narrower and still defensible.** Not *"nobody computes the
+line"* — they do, and they have converged on which quantity to compute. What is absent is:
+
+1. **the feasibility-region formulation** — the field computes a *quantity* (`D_I`) and
+   turns it into a *round count*; nobody treats the result as a region over the whole
+   parameter vector, which is why GSR's `R_f0` constraint has no home in anyone's
+   provisioning rule (§3);
+2. **regime labels that travel** — A4 is *"we conjecture that this bound is achieved"*,
+   GKR's ideal degree is an explicit `Conjecture 1` with *"We leave the problem to prove it
+   open for future work"*, Perrin's own bound is a conjecture, and all three get quoted
+   downstream as if they were bounds;
+3. **machine checking** — nobody does it, and §5 says we should do it in exactly one place.
+
+**Rewrite the pitch accordingly. "Nobody is doing this" is false and a reviewer will say
+so in one sentence.**
+
+### ⚑ C3. The DoF round ceiling is NOT ours — Grassi–Koschatko–Rechberger published it
+
+§0 and `computed_line.py` §9 present the DoF-counting ceiling as our derivation. **It is
+published.** GKR, eprint **2025/954** (*Poseidon and Neptune: Gröbner Basis Cryptanalysis
+Exploiting Subspace Trails*, ToSC 2025(2)), §5.1:
+
+> *"an attacker can cover at most `0 ≤ t − (c + d) ≤ t − 2` rounds without exhausting the
+> degrees of freedom necessary to solve the CICO problem."*
+
+Same argument, different parameterization. **Our `1 + (t−k)` is the GSR-specific instance of
+GKR's bound, not a new result, and the note must say so.** What remains genuinely ours is
+narrow: the observation that GSR attains `1 + (t−2k)` against that ceiling, so **the residual
+headroom for the family is exactly `k` rounds**, and that closing it requires satisfying the
+CICO input constraints without spending DoF.
+
+⚑ And GKR's subspace-trail construction is the same Krylov object the sibling lane
+computed: `S^(ℓ) = ⟨e₀, e₀M, …, e₀M^{ℓ−1}⟩^⊥`, with *"the choice of the matrix M in
+Poseidon, Poseidon2, and Neptune guarantees that dim(S^(ℓ)) = t − ℓ"*. **The pincer in §3
+is visible in GKR's own algebra**; what the sibling lane added was computing it on our
+deployed constants and naming the consequence.
+
+---
+
+## 9. Instance 6, and the additions that change marks in §2
+
+**⚑ Instance 6 — resultants, eprint 2025/259** (Bariant, Boeuf, Briaud, Hostettler,
+Øygarden, Raddum, *Improved Resultant Attack against Arithmetization-Oriented Primitives*):
+
+> *"We show that most variants of Griffin, Arion and Anemoi **fail to reach the claimed
+> security level.** For the first time, we successfully break a parameter set of Rescue,
+> namely its 512-bit security variant."*
+
+**Sixth instance, same direction.** And it is the *best-founded* bound in the whole family —
+*"an efficient reduction procedure that we propose and **rigorously analyze**"*, with the one
+assumption discharged per primitive (`c = 1` for Arion/Griffin/even-char Anemoi, `c = 2`
+otherwise) and tightness **measured**: *"we observe that this upper bound is reached."*
+
+### Mark changes to §2
+
+| row | was | now | source |
+|---|---|---|---|
+| A6 resultants | EXACT-ATTACK | ⚑ **EXACT-ATTACK, rigorously analyzed** — the strongest-founded bound in the family | 2025/259 §3.1 |
+| A4 CheapLunch | EXACT-ATTACK | **closed form, but `"We conjecture that this bound is achieved"`** — CONJECTURED regime; and *loose* for Griffin/ArionHash where assumptions are unverified | 2025/2040 §4.2, abstract |
+| T1 invariant subspaces | EXACT-DEFENSE | ⚑ **SPLIT.** *Infinite* subspace trails of a P-SPN **linear layer**: DECIDABLE, iff, `O(t³)`, **measured at 4 ms (t=4) to 30 ms (t=16)** (GRS 2020/500 §5.1). *General* invariant subspaces of a round function: ⚑ **NO decision procedure — a stated open problem** (Leander–Minaud–Rønjom 2015/068 §7). All invariants of an unkeyed permutation: exact but `O(n·2^{2n})`, *"impractical for n = 64"* (Beyne 2018/763) | three papers |
+| T2 invariant quotients | EXACT-DEFENSE in principle | ⚑ **AND THERE IS NO LITERATURE.** The sweep found **no paper on invariant quotient attacks** in either corpus. Our gate is our own construct with no external check — which is exactly how it came to be vacuously green | absence, stated with the instrument |
+| T3 subspace trails | heuristic-except-Krylov | **EXACT construction**: `S^(ℓ)` is an orthogonal complement of a Krylov span, `O(t³)`, no search; max length `t−1` closed form. ⚠ but the ideal degree built on top is `Conjecture 1`, *"We leave the problem to prove it open"* | GKR 2025/954 §4.2, §5.1 |
+| A1/A2 (new) | — | ⚑ **Khovratovich 2026 (informal, UNPUBLISHED)**: `b ≤ 4t/m` ⟹ **MDS kills 4-round skipping**; **3-round skipping OPEN**, *"No 3-round trail found yet"*, open ETH grant. This is why the Initiative moved to Poseidon1/KoalaBear | `spring2026-khovratovich-slides.pdf` sl. 7, 12 |
+
+⚠ **T1's split is the one that matters for us.** We have been carrying "invariant subspaces:
+EXACT-DEFENSE" as a single row. It is exact for the *linear layer* and **undecidable in
+general** — and the Weft kill lived on the general side. The §2 mark was too generous and
+is corrected above.
+
+⚠ **And note the shape of the absence in T2**: no paper found, in a corpus that is
+cryptology-only. Per `feedback` doctrine that is *"nothing listed"*, not *"nothing exists"*
+— stated with the instrument, as required.
