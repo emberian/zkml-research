@@ -28,6 +28,12 @@ Controls (must pass or the measurement says nothing):
   C2  a deliberately LOW-degree stand-in (the P=0 variant is still carry-laden,
       so instead: XOR of two cube bits) must give cube sum 0 at m=3 and 1 at m=1.
   C3  a random function must give ~half the bits nonzero.
+  ⚑ C4, the best one, is INSIDE the measurement rather than beside it: at
+      rounds=1 the LEFT branch is the copied Feistel branch, so every one of
+      its bits is balanced for EVERY base state -- a REAL integral property.
+      The run must find it (1024/1024 against a chance baseline of 1).  If it
+      does not, the harness cannot see integral properties at all and every
+      "nothing found" row below is worthless.
 ⚠ an earlier draft of this file used a Mobius transform and asserted that bit k
 of (x+c) mod 2^M has degree k+1.  The control went RED and the ANALYTIC CLAIM
 was what was wrong (carry_k depends on x_0..x_{k-1}, so the degree is max(k,1)).
@@ -143,13 +149,21 @@ CONFIGS = [
     (1, 16, 8, "w=1 (fewer parallel lanes than deployment; w only ADDS mixing)"),
     (4, 12, 5, "w=4 (FULL deployment width)"),
 ]
+# FCT6_CONFIGS="w:m:nbase,w:m:nbase" overrides, for running a cheaper cube when
+# the box is contended.  ROUNDS likewise.
+if os.environ.get("FCT6_CONFIGS"):
+    CONFIGS = []
+    for spec in os.environ["FCT6_CONFIGS"].split(","):
+        a, b, c = (int(t) for t in spec.split(":"))
+        CONFIGS.append((a, b, c, f"w={a} (override)"))
+ROUNDS = tuple(int(t) for t in os.environ.get("FCT6_ROUNDS", "1,2").split(","))
 
 for w, M, NBASE, label in CONFIGS:
     print(f"\n--- {label};  cube dimension m={M}, {NBASE} base states ---")
     NOUT = 2 * w * D * 64
     half = NOUT // 2
     F = Feistel(Q, seed=2026, w=w, p=2, nr=4)
-    for rounds in (1, 2):
+    for rounds in ROUNDS:
         rng = random.Random(20260818 + rounds)
         always_balanced = (1 << NOUT) - 1          # bit set = balanced so far
         nz_first = None
