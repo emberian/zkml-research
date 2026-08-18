@@ -41,6 +41,20 @@
   files). `git status` first; commit `--only` named paths; never `add -A`,
   never stash. `--only` is PATH-granular — a dirty shared file sweeps foreign
   hunks.
+- ⚑⚑ **RUN THE NARROWEST THING THAT COULD REFUTE YOU — an unfiltered
+  `-p <crate>` suite run is a RESOURCE GRAB, not thoroughness.** Measured
+  2026-08-18: a lane ran `cargo nextest run -p dregg-circuit --release
+  --no-fail-fast` **on ember's laptop**, taking **~9.5 GB across three
+  processes for 1h52m** — of which the two heaviest (`pasta_sound_*`,
+  **5.3 GB and 2.8 GB**) were Pasta-curve soundness measurements **that could
+  not have moved its result.** It had *already started the same suite on hbox*.
+  **Filter with `-E 'test(...)'` or explicit `--test <name>`, and state your
+  control separately** — for most lanes the control is *counts unchanged* or
+  *bytes identical*, which is cheap and needs no heavy tests. ⚠ **A suite-wide
+  green is usually neither necessary nor sufficient for a lane's actual gate.**
+  (Second RAM incident this week; the earlier was ~50 GB of Lean RSS from
+  parallel builds. **The briefing gap: we document HOW to run things and never
+  WHICH tests to run.**)
 - ⚑⚑ **THE AGENT HARNESS STOPS BACKGROUNDED BASH JOBS AT ~50 MINUTES — AND A
   KILLED TEST REPORTS AS `1 failed`, NOT AS UNRUNNABLE.** Found 2026-08-14 by
   measurement, not guess: three kills at **3017.8 / 3137.0 / 3106.0 s**, within
