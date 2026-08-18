@@ -412,3 +412,46 @@ forever.
   be computed rather than guessed.
 - **Then** compose the landed wins honestly and publish one number for "what
   ships if all four land," which nobody currently knows.
+
+
+---
+
+## ADDENDUM (2026-08-18): the AIR interpreter — my premise was wrong twice, and the win is ~0.1%
+
+`circuit/src/flat_eval.rs` (`8d41da95f`, `474a73b51`), note `notes/air-interpreter.md`.
+
+⚠ **I claimed the tree walk runs per row over the LDE'd domain — 64× the trace
+height. Refuted at source and by counter**: `Air::eval` runs **once per SIMD
+pack-chunk of the QUOTIENT domain** (degree-driven ×2/×8/×2), measured at **32
+prover-folder invocations at lb=6 where per-LDE-row would be 1,024.** And I
+**conflated the `LDE quotient-eval` span (a DFT) with `quotient eval`** — the
+latter is 0.9–1.3 ms, **flat in b, 2.7% of a b=6 prove.**
+
+**So the win is small and honestly labelled**: the flat tape cuts the
+quotient-eval phase **3–5% = 25–40 µs/prove ≈ 0.1% of a deployed prove.**
+*"This axis was never the prize the brief hoped."*
+
+**What it produced anyway, and two of these are worth more than the latency:**
+- **Byte-identity EXACT** — blake3-equal proofs at lb 3–8 pow0 *and* deployed
+  pow16, both serializations, **identical across NEON and AVX2 boxes.** The LDE
+  precedent held.
+- **Three superseded tree walkers DELETED** (*"two evaluators that agree today
+  disagree later"*), with the compiled tape serving symbolic builders, prover
+  folder, verifier folder, gate oracle **and the recursion tower** from one
+  object. No AIR authored — the Lean descriptor remains sole author.
+- ⚑ **The A/B earned its keep twice**: it caught a v1 per-construction compile
+  **regressing the verifier +0.14 ms** (fixed by a Weak-pruned identity cache),
+  and it ***demonstrated the counts-blindness thesis BY MEASUREMENT*** — **every
+  count instrument identical while latency moved in both directions.**
+- ⚠ **One honest residual**: an unattributed **~2% in-pool-only** whole-prove
+  delta that **survives order reversal and is invisible to every span.**
+  Recorded, not explained away.
+
+⚑⚑ **AND THE FINDING THAT OUTWEIGHS THE LANE: HEAD has 102 PRE-EXISTING REDS**
+under the degraded-Lean build — discovered incidentally by a full-suite gate.
+**One root-caused**: `cap_delegation_nonamp` writes `pis[41]` against a
+`public_input_count` of **35** — *missed by the seven-slot PI-compaction flag
+day `f7bc7d351`.* **Nobody knew. The suite gate that found them is the same kind
+of run we just banned unfiltered — so the rule needs its exception stated: a
+DELIBERATE, filtered, hbox-side full-suite audit is a legitimate scheduled task,
+just never a lane's default.**
