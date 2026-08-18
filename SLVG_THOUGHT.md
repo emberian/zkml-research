@@ -187,6 +187,46 @@ plumbing in the tree.*
 removes nothing** — 3,298 → 3,298; the u256 adder is already a DAG, and its 768
 bit wires are irreducible by sharing.)
 
+## IV-f. ⚑ ADOPT-DON'T-DESIGN IS NOT AVAILABLE ON OUR RUNG — so build, and check
+
+**2026-08-18, ember**: *"adopting the aged thing isn't necessarily going to be
+realistic, we might just need to build our own constructions."* **The week's own
+evidence says so, and I had been arguing the other side on a premise that does
+not hold here.**
+
+**Why adoption fails on the binary rung specifically:**
+- ⚑ **There is no aged binary-rung hash.** Our own books: Vision/Mark-32 is
+  *"none found, and nobody has looked."* **CheapLunch, Perrin, Rijmen are all
+  PRIME-FIELD assets.** The cryptanalytic age we kept invoking is age *somewhere
+  else*.
+- ⚑ **And `[M32-flag]` reaches the recommendation itself**: **Mark-32's own MDS
+  IS the fast systematic-RS form — the one carrying the 3-deep invariant flag.**
+  *The adoption target has the shape we rejected a candidate for.*
+- **"Aged" is not tracking "safe" in this field.** In one week's reading:
+  Griffin full-round broken at k=1, Anemoi ℓ=1 at 2^70, Rescue-Prime α=3 at
+  2^112, Chaghri broken, Rubato broken, AIM attacked twice, Poseidon2b
+  round-skipped — **and GSR just took 18 of 21 rounds of the primitive we
+  actually deploy**, with *its own defense criterion as the enabling condition.*
+
+**So the real choice is not aged-vs-novel. It is: novel-and-unchecked (theirs)
+vs novel-and-checked (ours).** ⚑ **And the differentiator is not that we design
+better — it is that we can COMPUTE properties designers ASSERT.** In one week
+the gate: killed a candidate on an exact branch number; found an autonomous
+quotient at the level a loop had skipped; **found the attacked shape inside the
+MDS form our own earlier lane had blessed**; and reproduced a published table
+well enough to catch its own dead guard row.
+
+**And we already built the candidate.** The **coset novel transform** wins gate
+items 1–4, has **`[WEFT-multiround]`'s quotient half discharged as a theorem at
+every level**, measures **0/370 stalled trails**, carries the **one-object
+prize** (`weft_one_object`: hash mixing layer *and* code encoding map, one
+function), and costs **zero extra ops**. Its honest deficits are named: branch 8
+(a certified *instance*) against 25 (a *theorem*), and the **trail half of
+`[WEFT-multiround]` narrowed, not closed.**
+
+> **The construction is not the hard part. The check is — and the check is the
+> thing we have that nobody else does.**
+
 ## V. Method, compressed to what survived
 
 Write the note first, incrementally. Read the binders, not the docstrings.
