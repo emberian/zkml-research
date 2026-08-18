@@ -418,3 +418,32 @@ module list (no AIR); shares/cells quoted from `leaf-vs-recursion.md` §2c,
 measured, not re-measured here). Concurrent work the same day, referenced
 not duplicated: `hash-landscape.md` ADDENDUM 4 (Kagi sweep) and
 `notes/weft2.md` (the kill-scope re-open; owns `weft2_structure.py`).
+
+---
+
+## ⭐ SUCCESSOR, 2026-08-18 — `notes/weft-coset-repair.md` (LEAN BUILD lane)
+
+⚑ **§3's systematic-RS form carries a 2026/306-shaped invariant flag, and the gate that
+blessed it cannot see it.** `[MEASURED + DERIVED]` For **every** point split in which both
+point sets are unions of cosets of a common GF(2)-subspace — precisely the condition that
+makes the LCH transform O(t log t) — `A = V₂V₁⁻¹` has a 3-deep nested flag of
+**block-constant** invariant subspaces, **dim 12 ⊃ 6 ⊃ 3**, preserved by the mixing layer
+AND by every lane-wise S-box. Mechanism: the degree-`<t` polynomials invariant under
+translation by `W` are `K[Ŵ_W]` of dimension `t/|W|`, and their value vectors are constant
+on each `W`-coset on both sides. The `A² = I` / `deg(minpoly) = 2` result `weft2.md` §7
+measured is the `P₂ = x* + P₁` case of the same theorem, with `rank(A+I) = 12`: **half the
+state fixed POINTWISE by an MDS layer.**
+
+- ⚠ **Not a break** — it is an invariant SUBSPACE, so a round constant outside it breaks
+  it (unlike Weft-1's quotient). It is the attacked SHAPE, present by construction, and
+  2026/306 reached 2^106 on Poseidon2 with the analogous structure despite constants.
+- **The escape costs the thesis**: a random (non-coset) parity set gives `deg(minpoly) = 24`,
+  observability 24/24 and zero stalled trails — and an O(t²) matmul.
+- **§7's closing law extends**: the branch passes are not an identity instrument **and not
+  a structure instrument**. MDS is not a structure certificate.
+- **New obligation [M32-flag]** on the adopt-Mark-32 path (§4): Mark-32's own MDS *is* the
+  fast systematic-RS form, so read its Sage point split and test whether both point sets
+  are unions of cosets of a common subspace. Cheap, and it belongs next to
+  [M32-coeffgroup].
+- §1's verdict is **unchanged and reaffirmed**: build nothing now. The successor lane makes
+  the object ready, not deployed.
