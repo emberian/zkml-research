@@ -516,3 +516,38 @@ cd ~/src/ring-ro-hash && python3 mark32_sysrs_branch.py # the sibling lane's MDS
   3-deep block-constant invariant flag dim 12 ⊃ 6 ⊃ 3 — the 2026/306 shape, in an MDS
   matrix, invisible to branch 25.** The one-transform coset form has none.
 - **A fourth free condition**, joining §8's three: `M·1` must not be block-constant.
+
+---
+
+## ⚑ SUCCESSOR, 2026-08-18 — `notes/weft-c-spec.md` (DESIGN + ANALYSIS lane)
+
+The coset repair is now a **named, complete specification (Twill)** with a **derived round
+count**. Four things in this note are corrected or extended:
+
+1. ⚑⚑ **§6c's cost table is wrong by 2× on its Mark-32 row.** `[READ at source: 2024/633
+   Algorithm 1 + §4.2]` Mark-32's round has **two** `x⁻¹` layers, so "8 full rounds
+   (Mark-32's schedule)" is **16 S-box layers / 384 S-boxes**, not 192. The `0.375
+   cells/bit` row and the **`~3.2× cells/bit`** headline in §8 both inherit the error.
+2. ⚑ **§6c's cost CONCLUSION is instrument-dependent and both instruments are now in the
+   record.** *"The mixing layer dominates the native cost, not the S-box"* is true on the
+   software multiplication count and **false on Mark-32's own FPGA numbers** `[READ]`
+   Table 3: inversion **40.2 k**, MDS **9.2 k**, both `B` layers **0.6 k**, of **50.0 k LUT
+   per round** — the S-box is **80.4%**, because in hardware a *constant* multiplication is
+   an XOR tree. The `1.68×` mixing saving is a software/GPU figure worth **~9% of a round**
+   on FPGA. Say which currency before quoting the ratio.
+3. ⭐ **§1's argument that branch 6 was never the disqualifying fact is now QUANTIFIED.**
+   At the derived `R = 26` S-box layers, the full-state 768-bit bar needs only `B_d ≥ 2`
+   over the whole permutation and `B_d ≥ 7` over any 8-step segment. **Twill's 8 clears
+   both; Weft-1's 6 clears the first and fails the second.** The branch number was never the
+   binding leg — the algebraic legs are — and the segment reading is the one that separates
+   6 from 8.
+4. ⭐ **[WEFT-multiround]'s trail half now has a NUMBER, and it beats the generic bound.**
+   The 4-step minimum active S-box count is **≥ 17** (the generic `⌊R/2⌋·B_d` is 16), and
+   **≥ 22** along the cheapest route. There are **exactly eight** weight-4 codewords, with
+   the closed form `X̂_j · (s₄+a)(s₂+c)` for `j ∈ {0,1,2,3}` and the two `s₂`-cosets — §4's
+   constructive witness is the `j = 0` member — and **no out-support is an in-support**, so
+   they do not chain. Plus `|S| = 3` block-constant trails **closed exhaustively** (0/2 024)
+   and 500 random irregular partitions (0/500).
+5. **§8's three free conditions plus §4a's fourth are now NORMATIVE SPEC CONDITIONS** of
+   Twill, including a **rejection loop** on the round constants that makes condition 3
+   enforceable rather than advisory.
