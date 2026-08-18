@@ -468,23 +468,21 @@ If the modulus is reduced away before the linear layer (as in our product layer,
 `d·B² ≪ q`), that layer is classical and free. If it survives into the linear layer, that layer
 costs `Θ(n)` modular additions per multiply and the analysis is over.
 
-**Proposed amendment to `swarm/BRIEF-TEMPLATE.md` §7d** — before concluding a primitive cannot be
-analyzed:
+✅ **LANDED as `swarm/BRIEF-TEMPLATE.md` §7d-bis** (2026-08-18) — six ordered steps, each paid for
+by something that went wrong in this lane:
 
-1. **Name the substrate of each layer separately.** Not "is this AO or classical" but, per layer:
-   what ring does the arithmetic close over, and does the modulus survive the layer?
-2. **A layer whose values are provably small relative to the modulus is a CLASSICAL layer** and
-   should be priced against bit-level tools (CLAASP/CLAASP-MP, SAT differential search), not
-   against algebraic ones.
-3. **Check the tool's arithmetic field before the tool's capability list.** ⚑ A `modulus`
-   parameter that the models ignore is worse than an absent one. Run the tool's own
-   self-consistency check (`check_anf_correctness` or equivalent) at ≥200 samples on a low-order
-   bit **before** believing any output.
-4. **Before "the tool cannot be run", ask what quantity it bounds and whether that quantity is
-   directly measurable.** Here the exact F₂ degree over a 2¹⁶ cube took minutes and settled what
-   a ~10⁹-variable MILP would have reported.
-5. **"No published model can be instantiated" is UNDONE WORK, not a theorem.** State it with the
-   specific requirement that fails, and eliminate the plausible-sounding non-blockers by name.
+1. **Name the substrate of each LAYER separately**, not of the primitive. A layer whose values are
+   provably small relative to the modulus is a **classical layer**, priced against bit-level tools.
+2. **Check the tool's arithmetic field before its capability list.** A `modulus` parameter the
+   models ignore is worse than an absent one; run the tool's self-check at ≥200 samples on a
+   low-order bit.
+3. **Before "the tool cannot be run", ask what QUANTITY it bounds and whether it is directly
+   measurable.** A scale wall is not a verdict; the quantity behind it usually is.
+4. **One base state cannot tell a distinguisher from a coin**, and the grid must contain a
+   known-true property the harness has to find.
+5. **"No published model can be instantiated" is UNDONE WORK**, stated with the failing
+   requirement *and* the plausible non-blockers eliminated by name.
+6. **Count the instruments and do not add them up.**
 
 ---
 
