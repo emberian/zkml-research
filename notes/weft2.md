@@ -493,3 +493,26 @@ cd ~/src/ring-ro-hash && python3 mark32_sysrs_branch.py # the sibling lane's MDS
   exact, §4) — plus two conditions its MDS form does not carry (§7).
 - **New named obligation [WEFT-multiround]**: 2- and 4-round minimum active S-box counts by
   search, since §3 shows the 1-round branch bound and the truth diverge.
+
+---
+
+## ⭐ SUCCESSOR, 2026-08-18 — `notes/weft-coset-repair.md` (LEAN BUILD lane)
+
+- **§4's coset repair is LANDED IN LEAN**: `minidregg/Selvage/CosetNovelTransform.lean`,
+  23 axiom-pinned declarations, full tree green. `cosetPack_shift_zero` makes the KILLED
+  form the `s = 0` member of the same one-parameter family; ⭐ **`cosetPack_succ` turns
+  this note's `[DERIVED, standard]` "zero field ops" into a THEOREM** (identical butterfly
+  recursion, shift folded through `q_{β₀}`, `X ↦ X + s`).
+- **§2a's fixed lane is now general**: `novelPack_eval_zero` proves
+  `(novelPack β m p).eval 0 = p.coeff 0` for EVERY level and EVERY ordered basis, where
+  this note measured one instance.
+- **[WEFT-multiround] quotient half DISCHARGED** — at every level, both sides, any round
+  count, general in the S-box and the constants (`autonomousSet_iterate`,
+  `weftMix_no_autonomousSet`). Trail half NARROWED to the 4-round active count, general
+  K-subspaces, and `|S| ≥ 3` block-constant partitions.
+- ⚑⚑ **§7's `deg(minpoly)` degeneracy is EXPLAINED and is worse than recorded**: it tracks
+  the COSET STRUCTURE that makes the LCH transform fast, the `A² = I` case is a theorem
+  (translation is an involution in char 2), and **every FAST systematic-RS split carries a
+  3-deep block-constant invariant flag dim 12 ⊃ 6 ⊃ 3 — the 2026/306 shape, in an MDS
+  matrix, invisible to branch 25.** The one-transform coset form has none.
+- **A fourth free condition**, joining §8's three: `M·1` must not be block-constant.
