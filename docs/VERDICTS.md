@@ -833,18 +833,46 @@ the positional `OpeningScheme`; Fiat–Shamir; and `r` must be a power of two.
    `#guard_msgs … in #print axioms` while breadstuffs uses `#assert_all_clean`.
    ⚠ **A cross-repo audit using one repo's grep reports a false zero.**
 
-## 5e. ⚑ E5 RE-OPENS: our own optimizations moved the number that closed it
+## 5e. ~~E5 RE-OPENS~~ ⚑⚑ **RE-DERIVED 2026-08-18 — E5 IS STRENGTHENED, AND THIS SECTION HAD THE SIGN BACKWARDS**
 
-The verdict *"binary fields do not rescue in-circuit verifier cost"* was
-measured against a **36.45% hashing share**. **The batched reduced opening and
-the packing retune take that to 73.3% measured / ~81% derived — and the value
-of a free hash from ×1.57 to ~×5.**
+`notes/e5-rederived.md`; `notes/hash-landscape-scripts/crossover_rederive.py`
+(six committed controls reproduce before any new row prints).
 
-> **The advice may still stand; the number that made it a dead end does not.**
+**What this section said, and it is half right:** the verdict *"binary fields do
+not rescue in-circuit verifier cost"* was measured at a **36.45%** hashing share;
+the reduced-opening split and the packing retune move it, and a *free* hash goes
+from ×1.57 to more.
 
-*We optimized the arithmetic hard enough that the verifier became
-hash-dominated after all* — which is exactly the condition the binary-field
-case needed. **This should be re-derived before the dead end is cited again.**
+⚑⚑ **What it got wrong: `R*` — the crossover a candidate hash must beat — is
+COMPUTED FROM that same share, and it moves the OTHER WAY.**
+
+> `R* = 1 + (1/m_leaf − 1) / f_circ` — the numerator is the **native-side gain**
+> (untouched); the denominator is the **in-circuit penalty exposure** (what grew).
+> **`R*` is strictly decreasing in `f_circ`.**
+
+| `f_circ` | free hash (R=0) | **`R*`, leaf wrap** |
+|---:|---:|---:|
+| 0.3645 *(where E5 was decided)* | ×1.57 | 2.49–4.52× |
+| **0.5236 — DEPLOYED TODAY** | **×2.10** | **2.04–3.45×** |
+| 0.7330 *(proven, not deployed)* | ×3.75 | **1.74–2.75×** |
+| 0.8100 *(derived; a NEW AIR that does not exist)* | ×5.26 | 1.67–2.58× |
+
+**Raising the in-circuit hash share raises the payoff of a FREE hash and raises
+the penalty of an EXPENSIVE one — a LEVERAGE increase, not a direction.** Char-2
+does not offer `R = 0`; it offers `R = 12.7–24.7×`, which was 2.8–9.9× above the
+bar and is now **4.6–14.2×** above it. All three premises hold unchanged.
+
+⚠ **Three corrections to the paragraph above:**
+1. **"~×5" is the DERIVED row.** Measured-and-proven is ×3.75; **deployed is ×2.10**.
+2. **Deployed `f_circ` is 52.36%, not 36.45%** — `834a3f7` is an ancestor of the
+   pinned `fc3c6df`, so `LEAF-VS-RECURSION.md:94`'s *"pin deliberately NOT moved"*
+   is stale.
+3. ⚑ **The optimizations closed the LOOKUP door, not the binary one.**
+   Lookup-arithmetized `R = 3.2` was a **0.79× wrap win** at 0.3645 and is a
+   **1.15× loss** at 0.733. `hash-landscape.md` §2's *"highest-value open
+   measurement"* crossed out of its own band while nobody was looking.
+
+> **E5 stands, with a larger margin. Do not cite this section as a re-opening.**
 
 ## 5f. ⚑⚑ WEFT RE-OPENED: the kill was right for the WRONG reason, and the repair is free
 
