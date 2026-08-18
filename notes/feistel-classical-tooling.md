@@ -343,6 +343,13 @@ permutations (2022/189) and block ciphers (2023/816), Qin et al. on sponge hashi
 Dong et al. generic sponge frameworks (2024/604), Hou et al. on Feistel (2023/1359) and on binary
 matrix linear layers (2025/082), Michel et al. differential-MITM on Feistel (2025/1911).
 
+⚠ **Provenance, stated exactly**: the twelve-paper sweep was executed by a delegated reader against
+the local mirror. Per `feedback-read-the-blocker-before-you-relay-it` I **re-opened the two
+load-bearing quotes myself** instead of relaying them — SS22's `b=2 → MITM (automatic) Inapplicable`
+table row, and the CiC paper's *"additions of constants and application of S-Boxes do not change the
+colors of individual bytes"*. Both check out verbatim. The remaining rows carry the sweep's reading,
+not mine.
+
 **What every model requires**, and where ours fails:
 
 | requirement | every published model | the gadget-Feistel |
