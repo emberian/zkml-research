@@ -306,7 +306,7 @@ everything:
 | A2 | **S-box skipping / GSR** | absorbed rounds `1+(t−2k)`; residual degree `α^(Rp+Rf1−t+2k)`; **applicability** = `dim Krylov(M_I,e₀) ≥ t−2k` | **EXACT-ATTACK**, and the applicability test is exact linear algebra | instant | ✅ reproduced, guard passes; Krylov computed by sibling lane |
 | A3 | **DoF ceiling on A1–A2** | `1+(t−k)` absorbed rounds | ⚑ **EXACT-DEFENSE** | instant | ✅ derived here |
 | A4 | FreeLunch / CheapLunch | ideal degree (system is already a Gröbner basis) | **EXACT-ATTACK** (closed-form upper bound) | instant | partial |
-| A5 | generic Gröbner / CICO | degree of regularity, solving degree | ⚠ **HEURISTIC — and known-unreliable**; Perrin's rule: argue from the *elimination* step, the GB itself is "sometimes literally non-existent" | — | rule held, bound not |
+| A5 | generic Gröbner / CICO | degree of regularity, solving degree | ⚠ **HEURISTIC, and its best replacement is CONJECTURED** — see below | — | rule verified at source |
 | A6 | resultants / univariate root-finding | degree of the resultant; Cantor–Zassenhaus `O(d² log p)` | **EXACT-ATTACK** | instant | ✅ (it is GSR's own solver) |
 | S1 | differential | max characteristic probability | **HEURISTIC**; the wide-trail *bound* is EXACT-DEFENSE but loose | — | — |
 | S2 | branch number (the S1 defense) | `branch(M)`, via the `branch(M)=branch(M⁻¹)` duality | ⚑ **EXACT-DEFENSE**, self-certifying | minutes | ✅ four-pass exhaustion |
@@ -326,6 +326,36 @@ argument. Four more are EXACT-ATTACK, which tells you where you *must not* be bu
 where you may stop. **The single most load-bearing family in AO design — A5, generic
 Gröbner — is the one with no computable bound in either direction**, and that is not an
 accident of our effort: it is Perrin's point.
+
+### ⚑ A5 in detail — the binding family's best bound is in the CONJECTURED regime
+
+Perrin, eprint 2024/605 (`~/paperbin/xhash-security-perrin-2024-605.txt`), abstract,
+verbatim — note the typo is his:
+
+> *"For algebraic attack relying on the computation and exploitation of a Gröbner basis, our
+> survey of the literature suggests to base a security argument on **the complexity of the
+> variable elimination step rather than that of the computation of the Gröbner basis
+> itself.** Indeed, it turns out that **the latter complexity is hard to estimate—and is
+> sometimes litteraly non-existent.**"*
+
+That is the methodological rule the brief carried, and it holds at source. **But read the
+next clause**, which the brief did not carry and which is the more important half:
+
+> *"we propose a generalization of the "FreeLunch" approach which, **under a reasonable
+> conjecture about the behaviour of the degree of polynomial ideals of dimension 0**, is
+> sufficient for us to argue that both XHash8 and XHash12 are safe against such attacks."*
+
+**So even the repaired route is CONJECTURAL, and its author says so in the abstract.** The
+binding family in AO design has: no defense-side bound, a known-unreliable attack-side
+estimate, and a best-available replacement that is explicitly a conjecture validated
+"at least experimentally."
+
+⚑ **This is where our regime discipline earns its keep and the literature's does not.** Our
+calculator already refuses to conflate *proven / conjectured / withdrawn*, and
+`cbr_not_reportable` is a theorem. A "ship at the computed line" argument whose binding leg
+is conjectural is honest **only if the regime travels with the number.** Every mark in the
+table above exists for that reason, and A5's mark is the one that decides whether the whole
+argument may be made at all.
 
 ⚠ **T2 is the entry to distrust.** It is marked EXACT-DEFENSE and our own instance of it
 was *vacuously green* — the loop skipped the level at which the autonomous quotient
@@ -523,9 +553,11 @@ with every leg computed but one.** In whole-circuit terms that is Fiat–Shamir 
 versus 11.9%** (`ring-hash-build-verdict.md`), so the question is whether **7.9 points of
 circuit** is the price of an argument.
 
-Each gadget-Feistel round is 6.2% of the permutation, so an NR verdict of ±2 moves the
-92,257 figure by ~12% — **the round count is not where this candidate's cost is decided,
-and the M1 work should not be deferred on cost grounds.**
+And the cost of *being wrong about NR* is small enough that there is no excuse for leaving
+it open. Each round is 6.2% of the permutation, so NR 16 → 18 moves the 92,257-constraint
+Fiat–Shamir bill by ~12.5% — which, at FS = 4.0% of the whole circuit, is **~0.5% of the
+circuit.** **The round count is not where this candidate's cost is decided. M1 must not be
+deferred on cost grounds, because there are no cost grounds.**
 
 ---
 
@@ -616,9 +648,10 @@ Per `feedback-a-brief-is-a-claim-and-lanes-execute-it`, every load-bearing claim
 | the DoF round ceiling `1+(t−k)` and the k-round headroom | ⚑ **[derived here]** — the S-box ceiling `2t−k` is the papers' own; the *round* form is ours |
 | skip family absorbs ≤1 round of the gadget-Feistel | ⚑ **[derived here + measured]** `computed_line.py` §8, 1019/2000 |
 | "the sign of the error is predicted by the instrument" | ⚑ **[inferred here]** from the five instances + the two verbatim direction-words |
+| Perrin's elimination-step rule + *"sometimes litteraly non-existent"* | **[read at source]** 2024/605 abstract |
+| Perrin's replacement bound rests on *"a reasonable conjecture"* | ⚑ **[read at source]** 2024/605 abstract — the brief carried the first half of this sentence, not the second |
 
-**Not verified**: nothing in this note rests on a claim I could not open. Two items I did
-*not* chase — CheapLunch's exact statement of the Poseidon ideal-degree bound, and Perrin's
-elimination-step rule verbatim — are carried in §2 from the brief and are marked in that
-table as *rule held, bound not*; a second citation lane was running against them and its
-result should be folded in before §2 is quoted outward.
+**One item not chased**: CheapLunch's exact statement of the Poseidon ideal-degree bound
+(`α^(k·R_F+R_P)`) is carried in §2 from the brief and marked *partial* in the held column. A
+second citation lane was running against it; fold its result in before §2 is quoted
+outward. Nothing else in this note rests on a claim I did not open.
