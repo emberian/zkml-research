@@ -1152,6 +1152,54 @@ is satisfied at NR ≈ 2–3; **the binding leg (order-2 / MITM) is OPEN**, and
 thesis says not to ship.* ⚠ **Cost of being wrong about NR is ~0.5% of the
 circuit — so there are no cost grounds for deferring the MITM work.**
 
+## 5j. ⚑ THE CR/RO SPLIT: real as a JOB, FALSE as a REQUIREMENT — and the live knob is leaf RATE
+
+`notes/fastest-oracle.md` (`566bd8c`) + `notes/fastest-oracle-scripts/merkle_geometry.py`.
+My organizing idea — *"a Merkle node needs collision resistance only, so stop
+paying random-oracle prices for it"* — is **refuted at the requirement, with
+three sources read at the load-bearing passage.**
+
+**The JOB split is real and now exact**: one `Poseidon2BabyBear<16>` in four
+roles; **CR work is 92.0% of Merkle-commit perms, 81.6% of all prover hashing,
+70.8% of wrap in-circuit perms.** ⚠ One wiring correction to my brief: **the
+Merkle PATH never enters the FS transcript** — only the root does.
+
+⚑⚑ **But the REQUIREMENT does not split**: BCS (2023/1071) makes **the tree hash
+the random oracle itself** — straightline extraction runs off oracle *queries*,
+and **a linear map generates none**; 2019/997 constructs a **CR-only tree that
+kills FS-Kilian for ANY challenger, including a true RO**; and **Vortex — the
+one production SIS-hash system — concedes in print** that its Merkle tree
+*"needs to be modeled as a random oracle… to retain extractability."*
+(Chiesa–Orrù 2025/536 gives the modern modular form, with the tree's `κ_MT`
+term surviving.)
+> **So the split licenses GEOMETRY freedom and a separate GRIND oracle — not
+> algebraic tree nodes. And it kills "fewer rounds for the tree since it is only
+> CR."**
+
+**The arity computation, exact and validated**: the model reproduces the
+measured Merkle-commit count **to the unit at all five blowups**
+(26,493 / 52,989 / 105,981 / 211,965 / 423,933) with **zero fitted parameters**.
+⚑ **Leaf sponges are 92.03% of the tree and nodes only 7.97% — so ARITY IS A
+NULL KNOB (×1.003–1.026)**, independently matching a prior lane's untaken 1.0%.
+⚑ **The live knob is the LEAF RATE**: a **w24 rate-16 sponge** (the pinned p3's
+own `examples/types.rs` shape; *we deployed the test-convention rate-8*) is
+**×0.777 native Merkle-commit** — and sequenced **behind** the narrow-AIR
+landing it also wins in-circuit (×0.871; ×1.055 *loss* on today's wide chip, so
+the order matters).
+
+**Ranked**: (1) narrow Poseidon2 AIR · (2) **rate-16 leaf sponge** · (3) ⚑ **the
+GRIND SWAP — the one slot a traditional hash wins, because grinding is verified
+ONCE, not per-query: ~8–14% of deployed prove for +9,168 one-time wrap cells**
+⚠ *after* settling the prior budget question, *is `pow=16` worth 25% of prove* ·
+(4) decompose the wrap's 29.2% RO lump · (5) **SIS nodes closed three ways**
+(the extraction wall above; **Vortex Fig 22's ≥2,048-bit digests → paths ×8–33**;
+and our own dual-mode's ×0.7–13), **algebraic fingerprints closed by
+definition** (challenge-after-commit), **code-based commitments = the blowup knob
+with a bigger verifier.**
+
+**Fixed-cost bound applied throughout**: hash wins compound at the **wrap/tower**
+layer, **not at small leaves.**
+
 ## 6. Method
 
 - **No absence claim without**: grep `~/paperbin` first (now full-text
