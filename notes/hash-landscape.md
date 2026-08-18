@@ -1428,3 +1428,57 @@ a `range(1, 5)` hid a fixed lane.
 quantity and goes **fifth**, on both sides; structure/quotient/subfield/minpoly go
 first. The 23-rotation family is the proof — it changes the structure completely
 and **moves neither branch number**.
+
+
+---
+
+## ADDENDUM 6 (2026-08-18): the two repairs are NOT the same object — and the MDS one carries the attacked shape
+
+`Selvage/CosetNovelTransform.lean` (`9db15e7`, tree green at 9,006 jobs, **23
+axiom pins, mutation-tested — injecting a fabricated `sorryAx` turns the build
+red**) + `notes/weft-coset-repair.md`.
+
+**They are different objects.** Both evaluate the same LCH novel basis off the
+window, but the coset form is **one Vandermonde `V_{x*}`** while the RS form is
+a **ratio `V₂V₁⁻¹`** — and the factor `V₁⁻¹` *is the question of what the state
+vector holds*: **novel-basis coefficients vs values on the window.**
+
+⚠ **"MDS at the same zero op cost" is FALSE — my summary said it and it is
+wrong.** **Zero-op belongs to the COSET** (`cosetPack_succ` proves the identical
+butterfly recursion with the shift folded through). **The RS/MDS form is two LCH
+passes — 1.68× per permutation.**
+
+⭐⭐ **AND THE FAST MDS FORM CARRIES THE 2026/306 SHAPE.** For **every** point
+split where both sets are unions of cosets of a common subspace — ***which is
+precisely what makes LCH O(t log t)*** — `A = V₂V₁⁻¹` has a **3-deep flag of
+block-constant invariant subspaces (dim 12 ⊃ 6 ⊃ 3), preserved by the layer AND
+by every lane-wise S-box.** Measured: **117/370 stalled trails for both fast
+splits, 0/370 for the coset.** The mechanism is a **theorem** (translation-
+invariant polynomials are `K[Ŵ_W]`, dim `t/|W|`), and the sibling lane's
+measured `A² = I` is its `P₂ = x* + P₁` case — with **`rank(A+I) = 12`: half the
+state fixed pointwise by an MDS layer.** ⚠ **A random (non-coset) split clears
+it and deletes the fast transform.**
+
+> ***You can have MDS, or you can have the fast transform, but the fast MDS form
+> has the attacked shape by construction.*** Not a break — it is a subspace, so
+> constants break it — but it is **the attacked shape, present by construction,
+> in the object our own gate blessed.**
+
+**The trade, stated**: the coset form **wins gate items 1–4 and loses only item
+5 — the item the amendment demoted.** Honest counterweight: **branch 25 is a
+theorem; branch 8 is a certified instance.**
+
+**`[WEFT-multiround]`: quotient half DISCHARGED** — `novelPack_eval_zero` makes
+the fixed lane general at **every level, including the one the original script's
+`range(1,5)` skipped**, and no constant, no S-box, and no round count breaks a
+quotient. **Trail half narrowed** to the 4-round active count. **`weft_one_object`
+inhabits both interfaces with one function — the prize is preserved** — and the
+tooth `weft_shift_zero_encodes_but_does_not_mix` shows the *killed* form
+**encodes fine and is refused mixing.**
+
+⚑ **New obligation `[M32-flag]`, and it reaches our adoption recommendation:
+Vision Mark-32's own MDS IS the fast systematic-RS form.** *The candidate we
+recommended adopting carries the same shape.* **If the char-2 slot never opens**,
+`cosetPack` survives as the **code's encoder on a shifted domain at zero extra
+ops**; everything hash-side dies. Standing verdict unchanged: **build nothing
+now.**
