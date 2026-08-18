@@ -687,7 +687,7 @@ Rosetta lacks a CPU extension FLINT's matmul uses). Script + full recipe:
 `notes/ring-hash-scripts/integral_char_p_settling.sage`.
 
 **Falsification guard passed**: the run reproduces the paper's published table
-**exactly** — last round carrying a mod-p² property = **1 / 13 / 20 / 21** for
+**exactly** — last round carrying a mod-p² property = **⚠ **CORRECTED 2026-08-18: the guard had a DEAD ROW.** Beyne–Verbauwhede use exactly three fields; **there is no degree-8 extension and no published "21"** — that row asserted a number the paper does not contain, **could not go red, and reported OK.** Rows 1–3 are genuine and pass, **so the τ verdict stands** — but the guard was 3/4 live, not 4/4** for
 prime / deg-2 / deg-4 / deg-8. (An initial wrapper bug — the round polytope was
 never advanced — was *caught by this guard*, which is why the guard is there.)
 

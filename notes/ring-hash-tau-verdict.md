@@ -40,7 +40,7 @@ were **both** wrong, for different reasons.
 > ✅ **SETTLING EXPERIMENT EXECUTED (2026-08-17).** The authors' `SPN.ipynb`
 > machinery, run verbatim at our base ~2^64 (Frog *and* 2^64−257, identical),
 > holding e·t = 16: **τ=1 → round 2, τ=2 → round 24, τ=4 → ≥42** (guard: it
-> reproduces the paper's 1/13/20/21 exactly). The reframe's monotonicity holds by
+> ⚠ **CORRECTED 2026-08-18: the guard had a DEAD ROW.** Beyne–Verbauwhede use exactly three fields; **there is no degree-8 extension and no published "21"** — that row asserted a number the paper does not contain, **could not go red, and reported OK.** Rows 1–3 are genuine and pass, **so the τ verdict stands** — but the guard was 3/4 live, not 4/4 exactly). The reframe's monotonicity holds by
 > execution, **but the magnitudes at our modulus are ~2× the paper's** — the τ=2
 > integral property survives to **24, not 13** (same e=2,t=8; pure base-prime
 > effect). Verdict unchanged (τ=2), but its round-count margin over the borrowed

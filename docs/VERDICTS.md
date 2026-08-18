@@ -1054,6 +1054,61 @@ nor refute it. And **"Poseidon2's internal layer is branch 2" was a script
 DOCSTRING I propagated as a measurement into five notes**; nobody has computed
 it, and it is irrelevant to GSR regardless. Corrected at source.
 
+## 5i. ⚑ THE "SHIP AT THE LINE" THESIS: naive form REFUTED, better form SURVIVES
+
+`notes/formal-cryptanalysis-pipeline.md` + `notes/ring-hash-scripts/computed_line.py`
+(guard reproduces all 5 rows of GSR's Table 1 to ≤0.6 bits).
+
+**"Compute the line → ship fewer rounds" is FALSE for AO hashes.** **Six
+independent instances of a computed bound sitting FURTHER OUT than the deployed
+parameter, none the other way**: GSR at t=24 (1.6–2.9×), char-p integral at our
+base (4.8×), our own Poseidon2 (1.15×), Ashur–Buschman–Mahzoun (35 partial
+rounds where the designers' equation gives 22), resultants breaking Rescue-512,
+and the Poseidon initiative *already raising* `R_F`. **My stated make-or-break
+fear was the correct one.**
+
+⚑⚑ **BUT THE ORGANIZING FACT IS BETTER THAN THE THESIS WAS: the SIGN of the
+error is PREDICTED BY THE INSTRUMENT.** Where a family has a *provable
+defense-side* bound (statistical, via wide-trail) designers are **conservative
+and say so** — Poseidon2 §7.1: *"this is a pessimistic estimate."* Where a
+family has only **heuristics** (algebraic), they are **optimistic and have been
+corrected outward repeatedly.**
+> ***Formal bounds are looser exactly on the families that are NOT binding.***
+
+**WHAT SURVIVES IS A STRONGER, CHEAPER CLAIM — the value function is KINKED at
+`R_P = t − 2k`, and a multiplicative margin rule is blind to a kink BY
+CONSTRUCTION.** Measured: **every one of our deployed partial rounds — 13 at
+w16, 21 at the w24 sponge — sits BELOW the kink and buys ZERO** against this
+family. And inside **Poseidon's own objective** (`t·R_F + R_P`), at identical
+215 S-boxes: **the "arbitrary" +2 `R_F` costs 48 S-boxes and buys 1 round of
+gate margin; the same 48 spent on `R_P` buy 48. Ratio 48:1** — and *all three*
+of Poseidon's own corrected Gröbner conditions prefer the reallocation.
+⚑ **So the win is not "fewer rounds" but "the SAME rounds allocated
+differently" — free, and derived from the designers' own objective function.**
+(Their §5.4 concedes the input: *"we **arbitrarily** decided to add… +2 R_F and
++7.5% R_P."*)
+
+⚠ **Three corrections**, one of them mine to amplify: **the τ=2 script's
+falsification guard had a DEAD ROW** (`:183` asserted a "21" the paper does not
+contain — B–V use exactly three fields), **so it could not go red and reported
+OK** — which is how *"reproduces 1/13/20/21 exactly"* entered three notes and
+my summary. **Rows 1–3 are genuine and pass; the τ verdict stands; the guard
+was 3/4 live.** Also: *"nobody in the AO-hash space is pressing this"* is
+**refuted** (Perrin, EC'26 slide 31: *"security arguments based on D_I are the
+future!"*) — the narrow true claim is the *feasibility-region formulation,
+regime labels, and machine checking*. And the DoF ceiling is **GKR 2025/954
+§5.1, not ours.**
+
+⚑ **AND A DESIGN FORK FOR EMBER — the thesis argues AGAINST our front-runner.**
+The gadget-Feistel resists the skip family (absorbs **≤1 round** vs 23 for
+Poseidon t=24, because base-B decomposition does not commute with affine maps)
+— **but the same non-polynomiality makes the algebraic instrument inapplicable
+in BOTH directions, so the pipeline CANNOT set its `NR`.** Every computable leg
+is satisfied at NR ≈ 2–3; **the binding leg (order-2 / MITM) is OPEN**, and
+**NR=16 remains precedent.** *A primitive we cannot analyze is exactly what the
+thesis says not to ship.* ⚠ **Cost of being wrong about NR is ~0.5% of the
+circuit — so there are no cost grounds for deferring the MITM work.**
+
 ## 6. Method
 
 - **No absence claim without**: grep `~/paperbin` first (now full-text
