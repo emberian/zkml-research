@@ -459,8 +459,8 @@ re-partitions its cell.** That is a statable research problem, not a gap.
 ⚑ **And the honest cost note.** The pipeline note's ~0.5%-of-circuit figure for NR 16→18 is a
 reason not to defer the *fix*; it is not a reason to treat 16 as safe. **Nothing computed
 justifies 16 rather than 14 or 24.** If a number must be defended outward today, the defensible
-sentence is *"16 is a structural precedent with a 2× margin over every leg any instrument can
-compute, and the binding leg is unanalysed."*
+sentence is *"16 is a structural precedent sitting 8× above every leg any instrument can compute
+(all of which are satisfied at NR ≈ 2), and the binding leg is unanalysed."*
 
 ---
 
