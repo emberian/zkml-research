@@ -404,10 +404,17 @@ through `metatheory/EmitByName.lean` → `dregg-eth-lightclient-verify-v1.json` 
 | ETH light-client update | **8 rows × 21 cols** | **128 × 21** | 13.30 ms *(incl. grind)* |
 | dregg Transfer turn | 188 rows × 64 cols | 256 × 64 | 15.50 ms *(excl. grind)* |
 
-**A 6.1× difference in padded cells — 71× in logical ones — buys 1.2× in time.** The mechanism
-is not mysterious: `TablePacking::min_trace_height` enforces
-`min_trace_height ≥ 2^(log_final_poly_len + log_blowup + 1)`, so at `lb=6` **every trace is
-padded up to 128 rows.** An 8-row program pays for 128.
+**A 6.1× difference in padded cells — 71× in logical ones — buys 1.2× in time.**
+
+⚠ **Mechanism, stated at the resolution the source supports.** The measured fact is the
+1.2×-for-6.1× above. The *explanation* is a floor on trace height: FRI requires
+`log_trace_height > log_final_poly_len + log_blowup`, so at `lb=6, log_final_poly_len=0`
+**no trace can be shorter than 2⁷ = 128 rows** — an 8-row program pays for 128.
+`TablePacking::min_trace_height` documents exactly this bound (*"FRI requires… so
+min_trace_height should be ≥ 2^(lfpl + lb + 1)"*), though its own **default is 1** — the floor
+is FRI's, not the packing knob's. **The padded-cell figures in the table are derived from that
+bound, not read off a prover log**, and are labelled `[DERIVED]` accordingly; the times and the
+logical trace shapes are `[MEASURED]`.
 
 > ### ⚑⚑ This is `LEAF-VS-RECURSION`'s *"our problem is that THE LEAF IS TOO SMALL"* — measured for the first time as a wall-clock, on a real task. And it **inverts the decompilation pitch.**
 >
