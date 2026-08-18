@@ -158,9 +158,24 @@ So, in this order:
    non-blockers by name** — for the gadget-Feistel, "it is a Feistel" and "it is unkeyed" are
    both covered in the MITM literature and neither is the blocker. If you do not name them,
    the next reader will cite them as reassurance.
-6. **Count the instruments, and do not add them up.** Three instruments reporting they see
-   nothing is **one** fact about our instruments, not three about the primitive
+6. **Count the instruments, and do not add them up.** Four instruments reporting they see
+   nothing is **one** fact about our instruments, not four about the primitive
    (`feedback-every-instrument-is-blind-to-the-next-wound`).
+7. ⚑⚑ **"NO TOOL MODELS IT" AND "THE MODEL EXISTS AND NOBODY CAN RUN IT" ARE DIFFERENT
+   VERDICTS, AND THE SECOND IS STRONGER.** This lane wrote the first and the sweep returned
+   the second. For the decomposition layer, **three designer papers write the constraint
+   themselves** (Monolith 2023/1025 §B.3, Reinforced Concrete 2021/1038 §B.4, Skyscraper-v2
+   Eq. 21) — and **every solved instance in the literature is a 6-16 bit toy prime**, with
+   Monolith calling full-size ones *"computationally intractable"* in its own words.
+   **So always ask, in this order: (a) does anyone write the encoding? (b) has anyone RUN it
+   at real parameters?** A "no" at (b) with published toy-scale numbers is a **measured wall**
+   you can cite; a "no" at (a) is usually just a literature search you have not finished.
+8. ⚑ **When the automated instruments all refuse, go find the HAND-BUILT attack.** The only
+   published technique that reaches a decomposition layer is Liu et al., eprint **2024/1900** —
+   a hand-written limb-wise carry-DDT automaton in C++, explicitly *"Independent of the
+   S-box"*, reaching 3/5-round Tip5 and 2/6-round Monolith-64 collisions. **The absence of an
+   automatable model is not the absence of an attack**, and the attack-me item should name the
+   concrete technique, not a family ("order-2 / boomerang").
 
 ## 8. STANDING ORDERS (copy verbatim into every brief)
 - Read theorem statements, not abstracts, for anything you call a bound.

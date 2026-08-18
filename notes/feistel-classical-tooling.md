@@ -28,14 +28,29 @@ instantiated.** Not because it is a Feistel and not because it is unkeyed — bo
 covered in the literature — but because every model needs the nonlinearity to be a *cell-local,
 width-preserving bijection*, and base-B decomposition **re-partitions the cell**.
 
-**So NR is still not set, and the reason has moved.** It was "the instrument does not apply"
-(§4's verdict). It is now: **the instrument applies, cannot be run at scale, and the quantity it
-bounds is saturated at 2 rounds anyway; and the binding leg fails on one named, statable
-requirement.** That is a sharper refusal, and §5 argues it is worth more than the old one.
+**And the AO instrument — the one our pipeline note said "does not apply" — turns out to be
+written down and computationally dead.** All three decomposition-hash designer papers (Monolith,
+Reinforced Concrete, Skyscraper-v2) write **exactly** the degree-`B` vanishing polynomial per digit
+plane that our own §4 identified as the obstruction. **Nobody can solve it**: every published data
+point is a 6–16-bit toy prime, and Monolith calls full-size instances *"computationally
+intractable"* in its own words. ⚑ **"The encoding is writable and unsolvable" is strictly stronger
+than "no tool models it"** — our crux is the measured wall for this whole family of hashes, not a
+peculiarity of our design.
 
-⚠ **Nothing here is an attack, and nothing here clears the design.** Three instruments now report
+**So NR is still not set, and the reason has moved.** It was "the instrument does not apply"
+(§4's verdict). It is now: **the classical instrument applies, cannot be run at scale, and the
+quantity it bounds is saturated at 2 rounds anyway; the AO instrument is written and unsolvable at
+real primes; and the binding leg fails on one named, statable requirement.** That is a sharper
+refusal, and §5 argues it is worth more than the old one.
+
+⚑ **The one actionable thing in the whole note**: the only published technique that *does* reach a
+decomposition layer is **hand-built, not automated** — Liu et al.'s limb-wise carry-DDT automaton
+(eprint 2024/1900), which routes around the S-box entirely and gets 3/5-round Tip5 and 2/6-round
+Monolith-64 collisions. **That, not "order-2 / boomerang", is what attack-me item #1 should mean.**
+
+⚠ **Nothing here is an attack, and nothing here clears the design.** **Four** instruments now report
 that they see nothing, and per `feedback-every-instrument-is-blind-to-the-next-wound` that is
-**one** fact about our instruments, not three about the primitive. Two of the findings below are
+**one** fact about our instruments, not four about the primitive. Two of the findings below are
 about the *tools*, not about us.
 
 ---
@@ -57,12 +72,30 @@ Scripts: `notes/feistel-tooling-scripts/`.
 | no published automated MITM model can be instantiated on this shape | ⚑ **[read at source, 12 papers]** §4 |
 | CLAASP-MP's component vocabulary and mod-mul model | **[read at source]** eprint 2026/735 §3.3, Alg. 4 |
 | SS22 marks 2-branch Feistel "Inapplicable" to the automatic MITM tool | **[read at source]** eprint 2022/189 §7.1, Table 3 |
+| the MIQCP tool (2024/2061) Def. 2 requires *"degree α being a small integer"* | ⚑ **[re-opened and verified by me]** §4.2 |
+| Monolith: full-size instances are *"computationally intractable"* | ⚑ **[re-opened and verified by me]** 2023/1025 l.1183 |
+| 2026/1104 §3.1: non-polynomial S-boxes need brute force, *"infeasible for large pⁿ"* | ⚑ **[re-opened and verified by me]** |
+| 2024/1900 is hand-built, *"Independent of the S-box"*, 3/5-round Tip5 + 2/6-round Monolith-64 | ⚑ **[re-opened and verified by me]** §4.2a |
+| the three designer papers write the degree-B vanishing polynomial; all solved points are toy primes | **[sweep, read at source]** §4.2 |
 | the LINEAR_LAYER evaluator/model transpose | ⚠ **[REFUTED — my source reading was wrong]** see §1.4 |
+| *"no automated tool models base-B decomposition"* | ⚠ **[MY FRAMING, CORRECTED]** — the encoding exists and is unsolvable; §4.2 |
+| eprint 2024/270 as the "Blackbox" paper | ⚠ **[WRONG — 2024/270 is YPIR; the paper is 2024/1900]** verified by me |
 
-**Corpus statement**, per the PREFLIGHT corpus-blindness rule: the MITM sweep (§4) was run over
-`~/paperbin` and the **full local IACR eprint mirror** (`~/dev/gh/forks/IACR-eprint-mirror/`,
-1996→2026/1053+). That corpus is **cryptology-only**; it cannot see arXiv, ITP/CAV, or grey
-literature. No absence claim below is stronger than "absent from the IACR corpus."
+**Corpus statement**, per the PREFLIGHT corpus-blindness rule: the MITM sweep (§4) and the AO sweep
+(§4.2) were run over `~/paperbin` and the **full local IACR eprint mirror**
+(`~/dev/gh/forks/IACR-eprint-mirror/`, 1996→2026/1053+), the latter full-text scanning **9,761 PDFs
+across 2022–2026**. That corpus is **cryptology-only**; it cannot see arXiv, ITP/CAV, Springer-only
+chapters, or grey literature. ⚠ Two further limits attach specifically to §4.2's absence claim: the
+sweep's regex keyed on **design names**, so a paper attacking this layer without naming Monolith /
+Tip5 / Reinforced Concrete would be missed, and **2021 was outside the full-text scan range.**
+No absence claim below is stronger than that.
+
+⚠ **A misattribution caught and killed here**, because it is exactly the class this repo bleeds
+from: the sweep initially paired *"Opening the Blackbox"* with eprint **2024/270**. **2024/270 is
+YPIR: High-Throughput Single-Server PIR** — I opened it and read the title page. The Blackbox paper
+is **2024/1900**. The bad pairing came out of a **corrupt title index**; the `-fixed` index columns
+are the trustworthy ones. Nothing in this note rests on the wrong number, and it is recorded so the
+next reader does not re-derive it.
 
 ---
 
@@ -425,7 +458,83 @@ change of basis between them is a dense F_q-linear map.
 of why the cell-colouring framework has nothing to grip — and it is a property of the design, not
 of the tools.
 
-### 4.2 The rest of the classical toolchain, assessed rather than tried
+### 4.2 ⚑ The AO instrument: the encoding EXISTS, and it is computationally dead at real primes
+
+This is the correction that matters most, and it lands against **my own framing**, not against the
+pipeline note. I had been writing as though *no one models base-B decomposition of a prime-field
+element.* That is wrong, and the truth is stronger.
+
+**All three designer papers write exactly the constraint** this lane identified as the obstruction
+— one degree-`B` vanishing polynomial per digit plane:
+
+- **Monolith** (2023/1025) §B.3: `0 = ∏_{j=0}^{2^{s_i}−1}(x_i − j)`
+- **Reinforced Concrete** (2021/1038) §B.4
+- **Skyscraper-v2** Eq. 21, labelled **"Range constraints"**
+
+**Nobody can run it.** Every solved data point in the literature is a toy prime:
+
+| paper | solver run on the decomposition | primes |
+|---|---|---|
+| Reinforced Concrete §B.4, Table 4 | Magma, n=2 buckets | p ∈ {41 … 127} (6–7 bit) |
+| Monolith §6.3, Table 2 | Magma, m=2 buckets, non-MDS matrix | p ∈ {13, 29, 61, 113} |
+| Skyscraper-v2 §4.3.2 | Magma | ≤ 16 bits |
+| **Tip5** §5.7 | ⚑ **none ever run** | — |
+
+Monolith says it in its own words — **verified at source**, `2023/1025` line 1183: the extrapolation
+exists because full-size instances are *"**computationally intractable**"*, and §B.2 calls
+evaluating Bar's actual density over `p = 2⁶⁴−2³²+1` or `2³¹−1` infeasible in practice. Reinforced
+Concrete's own summary: *"Gröbner basis cryptanalysis fails at greatly weakened versions (10-bit
+fields) already."*
+
+> ⚑ **"The encoding is writable and unsolvable" is a strictly stronger statement than "no tool
+> models it"** — and it confirms `formal-cryptanalysis-pipeline.md` §4's verdict **from the
+> designers' side, with published numbers.** Our own crux (the vanishing ideal has degree `B` per
+> plane, so the system has ~`2^(16·planes)` spurious solutions) is not a peculiarity of our design
+> or a gap in our effort. It is the measured wall for **this entire family of hashes.**
+
+**And it covers the statistical instrument too**, not just the algebraic one. Beyne-school,
+eprint **2026/1104 §3.1**, verified verbatim: *"For non-polynomial functions the only way to measure
+the linear correlation/maximum differential probability of an S-box is through a **brute force
+approach, which becomes infeasible for large pⁿ**."*
+
+**Two explicit out-of-scope declarations** — this family gets excluded by name, repeatedly.
+CheapLunch already; and eprint **2025/1920** (ALFOMs/Moirai) fn. 1: *"We purposefully leave aside
+hash functions based on the 'Split-and-lookup' or 'Kintsugi' approach, like Monolith."*
+
+**The MIQCP tool's failing requirement, named.** eprint **2024/2061** is the paper
+(*"Programming Equation Systems of Arithmetization-Oriented Primitives with Constraints"*,
+Chang–Qiao–Cheng–Ou–Zhu). **Definition 2** requires *"an arithmetic module with **degree α being a
+small integer**"*. Our decomposition layer has degree `B = 2¹⁶` per plane. **It cannot be a module
+in this model.** Verdict: **no**.
+
+**Scale of the negative result**: 9,761 eprint PDFs full-text scanned, 2022–2026. The strings
+`MILP`, `SAT`, `SMT`, `constraint programming` and `automated search` appear **zero times** in
+Monolith, Tip5, Reinforced Concrete, Skyscraper-v2, *Opening the Blackbox*, or either Bak–Perrin
+paper. **The only automated instrument anywhere in this literature is Magma's F4+FGLM, and it is
+never pointed at the decomposition.**
+
+⚠ **Two limits on that absence claim, kept attached to it**: the sweep's regex keyed on *design
+names*, so a paper attacking this layer without naming them would be missed; and **2021 was outside
+the full-text scan range.**
+
+#### ⚑ 4.2a The one published attack technique that DOES reach this layer — and it is hand-built
+
+*"Opening the Blackbox: Collision Attacks on Round-Reduced Tip5, Tip4, Tip4′ and Monolith"*
+(Liu, Koschatko, Grassi, Yan, Chen, Banik — eprint **2024/1900**) is the closest thing in the
+literature to an attack on our obstruction class, and **it is not automated.** It is a hand-written
+limb-wise carry-DDT automaton in C++ (§4.2 Alg. 1), depth-first with early aborting, with Magma run
+only on the *residual low-degree* system. Its §3 is titled *"Cryptanalysis of Tip5 and Monolith
+**Independent of the S-box**"*, and §5.2 says plainly (verified): *"we do not know the high-degree
+expression of the S-box over F_p."* Results: **3/5-round Tip5 and 2/6-round Monolith-64 collisions.**
+
+⚑ **This is the actionable item for our M1 leg.** The productive attack direction against a
+decomposition-based round function is **a hand-built carry-DDT automaton that routes around the
+S-box entirely** — not an automated model, which §4.2 shows cannot exist at real primes. That is a
+concrete method, with a published implementation shape and published reach, aimed at exactly our
+nonlinearity. **It is what "attack-me item #1" should now mean**, and it supersedes the vaguer
+"order-2 / boomerang" framing the pipeline note left.
+
+### 4.3 The rest of the classical toolchain, assessed rather than tried
 
 The brief also named CryptoSMT and the `Deadlyelder/Tools-for-Cryptanalysis` catalogue. **[derived,
 not run]** — and the reason is structural rather than an effort budget:
@@ -468,22 +577,13 @@ plausible excuses (Feistel, unkeyed) explicitly eliminated. The open leg is the 
 *reason* it is open is now specific: **it needs a colour-propagation rule for a nonlinearity that
 re-partitions its cell.** That is a statable research problem, not a gap.
 
-**One instrument from the brief that was dispatched and NEVER REPORTED.** The AO-specific MIQCP
-tool (*"Programming Equation Systems of Arithmetization-Oriented Primitives with Constraints"*,
-`dl.acm.org/doi/10.1007/978-981-95-6203-9_5`) was handed to a delegated reader, which **stalled and
-returned nothing** — its transcript went byte-stable for 20 minutes with no completion, on a box at
-**load average 929** from concurrent lanes.
-
-⚠ ⚑ **This is "we never looked", NOT "we looked and found nothing", and the two must not be
-allowed to blur.** No absence claim may be derived from this row. It is the one leg of the brief
-this note does not answer.
-
-The question put to it is the one to re-ask, and it is worth more than the tool that prompted it:
-*does **any** automated tool natively model "decompose a prime-field element into base-B digits"?*
-That single obstruction is shared by **Monolith (2023/1025), Tip5/Tip4, and Reinforced Concrete
-(2021/1038)** — all prime-field hashes whose nonlinearity is also chunk decomposition. If any tool
-models it, that tool reaches this primitive where **both** instruments in this note do not, and it
-would be the most valuable single finding in the area. **First thing to pick up.**
+✅ **The AO/MIQCP leg came in after this note was first drafted, and it is answered** — see §4.2.
+The MIQCP tool is eprint **2024/2061**, and its **Definition 2** requires *"degree α being a small
+integer"*; our decomposition layer has degree `B = 2¹⁶` per plane, so it cannot be a module in that
+model. **Verdict: no.** But the useful half is what came with it: the modelling recipe **exists**
+in three designer papers and is **unsolvable at real primes**, with published toy-prime data points
+(6–16 bit) and Monolith's own *"computationally intractable"*. **That is a fourth instrument
+reporting nothing, and its silence is now a measured wall rather than an untried tool.**
 
 **Legs that remain precedent-only**, named as the brief requires:
 1. **MITM / order-2 / boomerang.** The binding one. No instrument reaches it.
@@ -535,6 +635,12 @@ by something that went wrong in this lane:
 5. **"No published model can be instantiated" is UNDONE WORK**, stated with the failing
    requirement *and* the plausible non-blockers eliminated by name.
 6. **Count the instruments and do not add them up.**
+7. ⚑⚑ **"No tool models it" and "the model exists and nobody can run it" are different verdicts,
+   and the second is stronger.** Ask (a) does anyone *write* the encoding, then (b) has anyone
+   *run* it at real parameters. A "no" at (b) with published toy-scale numbers is a **measured
+   wall** you can cite; a "no" at (a) is usually an unfinished literature search — as mine was.
+8. ⚑ **When every automated instrument refuses, go find the hand-built attack.** The absence of an
+   automatable model is not the absence of an attack.
 
 ---
 
