@@ -227,6 +227,74 @@ function), and costs **zero extra ops**. Its honest deficits are named: branch 8
 > **The construction is not the hard part. The check is — and the check is the
 > thing we have that nobody else does.**
 
+## IV-g. ⚑⚑ TWILL — our construction, with a round count that is DERIVED
+
+`notes/weft-c-spec.md` (1,191 lines) + `notes/weft-c-scripts/`.
+**Twill = Vision Mark-32's field, geometry, `x⁻¹` S-box and two-step round,
+with its MDS replaced by the one-transform coset novel transform.** *One
+component swapped, on the one axis we computed.* GF(2³²) Fan–Paar tower, t=24,
+rate 16 / capacity 8, four free conditions made **normative**, the `B`/`B⁻¹`
+layer **kept with a computed reason** (without it the constant-free round is
+`K*`-equivariant — *a shape nothing in our gate can see*), coefficients fixed by
+a derivation rather than left as a hole. §1h is a complete implementer's block.
+
+**R = 26 S-box layers = 13 Vision-rounds**, from **seven legs stated separately
+with their instruments named** — three exact-defense and measured, one
+exact-attack derived, three **labelled inherited**, and the binding one
+(Gröbner/CICO, no defense-side bound in either direction) corrected outward by a
+**stated empirical prior (×2.1, six instances, labelled a prior not a bound)**.
+
+⭐⭐ **AND THE HEADLINE: branch 8 vs branch 25 does not move the round count AT
+ALL.** Every statistical leg clears well inside the algebraic demand — on
+**both** sides, with the linear half now `B_l ≥ 8` **proven**. ***The 3× branch
+gap is worth ZERO rounds*** (and costs 1.68× native mixing to obtain).
+⚑ **The derivation is calibrated**: fed Mark-32's own uncorrected legs, it
+returns **exactly Mark-32's 16 steps.**
+
+## IV-h. The adoption target has TWO confirmed defects
+
+- ⚑⚑ **`[M32-flag]` CLOSED as a confirmed defect.** Mark-32's split is the
+  natural one — **its own prose says so** — and both halves are coset unions,
+  so **its deployed MDS carries the 12 ⊃ 6 ⊃ 3 block-constant flag,
+  `deg(minpoly) = 6`, and GF(2⁸) entries: a 2¹⁹² closed set.** A random-split
+  control shows none of it.
+- ⚑⚑ **`[M32-floor]`, new**: Marvellous (2019/426 §5) recommends `2⌈n/5.5m⌉`
+  rounds ***"with a minimum of 10 rounds."*** At m=24 the formula is **vacuous
+  — so the floor WAS the number — and Mark-32 ships 8.** *It kept the
+  extrapolation and dropped the distrust the floor encodes.*
+- ⚠ **And we have been counting its rounds wrong by 2×**: "8 rounds" is **16
+  S-box layers / 384 inversions.** The `~3.2× cells/bit` headline inherits the
+  error.
+
+## IV-i. Two method laws earned here
+
+- ⭐ **`[WEFT-multiround]`'s trail half now BEATS the generic bound**: 4-step
+  minimum active S-boxes **≥ 17 (generic 16)**, ≥ 22 on the cheap route —
+  **exactly eight weight-4 codewords in closed form, and no out-support is an
+  in-support, so they do not chain.** `|S|=3` closed exhaustively (0/2024).
+- ⚑ **A tool's reach is decided by GROUND-FIELD MATCH *and* whether the
+  quantity it bounds is STILL MOVING — not by whether a design "feels"
+  classical.** *This refutes my own hypothesis*: CLAASP's ground field is `F₂`,
+  so **Twill is CHEAPER to express than the gadget-Feistel** (one
+  `linear_layer` component per layer) — **and it still buys nothing, because
+  `x⁻¹`'s maximal `F₂`-degree saturates the bounded quantity in two steps.**
+- ⚠ **Cost verdicts are instrument-dependent**: *"mixing dominates"* is true in
+  software and **false on Mark-32's own FPGA numbers** (S-box 80.4%, MDS
+  18.4%). Twill at 26 steps is **0.97× Mark-32-at-16 in software and ≈1.5×
+  against us on FPGA** — both in the record.
+- **Guards fired twice on its OWN instruments**, neither a failure in the code
+  under test: a search pruning on genericity **missed a constructive witness
+  and reported a clean, wrong 0**; a mutation aimed at a column no witness
+  reads reported a **dead 8 vs 8**.
+
+**Standing verdict unchanged**: the char-2 hash slot does not exist (no char-2
+AIR, no constraint evaluator, no witness-gen). **This makes the object ready and
+defensible, not deployed** — and `cosetPack` survives as the code's encoder
+regardless. ⚑ **The fork is now visible with both sides priced: adopt a
+published design with a measured structural defect and a round count below its
+own strategy's floor, or build one with the defect repaired and no record at
+all.**
+
 ## V. Method, compressed to what survived
 
 Write the note first, incrementally. Read the binders, not the docstrings.
