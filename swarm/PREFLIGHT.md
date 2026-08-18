@@ -49,7 +49,8 @@
   **5.3 GB and 2.8 GB**) were Pasta-curve soundness measurements **that could
   not have moved its result.** It had *already started the same suite on hbox*.
   **Filter with `-E 'test(...)'` or explicit `--test <name>`, and state your
-  control separately** — for most lanes the control is *counts unchanged* or
+  control separately — ⚑ AND THIS APPLIES ON HBOX TOO; it is quieter, not free,
+  and is co-tenant with codex** — for most lanes the control is *counts unchanged* or
   *bytes identical*, which is cheap and needs no heavy tests. ⚠ **A suite-wide
   green is usually neither necessary nor sufficient for a lane's actual gate.**
   (Second RAM incident this week; the earlier was ~50 GB of Lean RSS from
