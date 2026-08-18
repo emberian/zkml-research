@@ -70,9 +70,14 @@ vision-mark-32-binary-tower-hash-2024-633.txt`,
    is ≥ 17, strictly above the generic `⌊R/2⌋·B_d = 16`** — exactly eight weight-4
    codewords exist, they have a closed form, and they do not chain. And the Lean pins were
    **proved live by injection**: one `sorry` turns three of them red. §3.
-8. **The uncomputable legs are named, and the sibling CLAASP-MP lane's answer is not in.**
-   `x⁻¹` over a tower is Vision-shaped, not Feistel-shaped; monomial-prediction MILP over a
-   31-degree bit-level ANF is the wrong instrument, and §4 says what would decide it.
+8. **The uncomputable legs are named — and the sibling CLAASP-MP lane's answer arrived and
+   refuted half of my expectation.** `[READ at source, by that lane]` CLAASP's ground field is
+   `F₂`, so **Twill's mixing layer and both `B` layers are ONE `linear_layer` component each**
+   and Twill is *cheaper* to express than the gadget-Feistel by orders of magnitude. It still
+   buys nothing, for the other lane's own reason: `x⁻¹` has maximal `F₂`-degree, so the
+   quantity the tool bounds is saturated in two steps and the leg returns `NR ≥ 2`. §4a.
+   ⚑ **A tool's reach is decided by whether its ground field matches AND whether the quantity
+   it bounds is still moving — not by whether the design "feels" classical.**
 9. ⚠ **THE STANDING VERDICT IS UNCHANGED AND RESTATED: the char-2 hash slot does not
    exist.** No char-2 AIR, no constraint evaluator, no witness-gen (`post-weft-hash.md` §1,
    the routability grep). **This lane makes the object ready and defensible, not deployed.**
@@ -774,42 +779,84 @@ partitions:
 | U3 | **integral / division property** `[WEFT-integral]` | the Beyne–Verbauwhede propagation is a large finite search; char-2 towers are the extreme point of their monotonicity axis and `x⁻¹` has maximal `F₂`-degree | their notebook at `t = 24`, GF(2³²), `R = 26`. Feasible, minutes-to-hours, **not run here** |
 | U4 | **rebound / truncated differential** `[TWILL-rebound]` | no statement yet; the wide-trail bound does not cover it | an inbound/outbound analysis at this branch number |
 | U5 | **`[TWILL-indiff]` / `[M32-mode]`** | inherits the open upstream `SpongeIndiffGame`; and Mark-32's own mode reading is unresolved (§1g) | the Lean sponge game, plus reading 2024/633 Figure 2 |
+| U8 | **integral / monomial-prediction, via CLAASP-MP** | ⚑ **NOT a reach problem — Twill is cheap to express (§4a). The quantity the tool bounds is `F₂` degree, and `x⁻¹`'s is MAXIMAL, so it saturates in 2 steps and the bound is vacuous by construction** | nothing the tool can say; but the sibling lane's direct cube-sum measurement (`fct6`, with its `r=1` positive control) at 1/2/3 steps would confirm the derivation by measurement. **Cheapest open item in this note** |
 | U6 | **general `K`-subspace trails** outside the coordinate and block-constant families | unbounded search space | a subspace-trail search framework for `K`-linear layers; not attempted, **not waived** |
 | U7 | **block-constant trails at `\|S\| ≥ 4` outside the scanned families** | Bell(24)-sized family | §3g closes `\|S\| = 3` **exhaustively** (0/2 024) and samples 500 irregular partitions (0/500) with both controls firing; `\|S\| ≥ 4` outside those is **evidence, not exhaustion** |
 
-### 4a. ⚠ The sibling CLAASP-MP lane — referenced, and its answer is NOT in
+### 4a. ⭐ The sibling CLAASP-MP lane's answer IS in — and it refutes half of my expectation
 
-A sibling lane is testing whether **CLAASP-MP** (eprint 2026/735, Bellini–Rachidi–Tiwari,
-MILP monomial prediction) reaches a *classical-shaped* primitive where AO tooling cannot.
-Its artifacts as of this writing are three scripts and **no note**:
-`notes/feistel-tooling-scripts/fct1_claasp_mp_guard.py` (reproduce the paper's own SIMON-32
-listing and prove every row refutable — the same discipline as §3),
-`fct2_modulus_trap.py` and `fct2b_selfcheck_reach.py` (whether CLAASP's `modulus` field
-reaches the models, and how blind its `check_anf_correctness` is to an odd prime).
+`notes/feistel-classical-tooling.md` landed while this note was being written (`e2764ef`).
+Its subject is the gadget-Feistel, not Twill, but it read **CLAASP-MP's component vocabulary
+at source** (eprint 2026/735 §3.3, Alg. 4, plus the installed tree), and that reading decides
+our question too.
 
-⚑ **What this lane can say without waiting**, because it is about the shape of Twill and
-not about the tool's state:
+**What it found, `[READ at source]` and `[MEASURED]`:**
 
-* **CLAASP-MP is a bit-level instrument.** It models a cipher as a Boolean circuit and runs
-  monomial prediction over the ANF. Its target class is SIMON/SPECK-shaped: low-degree
-  Boolean round functions with sparse ANFs.
-* **`x⁻¹` over GF(2³²) is the opposite.** Its `F₂`-degree is **31 — maximal** — and its ANF
-  is dense: the bit-level circuit for a tower inversion is a deep recursive Wiedemann
-  descent, not a few AND/XOR layers. **Monomial prediction over a maximal-degree, dense
-  32-bit S-box, 24 lanes wide, is the wrong instrument**, and the MILP would not be a
-  question of tuning.
-* **So the honest expectation is that classical bit-level tooling does NOT reach Twill**,
-  for exactly the reason it does not reach Vision or Rescue, and the sibling lane's
-  gadget-Feistel target is a genuinely different case (a Feistel over `Z_q` with base-`B`
-  digit extraction — where the *modulus* question its `fct2` scripts chase is the binding
-  one).
-* ⚠ **This is a DERIVED expectation about instrument fit, not a measurement.** **What would
-  decide it**: point the sibling lane's already-armed guard (`fct1`) at a *single lane* of
-  Twill — one GF(2³²) inversion expressed as a CLAASP component — and read
-  `find_upper_bound_degree_of_specific_output_bit`. If it returns 31 in reasonable time,
-  the instrument reaches one S-box and the question becomes how many rounds it survives; if
-  it does not terminate, the answer is settled at one lane and no round count is needed.
-  **That is a one-afternoon experiment and it is the cheapest open item in this note.**
+* CLAASP-MP's vocabulary is **bit-level over F₂**: XOR, AND, NOT, OR, COPY, ROTATE, SHIFT,
+  **S-box (via its ANF)**, **linear layer (an F₂ matrix)**, MODADD, MODSUB, FSR, and a
+  `(x·y) mod 2ⁿ` model.
+* The gadget-Feistel **is** expressible — exactly, verified against its spec — but its dense
+  public-constant combination over `Z_q` with `q` a **64-bit prime** has no primitive in any
+  classical tool and costs **14.5 M components and 943 M wire bits per round**. ChaCha, the
+  paper's headline target, is 512 bits of state.
+* ⚑ And the scale wall did not decide it. **The quantity CLAASP-MP bounds — the F₂ algebraic
+  degree — is already saturated after one round**, measured directly by cube sums on the real
+  primitive: the only integral property that exists is the trivial 1-round Feistel branch copy
+  (`1024/1024` against a chance baseline of `2.0` — the harness's own positive control), and
+  at `r = 2, 3` nothing survives above chance. **So the tool would return "no distinguisher"
+  after a 10⁹-variable solve that 2¹⁶ evaluations settle in 18 seconds.**
+
+### ⚑ MY EXPECTATION WAS WRONG ON EXPRESSIBILITY AND RIGHT ON USEFULNESS — for a different reason
+
+The brief carried, and an earlier draft of this section repeated, that *"`x⁻¹` over a tower is
+closer to Vision than to a Feistel — so classical bit-level tooling may NOT reach this one."*
+**Read against CLAASP's actual vocabulary, that is backwards.**
+
+| Twill layer | in CLAASP | cost |
+|---|---|---|
+| the mixing layer `M` | it is `K`-linear, hence **`F₂`-linear on the 768-bit state** | ⭐ **ONE `linear_layer` component**, a 768×768 `F₂` matrix |
+| `B` and `B⁻¹` | linearized affine ⇒ **`F₂`-linear**, and 2024/633 Algorithm 2 *already gives the `GL₃₂(2)` matrix* | ⭐ **ONE component each**, 32×32 |
+| `x⁻¹` over GF(2³²) | not a table (2³² entries), but the tower inversion is a bounded recursive AND/XOR circuit | hundreds of components per lane |
+| round constants | XOR of a constant | free |
+
+> ⭐⭐ **Twill is CHEAPER to express in CLAASP than the gadget-Feistel by orders of magnitude,
+> and the reason is structural: CLAASP's ground field is `F₂`, and so is Twill's.** The thing
+> that cost the gadget-Feistel 14.5 M components — a dense combination over a **prime**-order
+> ring — **does not exist in Twill.** Two entire layers that would be the expensive part of an
+> AO hash collapse to one component each, because *linearized* is exactly what CLAASP's
+> `linear_layer` primitive means.
+>
+> ⚑ And the sibling lane's measured tool defect — **CLAASP's `modulus` field never reaches any
+> constraint model**, with `check_anf_correctness` missing the divergence at `p = 0.54` — is
+> **irrelevant to us**, because a char-2 primitive never sets a modulus.
+
+**And it still buys nothing, for the sibling lane's own reason, harder.** `x⁻¹` has `F₂`-degree
+**31 — maximal** — so one S-box layer takes every lane's degree to the top, and the mixing layer
+(full support from any single lane, `f(1) = 24`, §3c) spreads it across the state in one more.
+`deg(f∘g) ≤ deg f · deg g` gives `31² = 961 > 767` after **two steps**. CLAASP-MP computes an
+**upper** bound on that degree, and an upper bound is never below the exact value — so wherever
+the exact degree already equals the cube dimension, **the tool cannot certify an integral
+distinguisher no matter how well the MILP is solved.** The leg would return **`NR ≥ 2`**: the
+same "sets nothing" the sibling lane got, reached without the scale wall.
+
+> ⚑ **The transferable law, and it is sharper than "classical tools reach classical designs":**
+> **a classical automated tool's reach is decided by two things, and neither of them is whether
+> the design "feels" classical — (i) is the tool's ground field the primitive's ground field,
+> and (ii) is the quantity the tool bounds still MOVING at the round counts you care about?**
+> The gadget-Feistel fails (i) and (ii). **Twill passes (i) perfectly and fails (ii) on
+> arrival** — and failing (ii) is the *design's* doing, not the tool's: a maximal-`F₂`-degree
+> S-box is chosen precisely so that degree-based analysis dies immediately.
+> ⚠ **Which is a security property and an analysability cost at the same time**, and the second
+> half is the one nobody says out loud. Per `feedback-every-instrument-is-blind-to-the-next-wound`:
+> **three instruments reporting "nothing here" is one fact about our instruments, not three
+> about the primitive.**
+
+**What would still be worth running, and it is the cheapest open item in this note:** the
+sibling lane's `fct6` method — direct cube sums by Möbius, with its own `r = 1` positive
+control — pointed at Twill at 1, 2 and 3 steps. It needs no MILP, no CLAASP install and no
+solver; it is `2^m` evaluations of the permutation. **It would confirm the two-step derivation
+above by measurement instead of by a degree-composition bound, and it would say so in an
+afternoon.** It is not run here.
 
 ---
 
