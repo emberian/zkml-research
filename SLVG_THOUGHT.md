@@ -295,6 +295,49 @@ published design with a measured structural defect and a round count below its
 own strategy's floor, or build one with the defect repaired and no record at
 all.**
 
+## IV-j. ⚑ THE PARETO LEDGER — what actually got strictly better
+
+Ember asked the question that should be asked more often: *"have we advanced the
+Pareto frontier of any construction at all?"* **Answered from the record, not
+memory. Yes — substantially on the proof system, once on a hash component,
+nowhere on a hash primitive.**
+
+**Strictly better at the same or less cost, MEASURED and LANDED:**
+
+| construction | move | factor | why it is Pareto, not a trade |
+|---|---|---:|---|
+| wrap cells — batched reduced opening | 58.2M → 40.6M | **×1.436** | **child proof BYTE-IDENTICAL**, VK rotation only |
+| wrap cells — packing K16/rec4 | 40.6M → 29.0M | **×1.400** | **PROVEN, and a corrupted trace refuses** |
+| **⇒ cumulative on the wrap** | **58.2M → 29.0M** | **×2.011** | ***same security, half the object*** |
+| LDE layout (quotient batching) | phase ×3.57–4.07 | ×1.19+ prove | **proof bytes byte-identical at b=2..8, no flag day** |
+| grind schedule (windowed min) | crit path 20,766 → ~1,960 | **×10.6** | **witness byte-identical**; total work +12.6% (a latency claim, kept separate) |
+| Poseidon2 chip — `permEmissionNarrow` | 352 → 141 lanes | ×2.34 cells | identity over ℤ, **degree 7 on both arms**, 11 artifacts byte-identical |
+| ⚑ **Weft mixing — coset repair** | branch 6 → 8, flag 4-deep → **none** | **ZERO extra ops** | ***strictly better security at identical cost — the cleanest Pareto move of the campaign*** |
+| Poseidon2 `R_P` reallocation | same 215 S-boxes | **48 : 1** | *derived, not landed* — from Poseidon's own objective |
+| leaf sponge rate | rate-8 → rate-16 | ×0.777 native | **we shipped the TEST convention; the pinned p3's own examples use rate-16** — free |
+
+⚑ **The two that are Pareto in the strict sense — better on one axis, worse on
+none — are the coset repair (security up, cost identical) and the `R_P`
+reallocation (margin up, S-box count identical).** *Both came from computing
+something a designer had asserted.*
+
+**And the honest negative, stated as plainly:**
+- **No new hash primitive is deployed or even derivable** — `NR=16` remains
+  precedent, and four instruments have reached the gadget-Feistel exactly once,
+  for 2 rounds.
+- **The char-2 slot does not exist** (no char-2 prover), so **Twill is
+  ready-not-deployed.**
+- **Nothing here beats binius on their axis**, and *which axis to measure on* is
+  still open.
+- **The three end-to-end workloads remain unmeasurable** — a deleted descriptor
+  reader, no vFHE AIR, a Lean-only SGD.
+
+> **The pattern worth keeping: every Pareto win came from MEASURING something
+> that was previously ASSERTED** — a packing default nobody had swept, a
+> quotient-chunk batching nobody had profiled, a grind schedule nobody had timed
+> at thread counts, a point set nobody had varied, a round-allocation nobody had
+> differentiated. **None came from inventing anything.**
+
 ## V. Method, compressed to what survived
 
 Write the note first, incrementally. Read the binders, not the docstrings.
