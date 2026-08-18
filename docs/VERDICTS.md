@@ -856,7 +856,7 @@ challenges held, and the lane found worse *and* better than either verdict.
 S-box is **30 bits on BOTH sides** (my arithmetic needed sharpening: 30 not 32,
 and the *linear* side is not better). Branch 6 → **180 bits per 2 rounds**.
 Three things kill the "6 < 25" verdict outright:
-⚑ **Poseidon2's own INTERNAL layer is branch 2 and ships** (our own note);
+⚑ **Poseidon2's own internal layer is far below MDS and ships** ⚠ (*the specific figure "branch 2" was a script DOCSTRING I propagated as a measurement into five notes — corrected 08-18; nobody has computed it*);
 ⚑ **the comparator was CROSS-CHARACTERISTIC** — M_E's {1,2,3} entries collapse
 in char 2 (diagonal factor 2 → 0), and the measured char-2 reduction is
 **branch ≤ 8 at t=24**; and MDS is the ideal, not the bar.
@@ -964,6 +964,67 @@ elimination-step rule).
 **qemu** instead of Rosetta (FLINT's matmul hit an unsupported instruction
 under Rosetta on this box). Correct but slower; a Docker Desktop restart
 restores Rosetta. **The arm64 `claude-sandbox` containers were untouched.**
+
+## 5h. ⚑⚑ GSR (eprint 2026/1692) APPLIES TO OUR POSEIDON2 IN FULL — and R_P sits BELOW its threshold
+
+`notes/gsr-poseidon-2026-1692.md` (`d741c96`) + scripts in `notes/gsr-scripts/`.
+The paper never analyzes Poseidon2 (three passing citations), so this was
+settled **by computation, not analogy.**
+
+⚑⚑ **THE STRUCTURAL FINDING: Poseidon2's defense IS the vulnerability.** The
+gadget's only stated requirement is that the partial layer be an **invertible
+linear map** — justified verbatim as *"Because the mapping is affine."* **No
+MDS, no branch number, no round-constant property is ever invoked.** Its one
+implicit requirement is **full Krylov rank at `e₀`** — and on our deployed
+constants that is **16/16 (w16), 24/24 (w24): FULL.** ***Because Poseidon2's own
+design criterion is "no nontrivial invariant subspace", which IS full Krylov
+rank. The property that defends it against subspace trails is the property that
+makes GSR well-conditioned. No matrix choice fixes this.***
+
+**Our numbers** (`t=16, α=7, R_F=8, R_P=13`, read from source, unanimous across
+nine transcriptions): ⚑ **`t − 2k = 14 > R_P = 13`** — **GSR absorbs 100% of
+our internal layer plus one full round, with a degree of freedom to spare** —
+*strictly worse than the paper's own target, which retains one unskipped
+partial round.* **CICO-1 on 18 of 21 rounds at 2^27.4 — practical, seconds.**
+CICO-2 at 2^61.1 vs 2^62 generic is one bit, not a break. ⚑ **α = 7 is what
+saves us, not Poseidon2.** (Their Table 1 reproduced 5/5 before the calculator
+was pointed at us.)
+
+**WHAT STANDS, said as loudly as what falls**: the **full 21-round
+permutation**, and **the sponge's ~124-bit claim** — which lives at CICO-k for
+k at the capacity, where GSR gives **nothing** (no gain by k=3; identically
+vacuous at k=8). ***The instances GSR breaks are not the instances carrying our
+security claim.***
+
+**Margin: 3 of 21 rounds — a CEILING** (a lower bound on adversarial reach;
+this lineage has only pushed it up). **Filed NEXT TO, never summed with, the
+τ=2 integral FLOOR of 24 — opposite species.** The 3 rounds are set entirely by
+`R_f0`, not `R_P`.
+
+⚠⚠ **AND THE ONE RUNNABLE COMPUTATION THAT WOULD MOVE THIS FURTHER**:
+**CheapLunch §D.1 already flagged, at our EXACT `t=16, k=1`, that Poseidon2's
+non-MDS `M_E` lets "two rounds be freely skipped"** — left as an open problem.
+**That skip lives in the initial full rounds, which are our ENTIRE margin.**
+Composability is unverified and not claimed — **but if it composes, the margin
+goes to 1.**
+
+**Repairs, priced against 2.13 cells/S-box**: **`R_P` 13→15 kills the practical
+CICO-1 outright for +1.4%**; **13→20 buys margin 3→9 for +5.0%.** A different
+internal matrix does **not** work; all-full-rounds is +138% for the same
+outcome as the +5% fix. ⚑ *The lane named 15 as containment and 20 as fix
+explicitly so the phases are not run backwards — per the house doctrine, and I
+recommend going straight to 20.*
+
+**Collateral**: **σ-Poseidon is reached but DOMINATED** (GSR linearizes 8 of 30
+rounds vs the integral's 24 — **adds no debt**, and its `R_P/t` is far
+healthier at 32% absorbed vs our 100%). **The gadget-Feistel is IMMUNE by
+construction** — no S-box, no partial layer. *The front-runner is untouched.*
+
+⚠ **Two corrections to me**: the "triple-confirmed" Poseidon2 verdict is a
+**COST** verdict — GSR concerns a different quantity and can neither confirm
+nor refute it. And **"Poseidon2's internal layer is branch 2" was a script
+DOCSTRING I propagated as a measurement into five notes**; nobody has computed
+it, and it is irrelevant to GSR regardless. Corrected at source.
 
 ## 6. Method
 
