@@ -1036,6 +1036,49 @@ non-MDS `M_E` lets "two rounds be freely skipped"** — left as an open problem.
 Composability is unverified and not claimed — **but if it composes, the margin
 goes to 1.**
 
+✅ **COMPOSABILITY SETTLED 2026-08-18** (`d7da8d1`, `notes/gsr-cheaplunch-composability.md`):
+**the skip REACHES us; it does NOT compose. Margin stays 3.**
+- **It reaches us**, verified by construction on our **deployed** constants (a
+  2-round chain, CICO-1 input zero, re-checked against the deployed rounds on
+  256 random inputs). ⚠ **Their `M_E` is not ours** (paper `M_4=[[5,7,1,3],…]`
+  vs deployed Plonky3 `circ(2,3,1,1)`) so their vector is inert — **but the
+  phenomenon rests on the outer form alone.** Nothing dodges it: **α=7 is
+  irrelevant** (α-independent given α odd and `gcd(α,p−1)=1`, both forced by
+  Poseidon2 needing a permutation), nor width, nor `M_4`, nor constants (12/12
+  random sets chain). ⚠ And a brief correction: `s = ⌊t/k⌋ − 2 ≤ k` — **the
+  `≤ k` binds**, so at t=16,k=1 an *MDS* `M_E` already gives one free round and
+  the non-MDS form buys only the **second**.
+- ⚑ **Composition does not merely fail to help — it DESTROYS GSR.** GSR's first
+  forward-linearisation functional on the verified chain is a **degree-49
+  polynomial: 48 coefficients must vanish against 8 spare parameters.**
+  Steelmanned past that particular line by a Grassmannian count: **a 2-round
+  front-end skip forces D = 1**, and even a 1-round skip caps at **D = 7 —
+  still 8 short of the 15 GSR needs.** ***The obstruction is PRIOR to the
+  arithmetic: GSR's freedom exists only if rounds 1–3 are DROPPED; the skip's
+  saving only if rounds 1–2 are KEPT. Different objects.***
+- **The skip alone is 2^111.6** — not an attack. (A perfect composition would
+  have been 2^33.0, above the 2^31 generic bound, and would have bought
+  20-of-21 i.e. margin 1.)
+- ⚑ **NEW AND LOAD-BEARING: `R_P` buys NOTHING against a front-end skip** —
+  that lives in `R_F`'s rounds. **So our safety on that half now rests entirely
+  on the §4b obstruction**, recorded with its tripwire: ***any affine family of
+  dimension ≥ 15 surviving a front-end external round.*** If that ever appears,
+  **the answer is `R_F`, not `R_P`** — and **changing `M_E` is NOT an option**
+  (the invariant subspace holds for any `A`).
+- **Derived, and left open by BOTH papers**: the mechanism is an `M_E`-invariant
+  subspace `W = {(0,v,−v,0)}` with `M_E|_W = A`, preserved by the S-box because
+  α is odd — **and it explains why exactly TWO**: MDS misses the second round by
+  *exactly one* degree of freedom, and `W` is that degree; the third needs 3
+  projective conditions with zero free parameters (180 shapes enumerated, none
+  satisfy).
+- ⚠ **Two traps paid for**: `pdftotext` **without `-layout` interleaves §D.1's
+  six column vectors** into an unreadable stream; and `pow(a, p-2, p)` is
+  **silently wrong for the composite modulus `p−1`** in the α-th root — ⚑ **the
+  symptom was not an exception but the chain failing at round 2, which reads
+  exactly like "the skip does not reach us." A wrong inverse rendering as the
+  hoped-for verdict** — the refusal-renders-as-the-expected-verdict class,
+  again.
+
 **Repairs, priced against 2.13 cells/S-box**: **`R_P` 13→15 kills the practical
 CICO-1 outright for +1.4%**; **13→20 buys margin 3→9 for +5.0%.** A different
 internal matrix does **not** work; all-full-rounds is +138% for the same
