@@ -234,6 +234,15 @@ components ≈ **13.9M**, plus ~0.66M for the `Y·Y` layer and ~0.8K for the two
 layers → **≈14.67M**. Measured: 14,512,940. The 1.1% gap is the actual popcounts of the sampled
 constants. ⚑ **97% of the cost is one line of the spec** — `F_r = Σ g·Y + Σ h·Z`.
 
+⚠ **The encoding is verified exact; it is not proven optimal, and the obvious improvement is
+named here rather than left for a reader to find.** `mulq_const` reduces mod q at every step
+(63 doublings + ~32 additions, each a 6-component `addq`). A Barrett-style alternative —
+accumulate the ~32 shifted copies of `v` into a 128-bit register with plain MODADD, *then* reduce
+once — costs roughly **2× less**, call it ~7M components per round instead of 14.5M. **The verdict
+is insensitive to that factor**: the gap to a 512-bit ChaCha state is five to six orders of
+magnitude, and halving it changes nothing. Anyone who wants the tighter number should build it;
+the exactness harness (`fct3`, `fct5`) is what any replacement must pass.
+
 CLAASP-MP allocates at least one binary exponent variable per wire bit, plus COPY variables per
 fan-out. Against that, the instances the paper actually solves: SIMON-32 3 rounds (32-bit block,
 1.0s here), **ChaCha 6.75 rounds at 512 bits of state**, Trivium at 288, MSX-128 at 128.
