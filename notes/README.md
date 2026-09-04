@@ -64,6 +64,13 @@ something it never said.
 - `zkqmc-read.md` — eprint 2022/1007 read in full (2026-09-04): a prover-held quasi-random shift is `BeaconRefutation` (ε_beacon = p, q ≤ 0), a warden-secret shift is learned from ≈ ℓ/log₂(1/p) observed fires; trap for audit selection, real-but-off-axis for the paper's own claim
 - `rank1-gradient-check.md` — a linear layer's gradient is CHECKED, not proved: the MLE of an outer product factors, so no sumcheck round at all; Lean-authored, measured at 4096×4096, and honest that it removes the n² proof but not the n² commitment
 
+**Deltas, 2026-09-04** (what moved outside since 08-18, each with corpus+instrument):
+`proximity-delta-2026-09-04.md` (BCSS25's personal communications are 2026/532 and
+2025/2110; Plonky3 labels our 130 "legacy"; nothing moves UDR 34 / JBR 73),
+`systems-delta-2026-09-04.md` (PR #1982 merged; leanVM v0.10 binary+BLAKE2s;
+BinarySpartan v4; Jolt to lattice PCS; Plonky3 v0.7.0 has GKR), `formal-delta-2026-09-04.md`
+(ArkLib 416→314 tainted, statements admitted not absent; better.codes; VCVio Merkle extractability).
+
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
 instrument; absence claims are only as good as those two lines.

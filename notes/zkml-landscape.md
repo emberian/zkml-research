@@ -105,7 +105,9 @@ measured, and it is the first thing worth measuring.**
 
 DeepProve already ships and measures a **BaseFold-over-Goldilocks** config which
 their paper calls "plausible post-quantum secure" — and it is the *lower memory*
-one (96 GB vs 147 GB). Expander offers Orion. Jolt is hash-based.
+one (96 GB vs 147 GB). Expander offers Orion. Jolt is hash-based. ⚠ 2026-09-04:
+**Jolt is not** — HyperKZG was deleted and the Akita lattice-PCS path measures
+1.76–2.70× over Dory (`systems-delta-2026-09-04.md` §5.2).
 
 Not PQ: zkLLM (BLS12-381), zkGPT (BN254), ZKTorch (KZG+Mira), ezkl (halo2-KZG),
 NanoZK (Halo2 IPA).

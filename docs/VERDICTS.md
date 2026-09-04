@@ -41,6 +41,18 @@ each fails differently:
   the extension-degree flag day PROVEN-120 was buying.** ⚠ Citation-strength
   caveat: BCSS25 states no FRI theorem and its Thm 4.3 plugs into a personal
   communication.
+  > ⚑ **09-04: the caveat is STALE, and so is the crate claim.** BCSS25 =
+  > eprint 2025/2055; its `[Sta25]` ("StarkWare Team. S-two whitepaper. 2025.
+  > Personal communication") is **eprint 2026/532** (Mar 2026; App. A.2 **Thm 28**
+  > "CA over given sets", **Thm 29** weighted, Johnson regime, from Thm 25
+  > [BCI+20, BCH+25]); `[Hab25]` is **eprint 2025/2110**. Both public, both in the
+  > mirror and `~/paperbin`. 532's **Thm 19** is a FRI theorem on the 2025 bounds —
+  > for *circle* FRI over M31; classic-FRI [HHM25] is still unpublished by 532's
+  > own text. So the +17–21-bit commit-column upgrade rests on a readable chain
+  > (a vendor whitepaper, not peer review); re-derivation is a second ε_C column
+  > in `FriLedger.lean` beside the old one, whose `:270` "Neither is public" is
+  > now stale. And `p3-security` **has been a crate since 2026-07-08**, alongside
+  > `uni-stark/src/security.rs`. `notes/proximity-delta-2026-09-04.md` §3.2–3.3.
 - **Flag day: two items are a REDESIGN, not a swap.** 450 files / 4,216
   literals / **50 independent modulus declarations** in metatheory (minidregg
   has 1). ⚑ **Ext6 stops existing** (`3 ∤ p_KB−1`, so no binomial degree-6
@@ -85,6 +97,16 @@ hash **Poseidon2 width-16**. KoalaBear (2130706433 = 127·2²⁴+1) is a
 - **"Conjectured 130" is CBR-shaped — the capacity regime `ethereum/soundcalc`
   deleted in Nov 2025.** 57 of the 130-vs-73 headroom is a withdrawal, not a
   knob. **Never quote 130.**
+  > ⚑ **09-04: upstream now labels it legacy.** Plonky3 `p3-security` v0.7.0
+  > (#2018, merged 2026-09-03) added `legacy_conjectured_error = log_blowup ·
+  > num_queries + query_pow` — character-for-character our `capacityBits`. Its
+  > non-legacy "conjectured" column is the DG25 random-words heuristic, [DERIVED]
+  > **128.40** at (6,19,16) over BabyBear⁴; `SecurityAssumption::CapacityBound`
+  > still exists upstream. The rule stands, now citable against upstream's own
+  > label. Grinding "additive and regime-free" holds at three sources (2026/532
+  > §5, `p3-security/src/grinding.rs`, soundcalc `apply_grinding`) with one
+  > refinement: additive *to the round it precedes*; commit-phase PoW (ours = 0)
+  > is the one additive lever on ε_C. `notes/proximity-delta-2026-09-04.md` §3.3–3.4.
 - **100 proven-UD bits costs 86 queries instead of 19, with `log_blowup`
   unchanged** — 4.5× on the query phase, **zero on the commit phase**, because
   ρ=1/64 already bought the expensive half. Four of five production systems
@@ -1364,6 +1386,11 @@ class and it recurred twice anyway.***
    - **Fixed** in the `[patch]`ed `vendor/plonky3-fri-82cfad73`. **PR #1982 is
      the same change and is STILL OPEN / CHANGES_REQUESTED** (checked 08-14), so
      we carry it with the provenance recorded.
+     > ✅ **09-04: MERGED upstream 2026-08-17** (`f67b0ea2`, only
+     > `fri/src/two_adic_pcs.rs`), shipped in `p3-fri` **v0.7.0 (2026-09-04)**.
+     > `notes/blowup-drop.md`'s condition for dropping the vendored delta is met;
+     > the drop is a Cargo pin bump in breadstuffs (ember's — outward-facing
+     > pins, same as the `num_queries` push). `notes/systems-delta-2026-09-04.md` §7.
    - **Gate inverted** to assert the correct behaviour, and **all twelve survey
      descriptors — chip-bearing and chip-free — now prove AND self-verify at
      `(2,57)`.** The per-descriptor "floor" column reads `log_blowup 2` for all.
@@ -1448,6 +1475,10 @@ class and it recurred twice anyway.***
    128; our `PROVEN-120-CONFIG.md` says d=5 cannot reach 120. **Probably a
    scope difference** (RS proximity leg vs whole apex composite) — **check,
    do not guess.**
+   > ⚑ **09-04: Plonky3's side moved.** #1978 (2026-08-13) grades conjectured
+   > security per round and at the instance shape; its conjectured LDT-only
+   > numbers dropped **128 → 119–125**. The scope-difference hypothesis is
+   > unchanged and still unchecked. `notes/proximity-delta-2026-09-04.md` §3.3.
 
 ---
 

@@ -1,5 +1,8 @@
 # The formalization frontier: ArkLib measured, Selvage positioned, one composition
 
+> ⚑ **Re-measured 2026-09-04** at ArkLib `22dbd4e`: **314** sorry-tainted declarations (was 416), **123** security results (was 133; the old regex reproduces 133 exactly), 183 code `sorry` tokens (was 203), Binius leaves 32 (was 33). FRI/Binius soundness are *admitted statements*, BCS still a stub. `formal-delta-2026-09-04.md` §1–2. The 08-13 text below is kept as the baseline.
+
+
 2026-08-13. Two lanes (ArkLib deep-dive spot-checked by me: 416-taint baseline
 and `append_… := sorry` confirmed at source; recursion survey). This note
 supersedes the AGENDA Pillar V characterization of ArkLib.
@@ -149,7 +152,9 @@ cleanest external specimen of the vacuity class, landed ten days ago).
 **The tree's genuinely unclaimed positions, in order:**
 1. **BCS transform soundness** — stub in ArkLib, absent everywhere else;
    ours proved at the deployed root-and-columns alphabet.
-2. **RBR→Fiat–Shamir compiler theorem** — absent everywhere; ours
+2. **RBR→Fiat–Shamir compiler theorem** — absent everywhere **for IOPs** (⚠ 09-04:
+   VCVio has a kernel-clean Σ-protocol FS EUF-CMA, Apr 2026; EasyCrypt 2026/1086
+   is signature-level — `formal-delta-2026-09-04.md` §4); ours
    unconditional at (t+k)·ε_rbr.
 3. **State-restoration soundness** — absent everywhere; ours proved.
 4. **Sponge indifferentiability in a foundational prover** — first ever
@@ -161,6 +166,11 @@ cleanest external specimen of the vacuity class, landed ten days ago).
    parameters** (2^-56 < error ≤ 2^-55, dominant term named). Hirai:
    uninstantiated. Isabelle: never shown < 1. ArkLib: no statement.
    **Nobody else has a number at all.**
+   > ⚠ 2026-09-04: no longer true as written — **better.codes** (EF FV + Yukon +
+   > zkSecurity, 08-20) has a Lean-kernel-checked two-sided leaderboard for one
+   > proximity-gap instance (koalaIRS12: **[68.02, 116.13]** bits), by its own
+   > README "not a full-protocol security claim". Ours stays unique as a
+   > *composed protocol* number. `formal-delta-2026-09-04.md` §3.
 6. **Grinding necessity** — everyone else proves sufficiency only; ours
    exhibits 9/25 > 1/5 exactly.
 

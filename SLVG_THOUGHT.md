@@ -17,6 +17,23 @@ statement for its own FRI. We are doing **basic research**: chart the
 landscape, formalize what is statable, price what is measurable, and keep
 every design axis mutable until a measurement or a theorem pins it.
 
+> ⚑ **2026-09-04, re-measured** (`notes/formal-delta-2026-09-04.md`). The claim
+> survives in ArkLib's own words — its 08-29 status doc: *"unrestricted stateful
+> composition theorems remain admitted"*; BCS and FS transfer are Phase-6 roadmap;
+> `BCS/Basic.lean` is an 81-line stub, `fiatShamir_completeness := sorry`, every
+> `seqCompose_*Soundness` is `by sorry`. **Three wordings above were wrong**:
+> ArkLib *has* FRI and Binius soundness **statements** (13 `*_rbrKnowledgeSoundness`
+> in Binius), all sorry-tainted — say "admitted statements", not "no statement";
+> the Binius leaves carry **32** sorries, not 33; and ArkLib's kernel sweep now
+> reads **314** sorry-tainted declarations (was 416), 123 security results (was
+> 133). Two things nobody had: **better.codes** (EF FV team + Yukon + zkSecurity,
+> 2026-08-20) runs a Lean-kernel-checked, axiom-gated two-sided leaderboard for a
+> KoalaBear-sextic IRS at ρ=½ — **[68.02, 116.13] bits** — explicitly "not a
+> full-protocol security claim"; and VCVio landed a kernel-clean Σ-protocol
+> Fiat–Shamir EUF-CMA (Apr 2026) plus **sorry-free Merkle multi-extractability**
+> (09-01). So: our composed FS+FRI+grinding two-sided number is unique *in kind*,
+> and "RBR→FS absent everywhere" must be scoped to **IOPs**.
+
 ## II. The five load-bearing ideas the campaign earned
 
 1. **Materialize vs virtualize** (née "boundary vs interior" — the literature
