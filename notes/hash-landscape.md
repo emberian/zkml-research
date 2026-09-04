@@ -573,6 +573,12 @@ migration, not a knob.
   (transpose to `M̄_ε = M₄ ⊗ P_{t/4}`) is free, same fast matmul, and **not
   shipped in any Plonky3**. It does not justify a flag day; it should ride one.
 - ⚑ **Poseidon was NOT broken, and the EF pivot is not an institutional artifact.**
+  > 09-04: still no EF writeup (ethresear.ch search, blog, EIP, eprint — instruments
+  > in `systems-delta-2026-09-04.md` §2.1), **but leanVM v0.10 (2026-09-03) is a
+  > citable artifact**: "full rewrite with binary fields and blake2s", F_{2^192},
+  > WHIR, Flock's BLAKE2s R1CS, 128-bit RBR Johnson + 17 grinding bits, spec PDF
+  > Thm B.7. The "tweet-only" provenance label can be retired; the decision's
+  > *reasoning* is still only Drake's thread.
   Source located and verified: **Justin Drake, X, `x.com/drakefjustin/status/2087905684180418733`,
   ~2026-08-12** — *"Goodbye, Poseidon! … The Ethereum Foundation is abandoning
   Poseidon for L1, pivoting to SHA or BLAKE"* and *"In hindsight the key was not

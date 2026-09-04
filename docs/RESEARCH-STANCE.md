@@ -72,3 +72,5 @@ Flock per-core** — on a contended box, at b=6, before four landed fixes.
 ⚠ **And I will not quote the compounded figure**, because our own cost model
 says the wins **reshuffle phase shares rather than multiplying** — that number
 has to be composed and measured, which is what the hbox rig is for.
+
+> ⚠ 2026-09-04: BinarySpartan's eprint was revised (v4, 09-03) to SHA-256 **401k** h/s (v1: 255k), so the same arithmetic reads **~22.7× off**, not 12.4×. Numbers stale, stance not. `notes/systems-delta-2026-09-04.md` §3.1.

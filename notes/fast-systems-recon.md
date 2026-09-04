@@ -174,6 +174,11 @@ what the WIRING argument then costs.**
 - **Plonky3 has no GKR** (zero hits) and `p3-lookup` materializes permutation
   columns. Every system here either left Plonky3 or built the GKR layer
   itself. **That is the size of the LogUp-GKR move: build, not adopt.**
+  > ⚠ 2026-09-04: **no longer true** — Plonky3 v0.7.0 (2026-09-04) ships
+  > `p3-multi-stark` with fractional LogUp-GKR, ring switching in `p3-sumcheck`,
+  > STIR/WHIR crates and a `p3-binary-field` tower (no PCS yet). The build-not-adopt
+  > stance is a separate decision (RESEARCH-STANCE §4 "we are abandoning Plonky3"),
+  > not a fact about upstream. `systems-delta-2026-09-04.md` §5.1.
 
 ## The lesson worth stealing, in their words
 

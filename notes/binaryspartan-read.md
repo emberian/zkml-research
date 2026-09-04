@@ -3,6 +3,12 @@
 2026-08-17. DEEP-READ + POSITION lane. Charge: *"read the actual paper and try and push past it,
 or understand why it cannot be pushed past."*
 
+> ⚠ 2026-09-04: the eprint has been revised **four times, last 09-03**. v4 reports
+> BLAKE3 **872k** / SHA-256 **401k** / Keccak **287k** h/s — 2.13× / 1.83× / 1.76×
+> the v1 read below; the mirror and `~/paperbin` hold v1; still **no artifact**
+> (gh repo search ∅, abstract carries no URL). Read below as the v1 account.
+> `systems-delta-2026-09-04.md` §3.1.
+
 **Source**: eprint 2026/1656, Srinath Setty (Microsoft Research), *"BinarySpartan: Spartan over
 binary fields"* — read in full, all 11 pages (10 + Appendix A), from
 `~/paperbin/2026-1656-binaryspartan-setty.pdf` (copied from `~/Desktop/2026-1656.pdf`, 283 KB).
