@@ -49,6 +49,13 @@ everything else") · fhegg-rtl word-level BitVec verdict · G3 ring noise lift �
 G4 CPA-D/determinism hinge (the Smart–Walter analogue — a Lean-shaped first).
 
 ## E. Zero motion since first mention
+> ✅ **zkQMC ANSWERED 2026-09-04, negatively** — `notes/zkqmc-read.md`. The paper's
+> guarantee is uniform over the prover's randomness for a *fixed* bounded-variation
+> integrand; the audit adversary picks the integrand after the points, and the
+> Hardy–Krause term is the adaptivity tax. A prover-held shift is `BeaconRefutation`;
+> a warden-secret Kronecker shift is pinned after ≈ ℓ/log₂(1/p) fires. VERDICTS §7.6
+> unchanged. The line below is kept as history.
+
 **zkQMC** (2022/1007 — proving randomized computation by replacing randomness
 with low-discrepancy quasi-random sequences; the mine's genuine surprise, a
 direct answer to "prove the sampling was honest" that nobody has touched) ·

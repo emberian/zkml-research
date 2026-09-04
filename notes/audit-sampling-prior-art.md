@@ -138,3 +138,17 @@ proofs line (2013/156, 2014/992, 2017/270, 2018/514, 2026/658), rational
 sumchecks without Schwartz–Zippel (2015/1058), financially-backed covert
 security (2021/1652 — the deterrence factor as on-chain slashing with
 non-interactive judging), and RDoC at its ePrint number (2011/518).
+
+## Addendum 2026-09-04 — a 2022 citation that names both grinding legs and steps around them
+
+eprint 2022/1007 (zkQMC, LANL), p.5 "Limitations of the Monte Carlo Method", read
+in full in `notes/zkqmc-read.md` [READ]: it rejects prover-chosen seeds because a
+malicious prover "can search over seed values" (and prices it with a try-count
+union bound over `M` seeds), and rejects a randomness beacon because of "the
+potential for an adversarial prover to search over time to acquire a sequence of
+points which misleads the verifier." Both legs of our `ε_beacon`, named in a
+proof-of-computation paper four years ago — as reasons to avoid seeds and beacons,
+not as terms in a budget. Its own escape (a prover-held low-discrepancy shift) is
+a prover-controlled beacon in our vocabulary and does not compose with sampled
+audits (`zkqmc-read.md` §3). This does not change the narrowing above: the legs
+existed separately; nobody composed them.
