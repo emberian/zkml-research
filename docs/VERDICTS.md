@@ -333,6 +333,7 @@ at §4.3/§7**):
 - **The surpass table, honest**: they win measured latency and memory
   maturity; **we win PQ, formal content (their repos verified zero this
   session, instruments named), and the depth bound**; transparency ties.
+  > 09-04 (soft): eprint 2026/1857 gives the smudging tax a lattice-side price — Θ(log n_F) decomposition depth (k=31 vs Θ(1)), interactive-only. `notes/eprint-delta-2026-09-04.md`.
 
 **The composed architecture this yields**: dual-mode MSIS at the base →
 Nova-shaped PQ folding (4–8% overhead) → switchboard pay-per-use (Ajtai
@@ -454,6 +455,16 @@ lookup-collapsible dominant term; re-derive at Stage 3). And
 umbrella** — `Compiler.lean` carries a sibling's uncommitted import of an
 untracked file, so the rooting line waits (said loudly; the
 gating-defaults-to-silence shape, declared this time).
+
+> ⚑ **09-04: a new requirement, not a kill — eprint 2026/1838** (Fenzi, 09-01):
+> Fiat–Shamir attacks on *program-generated instances*, which is exactly this
+> route's shape. The pinned `p3-batch-stark` transcript (`transcript.rs:27-66`,
+> rev `82cfad7`) absorbs the instance count, `(log_ext_degree, log_degree, width,
+> num_quotient_chunks)`, the main and preprocessed commitments and public values —
+> **not the constraint polynomials**. Proposed, conditional on reading 1838's
+> mitigation theorem (PDF not yet in the mirror): absorb a descriptor digest
+> before the first challenge. Adds a line to `evm-decompilation.md` §6's trusted
+> base ("4. Nothing else" is now "4. the descriptor is bound"). `notes/eprint-delta-2026-09-04.md` §1.
 
 ## 4. Proof-system design
 
@@ -1045,6 +1056,21 @@ permutation**, and **the sponge's ~124-bit claim** — which lives at CICO-k for
 k at the capacity, where GSR gives **nothing** (no gain by k=3; identically
 vacuous at k=8). ***The instances GSR breaks are not the instances carrying our
 security claim.***
+> ⚑ **09-04: true of GSR — UNESTABLISHED for eprint 2026/1792** (Li–Liu–Wang,
+> 08-26, nonlinear subspace trails). Its trail spans **2·E_c** partial rounds with
+> **E_c = t − d in compression mode** [READ, 1792 §2.2/§4]. Our Merkle INTERNAL
+> node is `TruncatedPermutation<Perm16, 2, 8, 16>` — compression mode, c=0, d=8,
+> no feed-forward (`plonky3_prover.rs:71-72`, `stark_zk.rs:79-80`) — so E_c = 8
+> and the window is **16 ≥ R_P = 13**: every partial round absorbed with three to
+> spare; the residual is the 8 full rounds at α=7. The leaf sponge (c=8) has
+> E_c = 0 and is untouched. **No cost exists at our point** — 1792's tables stop
+> at p ≥ 2^64, d ≤ 4, r_F = 6. The decisive computation is named (1792 §4.2's cost
+> model, calibrated by reproducing its Table C.1 at t=16, then evaluated at
+> p≈2^31, R_F=8, R_P∈{13,20}) and is in flight as `notes/nst-1792-at-our-node.md`.
+> 1792 is an independent argument for `R_P 13→20` (four rounds past the trail)
+> over `13→15` (still inside it). ⚠ `hash-verdict.md` item 6 "our Merkle tree is
+> sponge-mode" is true of leaves only. `notes/hash-delta-2026-09-04.md` §1.2, §7;
+> `notes/eprint-delta-2026-09-04.md` §1.
 
 **Margin: 3 of 21 rounds — a CEILING** (a lower bound on adversarial reach;
 this lineage has only pushed it up). **Filed NEXT TO, never summed with, the

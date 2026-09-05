@@ -209,6 +209,14 @@ re-pick the exponents.** C3 as written cannot see this.
 `notes/ring-hash-tau-verdict.md`, `notes/ring-hash-cryptanalysis.md`
 (⚠ **that last file has ZERO external citations** — its "not executed:
 a direct Gröbner/CICO attack" line is an invitation).
+- ⚑ **09-04, from the delta lanes.** eprint **2026/1760** (Jo) collided the
+  Initiative's full-round KoalaBear Poseidon1 (16,3,8,20) by choosing the MDS
+  *after* the constants, under the challenge's arbitrary-MDS rule — a rules
+  artefact for them, **a design rule here**: a Cauchy-programmed layer with
+  borrowed constants must derive its constants after/from the matrix (1760 §6
+  says exactly this). And **2026/1792**'s nonlinear subspace trails (2·E_c
+  partial rounds) are the model to run against the gadget-Feistel's partial
+  layer. `notes/hash-delta-2026-09-04.md` §7, `notes/eprint-delta-2026-09-04.md` §1.
 
 ---
 
@@ -254,6 +262,10 @@ never cross it.** Full mode is the FS hash. Same parameters as Brief 1.
   — proved at a toy, **expected false at production sizes by pigeonhole**; the
   computational reading is a named residual, **and that gap is where a real
   attack would live.**
+- ⚑ **09-04**: the generalized-birthday / k-tree regime (eprint **2026/1835**) is
+  absent from this brief and from `ring-hash-{cryptanalysis,dual-mode,design}.md`
+  (grep: only MDS-birthday hits). Add it beside the MSIS short-opening obligation
+  before anything custom ships. `notes/eprint-delta-2026-09-04.md` §1.
 
 ---
 
