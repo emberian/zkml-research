@@ -548,8 +548,27 @@ refutation: no round-0 message synthesizes `h_1` for every `ρ_0`
   runs accepted with the full-fold output; SAME output as `accReductionBcs`
   on the increment transcript (`partialFold_last` + `foldWords_ofFn` CITED).
 * `accRbrKnowledgeSoundBcsShifted` — STATED (Def 4.2 at the shifted
-  alphabet, statement-first Prop with ATLAS fields): NOT inhabited;
-  inhabiting it is `[ACC-rbr-bcs-shifted-resid]`(a)+(b).
+  alphabet, statement-first Prop with ATLAS fields); RETIRED by
+  `Selvage/AccRbrBcsShiftedTransport.lean`, which proves it has a FLOOR OF
+  ONE: inhabited at `εfold ≡ 1` (`accRbrKnowledgeSoundBcsShifted_one`, the
+  degenerate state) and FALSE at every `εfold < 1` on the window, for EVERY
+  knowledge state and extractor (`shiftedRbr_floor`,
+  `accRbrKnowledgeSoundBcsShifted_forces_one`; fired on the landed chain as
+  `AccRbrBcsShiftedTransportExample.shifted_forces_one_F5` /
+  `shifted_accRbrError_false_F5`). Reason: this verifier never ties
+  consecutive roots, so the untethered adversary — anchor the genesis, commit
+  an aggregate-solving last word — is accepted with a satisfied output at
+  every challenge draw (`untethered_verify`), and Def 4.2's backward chain
+  then manufactures a source witness. The deployed-ZK statement that HOLDS is
+  the log route at the LINKED reduction: `linkedAdaptiveIncrementSound_proved`
+  (`Selvage/OracleLogLinkedAssembly.lean`) at the true `accRbrError`, extractor
+  pinned by construction (`linkedTarget_pins_extractor`) — it SUPERSEDES this
+  object (`shifted_retired_log_stands_F5` pairs the two on one instance).
+  `[ACC-rbr-bcs-shifted-resid]`(a) is thereby answered NEGATIVELY as stated
+  (no round bound below `1` exists at this verifier); (b), the shifted state
+  design, is re-homed at the linked reduction as
+  `accRbrKnowledgeSoundBcsShiftedLinked` (`[ACC-rbr-bcs-shifted-linked]`,
+  satisfiable at `εfold ≡ 1`, refuted at `εfold ≡ 0`, open at `accRbrError`).
 * Keystones — `accReductionBcsShifted_F5` (built), `msgShifted`,
   `shifted_completeness_F5` (accepts + satisfies, every draw),
   `shifted_reduces_as_unshifted_F5` (same statement as the landed `msgBcs`
