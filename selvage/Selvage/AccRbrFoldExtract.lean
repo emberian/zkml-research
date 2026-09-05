@@ -6,9 +6,11 @@ exactly when the witness carries the absorbed openings.
 
 `Selvage/AccRbrFold.lean` enters `[ACC-rbr-fold-resid](a)` statement-first as
 `FoldRoundBound`, parametrised by a caller-supplied round extractor, with
-`foldRoundBound_one` (satisfiable at `ε ≡ 1`) and
-`ToyFold.toy_roundBound_zero_id_false` (the identity extractor refuted at
-`ε ≡ 0`) as its keystone pair. The census (`unit-witness-census.md` §7 item 3)
+`foldRoundBound_one` (satisfiable at `ε ≡ 1`) as its satisfiability witness
+and this file's `foldRoundBound_floor` as its teeth
+(`ToyFold.toy_roundBound_zero_id_false`, the identity extractor refuted at
+`ε ≡ 0`, is the subsumed special case). The census
+(`unit-witness-census.md` §7 item 3)
 asked for a CONSTRUCTED extractor and a proof of the round bound at the
 per-absorbed-commitment `ε_MSIS`. This file answers with two theorems whose
 conjunction is the honest shape of the residual:
@@ -56,20 +58,33 @@ conjunction is the honest shape of the residual:
 ## Honest scope
 
 * `foldReductionCarried`'s decider checks `T + 1` openings: it is NOT succinct.
-  That is the content — in the single-transcript Def-4.2 model, knowledge
-  soundness of the additive fold costs exactly the compression; rewinding
-  buys it back and this tree has no rewinding extractor.
+  SCOPE of that conclusion — resource model (i) ONLY, the PUBLIC-TRANSCRIPT-
+  ONLY extractor: it sees exactly what the verifier sees, which is what
+  `RbrKnowledgeSoundness` and the `(t + k)·ε` compositions model. In model
+  (i) the zero-absorb attack refutes a contract that admits an already-
+  invalid genesis opening and asks a challenge-dependent step to certify
+  the missing shortness (the challenge space is irrelevant to it), and the
+  carried witness is the object that discharges Def 4.2. The `T + 1`
+  theorem says NOTHING about (ii) straight-line extraction with a trapdoor /
+  RO-query interface / prescribed prover access, nor about (iii) ONLINE
+  extraction — extract each incoming witness, update a running state,
+  discard it — where live extractor memory, total extraction work, output
+  size, and decider work are FOUR different quantities and a theorem about
+  one is not a theorem about the others. Routes not in this tree: (ii),
+  (iii), and rewinding. "Not succinct" here is measured in model (i) alone.
 * `MsisHardEx` enters nowhere in the round bound of the carried fold. It
   enters where it always did: binding of the (now relaxed) genesis opening,
   `fold_binding`, at a doubled budget. No new computational `Prop` is named
   because none is consumed by the theorems here.
-* The four callers in `AccRbrFold.lean` (`foldRbrOfRoundBound`,
-  `fold_depth_composition`, `fold_fs_sound`, `fold_fs_price_msis`) remain
-  caller-conditional on `FoldRoundBound`; `foldRoundBound_floor` says their
-  only inhabitants at binding instances are at `ε ≥ 1`, i.e. every
-  conclusion they can reach there is at error `≥ T`. The carried analogs
-  `foldCarried_depth_composition` / `foldCarried_fs_sound` are at error `0`,
-  extractor CONSTRUCTED, no parameter.
+* `AccRbrFold.lean` carries NO extractor-parametric consumer of
+  `FoldRoundBound` any more: the `extractFn`-generic Def-4.2 packaging and
+  the depth/FS compositions over `foldReduction` it once had were vacuous
+  below error `T` by `foldRoundBound_floor`, and are retired
+  (`repair-fold-callers.md`). The compressing reduction's one Def-4.2
+  instance in the tree is the trivial `ε ≡ 1` one, built inline at its
+  single use (`foldOB2Unguarded_false`, the error-algebra corner). The
+  compositions live HERE, at the carried fold: `foldCarried_depth_composition`
+  / `foldCarried_fs_sound` at error `0`, extractor CONSTRUCTED, no parameter.
 
 Design record: `zkml-research/notes/fold-extractor-upgrade.md`.
 -/
@@ -401,9 +416,9 @@ noncomputable def foldCarriedRbr (hchal : ∀ c, chalVal c ∈ S.chalSet) :
     foldCarriedRoundBound_zero S T hT Kh chalVal b₀ hchal δ hδ st i rs hlen π
 
 /-- **Depth composition for the carried fold**: straightline state-restoration
-knowledge-sound at error `0` — the fold analog of `fold_depth_composition`
-with the extractor constructed and the round bound discharged, riding the
-landed [OB-2′]. -/
+knowledge-sound at error `0` — THE depth composition for the fold shape, with
+the extractor constructed and the round bound discharged, riding the landed
+[OB-2′] (`OB2_depth_composition_nonneg_proved`, `Selvage/Depth.lean`). -/
 theorem foldCarried_depth_composition (hchal : ∀ c, chalVal c ∈ S.chalSet)
     (Z : Set (Stmt (foldReductionCarried S T hT Kh chalVal b₀))) :
     StraightlineSrKnowledgeSoundness (foldReductionCarried S T hT Kh chalVal b₀)
@@ -414,11 +429,11 @@ theorem foldCarried_depth_composition (hchal : ∀ c, chalVal c ∈ S.chalSet)
     (fun _ _ => le_refl 0) (fun _i _st _hst _δ _hδ => le_refl 0)
   simpa only [mul_zero] using h
 
-/-- **Fiat–Shamir of the carried fold, straightline, at error `0`** — the
-fold analog of `fold_fs_sound` with NO extractor parameter and NO round-bound
-hypothesis: the one theorem in the additive lane that is no longer
-caller-conditional on an unspecified extractor. Riding `fsKeystone_proved`
-(PROVED unconditionally). -/
+/-- **Fiat–Shamir of the carried fold, straightline, at error `0`** — THE
+Fiat–Shamir composition for the fold shape, with NO extractor parameter and
+NO round-bound hypothesis: nothing in the additive lane is caller-conditional
+on an unspecified extractor any more. Riding `fsKeystone_proved` (PROVED
+unconditionally). -/
 theorem foldCarried_fs_sound (hchal : ∀ c, chalVal c ∈ S.chalSet)
     (Z : Set (Stmt (foldReductionCarried S T hT Kh chalVal b₀))) :
     FsStraightlineKnowledgeSoundness (foldReductionCarried S T hT Kh chalVal b₀)

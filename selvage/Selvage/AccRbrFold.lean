@@ -46,22 +46,31 @@ at Merkle roots — roots do not add — and this file states it.
 * The Def-4.1 knowledge state through a fold is PROVED (`foldKState`: the
   witness is a short opening of the RUNNING accumulator at the RUNNING budget).
   The Def-4.2 round bound — producing a shorter-prefix opening from a longer
-  one, single-transcript, no rewinding — is the real content and is entered
-  STATEMENT-FIRST (`FoldRoundBound`), with `foldRbrOfRoundBound` showing it is
-  the ONLY missing piece, `foldRoundBound_one` its satisfiability, and
-  `ToyFold.toy_roundBound_zero_id_false` its teeth. Lattice folding genuinely extracts
-  from 2–3 transcripts with RELAXED openings (slack `ρ − ρ'`); pricing the
-  single-transcript event is `[ACC-rbr-fold-resid]`(a) — the exact additive-
-  alphabet analog of `[ACC-rbr-bcs-shifted-resid]`(a).
+  one, single-transcript, no rewinding — is entered STATEMENT-FIRST
+  (`FoldRoundBound`) and is FALSE below error 1 at this witness type, for
+  EVERY extractor: `foldRoundBound_floor` (`Selvage/AccRbrFoldExtract.lean`,
+  the zero-absorb attack) forces `1 ≤ ε δ` at any binding instance, so
+  `foldRoundBound_one` is its satisfiability AND its tight value. The Def-4.2
+  instance that exists lives at the CARRIED witness type
+  (`foldReductionCarried`: the running opening plus the `T` absorbed
+  openings): `foldCarriedRbr` at error 0 with the un-fold extractor
+  CONSTRUCTED, priced by a relaxed source relation (`budget b₀ (2T)`) and a
+  halved binding capacity (`DualModeParams.carried_capacity_safe` through
+  `2^46 − 1`, `DualModeParams.carried_break` at `2^46`).
+  `[ACC-rbr-fold-resid]`(a) is thereby RESOLVED, not priced: the single-
+  transcript event at the compressing type has no price below 1, and the
+  2–3-transcript relaxed-opening extraction lattice folding actually uses is
+  rewinding, which this tree's `RbrKnowledgeSoundness` does not model.
 * **The Z = ∅ corner RECURS: additivity does not dissolve it.** The `Depth.lean`
   refutation lives in the ERROR algebra, not the message algebra —
-  `foldOB2Unguarded_false` re-runs it at a genuine fold instance, and the
-  guarded composition holds for every fold instance by direct application of
-  the landed [OB-2′] (`fold_depth_composition` / `fold_fs_sound`, riding
-  `OB2_depth_composition_nonneg_proved` / `fsKeystone_proved`). Error
-  accumulation: `(t + T)·(εr + εM)` splits into `(t+T)·εr + (t+T)·εM` —
-  one ε_MSIS per absorbed commitment, the Nebula pricing
-  (`fold_fs_price_msis`).
+  `foldOB2Unguarded_false` re-runs it at a genuine fold instance (with the
+  trivial `ε ≡ 1` Def-4.2 instance, the only kind the compressing fold has),
+  and the guarded composition holds at the carried fold at error 0 by direct
+  application of the landed [OB-2′] (`foldCarried_depth_composition` /
+  `foldCarried_fs_sound`, riding `OB2_depth_composition_nonneg_proved` /
+  `fsKeystone_proved`). The `Q·ε_MSIS` accounting of the Nebula read is NOT a
+  round-bound term — the carried round bound has none — it is the DECIDER's
+  binding of each opened commitment: `fold_binding` at the doubled budget.
 
 Measurement/design record: `zkml-research/notes/acc-rbr-fold.md`; the gap this
 answers: `zkml-research/notes/nebula-vega-lessons.md` §2 (Q2); the intended
@@ -546,21 +555,34 @@ noncomputable def foldKState :
       refine ⟨by rw [hcom, ← hx], ?_⟩
       simpa [List.length_ofFn] using hnrm
 
-/-- **[ACC-rbr-fold-resid](a) — the per-fold round bound, STATEMENT-FIRST**
-(house law): with a caller-supplied round extractor, the Def-4.2 round event
-against the fold knowledge state is bounded by `εfold`. This is the ONLY
-missing piece of a full `RbrKnowledgeSoundness` instance
-(`foldRbrOfRoundBound` packages everything else), and it is where the
-per-absorbed-commitment ε_MSIS term lives: producing a shorter-prefix opening
-from a longer one, single-transcript, is exactly what lattice folding buys
-with 2–3 transcripts and RELAXED openings (slack `ρ − ρ'`) — the additive-
-alphabet analog of `[ACC-rbr-bcs-shifted-resid]`(a).
+/-- **[ACC-rbr-fold-resid](a) — the per-fold round bound at the COMPRESSING
+witness type: STATEMENT-FIRST, and REFUTED below error 1** (house law: the
+statement stays, fully priced). With a caller-supplied round extractor, the
+Def-4.2 round event against `foldKState` is bounded by `εfold`. It is NOT
+where a per-absorbed-commitment ε_MSIS term lives — no such home exists in
+the single-transcript model: `foldRoundBound_floor`
+(`Selvage/AccRbrFoldExtract.lean`, the zero-absorb attack — genesis
+`commit Z` with `b₀ < ‖Z‖ ≤ b₀ + ρB`, absorb `π = 0`) shows that at ANY
+binding instance, for EVERY `extractFn`, this Prop forces `1 ≤ εfold δ`. A
+single plane vector cannot be un-folded without an opening of the absorbed
+commitment; the 2–3-transcript relaxed-opening extraction lattice folding
+uses is rewinding, outside `RbrKnowledgeSoundness`. Nothing in this tree
+consumes an inhabitant of this Prop below `ε ≡ 1`; its one use is the
+trivial `ε ≡ 1` instance inside `foldOB2Unguarded_false`. The Def-4.2
+instance that exists — extractor constructed, error 0 — is `foldCarriedRbr`
+at `foldReductionCarried` (the witness carries the `T` absorbed openings;
+price: relaxed source relation `budget b₀ (2T)`, binding capacity halved to
+`T ≤ 2^46 − 1`); the ε_MSIS accounting is the decider's `fold_binding` per
+opened commitment.
 
 ATLAS keystone fields:
-* satisfiable: `foldRoundBound_one` — every instance at `εfold ≡ 1`.
-* teeth: `ToyFold.toy_roundBound_zero_id_false` — at the toy instance,
-  `εfold ≡ 0` with the identity extractor is REFUTED (the honest one-fold
-  transcript inhabits the round event at every nonzero challenge).
+* satisfiable: `foldRoundBound_one` — every instance at `εfold ≡ 1`; TIGHT.
+* teeth: `foldRoundBound_floor` — every extractor, `1 ≤ εfold δ`, at any
+  binding instance; discharged at the toy (`ToyFold.toy_roundBound_floor`)
+  and at production under `[FOLD-msis]`
+  (`DualModeParams.production_roundBound_floor`).
+  `ToyFold.toy_roundBound_zero_id_false` below is the id-extractor special
+  case at `b₀ = 0`, subsumed.
 * premise-inhabitation: `foldKState` is a genuine Def-4.1 instance (three
   clauses proved), and `ToyFold` builds the reduction on concrete data. -/
 def FoldRoundBound
@@ -575,85 +597,22 @@ def FoldRoundBound
         (foldKState S T hT Kh chalVal b₀).state δ st ⟨rs ++ [(π, ρ)], none⟩ Y
             = true) ≤ εfold δ
 
-/-- The round bound is all that is missing: given it, the fold carries a full
-Def-4.2 instance — `foldKState` plus the caller's extractor plus the uniform
-error, no slack, nothing else owed. -/
-noncomputable def foldRbrOfRoundBound
-    (extractFn : Stmt (foldReduction S T hT Kh chalVal b₀) →
-      Transcript C Kh → W → W) (εfold : ℝ → ℝ)
-    (h : FoldRoundBound S T hT Kh chalVal b₀ extractFn εfold) :
-    RbrKnowledgeSoundness (foldReduction S T hT Kh chalVal b₀) where
-  kstate := foldKState S T hT Kh chalVal b₀
-  extract := extractFn
-  err := fun _i _st δ => εfold δ
-  extractTime := fun _ => 0
-  extract_sound := fun δ hδ st i rs hlen π => h δ hδ st i rs hlen π
-
 /-- Satisfiable: every fold instance meets the round bound at `εfold ≡ 1` —
-the Prop is not vacuously unmeetable. -/
+the Prop is not vacuously unmeetable — and by `foldRoundBound_floor` this is
+the TIGHT value at any binding instance, for every extractor. -/
 theorem foldRoundBound_one
     (extractFn : Stmt (foldReduction S T hT Kh chalVal b₀) →
       Transcript C Kh → W → W) :
     FoldRoundBound S T hT Kh chalVal b₀ extractFn (fun _ => 1) :=
   fun _δ _hδ _st _i _rs _hlen _π => uniformProb_le_one _
 
-/-! ### The depth composition for the fold shape — PROVED, riding [OB-2′] -/
-
-/-- **Depth composition for the fold shape**: given the per-fold round bound
-at a nonnegative `εfold`, the fold reduction is straightline state-
-restoration knowledge-sound at `(t + T)·εfold` — a DIRECT application of the
-landed repaired [OB-2′] (`OB2_depth_composition_nonneg_proved`,
-Selvage/Depth.lean). Nothing fold-specific remains in the composition; the
-fold-specific content all lives in `FoldRoundBound`. -/
-theorem fold_depth_composition (εfold : ℝ → ℝ)
-    (hnn : ∀ δ ∈ Set.Ioo (0 : ℝ) 1, 0 ≤ εfold δ)
-    (extractFn : Stmt (foldReduction S T hT Kh chalVal b₀) →
-      Transcript C Kh → W → W)
-    (h : FoldRoundBound S T hT Kh chalVal b₀ extractFn εfold)
-    (Z : Set (Stmt (foldReduction S T hT Kh chalVal b₀))) :
-    StraightlineSrKnowledgeSoundness (foldReduction S T hT Kh chalVal b₀) Z
-      (fun _s t δ => ((t : ℝ) + (T : ℝ)) * εfold δ) :=
-  OB2_depth_composition_nonneg_proved (foldReduction S T hT Kh chalVal b₀)
-    (foldRbrOfRoundBound S T hT Kh chalVal b₀ extractFn εfold h) Z εfold hnn
-    (fun _i _st _hst _δ _hδ => le_refl _)
-
-/-- Fiat–Shamir of the fold, straightline, at the same `(t + T)·εfold` —
-riding `fsKeystone_proved` (PROVED unconditionally). -/
-theorem fold_fs_sound (εfold : ℝ → ℝ)
-    (hnn : ∀ δ ∈ Set.Ioo (0 : ℝ) 1, 0 ≤ εfold δ)
-    (extractFn : Stmt (foldReduction S T hT Kh chalVal b₀) →
-      Transcript C Kh → W → W)
-    (h : FoldRoundBound S T hT Kh chalVal b₀ extractFn εfold)
-    (Z : Set (Stmt (foldReduction S T hT Kh chalVal b₀))) :
-    FsStraightlineKnowledgeSoundness (foldReduction S T hT Kh chalVal b₀) Z
-      (fun _s t δ => ((t : ℝ) + (T : ℝ)) * εfold δ) :=
-  fsKeystone_proved.sound (foldReduction S T hT Kh chalVal b₀)
-    (foldRbrOfRoundBound S T hT Kh chalVal b₀ extractFn εfold h) Z εfold hnn
-    (fun _i _st _hst _δ _hδ => le_refl _)
-
-/-- **The Nebula pricing, named**: with a per-fold error split as a
-round term plus a per-absorbed-commitment ε_MSIS term, the FS bound splits
-into `(t+T)·εr + (t+T)·ε_MSIS` — one ε_MSIS per absorbed commitment times
-the query budget, the `Q·ε_MSIS` accounting of the Nebula read
-(`nebula-vega-lessons.md` §1), carried not hand-waved. -/
-theorem fold_fs_price_msis (εr : ℝ → ℝ) (εM : ℝ)
-    (hnn : ∀ δ ∈ Set.Ioo (0 : ℝ) 1, 0 ≤ εr δ + εM)
-    (extractFn : Stmt (foldReduction S T hT Kh chalVal b₀) →
-      Transcript C Kh → W → W)
-    (h : FoldRoundBound S T hT Kh chalVal b₀ extractFn (fun δ => εr δ + εM))
-    (Z : Set (Stmt (foldReduction S T hT Kh chalVal b₀))) :
-    FsStraightlineKnowledgeSoundness (foldReduction S T hT Kh chalVal b₀) Z
-      (fun _s t δ =>
-        ((t : ℝ) + (T : ℝ)) * εr δ + ((t : ℝ) + (T : ℝ)) * εM) := by
-  have hfun : (fun (_s t : ℕ) (δ : ℝ) =>
-        ((t : ℝ) + (T : ℝ)) * εr δ + ((t : ℝ) + (T : ℝ)) * εM)
-      = (fun (_s t : ℕ) (δ : ℝ) =>
-        ((t : ℝ) + (T : ℝ)) * (εr δ + εM)) := by
-    funext _s t δ
-    ring
-  rw [hfun]
-  exact fold_fs_sound S T hT Kh chalVal b₀ (fun δ => εr δ + εM) hnn
-    extractFn h Z
+/-! ### Depth / Fiat–Shamir composition for the fold shape — it lives at the
+CARRIED fold. `Selvage/AccRbrFoldExtract.lean` proves
+`foldCarried_depth_composition` / `foldCarried_fs_sound` at error 0 by direct
+application of the landed [OB-2′] (`OB2_depth_composition_nonneg_proved` /
+`fsKeystone_proved`) to `foldCarriedRbr`. Nothing composes over
+`foldReduction` below error `(t + T)·1`: that is `foldRoundBound_floor`, not
+a gap. -/
 
 end FoldReduction
 
@@ -701,17 +660,22 @@ never reads the message algebra: it lives in the ERROR algebra (`εfold`
 unconstrained off `Z`, instantiated at `−1` against a nonnegative
 probability), and the additive alphabet changed only the messages. Same move
 as `OB2_depth_composition_false`: `Z = ∅`, `εfold = −1`, move budget `0`,
-`T = 1`, the round bound met at `εfold ≡ 1` (`foldRoundBound_one`). The
-GUARDED composition holds for every fold instance
-(`fold_depth_composition`); the pair is the brief's "either answer is a
-theorem worth having", with both halves on disk. -/
+`T = 1`, the Def-4.2 instance the trivial `ε ≡ 1` one (`foldKState`, the
+identity extractor, `foldRoundBound_one`) — by `foldRoundBound_floor` the
+only kind the compressing fold has at a binding instance, built inline here
+at its one use. The GUARDED composition holds at the carried fold at error 0
+(`foldCarried_depth_composition`); the pair is the brief's "either answer is
+a theorem worth having", with both halves on disk. -/
 theorem foldOB2Unguarded_false : ¬ FoldOB2Unguarded := by
   intro h
   have h1 := h ℤ ℤ ℤ zeroFoldScheme 1 one_pos Bool (fun _ => 0) 0
-    (foldRbrOfRoundBound zeroFoldScheme 1 one_pos Bool (fun _ => 0) 0
-      (fun _ _ Y => Y) (fun _ => 1)
-      (foldRoundBound_one zeroFoldScheme 1 one_pos Bool (fun _ => 0) 0
-        (fun _ _ Y => Y)))
+    { kstate := foldKState zeroFoldScheme 1 one_pos Bool (fun _ => 0) 0
+      extract := fun _ _ Y => Y
+      err := fun _i _st _δ => 1
+      extractTime := fun _ => 0
+      extract_sound := fun δ hδ st i rs hlen π =>
+        foldRoundBound_one zeroFoldScheme 1 one_pos Bool (fun _ => 0) 0
+          (fun _ _ Y => Y) δ hδ st i rs hlen π }
     ∅ (fun _ => -1)
     (fun _i st hst => ((Set.mem_empty_iff_false st).mp hst).elim)
   obtain ⟨E, hE⟩ := h1
@@ -1268,12 +1232,15 @@ theorem toy_commit_e01 : intCommit 97 A97 e01 0 = (1 : ZMod 97) := by
 def shiftSpike (b : Fin 2 → ℤ) (k : ℕ) : Fin 2 → ℤ :=
   b + unitSpike 0 ((97 * k : ℕ) : ℤ)
 
-/-- **`FoldRoundBound` is REFUTABLE** (with `foldRoundBound_one` as its
-satisfiability, the Prove-The-Floor-FALSE pair): at the toy instance,
-`εfold ≡ 0` with the identity extractor is false — the honest one-fold data
-inhabits the round event at challenge `+1`: `e₀` opens the extended fold
-(`0 + 1·commit e₀`) inside budget 1, while the id-extracted prefix state
-demands `commit e₀ = 0`, refuted. The per-fold price is REAL. -/
+/-- **`FoldRoundBound` is REFUTABLE — the id-extractor special case at
+`b₀ = 0`** (with `foldRoundBound_one` as its satisfiability): at the toy
+instance, `εfold ≡ 0` with the identity extractor is false — the honest
+one-fold data inhabits the round event at challenge `+1`: `e₀` opens the
+extended fold (`0 + 1·commit e₀`) inside budget 1, while the id-extracted
+prefix state demands `commit e₀ = 0`, refuted. Subsumed by
+`toy_roundBound_floor` (`Selvage/AccRbrFoldExtract.lean`): EVERY extractor,
+`1 ≤ εfold δ` — at this witness type the per-fold price is not merely real,
+it is TOTAL. -/
 theorem toy_roundBound_zero_id_false :
     ¬ FoldRoundBound toy 1 one_pos (Fin 3) chalVal3 0 (fun _ _ Y => Y)
       (fun _ => 0) := by
@@ -1417,12 +1384,6 @@ end ToyFold
 #guard_msgs (whitespace := lax) in #print axioms FoldCommitScheme.nrm_mFold_le
 /-- info: 'Minidregg.Selvage.FoldCommitScheme.commit_mFold' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms FoldCommitScheme.commit_mFold
-/-- info: 'Minidregg.Selvage.fold_depth_composition' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms fold_depth_composition
-/-- info: 'Minidregg.Selvage.fold_fs_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms fold_fs_sound
-/-- info: 'Minidregg.Selvage.fold_fs_price_msis' depends on axioms: [propext, Classical.choice, Quot.sound] -/
-#guard_msgs (whitespace := lax) in #print axioms fold_fs_price_msis
 /-- info: 'Minidregg.Selvage.foldOB2Unguarded_false' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs (whitespace := lax) in #print axioms foldOB2Unguarded_false
 /-- info: 'Minidregg.Selvage.binding_lost_at_wraparound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
