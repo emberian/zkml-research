@@ -65,9 +65,15 @@ frontier of towers instead.
   structure an attacker reads).
 - **Folding.** Hash commitments do not fold: measured ordering DL fold 1× <
   PQ lattice fold 4–50× < Merkle wrap ~10^3×. Our candidate is a dual-mode ring
-  object over R_q, q = 2^64 − 257, X^N+1 splitting into τ = 2 factors, norm
-  bound B = 2^16: an Ajtai/MSIS commitment in linear mode and a Fiat–Shamir
-  hash in full mode, one parameter set. Additive-commitment folding is proved
+  object over R_q = Z_q[X]/(X^16 + 1) — note d = 16, a hash-state ring, NOT the
+  FHE ring's N = 4096 — with q = 2^64 − 257 prime, q ≡ −1 (mod 32) so X^16 + 1
+  splits into eight quadratics and R_q ≅ (F_{q²})^8; τ = 2 is that CRT-component
+  degree, and the diagonal F_{q²} (size 2^128) is the sumcheck sampling set. Norm
+  bound B = 2^16, gadget K = 4. It is an Ajtai/MSIS commitment in linear mode and
+  a Fiat–Shamir hash in full mode (round = gadget digit-decomposition ∘ public
+  dense affine; the digit map is deliberately not a ring polynomial), one
+  parameter set. (An earlier version of this prompt wrote "X^N+1 splitting into
+  τ = 2 factors"; that was our transcription error, corrected 2026-09-04.) Additive-commitment folding is proved
   safe through T = 2^47 − 2 fold steps and loses binding unconditionally at
   2^47 − 1. Sponge indifferentiability of the full mode is the one unproved
   wall. Pay-per-bit lattice folding (Neo) is structurally incompatible with
