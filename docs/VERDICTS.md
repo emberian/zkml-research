@@ -1538,6 +1538,19 @@ class and it recurred twice anyway.***
    > follow-up); slack 3 is a unit mod 2⁶⁴; a priced module-BKZ bill (Δβ ≈ −17,
    > −4.9 bits) for §7's lattice item. Consolidated read of the external answer:
    > `notes/astra-algebra-read.md`.
+   > ⚠ **09-05: the proof-cost half of that TRAP label is REOPENED** (external review,
+   > verified at the algebra level): the "270–480× per multiplication, 65 GB of tables"
+   > priced EAGER expansion of every table entry into d coefficients, an implementation
+   > choice. After j folds the extension-valued weights μ_a are shared across the table
+   > (rank ≤ min(d, 2^j)); a division-free prefix schedule keeps the big arrays
+   > base-valued and materializes the two remaining tables by one rectangular matrix
+   > product: C_b = n(3/2)^b + 2dn + 3m_S(n/2^b − 1), ≈ **388 u64 mults per table
+   > position** at n = 2^25, d = 162, b = 9 [reviewer's DERIVED, equivalence tested on
+   > GR(4,2)]; the bilinear floor 2d−1 bounds one dense product, not the prover. What
+   > stands: dense messages 1,296 B each, FHE depth 1, no short inverses. What is
+   > unpriced: the ZK-mask term (a dense mask per entry can destroy the advantage). A
+   > lane is reproducing the equivalence, calibrating the formula against counted ops,
+   > and re-pricing; the label is "open on the bench" until it reports.
 3. **Can we choose the FHE modulus?** Both Zama predecessors set q_FHE = the
    proof field; 2025/719 uses BabyBear. *Our "we don't control it" was never
    verified, and checking it is cheaper than building what depends on it.*
@@ -1564,6 +1577,18 @@ class and it recurred twice anyway.***
    > The gate is now a standing item (`forcodex/08-ATTACK-BRIEFS.md` BRIEF 3) with a
    > Lean-shaped Prop: `∀ i, ∃ x y, x ≡ y [mod I_i] ∧ F x ≢ F y [mod I_i]`, witness
    > from the script. `notes/dual-mode-ideal-quotient-gate.md`.
+   > ⚠ **09-05: that gate is INSUFFICIENT** (external review, verified at the algebra
+   > level): a bare slot-permuting automorphism σ₅ PASSES it at all eight ideals while its
+   > slot-dependency matrix is a permutation matrix — "not ring-polynomial" ≠ "mixes
+   > slots". Exact classification for m = 32, q ≡ 31: σ_e is ring-polynomial iff e ∈ ⟨q⟩
+   > = {1, 31}; σ₅, σ₂₅, σ₁₇ merely permute slots. Rounds made only of slotwise
+   > nonlinearity + R-linear mixing + a common global σ_e compose to a SLOT-SEPARABLE
+   > permutation (a one-slot difference stays one-slot forever: a two-query
+   > distinguisher). Our σ-layer is `x + c·σ_k(x)` — two dependencies per output slot,
+   > the reviewer's own `I + 2σ` diffusion shape — so the theorem does not apply as
+   > stated, and whether the WHOLE round reaches full dependency is what must be
+   > measured. The replacement gate is the dependency matrix Dep_ij; a lane is running
+   > it on both candidates and stating the classification/closure theorems in Lean.
 5. ⚑ **Cross-limb binding — EXHIBITED 2026-08-14, and it was TWO holes under one
    name.** `notes/cross-limb-binding.md`; `breadstuffs` `5b653ba5d`
    (`metatheory/Bfv/CrossLimb.lean`, `#assert_namespace_axioms Bfv` 90 → **113**).
@@ -1603,6 +1628,22 @@ class and it recurred twice anyway.***
      > shift), so **Hole B becomes a range check there** — TFHE/HPU-shaped, not BFV
      > at prime q. Not a closure of the deployed hole; a statement of where it is
      > cheap.
+   - > 09-05 [DERIVED, external review, verified]: **Hole B in its sharpest form —
+     > the quotient map discards information the rounding needs.** With z the lifted
+     > integer convolution coefficient, round(t(z+Q)/Q) = round(tz/Q) + t, so the scaled
+     > result mod Q does not factor through z mod Q (Q = 31, t = 4: products 1·1 and
+     > 2·16 share residue 1, scale to 0 and 4). Proving `c_raw = a·b` in R_Q proves
+     > nothing about the scaled BFV product; the certificate is over the INTEGERS —
+     > ∃ s, 0 ≤ s < Q ∧ tz + ⌊Q/2⌋ = Qy + s (nearest, ties up) — and checking it mod Q
+     > deletes y. SEAL's `bfv_multiply` (BEHZ: extend the RNS basis, multiply, ×t,
+     > divide-and-floor, convert back) is the semantics a faithful proof must
+     > implement. Consequence for the commit-to-the-ciphertext by-product: full
+     > ciphertext coefficients are NOT short witnesses (digit decomposition: 4 digits at
+     > 64 bits, 7 at 109), so the 5.5× must state its representation; naive residual
+     > booleanity alone is 3·4096·109 = 1,339,392 constraints at N = 4096. Prop to land:
+     > `BFVScaleLiftRefinement` (verified lifted convolution + integer quotient–remainder
+     > certificate + stated rounding ⇒ the reference scaling), falsifier the 1-vs-32 pair
+     > bound only mod Q.
    - **Still open:** Hole B has an exhibit and no closure; there is **no ct×ct
      arithmetization in the tree** to fix (the hole is in the design); and `ε_chk`
      **cannot be instantiated limb-locally**, which is new information for item 6.
