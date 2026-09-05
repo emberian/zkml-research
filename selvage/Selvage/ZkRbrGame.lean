@@ -487,7 +487,13 @@ the game's `fs_composed` field compiles `Selvage/Depth.lean`'s
 `errstar ≡ 4/5`) to a straightline FS argument at the `(t + k)·accRbrError`
 factor. The instance is Depth's trivial one BECAUSE the accumulator's own
 Def-4.2 instance is exactly `[ZK-RBR-game-resid]` — this keystone shows the
-carrier field genuinely fires, not that the residual is closed. -/
+carrier field genuinely fires, not that the residual is closed.
+⚠ **Superseded as the keystone (2026-09-04)**: `native_fs_fired`
+(`Selvage/AccRbrInstance.lean:974`) runs this same `fs_composed` field on the
+NATIVE pair `accReduction_F5`/`accRbr_F5`, discharging `[ZK-RBR-game-resid]`
+(`Selvage.lean:56`, *"where `game_fs_fired` could only offer
+`trivialReduction`"*); what stands below is kept as the trivial-reduction
+exhibit, not as the residual's discharge. -/
 theorem game_fs_fired :
     FsStraightlineKnowledgeSoundness trivialReduction Set.univ
       (fun _s b δ => ((b : ℝ) + (trivialReduction.k : ℝ))

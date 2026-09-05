@@ -11,11 +11,14 @@ one interactive framework*: same `Idx`, same **`W`**, same `Chal` alphabet, same
 on both sides — by explicit design (`Rbr.lean:27-56`, "Deliberate specializations" 1-4).
 `R'` is the residual claim after **this** protocol's own rounds.
 
-All seven `Reduction` instances in the tree are intra-system (`SumcheckRbr:182`,
+All eight `Reduction` instances in the tree are intra-system (`SumcheckRbr:182`,
 `Depth:489`, `FiatShamir:550`, `AccRbrInstance:391`, `AccRbrBcs:333`,
-`AccRbrBcsShifted:230`, `AccRbrBcsRaw:45`). None sets `R` or `R'` to another system's
-verifier-acceptance predicate, and none can: **the recursion seam needs `B`'s witness
-type to BE `A`'s proof type**, and `Reduction` forces one shared `W`.
+`AccRbrBcsShifted:230`, `AccRbrBcsRaw:45`, `AccRbrFold:478` — `foldReduction`, the
+eighth, landed after this file and was folded into the count 2026-09-04; its `R` is
+`S.ShortOpens b₀ C₀ Y`, a commitment predicate of the same system). None sets `R` or
+`R'` to another system's verifier-acceptance predicate, and none can: **the recursion
+seam needs `B`'s witness type to BE `A`'s proof type**, and `Reduction` forces one
+shared `W`.
 
 ## Why the direction that costs nothing is not the load-bearing one
 
