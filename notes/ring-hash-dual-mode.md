@@ -50,6 +50,9 @@ own opening protocol, so every row shaved off the hash cheapens the commitment's
 A correction carried from the brief: the σ-Poseidon bar figure **302,141 is the τ=4 point**
 (`ring-hash-design.md` §5.0). The standing τ verdict is **τ=2** (`ring-hash-tau-verdict.md`), where
 the same table gives **363,513** (= 3,372.1 ring elements/step × 107.8). Both quoted below.
+> ⚠ 2026-09-04: the 107.8/elt factor is mis-counted (σ₃₁ is the Frobenius; see the
+> note at the top of `ring-hash-design.md`): 125.8 or 98.8 depending on the pp choice,
+> so 363,513 reads 424,213 or 333,163. The 4–8% PQ-fold share moves within its band.
 
 ---
 

@@ -262,6 +262,13 @@ never cross it.** Full mode is the FS hash. Same parameters as Brief 1.
   — proved at a toy, **expected false at production sizes by pigeonhole**; the
   computational reading is a named residual, **and that gap is where a real
   attack would live.**
+- ⚑ **09-04, standing gate — the ideal-quotient test, BEFORE indifferentiability.**
+  Any full-mode round built only from ring-polynomial operations respects every
+  CRT-slot congruence and is a perfect distinguisher target. Ran on the real modulus
+  (`notes/ring-hash-scripts/ideal_quotient_gate.py`): both candidates escape as whole
+  permutations; σ₃₁ is the Frobenius, so 14/30 σ-Poseidon rounds are slot-respecting
+  and the τ=2 cost row is mis-counted. Re-run this script on ANY change to a σ-layer
+  exponent, the gadget, or the modulus. `notes/dual-mode-ideal-quotient-gate.md`.
 - ⚑ **09-04**: the generalized-birthday / k-tree regime (eprint **2026/1835**) is
   absent from this brief and from `ring-hash-{cryptanalysis,dual-mode,design}.md`
   (grep: only MDS-birthday hits). Add it beside the MSIS short-opening obligation
