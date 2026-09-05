@@ -74,7 +74,10 @@ BinarySpartan v4; Jolt to lattice PCS; Plonky3 v0.7.0 has GKR), `formal-delta-20
 window is 16 ≥ R_P=13 at our Merkle internal node — cost at our prime uncomputed;
 1760 is a rules artefact and a design rule), `eprint-delta-2026-09-04.md` (all 142
 ids 1719–1861 triaged: 19 relevant, 19 maybe; 1838 FS-on-program-generated-instances
-is a new requirement for the EVM route; 1835 k-tree regime missing from BRIEF 3).
+is a new requirement for the EVM route; 1835 k-tree regime missing from BRIEF 3),
+`nst-1792-at-our-node.md` (+ `gsr-scripts/nst_1792.py`) — 1792's cost model reproduced
+58/58 + 21/21 with no fitted constant, then evaluated at our Merkle node: ≥ 2^511.9,
+R_P=20 changes nothing at the floor; the binding quantity is d=8 × the p−2 cap, not R_P.
 
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its

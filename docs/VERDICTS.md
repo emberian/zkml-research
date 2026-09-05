@@ -1056,21 +1056,27 @@ permutation**, and **the sponge's ~124-bit claim** — which lives at CICO-k for
 k at the capacity, where GSR gives **nothing** (no gain by k=3; identically
 vacuous at k=8). ***The instances GSR breaks are not the instances carrying our
 security claim.***
-> ⚑ **09-04: true of GSR — UNESTABLISHED for eprint 2026/1792** (Li–Liu–Wang,
-> 08-26, nonlinear subspace trails). Its trail spans **2·E_c** partial rounds with
-> **E_c = t − d in compression mode** [READ, 1792 §2.2/§4]. Our Merkle INTERNAL
-> node is `TruncatedPermutation<Perm16, 2, 8, 16>` — compression mode, c=0, d=8,
-> no feed-forward (`plonky3_prover.rs:71-72`, `stark_zk.rs:79-80`) — so E_c = 8
-> and the window is **16 ≥ R_P = 13**: every partial round absorbed with three to
-> spare; the residual is the 8 full rounds at α=7. The leaf sponge (c=8) has
-> E_c = 0 and is untouched. **No cost exists at our point** — 1792's tables stop
-> at p ≥ 2^64, d ≤ 4, r_F = 6. The decisive computation is named (1792 §4.2's cost
-> model, calibrated by reproducing its Table C.1 at t=16, then evaluated at
-> p≈2^31, R_F=8, R_P∈{13,20}) and is in flight as `notes/nst-1792-at-our-node.md`.
-> 1792 is an independent argument for `R_P 13→20` (four rounds past the trail)
-> over `13→15` (still inside it). ⚠ `hash-verdict.md` item 6 "our Merkle tree is
-> sponge-mode" is true of leaves only. `notes/hash-delta-2026-09-04.md` §1.2, §7;
-> `notes/eprint-delta-2026-09-04.md` §1.
+> ✅ **09-04: HOLDS for eprint 2026/1792 too — by ≥ 264 bits, on the Merkle node as
+> well as the sponge.** 1792 (Li–Liu–Wang, 08-26) gives nonlinear subspace trails of
+> **2·E_c** partial rounds with **E_c = t − d in compression mode** [READ]. Our Merkle
+> INTERNAL node is `TruncatedPermutation<Perm16, 2, 8, 16>` — compression mode,
+> c=0, d=8, no feed-forward (`plonky3_prover.rs:71-72`, `stark_zk.rs:79-80`) — so
+> the trail **covers all 13 partial rounds** (window 17 > R_P = 13); leaves are
+> sponge-mode with c=8, E_c = 0. **Coverage is not cost.** 1792's own cost model
+> (Macaulay bound, ω=2, FGLM, Graeffe, p−2 degree cap), calibrated by reproducing
+> its **Table C.1 58/58 and Table C.2 21/21 with no fitted constant**, prices every
+> attack in its family at our point (p≈2^31, t=16, α=7, R_F=8) at **≥ 2^511.9**
+> [DERIVED] — the cheapest is the *basic* attack with n = d = 8 variables at the
+> p−2 cap; the trail models cost 2^816–2^878; ω=2.37 gives 2^606.6. That is +384
+> bits over 2^128 and +264 over the 2^248 generic preimage bound; **R_P = 20 leaves
+> the floor unchanged**, so 1792 is NOT an argument for `13→20`. The binding
+> quantity is d = 8 times the degree cap, not R_P. Caveats: a semi-regular
+> *estimate* the paper itself calls "a loose upper bound"; preimage/CICO only;
+> our point is inside the formulas, outside the tabulated envelope. ⚠
+> `hash-verdict.md` item 6 "our Merkle tree is sponge-mode" is true of leaves only.
+> `notes/nst-1792-at-our-node.md` + `notes/gsr-scripts/nst_1792.py`;
+> `notes/hash-delta-2026-09-04.md` §7.2 (its "six full rounds below 2^128" and
+> "t=10" readings are corrected there); `notes/eprint-delta-2026-09-04.md` §1.
 
 **Margin: 3 of 21 rounds — a CEILING** (a lower bound on adversarial reach;
 this lineage has only pushed it up). **Filed NEXT TO, never summed with, the
