@@ -11,6 +11,13 @@
 > `--ignored` test that would print the decider R1CS shape, unrun by anyone in
 > print. `lova-neo-rmfe-read.md` §2. The binary-field incompatibility and the
 > dual-mode kills below stand.
+> ⚠ 09-05, sharpened by `nightstream-read.md`: that ignored test prints the
+> full-history *audit* circuit, not the step; **the recursive step's cost IS a
+> Lean theorem on Nightstream's 09-04 branch: 27,537,894 R1CS rows**, ≈13.6 M of
+> them the in-circuit Poseidon2 digest of the running state — ≈17× Arc and
+> ≈2,750× Nova by their own intro figures. Still unpublished in print; now a
+> number with a theorem name behind it. Neo's marquee "low recursion overhead"
+> has a first measurement, and it is not low.
 
 ## ⚠ CORRECTION TO THE LANE'S HEADLINE, BEFORE ANYTHING ELSE
 

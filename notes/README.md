@@ -97,7 +97,9 @@ over any monic f, conductor 6561 proved; teeth on ZMod 4 and (ZMod 4)[X]/(X²+1)
 `galois-scripts/rmfe_toy.py`) — Lova read at source (q = 2^64, unstructured SIS, t = 330,
 16–47 MB/fold: the unstructured PQ fold is outside VERDICTS §3c's 4–50× band); Neo now has
 implementations (Nightstream) but still no verifier constraint count; RMFE toy verified,
-rates 0.279 at D = 2. `dual-mode-ideal-quotient-gate.md` (+ `ring-hash-scripts/ideal_quotient_gate.py`)
+rates 0.279 at D = 2. `nightstream-read.md` — Nightstream's Lean audited at main and tip: 5,621
+theorems, 0 sorry, 185 native_decide, a paper twin plus R1CS layout, no FS/BCS/depth theorem; the
+recursive step costs 27,537,894 rows by their own theorem; "both legs" stands. `dual-mode-ideal-quotient-gate.md` (+ `ring-hash-scripts/ideal_quotient_gate.py`)
 — the CRT-slot congruence gate on both full modes at the real modulus: both escape; σ₃₁ is the
 Frobenius; the τ=2 cost row is mis-counted. `descriptor-reader-scout.md` — what d55ef32/b297c7d
 deleted and why (quoted), the emit→consume map (the Stage-0 descriptor JSON has no consumer),

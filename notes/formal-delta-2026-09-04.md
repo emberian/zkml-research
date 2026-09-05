@@ -210,7 +210,7 @@ scheme OR folding scheme soundness Lean 2026" → `LFDT-Nightstream/Nightstream/
 (Lean 4 "cross-check" of SuperNeo/Neo: embeddings, Π_CCS/Π_RLC/Π_DEC, "Theorem 8 invertibility
 (axioms + constructive Goldilocks)", "parent-authority Fiat-Shamir reroute lemma"); 38 commits
 2026-02-25 → 2026-06-29, none in window; README calls it "the theorem-facing Lean implementation"
-with a `#guard`-driven test suite — a twin by our classification, axiom-bearing by its own README.
+with a `#guard`-driven test suite — a twin by our classification, axiom-bearing by its own README (⚠ 09-05 re-measured in `nightstream-read.md`: 0 `axiom` on main except one leaf `goldilocks_prime`, **185 `native_decide`**, Goldilocks primality under the `Field` instance; the 09-04 tip deletes the paper twin and ships 9,105 R1CS-layout theorems).
 Not previously in notes/neo-superneo-read.md. No depth-composition theorem anywhere else.
 `gh search code "stateRestoration OR state-restoration" --language Lean` → ∅.
 
