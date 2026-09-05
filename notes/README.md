@@ -79,6 +79,14 @@ is a new requirement for the EVM route; 1835 k-tree regime missing from BRIEF 3)
 58/58 + 21/21 with no fitted constant, then evaluated at our Merkle node: ≥ 2^511.9,
 R_P=20 changes nothing at the floor; the binding quantity is d=8 × the p−2 cap, not R_P.
 
+**Algebra candidates, 2026-09-04** (the joint-algebra question, `swarm/ASTRA-ALGEBRA-PROMPT.md`):
+`circle-aligned-vfhe.md` (+ `circle-scripts/circle_m31.py`) — M31's negacyclic NTT and the
+circle STARK share one twiddle table exactly, and it buys nothing: the BFV relation is
+coefficient-domain; cosmetic. `galois-ring-stack.md` (+ `galois-scripts/`) — Z/2^64 as one
+algebra is a trap: residue-field soundness (1/64 per challenge bit), local ring so challenge
+sets have size ≤ 2, T-function hashes (preimage kill test ran); by-products: q = 2^64−257 is
+load-bearing, rescale at power-of-two q is a shift.
+
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
 instrument; absence claims are only as good as those two lines.

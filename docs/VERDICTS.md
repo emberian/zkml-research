@@ -1452,6 +1452,42 @@ class and it recurred twice anyway.***
    ⚠ **But the "~3.4× migration" does NOT follow — see §1b.**
 2. **H1** — does the 61-bit design point survive a 2.4-bit margin? Now carries
    the whole joint-representation question.
+   > ⚑ **09-04: two "different algebra" candidates priced, both NEGATIVE, for the
+   > same reason — the relation we prove never touches the structure the algebra
+   > aligns.** (`swarm/ASTRA-ALGEBRA-PROMPT.md` states the question in full.)
+   > **Circle-aligned M31** (`notes/circle-aligned-vfhe.md` + `circle-scripts/`):
+   > the algebra holds exactly — over p = 2^31−1, X^N+1 splits into N/2 quadratics,
+   > R_p ≅ (F_{p²})^{N/2}, and the N-th roots of −1 ARE the circle STARK's
+   > standard-position coset, same twiddle table [DERIVED, script] — and it buys
+   > nothing countable: the deployed BFV family (98,304 equations) is
+   > coefficient-domain with no NTT, F_p^D and (F_{p²})^{N/2} are non-isomorphic
+   > F_p-algebras, and an in-circuit half-split transform costs 1.375–1.833× a
+   > fully split limb. As a plain KoalaBear-style limb, M31 prices worse (depth-2
+   > margin 6.95 bits, Poseidon2 forced to α=5 at 1.93× KoalaBear's cells, QM31 =
+   > 124.000 bits clearing neither bar). **Cosmetic; the twiddle-sharing sub-claim
+   > is a trap.** One off-axis asset: M31 is the largest 31-bit prime, so
+   > BabyBear/KoalaBear residues fit one M31 felt (a 4×31-bit tower, 0.67×
+   > bridged, margin 29.4 bits, but worse on §7.8's security gap at N=4096).
+   > **Galois-ring machine-word stack** Z/2^64 (`notes/galois-ring-stack.md` +
+   > `galois-scripts/`): **TRAP as one algebra.** Soundness is bought only by the
+   > residue field, so 63/64 of every challenge bit is wasted (GR(2^64,107) for
+   > 100 bits: 856-byte challenges, 11,449 u64 mults per challenge product vs 16
+   > for BabyBear-Ext4); Z_{2^k}[X]/(X^N+1) is local with residue field F_2, so no
+   > pairwise-invertible-difference set of size > 2 exists and every lattice
+   > PCS/fold/opening loses its challenge space (1/2 knowledge error per fold);
+   > every polynomial map over Z/2^k is a T-function — the kill test RAN: 10/10
+   > preimages of an 8-round Rivest-S-box hash over Z/2^32 in 160 evaluations.
+   > No lattice PCS over a power-of-two modulus is published (corpus+instrument in
+   > the note §8). The survivors are things we hold: TFHE/HPU-native ciphertexts
+   > and integer accumulators, binary towers as the family's s=1 corner, the
+   > decomposition Feistel as the hash escape. **Three by-products worth more
+   > than the candidate**: (i) the dual-mode's q = 2^64 − 257 is *load-bearing*
+   > against the T-function attack; (ii) at q = 2^64 exactly, the gadget-Feistel's
+   > "broken-by-default" γ = B^K − q defect vanishes; (iii) `Bfv/ZqSumcheck.lean:106`
+   > `agree_card_lt_of_proj` already has the generality a Galois ring needs.
+   > **The pattern**: alignment of transform structure is worth zero until the
+   > proved relation uses the transform — the same "measure the share first" law,
+   > now on the algebra axis.
 3. **Can we choose the FHE modulus?** Both Zama predecessors set q_FHE = the
    proof field; 2025/719 uses BabyBear. *Our "we don't control it" was never
    verified, and checking it is cheaper than building what depends on it.*
@@ -1491,6 +1527,11 @@ class and it recurred twice anyway.***
      a probabilistic binding; keeping per-limb-native tables costs ~4× that again.
      ⚑ **So the soundness argument and the field-choice lane converge: per-limb-
      native proving is what makes cross-limb binding expensive.**
+   - > 09-04 [DERIVED, `notes/galois-ring-stack.md` §6]: **at a power-of-two
+     > modulus the rescale ⌊t·x/Q⌉ is a bit shift** (q = 2^64, t = 2^20: a 44-bit
+     > shift), so **Hole B becomes a range check there** — TFHE/HPU-shaped, not BFV
+     > at prime q. Not a closure of the deployed hole; a statement of where it is
+     > cheap.
    - **Still open:** Hole B has an exhibit and no closure; there is **no ct×ct
      arithmetization in the tree** to fix (the hole is in the design); and `ε_chk`
      **cannot be instantiated limb-locally**, which is new information for item 6.

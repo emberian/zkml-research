@@ -410,6 +410,30 @@ question decidable is the structure an attacker reads.***
 and is **cost-dead on diffusion latency** while moving nothing on the binding
 leg — *"decidability-primary is a design LENS, not an OBJECTIVE."*
 
+## IV-l. ⚑ THE JOINT-ALGEBRA QUESTION — two candidates priced, both negative, same reason
+
+**2026-09-04, ember**: *"we haven't managed to find any kind of proof system that
+aligns zk/ivc, fhe, ml?"* — and then *"explore different algebras?"* The honest
+state: no single system; four objects (ciphertext ring element, commitment word,
+witness word, ML accumulator) in four algebras, every seam paid in proof cost;
+what we hold is one *object* (the dual-mode ring) that makes the commitment and
+the hash the same artifact, with the ML leg on top by sumcheck and the FHE leg
+by limb choice. The question is posed in full for a stronger reader in
+`swarm/ASTRA-ALGEBRA-PROMPT.md`.
+
+Two candidates from the unexplored part of the space were priced the same day
+(VERDICTS §7.2): **circle-aligned M31** (the FHE NTT and the circle FFT share one
+root-of-unity structure — exactly true, and worth nothing, because the BFV
+relation we prove is coefficient-domain and never runs an NTT; cosmetic) and the
+**machine-word Galois-ring stack** over Z/2^64 (trap: soundness comes only from
+the residue field, the ring is local so challenge sets collapse to size 2, and
+polynomial hashes are T-functions with bit-plane preimages — the kill test ran).
+⚑ **The shared reason is the campaign's own law on a new axis: alignment of
+structure is worth zero until the proved relation uses the structure.** The
+by-products were better than the candidates: the dual-mode's q = 2^64 − 257 is
+load-bearing against T-functions, and at a power-of-two modulus the BFV rescale
+is a shift, so Hole B is a range check in the TFHE/HPU world.
+
 ## V. Method, compressed to what survived
 
 Write the note first, incrementally. Read the binders, not the docstrings.
