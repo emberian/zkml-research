@@ -89,7 +89,11 @@ load-bearing, rescale at power-of-two q is a shift. `inert-cyclotomic-tower.md` 
 `galois-scripts/inert_tower.py`) — the Φ_{3⁸} tower dissolves the residue-field obstruction and
 dies on dense GR(2⁶⁴,162) proof messages (270–480× per mult); by-product: commit-to-the-ciphertext
 at 5.5×. `astra-algebra-read.md` — the adversarial read of the external model's answer: what it
-corrected in us, what we priced, what it got wrong. `lova-neo-rmfe-read.md` (+
+corrected in us, what we priced, what it got wrong. `exceptional-set-lean.md` — the
+Lean side (minidregg `Theory/ExceptionalSetLocalRing.lean`, `Theory/CyclotomicExceptionalSet.lean`):
+exceptional sets ⟺ injective residues over any local hom into a field, the ceiling |A| ≤ |residue
+field|, fixed-weight sets over (ZMod n)[X]/(f) for p | n | pᵉ via `AdjoinRoot`, counting C(deg f, h)
+over any monic f, conductor 6561 proved; teeth on ZMod 4 and (ZMod 4)[X]/(X²+1). `lova-neo-rmfe-read.md` (+
 `galois-scripts/rmfe_toy.py`) — Lova read at source (q = 2^64, unstructured SIS, t = 330,
 16–47 MB/fold: the unstructured PQ fold is outside VERDICTS §3c's 4–50× band); Neo now has
 implementations (Nightstream) but still no verifier constraint count; RMFE toy verified,
