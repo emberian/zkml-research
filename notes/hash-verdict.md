@@ -52,6 +52,12 @@ algebra; every headline Gröbner number was computed at 128–512-bit fields).
    permutation, and our Merkle tree is sponge-mode — any sponge-permutation
    swap costs zero formal work. (Compression-mode literature findings do
    not reach us.)
+   > ⚠ 2026-09-04: **false for internal nodes.** breadstuffs compresses Merkle
+   > internal nodes with `TruncatedPermutation<Perm16, 2, 8, 16>` (compression
+   > mode, c=0, d=8, no feed-forward; `plonky3_prover.rs:71-72`, `stark_zk.rs:79-80`);
+   > only leaves are sponge-mode (`PaddingFreeSponge<Perm16, 16, 8, 8>`).
+   > Compression-mode findings DO reach us: eprint 2026/1792's nonlinear-trail
+   > window at that node is 2·(t−d) = 16 ≥ R_P = 13. `hash-delta-2026-09-04.md` §1.2.
 
 ## Oddity on the record
 

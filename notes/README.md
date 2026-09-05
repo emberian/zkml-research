@@ -69,7 +69,12 @@ something it never said.
 2025/2110; Plonky3 labels our 130 "legacy"; nothing moves UDR 34 / JBR 73),
 `systems-delta-2026-09-04.md` (PR #1982 merged; leanVM v0.10 binary+BLAKE2s;
 BinarySpartan v4; Jolt to lattice PCS; Plonky3 v0.7.0 has GKR), `formal-delta-2026-09-04.md`
-(ArkLib 416→314 tainted, statements admitted not absent; better.codes; VCVio Merkle extractability).
+(ArkLib 416→314 tainted, statements admitted not absent; better.codes; VCVio Merkle extractability),
+`hash-delta-2026-09-04.md` (no hash verdict moves; 2026/1792's compression-mode trail
+window is 16 ≥ R_P=13 at our Merkle internal node — cost at our prime uncomputed;
+1760 is a rules artefact and a design rule), `eprint-delta-2026-09-04.md` (all 142
+ids 1719–1861 triaged: 19 relevant, 19 maybe; 1838 FS-on-program-generated-instances
+is a new requirement for the EVM route; 1835 k-tree regime missing from BRIEF 3).
 
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
