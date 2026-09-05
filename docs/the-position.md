@@ -115,7 +115,14 @@ you are proving against.
 floating point with an exact accumulator.** This:
 
 - keeps sumcheck/GKR, which the whole field has converged on;
-- **matches what tensor cores physically do**, so it is not a fidelity
+- **matches what tensor cores physically do** (⚠ 2026-09-04: **overstated.** TPUs
+  accumulate BF16 products in FP32 [READ, Google TPU architecture doc]; the A100
+  block-FMA window truncates products shifted below the block's max exponent.
+  Neither is an exact integer accumulator: `RN32(RN32(2^24 + 1) − 2^24) = 0`
+  with BF16-representable operands, where exact gives 1. The spec below is
+  *ours*, chosen for soundness; the executable numerical contract — kernel,
+  reduction order, rounding points — must be frozen and refined against, not
+  assumed to coincide with silicon. `notes/astra-algebra-read.md`), so it is not a fidelity
   compromise — arguably the reverse;
 - gives bf16-class dynamic range, and bf16 unary ops stay exact 2^16 tables;
 - fits a block accumulator in one BabyBear element;
