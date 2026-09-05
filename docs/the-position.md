@@ -122,7 +122,21 @@ floating point with an exact accumulator.** This:
   with BF16-representable operands, where exact gives 1. The spec below is
   *ours*, chosen for soundness; the executable numerical contract — kernel,
   reduction order, rounding points — must be frozen and refined against, not
-  assumed to coincide with silicon. `notes/astra-algebra-read.md`), so it is not a fidelity
+  assumed to coincide with silicon. `notes/astra-algebra-read.md`. ⚠ 09-05, sharper:
+  NVIDIA's PTX leaves accumulation order, rounding, and subnormal handling of the FP
+  tensor instructions UNSPECIFIED and cuBLAS reproducibility is conditional on a fixed
+  toolkit/hardware, so **no finite black-box experiment yields a universal hardware
+  semantics** — `ConformsOnTests` is not `ExactKernelRefinement`; arXiv 2512.07004's
+  H100 model (16-product blocks, extra alignment bits, denormalized products,
+  truncation, and *operand-factorization sensitivity*: 1.5·1.5 vs 1·2.25 can differ)
+  is the model class to test within. The contract that survives for bounded-integer
+  crypto kernels is order-INDEPENDENCE: `IntegerDotOrderIndependence` — if every
+  primitive product and admissible partial sum lies in the exact range, all allowed
+  reduction trees give the same integer (byte tiles: 256·255² < 2²⁴; or integer MMA
+  with a proved no-overflow bound, whose overflow PTX does specify). And a missing
+  axis for the hardware ledger: fixed/public operand (NTT, basis-conversion, public
+  commitment matrices admit preprocessing) vs two changing operands (ct×ct, private
+  weight updates do not — CROSS App. H says so).), so it is not a fidelity
   compromise — arguably the reverse;
 - gives bf16-class dynamic range, and bf16 unary ops stay exact 2^16 tables;
 - fits a block accumulator in one BabyBear element;
