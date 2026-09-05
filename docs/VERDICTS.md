@@ -316,7 +316,13 @@ at §4.3/§7**):
   > `lattirust/lova` (★2, 2025-04). R1CS is its future work. And **Neo now has
   > implementations** (LFDT-Nightstream/Nightstream, Lean + Rust, ★30, pushed
   > 09-04; two PoCs), eprint 2026/242 rev 3 (CRYPTO 2026); *"no published
-  > recursive-verifier constraint count"* still holds. `notes/lova-neo-rmfe-read.md`.
+  > recursive-verifier constraint count"* still holds in print — but Nightstream's
+  > 09-04 branch carries the step's cost as a Lean theorem: **27,537,894 rows**
+  > (≈2,750× Nova by their own figures; `notes/nightstream-read.md`). Nightstream's
+  > Lean (5,621 theorems on main) is a paper twin plus R1CS layout: 0 `sorry`,
+  > 185 `native_decide` (Goldilocks primality under the `Field` instance), no
+  > FS/BCS/Merkle/depth theorem, no numeric bound — "both legs" stands.
+  > `notes/lova-neo-rmfe-read.md`.
   class-unchanged; the genuinely new term is `Q·ε_MSIS` per absorbed
   commitment. **Neo's configuration is killed twice by the dual-mode**
   (ring-native absorb at 27.4 rows/elt; the κ=24 commit-not-absorb cap).
