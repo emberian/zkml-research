@@ -85,7 +85,11 @@ circle STARK share one twiddle table exactly, and it buys nothing: the BFV relat
 coefficient-domain; cosmetic. `galois-ring-stack.md` (+ `galois-scripts/`) — Z/2^64 as one
 algebra is a trap: residue-field soundness (1/64 per challenge bit), local ring so challenge
 sets have size ≤ 2, T-function hashes (preimage kill test ran); by-products: q = 2^64−257 is
-load-bearing, rescale at power-of-two q is a shift.
+load-bearing, rescale at power-of-two q is a shift. `lova-neo-rmfe-read.md` (+
+`galois-scripts/rmfe_toy.py`) — Lova read at source (q = 2^64, unstructured SIS, t = 330,
+16–47 MB/fold: the unstructured PQ fold is outside VERDICTS §3c's 4–50× band); Neo now has
+implementations (Nightstream) but still no verifier constraint count; RMFE toy verified,
+rates 0.279 at D = 2.
 
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its

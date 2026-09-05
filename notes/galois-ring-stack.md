@@ -131,7 +131,11 @@ no hit) — not read, not quotable beyond the snippet.
   vector mod 2^{k−j} into one mod 2^k at norm ×2^j — a filtration the estimator must be run against
   at β near q [INFERRED, un-run; it is the dual-mode note's O6 all over again].
 
-**Escapes [INFERRED, ours, unverified].** Repetition: κ ≈ 100–128 parallel challenges (×κ on every
+**Escapes [INFERRED, ours, unverified].** (⚠ 09-04: the repetition escape is
+verified and has a name — it is exactly Lova, eprint 2024/1964, t = 330 ternary
+repetitions at q = 2^64; and RMFE (2023/173) softens the r× witness blow-up to
+×3.6–8.9 on the nonlinear part without beating a base-ring witness.
+`lova-neo-rmfe-read.md`. The TRAP verdict stands.) Repetition: κ ≈ 100–128 parallel challenges (×κ on every
 opening). Extension: run the commitment over `GR(2^k, r)[X]/(X^N+1)` — residue field F_{2^r},
 exceptional sets of size 2^r, witness blown up r× (this is the SuperNeo R_K seam 1857 names, §5).
 Hash-based over GR: 2025/1767's fold divides by `2·diag(T)` (l.414: *"invertible in GR(p^s, r) if
