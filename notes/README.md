@@ -89,7 +89,12 @@ load-bearing, rescale at power-of-two q is a shift. `lova-neo-rmfe-read.md` (+
 `galois-scripts/rmfe_toy.py`) — Lova read at source (q = 2^64, unstructured SIS, t = 330,
 16–47 MB/fold: the unstructured PQ fold is outside VERDICTS §3c's 4–50× band); Neo now has
 implementations (Nightstream) but still no verifier constraint count; RMFE toy verified,
-rates 0.279 at D = 2.
+rates 0.279 at D = 2. `dual-mode-ideal-quotient-gate.md` (+ `ring-hash-scripts/ideal_quotient_gate.py`)
+— the CRT-slot congruence gate on both full modes at the real modulus: both escape; σ₃₁ is the
+Frobenius; the τ=2 cost row is mis-counted. `descriptor-reader-scout.md` — what d55ef32/b297c7d
+deleted and why (quoted), the emit→consume map (the Stage-0 descriptor JSON has no consumer),
+the lawful build brief (Lean witness fill + exhibits; generated-glue reader; p3 as throwaway
+oracle), and the blocker: `GateMleExt6.lean:246 CommittedTerminal` has no realizer.
 
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its

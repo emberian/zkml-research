@@ -5,6 +5,14 @@ lane died on credits after writing three scripts and no prose. This file is the
 prose. Every number below was produced by **re-running the scripts in this
 session**; the run outputs are quoted, not remembered.
 
+> ⚠ 2026-09-04: **the τ=2 σ-Poseidon row "107.8/elt (6.7×)" (§2.1/§4.1 tables) is
+> mis-counted.** σ₃₁ = σ_q is the Frobenius x ↦ x^q on R_q, so at τ=2 the σ-cost law's
+> ⌈(s−1)/2⌉ counts σ_{−5^j} as a new slot when it is the Frobenius class of 5^j. Under
+> the row model as written: pp=(σ₅,σ₋₁) → **125.8/elt (5.7×)**, pp=(σ₅,σ₂₅) →
+> **98.8/elt (7.3×)**; 107.8 corresponds to neither. Direction of the trilemma
+> unchanged. Also: 14 of 30 σ-Poseidon rounds are CRT-slot-respecting (measured), the
+> whole permutation is not. `dual-mode-ideal-quotient-gate.md` §3–§4.
+
 > ⚑ **BUILD IT — delegation is dead** (§5.2, and `ring-hash-build-verdict.md`).
 > Delegation pays only when the hash is expensive *in-circuit*; Poseidon-over-R_q
 > is 856 constraints per permutation, so **2026/1127's bill is transcript VOLUME

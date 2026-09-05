@@ -1504,6 +1504,27 @@ class and it recurred twice anyway.***
    verified, and checking it is cheaper than building what depends on it.*
 4. **τ for the ring hash** — τ=2 leads (challenge space kills τ=1, integral
    cryptanalysis punishes τ=4); one named experiment settles it.
+   > ⚑ **09-04: the ideal-quotient gate ran on the real modulus** — an elementary
+   > hazard named by an external reviewer that belongs *before* indifferentiability:
+   > any map built only from ring-polynomial operations respects x ≡ y (mod I) for
+   > every ideal I, so on R_q ≅ (F_{q²})^8 it acts slot-by-slot and is distinguished
+   > from random with advantage ≈ 1 by one congruent pair. Measured
+   > (`notes/ring-hash-scripts/ideal_quotient_gate.py`, 82 s, all eight CRT ideals,
+   > baseline 2^−128/element): **both full-mode candidates escape as whole
+   > permutations** (rate 0) — gadget-Feistel via `G⁻¹` (rate 0 alone), σ-Poseidon via
+   > the σ₅/σ₂₅/σ₁₇ layers. **But σ₃₁ = σ_q is literally the Frobenius x ↦ x^q on
+   > R_q** — ring-polynomial — so **14 of 30 σ-Poseidon rounds are slot-respecting**
+   > and rounds 8–11 compose to a slot-diagonal 4-round permutation (the attack
+   > lane's §3b defect, reproduced by a different statistic; σ-off control: rate 1
+   > through all 30 rounds). Cost consequence: the ⌈(s−1)/2⌉ σ-cost law counted
+   > σ_{−5^j} as a new slot; at τ=2 it is the Frobenius class of 5^j, so the quoted
+   > **τ=2 row "107.8/elt (6.7×)" corresponds to no valid choice** — pp=(σ₅,σ₋₁)
+   > gives 125.8/elt (5.7×), pp=(σ₅,σ₂₅) gives 98.8/elt (7.3×); the trilemma's
+   > direction is unchanged. Linear mode is slot-respecting in the planes by design
+   > and leaks nothing into full mode (`G⁻¹` precedes the shared linear map in both).
+   > The gate is now a standing item (`forcodex/08-ATTACK-BRIEFS.md` BRIEF 3) with a
+   > Lean-shaped Prop: `∀ i, ∃ x y, x ≡ y [mod I_i] ∧ F x ≢ F y [mod I_i]`, witness
+   > from the script. `notes/dual-mode-ideal-quotient-gate.md`.
 5. ⚑ **Cross-limb binding — EXHIBITED 2026-08-14, and it was TWO holes under one
    name.** `notes/cross-limb-binding.md`; `breadstuffs` `5b653ba5d`
    (`metatheory/Bfv/CrossLimb.lean`, `#assert_namespace_axioms Bfv` 90 → **113**).
