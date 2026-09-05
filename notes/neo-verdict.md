@@ -2,6 +2,16 @@
 
 2026-08-14. Full read at `notes/neo-superneo-read.md`.
 
+> ⚠ 2026-09-04: **"no implementation" is dead** — LFDT-Nightstream/Nightstream
+> (Lean 17 MB + Rust 6 MB, ★30, pushed 09-04: SuperNeo Π_CCS→Π_RLC→Π_DEC +
+> HyperNova-style IVC + Spartan2 decider, "research software"), moven0831/superneo
+> (Rust PoC), a Swift/Metal PoC; eprint 2026/242 is at rev 3 (CRYPTO 2026). It was
+> already false on 08-14 (Nightstream dates from 2025-08). **"No published
+> constraint count for its own recursive verifier" survives** — Nightstream has an
+> `--ignored` test that would print the decider R1CS shape, unrun by anyone in
+> print. `lova-neo-rmfe-read.md` §2. The binary-field incompatibility and the
+> dual-mode kills below stand.
+
 ## ⚠ CORRECTION TO THE LANE'S HEADLINE, BEFORE ANYTHING ELSE
 
 The lane concluded **"there is no BinarySpartan — the premise is false"** after

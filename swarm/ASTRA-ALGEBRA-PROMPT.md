@@ -117,8 +117,11 @@ frontier of towers instead.
 - 61-bit joint prime: wins both sides, costs one level, margin open.
 - Binary towers + additive BaseFold + ring switching: landed; no lattice norms,
   so no pay-per-bit folding; verification stays expensive under recursion.
-- Neo/SuperNeo: unscoreable (no implementation, no verifier constraint count),
-  killed at our dual-mode parameters twice.
+- Neo/SuperNeo: implementations exist (Nightstream, Lean + Rust; two PoCs) but
+  no published constraint count for its own recursive verifier; killed at our
+  dual-mode parameters twice; incompatible with characteristic 2. Lova
+  (2024/1964, unstructured SIS at q = 2^64, t = 330 ternary repetitions,
+  16–47 MB per fold) is the known power-of-two folding baseline.
 - Circle STARK over M31 (StarkWare S-two): fastest CPU prover; formalized by
   Avigad's group; not examined by us for FHE alignment.
 - Galois rings GR(2^k, d), Z/2^k arithmetic with sumcheck over exceptional sets

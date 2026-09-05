@@ -306,6 +306,17 @@ at §4.3/§7**):
   **dual-mode MSIS commitment** ≈ **4–7×10³ R_q rows/step ≈ 4–8% of the
   92,396-row FS bill it rides beside.** Ordering: **DL fold 1× < PQ fold
   ~4–50× < Merkle wrap ~10³×.** γ-grinding under folding: negligible,
+  > ⚑ 09-04: **that "PQ fold 4–50×" is the STRUCTURED-MSIS band only.** Lova
+  > (eprint 2024/1964, read at source: q = 2^64 literally, unstructured Ajtai
+  > under plain SIS, ternary challenge matrices whose extractor never inverts 2 —
+  > the Lenstra-constant-2 escape — at the price of (2/3)^t soundness, t = 330)
+  > folds at **16–47 MB and 702–3,244 s per step, verifier ≥ 7.4·10⁶ Z_{2^64}
+  > constraints** [DERIVED from its p.20 formula] ≈ **740× Nova / 0.78× our Merkle
+  > wrap by constraint count** — no clock conversion exists. Rust at
+  > `lattirust/lova` (★2, 2025-04). R1CS is its future work. And **Neo now has
+  > implementations** (LFDT-Nightstream/Nightstream, Lean + Rust, ★30, pushed
+  > 09-04; two PoCs), eprint 2026/242 rev 3 (CRYPTO 2026); *"no published
+  > recursive-verifier constraint count"* still holds. `notes/lova-neo-rmfe-read.md`.
   class-unchanged; the genuinely new term is `Q·ε_MSIS` per absorbed
   commitment. **Neo's configuration is killed twice by the dual-mode**
   (ring-native absorb at 27.4 rows/elt; the κ=24 commit-not-absorb cap).
