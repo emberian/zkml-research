@@ -1499,6 +1499,22 @@ class and it recurred twice anyway.***
    > **The pattern**: alignment of transform structure is worth zero until the
    > proved relation uses the transform — the same "measure the share first" law,
    > now on the algebra axis.
+   > ⚑ **09-05, the third candidate — the inert Φ_{3⁸} cyclotomic tower** (proposed
+   > by an external reader; `notes/inert-cyclotomic-tower.md` + `galois-scripts/
+   > inert_tower.py`, exhaustive at conductors 27/81): the Galois-ring obstruction
+   > IS dissolved — residue field F_{2^4374}, 2^149 pairwise-unit challenges of norm
+   > 16 inside the FHE ring itself — and the proof dies on dense messages: every
+   > non-challenge element of GR(2⁶⁴,162) is 1,296 B and 4,323 u64 mults per product
+   > vs 16 B / 9–16 for BabyBear-Ext4, **270–480×**, bilinear floor 20×. Folding
+   > works with a non-dividing extractor (expansion exactly 2h, no-wrap 2^42−1
+   > folds); **short inverses provably do not exist** (AL21: subtractive sets over
+   > Z[ζ_{p^ℓ}] have size ≤ p = 3). FHE at q=2⁶⁴ there is standard but **depth 1**
+   > (deployed 2). **TRAP as single substrate.** By-products: commit-to-the-
+   > ciphertext (Ajtai over the FHE ring; ct×ct identity checkable at 5.5× the cost
+   > of performing it, vs ≥618× on the deployed route — the one line worth a
+   > follow-up); slack 3 is a unit mod 2⁶⁴; a priced module-BKZ bill (Δβ ≈ −17,
+   > −4.9 bits) for §7's lattice item. Consolidated read of the external answer:
+   > `notes/astra-algebra-read.md`.
 3. **Can we choose the FHE modulus?** Both Zama predecessors set q_FHE = the
    proof field; 2025/719 uses BabyBear. *Our "we don't control it" was never
    verified, and checking it is cheaper than building what depends on it.*
