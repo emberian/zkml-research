@@ -108,7 +108,9 @@ oracle), and the blocker: `GateMleExt6.lean:246 CommittedTerminal` has no realiz
 `unit-witness-census.md` — every soundness/knowledge/extraction declaration in Selvage classified K/S/U/H
 with consumers: the genuine extractors are never wired into any `RbrKnowledgeSoundness.extract`, the deployed
 2⁻⁵⁵ sums only (S)/CR bounds, the IVC tower's `KnowledgeSound` has identity extractors and zero consumers;
-top-3 upgrades named with exact statement changes.
+top-3 upgrades named with exact statement changes. `fold-extractor-upgrade.md` — upgrade 3 resolved
+the other way: FoldRoundBound is false for every extractor (zero-absorb attack, proved at toy and
+production); the carried-witness reduction has error 0 at the cost of succinctness and half the capacity.
 
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its

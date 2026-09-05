@@ -408,6 +408,23 @@ audits, no `sorryAx`)**:
 - Honest label: `MsisHardEx` is *nonexistence* — proved at the toy, expected
   false at production sizes by pigeonhole; the computational reading is the
   named residual `[FOLD-msis]`.
+  > ⚑⚑ **09-05: `FoldRoundBound … extractFn ε` is FALSE for every extractor below
+  > ε = 1** (`Selvage/AccRbrFoldExtract.lean`, 9 pins): the zero-absorb attack —
+  > genesis `commit Z` with `b₀ < ‖Z‖ ≤ b₀ + ρB`, absorb `π = 0`; `Z` is in the
+  > extended state, the prefix state is empty, binding pins any `b₀`-short opening
+  > to `Z`, the round event fires at every challenge. Discharged at the toy AND at
+  > the production dual-mode parameters. So **the four `extractFn`-parametric
+  > callers (`foldRbrOfRoundBound`, `fold_depth_composition`, `fold_fs_sound`,
+  > `fold_fs_price_msis`) are vacuous below error T at any binding instance** —
+  > `[ACC-rbr-fold-resid](a)`'s "per-absorbed-commitment ε_MSIS home" does not
+  > exist in the single-transcript model. What exists: the **carried-witness
+  > reduction** (running opening + the T absorbed openings; linear un-fold on a
+  > descending budget; source relation relaxed by 2T·ρB) with **error 0
+  > unconditionally** — depth composition and FS transport at error 0, no extractor
+  > parameter, identity extractor refuted at the toy. Price: the decider checks
+  > T+1 openings (knowledge soundness costs exactly the compression; rewinding buys
+  > it back and this tree has none), and **capacity halves: T ≤ 2^46 − 1**.
+  > `notes/fold-extractor-upgrade.md`; `unit-witness-census.md` §7 item 3.
 
 ## 3d. EVM DECOMPILATION — real, unclaimed at the right granularity, staged
 
