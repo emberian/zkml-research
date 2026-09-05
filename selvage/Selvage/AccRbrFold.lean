@@ -49,7 +49,7 @@ at Merkle roots — roots do not add — and this file states it.
   one, single-transcript, no rewinding — is the real content and is entered
   STATEMENT-FIRST (`FoldRoundBound`), with `foldRbrOfRoundBound` showing it is
   the ONLY missing piece, `foldRoundBound_one` its satisfiability, and
-  `foldRoundBound_zero_id_false` its teeth. Lattice folding genuinely extracts
+  `ToyFold.toy_roundBound_zero_id_false` its teeth. Lattice folding genuinely extracts
   from 2–3 transcripts with RELAXED openings (slack `ρ − ρ'`); pricing the
   single-transcript event is `[ACC-rbr-fold-resid]`(a) — the exact additive-
   alphabet analog of `[ACC-rbr-bcs-shifted-resid]`(a).
@@ -558,7 +558,7 @@ alphabet analog of `[ACC-rbr-bcs-shifted-resid]`(a).
 
 ATLAS keystone fields:
 * satisfiable: `foldRoundBound_one` — every instance at `εfold ≡ 1`.
-* teeth: `ToyFold.foldRoundBound_zero_id_false` — at the toy instance,
+* teeth: `ToyFold.toy_roundBound_zero_id_false` — at the toy instance,
   `εfold ≡ 0` with the identity extractor is REFUTED (the honest one-fold
   transcript inhabits the round event at every nonzero challenge).
 * premise-inhabitation: `foldKState` is a genuine Def-4.1 instance (three
