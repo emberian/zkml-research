@@ -22,6 +22,12 @@ Every absence claim carries corpus + instrument (§6).
 
 ## 0. VERDICT
 
+> ⚠ 2026-09-04, later the same day: the named computation ran
+> (`nst-1792-at-our-node.md`). VERDICTS §5h's sentence **holds for 1792 by
+> ≥ 264 bits** on the Merkle node; the "six full rounds below 2^128" and the
+> "R_P 13→20" readings below are withdrawn (see the note at §7.2). The
+> compression-mode identification stands.
+
 **No hash verdict moves on what has been read. Four new items are real; one of them names
 a computation we have not run — and after the full read of 2026/1792 (§7.2) that computation
 is the one thing standing between VERDICTS §5h's sponge sentence and a counter-instance on
@@ -476,6 +482,17 @@ qualifier; the pause line) as in §1.3; one zero-cost gate item — *fix the sel
 (constants before matrix, or both from one seed) and say so* — for any primitive we author.
 
 ### 7.2 ⚑ eprint 2026/1792 — read in full, and the identification in §1.2 is confirmed at source
+
+> ⚠ **Corrected 2026-09-04 by the computation this section asked for**
+> (`nst-1792-at-our-node.md`, `gsr-scripts/nst_1792.py`, Table C.1 58/58 and C.2
+> 21/21 reproduced). Two readings below are wrong and are kept as written:
+> (i) Table C.1's entries `2E_c+1` are the model's *trail floor*, at which the cost
+> is already ≥ 2^128 in 55/58 cells (≥ 2^164.9 for every t ≥ 8) — "six full rounds
+> alone sit below 2^128" does not follow; (ii) "t=10, p≈2^64: E_c=2 → 9" is a
+> column misalignment (row a's first entry is under t=12). At our node the cheapest
+> model is 2^511.9 at ω=2, R_P=20 changes nothing at the floor, and the
+> "independent argument for R_P 13→20" does not survive. The structural
+> identification (trail covers all 13 partial rounds) stands.
 
 **`E_c` is exactly what §1.2 assumed** `[READ, §4.1 p.24]`: *"we take `min{c, d} = d` without
 loss of generality. Then `E_c = r − min{c, d} = r − d = t − (c + d)`. In compression mode, one
