@@ -95,6 +95,10 @@ Frobenius; the τ=2 cost row is mis-counted. `descriptor-reader-scout.md` — wh
 deleted and why (quoted), the emit→consume map (the Stage-0 descriptor JSON has no consumer),
 the lawful build brief (Lean witness fill + exhibits; generated-glue reader; p3 as throwaway
 oracle), and the blocker: `GateMleExt6.lean:246 CommittedTerminal` has no realizer.
+`unit-witness-census.md` — every soundness/knowledge/extraction declaration in Selvage classified K/S/U/H
+with consumers: the genuine extractors are never wired into any `RbrKnowledgeSoundness.extract`, the deployed
+2⁻⁵⁵ sums only (S)/CR bounds, the IVC tower's `KnowledgeSound` has identity extractors and zero consumers;
+top-3 upgrades named with exact statement changes.
 
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
