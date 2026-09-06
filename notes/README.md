@@ -121,7 +121,10 @@ chain dies at hop two; delegating PCE with closure needs general-circuit constra
 says so); the extractor warning confirmed and sharpened; DARK-TRAINING §6 reclassified to tier-C custody.
 `private-trace-lemma.md` — minidregg `Theory/PrivateTrace.lean`: trace privacy from a preserved relation
 (no axioms), the byte toy honest (equal HIGH bit), +1 as the preservation falsifier, recovery in 8 decided
-by kernel and 7 insufficient for every policy.
+by kernel and 7 insufficient for every policy. `release-gate-routing.md` — minidregg
+`Assurance/ReleaseGateRouting.lean`: an unbound release gate determines the state; a binding gate
+releases only public information; the kernel's Settlement is one by type; at Stage 0 the descriptor
+forces Z and the receipt is bound evidence (binds, does not hide).
 
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
