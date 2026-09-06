@@ -114,3 +114,36 @@
 [EXECUTED] These two new modules have 42 exact standard-axiom pins and passed the focused check, independent adversarial compilation, and the complete 307-pin integration with all previously finished modules. Details, source hashes, failure history, patch prerequisites and commands are in `formal/randomness_composition/generic/README.md`. Independent records are `experiments/adversarial_review/lean_contextual_gate_01.json` and `lean_ema_adaptive_01.json`. The original entropy and release-selection limitations above remain unchanged.
 
 [DERIVED / OPEN] The Stage0 and proposed EMA query encodings are proved disjoint because their decoded word lengths are 4131 and 153. Their disjoint sum therefore embeds injectively into one byte-address space. This does not yet prove a mixed-program ROM price: the remaining target is a distribution-preserving, cache-preserving projection of one mixed adaptive schedule into each homogeneous query game, with the original global query count retained. No independent-oracle assumption or free prior correlated transcript is supplied. Same-width future descriptors need additional program/descriptor namespace binding. The generic README records the precise proposed projection and conditional two-program rate; it does not claim that rate has been proved.
+
+## One-cache composition for actual Stage0 and EMA, 2026-09-06
+
+[DERIVED, kernel checked] The new `formal/randomness_composition/mixed/` patch
+closes a precise part of the previously open mixed-program gap: a two-phase
+controller, Stage0 first and EMA adaptive to its full response history, has an
+actual shared-cache bound
+`((t0+14)*4160+(t1+9)*161)/2013265921^6` after exactly `t0+t1` query entries.
+`ResidentMixedPhases.one_global_coin_receipt_bound` transports one positional
+coin vector and the same cache to the existing descriptor-specific soundness
+bounds; it does not assume independently provided oracles or charge the global
+budget twice. The EMA radius remains explicit `0 < delta < 1/153`.
+
+[DERIVED, kernel checked] The same two concrete full-word receipts inhabit both
+wrappers under the actual shared zero-sampled 14+9-query log, with program tags
+0 and 1. The actual byte encoder's injection transports cache answers; a
+namespace omission and an empty EMA log are the failed-premise siblings.
+The 29 exact guarded pins, proposed patch, all elaboration failures, frozen
+hashes, and commands are retained in that directory. Its README gives exact
+statement locations and scope.
+
+[EXECUTED] `experiments/randomness_composition/mixed/audit.py` exhausts 64 raw
+six-bit tapes and checks 384 answer transports. The tagged experiment's union
+event has probability 3/4 and conditional second-event probability 1/2 on every
+first-phase tape. Removing tags yields 40 pathwise mismatches and union
+probability 1. This is a cache model, not an encryption implementation.
+
+[OPEN] Arbitrary interleaving remains outside the theorem: later EMA answers
+cannot influence the already fixed Stage0 receipt-selection function in this
+controller. The next exact target is a global interleaving simulator with
+fixed foreign-cache coin tapes, local query budgets, and receipt-event transport.
+Concrete hash sampling, QROM, private words, correlated preloaded service
+history, and runtime before-publication ordering remain separate.

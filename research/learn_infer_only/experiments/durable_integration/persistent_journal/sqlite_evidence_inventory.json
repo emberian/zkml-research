@@ -1,0 +1,2970 @@
+{
+  "raw_files": [
+    {
+      "path": "results/run_001/after_commit_before_publication/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/after_commit_before_publication/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "f678327f41d7dafaaa32bb192f38fbf93f828ba15f1f9b8ec1012f505ab847dc"
+    },
+    {
+      "path": "results/run_001/after_commit_before_publication/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "3f5b91899a17900664fc14c822d150dce4074be701768071ddb4b39f5cc1d593"
+    },
+    {
+      "path": "results/run_001/after_commit_before_publication/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/after_commit_before_publication/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "d360b742818f37592ad55dba58db087e50edbd6b60700413a361cb6e506446de"
+    },
+    {
+      "path": "results/run_001/after_commit_before_publication/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "ee27ccb2bb6b0899d4f85a9550e2d7d140488fe141adbfa733b929afc6888fc2"
+    },
+    {
+      "path": "results/run_001/after_install_before_commit/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/after_install_before_commit/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "49906764cde456cb438c1b4ce9f5a3e405623e19cf9fae361332f8d9a5a7e4c9"
+    },
+    {
+      "path": "results/run_001/after_install_before_commit/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "d58bc221ffbdfc6b7831888f6d6658a0941eff2739732bc2b2962b7e0f737b5f"
+    },
+    {
+      "path": "results/run_001/after_install_before_commit/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/after_install_before_commit/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "e9ad1c0aace962adf70fd11f259ad79825cec0c56e7c8ea9c46637c4f48f8ae8"
+    },
+    {
+      "path": "results/run_001/after_install_before_commit/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "8f542f214cf10cfefa6449bb90a3b5aa7e6b12366ed7fd9160f78d5ecdf4a027"
+    },
+    {
+      "path": "results/run_001/after_publication_before_client_ack/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/after_publication_before_client_ack/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7dc2581143aafce8b055f76e0866371d2cc45fa03092c7403610a774895f0017"
+    },
+    {
+      "path": "results/run_001/after_publication_before_client_ack/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "63de5ab8ff80c15825cdfc141a50f5ea9ce49a8ead4fd01ebead518b101ffa33"
+    },
+    {
+      "path": "results/run_001/after_publication_before_client_ack/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/after_publication_before_client_ack/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "e97a629942e416266db9c5812ce32973533ea02bb25a145d23199be37cc62f53"
+    },
+    {
+      "path": "results/run_001/after_publication_before_client_ack/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "c04dfb451f15b9865196682dc0fd502bb823888686589493bc1a471609e84aaa"
+    },
+    {
+      "path": "results/run_001/authority_rollback_negative_control/authority/genesis_backup.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "16c648c1524098e7ca147cf89220547d6386ca3757321eb48e878dcf5176ea9f"
+    },
+    {
+      "path": "results/run_001/authority_rollback_negative_control/authority/journal.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "16c648c1524098e7ca147cf89220547d6386ca3757321eb48e878dcf5176ea9f"
+    },
+    {
+      "path": "results/run_001/authority_rollback_negative_control/authority/journal.sqlite3-wal",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/run_001/authority_rollback_negative_control/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/authority_rollback_negative_control/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "f92ab0accd4e9559892cc48cfc16c76479f2f11187279d1ab36e03347b1714da"
+    },
+    {
+      "path": "results/run_001/authority_rollback_negative_control/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "e778e6c8846d34e425a1fd551f147a64d80a776acd375428416ad14fdfd95ce9"
+    },
+    {
+      "path": "results/run_001/before_reservation/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/before_reservation/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "8d10ba2fc57124ef1b8177fb96f6e192c34d1a36a185f2609718ad0421ad97b9"
+    },
+    {
+      "path": "results/run_001/before_reservation/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "c58dea0139e0e212ad788c27fbfad72384c08c14e79a5ab05bea36a1f5d1fed6"
+    },
+    {
+      "path": "results/run_001/before_reservation/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/before_reservation/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "bd2f9688770aa8295ab47131416c9ca3d7f6336ec2ef544e339d3c4f3f9b9ab3"
+    },
+    {
+      "path": "results/run_001/before_reservation/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "2e99b60d82bfaf7633fc937ea8df84b94a8a9484c57b1fa582f2e52036e3c35d"
+    },
+    {
+      "path": "results/run_001/host_restore_only/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/host_restore_only/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "e54f27d9dfc846d7a51e1988d2eb845a47546162b6065d2850d198d217510cdb"
+    },
+    {
+      "path": "results/run_001/host_restore_only/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "048c70b7fa8f8eabbea57d433f201e45f56a988f9022daed3d50d8519c9e7091"
+    },
+    {
+      "path": "results/run_001/host_restore_only/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/host_restore_only/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "dc6a5ec175a35b2863606456a63bce34bec491707557c557a93a34328511688e"
+    },
+    {
+      "path": "results/run_001/host_restore_only/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "31458e2a34d739314e222eeed39901ba70953e88670b708db22ff0006438ac2e"
+    },
+    {
+      "path": "results/run_001/retry_and_exact_packet/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/retry_and_exact_packet/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "fbfcad23bc12267f3c6f6c2c4d578eb7a013f83ad58f0c4980fa68f1ab2c533e"
+    },
+    {
+      "path": "results/run_001/retry_and_exact_packet/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "c84d1fca7ab3b9617036eb5b0169014ef24a4ca7c42ba6c2f61a736382c6d7ac"
+    },
+    {
+      "path": "results/run_001/retry_and_exact_packet/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/retry_and_exact_packet/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "4665794b10faf242617b7050cd40a0e627eba8f9752e56ade711d278e188c3f8"
+    },
+    {
+      "path": "results/run_001/retry_and_exact_packet/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "b4ac7c186512b52f00a1b5be36bb7bce48f86e8b79bd964acf452a81253630ca"
+    },
+    {
+      "path": "results/run_001/same_parent_race_00/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_00/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "814088810097d2545afa6a574acc079fc9ed386d2e353d108c3a76033982e2cb"
+    },
+    {
+      "path": "results/run_001/same_parent_race_00/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "839a935072547833dc3a34183d0b8a678068d241550e1e6d31041907ce2bf404"
+    },
+    {
+      "path": "results/run_001/same_parent_race_00/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_00/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "891ffb1f99df023d265cfdf629035cb7d30072ee469d7771df1f4f5a0bcf606c"
+    },
+    {
+      "path": "results/run_001/same_parent_race_00/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "665403ae45ddb6ba4567443c39189a6f3066971b664141e8de93a0dccf183685"
+    },
+    {
+      "path": "results/run_001/same_parent_race_01/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_01/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7706f88db029a5aa2dfac141825dd6bc8c4938b9fa8d6a75311b8860eb734043"
+    },
+    {
+      "path": "results/run_001/same_parent_race_01/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "f579cc7d9813d9f1745a40e00fddddf9098dca8c73052499ae3d5750f0c7fe96"
+    },
+    {
+      "path": "results/run_001/same_parent_race_01/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_01/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "94bea8e6c9a30305871f63351ff5280385cde3bd0ea86c687e8f3b311433db8b"
+    },
+    {
+      "path": "results/run_001/same_parent_race_01/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "749340e9eafffd578f190be126fba02bf783ae942e941a31c7b62be0dcb6c4b7"
+    },
+    {
+      "path": "results/run_001/same_parent_race_02/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_02/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0d2e52616d5af8416acdba1f516e3c3b167675be887e466952293422e879d303"
+    },
+    {
+      "path": "results/run_001/same_parent_race_02/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "3990ab21025f374156d413c493ce3efaabc8b6ba4078c8f61389382563b30658"
+    },
+    {
+      "path": "results/run_001/same_parent_race_02/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_02/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "03dfb581d5074ebb4064ba7d579bb8b4b263c09414126eb4cc430317632f8045"
+    },
+    {
+      "path": "results/run_001/same_parent_race_02/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "c05088a16b2dd65d072eb20f570bd1b3349481f4ea0a0c262e9f60772aaca4d0"
+    },
+    {
+      "path": "results/run_001/same_parent_race_03/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_03/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "03b303acf294ed9d049665540c1e223d840fbe68007f369857c4d583973adec4"
+    },
+    {
+      "path": "results/run_001/same_parent_race_03/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "b60505fc929f967d8de7d55fe6dc5eef0ca83f7ec37a82c8b43bd9f7a5687703"
+    },
+    {
+      "path": "results/run_001/same_parent_race_03/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_03/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0b0ebdfcfffd7bd4b33e6665cded033e1672759ab1f991f6efb6e8417edee39f"
+    },
+    {
+      "path": "results/run_001/same_parent_race_03/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "1918922750147ba8b216f67fc32203633ed5a2549d95f6b5b73666c380caf692"
+    },
+    {
+      "path": "results/run_001/same_parent_race_04/authority/journal.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "d63e02355a1afc629441b4dcbe30f9292414723fbc9e172ceab1511765f7d2ed"
+    },
+    {
+      "path": "results/run_001/same_parent_race_04/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+    },
+    {
+      "path": "results/run_001/same_parent_race_04/authority/journal.sqlite3-wal",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/run_001/same_parent_race_04/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_04/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a4598bd92aaa23924a52b0114991c3bc1bf0e09d1be27aeae0cd45b0da3d0b29"
+    },
+    {
+      "path": "results/run_001/same_parent_race_04/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "6d24f95c02e06f44700d4318db7ab008051dcd7cc4f730cb2f619a4ff77143e2"
+    },
+    {
+      "path": "results/run_001/same_parent_race_05/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_05/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "c3f1d6e210015bebe1443122b899c4ef6dbf6807a4835af21dfa07573de33ec3"
+    },
+    {
+      "path": "results/run_001/same_parent_race_05/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "e37f56e67e08301000e8e530384274194e862b57ee7b9c0ce4f27c2e7652a273"
+    },
+    {
+      "path": "results/run_001/same_parent_race_05/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_05/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "f990ef9f96ba9c97b2f9dbd77275ed63e745f7958fa0e56ae4839bb9d5be2ce5"
+    },
+    {
+      "path": "results/run_001/same_parent_race_05/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "b74344aaa8a8b6854cb8a1a890562b747c6913645fa84e7750c314f1b7835206"
+    },
+    {
+      "path": "results/run_001/same_parent_race_06/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_06/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "9f777decc720b867b8aca946d7b8949b7cf8e286f19ff215001aa02eeef353b8"
+    },
+    {
+      "path": "results/run_001/same_parent_race_06/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "34d20ff11ae9f57b29dfc410f8ae66d21b7a4abe7e30f1c3823fd3239761ee27"
+    },
+    {
+      "path": "results/run_001/same_parent_race_06/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_06/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "e5a0d499c2f89df8818da5c320f3c6146f47c1f04eaa97866ca83f74664d1477"
+    },
+    {
+      "path": "results/run_001/same_parent_race_06/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "da9a922590bd4cb5eb44f42d187468cef3a75b50977c9af25b614ba28e723ac0"
+    },
+    {
+      "path": "results/run_001/same_parent_race_07/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_07/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "2a8e1b6a19a2741e4be5583f4e1fafe769f71835e15a77e837836497e53a9b8d"
+    },
+    {
+      "path": "results/run_001/same_parent_race_07/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "738c80d989b2da36006a5ddffa3103a6366dfa77caf55a95aad86385a87a5a4d"
+    },
+    {
+      "path": "results/run_001/same_parent_race_07/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_07/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "2040e2dbddce27589171341b90edeaebfffac93d74f059c925db45eb5a2e63ef"
+    },
+    {
+      "path": "results/run_001/same_parent_race_07/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "b14b8d4714c3ae0f3f1df6c012fc487cbf4f425253899807b6c7c4900da3791c"
+    },
+    {
+      "path": "results/run_001/same_parent_race_08/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_08/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7206e9129f08d9aecc579c380a7e97ddad09342b755de5b8a2e7996205616853"
+    },
+    {
+      "path": "results/run_001/same_parent_race_08/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "92fe56ff6d2affe3a56ee9045a911a4dc1c32b6fff9b99b73bbb1d8f334f1858"
+    },
+    {
+      "path": "results/run_001/same_parent_race_08/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_08/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "80bc601ebb712201c2c40513288f8f8443135ef6dac9eb1bcdc61b463755fa60"
+    },
+    {
+      "path": "results/run_001/same_parent_race_08/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "605dcc5f8efbd57a7f59cf5000040d0c3340a22b74e85a5e72b958e8842a7760"
+    },
+    {
+      "path": "results/run_001/same_parent_race_09/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_09/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7b76398672c27892b45daeb42bc6aa5de50f0f145d6c6e34750ee67fffb55783"
+    },
+    {
+      "path": "results/run_001/same_parent_race_09/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "76e2efce94f26eff14db4a0d6cc8aff2ba9edc982aa4fc338ac8ef5313e4c9b9"
+    },
+    {
+      "path": "results/run_001/same_parent_race_09/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_09/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "4714927c39aa3b14d7f6b4658a20a8e5af620001b0a21428db62fa9370bb1350"
+    },
+    {
+      "path": "results/run_001/same_parent_race_09/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "571af20b0ec73d722866cef5d0c8b274ff17e0ebd2dd57d213485792aa100e5a"
+    },
+    {
+      "path": "results/run_001/same_parent_race_10/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_10/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ba9fb647d15dc1462cbd11219404481e050f2b0a6b0e31b877e10833b4949b5f"
+    },
+    {
+      "path": "results/run_001/same_parent_race_10/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "fafd87b8ab8c892a3240c3dc8ae4bf88de5f8c5a2981c93c3e2988b83c6186f2"
+    },
+    {
+      "path": "results/run_001/same_parent_race_10/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_10/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "b8236eaa4c026b6f5545c50d6e2f2e7058db56c2c5368fd6ddb14997bbc33f47"
+    },
+    {
+      "path": "results/run_001/same_parent_race_10/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "f96d99bd6cd0619cc4cefbabd91743d4e71209f5234f5a252a3d01efc9f27a0f"
+    },
+    {
+      "path": "results/run_001/same_parent_race_11/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_11/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "c0a94dfca86c14fa46c51bfe846df7774716d14c690c3e315ba64ebaed65294a"
+    },
+    {
+      "path": "results/run_001/same_parent_race_11/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "05c8cdb9267a66b4c5e84c6c4278e194bc666b42b05bbf457521d0c3b1bb2c16"
+    },
+    {
+      "path": "results/run_001/same_parent_race_11/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_001/same_parent_race_11/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "11a5e620e36ac3be443b3be995920c1997814cba9c0e3e29a389601752f0d9fd"
+    },
+    {
+      "path": "results/run_001/same_parent_race_11/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "492dbdaac8fb3bfd424f51dc5c82129bd3d33b51b4c71422c1dde42fb1c51326"
+    },
+    {
+      "path": "results/run_002/after_commit_before_publication/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/after_commit_before_publication/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "fcf9a48bfd5a643581aab0104ffccc34250aa27b863998bd2941bc58c098aea3"
+    },
+    {
+      "path": "results/run_002/after_commit_before_publication/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "a87adf10f429718d0a28fca31252ac869ff7b4ec75881d152d265c905d38d61c"
+    },
+    {
+      "path": "results/run_002/after_commit_before_publication/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/after_commit_before_publication/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "349b6db3563bf211c3fed1daa72bc7e47f362b70fdf793cd0a90f3ba59e56e5f"
+    },
+    {
+      "path": "results/run_002/after_commit_before_publication/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "a0104bc421cd121df52f517bf76cb5841857f7a189e1cb543485e58ea8966313"
+    },
+    {
+      "path": "results/run_002/after_install_before_commit/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/after_install_before_commit/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0c46d4d1e624e37305f409f2f6a65f422b47600c4177bec208eff196ded1f3db"
+    },
+    {
+      "path": "results/run_002/after_install_before_commit/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "002d28ec350998d8013dbb710124cd6d7d49950c5237f866c2a47ceabafee02c"
+    },
+    {
+      "path": "results/run_002/after_install_before_commit/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/after_install_before_commit/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "2769a2f9f297dca706061c72df106a3983baec2462703f7f1d32c72cb8930bf8"
+    },
+    {
+      "path": "results/run_002/after_install_before_commit/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "69eaf5fa20a9dc5a4006e130954492efc3700e870eef459640b07dad6ad0180a"
+    },
+    {
+      "path": "results/run_002/after_publication_before_client_ack/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/after_publication_before_client_ack/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "8c75add364b20877e078b7ceacd869f7b7ee5489d0de2f32b2738a4ae861f7f4"
+    },
+    {
+      "path": "results/run_002/after_publication_before_client_ack/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "73f53b0d39733344ead821e65cf452100693bde256f5a9cc7e04f1aa425cfc28"
+    },
+    {
+      "path": "results/run_002/after_publication_before_client_ack/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/after_publication_before_client_ack/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "bd09011d6331bd1d29dd322dff694ba78d05a5eafa33b3666c8e2227a6fa79b2"
+    },
+    {
+      "path": "results/run_002/after_publication_before_client_ack/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "4cbf5e1206374ba451ec86b98cf0d37ad4956307f3a4a3af6466c6762f7c2770"
+    },
+    {
+      "path": "results/run_002/authority_rollback_negative_control/authority/genesis_backup.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "16c648c1524098e7ca147cf89220547d6386ca3757321eb48e878dcf5176ea9f"
+    },
+    {
+      "path": "results/run_002/authority_rollback_negative_control/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/authority_rollback_negative_control/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "d4642572ac157e4ccc786135cd3313f68cf3ff0142816199dfb950d0a6a9b215"
+    },
+    {
+      "path": "results/run_002/authority_rollback_negative_control/authority/journal.sqlite3-wal",
+      "size_bytes": 115392,
+      "sha256": "632b36b02315c42c0805909c9ea6f3e5e73e7caade09235f670d4dd7dadada57"
+    },
+    {
+      "path": "results/run_002/authority_rollback_negative_control/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/authority_rollback_negative_control/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "29c31daad4684fc945009d4469ea130d4642999658bcc019a3f3b8eb8846932a"
+    },
+    {
+      "path": "results/run_002/authority_rollback_negative_control/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "25cd9ba4c9d5d24d7a3738de3b1339ecdcb96b1edc2b8b2100d4bf9964d5bcdb"
+    },
+    {
+      "path": "results/run_002/before_reservation/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/before_reservation/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a48e52f77fcd05733b56bcb228afa893e3ffb502c0a3a77970130dab3da996e6"
+    },
+    {
+      "path": "results/run_002/before_reservation/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "a9e85904e86d605dae4a44526827d0af9d46850a0d837ea7e849b2847f45120a"
+    },
+    {
+      "path": "results/run_002/before_reservation/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/before_reservation/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "1cfe7b89b894151625bdd26540801cb55883e474c78158057713218a883c2440"
+    },
+    {
+      "path": "results/run_002/before_reservation/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "72076f59a26734c2ff4e6c126a295d0bc46ff7903993d7e16f4fa9b2dad08356"
+    },
+    {
+      "path": "results/run_002/host_restore_only/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/host_restore_only/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "e3ee8be4e4b7f4efebf6655ad4c843539cacb884b5ecd92d27c15767a9540fc4"
+    },
+    {
+      "path": "results/run_002/host_restore_only/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "b74eca26a598a20a742449acf8c2f3af22f0ad42e822755733e1f0f6e2e153a6"
+    },
+    {
+      "path": "results/run_002/host_restore_only/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/host_restore_only/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "5590516733ef3b86248475f8e10838ab9370fbcbfdd4c649a60b061dc5296527"
+    },
+    {
+      "path": "results/run_002/host_restore_only/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "09df264a15f86b58bbd27ddb14e78fdfecc33fe0f1f567eb378e2eb174ebb3ea"
+    },
+    {
+      "path": "results/run_002/retry_and_exact_packet/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/retry_and_exact_packet/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "aca406f5d6b91e72a07811e9e8731525567cb34bddb0a79528e969425b809fb4"
+    },
+    {
+      "path": "results/run_002/retry_and_exact_packet/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "3442956302b88f0bb46f635553db2c2d225e573bc49d55ce87c0336aa3e489be"
+    },
+    {
+      "path": "results/run_002/retry_and_exact_packet/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/retry_and_exact_packet/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "9f5d1a018c7cce861a74c8ed81aef06189f5a079cb0bbe900b60f6bc1d25255d"
+    },
+    {
+      "path": "results/run_002/retry_and_exact_packet/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "2f5e5a1fac61c2c232a2200aaef5a864dd0baff512be1cece0880459bb974e2e"
+    },
+    {
+      "path": "results/run_002/same_parent_race_00/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_00/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0b22ac7c8b0e9c1465479bf3b32618b1b199c7ba3de12afa12d414b1e1ce1390"
+    },
+    {
+      "path": "results/run_002/same_parent_race_00/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "80b40d49b7c2725c4c547d61c5d242708764be6ac551e878118b91bb9f4fef82"
+    },
+    {
+      "path": "results/run_002/same_parent_race_00/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_00/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "8c3758b367713d97e8e351311434b4c257372a7a3309bdca143983eead21985d"
+    },
+    {
+      "path": "results/run_002/same_parent_race_00/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "8c44450d6669797124e4b84fdcc63c396e086ffc1f7633aef9d918c500be148c"
+    },
+    {
+      "path": "results/run_002/same_parent_race_01/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_01/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "f2744e78e0db3d04123b4185e861907f9f7fd347354e86a85b52abbac3d328e4"
+    },
+    {
+      "path": "results/run_002/same_parent_race_01/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "01d7391db77d0816bd4422ce5ffe1b7579021501c9fee402abce183e70f4f117"
+    },
+    {
+      "path": "results/run_002/same_parent_race_01/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_01/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "2bd7ec39be2e4b1eea8dd6dd74595dacc8153a47219030f8192eeb03eaad3a14"
+    },
+    {
+      "path": "results/run_002/same_parent_race_01/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "b1ac97d4355580187dcee7ed981aa0f522403055c97e68ebaa3f81bc61fd565f"
+    },
+    {
+      "path": "results/run_002/same_parent_race_02/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_02/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ba7845d2fc6bdc68d64cb320d17f8c1dcf001b42a530ef83a198ace3cf9fbdfa"
+    },
+    {
+      "path": "results/run_002/same_parent_race_02/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "f8f4b9a1646ae048085a00bc4b71c998b7d48f18b64796def57e30c085da3f90"
+    },
+    {
+      "path": "results/run_002/same_parent_race_02/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_02/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "49610038c38e8a8afddb0ba912377d48c8c9778739c80132e8dd92dac7956b10"
+    },
+    {
+      "path": "results/run_002/same_parent_race_02/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "fde5c62fe782e149e8aa52f965991e75d702f83ac4b0ea951bfdedc911053e65"
+    },
+    {
+      "path": "results/run_002/same_parent_race_03/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_03/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a65bcd78b6cd6640f48b729b26f725af41cac26d292e2ccf151b237dd0f6ed5c"
+    },
+    {
+      "path": "results/run_002/same_parent_race_03/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "ecd2cddb07c46bd77d32d32c7a3b831d5be04b530178c9c0008d7cf2831beeee"
+    },
+    {
+      "path": "results/run_002/same_parent_race_03/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_03/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "6f95578f03679232eecca09a57a97d42e46899e81d09b3a09e6dc9b82e6b92ee"
+    },
+    {
+      "path": "results/run_002/same_parent_race_03/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "f9ef37ad5ff58b3c21b64757b4e6c2053111940bd8be75a4ec6121b7d4b52b2e"
+    },
+    {
+      "path": "results/run_002/same_parent_race_04/authority/journal.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "44a051b9574f68ea8b6fe297f2dbce62cc2cd5fbacf7748425b229dbe3acbefc"
+    },
+    {
+      "path": "results/run_002/same_parent_race_04/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+    },
+    {
+      "path": "results/run_002/same_parent_race_04/authority/journal.sqlite3-wal",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/run_002/same_parent_race_04/recipient/inbox.sqlite3",
+      "size_bytes": 20480,
+      "sha256": "59d0b1174f30373eabefd17118dc28e3cc10fe8ba7b688e05b4808e106cfc016"
+    },
+    {
+      "path": "results/run_002/same_parent_race_04/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+    },
+    {
+      "path": "results/run_002/same_parent_race_04/recipient/inbox.sqlite3-wal",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "results/run_002/same_parent_race_05/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_05/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "fd737a5be794dae1086944f5e0bcf56a3ce36dcd8b64100a73aef369b2b3cfc2"
+    },
+    {
+      "path": "results/run_002/same_parent_race_05/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "f95f090661a1763fd99553d5b0c67b9b32f97b00c75349d27c9a5c51a877ed48"
+    },
+    {
+      "path": "results/run_002/same_parent_race_05/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_05/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "98115ed965a15d41c8d0ab96fe257242229910d63b1da706cab3c84e5a15e3bb"
+    },
+    {
+      "path": "results/run_002/same_parent_race_05/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "8220212b2d3e14a8aa33e0c778a41311b8cca8d21170c8179aa705f0c2b546ed"
+    },
+    {
+      "path": "results/run_002/same_parent_race_06/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_06/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "809076cc8cfd4941fb2c71a297dd46672d24d2341c030463c224405855147558"
+    },
+    {
+      "path": "results/run_002/same_parent_race_06/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "e59e8e98a480d09a2131547986855c934b2f28ea8f8e7831b624b56d4928f1a0"
+    },
+    {
+      "path": "results/run_002/same_parent_race_06/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_06/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "94db9d2415c15a9ba95a767bb618d2a1a9efbecf14929c7c9c1762381477f34c"
+    },
+    {
+      "path": "results/run_002/same_parent_race_06/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "f47ac617b002e427ae2d02d2b51ad84db316fe854eea3549a6a4745a9131191e"
+    },
+    {
+      "path": "results/run_002/same_parent_race_07/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_07/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "18d9c05052ec7b7cd02c77bd667921d8f571c08a81d9e2ae25f7dcd555b4e5f7"
+    },
+    {
+      "path": "results/run_002/same_parent_race_07/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "7816e22b482fe85156891249085b3ac0fae0d19e73014a5c10b713caeba06da4"
+    },
+    {
+      "path": "results/run_002/same_parent_race_07/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_07/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ede7a0b3dcdc966ec445e9771ee6cbe327ddf19c4cba4d18cd40c741bcd65496"
+    },
+    {
+      "path": "results/run_002/same_parent_race_07/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "d915db1bf9e3d0daaaad17609c8769805508e75d9bbc8556ebb27aa67361b345"
+    },
+    {
+      "path": "results/run_002/same_parent_race_08/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_08/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0d7c2329bedcef4860853ab36dffbf555a545528188073ea6b02b60d68f76f57"
+    },
+    {
+      "path": "results/run_002/same_parent_race_08/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "ae159997e11b0179615f91ee8ba8a2a95d30d62133e02f431910068b2554cd5a"
+    },
+    {
+      "path": "results/run_002/same_parent_race_08/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_08/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "b6ed870933cfb8766698c50d2d5a9c621c94fc94b1d1824c2e80ce266f5612e6"
+    },
+    {
+      "path": "results/run_002/same_parent_race_08/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "989030968d92ad8973f1c918c5aef6358a08aacd9f26d5270418e399735cf4ba"
+    },
+    {
+      "path": "results/run_002/same_parent_race_09/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_09/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "cb7830c011c49536348d43decf387fa2f2637e7132d44657f1c7f18df81de6e2"
+    },
+    {
+      "path": "results/run_002/same_parent_race_09/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "aaec380ac1828bc5c6eebc26607281be34bd0658dc4b63485ef33e9722482c0b"
+    },
+    {
+      "path": "results/run_002/same_parent_race_09/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_09/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "16c68d075043c1b51c3cbdbdb753e534cf5f4b911cbb641a6a431892dbcb46d3"
+    },
+    {
+      "path": "results/run_002/same_parent_race_09/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "0f71c3ed696f1e27081c207747e2df8012a4690a26da851c8e718cb3a8fe5eba"
+    },
+    {
+      "path": "results/run_002/same_parent_race_10/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_10/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "40d20162eee5e09cdff43561351ed25d8c33716cc4e10148d2d3c28f143c261a"
+    },
+    {
+      "path": "results/run_002/same_parent_race_10/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "c06df79c932546ba56973b0c1de0455d2401fe24d519799f4ce1b672ba7cc6b6"
+    },
+    {
+      "path": "results/run_002/same_parent_race_10/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_10/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "97331a85c2fbd938ba0ad222ff65572b4cc8a53e4ec1bfa6e0e350a90d610170"
+    },
+    {
+      "path": "results/run_002/same_parent_race_10/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "03ac0be063eb79a9b7f3e4a0900ff394843e840f6f806ecd0e5984f880901365"
+    },
+    {
+      "path": "results/run_002/same_parent_race_11/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_11/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "51209aafd3b2c1fa1658e8108f6d97557e9dd3366babe87d6058713f59ce44fc"
+    },
+    {
+      "path": "results/run_002/same_parent_race_11/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "7040eb4c920a4ee32ba95be4fc5cd6ef0aee1886ed6730d4a76c3dd23b57c039"
+    },
+    {
+      "path": "results/run_002/same_parent_race_11/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_002/same_parent_race_11/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "c754ef545e1f5f9c6d5adfb727094c5d797cc0f8fd432f8b6115949297f11990"
+    },
+    {
+      "path": "results/run_002/same_parent_race_11/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "2189af1ba7cd74f9f5ec2f39806c2466aa58933eedfd5191d88b8592d60408df"
+    },
+    {
+      "path": "results/run_003/after_commit_before_publication/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/after_commit_before_publication/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "85789bf25c0e45cc80872316e86514554311b81ca71d3350d8e719a2883ce5e7"
+    },
+    {
+      "path": "results/run_003/after_commit_before_publication/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "8296f543eef9912989a68484e33a1e5a4e00cd0cd04055b0a04a46644dddbbc0"
+    },
+    {
+      "path": "results/run_003/after_commit_before_publication/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/after_commit_before_publication/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "9e4e97aea204bb39b6cbee9a415acdf6121274e9bfa3649780630bea1ccd5313"
+    },
+    {
+      "path": "results/run_003/after_commit_before_publication/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "69a930f07aeee7c8dc9d43c97755da4fee67f814a66956b2599f698166740db4"
+    },
+    {
+      "path": "results/run_003/after_install_before_commit/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/after_install_before_commit/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "dfef050206a63e2e65eddc214aed86acce18321739026c746e7f689e2aa38604"
+    },
+    {
+      "path": "results/run_003/after_install_before_commit/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "2d8271af96ed9c461c006df6761f7ae2a5bd031172967e26c51e4781093097bf"
+    },
+    {
+      "path": "results/run_003/after_install_before_commit/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/after_install_before_commit/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "eb8b15235c93a7ebede04b79520a2a15b7d886182e2408b1561683666f2c9476"
+    },
+    {
+      "path": "results/run_003/after_install_before_commit/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "83009ec328d6edf36b2a986d546acade5d630c3f11f284f55d1917e659e62302"
+    },
+    {
+      "path": "results/run_003/after_publication_before_client_ack/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/after_publication_before_client_ack/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "70c7594e097ccda7c5c8e33f830cb0fae92da84139cf3db33e32774d0525a81c"
+    },
+    {
+      "path": "results/run_003/after_publication_before_client_ack/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "da737c55cbe1a8245d3dfb8176db502944c1692cfb240da0f187d1b929af9a00"
+    },
+    {
+      "path": "results/run_003/after_publication_before_client_ack/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/after_publication_before_client_ack/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a411bb79952425f6eca19607d76c3e33827067491449491afc74887305f22150"
+    },
+    {
+      "path": "results/run_003/after_publication_before_client_ack/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "2da7b04ff49efcb398bef92f1e014999480dcbce08d25e4ea959dfdcdd559a85"
+    },
+    {
+      "path": "results/run_003/authority_rollback_negative_control/authority/genesis_backup.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "16c648c1524098e7ca147cf89220547d6386ca3757321eb48e878dcf5176ea9f"
+    },
+    {
+      "path": "results/run_003/authority_rollback_negative_control/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/authority_rollback_negative_control/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "6b2100671bbfc51dbfabaf55078e590c119421f4e613de37ba221ea5323b9876"
+    },
+    {
+      "path": "results/run_003/authority_rollback_negative_control/authority/journal.sqlite3-wal",
+      "size_bytes": 115392,
+      "sha256": "836e2a6178646cdf3d50707d53ba7275e9cb104408839defaef5f29541ed7af7"
+    },
+    {
+      "path": "results/run_003/authority_rollback_negative_control/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/authority_rollback_negative_control/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ad8160c7c2ec35d84511c5a38b1241a14369c45bfb74016c419f0f825c18e6ca"
+    },
+    {
+      "path": "results/run_003/authority_rollback_negative_control/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "6bfe8b9d63b2f8b122d32e29b76fab6c74b96ce5134230820ae9338f8c9ca7d9"
+    },
+    {
+      "path": "results/run_003/before_reservation/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/before_reservation/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "27d08ca965b48cc3d71fad9e1edd49fad1a98694f7bf2a8674b8e0e894a3fa13"
+    },
+    {
+      "path": "results/run_003/before_reservation/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "1ad1268e5b537717f99ba1d183706a7fe6a832da65364066089ef8fdb1cfabce"
+    },
+    {
+      "path": "results/run_003/before_reservation/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/before_reservation/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "3281443852e8b3cb6d638d725b0b748a3a334a47ac6f2c5466336667d1b2ebea"
+    },
+    {
+      "path": "results/run_003/before_reservation/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "0da0ec2300f7384e81bb8501b9c555a4513528be468c42cd7796f1fff43b91ad"
+    },
+    {
+      "path": "results/run_003/broken_publish_before_commit/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/broken_publish_before_commit/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7bac8fc0e6d55cc15e121040bfbe7c13d84d98226283aabe412f3062e1141649"
+    },
+    {
+      "path": "results/run_003/broken_publish_before_commit/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "0b73787b7ee31425ee799b9a3242a681ddc6f45c9ea80d1d4f14937a86fb1859"
+    },
+    {
+      "path": "results/run_003/broken_publish_before_commit/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/broken_publish_before_commit/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "b1584d03e0e3c110c4fbfa29124fbf1c37e381e85564038e8d513db613106bfc"
+    },
+    {
+      "path": "results/run_003/broken_publish_before_commit/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "928a13e1df89d6f1eb2e4dea9cbfabe7123e9fa1c32550e6e0debc3184263d39"
+    },
+    {
+      "path": "results/run_003/host_restore_only/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/host_restore_only/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "8a79fe192aa0fdac5d9c9535b5ceb6f53ace3992a9a0ff2fd08b9a0bebf9a141"
+    },
+    {
+      "path": "results/run_003/host_restore_only/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "2992b75ae6b325d89d0d5ac518182e34284860bbdd8c7fb55c1dae333445a9a5"
+    },
+    {
+      "path": "results/run_003/host_restore_only/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/host_restore_only/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "6d8d193d312c6bbc871c8dc731665a1317d937a7b5f4b9e6c942bb3a6624991e"
+    },
+    {
+      "path": "results/run_003/host_restore_only/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "8802a1d856af944e3ec6abd60a5f7bed6d3cdc1a150b606d061af5e2de8a9913"
+    },
+    {
+      "path": "results/run_003/retry_and_exact_packet/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/retry_and_exact_packet/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a0d91418a0292df41a16427aa6fa632c13506859727103df0bad836bf07be8f6"
+    },
+    {
+      "path": "results/run_003/retry_and_exact_packet/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "4e65d659d5ca308c9885583a7131f7b64c902b5883ba5ace3269dfeb9372e9ad"
+    },
+    {
+      "path": "results/run_003/retry_and_exact_packet/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/retry_and_exact_packet/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a4b273fc371d8049fdae584ccc0691c8298b622240a79f6e3347ee9e0492df23"
+    },
+    {
+      "path": "results/run_003/retry_and_exact_packet/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "1b386455ab5a7b264d26a33d8d1a21547e5e0301bdbec97e9fdfde981ef160fd"
+    },
+    {
+      "path": "results/run_003/same_parent_race_00/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_00/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "93cf7084b1e931e71c6c993ce5765926a4a770b2c40f146386b80ca1eccf2054"
+    },
+    {
+      "path": "results/run_003/same_parent_race_00/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "2cabf9a0170eb52f7d904a5c2df680d0ca8b59047cf9503d8c2c9ff5690e2bf0"
+    },
+    {
+      "path": "results/run_003/same_parent_race_00/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_00/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "2638d5e71b299a47167c8e011aedd6341875dbe0a634edef6efed60c18c05682"
+    },
+    {
+      "path": "results/run_003/same_parent_race_00/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "39acaff45b96f2b8a342b3359fb70009c8d964a8ebcea39405ac75c8eb0f00dd"
+    },
+    {
+      "path": "results/run_003/same_parent_race_01/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_01/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "5da950d87e08bdebba9087973f0daa1a55bdd2ddff711ed8dd5944620c360c5d"
+    },
+    {
+      "path": "results/run_003/same_parent_race_01/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "1f68f6d5fa725b34dd2bc92f9951d7b456a06282b1be017fc663d32757a498d1"
+    },
+    {
+      "path": "results/run_003/same_parent_race_01/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_01/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "3e884b05fca5d8020484e67ca9e11471cff51696bd10b42f91d8ac401227fee0"
+    },
+    {
+      "path": "results/run_003/same_parent_race_01/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "e6b0d37cb5ec303be49f055c693b3055bd751bfaa62ef5d3fd38d597cf700467"
+    },
+    {
+      "path": "results/run_003/same_parent_race_02/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_02/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "d7db839ab87317bbed492c71938dd7e0f837ec84e9bb757a74b5cd154caaf6d2"
+    },
+    {
+      "path": "results/run_003/same_parent_race_02/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "890ffdfec3d2ec87a084d17d5ef70f23cf73e4decadf4b749e93f002dfdec194"
+    },
+    {
+      "path": "results/run_003/same_parent_race_02/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_02/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "21829f120ecee953754c2bd4e486154850f3c601223ac43718c4dccd280ad323"
+    },
+    {
+      "path": "results/run_003/same_parent_race_02/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "3d15735ea4f04329fc24dccb050388c9d2ebbd12ebd50af3b0a369a1130d3ec7"
+    },
+    {
+      "path": "results/run_003/same_parent_race_03/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_03/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "bc8c14966d500c818015bbd385e159208d854b1f3983203406a92eea70cede43"
+    },
+    {
+      "path": "results/run_003/same_parent_race_03/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "c3b752e21fafd04b9bcf48fa0257a1764dc56d7f33de2b0485ecfce632a85799"
+    },
+    {
+      "path": "results/run_003/same_parent_race_03/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_03/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a189a3c3c4f03a9f812bb4ca800186c8eec90668beaff7edbfae67478326a0e9"
+    },
+    {
+      "path": "results/run_003/same_parent_race_03/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "2264b7c9aa236616e98a0b72bede573b0b0e1b03375677a74dbe6545c046f47b"
+    },
+    {
+      "path": "results/run_003/same_parent_race_04/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_04/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "43678e087d0c0cccdcbfba9094c43455e8228c9fd977e503947948ccdfa96adb"
+    },
+    {
+      "path": "results/run_003/same_parent_race_04/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "7b99a09184bac7a526858145c48e51f84c66de2bc3f3fb187961d4af92f359de"
+    },
+    {
+      "path": "results/run_003/same_parent_race_04/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_04/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "87bff5463c4863a4ebe0b40067eeed0aab520e21b3c9c437c047503cfde0730b"
+    },
+    {
+      "path": "results/run_003/same_parent_race_04/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "6851351e78dac7a8465ec5c1887e2f00f1661e1c0754f933504ae6d7f653e4bc"
+    },
+    {
+      "path": "results/run_003/same_parent_race_05/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_05/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "1f044857c0504a3e73fd4af5bb91e2bf4103aa8183dc1e6198f54cb08aa454e7"
+    },
+    {
+      "path": "results/run_003/same_parent_race_05/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "1ed50907b40714ecf9fd5aea848e61ac54563cc11842ac61a1630ca8c192c71a"
+    },
+    {
+      "path": "results/run_003/same_parent_race_05/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_05/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "3d05a90e7826285b069ccb676c9bb504e03b883cdff1ebfb31f61e2b86e09735"
+    },
+    {
+      "path": "results/run_003/same_parent_race_05/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "c61f2bef9331857e080e10b48368e105ca7479e684857fb2ae5589c1a98b2caf"
+    },
+    {
+      "path": "results/run_003/same_parent_race_06/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_06/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "e9b839e352176df430066c2a3360387b4e46b29431c9ef70e00e6e3b55d9fa0a"
+    },
+    {
+      "path": "results/run_003/same_parent_race_06/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "454c0b9abc76aa73b3c94c1eb42d3638906f65fadd6a9f17b6816b6d0aeadb81"
+    },
+    {
+      "path": "results/run_003/same_parent_race_06/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_06/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "56c65e8d70af84e154561f9df4329406ddb6e4840795c3e6e69ff01a4cc3f251"
+    },
+    {
+      "path": "results/run_003/same_parent_race_06/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "1f49fed9ecda2961028ae69ee9c5d3f343faebb1766c36593687b02f7a5e0704"
+    },
+    {
+      "path": "results/run_003/same_parent_race_07/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_07/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "6f0284a4591a1150337b620530ed0b12bce67b2da89e4bf7ab84df901121497c"
+    },
+    {
+      "path": "results/run_003/same_parent_race_07/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "316dd7018c3be48e917bcc6b1e28b6e66b1282a8181a9c8f9cfd6c549b5cab1f"
+    },
+    {
+      "path": "results/run_003/same_parent_race_07/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_07/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "b2bd4b8406c4c2a22ac257085cba73e9699309fcb6e310ffd7a984ff6aa4ff7e"
+    },
+    {
+      "path": "results/run_003/same_parent_race_07/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "63b998252d7015749a1762f43bc6884cc69e215d9785a6def518d1c4840b0b21"
+    },
+    {
+      "path": "results/run_003/same_parent_race_08/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_08/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0a40e83ab86ffc4593a97320c0841a4051f3eef62bf5c378e05f61b1b59ee689"
+    },
+    {
+      "path": "results/run_003/same_parent_race_08/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "88fdb5e77d325d22d564799450f3aeb67f07cbbdf69dd7c0847db4c21a5855a6"
+    },
+    {
+      "path": "results/run_003/same_parent_race_08/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_08/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "f37c9009770084efc1a78bc8227b92457e533903860860f888050672d0986c24"
+    },
+    {
+      "path": "results/run_003/same_parent_race_08/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "988ff0d12eb0b0f82084ad7e51be9f31cb4a08d9e15d804ab3f81dff6993d9ff"
+    },
+    {
+      "path": "results/run_003/same_parent_race_09/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_09/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "cbfc0b0f06fa8be5843735db9b564764932a2c269a2dbd1258fc41fa4b40dd64"
+    },
+    {
+      "path": "results/run_003/same_parent_race_09/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "6e5a4adbf11f6999939d9e7dc71415a0d4766d73e5af1e20b7030eec7ec36e1e"
+    },
+    {
+      "path": "results/run_003/same_parent_race_09/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_09/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "72a911571a6d3c9fd89d08d521278c08d539b42c32d0a3fbdd8ad97751e149d6"
+    },
+    {
+      "path": "results/run_003/same_parent_race_09/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "4350b9cff2454bfac94fd810dc3928f726005a5b3d7ec23192a545d459b6ab18"
+    },
+    {
+      "path": "results/run_003/same_parent_race_10/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_10/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "87386ff2f330ee29552a2e7886331ad39074490baf621792523834fce695e528"
+    },
+    {
+      "path": "results/run_003/same_parent_race_10/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "149b068197493609cbcb323de1b871891976c32f03cfc9a5b4c1dbf86d622546"
+    },
+    {
+      "path": "results/run_003/same_parent_race_10/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_10/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "621d6583fef42e9822252cfb49d1b8fc07323f63da0c7e82cc04a43a1fa31b85"
+    },
+    {
+      "path": "results/run_003/same_parent_race_10/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "3728f1d1fa03188b1a94757b842cdc915d22718d0a9ceb939c9323924c54dbd5"
+    },
+    {
+      "path": "results/run_003/same_parent_race_11/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_11/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7d1a3c67c79fd74ebb23eaf1018c3866e36d86f9cb576b5fbf922ff7f1b3d60a"
+    },
+    {
+      "path": "results/run_003/same_parent_race_11/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "c18613f9a288f2e0fbc3ca73f004946e683cf87f33d7738e9e50cb8e799ccd1d"
+    },
+    {
+      "path": "results/run_003/same_parent_race_11/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_003/same_parent_race_11/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "05069192b898174b235fb4bf5f05b81514677316f9395b3efd3740dc8c63b568"
+    },
+    {
+      "path": "results/run_003/same_parent_race_11/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "16977320d1c909e4e10c3ddf2892efb114c89338f6603f1d0106e95df9eb4808"
+    },
+    {
+      "path": "results/run_004/after_commit_before_publication/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/after_commit_before_publication/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7791ca2ec2895a37c84ce7c92f52a06a204623a02ff585cb4afe3e6ec25c3226"
+    },
+    {
+      "path": "results/run_004/after_commit_before_publication/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "f34b5e0b1d23c6b631e84cfb98aef86c509cb54c6415b41e7428c52ef6553925"
+    },
+    {
+      "path": "results/run_004/after_commit_before_publication/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/after_commit_before_publication/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ffd1997af4ae5fd5130704dc62dc279a2dbaf304892084aa5b53e587cf09e01f"
+    },
+    {
+      "path": "results/run_004/after_commit_before_publication/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "28a338c96ccb1e159918d3f84a36e0e4f5cdcdc5a12b290fa703bb6074867047"
+    },
+    {
+      "path": "results/run_004/after_install_before_commit/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/after_install_before_commit/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "80623ccea3c721e645db31370b54915068beb3537655c05089afb367070d21ce"
+    },
+    {
+      "path": "results/run_004/after_install_before_commit/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "f781d9017f92ef9406e93957bdf5c4d6ce213d15f47d04b9eea943e6d03dafa7"
+    },
+    {
+      "path": "results/run_004/after_install_before_commit/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/after_install_before_commit/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "90fc876dadcd267490fca981e93b2e0eee3554f91668b0c44832f56ac9e3bdad"
+    },
+    {
+      "path": "results/run_004/after_install_before_commit/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "778fe0add97e73d9b40c74b85a0a9feba6a3082779b57099b67a3b1f3948daa1"
+    },
+    {
+      "path": "results/run_004/after_publication_before_client_ack/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/after_publication_before_client_ack/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ba596b8ac23a710fb5ac74d8daaad2223aea59d90f3370f20288c84e38b05aab"
+    },
+    {
+      "path": "results/run_004/after_publication_before_client_ack/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "b113351eed311842f06785fdbe2afcfd7385ce050fca2f18377af533c603f94e"
+    },
+    {
+      "path": "results/run_004/after_publication_before_client_ack/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/after_publication_before_client_ack/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "1841f3e10fb35e8c901faad56272af5274a100202966e67d6228788488fe4083"
+    },
+    {
+      "path": "results/run_004/after_publication_before_client_ack/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "7a700049ef150c3e0a31c3f8c673bda541ada3075591fd79650a7c9541e0bc1d"
+    },
+    {
+      "path": "results/run_004/authority_rollback_negative_control/authority/genesis_backup.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "16c648c1524098e7ca147cf89220547d6386ca3757321eb48e878dcf5176ea9f"
+    },
+    {
+      "path": "results/run_004/authority_rollback_negative_control/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/authority_rollback_negative_control/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "170d230fa014d51365242d3937ed2809f21313205310b52e7f7015bd331a4f24"
+    },
+    {
+      "path": "results/run_004/authority_rollback_negative_control/authority/journal.sqlite3-wal",
+      "size_bytes": 115392,
+      "sha256": "fa6d4af05a856d1fd0a74f405159b7ec0ffda67ce328265e7fbad791ebae6caa"
+    },
+    {
+      "path": "results/run_004/authority_rollback_negative_control/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/authority_rollback_negative_control/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "81f1db9ded09dc2978b714c1d6b77ca75bfb977276cab4607b77abfb75bd34a9"
+    },
+    {
+      "path": "results/run_004/authority_rollback_negative_control/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "4a4cbb7a367ed835d8b7d4a58bce79cb8189aca19344817239bfd2994817df68"
+    },
+    {
+      "path": "results/run_004/before_reservation/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/before_reservation/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "fa4d3a9b2bfa945bdcbd934fc8310a4f3a3858d315ecb7b61b7e5078a4b5acbb"
+    },
+    {
+      "path": "results/run_004/before_reservation/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "73b327965a7a05ee3d043358f3c5e9f6d926a2e2bcde1f77b04562461db871cb"
+    },
+    {
+      "path": "results/run_004/before_reservation/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/before_reservation/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "e8338c28cfccaab5e13004b709f8d9a719b15eddacd12a9dee6af33aecd48fde"
+    },
+    {
+      "path": "results/run_004/before_reservation/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "63ac74dfe438dced8bf8c0861c771607b31650853eeab0ba9b4a819355929b12"
+    },
+    {
+      "path": "results/run_004/broken_publish_before_commit/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/broken_publish_before_commit/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "1b163a9ee33a98576203826ccf2d43bee8c7d6a6787862f8529c93066ba8db72"
+    },
+    {
+      "path": "results/run_004/broken_publish_before_commit/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "44b144daf9271a540d3d7a2ed451d0e2c9088fc821bfb66dc34a6b062dbf2e32"
+    },
+    {
+      "path": "results/run_004/broken_publish_before_commit/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/broken_publish_before_commit/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "84be50f3c13c8921f021ec42e6f78e095bfc9403abf85a7bbea1da5e72269999"
+    },
+    {
+      "path": "results/run_004/broken_publish_before_commit/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "66b5ad85161756fc8a46ab67819491f7e966efaf6d057481ef5c3b055425c7f3"
+    },
+    {
+      "path": "results/run_004/host_restore_only/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/host_restore_only/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "70cff2dafe76f12875a533d8ee6b479a6ada51642dc883c4c498857ba02d1b6e"
+    },
+    {
+      "path": "results/run_004/host_restore_only/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "55888726f6b18bd9f4ceaad8698296f087688390887c28a73291b6aa2aa39356"
+    },
+    {
+      "path": "results/run_004/host_restore_only/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/host_restore_only/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "17f830d87429210562b5ec32b1f727d4c03c4167c661ef9f51f99e0aaf943240"
+    },
+    {
+      "path": "results/run_004/host_restore_only/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "155058f00614c326406ae1b80ab16b9c02b8b5b56323ea90c1e060c17f5fb360"
+    },
+    {
+      "path": "results/run_004/retry_and_exact_packet/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/retry_and_exact_packet/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "e000b9b27ffc6d021c826d6cd0c216a0db6819b111190d321508b67d78a657b0"
+    },
+    {
+      "path": "results/run_004/retry_and_exact_packet/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "040c91e15eb1d504be6a73fcbe4f5919ad433d44caed6bbcbd13c372c351e46e"
+    },
+    {
+      "path": "results/run_004/retry_and_exact_packet/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/retry_and_exact_packet/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "9fa8bbd06de71e16353b65fe4d0e813a6fb3684594754918de43db8db1a75148"
+    },
+    {
+      "path": "results/run_004/retry_and_exact_packet/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "5eb73d5e1db5a619bc321c93bfa3ea9ab2c93262e78a74236e5c693f7cc8818a"
+    },
+    {
+      "path": "results/run_004/same_parent_race_00/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_00/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0a27c6175e6f94ca1bfb96ff056fe9f4f2492ebaadca6706cb93af2ef314f005"
+    },
+    {
+      "path": "results/run_004/same_parent_race_00/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "041ec0ab0caf056d4caf7de19e359ca48163a3626179201f94ab18f936d0ae5d"
+    },
+    {
+      "path": "results/run_004/same_parent_race_00/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_00/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "b6bf8502547d261bb684a31207738659f34e5167df42c5948696366c22766255"
+    },
+    {
+      "path": "results/run_004/same_parent_race_00/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "272f2fb741e6d07206d8fcf716df61fd2c877897bd1a36859c78160926e5553c"
+    },
+    {
+      "path": "results/run_004/same_parent_race_01/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_01/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "de529ba634fe1093defb652a5ecb218bad373bf44b5d3bc7807c719397a94b8e"
+    },
+    {
+      "path": "results/run_004/same_parent_race_01/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "787e738ddc59f8e17c25835e9e476c0058e7f7170c7be92e9eabc3a4407aceb7"
+    },
+    {
+      "path": "results/run_004/same_parent_race_01/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_01/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "3f70eb8ee0a2e4b7e9613f18c3edb91fcb0f022a973cd2cac47fd28ec75479a7"
+    },
+    {
+      "path": "results/run_004/same_parent_race_01/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "7f6b263461047b59c621bb09ba3a0832cde06de10208e5771a838651a2804bec"
+    },
+    {
+      "path": "results/run_004/same_parent_race_02/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_02/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "5d7f9549183e00ad25c0f9ac2859f6b905c1bf150d551772c7044e09071f5020"
+    },
+    {
+      "path": "results/run_004/same_parent_race_02/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "29ca66741116a0913fc3047e91579461e2c61275478955ceb10aca1ac30c2045"
+    },
+    {
+      "path": "results/run_004/same_parent_race_02/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_02/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0e06b02cdcd11d8b83e8348c8472b64ee8a87a96a4ee88f85ac71e3e3593a900"
+    },
+    {
+      "path": "results/run_004/same_parent_race_02/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "7b09183856593dd6525d2259b0e284e579b1ab484d49efce8867c3a5bc727cb0"
+    },
+    {
+      "path": "results/run_004/same_parent_race_03/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_03/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "207bb62cff479f92d49858591e724274cdd28b24b0c6550129780532b894910f"
+    },
+    {
+      "path": "results/run_004/same_parent_race_03/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "42f5e6fae793759cc94a1cc99fcd932c2d767be04d09ec3e220e03abc2a67dfc"
+    },
+    {
+      "path": "results/run_004/same_parent_race_03/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_03/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7151e324623a63170043d536636a531a84c81d4c43b5c9fbcabaf375426d6531"
+    },
+    {
+      "path": "results/run_004/same_parent_race_03/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "2dd35d4d2254fd7a4f752bdc45d95dce222a86f530a1fef12763111e357f7f9c"
+    },
+    {
+      "path": "results/run_004/same_parent_race_04/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_04/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "2a872a07f5ef42d914c2b51de883a68102866308921f14ed1dd1d39cd899b18f"
+    },
+    {
+      "path": "results/run_004/same_parent_race_04/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "fa5ae46632a54d2d1d7bbd896691cfbe8559c78b5ba252fff7a0201d33fea979"
+    },
+    {
+      "path": "results/run_004/same_parent_race_04/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_04/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ccd0900135f7f4d2fa471b5d2f55a2206a0bb3317403343e0ffdcf65626de2d6"
+    },
+    {
+      "path": "results/run_004/same_parent_race_04/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "7ecaa27da38ed001d393a1277f23882c99bbbcc065116b62c0f0a40bddb9c846"
+    },
+    {
+      "path": "results/run_004/same_parent_race_05/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_05/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a9cf213f73a0a1a2150bed518030c8d94f4565d178e076d36da6da8c8ec2a0c1"
+    },
+    {
+      "path": "results/run_004/same_parent_race_05/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "b10ecaaf55eddeeb5b2e026e59ac08bb1005c2abeb3ce961b5692f81761d4ebe"
+    },
+    {
+      "path": "results/run_004/same_parent_race_05/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_05/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7af34439c4d7b5332e357e35de528bab0c7e467ba9de0f99b96e42f4f4265022"
+    },
+    {
+      "path": "results/run_004/same_parent_race_05/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "9747ab326d873ea5f3721aa6e366e7ff5c79799588c09d3144052c413e95e3e7"
+    },
+    {
+      "path": "results/run_004/same_parent_race_06/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_06/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "21c2120631a457a81e137cc13b60dbfa8a527c7e61c1ba818f72e6a549a8f84d"
+    },
+    {
+      "path": "results/run_004/same_parent_race_06/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "3818d641070651e022c1ce9e32bd8ec127e307179a4e006dff7da75f47c99706"
+    },
+    {
+      "path": "results/run_004/same_parent_race_06/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_06/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "462d7d927ad1ba9ee2af20ff63741f51466538d81f9650fcda75664348855ee0"
+    },
+    {
+      "path": "results/run_004/same_parent_race_06/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "16769868728fb6247d6ebdca674b16c7e02b3f4e6a4ed541b31000f5e2c406c0"
+    },
+    {
+      "path": "results/run_004/same_parent_race_07/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_07/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ef1f987012593a9f65a12af18feb36d376abb952b20c1110e0ce7fe61504f5db"
+    },
+    {
+      "path": "results/run_004/same_parent_race_07/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "a2516210561ad8a329036d761f4518eb0bbf8ccd5360c6a7bab12c96ec84cc6f"
+    },
+    {
+      "path": "results/run_004/same_parent_race_07/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_07/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "bd151bf77154668d270b083d872fabc09fc9470e771ea17a8966e0db1f138160"
+    },
+    {
+      "path": "results/run_004/same_parent_race_07/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "5a9f35bcd74c47a9df49dd8172291848e7f3473441782506bcc52122b6d2fd0e"
+    },
+    {
+      "path": "results/run_004/same_parent_race_08/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_08/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "4ba46bf80cb3a73dda75225f30d38947cf43b84210e378f3f1ca4621d8c3639a"
+    },
+    {
+      "path": "results/run_004/same_parent_race_08/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "291e03852b82be7ccde454d9717a49b2a813d172eb0ea4872ae39e31b453b2be"
+    },
+    {
+      "path": "results/run_004/same_parent_race_08/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_08/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7b074d479010717b6259813eec513c2d4bf70acb8a136880ee80ebb9e6939e30"
+    },
+    {
+      "path": "results/run_004/same_parent_race_08/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "3af632d0d1c4a4e83e7e6dd5a4e571d514133c57b58165acd384e8e97483150a"
+    },
+    {
+      "path": "results/run_004/same_parent_race_09/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_09/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "edc5260950d9100de9ea6baccd9a4bf3037a05fbe4468a817c2ae67fd8ee7bd3"
+    },
+    {
+      "path": "results/run_004/same_parent_race_09/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "51630f3e0241efb1649452baa7d9fc85830eb74a8a8a3e8a51bee5f69f30c951"
+    },
+    {
+      "path": "results/run_004/same_parent_race_09/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_09/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "db99fcdec74e72baaa2fa146b0d2fa4ebc66536c290f908f1c5fce76e094867a"
+    },
+    {
+      "path": "results/run_004/same_parent_race_09/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "811c4fc597629811432b56336e839d0b0c815c500c57b52e148ec7ca33f26847"
+    },
+    {
+      "path": "results/run_004/same_parent_race_10/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_10/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a07276df4edabad0a74c5f32f47c4277a642a173f19740b4280d34744b98e768"
+    },
+    {
+      "path": "results/run_004/same_parent_race_10/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "307cfadbfdab7c83eb5640bfaea36949f4d4c0f988988d9e3f67931e9a33c116"
+    },
+    {
+      "path": "results/run_004/same_parent_race_10/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_10/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "80829e459c75a0bf5db39fee0e4007cb23f286eacdafa445c5bc6b9e086fabad"
+    },
+    {
+      "path": "results/run_004/same_parent_race_10/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "e66f768fce1c682f064749551d898db7408e53331d229b325094e701bd98df84"
+    },
+    {
+      "path": "results/run_004/same_parent_race_11/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_11/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "070be2f3f5b71d13506a3ba7cb1679e1e461b233d5db26e279bb13825bd9dcf7"
+    },
+    {
+      "path": "results/run_004/same_parent_race_11/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "c73435ec367b9161df937c2736e642da5a2af5266dbe5f9928d3cb0db0487dad"
+    },
+    {
+      "path": "results/run_004/same_parent_race_11/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_004/same_parent_race_11/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "73c876753d997e90e5efaa271b2675e15a93c69bbbb7934557e94bbfd53af1d0"
+    },
+    {
+      "path": "results/run_004/same_parent_race_11/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "d61069ea6ec4e773d70c9433756e4b29ab994cd240b8ba2d7f8051acac7254ce"
+    },
+    {
+      "path": "results/run_005/after_commit_before_publication/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/after_commit_before_publication/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "c24a6b0e31ee181b3f6117bb047c44039c00b628fa449852bdf879b643da5b2d"
+    },
+    {
+      "path": "results/run_005/after_commit_before_publication/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "bba15d7fe99aaecf76664ce7f284de5caa3f95f88306623573cde2573e16a1c7"
+    },
+    {
+      "path": "results/run_005/after_commit_before_publication/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/after_commit_before_publication/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "41e90259229a22b9e08ff9ec7580057db178d819ffe59434490eec9214235490"
+    },
+    {
+      "path": "results/run_005/after_commit_before_publication/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "152b4961a4691a30d2428615dfc3271536d6c471aa22fd305eab9d1253aad93f"
+    },
+    {
+      "path": "results/run_005/after_install_before_commit/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/after_install_before_commit/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "4f76109a2d2a160ec84ba8fa98602cd6c4ab01e70e873748fabde19ceadc2558"
+    },
+    {
+      "path": "results/run_005/after_install_before_commit/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "ba6917ed3ecdfe33f02f625d1ee18924fb0fb71e78014691826c82916bde65cb"
+    },
+    {
+      "path": "results/run_005/after_install_before_commit/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/after_install_before_commit/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "8fa6a4e0b13b6530bfdcb46a3e988080ed565fc1c592da692b1ac94bc386756b"
+    },
+    {
+      "path": "results/run_005/after_install_before_commit/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "ef2d22a01dbd089a1fd9f19b48301d9a97b012188b1a6575a7a571c12209ffab"
+    },
+    {
+      "path": "results/run_005/after_publication_before_client_ack/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/after_publication_before_client_ack/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a052f972f7c8241489fe92120d367f5aafecbbd468cf5e742aeeb6919148d714"
+    },
+    {
+      "path": "results/run_005/after_publication_before_client_ack/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "010ea543996b0dfb9502129ec4e7bbf0deca0246fb009406cff7f846aaacc78b"
+    },
+    {
+      "path": "results/run_005/after_publication_before_client_ack/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/after_publication_before_client_ack/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "aa8bb34574098db553ee3679e7e2d996076139946597312df7b4bce383b12803"
+    },
+    {
+      "path": "results/run_005/after_publication_before_client_ack/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "8944dbab695fdf5649b0b2f78d974370bc5ca11f082c2f28035bd07761d0f581"
+    },
+    {
+      "path": "results/run_005/authority_rollback_negative_control/authority/genesis_backup.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "16c648c1524098e7ca147cf89220547d6386ca3757321eb48e878dcf5176ea9f"
+    },
+    {
+      "path": "results/run_005/authority_rollback_negative_control/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/authority_rollback_negative_control/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "8d564756f3a941a18a97925b567b2797af83c92e02c58e730166187219798ce0"
+    },
+    {
+      "path": "results/run_005/authority_rollback_negative_control/authority/journal.sqlite3-wal",
+      "size_bytes": 115392,
+      "sha256": "7edfab4f3fbe80ec43d3353d000be9b082995297b873b3f723f37b5c5893c113"
+    },
+    {
+      "path": "results/run_005/authority_rollback_negative_control/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/authority_rollback_negative_control/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "8c57004c27a68bcc30d88ba95e04af99f985f269c44fb650aefc68a75323459b"
+    },
+    {
+      "path": "results/run_005/authority_rollback_negative_control/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "062e908b604557a749c948a30fb53b8012adb647ef111a70f508b8c812761ea7"
+    },
+    {
+      "path": "results/run_005/before_reservation/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/before_reservation/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "eae09d624d4668a8e0d7fa532e47a00f67058f7664d9219b7de4aa379d41318b"
+    },
+    {
+      "path": "results/run_005/before_reservation/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "3fef76c695ab86570fdfd0efbacb22613f2ff02422d61485091bbf32e2222812"
+    },
+    {
+      "path": "results/run_005/before_reservation/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/before_reservation/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0840871881e6cbfd94669bdaf998858672f5ddb804f0e1bc83837a026932bcf1"
+    },
+    {
+      "path": "results/run_005/before_reservation/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "f3f31436f5357bff7cf4a88977b494d35398c038f86a7fe5157290e0bdf13bd8"
+    },
+    {
+      "path": "results/run_005/broken_publish_before_commit/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/broken_publish_before_commit/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "b062a930452b915191c757907854efcfd8136fa50445e5aa2118b9263df0b6a7"
+    },
+    {
+      "path": "results/run_005/broken_publish_before_commit/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "f230352d231b6b692391a54e22f09d586e6721b7e4d459b91b3d535c8974694f"
+    },
+    {
+      "path": "results/run_005/broken_publish_before_commit/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/broken_publish_before_commit/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "c5900b15af24bea4929c157f6cfef5ddf3583989ac95ef047a9705a986c7f1f5"
+    },
+    {
+      "path": "results/run_005/broken_publish_before_commit/recipient/inbox.sqlite3-wal",
+      "size_bytes": 49472,
+      "sha256": "1e65610210389f9fff3715864223583b83174c8d6600e0269c01dc3b18e36345"
+    },
+    {
+      "path": "results/run_005/host_restore_only/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/host_restore_only/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "751b37dcf2ffde25059becfb3f35c45a9ccae01653726fdf21c6ddeb3bef2bfe"
+    },
+    {
+      "path": "results/run_005/host_restore_only/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "261ca934d9dab66a8a6bf4483e146feeba077b13807f6f208a6218e5557e3d48"
+    },
+    {
+      "path": "results/run_005/host_restore_only/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/host_restore_only/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "b08136fcf2045a129c77f2a9637f4155290ce82386aaf0017148ea43c46d555e"
+    },
+    {
+      "path": "results/run_005/host_restore_only/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "8a3c24f22e6e64a60ba4a9b31ecdc210921e8c93ab0e0d64ec0b3f964a8e071b"
+    },
+    {
+      "path": "results/run_005/retry_and_exact_packet/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/retry_and_exact_packet/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "561bf6904b26673b8cab77daf281b2089b2e4f5b8b535afccc599de7da6b8878"
+    },
+    {
+      "path": "results/run_005/retry_and_exact_packet/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "d150f13a2a5fe70b197567e8b8d0b4bb69b3c587558787794a57a4dc2288242a"
+    },
+    {
+      "path": "results/run_005/retry_and_exact_packet/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/retry_and_exact_packet/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7f4b2ec0fbfb6f074fe702191659ac1b1aa95fa21eb83c3d533d7c26e56b759a"
+    },
+    {
+      "path": "results/run_005/retry_and_exact_packet/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "9667e1ef6bf206569876632b6f97d134b8846d4366bb71d53d1c26e14d7924e1"
+    },
+    {
+      "path": "results/run_005/same_parent_race_00/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_00/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "2034775349ddcf92d7ed4842f72d8c401490858943dd4484b2bec0321f54c2e9"
+    },
+    {
+      "path": "results/run_005/same_parent_race_00/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "397899a1b7815780ee31b12b5d7a02b3eee81ccd835493365f38627d291be725"
+    },
+    {
+      "path": "results/run_005/same_parent_race_00/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_00/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "299921b217fd94f46117438b8c04379e0262cae5e82cfda3ce034466d8daf050"
+    },
+    {
+      "path": "results/run_005/same_parent_race_00/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "68d6be42e549f0042fe3f354b7218675823fc39d25b9ea25fea3e15a739683de"
+    },
+    {
+      "path": "results/run_005/same_parent_race_01/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_01/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "0a50613becbea91aab8e6bbf578a90a74241663c0097d3232047b5baed28121b"
+    },
+    {
+      "path": "results/run_005/same_parent_race_01/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "9b2884aa732b7819c0a42a3c447eb0e4356e95ae1140554269ee74955e66da59"
+    },
+    {
+      "path": "results/run_005/same_parent_race_01/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_01/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "1919e1c096573b4da6cecece9b164d772258ddab5c98d19e9def50f51329b09a"
+    },
+    {
+      "path": "results/run_005/same_parent_race_01/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "15bb8586bb7e5d1f6280f14ed5f4a966d9d25fbda4af2713f1cefaaa95d073ad"
+    },
+    {
+      "path": "results/run_005/same_parent_race_02/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_02/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "2efa91b12b2b3aedeb62c3c10cb8b54aeb2e044e788be287e1fefda5be7dc64a"
+    },
+    {
+      "path": "results/run_005/same_parent_race_02/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "d14e5190443166706445d7c79a49e3b4d3ad09b9566cc51388dbcdb7271312be"
+    },
+    {
+      "path": "results/run_005/same_parent_race_02/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_02/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "14ce46eba964e9b3bcb171d14a9cb57958877d70d0e6ba312dd7910b966fe982"
+    },
+    {
+      "path": "results/run_005/same_parent_race_02/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "76e6878de919454d80eb7d77301b51527a8a8e084a41ca85ec1d3e94cf9ca956"
+    },
+    {
+      "path": "results/run_005/same_parent_race_03/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_03/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "6b36158981209468a281223874571f8fb9ac70ac4589dc451a8d1e91380ea71f"
+    },
+    {
+      "path": "results/run_005/same_parent_race_03/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "682981b268e4b3ce55d869b912d02d03150d8877b4de8a132a29fbec4589b1d2"
+    },
+    {
+      "path": "results/run_005/same_parent_race_03/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_03/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "32a32bd36593199a550336fae33a1042af4d0fbc89364297fb557f0ba32950bb"
+    },
+    {
+      "path": "results/run_005/same_parent_race_03/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "a12dbe4f80293d242a92a0bf020fa8242953900a273070a3d77a81e77e3c0f5c"
+    },
+    {
+      "path": "results/run_005/same_parent_race_04/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_04/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a7d72409bc7c5d994c88080b16ef2cb8f6c1d1ac6487e5db0b67f8dde672823a"
+    },
+    {
+      "path": "results/run_005/same_parent_race_04/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "d1caaaefb246e77541cfdee28dd21291b6407db9057804aed735c20af5e7569d"
+    },
+    {
+      "path": "results/run_005/same_parent_race_04/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_04/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "18bff6eb7344918fae6428580255adf0be5c196aca7d982cbc89476456e66b41"
+    },
+    {
+      "path": "results/run_005/same_parent_race_04/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "af8f589f6a68c18e335e83b473f523714a64afeaa656aea0aec6aea8eeaf9fc7"
+    },
+    {
+      "path": "results/run_005/same_parent_race_05/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_05/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "eec476ced5b3006438503b13f9cf8fa8603c187bcb08c88314196e855892e6d9"
+    },
+    {
+      "path": "results/run_005/same_parent_race_05/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "aadaccd2b9ea40d4cde26e17fb4f7cad70725ce6c2fa1efdf01ac225e5d89eab"
+    },
+    {
+      "path": "results/run_005/same_parent_race_05/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_05/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "2c64cb9b1e6883dbd5dc23bca3856ace9930cd03b8ee75d9bea70e88dafe6579"
+    },
+    {
+      "path": "results/run_005/same_parent_race_05/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "e0c3eb1e77e0172897a17db6e302c0531b0984f9fc3b9b458c02af3418bed931"
+    },
+    {
+      "path": "results/run_005/same_parent_race_06/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_06/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ef925e93735119b56f2e970f704d2282075f03da3a23e2ef29c715906bd89b2e"
+    },
+    {
+      "path": "results/run_005/same_parent_race_06/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "0c00e4d3b6935534fee7e82c966694e3e44897047f31f4ddc73743bc3ca5e4a3"
+    },
+    {
+      "path": "results/run_005/same_parent_race_06/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_06/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ef3e143e7f2ce0676651fdfe9a2244e79f01cf997e45e2954d0ca937ee7dee7e"
+    },
+    {
+      "path": "results/run_005/same_parent_race_06/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "7df82021e84e45389e7dc71abd818ed94ecee599c802180ae46ed06f51928eb4"
+    },
+    {
+      "path": "results/run_005/same_parent_race_07/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_07/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "7f86947605cd9a0072b731a541c53d5e2e0352ca145f5f56fc88662eee337ac6"
+    },
+    {
+      "path": "results/run_005/same_parent_race_07/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "1b24e76136717193579ff80aa09bff8e79c6239dc03a92d690e83aafe5fb742c"
+    },
+    {
+      "path": "results/run_005/same_parent_race_07/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_07/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "8536cabebc28a751a9f191b0cdea8fcfd290a40bcc9c079f6f240579e5882fd9"
+    },
+    {
+      "path": "results/run_005/same_parent_race_07/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "052387b3d106c4323aeef7b61e96df56d578436cd8bbdd179afaef5356fd7720"
+    },
+    {
+      "path": "results/run_005/same_parent_race_08/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_08/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "e1d69a67d70386ed2d88d5ce1dd84099f21247ffd52caa50dbad3f2f3fe7285d"
+    },
+    {
+      "path": "results/run_005/same_parent_race_08/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "d5d504d17f92787d510cb1466d009554e26f72b57984272aebb5c6088f2aa9a6"
+    },
+    {
+      "path": "results/run_005/same_parent_race_08/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_08/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "36294ac9e19875592de4327bc7927676777d0a82ee17447a48f163896e56db56"
+    },
+    {
+      "path": "results/run_005/same_parent_race_08/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "5882628b285bb8982ab661c9b37f30fcf39b9b026d8df4a3e65f83a13d97e659"
+    },
+    {
+      "path": "results/run_005/same_parent_race_09/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_09/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "a5e4cf722e6ad75dbfb2b93a440ee8b36c4f740b1e26ccdfa894dfd8e1891b73"
+    },
+    {
+      "path": "results/run_005/same_parent_race_09/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "4d85a5443c5921d060c7c830c87444d7c330889d1cc6db9e41e4f4c809da2f88"
+    },
+    {
+      "path": "results/run_005/same_parent_race_09/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_09/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "41f808afcda8260e2bdea31ed01003df94c3a5e122c337e9a1a0ac3a2435e4d3"
+    },
+    {
+      "path": "results/run_005/same_parent_race_09/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "ac589ecab342712eed21520d812f5e41b09d6e98bc74d5903be885755bc307ec"
+    },
+    {
+      "path": "results/run_005/same_parent_race_10/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_10/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "037848e825b2badce1f44e7da47c33003af90805e5b4fd76cf51830fe6f4ed8b"
+    },
+    {
+      "path": "results/run_005/same_parent_race_10/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "989537ba24b3b32722ae17b5fcb08f09eee30f5ca4bbb5de2bef68cd79b2c7f6"
+    },
+    {
+      "path": "results/run_005/same_parent_race_10/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_10/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "6f785f5cf692456f7dcda2238aea431dca6633646f6bb397ef619cacb0ee403b"
+    },
+    {
+      "path": "results/run_005/same_parent_race_10/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "fb05cba106aa6388f3add11f70c7f3138c9900d8b14948518cb7e42b3327b80f"
+    },
+    {
+      "path": "results/run_005/same_parent_race_11/authority/journal.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_11/authority/journal.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "8e5ef35a9a0cbf6e8b4a6d34f0c10555f150ab377e0761a15694efcd1c5e45cd"
+    },
+    {
+      "path": "results/run_005/same_parent_race_11/authority/journal.sqlite3-wal",
+      "size_bytes": 65952,
+      "sha256": "7ad649a7a3fdd0cc5bc24650554237d2ee95d890f4eaba9c7ae75f0ce8d3ebbf"
+    },
+    {
+      "path": "results/run_005/same_parent_race_11/recipient/inbox.sqlite3",
+      "size_bytes": 4096,
+      "sha256": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda"
+    },
+    {
+      "path": "results/run_005/same_parent_race_11/recipient/inbox.sqlite3-shm",
+      "size_bytes": 32768,
+      "sha256": "ae6e90f19831c11ddfde98f76484649385b1904eb60aea9090dfa56c9a56dae2"
+    },
+    {
+      "path": "results/run_005/same_parent_race_11/recipient/inbox.sqlite3-wal",
+      "size_bytes": 41232,
+      "sha256": "73de32df7f027f7143aa39624360d11108152814388838d309d1cabf89db0477"
+    }
+  ],
+  "raw_count": 592,
+  "raw_bytes": 17987632,
+  "archive_sha256": "6b543082057061bdfca0060b397dc82abc615fcbd60a8331530448d053e91690",
+  "archive_bytes": 354462,
+  "raw_files_unchanged": true,
+  "scope": "Owned SQLite/WAL/SHM evidence only; raw files retained and gitignored; logical JSON snapshots/logs remain ordinary artifacts"
+}

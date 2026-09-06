@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/build/Assurance/ResidentBfvSourcePhase.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Assurance/ResidentBfvSourcePhase.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "f212517652e632159dc3fb448164740a16459a67ed29cb277d3da0635f43f08e",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Assurance/ResidentBfvSourcePhase.lean:53:79: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  b \u2265 4096\n  a \u2265 0\n  a - b \u2265 1\nwhere\n a := \u2191width\n b := \u2191\u2191j\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Assurance/ResidentBfvSourcePhase.lean:64:2: error: Type mismatch: After simplification, term\n  h\n has type\n  (coefficient Q N \u2191j) ((phase 2) (encrypt (keygen 2 3 1) 4 1 2 (encodeRing Q N t32 delta message))) =\n    \u2191((if \u2191j = 0 then 9671406214650060397780993 else 0) / t32) + if \u2191j = 0 then 9 else 0\nbut is expected to have type\n  (coefficient Q N \u2191j) ((phase 2) (encrypt (keygen 2 3 1) 4 1 2 (encodeRing Q N t32 delta message))) =\n    \u2191((if j = 0 then q83 else 0) / t32) + if j = 0 then 9 else 0\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Assurance/ResidentBfvSourcePhase.lean:61:13: warning: declaration uses `sorry`\n",
+  "stderr": "",
+  "elapsed_seconds": 3.528768834003131
+}

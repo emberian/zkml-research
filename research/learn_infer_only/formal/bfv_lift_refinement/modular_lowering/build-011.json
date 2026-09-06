@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheRnsSourceWord.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheRnsSourceWord.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 3.3334270420018584
+  }
+]

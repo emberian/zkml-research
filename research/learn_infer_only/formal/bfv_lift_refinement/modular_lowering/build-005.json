@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheBarrettWord.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:131:75: error: unexpected token '='; expected ')', ',' or ':'\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:121:65: error: Unexpected term `rr.left`; expected single reference to variable\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:126:66: error: No goals to be solved\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:126:36: error: unsolved goals\nB p a : \u2124\nhB : 0 < B\nhp : 1 < p\nhpB : 2 * p < B\nha0 : 0 \u2264 a\nha : a < B ^ 2\nhparts : B ^ 2 / p % B + B ^ 2 / p / B < B\nc : \u2124 := B ^ 2 / p\nc0 : 0 \u2264 c\ncB : c < B ^ 2\nal0 : 0 \u2264 a % B\nal1 : a % B < B\ncl0 : 0 \u2264 c % B\ncl1 : c % B < B\nah0 : 0 \u2264 a / B\nch0 : 0 \u2264 c / B\naqr : B * (a / B) + a % B = a\ncqr : B * (c / B) + c % B = c\nah1 : a / B < B\nch1 : c / B < B\nll : 0 \u2264 a % B * (c % B) \u2227 a % B * (c % B) < B ^ 2\nhl : 0 \u2264 a / B * (c % B) \u2227 a / B * (c % B) < B ^ 2\nlh : 0 \u2264 a % B * (c / B) \u2227 a % B * (c / B) < B ^ 2\nhh : 0 \u2264 a / B * (c / B) \u2227 a / B * (c / B) < B ^ 2\nmid : 0 \u2264 middle B a c \u2227 middle B a c < B ^ 2\nqe : splitQuotient B a c = a * c / B ^ 2\nrr :\n  0 \u2264 a - a * (B ^ 2 / p) / B ^ 2 * p \u2227\n    a - a * (B ^ 2 / p) / B ^ 2 * p < 2 * p \u2227 (a - a * (B ^ 2 / p) / B ^ 2 * p) % p = a % p\nq0 : 0 \u2264 a * c / B ^ 2\nqp0 : 0 \u2264 a * c / B ^ 2 * p\nqp1 : a * c / B ^ 2 * p < B ^ 2\nq1 : a * c / B ^ 2 < B ^ 2\nrB : a - a * c / B ^ 2 * p < B\nh1 : 1 \u2264 B\n\u22a2 a - a * c / B ^ 2 * p < B ^ 2\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:128:82: error: A placeholder `_` cannot be used where a function is expected\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:153:4: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  d \u2265 0\n  c + d \u2265 0\n  a \u2265 1\n  a - b \u2264 -1\n  a - c - d \u2264 0\n  a - c \u2265 1\n  a - d \u2265 1\n  2*a - c - d \u2265 1\nwhere\n a := p\n b := B\n c := p * (x / p)\n d := x % p\n",
+    "stderr": "",
+    "elapsed_seconds": 5.01867933300673
+  }
+]

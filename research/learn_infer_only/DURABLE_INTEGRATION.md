@@ -276,8 +276,11 @@ only source-matching successes support these claims. [EXECUTED] A separate unifi
 part of16 modules/265 pins, with four umbrella checks and actual combined-patch
 apply/content comparison: `experiments/integration/results/run_002/report.json`
 reports passed. This reuses companion dependency oleans and is not a clean
-whole-tree rebuild. Independent adversarial source review is being recorded
-separately and must not be inferred from compilation alone.
+whole-tree rebuild. Independent adversarial source review subsequently passed at
+these frozen hashes: `ADVERSARIAL_REVIEW.md` §9 and its four `lean_ema_*_01.json`
+module checks. Its independently compiled census also checked all65,536 actual
+descriptor candidates. A deliberately chosen zero-oracle false-receipt control
+keeps the descriptor-premise/ROM distinction explicit; it is not a hash attack.
 
 [OPEN] This closes the **public semantic** gap exposed by the first-tranche
 constant-root tooth. The checker still sees canonical plaintext openings and
@@ -291,3 +294,92 @@ algebra/codec result plus exhaustive Python bit-circuit agreement is not a Lean
 refinement theorem for TFHE-rs or a cryptographic proof of its encrypted circuit.
 Physical durable atomicity, complete output mediation, secret entropy, recipient
 transport, and the first tranche's setup/privacy residuals remain open.
+
+
+## Third tranche: exact public ciphertext-window history
+
+[EXECUTED] The new patch
+`formal/durable_integration/bfv_window/minidregg-ciphertext-window.patch`
+(SHA256 `630d2fa6c0ec0c2b049fcc0affeca6c9b22a5a264cf638890780e9e0fe5eb4eb`)
+adds three modules with44 exact pins. Detailed statements, hashes, commands,
+source paths, witnesses and residuals are in the owned
+`experiments/durable_integration/bfv_window/README.md`; `review.json` records
+green Theory/Assurance umbrella checks, actual patch apply/content comparison
+and full copied Theory/Selvage import-boundary checks. First-tranche and EMA
+patches remain frozen. Companion dependency oleans were reused.
+
+[DERIVED] `Theory/CiphertextWindow.lean:294`, `reachable_queue_sum`, proves
+accumulator=sum(exact current queue) and length≤W after every checked history
+in any additive commutative ciphertext group. Admission sees canonical public
+ciphertext bytes; expiry must match the current head id and exact canonical
+bytes. `all_finite_horizons:339` constructively continues an admitted input
+stream for every finite horizon, retaining admission/id provenance. There are
+no plaintext fields, root assumptions, noise bounds or cryptographic claims
+in this algebra theorem.
+
+[DERIVED] `Assurance/CiphertextWindowCell.lean:188`,
+`executed_history_invariant`, ties that logical history to actual canonical
+DataSnapshot bytes, existing validated resource writes/preflight/installs and
+the actual journal length **for exclusive window-admission histories**.
+Separately journaled inference/no-op needs a journal admission projection;
+generic authority revision is not a window counter. A constant-root witness includes
+nonzero admission, exact oldest-ciphertext expiry and replay of the exact
+recorded transaction without another subtraction. Wrong ciphertext, stale id,
+denied input and a detached counter/journal history are refused; bypassing
+expiry equality leaves precisely old−proposed ciphertext debt.
+
+[EXECUTED] Actual vendored BFV serialization controls found two concrete seams:
+the empty zero placeholder panics on serialization, and seeded/expanded
+ciphertexts can have identical polynomials with different protobuf bytes.
+A compatible public nonempty zero, obtained by public ciphertext self-
+subtraction, normalizes both tested cases using `ct+zero`, preserving the
+tested public-key bytes. `serde_check_02.json` retains commands, source hashes,
+expected caught panic and positive controls. These findings do not attack
+the existing public-key window; they refute calling raw serialization a
+universal lawful canonical codec without its representation domain.
+
+[OPEN] The actual Rust RNS/NTT/group/normalization refinement, admission source
+and range proof, implementation phase/readout relation, BFV descriptor/FS
+adapter, hidden evidence and physical persistence/output mediation remain
+explicit obligations. The HE lane separately composes this exact queue sum
+with a modular phase map and horizon-independent noise premises. The queue
+proof itself neither decrypts nor proves absence of a reader. Scry0/web0.
+
+
+## Fourth tranche: actual journal/process crashes
+
+[EXECUTED] `experiments/durable_integration/persistent_journal/README.md` and
+`results/run_005/report.json` record the local SQLite/Unix-socket fixture:
+122 subprocess commands, four actual SIGKILL boundaries, twelve races through
+pairs of separate authority workers, eight concurrent exact retries, sixteen
+changed-identity refusals, host restore and two negative controls. Fixture
+context/intent/token/packet bytes are exported from the existing accepted
+Bool subject; computational validity is an explicit public allowlist premise,
+not a new cryptographic verifier. No frozen Lean source changed.
+
+[EXECUTED] Uncommitted installation rolls back; committed installation survives
+restart. The publication/acknowledgment gap yields two identical transport
+attempts and one retained recipient packet. Exact retry reads the installed
+journal packet, never a caller-supplied replacement. Restoring only host state
+leaves authority revision/currentness intact and refuses the stale fork.
+Generic authority revision is kept distinct from any window-admission count.
+
+[REFUTED: omitted continuity premises] Publishing before commit leaves an
+orphan packet after the state rolls back. Restoring the authority database
+itself re-enables a second committed packet at the same nonce; the still-current
+recipient refuses that conflicting publication, but the authority history has
+already forked. The local same-user files model separate roles and do not
+constitute an independently protected finality resource. Recipient persistence
+and deduplication are additional explicit assumptions; physical network
+exactly-once delivery is not claimed.
+
+[OPEN] This is an actual process-crash/concurrency fixture, not the kernel's
+implementation-refinement proof, a power-loss/distributed durability theorem,
+or a hidden-resident implementation. Full commands, source hashes, snapshots,
+outputs and precise fixture/gate/serialization scope are in its owned README.
+Trusted authority startup alone selects fault controls; normal client fault
+fields are refused. Raw databases are hashed/compressed and gitignored.
+No new private credentials, external messages or queries; Scry0/web0.
+[DERIVED] The window bounds current state, not uncompacted replay history:
+full canonical post-states retained per admission can cost T·W·ciphertext-size
+payload without an additional sharing/compaction refinement.

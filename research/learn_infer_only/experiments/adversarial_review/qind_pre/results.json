@@ -1,0 +1,77 @@
+{
+  "classification": "independent finite premise controls, not a cryptographic theorem checker",
+  "reviewed_target": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qind_pre/QIND_PRE_LIFT.md",
+    "sha256": "78b5140be6fd2b2cd7d15706eabad4ee2da476b437ef310f1feb77ec5d3dbd66"
+  },
+  "primary_source": {
+    "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf",
+    "sha256": "58bb2eb72bc8e5c3eaf3193fefd6c72754ff428265231fb459b0de6c8db32e30",
+    "access": "Def2.4 p8; source algorithms/11hybrids pp13-17; AppendixA pp19-24 and AppendixC p25 read"
+  },
+  "qualified_QIO": {
+    "exact_rational_cases": 3125,
+    "bound": "total_gap <= qualified_gap + common_prechallenge_bad_probability",
+    "challenge_dependent_event_falsifier": {
+      "qualified_gap": 0,
+      "world0_bad_probability": 0,
+      "actual_gap": 1
+    }
+  },
+  "joint_quantum_advice": {
+    "classification": "exact 4x4 rational density matrices, no quantum FE implementation",
+    "classical_Y_marginals_equal": true,
+    "quantum_R_marginals_equal": true,
+    "joint_accept_probabilities": [
+      "1",
+      "0"
+    ],
+    "one_copy_measurement_joint_gap": "1",
+    "lesson": "separate Y and R marginals cannot replace joint compatibility"
+  },
+  "delayed_signature": {
+    "classification": "symbolic signing-query transcript control only",
+    "exact_future_challenge_query_is_allowed_before_release": true,
+    "same_query_is_new_pair_with_delayed_signing": true,
+    "same_query_is_new_pair_after_eager_signing": false,
+    "minimal_simulated_key_constants": [
+      "t_star",
+      "Y_f",
+      "MPK",
+      "PKE_secret",
+      "punctured_PRF_key",
+      "f"
+    ],
+    "unreleased_signature_literal_present": false,
+    "lesson": "minimal simulated code and delayed signature justify the zero-query forgery reduction"
+  },
+  "bad_history": {
+    "cases": [
+      {
+        "bad_probability": "0",
+        "attained_measurement_gap": "0"
+      },
+      {
+        "bad_probability": "1/8",
+        "attained_measurement_gap": "1/8"
+      },
+      {
+        "bad_probability": "1/2",
+        "attained_measurement_gap": "1/2"
+      },
+      {
+        "bad_probability": "1",
+        "attained_measurement_gap": "1"
+      }
+    ],
+    "no_physical_state_copy_is_performed": true
+  },
+  "new_queries": {
+    "SQL": 0,
+    "schema": 0,
+    "web": 0,
+    "Kagi": 0
+  },
+  "script_sha256": "c870df3f7ea756f30b841a5dfb5f4b736076a2da3021309e1c645a33000172a7",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]"
+}

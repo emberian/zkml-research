@@ -1,0 +1,121 @@
+{
+  "label": "SOURCE exact local implementation map; DERIVED theorem correspondence, not Rust semantics refinement",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/source_map.py"
+  ],
+  "records": [
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs",
+      "sha256": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3",
+      "lines": [
+        17,
+        22
+      ],
+      "actually_seen": "implementation source",
+      "operation": "constant-time mask/xor selector",
+      "proof_endpoint": "FheBarrettWord.mask_selection"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs",
+      "sha256": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3",
+      "lines": [
+        54,
+        69
+      ],
+      "actually_seen": "implementation source",
+      "operation": "Modulus bounds and Barrett reciprocal constructor",
+      "proof_endpoint": "FheRnsSourceWord.target_word_bounds"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs",
+      "sha256": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3",
+      "lines": [
+        169,
+        208
+      ],
+      "actually_seen": "implementation source",
+      "operation": "Shoup reciprocal and lazy multiplication",
+      "proof_endpoint": "FheShoupWord.wordLazyShoup_correct"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs",
+      "sha256": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3",
+      "lines": [
+        577,
+        580
+      ],
+      "actually_seen": "implementation source",
+      "operation": "canonical u128 reduction wrapper",
+      "proof_endpoint": "FheBarrettWord.wordReduce_correct"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs",
+      "sha256": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3",
+      "lines": [
+        635,
+        645
+      ],
+      "actually_seen": "implementation source",
+      "operation": "one-step lazy residue correction",
+      "proof_endpoint": "FheBarrettWord.wordReduceOne_correct"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs",
+      "sha256": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3",
+      "lines": [
+        672,
+        687
+      ],
+      "actually_seen": "implementation source",
+      "operation": "two-word lazy Barrett reduction",
+      "proof_endpoint": "FheBarrettWord.wordLazyBarrett_correct"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/scaler.rs",
+      "sha256": "82719d9ba27cc48542a6ba6989240217cc50d9005591208e7d7648b211f33c4f",
+      "lines": [
+        76,
+        116
+      ],
+      "actually_seen": "implementation source",
+      "operation": "gamma and omega projection/Shoup setup",
+      "proof_endpoint": "FheRnsModularAccumulation.projected_product; constructor remains inspected source"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/scaler.rs",
+      "sha256": "82719d9ba27cc48542a6ba6989240217cc50d9005591208e7d7648b211f33c4f",
+      "lines": [
+        250,
+        304
+      ],
+      "actually_seen": "implementation source",
+      "operation": "Garner and correction accumulators/sign/magnitude",
+      "proof_endpoint": "existing FheRnsScale word lemmas; FheRnsSourceWord magnitude lemmas"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/scaler.rs",
+      "sha256": "82719d9ba27cc48542a6ba6989240217cc50d9005591208e7d7648b211f33c4f",
+      "lines": [
+        307,
+        340
+      ],
+      "actually_seen": "implementation source",
+      "operation": "per-target initialization/correction/product accumulation/reduction",
+      "proof_endpoint": "FheRnsSourceWord.sourceWordRefinement"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/mod.rs",
+      "sha256": "f0a88975e063a68febcf18559eb40b9445ef519f60305687a3c4becf3c5bc5c7",
+      "lines": [
+        109,
+        119
+      ],
+      "actually_seen": "implementation source",
+      "operation": "BigUint projection into target residues",
+      "proof_endpoint": "inspected constructor source; no Rust BigUint proof"
+    }
+  ],
+  "metered_search_queries": 0,
+  "pdf_downloads": 0
+}

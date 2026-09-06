@@ -1,0 +1,52 @@
+{
+  "pid": 33781,
+  "request_sha256": "6e818f449abed4b7a57fd7fa5b748db163d5547655f5e19ebc5100399f5b4ae7",
+  "answer": {
+    "installed_state": [
+      1
+    ],
+    "nonce": {
+      "canonical_bytes": [
+        2,
+        255,
+        7,
+        255,
+        255
+      ],
+      "codec_version": 1,
+      "domain": 101,
+      "nullifier_id": 7
+    },
+    "packet": {
+      "canonical_bytes": [
+        11,
+        255,
+        7,
+        255,
+        255,
+        255,
+        1,
+        255,
+        1,
+        255,
+        19,
+        255,
+        23,
+        255,
+        255,
+        255,
+        1,
+        255,
+        1,
+        255
+      ],
+      "codec_version": 1,
+      "domain": 102,
+      "event_id": 91
+    },
+    "publication": "alreadyPublished",
+    "sequence": 1,
+    "status": "replayed",
+    "transaction_id": 91
+  }
+}

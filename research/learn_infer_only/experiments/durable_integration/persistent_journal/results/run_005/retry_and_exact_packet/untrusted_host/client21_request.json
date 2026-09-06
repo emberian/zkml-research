@@ -1,0 +1,100 @@
+{
+  "context": {
+    "authorization": 19,
+    "command": 1,
+    "genesis": 7,
+    "next": 1,
+    "output": 1,
+    "parent": 0,
+    "program": 0,
+    "randomness_commitment": 0,
+    "randomness_rule": 0,
+    "recipient": 23,
+    "version": 1
+  },
+  "intent": {
+    "event": {
+      "canonical_bytes": [
+        11,
+        255,
+        7,
+        255,
+        255,
+        255,
+        1,
+        255,
+        1,
+        255,
+        19,
+        255,
+        23,
+        255,
+        255,
+        255,
+        1,
+        255,
+        1,
+        255
+      ],
+      "codec_version": 1,
+      "domain": 102,
+      "event_id": 91
+    },
+    "exact_charge": {
+      "feeDebit": 1,
+      "incidences": 1,
+      "leaseByteBlocks": 1,
+      "memoryTouches": 1,
+      "networkBytes": 1,
+      "proofWork": 1,
+      "sideEffectCount": 1,
+      "storageBytes": 1,
+      "turnBytes": 1,
+      "witnessBytes": 1
+    },
+    "nullifiers": [
+      {
+        "canonical_bytes": [
+          2,
+          255,
+          7,
+          255,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 101,
+        "nullifier_id": 7
+      }
+    ],
+    "read_guards": [
+      {
+        "cell_id": 7,
+        "expected_root": 1
+      }
+    ],
+    "transaction_id": 91,
+    "writes": [
+      {
+        "canonical_post_bytes": [
+          1,
+          17
+        ],
+        "cell_id": 22,
+        "exact_post": 1,
+        "expected_pre": 0
+      }
+    ]
+  },
+  "openings": {
+    "epoch": 0,
+    "genesis_bytes": [
+      1
+    ],
+    "genesis_id": 7,
+    "pre_bytes": [
+      0
+    ],
+    "prior": [],
+    "state_id": 22
+  }
+}

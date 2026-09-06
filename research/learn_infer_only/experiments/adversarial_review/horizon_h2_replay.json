@@ -1,0 +1,22 @@
+{
+  "label": "EXECUTED owner pure-function replay; no cryptography",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/horizon_h2_replay.py"
+  ],
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/horizon_h2_replay.py": "23ac3b10a170ff6064d270ffe864155ea1428062a33667e0b9b61585baa78ba9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/finite_ladder.py": "c27cdf74e4eab4c68bdd608b7e66aa12783925319675ccef40d1ba2f15455831",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/results/finite_ladder_results.json": "362a5b00027a1dc4d860407fc7606d23d630a5053af3b484a6b3ea0583c4eba6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/FINITE_LADDER.md": "3c94a21d5a529b568da5392702c65cda7e22ace8e5f7be40a783ae93c43cb71c"
+  },
+  "inputs_unchanged": true,
+  "initial_states": 256,
+  "complete_paths": 2304,
+  "behavioral_classes": 14,
+  "issued_keys_exposed": 7,
+  "raw_masters": [],
+  "saved_results_match_after_JSON_normalization": true,
+  "initial_raw_Python_comparison_equal": false,
+  "reviewer_first_attempt_failure": "Raw Python equality failed because public-key dictionary integer keys become strings in JSON; normalized replay matches exactly."
+}

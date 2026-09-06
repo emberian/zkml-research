@@ -1,0 +1,8 @@
+{
+  "sources": {
+    "Compiler/DisjointOraclePhases.lean": "d68ceb0ef64f6e1dd6eae597b10ea68a24e8d1743be0da58d4c892d82d2e8503",
+    "Assurance/ResidentMixedPhases.lean": "42ff5733ed7618b5e1b0ef15e57906c77db334429f303b8acb96b13c98d0b560"
+  },
+  "patch": "minidregg-mixed-oracle-phases.patch",
+  "patch_sha256": "555b41015e5ea248558f0d0bb4a953ce52d3f9558691d901a95fe81cd1e4d164"
+}

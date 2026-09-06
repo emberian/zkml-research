@@ -1,0 +1,526 @@
+--- /dev/null
++++ b/Compiler/DisjointOraclePhases.lean
+@@ -0,0 +1,235 @@
++/-
++Statement-first: a two-phase adaptive query strategy runs against ONE shared
++cache. Disjoint Sum-tagged query encodings make its trace pathwise equal to
++concatenated local traces; this derives, rather than assumes, the product-coin
++coupling. The second strategy may depend on the entire first response history.
++The proof is a cache transport, not a soundness theorem for a dummy relation.
++ATLAS witnesses/falsifiers are instantiated in ResidentMixedPhases.
++-/
++import Selvage.Depth
++
++namespace Minidregg.Compiler.DisjointOraclePhases
++open Minidregg.Selvage
++open Classical
++set_option autoImplicit false
++
++variable {Q Q₀ Q₁ C : Type} [DecidableEq Q] [DecidableEq Q₀] [DecidableEq Q₁]
++
++/-- First occurrence cache lookup with a supplied fresh fallback. -/
++def answer (L : List (Q × C)) (q : Q) (fallback : C) : C :=
++  match L with
++  | [] => fallback
++  | e :: rest => if e.1=q then e.2 else answer rest q fallback
++
++/-- A positional coin is consumed even if an old answer is reused. -/
++def step (ask : List C → Q) (L : List (Q × C)) (coin : C) : List (Q × C) :=
++  let q := ask (L.map Prod.snd)
++  L ++ [(q,answer L q coin)]
++
++def run (ask : List C → Q) (L : List (Q × C)) (coins : List C) : List (Q × C) :=
++  coins.foldl (step ask) L
++
++def liftLeft (L : List (Q₀ × C)) : List ((Q₀ ⊕ Q₁) × C) :=
++  L.map (fun e => (Sum.inl e.1,e.2))
++def liftRight (L : List (Q₁ × C)) : List ((Q₀ ⊕ Q₁) × C) :=
++  L.map (fun e => (Sum.inr e.1,e.2))
++def leftLog (L : List ((Q₀ ⊕ Q₁) × C)) : List (Q₀ × C) :=
++  L.filterMap (fun e => match e.1 with | .inl q => some (q,e.2) | .inr _ => none)
++def rightLog (L : List ((Q₀ ⊕ Q₁) × C)) : List (Q₁ × C) :=
++  L.filterMap (fun e => match e.1 with | .inl _ => none | .inr q => some (q,e.2))
++
++/-- The tag determines which local response history is visible to the active
++program strategy. Both strategies' answers still come from the same full log. -/
++def leftStep (ask : List C → Q₀) (L : List ((Q₀ ⊕ Q₁) × C)) (coin : C) :=
++  let q := Sum.inl (ask ((leftLog L).map Prod.snd))
++  L ++ [(q,answer L q coin)]
++def rightStep (ask : List C → Q₁) (L : List ((Q₀ ⊕ Q₁) × C)) (coin : C) :=
++  let q := Sum.inr (ask ((rightLog L).map Prod.snd))
++  L ++ [(q,answer L q coin)]
++
++def mixedTrace (ask₀ : List C → Q₀) (ask₁ : List C → List C → Q₁)
++    (coins₀ coins₁ : List C) : List ((Q₀ ⊕ Q₁) × C) :=
++  let first := coins₀.foldl (leftStep ask₀) []
++  coins₁.foldl (rightStep (ask₁ (first.map Prod.snd))) first
++
++theorem answer_append (A B : List (Q × C)) (q : Q) (c : C) :
++    answer (A++B) q c = answer A q (answer B q c) := by
++  induction A with
++  | nil => rfl
++  | cons a A ih => simp only [List.cons_append,answer]; split <;> simp_all
++
++theorem tagged_answers (A : List (Q₀ × C)) (B : List (Q₁ × C)) (c : C) :
++    (∀ q,answer (liftLeft A++liftRight B) (.inl q) c=answer A q c) ∧
++    (∀ q,answer (liftLeft A++liftRight B) (.inr q) c=answer B q c) := by
++  have left_other : ∀ q, answer (liftRight B : List ((Q₀ ⊕ Q₁) × C)) (.inl q) c=c := by
++    intro q;induction B with
++    | nil => rfl
++    | cons b B ih => simpa [liftRight,answer] using ih
++  have left_same : ∀ q c, answer (liftLeft A : List ((Q₀ ⊕ Q₁) × C)) (.inl q) c=answer A q c := by
++    intro q c;induction A with
++    | nil => rfl
++    | cons a A ih => simpa [liftLeft,answer] using congrArg (fun x=>if a.1=q then a.2 else x) ih
++  have right_other : ∀ q c, answer (liftLeft A : List ((Q₀ ⊕ Q₁) × C)) (.inr q) c=c := by
++    clear left_same
++    intro q c;induction A with
++    | nil => rfl
++    | cons a A ih => simpa [liftLeft,answer] using ih
++  have right_same : ∀ q, answer (liftRight B : List ((Q₀ ⊕ Q₁) × C)) (.inr q) c=answer B q c := by
++    clear left_other
++    intro q;induction B with
++    | nil => rfl
++    | cons b B ih => simpa [liftRight,answer] using congrArg (fun x=>if b.1=q then b.2 else x) ih
++  constructor
++  · intro q;rw [answer_append,left_other,left_same]
++  · intro q;rw [answer_append,right_other,right_same]
++
++omit [DecidableEq Q₀] [DecidableEq Q₁] in
++theorem tagged_projections (A : List (Q₀ × C)) (B : List (Q₁ × C)) :
++    leftLog (liftLeft A++liftRight B)=A ∧ rightLog (liftLeft A++liftRight B)=B := by
++  constructor <;> simp [leftLog,rightLog,liftLeft,liftRight,List.filterMap_map]
++
++theorem left_step_transport (ask : List C → Q₀) (A : List (Q₀ × C)) (c : C) :
++    leftStep ask (liftLeft A : List ((Q₀ ⊕ Q₁) × C)) c=liftLeft (step ask A c) := by
++  have hp := (tagged_projections A ([] : List (Q₁ × C))).1
++  have ha := (tagged_answers A ([] : List (Q₁ × C)) c).1
++  simp only [liftRight,List.map_nil,List.append_nil] at hp ha
++  unfold leftStep
++  rw [hp]
++  dsimp only
++  rw [ha]
++  simp only [step,liftLeft,List.map_append,List.map_cons,List.map_nil]
++
++theorem right_step_transport (ask : List C → Q₁) (A : List (Q₀ × C))
++    (B : List (Q₁ × C)) (c : C) :
++    rightStep ask (liftLeft A++liftRight B) c=liftLeft A++liftRight (step ask B c) := by
++  have hp := (tagged_projections A B).2
++  have ha := (tagged_answers A B c).2
++  unfold rightStep
++  rw [hp]
++  dsimp only
++  rw [ha]
++  simp only [step,liftRight,List.map_append,List.map_cons,List.map_nil,List.append_assoc]
++
++theorem left_run_transport (ask : List C → Q₀) (coins : List C) (A : List (Q₀ × C)) :
++    coins.foldl (leftStep ask) (liftLeft A : List ((Q₀ ⊕ Q₁) × C))=liftLeft (run ask A coins) := by
++  induction coins generalizing A with
++  | nil => rfl
++  | cons c cs ih => simpa only [List.foldl_cons,left_step_transport,run] using ih (step ask A c)
++
++theorem right_run_transport (ask : List C → Q₁) (coins : List C)
++    (A : List (Q₀ × C)) (B : List (Q₁ × C)) :
++    coins.foldl (rightStep ask) (liftLeft A++liftRight B)=liftLeft A++liftRight (run ask B coins) := by
++  induction coins generalizing B with
++  | nil => rfl
++  | cons c cs ih => simpa only [List.foldl_cons,right_step_transport,run] using ih (step ask B c)
++
++theorem mixed_trace_coupling (ask₀ : List C → Q₀) (ask₁ : List C → List C → Q₁)
++    (coins₀ coins₁ : List C) :
++    mixedTrace ask₀ ask₁ coins₀ coins₁ =
++      let A := run ask₀ [] coins₀
++      liftLeft A++liftRight (run (ask₁ (A.map Prod.snd)) [] coins₁) := by
++  unfold mixedTrace
++  have h₀ := left_run_transport (Q₁:=Q₁) ask₀ coins₀ []
++  change coins₀.foldl (leftStep ask₀) []=liftLeft (run ask₀ [] coins₀) at h₀
++  rw [h₀]
++  dsimp only
++  have hmap : (liftLeft (run ask₀ [] coins₀) : List ((Q₀ ⊕ Q₁) × C)).map Prod.snd=
++      (run ask₀ [] coins₀).map Prod.snd := by simp [liftLeft,List.map_map]
++  rw [hmap]
++  simpa only [liftRight,List.map_nil,List.append_nil] using
++    right_run_transport (ask₁ ((run ask₀ [] coins₀).map Prod.snd)) coins₁ (run ask₀ [] coins₀) []
++
++theorem run_length (ask : List C → Q) (L : List (Q × C)) (coins : List C) :
++    (run ask L coins).length=L.length+coins.length := by
++  induction coins generalizing L with
++  | nil => simp [run]
++  | cons c cs ih => simpa [run,step,List.foldl_cons,Nat.add_assoc,Nat.add_comm,Nat.add_left_comm] using ih (step ask L c)
++
++theorem mixed_query_budget (ask₀ : List C → Q₀) (ask₁ : List C → List C → Q₁)
++    (coins₀ coins₁ : List C) :
++    (mixedTrace ask₀ ask₁ coins₀ coins₁).length=coins₀.length+coins₁.length := by
++  rw [mixed_trace_coupling]
++  simp [liftLeft,liftRight,run_length]
++
++theorem answer_eq_find (L : List (Q × C)) (q : Q) (c : C) :
++    answer L q c = match L.find? (fun e => decide (e.1=q)) with | some e=>e.2 | none=>c := by
++  induction L with
++  | nil => rfl
++  | cons e L ih => simp only [answer,List.find?_cons];split <;> simp_all
++
++/-- Exact transport into the pre-existing Fiat–Shamir game's cache engine. -/
++theorem run_is_srTrace {r : Reduction} {s t : Nat} (P : SrProver r s)
++    (coins : Fin t → r.Chal) : run P.move [] (List.ofFn coins)=srTrace P coins := by
++  classical
++  rw [srTrace_eq_runFrom]
++  unfold run runFrom
++  have h : step P.move=stepOnce P := by
++    funext L c;simp only [step,stepOnce,answer_eq_find];congr 6
++    cases L.find? (fun e=>decide (e.1=P.move (L.map Prod.snd))) <;> rfl
++  rw [h]
++
++/-- Product slicing requires no event independence: the right event is bounded
++for EVERY left history, including histories selected adaptively by the first
++program. The uniform product here is justified by the pathwise cache coupling. -/
++theorem two_phase_union_bound {A B : Type} [Fintype A] [Fintype B]
++    (p : A → Prop) (q : A → B → Prop) {ε₀ ε₁ : ℝ}
++    (h₀ : uniformProb A p ≤ ε₀) (h₁ : ∀ a,uniformProb B (q a) ≤ ε₁)
++    (nonneg₁ : 0≤ε₁) :
++    uniformProb (A×B) (fun c=>p c.1 ∨ q c.1 c.2) ≤ ε₀+ε₁ := by
++  have left : uniformProb (A×B) (fun c=>p c.1) ≤ ε₀ := by
++    rw [←uniformProb_equiv (Equiv.prodComm B A) (fun c : A×B=>p c.1)]
++    exact uniformProb_prod_le (le_trans (uniformProb_nonneg p) h₀) (fun _=>h₀)
++  have right : uniformProb (A×B) (fun c=>q c.1 c.2) ≤ ε₁ :=
++    uniformProb_prod_le nonneg₁ h₁
++  exact le_trans (uniformProb_or_le _ _) (add_le_add left right)
++
++/-- Injective transport preserves every cached answer, including repeats.
++The resident adapter supplies the actual Stage0/EMA byte encoder. -/
++theorem encoded_answer_transport {Bytes : Type} [DecidableEq Bytes]
++    (encode : Q → Bytes) (injective : Function.Injective encode)
++    (L : List (Q × C)) (q : Q) (c : C) :
++    answer (L.map (fun e=>(encode e.1,e.2))) (encode q) c=answer L q c := by
++  induction L with
++  | nil => rfl
++  | cons e L ih =>
++    simp only [List.map_cons,answer]
++    have same : encode e.1=encode q ↔ e.1=q := injective.eq_iff
++    simp only [same,ih]
++
++theorem answer_eq_getD (L : List (Q × C)) (q : Q) (c : C) :
++    answer L q c=((L.find? (fun e=>decide (e.1=q))).map Prod.snd).getD c := by
++  rw [answer_eq_find]
++  cases L.find? (fun e=>decide (e.1=q)) <;> rfl
++
++end Minidregg.Compiler.DisjointOraclePhases
++
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.answer_append' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.answer_append
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.tagged_answers' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.tagged_answers
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.tagged_projections' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.tagged_projections
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.left_step_transport' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.left_step_transport
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.right_step_transport' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.right_step_transport
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.left_run_transport' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.left_run_transport
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.right_run_transport' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.right_run_transport
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.mixed_trace_coupling' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.mixed_trace_coupling
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.run_length' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.run_length
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.mixed_query_budget' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.mixed_query_budget
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.answer_eq_find' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.answer_eq_find
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.run_is_srTrace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.run_is_srTrace
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.two_phase_union_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.two_phase_union_bound
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.encoded_answer_transport' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.encoded_answer_transport
++/-- info: 'Minidregg.Compiler.DisjointOraclePhases.answer_eq_getD' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.DisjointOraclePhases.answer_eq_getD
+--- /dev/null
++++ b/Assurance/ResidentMixedPhases.lean
+@@ -0,0 +1,271 @@
++/-
++Statement-first: actual Stage0 and EMA public full-word receipts share ONE
++program-tagged cache. Stage0 runs first; EMA's entire strategy and all its plans
++may depend on Stage0's complete response history. Query-complete schedules give
++an any-bad bound ((t0+14)*4160+(t1+9)*161)/p^6 with t0+t1 total queries.
++There is no per-receipt factor and no hidden charging of the global budget twice.
++This is a classical uniform-Ext6 ROM theorem for this explicit phase controller;
++arbitrary interleaving, correlated preloaded service history, byte-uniform hash
++sampling, and runtime publication timing are outside its statement.
++-/
++import Compiler.DisjointOraclePhases
++import Assurance.ResidentMultiReceiptSchedule
++import Assurance.ResidentEmaAdaptive
++
++namespace Minidregg.Assurance.ResidentMixedPhases
++open Classical
++open Minidregg.Selvage
++open Minidregg.Compiler
++open Minidregg.Compiler.CommittedTerminalFiatShamir
++open Minidregg.Compiler.CommittedTerminalRealizer
++open Minidregg.Theory.TypedAuthorization (Digest)
++
++set_option autoImplicit false
++set_option maxRecDepth 10000
++set_option maxHeartbeats 2000000
++
++noncomputable abbrev R₀ := ResidentAdaptiveContext.adaptiveReduction
++noncomputable abbrev R₁ := ResidentEmaAdaptive.R
++abbrev Q₀ := SrMove R₀ 0
++abbrev Q₁ := SrMove R₁ 0
++abbrev Coins₀ (t : Nat) := (Fin t → Ext6L) × (Fin 14 → Ext6L)
++abbrev Coins₁ (t : Nat) := (Fin t → Ext6L) × (Fin 9 → Ext6L)
++
++/-- One uniformly sampled vector supplies the entire positional query budget.
++The 14+9 auxiliary coordinates are unused fallback coins from the inherited
++soundness games; query completeness prevents them becoming free verifier queries. -/
++abbrev GlobalCoins (t₀ t₁ : Nat) := (Fin (t₀+t₁) → Ext6L) ×
++  ((Fin 14 → Ext6L) × (Fin 9 → Ext6L))
++
++def splitQueryCoins (t₀ t₁ : Nat) : (Fin (t₀+t₁) → Ext6L) ≃
++    (Fin t₀ → Ext6L) × (Fin t₁ → Ext6L) :=
++  (Equiv.arrowCongr finSumFinEquiv.symm (Equiv.refl Ext6L)).trans
++    (Equiv.sumArrowEquivProdArrow (Fin t₀) (Fin t₁) Ext6L)
++
++def splitGlobalCoins (t₀ t₁ : Nat) : GlobalCoins t₀ t₁ ≃ Coins₀ t₀ × Coins₁ t₁ :=
++  (Equiv.prodCongr (splitQueryCoins t₀ t₁) (Equiv.refl _)).trans
++    (Equiv.prodProdProdComm _ _ _ _)
++
++theorem global_coin_positions {t₀ t₁ : Nat} (c : GlobalCoins t₀ t₁)
++    (i : Fin t₀) (j : Fin t₁) :
++    (splitGlobalCoins t₀ t₁ c).1.1 i=c.1 (Fin.castAdd t₁ i) ∧
++    (splitGlobalCoins t₀ t₁ c).2.1 j=c.1 (Fin.natAdd t₀ j) := by
++  exact ⟨rfl,rfl⟩
++
++theorem uniform_global_coin_transport {t₀ t₁ : Nat} (event : Coins₀ t₀ × Coins₁ t₁ → Prop) :
++    uniformProb (GlobalCoins t₀ t₁) (fun c=>event (splitGlobalCoins t₀ t₁ c))=
++      uniformProb (Coins₀ t₀ × Coins₁ t₁) event :=
++  uniformProb_equiv (splitGlobalCoins t₀ t₁) event
++
++noncomputable def trace {t₀ t₁ : Nat} (P₀ : SrProver R₀ 0)
++    (P₁ : List Ext6L → SrProver R₁ 0) (c₀ : Fin t₀ → Ext6L) (c₁ : Fin t₁ → Ext6L) :=
++  DisjointOraclePhases.mixedTrace P₀.move (fun h=> (P₁ h).move) (List.ofFn c₀) (List.ofFn c₁)
++noncomputable def oracle {t₀ t₁ : Nat} (P₀ : SrProver R₀ 0)
++    (P₁ : List Ext6L → SrProver R₁ 0) (c₀ : Fin t₀ → Ext6L) (c₁ : Fin t₁ → Ext6L)
++    (q : Q₀ ⊕ Q₁) : Ext6L := DisjointOraclePhases.answer (trace P₀ P₁ c₀ c₁) q ext6Zero
++
++theorem actual_trace_coupling {t₀ t₁ : Nat} (P₀ : SrProver R₀ 0)
++    (P₁ : List Ext6L → SrProver R₁ 0) (c₀ : Fin t₀ → Ext6L) (c₁ : Fin t₁ → Ext6L) :
++    trace P₀ P₁ c₀ c₁ =
++      DisjointOraclePhases.liftLeft (srTrace P₀ c₀) ++
++      DisjointOraclePhases.liftRight (srTrace (r:=R₁) (P₁ ((srTrace P₀ c₀).map Prod.snd)) c₁) := by
++  unfold trace
++  rw [DisjointOraclePhases.mixed_trace_coupling,DisjointOraclePhases.run_is_srTrace]
++  dsimp only
++  exact congrArg (fun L : List (Q₁ × Ext6L)=>
++    (DisjointOraclePhases.liftLeft (C:=Ext6L) (Q₁:=Q₁) (srTrace P₀ c₀) : List ((Q₀ ⊕ Q₁) × Ext6L)) ++
++      DisjointOraclePhases.liftRight (C:=Ext6L) (Q₀:=Q₀) L)
++    (DisjointOraclePhases.run_is_srTrace (P₁ ((srTrace P₀ c₀).map Prod.snd)) c₁)
++
++theorem actual_query_count {t₀ t₁ : Nat} (P₀ : SrProver R₀ 0)
++    (P₁ : List Ext6L → SrProver R₁ 0) (c₀ : Fin t₀ → Ext6L) (c₁ : Fin t₁ → Ext6L) :
++    (trace P₀ P₁ c₀ c₁).length=t₀+t₁ := by
++  unfold trace;rw [DisjointOraclePhases.mixed_query_budget];simp
++
++theorem byte_addresses_injective : Function.Injective ResidentEmaAdaptive.programQueryBytes :=
++  ResidentEmaAdaptive.program_query_bytes_injective
++
++theorem stage0_oracle_transport {t₀ t₁ : Nat} (P₀ : SrProver R₀ 0)
++    (P₁ : List Ext6L → SrProver R₁ 0) (c₀ : Fin t₀ → Ext6L) (c₁ : Fin t₁ → Ext6L) :
++    (fun q=>oracle P₀ P₁ c₀ c₁ (.inl q))=ResidentMultiReceiptSchedule.loggedOracle P₀ c₀ := by
++  funext q
++  unfold oracle
++  rw [actual_trace_coupling]
++  have ha := (DisjointOraclePhases.tagged_answers (srTrace P₀ c₀)
++    (srTrace (r:=R₁) (P₁ ((srTrace P₀ c₀).map Prod.snd)) c₁) ext6Zero).1 q
++  trans DisjointOraclePhases.answer (srTrace P₀ c₀) q ext6Zero
++  · exact ha
++  exact DisjointOraclePhases.answer_eq_getD _ q ext6Zero
++
++theorem ema_oracle_transport {t₀ t₁ : Nat} (P₀ : SrProver R₀ 0)
++    (P₁ : List Ext6L → SrProver R₁ 0) (c₀ : Fin t₀ → Ext6L) (c₁ : Fin t₁ → Ext6L) :
++    (fun q=>oracle P₀ P₁ c₀ c₁ (.inr q))=
++      ContextualGate.loggedOracle (P₁ ((srTrace P₀ c₀).map Prod.snd)) c₁ := by
++  funext q
++  unfold oracle
++  rw [actual_trace_coupling]
++  have ha := (DisjointOraclePhases.tagged_answers (srTrace P₀ c₀)
++    (srTrace (r:=R₁) (P₁ ((srTrace P₀ c₀).map Prod.snd)) c₁) ext6Zero).2 q
++  trans DisjointOraclePhases.answer (srTrace (r:=R₁) (P₁ ((srTrace P₀ c₀).map Prod.snd)) c₁) q ext6Zero
++  · exact ha
++  exact DisjointOraclePhases.answer_eq_getD _ q ext6Zero
++
++/-- Expected contexts and opened plans are public. Their original wrappers
++check the actual descriptor-specific program tags and bindings. -/
++noncomputable def AnyBad {hash : List UInt8 → Digest} {M₀ M₁ t₀ t₁ : Nat}
++    (P₀ : SrProver R₀ 0) (P₁ : List Ext6L → SrProver R₁ 0)
++    (expected : Fin M₀ → List Ext6L → ResidentReleaseContext.Context)
++    (receipts₀ : Fin M₀ → List Ext6L → FsReceipt ResidentReleaseContext.Root 4131 13)
++    (plans : List Ext6L → Fin M₁ → List Ext6L → ResidentEmaCell.OpenedPlan hash)
++    (receipts₁ : List Ext6L → Fin M₁ → List Ext6L → ResidentEmaRelease.Receipt)
++    (c : Coins₀ t₀ × Coins₁ t₁) : Prop :=
++  let h₀ := (srTrace P₀ c.1.1).map Prod.snd
++  let h₁ := (srTrace (r:=R₁) (P₁ h₀) c.2.1).map Prod.snd
++  let O := oracle P₀ P₁ c.1.1 c.2.1
++  (∃ j,ResidentAdaptiveContext.wrapperCheck (expected j h₀) (fun q=>O (.inl q)) (receipts₀ j h₀)=true ∧
++      ¬ResidentReleaseContext.Forced (expected j h₀)) ∨
++  (∃ j,ResidentEmaAdaptive.wrapperCheck (plans h₀ j h₁) (fun q=>O (.inr q)) (receipts₁ h₀ j h₁)=true ∧
++      ¬ResidentEmaCell.LogicalStep (plans h₀ j h₁))
++
++/-- Two real descriptor bounds coupled to one cache, with separate charged
++phase lengths. All verifier addresses of every collected receipt are included.
++No independent-oracle assumption is a premise. -/
++theorem any_bad_mixed_receipt_bound {hash : List UInt8 → Digest} {M₀ M₁ t₀ t₁ : Nat}
++    {δ : ℝ} (hδ : δ ∈ Set.Ioo (0 : ℝ) (1/(153 : ℝ))) (hM₀ : 0<M₀) (hM₁ : 0<M₁)
++    (P₀ : SrProver R₀ 0) (P₁ : List Ext6L → SrProver R₁ 0)
++    (expected : Fin M₀ → List Ext6L → ResidentReleaseContext.Context)
++    (receipts₀ : Fin M₀ → List Ext6L → FsReceipt ResidentReleaseContext.Root 4131 13)
++    (plans : List Ext6L → Fin M₁ → List Ext6L → ResidentEmaCell.OpenedPlan hash)
++    (receipts₁ : List Ext6L → Fin M₁ → List Ext6L → ResidentEmaRelease.Receipt)
++    (closed₀ : ResidentMultiReceiptSchedule.AllOutputQueriesLogged t₀ P₀ (fun j h=>ResidentAdaptiveContext.output (receipts₀ j h)))
++    (closed₁ : ∀ h₀,ContextualGate.AllOutputQueriesLogged t₁ (P₁ h₀)
++      (fun j h₁=>ResidentEmaAdaptive.receiptOutput (receipts₁ h₀ j h₁))) :
++    uniformProb (Coins₀ t₀ × Coins₁ t₁)
++      (AnyBad P₀ P₁ expected receipts₀ plans receipts₁) ≤
++      (((t₀ : ℝ)+14)*4160+((t₁ : ℝ)+9)*161) / ((2013265921 : ℝ)^6) := by
++  have left := ResidentMultiReceiptSchedule.all_logged_bad_arithmetic_bound hM₀ P₀ expected receipts₀ closed₀
++  rw [ResidentAdaptiveContext.adaptive_price_numeric] at left
++  have right := fun h₀=>ResidentEmaAdaptive.all_logged_bad_steps_bound hδ hM₁ (P₁ h₀)
++    (plans h₀) (receipts₁ h₀) (closed₁ h₀)
++  have bound := DisjointOraclePhases.two_phase_union_bound _ _ left
++    (fun c₀ : Coins₀ t₀=>right ((srTrace P₀ c₀.1).map Prod.snd)) (by positivity)
++  convert bound using 1
++  · apply uniformProb_congr
++    intro c
++    unfold AnyBad
++    dsimp only
++    rw [stage0_oracle_transport,ema_oracle_transport]
++    rfl
++  · ring
++
++/-- The actual byte encoder is injective over the combined typed query domain;
++therefore a SINGLE byte-addressed cache gives exactly these typed answers. -/
++theorem byte_cache_transport {t₀ t₁ : Nat} (P₀ : SrProver R₀ 0)
++    (P₁ : List Ext6L → SrProver R₁ 0) (c₀ : Fin t₀ → Ext6L) (c₁ : Fin t₁ → Ext6L)
++    (q : Q₀ ⊕ Q₁) :
++    DisjointOraclePhases.answer
++      ((trace P₀ P₁ c₀ c₁).map (fun e=>(ResidentEmaAdaptive.programQueryBytes e.1,e.2)))
++      (ResidentEmaAdaptive.programQueryBytes q) ext6Zero=oracle P₀ P₁ c₀ c₁ q :=
++  DisjointOraclePhases.encoded_answer_transport _ byte_addresses_injective _ q ext6Zero
++
++theorem accepted_program_tags {hash : List UInt8 → Digest} (expected : ResidentReleaseContext.Context)
++    (p : ResidentEmaCell.OpenedPlan hash) (O₀ : Q₀ → Ext6L) (O₁ : Q₁ → Ext6L)
++    (rc₀ : FsReceipt ResidentReleaseContext.Root 4131 13) (rc₁ : ResidentEmaRelease.Receipt)
++    (h₀ : ResidentAdaptiveContext.wrapperCheck expected O₀ rc₀=true)
++    (h₁ : ResidentEmaAdaptive.wrapperCheck p O₁ rc₁=true) :
++    rc₀.root.1.program=0 ∧ rc₁.root.1.program=1 := by
++  have root₀ := ResidentReleaseContext.context_binding expected _ rc₀ h₀
++  have linked₀ := ResidentReleaseContext.accepted_linked expected _ rc₀ h₀
++  have pair₁ := ResidentEmaRelease.checked_context p _ rc₁ h₁
++  constructor
++  · rw [root₀];exact linked₀.2.2.2.2.1
++  · rw [pair₁.1];exact pair₁.2.1
++
++/-- Same actual receipts inhabit the two complete local schedules and both
++wrappers under their own shared sampled cache. The two program tags differ;
++the global trace contains fourteen Stage0 plus nine EMA queries. -/
++theorem mixed_two_receipts_premise_inhabited :
++    ∃ (rc₀ : FsReceipt ResidentReleaseContext.Root 4131 13) (rc₁ : ResidentEmaRelease.Receipt),
++      let P₀ := ResidentMultiReceiptSchedule.completeVerifier (M:=1) (by decide)
++        (fun _=>ResidentAdaptiveContext.output rc₀)
++      let P₁ := ContextualGate.completeVerifier (M:=1) (by decide)
++        (fun _=>ResidentEmaAdaptive.receiptOutput rc₁)
++      let O := oracle P₀ (fun _=>P₁) (fun _ : Fin 14=>ext6Zero) (fun _ : Fin 9=>ext6Zero)
++      ResidentMultiReceiptSchedule.AllOutputQueriesLogged 14 P₀
++        (fun _j : Fin 1=>fun _=>ResidentAdaptiveContext.output rc₀) ∧
++      ContextualGate.AllOutputQueriesLogged 9 P₁
++        (fun _j : Fin 1=>fun _=>ResidentEmaAdaptive.receiptOutput rc₁) ∧
++      ResidentAdaptiveContext.wrapperCheck (ResidentReleaseContext.honestContext 1 2)
++        (fun q=>O (.inl q)) rc₀=true ∧
++      ResidentEmaAdaptive.wrapperCheck (ResidentEmaWitness.p ResidentEmaWitness.publicHash)
++        (fun q=>O (.inr q)) rc₁=true ∧
++      rc₀.root.1.program=0 ∧ rc₁.root.1.program=1 ∧
++      (trace P₀ (fun _=>P₁) (fun _ : Fin 14=>ext6Zero) (fun _ : Fin 9=>ext6Zero)).length=23 := by
++  obtain ⟨rc₀,h₀,_⟩ := ResidentAdaptiveContext.honest_wrapper_inhabited (fun _=>ext6Zero)
++  obtain ⟨rc₁,h₁,_,_,_⟩ := ResidentEmaAdaptive.same_receipt_inhabited (fun _=>ext6Zero)
++  have tags := accepted_program_tags _ _ _ _ rc₀ rc₁ h₀ h₁
++  refine ⟨rc₀,rc₁,ResidentMultiReceiptSchedule.planned_verifier_logs_all (by decide) _,
++    ContextualGate.planned_verifier_logs_all (by decide) _,?_,?_,tags.1,tags.2,?_⟩
++  · rw [stage0_oracle_transport,ResidentMultiReceiptSchedule.zero_sampled_oracle]
++    exact h₀
++  · rw [ema_oracle_transport,ContextualGate.zero_sampled_oracle]
++    exact h₁
++  · exact actual_query_count _ _ _ _
++
++/-- Dropping the tag can reuse a first-program response for the other program.
++This is a cache falsifier, not a claim that the actual injective encoder aliases. -/
++theorem omitted_tag_breaks_coupling :
++    DisjointOraclePhases.answer ([(0,false)] : List (Nat × Bool)) 0 true=false ∧
++    DisjointOraclePhases.answer ([] : List (Nat × Bool)) 0 true=true := by decide
++
++theorem zero_ema_budget_fails (P : SrProver R₁ 0) (rc : ResidentEmaRelease.Receipt) :
++    ¬ContextualGate.AllOutputQueriesLogged 0 P
++      (fun _j : Fin 1=>fun _=>ResidentEmaAdaptive.receiptOutput rc) :=
++  ResidentEmaAdaptive.empty_query_log_fails P rc
++
++theorem one_global_coin_receipt_bound {hash : List UInt8 → Digest} {M₀ M₁ t₀ t₁ : Nat}
++    {δ : ℝ} (hδ : δ ∈ Set.Ioo (0 : ℝ) (1/(153 : ℝ))) (hM₀ : 0<M₀) (hM₁ : 0<M₁)
++    (P₀ : SrProver R₀ 0) (P₁ : List Ext6L → SrProver R₁ 0)
++    (expected : Fin M₀ → List Ext6L → ResidentReleaseContext.Context)
++    (receipts₀ : Fin M₀ → List Ext6L → FsReceipt ResidentReleaseContext.Root 4131 13)
++    (plans : List Ext6L → Fin M₁ → List Ext6L → ResidentEmaCell.OpenedPlan hash)
++    (receipts₁ : List Ext6L → Fin M₁ → List Ext6L → ResidentEmaRelease.Receipt)
++    (closed₀ : ResidentMultiReceiptSchedule.AllOutputQueriesLogged t₀ P₀ (fun j h=>ResidentAdaptiveContext.output (receipts₀ j h)))
++    (closed₁ : ∀ h₀,ContextualGate.AllOutputQueriesLogged t₁ (P₁ h₀)
++      (fun j h₁=>ResidentEmaAdaptive.receiptOutput (receipts₁ h₀ j h₁))) :
++    uniformProb (GlobalCoins t₀ t₁)
++      (fun c=>AnyBad P₀ P₁ expected receipts₀ plans receipts₁ (splitGlobalCoins t₀ t₁ c)) ≤
++      (((t₀ : ℝ)+14)*4160+((t₁ : ℝ)+9)*161) / ((2013265921 : ℝ)^6) := by
++  rw [uniform_global_coin_transport]
++  exact any_bad_mixed_receipt_bound hδ hM₀ hM₁ P₀ P₁ expected receipts₀ plans receipts₁ closed₀ closed₁
++
++end Minidregg.Assurance.ResidentMixedPhases
++
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.global_coin_positions' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.global_coin_positions
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.uniform_global_coin_transport' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.uniform_global_coin_transport
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.actual_trace_coupling' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.actual_trace_coupling
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.actual_query_count' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.actual_query_count
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.byte_addresses_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.byte_addresses_injective
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.stage0_oracle_transport' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.stage0_oracle_transport
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.ema_oracle_transport' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.ema_oracle_transport
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.any_bad_mixed_receipt_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.any_bad_mixed_receipt_bound
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.byte_cache_transport' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.byte_cache_transport
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.accepted_program_tags' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.accepted_program_tags
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.mixed_two_receipts_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.mixed_two_receipts_premise_inhabited
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.omitted_tag_breaks_coupling' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.omitted_tag_breaks_coupling
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.zero_ema_budget_fails' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.zero_ema_budget_fails
++/-- info: 'Minidregg.Assurance.ResidentMixedPhases.one_global_coin_receipt_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMixedPhases.one_global_coin_receipt_bound
+--- a/Compiler.lean
++++ b/Compiler.lean
+@@ -104,3 +104,4 @@
+ import Compiler.CommittedTerminalController  -- [CT-controller-lanes] the computable controller: check : … → Except Failure (Receipt Root m) with check_accepts by reflection, gateProof_sound_lane, an honest lane prover via residualSum_sparse (readPoly1_laneRound = mleHonest), receipt_complete / receipt_refuses_tamper / receipt_refuses_false_claim — the demo (m = 5) kernel-decided, and STAGE 0 (4,148 residuals, 13 rounds) as a compiled exhibit: the honest (1,2) proof ACCEPTED END TO END with terminal 0, a forged word refused at the root, at a round check, and at the terminal. The existing noncomputable controller is untouched; its obstruction is exhibited (AdjoinRoot.instField on every Receipt field, toExt6 in digestToExt6, the Finsupp aggregate). Remaining, sized: [CT-factored-prover] ~300, [CT-fiat-shamir-lanes] ~200 (the hash is a def), [CT-joint-price] ~60, [CT-sampled], [CT-merkle-profile].
+ import Compiler.CommittedTerminalFiatShamir  -- [CT-fiat-shamir-lanes] + [CT-joint-price]: the Stage-0 receipt made NON-INTERACTIVE under the tree's own keystone, not an invented oracle model. The controller's protocol is a Reduction (k = m+1: the γ round + m sumcheck rounds; verify IS check) with a PROVED RbrKnowledgeSoundness instance (round 0 priced by gammaZero_prob_le, rounds 1..m by one root, card_agreeFinset_lt); gateProof_fs_sound := fsKeystone_proved.sound at this instance, read out as (t + (m+1)) · (0 + (N−1)/|F| + m·(1/|F|)) in gateProof_fs_sound_reading. The deployed oracle is cSHAKE256 over a lawful-codec encoding of the transcript prefix (encodeMove_injective); fsCheck reflects into fiatShamir (fsCheck_ok_fiatShamir); the causal prover fsProve is complete. Demo kernel-decided (accepted; γ+1 refused as challengeMismatch though check accepts it — the fiatShamir_teeth shape); Stage 0 compiled: honest FS receipt accepted, altered challenge refused, a forged word's own FS run refused. THE PRICE, one expression, every term visible: stage0Receipt_price = (t + 14)·(0 + 4147/p⁶ + 13·(1/p⁶)) with S : BindingCommitment named (only S.commit consumed at full word), stage0Price_value = 4160/2013265921⁶ < 2^−173 by norm_num — FULL-WORD label: [CT-sampled] and [CT-merkle-profile] are not in it; "the deployed cSHAKE realizes the oracle" is [FS-ROM].
+ import Compiler.CommittedTerminalFactoredProver  -- [CT-factored-prover]: the honest prover for the seven factored openings — dense bit-corner tables + pairwise fold, check7 / check7_accepts, gateProof7_sound, sumcheck7_prob_le, and the bridge gammaBatched_eq_sum_table; Stage 0 compiled, demo decided (check7_complete_demo). Named, not closed: [CT-factored-prover-honest] (FactoredProverHonest : the fold messages read to factoredRounds), with its consumer factoredProver_complete_of_honest PROVED.
++import Compiler.DisjointOraclePhases -- one-cache coupling for disjoint two-phase query strategies
+--- a/Assurance.lean
++++ b/Assurance.lean
+@@ -126,3 +126,4 @@
+ import Assurance.SpartanR1CS  -- SPARTAN, composed out of engines we already had. The suspicion this file tests and confirms: Spartan is not three things to build but three things to COMPOSE. (1) The ZEROCHECK is Selvage.eqMle_fold (identity) plus Selvage.mle_zero_uniform_bound (multilinear Schwartz-Zippel) -- both LANDED, so AirSumcheckQuadratic's docblock residual (ii), still reading "not yet vocabulary", is STALE and not a gap. (2) The OUTER sumcheck is the degree-3 rung at head eqHead tau and body A-hat*B-hat - C-hat: literally the COMPOSITION of cubicForm_fraction_layer's vocabulary and cubicForm_hadamard, so it costs no realizer. spartan_outer_sound: an UNSATISFIED R1CS survives with probability at most s/|F| + s*3/|F| over the joint draw of the zerocheck point and the s challenges -- two events, two causes, added, and the flattering half never quoted alone. (3) The INNER sumcheck is not the hard part it is usually called: its three claims are literally three Selvage.LinearConstraint values ON THE WITNESS WORD (innerClaim, innerClaim_satisfied_iff), so batch_survives_prob_le retires a wrong triple at 2/|F| with nothing new proved, and the batched summand wt_gamma * z is a prodDiff with C = 0, i.e. the landed degree-2 engine with the FACTORED terminal wt-tilde(r_y) * z-tilde(r_y). mle_matVec is the identity that makes phase 2 exist, obtained as mle2_contraction at nu = 0 (matVec_is_contraction_at_nu_zero exhibits the instance, so there is ONE object and not a twin). THE HAND-OFF IS A THEOREM, not prose: spartanTerminal_eq_honest says the verifier's own terminal expression eq(tau,r_x)*(vA*vB - vC) equals the honest chain's final value exactly when the three v's are the three true row openings -- so phase 2's obligation is exactly three values, no more and no fewer, and the eq factor is NOT one of them. TWO NAMED OBLIGATIONS, neither discharged: [SPARTAN-pcs] SpartanOpeningProtocol over the landed Selvage.MleEvalClaim (the opening PROTOCOL is BaseFold's braided reduction, or Ligerito in the BinarySpartan shape; binding itself is proved here as spartanOpeningsBound), and [SPARTAN-sparse] SpartanSparseEvalOracle -- which is a COST obligation and NOT a soundness one: everything here is sound against a DENSE commitment to the matrices, and Spartan's SPARK layer (sparse multilinear commitment by offline memory checking) is what buys SUBLINEARITY. That layer does not exist in this tree at all -- zero timestamp vectors, zero multiset check -- and sparseEvalOracle_refutable proves the Prop is refutable rather than free. NO CHARACTERISTIC HYPOTHESIS anywhere, and nothing downstream of Proximity's FoldingData (whose two_ne is uninhabitable in char 2): what char-2 costs is the USEFULNESS of a k/|F| bound, not its proof, which is why ring-switching is load-bearing rather than an optimization. ZMod 7 teeth on the SQUARING gate w*w = v -- deliberately not a C = 0 instance the zero witness would satisfy for free: goodZ_sat and badZ_unsat are two live witnesses on one instance, badZ_survives_at_one exhibits a NONEMPTY s/|F| event while badZ_caught_at_three separates elsewhere, the inner claim predicate fires BOTH ways, and terminal_fires computes the hand-off to a specific nonzero element. AND THEN THE COMPOSITION (spartan_sound): the two phases over ONE joint draw ((tau,r_x),(gamma,r_y)), bounded by s/|F| + s*3/|F| + 2/|F| + t*2/|F|, with ADAPTIVE provers (outer sees tau, inner sees (tau,r_x,gamma), the claimed values are functions of (tau,r_x)) -- and, the point of it, against the DEPLOYED verifier. SpartanOuterRealAccepts contains NO honest side: Selvage's SumcheckAccepts renders the terminal oracle check as 'the folded claim equals the HONEST side's final value', which a real verifier cannot evaluate, and left unstated every bound here would have been about an idealized verifier -- the exact shape of a vacuity that survives a green build and passes its axiom pins. outerReal_iff_sumcheckAccepts discharges it: the deployed and idealized predicates coincide EXACTLY when the three claims are true. The case split IS the content -- either the prover told the truth about the three row openings and phase 1 must carry the lie and cannot, or it lied and phase 2 must carry it and cannot. WHAT THE COMPOSITION DID NOT DO, said next to the theorem and not in a footnote: it moved the idealization from phase 1 to phase 2, it did not remove it from the stack; phase 2's terminal is still a comparison against an honest chain, which is [SPARTAN-pcs]. Two elaboration findings paid for in build failures: the product splits must be done ONCE at opaque types (uniformProb_mid_le/_last_le -- inlining them at the concrete event types is a whnf HEARTBEAT TIMEOUT, because spartanBatch unfolds through batchConstraint into three rowPartials into mle's Finset.sum), and naming the events (spartanBatchAt, SpartanInnerAccepts, SpartanInnerFalse) is what made the proof elaborate at all. Final tooth, which is the ring-switching argument in one line: composed_bound_is_vacuous_at_f7 proves 1 < 1/7 + 3/7 + 2/7 + 2/7 = 8/7, so the composed bound at toy parameters is a TRUE statement that constrains nothing -- every term is k/|F|, the proofs are characteristic-free but the USEFULNESS is not, and that is a parameter fact rather than a proof obstruction
+ import Assurance.TwistMemoryFingerprintJoin  -- ⭐ the OFFLINE MEMORY CHECK, both poles priced: Compiler.TwistMultisetInvariant (Nebula Lemma 2 over the sparse typed carriers -- TwistContinuity IFF the IS+WS = RS+FS multiset invariant under the positional stamp discipline, BOTH directions, free absorbed by Option-valued cells with no case split) joined to Selvage.MultisetFingerprint (Corollary 1): a NON-continuous committed bus passes the fingerprinted check on at most (|dom|+|rows|)*(k+1)/|F| of challenge pairs for ANY prover stamps (nonContinuous_fingerprint_accept_le -- the adversarial direction of the bridge's named residual, discharged to the named floor), and every accepted execution's exact bus is accepted at EVERY challenge (exactBusClaim_fingerprint_accepted). Residual [TWIST-FP-BIND] names what is NOT discharged: commitment binding over the committed row/stamp columns, the roots-before-gamma schedule (AcceptedLogupRun), range checks realizing Set.InjOn vec, row-shape checks realizing DisciplineRowValid, and the pre/post audit against the exact state roots. NOTE: this is also the timestamp-vector + multiset-check engine SpartanR1CS's [SPARTAN-sparse] entry records as absent from the tree -- the SPARK sparse-commitment layer now has its combinatorial core, not yet its sparse-matrix instantiation
+ import Assurance.ReleaseGateRouting -- the release-gate routing lemma and its binding control, the handoff's §6B as theorems, joined to the tree at both ends. Routing: an unbound gate that reveals the designated bit of ANY submitted predicate determines the private state (determines_iff_separates; routing_of_projections / routing_of_accept_all; hostReconstruct_exact is the "put secret bit 37 in the output slot" attack, by rfl), and a gate accepting at most one predicate reveals at most one bit (single_predicate_not_determining, pigeonhole; both poles pinned on one carrier). Binding: BindingGate R stateOf outOf gate — acceptance implies the released output stands in the authorized relation to the state — gives routing_refused (an output that is not the authorized function of the public half is refused whatever the private half or proof string) and binding_release_public_only, the gate-level twin of privateTurn_public_indistinguishable; TwoBit instance decided. The tree at both ends: Kernel/PrivateEscrowSettlement's Settlement is a BindingGate BY TYPE (settlement_is_binding_gate, settlement_release_public_only, acceptable_pins_named_relation); and at Stage 0 the relation is y = rt ∧ descriptorHolds evmAddDescriptor (traceOf y) (Iff.rfl), the descriptor FORCES Z = (X + Y) mod 2^256 (stage0_released_output_forced via evmAddDescriptor_means_semantics + fragment_run_eq_iff), the ideal gate refuses every routed Z (stage0_forged_z_refused at Z = 4) while the honest candidate is accepted at the ideal AND the deployed gate (fsProve_complete), and stage0Receipt_is_bound_evidence = fsCheck_ok_fiatShamir ∧ stage0Receipt_price. What the receipt binds: the descriptor and the FULL word, public prefix included, up to the FS price under the ROM. What it does not: hide — the whole word IS the FS statement (stage0_statement_carries_word, rfl); Stage 0 has no private half. Residuals: [RELEASE-hiding], [RELEASE-continuity] (a bound gate does not refuse a replayed stale-but-valid state; the kernel's nullifier/freshness objects are named).
++import Assurance.ResidentMixedPhases -- actual Stage0/EMA shared-cache soundness with exact phase budgets

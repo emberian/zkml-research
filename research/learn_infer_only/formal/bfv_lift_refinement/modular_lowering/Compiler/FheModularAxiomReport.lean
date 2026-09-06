@@ -1,0 +1,42 @@
+import Compiler.FheShoupWord
+import Compiler.FheBarrettWord
+import Compiler.FheRnsModularAccumulation
+import Compiler.FheRnsSourceWord
+#print axioms Minidregg.Compiler.FheShoupWord.error_identity
+#print axioms Minidregg.Compiler.FheShoupWord.shoup_range
+#print axioms Minidregg.Compiler.FheShoupWord.shoupRefinement
+#print axioms Minidregg.Compiler.FheShoupWord.product_bounds
+#print axioms Minidregg.Compiler.FheShoupWord.wordLazyShoup_correct
+#print axioms Minidregg.Compiler.FheShoupWord.source_u64_bounds
+#print axioms Minidregg.Compiler.FheShoupWord.wide_first_operand_inhabited
+#print axioms Minidregg.Compiler.FheShoupWord.noncanonical_second_falsifier
+#print axioms Minidregg.Compiler.FheBarrettWord.split_quotient_exact
+#print axioms Minidregg.Compiler.FheBarrettWord.middle_range
+#print axioms Minidregg.Compiler.FheBarrettWord.barrett_reference
+#print axioms Minidregg.Compiler.FheBarrettWord.word_product_bound
+#print axioms Minidregg.Compiler.FheBarrettWord.wordLazyBarrett_correct
+#print axioms Minidregg.Compiler.FheBarrettWord.wordReduceOne_correct
+#print axioms Minidregg.Compiler.FheBarrettWord.wordReduce_correct
+#print axioms Minidregg.Compiler.FheBarrettWord.mask_selection
+#print axioms Minidregg.Compiler.FheBarrettWord.barrett_premises_inhabited
+#print axioms Minidregg.Compiler.FheBarrettWord.reduce_one_range_falsifier
+#print axioms Minidregg.Compiler.FheRnsModularAccumulation.sum_congruent
+#print axioms Minidregg.Compiler.FheRnsModularAccumulation.modularAccumulationSound
+#print axioms Minidregg.Compiler.FheRnsModularAccumulation.accumulation_range
+#print axioms Minidregg.Compiler.FheRnsModularAccumulation.six_limb_accumulator_fits
+#print axioms Minidregg.Compiler.FheRnsModularAccumulation.projected_product
+#print axioms Minidregg.Compiler.FheRnsModularAccumulation.shoup_projected
+#print axioms Minidregg.Compiler.FheRnsModularAccumulation.lazy_signed_premises_inhabited
+#print axioms Minidregg.Compiler.FheRnsModularAccumulation.correction_sign_falsifier
+#print axioms Minidregg.Compiler.FheRnsSourceWord.signed_magnitude
+#print axioms Minidregg.Compiler.FheRnsSourceWord.magnitude_range
+#print axioms Minidregg.Compiler.FheRnsSourceWord.negative_increment_fits
+#print axioms Minidregg.Compiler.FheRnsSourceWord.target_word_bounds
+#print axioms Minidregg.Compiler.FheRnsSourceWord.source_rest_bounds
+#print axioms Minidregg.Compiler.FheRnsSourceWord.source_v_range
+#print axioms Minidregg.Compiler.FheRnsSourceWord.target_reduce_correct
+#print axioms Minidregg.Compiler.FheRnsSourceWord.sourceWordRefinement
+#print axioms Minidregg.Compiler.FheRnsSourceWord.captured_source_word_inhabited
+#print axioms Minidregg.Compiler.FheRnsSourceWord.captured_wrong_neighbor
+#print axioms Minidregg.Compiler.FheRnsSourceWord.source_check_canonical
+#print axioms Minidregg.Compiler.FheRnsSourceWord.accepted_target_matches_source

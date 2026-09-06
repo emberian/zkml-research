@@ -1,0 +1,184 @@
+{
+  "passed": true,
+  "report_sha256": "25d65944fcd981a4c669d9f70614f13dfdfee3555c322ae023bdca384f3974a6",
+  "commands": 122,
+  "roles": {
+    "recipient": 20,
+    "authority": 38,
+    "client": 64
+  },
+  "exit_codes": {
+    "-15": 53,
+    "-9": 5,
+    "0": 64
+  },
+  "nonempty_stderr_files": [],
+  "normal_crash_cases": [
+    {
+      "case": "before_reservation",
+      "actual_killed_pid": 46252,
+      "exit_code": -9,
+      "before_journal": 0,
+      "before_recipient": 0,
+      "after_attempts": 1
+    },
+    {
+      "case": "after_install_before_commit",
+      "actual_killed_pid": 46272,
+      "exit_code": -9,
+      "before_journal": 0,
+      "before_recipient": 0,
+      "after_attempts": 1
+    },
+    {
+      "case": "after_commit_before_publication",
+      "actual_killed_pid": 46278,
+      "exit_code": -9,
+      "before_journal": 1,
+      "before_recipient": 0,
+      "after_attempts": 1
+    },
+    {
+      "case": "after_publication_before_client_ack",
+      "actual_killed_pid": 46283,
+      "exit_code": -9,
+      "before_journal": 1,
+      "before_recipient": 1,
+      "after_attempts": 2
+    }
+  ],
+  "race_count": 12,
+  "races": [
+    {
+      "case": "same_parent_race_00",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_00/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46331,
+        46332
+      ],
+      "winner": 91,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_01",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_01/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46336,
+        46337
+      ],
+      "winner": 92,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_02",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_02/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46341,
+        46342
+      ],
+      "winner": 91,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_03",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_03/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46346,
+        46347
+      ],
+      "winner": 91,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_04",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_04/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46351,
+        46352
+      ],
+      "winner": 92,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_05",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_05/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46360,
+        46361
+      ],
+      "winner": 91,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_06",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_06/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46365,
+        46366
+      ],
+      "winner": 91,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_07",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_07/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46370,
+        46371
+      ],
+      "winner": 91,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_08",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_08/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46375,
+        46376
+      ],
+      "winner": 91,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_09",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_09/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46380,
+        46381
+      ],
+      "winner": 92,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_10",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_10/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46385,
+        46386
+      ],
+      "winner": 92,
+      "loser_reason": "stalePrefix"
+    },
+    {
+      "case": "same_parent_race_11",
+      "shared_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/same_parent_race_11/authority/journal.sqlite3",
+      "distinct_worker_pids": [
+        46391,
+        46392
+      ],
+      "winner": 92,
+      "loser_reason": "stalePrefix"
+    }
+  ],
+  "mutation_count": 16,
+  "concurrent_published_retries": 8,
+  "rollback_scope": "distinct transaction/event envelopes; identical canonical bytes and installed state",
+  "fixture_matches_export_stdout": true,
+  "run_id": "005",
+  "normal_client_fault_field_refusal": {
+    "reason": "unsupportedRequestFields",
+    "status": "rejected"
+  },
+  "scope": "independent review of retained logical evidence, not OS/power-loss or cryptographic verification",
+  "script_sha256": "330f605076084c3ea858e45ce23524136e34fd91e1469e11aeb5e96a0b192dab"
+}

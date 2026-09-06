@@ -91,3 +91,11 @@ separately; dependency oleans are reused, not rebuilt. No Scry/Kagi queries are
 needed for this local integration check.
 
 The frozen window/noise/target-projection batch is `modules_window_batch.json`: 39 modules, 499 exact pins, four umbrellas. Run 009 passed; see REPORT.md. Earlier manifests and combined patch snapshots remain retained.
+
+The settled mixed-phase extension is `modules_with_mixed_phases.json`: 41 modules, 528 exact pins and four umbrellas, passed in run 010. Its 528 combined patch snapshot preserves the earlier 499 snapshot.
+
+## Final collection check
+
+[EXECUTED final collection, 2026-09-06] Run011 passed: **49 modules /651 exact theorem pins**, all four umbrellas, actual patch application/content comparison and both import-boundary instruments. Elapsed213.909 seconds. No selected input or companion source changed; companion HEAD/status were unchanged. Existing dependency oleans were reused; no clean whole-tree build is claimed. The final snapshot is formal/integration/minidregg-combined-resident-651.patch, SHA256 9398b530f3640d5f279c4f3958ccf57abcbb113f43ca608825ca41d935ed8e42.
+
+[DERIVED scope] This adds saved modular-word38, guarded horizon arithmetic 40 and source-phase 45 to the morning 528-pin pass. It excludes unfinished mixed-journal and source-noise successors. Apply one compatible combined proposal; earlier snapshots are retained as historical evidence.

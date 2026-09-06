@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheBarrettWord.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering",
+    "exit_code": 0,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:146:43: warning: unused variable `hp`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:156:26: warning: This simp argument is unused:\n  Int.sub_emod\n\nHint: Omit it from the simp argument list.\n  simp \u0335[\u0335I\u0335n\u0335t\u0335.\u0335s\u0335u\u0335b\u0335_\u0335e\u0335m\u0335o\u0335d\u0335]\u0335\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n",
+    "stderr": "",
+    "elapsed_seconds": 7.325542833001236
+  }
+]

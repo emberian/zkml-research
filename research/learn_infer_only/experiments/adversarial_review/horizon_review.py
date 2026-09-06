@@ -195,7 +195,8 @@ def main():
         'strict_sampling_repair': 'M=2^ceil(log2(2N)); dummy one-message, zero-key, constant-output ranks; exact Delta/M',
         'scope': 'No primitive theorem, encrypted execution, measured cryptographic advantage, or full source reduction formalization.'}
     assert report['inputs_unchanged']
-    (HERE/'horizon_review.json').write_text(json.dumps(report, indent=2)+'\n')
+    version = 1 + len(list(HERE.glob('horizon_review_[0-9][0-9].json')))
+    (HERE/f'horizon_review_{version:02}.json').write_text(json.dumps(report, indent=2)+'\n')
     print(json.dumps(report, indent=2))
 
 

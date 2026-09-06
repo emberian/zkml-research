@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheBarrettWord.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:178:8: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern\n  -1#?m.78\nin the target expression\n  (onTrue ^^^ onFalse) &&& -1 ^^^ onFalse = onTrue\n\ncase true\nonTrue onFalse : BitVec 64\n\u22a2 (onTrue ^^^ onFalse) &&& -1 ^^^ onFalse = onTrue\n",
+    "stderr": "",
+    "elapsed_seconds": 6.208387250007945
+  }
+]

@@ -1,0 +1,175 @@
+{
+  "passed": true,
+  "source_sha256": {
+    "protocol": "014eaffa1210b70881efe5e49672653bf0373f33df980001b4272baa2ecc5b80",
+    "fixture": "584e575c782a5b0c6c350f957912ac40a2791df8e604b68a51e8e7baad422801",
+    "script": "581ad161e5e493825d815516d24d905d17e225c1b30c43cb272cc9a83a7145a4"
+  },
+  "commands": [
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_protocol.py",
+        "serve",
+        "recipient",
+        "--socket",
+        "/tmp/mmaj-review-zcmxkq3d/recipient",
+        "--database",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/focused_results/run_001/recipient.sqlite3"
+      ],
+      "pid": 54018,
+      "started_ns": 1788689578387696000,
+      "stdout": "recipient.stdout",
+      "stderr": "recipient.stderr",
+      "exit_code": -15,
+      "finished_ns": 1788689579829084000
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_protocol.py",
+        "serve",
+        "authority",
+        "--socket",
+        "/tmp/mmaj-review-zcmxkq3d/first",
+        "--database",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/focused_results/run_001/authority.sqlite3",
+        "--recipient",
+        "/tmp/mmaj-review-zcmxkq3d/recipient",
+        "--fixture",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_fixture.json",
+        "--test-failpoint",
+        "after_commit_before_publication",
+        "--test-crash-marker",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/focused_results/run_001/kill_marker.json"
+      ],
+      "pid": 54019,
+      "started_ns": 1788689578444479000,
+      "stdout": "authority_before_kill.stdout",
+      "stderr": "authority_before_kill.stderr",
+      "exit_code": -9,
+      "finished_ns": 1788689579829087000
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_protocol.py",
+        "serve",
+        "authority",
+        "--socket",
+        "/tmp/mmaj-review-zcmxkq3d/one",
+        "--database",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/focused_results/run_001/authority.sqlite3",
+        "--recipient",
+        "/tmp/mmaj-review-zcmxkq3d/recipient",
+        "--fixture",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_fixture.json"
+      ],
+      "pid": 54020,
+      "started_ns": 1788689578495446000,
+      "stdout": "authority_worker_one.stdout",
+      "stderr": "authority_worker_one.stderr",
+      "exit_code": -15,
+      "finished_ns": 1788689579830574000
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_protocol.py",
+        "serve",
+        "authority",
+        "--socket",
+        "/tmp/mmaj-review-zcmxkq3d/two",
+        "--database",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/focused_results/run_001/authority.sqlite3",
+        "--recipient",
+        "/tmp/mmaj-review-zcmxkq3d/recipient",
+        "--fixture",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_fixture.json"
+      ],
+      "pid": 54023,
+      "started_ns": 1788689578549050000,
+      "stdout": "authority_worker_two.stdout",
+      "stderr": "authority_worker_two.stderr",
+      "exit_code": -15,
+      "finished_ns": 1788689579832088000
+    }
+  ],
+  "authority_worker_pids": [
+    54020,
+    54023
+  ],
+  "shared_authority_database": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/focused_results/run_001/authority.sqlite3",
+  "concurrent_exact_retry_count": 8,
+  "logical_installations": 1,
+  "logical_recipient_deliveries": 1,
+  "concurrent_publication_attempts": 8,
+  "recipient_lock_ns": [
+    1788689578602212000,
+    1788689579604217000
+  ],
+  "canonical_wire_reorder_reply": {
+    "installed_state": [
+      1
+    ],
+    "nonce": {
+      "canonical_bytes": [
+        2,
+        255,
+        7,
+        255,
+        255
+      ],
+      "codec_version": 1,
+      "domain": 101,
+      "nullifier_id": 7
+    },
+    "packet": {
+      "canonical_bytes": [
+        11,
+        255,
+        7,
+        255,
+        255,
+        255,
+        1,
+        255,
+        1,
+        255,
+        19,
+        255,
+        23,
+        255,
+        255,
+        255,
+        1,
+        255,
+        1,
+        255
+      ],
+      "codec_version": 1,
+      "domain": 102,
+      "event_id": 91
+    },
+    "publication": "alreadyPublished",
+    "sequence": 1,
+    "status": "replayed",
+    "transaction_id": 91
+  },
+  "changed_same_txid_reply": {
+    "reason": "transactionConflict",
+    "status": "rejected"
+  },
+  "different_txid_same_nonce_reply": {
+    "reason": "stalePrefix",
+    "status": "rejected"
+  },
+  "direct_recipient_duplicate_reply": {
+    "status": "duplicateSamePacket"
+  },
+  "direct_recipient_conflict_reply": {
+    "status": "conflictingPacket"
+  },
+  "scope": "Actual local role processes with same-user SQLite; eight client threads, one scheduled overlap, no power-loss or physical exactly-once claim",
+  "sources_unchanged": true
+}

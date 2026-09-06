@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/build/Theory/BfvPhaseAlgebra.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Theory/BfvPhaseAlgebra.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "c876dc4dab9167d68d531d4c57d7b3962d25b9c328999eb53aeceb6c5bf91743",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Theory/BfvPhaseAlgebra.lean:165:69: error: unsolved goals\nq N : \u2115\ninst\u271d\u00b9 : NeZero N\ninst\u271d : Nontrivial (ZMod q)\np : (ZMod q)[X]\nk : \u2115\nhk0 : 0 < k\nhkN : k < N\nhp : p.natDegree < N + k\nhd : (p /\u2098 modulus q N).natDegree < k\nhz : (p /\u2098 modulus q N).coeff k = 0\n\u22a2 (p /\u2098 (X ^ N + 1)).coeff k = 0\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Theory/BfvPhaseAlgebra.lean:172:66: warning: This simp argument is unused:\n  hz\n\nHint: Omit it from the simp argument list.\n  simp [modulus, add_mul, coeff_X_pow_mul', Nat.not_le_of_lt hkN,\u0335 \u0335h\u0335z\u0335]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n",
+  "stderr": "",
+  "elapsed_seconds": 3.0898712500056718
+}

@@ -1218,3 +1218,182 @@ depends on W because the accumulator cancels exact expired ciphertexts. The
 Rust current-queue benchmark does not exercise this complete durable journal;
 its memory figure should not be used for the composed carrier without a
 separate persistence measurement or compaction refinement.
+
+## 17. Independent-key ladder and a uniform growing horizon
+
+[SOURCE + DERIVED reviewed conditional positive] I independently read the local
+2013/729 paper's Definitions 2.1–2.4, Remark 2.5, Lemma 2.9, construction §4,
+simulator §5.1, eleven hybrids §5.2/Appendix A, correctness Appendix B and
+SIM-to-IND argument Appendix C. The paper at
+`/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf` has SHA256
+`58bb2eb72bc8e5c3eaf3193fefd6c72754ff428265231fb459b0de6c8db32e30`.
+The exact `pdftotext -layout` command is retained in
+`experiments/adversarial_review/horizon_review_01.json`; its full text output
+is explicitly ignored scratch. No paper was downloaded and this review made
+zero metered queries. The conditional source theorem and the reduction below
+were reviewed mathematically; they are not a newly kernel-checked cryptographic
+theorem or an implemented FE system.
+
+[EXECUTED versions] The final reviewed `FINITE_LADDER.md` hash is
+`3c94a21d5a529b568da5392702c65cda7e22ace8e5f7be40a783ae93c43cb71c`.
+The revised `horizon/HORIZON.md` hash is
+`f1415e2c95600e52a00c9fdb5e3b6c7bcf55cf2d726ffa9341f1abe9ff3d5743`;
+its audit script and result hashes are respectively
+`7fc7e24fc84152feb199cea4c83758557ff889f5b513fb902fa63e038950e6e9`
+and `0ae1ec22377b36443aa0867e933a7f592fa9fbf0baf95a7f8573f0591b523b61`.
+The independent final record is `horizon_review_01.json`; the earlier
+`horizon_review.json` preserves the intermediate padded-selector version
+before the explicit uniform-sampler paragraph was added. All recorded inputs
+were unchanged during their respective checks. The four fixed-H=2 artifacts
+were not changed by the growing-horizon repairs.
+
+[SOURCE/DERIVED: simulator quantifiers and timing] Definition 2.3 pp.6–7 places
+one simulator S before the quantifier over all PPT adversaries. Its A1 selects
+the challenge plaintext before setup. Its q counts challenge plaintexts, not
+function keys; key queries may occur in A2/A3. Theorem 4.1 and the explicit
+S1/S2 in §5.1 pp.14–15 supply the same algorithms for every sampled ladder
+node and side. S1 samples the current simulated setup and zero challenge without
+the private plaintext. S2 obtains the ideal output of the requested function,
+punctures a fresh PRF key, and obfuscates a program containing that output at
+the challenge point. No adversary-dependent simulator is chosen separately at
+each depth, and no preceding distinguisher's code is an input to the obfuscator.
+The one-SIM comparison requires no equality or compatibility promise on two
+plaintexts; its cryptographic assumptions remain the stated classical iO/OWF
+source assumptions.
+
+[SOURCE/DERIVED: full future exposure is included] For the fixed ladder,
+Definition 2.4 pp.7–8 permits computational indistinguishability of the joint
+pre-setup auxiliary/function-output law. Generating future layers first puts
+the complete future package P_(i+1), including every issued future key, in that
+auxiliary distribution before current setup. Each current transition function
+embeds only the next public key. Appendix C p.25 footnote 8 explicitly discusses
+adjoining the current setup secrets in the ideal-output argument; independence
+from the current setup is the premise that makes this safe. It does not license
+discarding future keys or assuming they are independent of future ciphertexts.
+The candidate's common-P_(i+1) ciphertext hybrids keep these correlations and
+sample only the other known candidate encryptions with independent coins.
+
+[DERIVED: exact expansion] For one node's test A, the identity is
+`Real(u)-Real(v) = [Real(u)-Ideal(u)] + [Ideal(u)-Ideal(v)]
+                  - [Real(v)-Ideal(v)]`.
+The middle test receives one whole future package and all B child ciphertexts.
+It builds the current S1/S2 simulated package as independent postprocessing.
+Telescope this vector one position at a time using the same future package;
+the sibling positions use right candidates before the selected position and
+left candidates after it. Equal current answers follow from R_i. At a terminal
+node g(u)=g(v) makes the remaining ideal-output gap exactly zero. Recursive
+expansion therefore gives 2N_H oriented one-SIM gaps. The right-side bit
+complement is necessary to obtain the negative terms; there is no requirement
+that all individual gaps have the same sign.
+
+[DERIVED: selected-node challenge and ancestor interface] The sampled prefix
+is chosen independently of setup randomness. Its two candidate states are
+computed from the original state pair and public Step descriptions before
+the selected instance's setup; neither computation needs its public key or a
+future key. A1 can then generate the complete future package and retain it,
+the prefix and candidate data. A2 requests only the selected layer's prescribed
+keys. After the selected challenge arrives, the reduction constructs ancestor
+packages using the same explicit S1/S2 and publicly generated sibling
+ciphertexts. The host receives these ancestor packages as well as the complete
+selected/future package. It receives neither the reduction's retained candidate
+plaintexts nor its simulated raw setup secrets. This fits the source A1/A2/A3
+syntax and accounts for ancestor exposure. Sampling a path in response to the
+host's ciphertext-dependent behavior would not have the same selectivity
+argument and is not performed here.
+
+[DERIVED correction, now repaired: exact bounded-time sampling] The first draft
+identified the arithmetic average Δ/(2N_H) directly with an exact strict-PPT
+fair-coin implementation. Unless 2N_H is a power of two, a fixed bounded number
+of fair bits cannot give each rank probability 1/(2N_H); those probabilities
+are not dyadic. Root supplied the cleaner repair now present in the lane:
+let M be the least power of two at least 2N_H, sample log2(M) bits, and assign
+extra ranks a valid one-message source experiment with no key queries and a
+constant final bit. Definition 2.3 permits this dummy: one challenge does not
+require a function-key query, and projecting to the constant final output has
+zero gap. Thus the strict-PPT reduction has the exact signed probability gap
+Δ/M with `2N_H ≤ M < 4N_H`. The mathematical uniform average Δ/(2N_H) remains
+correct as an arithmetic identity. For B=3,H=2, 26 real ranks are padded to 32,
+requiring five fair bits and six dummies. This is a constant-factor correction,
+not an obstruction to the logarithmic conclusion.
+
+[DERIVED correction, now explicit: uniform inputs] A uniform one-SIM adversary
+must also generate its initial state pair and public Step descriptions through
+a uniform PPT pre-setup sampler, or use fixed uniformly computable families.
+Polynomial description length alone does not supply such a generator.
+Definition 2.3 uses A1(1κ), whereas Definition 2.4 explicitly admits nonuniform
+adversaries and auxiliary z. The final note now states the uniform-sampler
+premise rather than silently importing arbitrary advice into the uniform
+corollary. A nonuniform or quantum-advice version needs the corresponding
+security convention or another lift. The given width-m=λ, pair-(0,1), public
+add/double/infer example meets the uniform premise.
+
+[SOURCE/DERIVED: runtime bound survives the wrappers] Each ancestor wrapper
+calls the previous distinguisher once. The source `Sim.G_f` contains one
+bounded transition/encryption circuit, one next-public-key literal, a fixed
+challenge and one fixed-format output; it does not contain future function-key
+code or an obfuscation of its caller. Public FE encryption §4 itself does not
+include f or its function key. With a common polynomial bound C for the
+chosen state width, circuits, primitive algorithms and B fixed commands,
+generating the future package and wrapping the ancestors takes O(H·C) extra
+work, plus polynomial integer/rank arithmetic. It does not iterate the host's
+runtime through a fresh polynomial at every depth. This is a source-level
+uniform polynomial bound, not a concrete cost or efficiency measurement.
+
+[DERIVED conditional consequence] A polynomial N_H and a uniform PPT host with
+non-negligible signed output gap would give one uniform PPT source adversary
+with non-negligible gap Δ/M. The explicit same-S reduction avoids a diagonal
+argument over separately chosen negligible functions. For fixed B>1, H=O(log λ)
+suffices; for B=1, polynomial H also has polynomial N_H. For branching
+superlogarithmic H the audited expansion has a superpolynomial loss. Its path
+implementation may remain polynomial, but ordinary negligible security no
+longer pays for the loss. This is a limitation of this proof, not a lower bound
+or an attack on every longer ladder. The deployed object count is linear in H;
+the proof-tree size is a separate quantity.
+
+[SOURCE/DERIVED: primitive bookkeeping is not the theorem] With zero external
+decryption-oracle queries, H6→H7, H8→H9 and H10→H11 make no changes. The other
+source transitions have three per-key iO switches, one per-key punctured-PRF
+switch, one commitment-hiding switch, one NIWI-WI switch and two PKE switches
+per SIM side. Local evaluation of exposed keys is host computation, not an
+external oracle query. The displayed 272 computational edges at B=3,H=2
+(126 iO, 42 PRF, 26 commitment, 26 WI, 52 PKE) are consistent with those
+transitions. The extra NIWI bad-equivalence allowance is conservative conditional
+bookkeeping. These counts do not instantiate any epsilon or prove a new
+resource-indexed primitive theorem. Alternative imperfect correctness or
+equivalence contracts need their errors added. In particular, Definition 2.1
+and Appendix B describe computational randomized-output correctness, not exact
+fresh independent randomness under repeated evaluation of the same key and
+ciphertext. The ladder's deterministic Step and the source SIM argument do not
+need to upgrade that statement to an unbiased lifetime-randomness guarantee.
+
+[EXECUTED independent controls] `horizon_review.py` compares 1,408 independently
+enumerated node/side labels with the owner's unranking and replays the owner's
+pure audit functions without invoking their file-writing main. More
+substantively, a separate deliberately insecure finite channel constructs
+correlated exposed future packages and the actual nested ancestor-wrapper
+shape, then enumerates exact probabilities through horizons zero, one and two.
+The root gaps 3/4, −1/8 and 1/16 equal the sums of the oriented node gaps;
+the padded reductions give 3/8, −1/64 and 1/256. Omitting the right complement
+fails in all three cases. A shared-pad control has identical ciphertext
+marginals but disjoint exposed-package joint worlds, making omission of the
+future auxiliary information falsifiable. These are reduction-wiring controls,
+not evidence that the intentionally transparent channel is secure.
+
+[EXECUTED fixed-interface replay] `horizon_h2_replay.py/json` independently
+replays all 256 states and 2,304 two-command paths, the 14 behavioral classes,
+the seven exposed issued keys and the empty raw-master registry. An initial
+raw-Python comparison failed because JSON converts integer dictionary keys to
+strings; the retained record identifies that reviewer issue and the normalized
+comparison matches the saved result exactly. These checks establish the stated
+symbolic interface and schedule only. No cryptographic malformed-ciphertext
+rejection, erasure or privacy follows from registry handles.
+
+[OPEN / scope of the positive] No further simulator-interface, correlated-auxiliary
+or recursive-runtime defect was found after the two repairs above. The result
+remains a classical source-conditional, selective-state, preissued finite-horizon
+privacy construction with honest erasure and public commands. It exposes all
+issued program strings, permits forks, and has no private fresh-input join,
+masterless horizon extension, receipt binding, finality/currentness guarantee,
+concrete efficiency result or post-quantum theorem. The relation must continue
+to admit nonidentical states as the horizon grows; the finite nonvacuity controls
+do not make that automatic for another learner.

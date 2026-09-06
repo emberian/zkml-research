@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build/Assurance/CiphertextWindowFrameWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrameWitness.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "2b4178b26f361057c0fed0ed3af5c28afec0f82b10c28a6f5655b8b76fff9901",
+  "inputs_unchanged": true,
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrameWitness.lean:91:4: error: Application type mismatch: The argument\n  honest_nonzero_add_and_expiry.right.right.right.left\nhas type\n  List.map Entry.admissionId s3.queue = [1, 2]\nbut is expected to have type\n  s3.accumulator = b + c\nin the application\n  \u27e8rfl, honest_nonzero_add_and_expiry.right.right.right.left\u27e9\n",
+  "stderr": "",
+  "elapsed_seconds": 3.7016899585723877
+}

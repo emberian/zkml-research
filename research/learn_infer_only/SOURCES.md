@@ -139,3 +139,29 @@ pins all four H2 artifacts and independently enumerates all 15 two-step adaptive
 policies. It confirms the 14 behavioral classes on 32,640 distinct-state pairs and
 checks that the same private pair fails at a longer horizon. This is an ideal
 interface audit and source-premise review, not a cryptographic reduction proof.
+
+## Final collection and interrupted-source register
+
+[EXECUTED] Completed metered total is 12 Scry SQL plus 2 schema calls, Kagi0.
+The additional query is private-ingress provenance (one SQL,25 rows,reported
+spend0); its exact response is retained. No new network query or PDF download
+was made by the parent during final collection.
+
+[SOURCE/EXECUTED] The provenance source manifest reconstructs five exact local
+PDF/extract pairs:2020/137,2016/629,2023/268,2019/238 and 2023/629. The last was
+abstract-only; construction/game access for the others is stated in the note.
+Their pdftotext -layout bytes were reproduced exactly during collection. The
+2025/330 source was already registered in the parent ingress audit. The final
+independent provenance review was interrupted; these are scoped delegated
+source readings, not a verified resident composition.
+
+[EXECUTED] Final source/proof collection: experiments/integration/results/run_011/report.json
+records 49 modules,651 exact pins, all four umbrellas, actual patch application
+and both import-boundary checks. The final guarded horizon witness was checked
+without changing its proof body. Source-phase 45 and modular-word38 are included;
+unpinned mixed-journal and failing source-window successors are excluded.
+
+[EXECUTED] Independent journal review is experiments/adversarial_review/persistent_journal/REPORT.md.
+It pins original/repaired protocols, both full runs and a separate concurrent
+retry-after-install schedule. QIND finite controls are retained against the
+exact pre-closeout draft snapshot; final review/primitive instantiation remains open.

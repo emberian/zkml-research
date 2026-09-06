@@ -1,0 +1,674 @@
+diff --git a/Theory/BfvPhaseAlgebra.lean b/Theory/BfvPhaseAlgebra.lean
+new file mode 100644
+--- /dev/null
++++ b/Theory/BfvPhaseAlgebra.lean
+@@ -0,0 +1,426 @@
++/-
++Source-level algebra for the two-component additive BFV path. The carrier is
++an actual polynomial quotient, with its canonical remainder coefficient map.
++No phase homomorphism is assumed: it is constructed from the ciphertext pair,
++secret multiplication, quotient multiplication and coefficient projection.
++Literal Rust/RNS/NTT and sampler refinements remain separate obligations.
++-/
++import Theory.IntegerWindowNoise
++import Mathlib.RingTheory.AdjoinRoot
++import Mathlib.Data.ZMod.Basic
++
++namespace Minidregg.Theory.BfvPhaseAlgebra
++set_option autoImplicit false
++open scoped BigOperators
++open Polynomial
++
++section Pair
++variable {R : Type} [CommRing R]
++abbrev CipherPair (R : Type) := R × R
++
++def keygen (s a e : R) : CipherPair R := (e - a * s, a)
++def encrypt (pk : CipherPair R) (u e1 e2 encoded : R) : CipherPair R :=
++  (u * pk.1 + e1 + encoded, u * pk.2 + e2)
++def plainMul (p : R) (c : CipherPair R) : CipherPair R := (c.1 * p, c.2 * p)
++
++def phase (s : R) : CipherPair R →+ R where
++  toFun c := c.1 + c.2 * s
++  map_zero' := by simp
++  map_add' c d := by simp only [Prod.fst_add, Prod.snd_add]; ring
++
++def EncryptionPhaseIdentity : Prop :=
++  ∀ s a e u e1 e2 encoded : R,
++    phase s (encrypt (keygen s a e) u e1 e2 encoded) = encoded + u * e + e1 + e2 * s
++
++theorem keygen_phase (s a e : R) : phase s (keygen s a e) = e := by
++  simp only [phase, AddMonoidHom.coe_mk, ZeroHom.coe_mk, keygen]
++  ring
++
++theorem encryption_phase : EncryptionPhaseIdentity (R := R) := by
++  intro s a e u e1 e2 encoded
++  simp only [phase, AddMonoidHom.coe_mk, ZeroHom.coe_mk, encrypt, keygen]
++  ring
++
++theorem phase_plainMul (s p : R) (c : CipherPair R) :
++    phase s (plainMul p c) = phase s c * p := by
++  simp only [phase, plainMul, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
++  ring
++
++def multiplyHom (p : R) : R →+ R where
++  toFun a := a * p
++  map_zero' := by simp
++  map_add' a b := by exact add_mul a b p
++
++def plainMulHom (p : R) : CipherPair R →+ CipherPair R where
++  toFun := plainMul p
++  map_zero' := by ext <;> simp [plainMul]
++  map_add' a b := by ext <;> simp [plainMul, add_mul]
++
++theorem phase_add_sub (s : R) (acc fresh expired : CipherPair R) :
++    phase s (acc + fresh - expired) = phase s acc + phase s fresh - phase s expired := by
++  simp only [map_sub, map_add]
++
++theorem signed_plainMul (s positive negative : R) (c : CipherPair R) :
++    phase s (plainMul positive c - plainMul negative c) = phase s c * (positive - negative) := by
++  rw [map_sub, phase_plainMul, phase_plainMul]
++  ring
++end Pair
++
++/-- The literal source pre-encoding: multiply by Q mod t in the plaintext
++ring, then multiply by inverse(-t) in the ciphertext ring. -/
++def sourceEncoded (q : Nat) (t m : Int) (delta : ZMod q) : ZMod q :=
++  (((m * ((q : Int) % t)) % t : Int) : ZMod q) * delta
++
++theorem source_encoded_canonical (q : Nat) (t m : Int) (delta : ZMod q) :
++    sourceEncoded q t (m % t) delta = sourceEncoded q t m delta := by
++  simp only [sourceEncoded, Int.mul_emod, Int.emod_emod]
++
++def ScalingPremise (q : Nat) (t : Int) (delta : ZMod q) : Prop :=
++  (-(t : ZMod q)) * delta = 1
++
++theorem source_encoded_floor (q : Nat) (t m : Int) (delta : ZMod q)
++    (hinv : ScalingPremise q t delta) :
++    sourceEncoded q t m delta = (((q : Int) * m / t : Int) : ZMod q) := by
++  have he : ((m * ((q : Int) % t)) % t : Int) = (q : Int) * m % t := by
++    simp [Int.mul_emod, mul_comm]
++  have hdiv := Int.mul_ediv_add_emod ((q : Int) * m) t
++  have hc := congrArg (fun z : Int => (z : ZMod q)) hdiv
++  simp only [Int.cast_add, Int.cast_mul, Int.cast_natCast, ZMod.natCast_self, zero_mul] at hc
++  have hrem : (((q : Int) * m % t : Int) : ZMod q) =
++      -(t : ZMod q) * (((q : Int) * m / t : Int) : ZMod q) := by linear_combination hc
++  unfold sourceEncoded
++  rw [he, hrem]
++  change -(t : ZMod q) * delta = 1 at hinv
++  calc -(t : ZMod q) * ↑((q : Int) * m / t) * delta =
++      (-(t : ZMod q) * delta) * ↑((q : Int) * m / t) := by ring
++       _ = _ := by rw [hinv, one_mul]
++
++section Negacyclic
++variable (q N : Nat) [NeZero N]
++
++noncomputable def modulus : Polynomial (ZMod q) := X ^ N + C 1
++
++theorem modulus_monic : (modulus q N).Monic :=
++  monic_X_pow_add_C 1 (NeZero.ne N)
++
++abbrev Ring := AdjoinRoot (modulus q N)
++
++/-- Canonical coefficient in the actual quotient (Z/qZ)[X]/(X^N+1). -/
++noncomputable def coefficient (k : Nat) : Ring q N →+ ZMod q where
++  toFun a := (AdjoinRoot.modByMonicHom (modulus_monic q N) a).coeff k
++  map_zero' := by simp
++  map_add' a b := by simp
++
++/-- Constructed fixed-query phase map for the window bridge. -/
++noncomputable def readoutPhase (s query : Ring q N) (k : Nat) :
++    CipherPair (Ring q N) →+ ZMod q :=
++  (coefficient q N k).comp ((multiplyHom query).comp (phase s))
++
++theorem readout_is_coefficient (s query : Ring q N) (k : Nat) (c : CipherPair (Ring q N)) :
++    readoutPhase q N s query k c = coefficient q N k (phase s (plainMul query c)) := by
++  simp only [readoutPhase, AddMonoidHom.comp_apply, multiplyHom, AddMonoidHom.coe_mk,
++    ZeroHom.coe_mk, phase_plainMul]
++
++theorem readout_signed_query (s positive negative : Ring q N) (k : Nat)
++    (c : CipherPair (Ring q N)) :
++    readoutPhase q N s (positive - negative) k c =
++      coefficient q N k (phase s (plainMul positive c - plainMul negative c)) := by
++  simp only [readoutPhase, AddMonoidHom.comp_apply, multiplyHom, AddMonoidHom.coe_mk,
++    ZeroHom.coe_mk, signed_plainMul]
++
++theorem readout_encryption (s a e u e1 e2 encoded query : Ring q N) (k : Nat) :
++    readoutPhase q N s query k (encrypt (keygen s a e) u e1 e2 encoded) =
++      coefficient q N k ((encoded + u * e + e1 + e2 * s) * query) := by
++  change coefficient q N k (phase s (encrypt (keygen s a e) u e1 e2 encoded) * query) = _
++  rw [encryption_phase]
++
++omit [NeZero N] in
++/-- This quotient is negacyclic, not cyclic: the wrap changes sign. -/
++theorem root_power : (AdjoinRoot.root (modulus q N)) ^ N = -1 := by
++  have h := AdjoinRoot.mk_self (f := modulus q N)
++  rw [modulus, map_add, map_pow, AdjoinRoot.mk_X, AdjoinRoot.mk_C, map_one] at h
++  exact eq_neg_of_add_eq_zero_left h
++
++/-- Reverse query coefficients around selected output k. -/
++noncomputable def reverseQuery (k : Nat) (query : Fin (k + 1) → ZMod q) : Polynomial (ZMod q) :=
++  ∑ j : Fin (k + 1), C (query j) * X ^ (k - j.val)
++
++theorem reverseQuery_degree (k : Nat) (query : Fin (k + 1) → ZMod q) :
++    (reverseQuery q k query).natDegree ≤ k := by
++  apply Polynomial.natDegree_sum_le_of_forall_le
++  intro j _
++  exact (natDegree_C_mul_X_pow_le _ _).trans (Nat.sub_le _ _)
++
++theorem reverseQuery_coefficient (p : Polynomial (ZMod q)) (k : Nat)
++    (query : Fin (k + 1) → ZMod q) :
++    (p * reverseQuery q k query).coeff k = ∑ j : Fin (k + 1), query j * p.coeff j.val := by
++  simp only [reverseQuery, Finset.mul_sum, Polynomial.finsetSum_coeff]
++  apply Finset.sum_congr rfl
++  intro j _
++  rw [← mul_assoc, coeff_mul_X_pow', if_pos (Nat.sub_le _ _), coeff_mul_C]
++  have hj : k - (k - j.val) = j.val := by have := j.isLt; omega
++  rw [hj, mul_comm]
++
++/-- A product can wrap at lower coefficients without affecting selected k:
++if degree(p)<N+k, the quotient by X^N+1 has degree<k. -/
++theorem selected_coefficient_no_alias [Nontrivial (ZMod q)]
++    (p : Polynomial (ZMod q)) (k : Nat) (hk0 : 0 < k) (hkN : k < N)
++    (hp : p.natDegree < N + k) :
++    coefficient q N k (AdjoinRoot.mk (modulus q N) p) = p.coeff k := by
++  have hd : (p /ₘ modulus q N).natDegree < k := by
++    rw [natDegree_divByMonic _ (modulus_monic q N), modulus, natDegree_X_pow_add_C]
++    omega
++  have hz : (p /ₘ modulus q N).coeff k = 0 := coeff_eq_zero_of_natDegree_lt hd
++  change (p %ₘ modulus q N).coeff k = p.coeff k
++  rw [modByMonic_eq_sub_mul_div, coeff_sub]
++  simp [modulus, add_mul, coeff_X_pow_mul', Nat.not_le_of_lt hkN]
++  simpa [modulus] using hz
++
++/-- Full-degree phase noise is allowed. It need not be supported only in the
++message slots; no high phase coefficient aliases the chosen output k. -/
++theorem packed_readout [Nontrivial (ZMod q)]
++    (p : Polynomial (ZMod q)) (k : Nat) (query : Fin (k + 1) → ZMod q)
++    (hk0 : 0 < k) (hkN : k < N) (hp : p.natDegree < N) :
++    coefficient q N k
++      (AdjoinRoot.mk (modulus q N) p * AdjoinRoot.mk (modulus q N) (reverseQuery q k query)) =
++      ∑ j : Fin (k + 1), query j * p.coeff j.val := by
++  rw [← map_mul]
++  rw [selected_coefficient_no_alias q N _ k hk0 hkN]
++  · exact reverseQuery_coefficient q p k query
++  · have hm := natDegree_mul_le (p := p) (q := reverseQuery q k query)
++    have hq := reverseQuery_degree q k query
++    omega
++
++/-- Every quotient element has the actual canonical degree-bounded phase
++polynomial used in the packing theorem. -/
++theorem canonical_degree [Nontrivial (ZMod q)] (a : Ring q N) :
++    (AdjoinRoot.modByMonicHom (modulus_monic q N) a).natDegree < N := by
++  induction a using AdjoinRoot.induction_on
++  rename_i p
++  rw [AdjoinRoot.modByMonicHom_mk]
++  have hn : modulus q N ≠ 1 := by
++    intro h
++    have hd := congrArg Polynomial.natDegree h
++    simp only [modulus, natDegree_X_pow_add_C, natDegree_one] at hd
++    exact NeZero.ne N hd
++  have h := natDegree_modByMonic_lt p (modulus_monic q N) hn
++  simpa only [modulus, natDegree_X_pow_add_C] using h
++
++/-- No arbitrary scalar phase interpretation remains at this seam: the
++constructed ciphertext-pair map equals the dot product of the quotient
++phase's canonical coefficients, including all its high noise coefficients. -/
++theorem readout_dot_product [Nontrivial (ZMod q)]
++    (s : Ring q N) (c : CipherPair (Ring q N)) (k : Nat)
++    (query : Fin (k + 1) → ZMod q) (hk0 : 0 < k) (hkN : k < N) :
++    readoutPhase q N s (AdjoinRoot.mk (modulus q N) (reverseQuery q k query)) k c =
++      ∑ j : Fin (k + 1), query j * coefficient q N j.val (phase s c) := by
++  let p := AdjoinRoot.modByMonicHom (modulus_monic q N) (phase s c)
++  have he : AdjoinRoot.mk (modulus q N) p = phase s c :=
++    AdjoinRoot.mk_leftInverse (modulus_monic q N) (phase s c)
++  change coefficient q N k (phase s c * _) = _
++  rw [← he]
++  have h := packed_readout q N p k query hk0 hkN (canonical_degree q N (phase s c))
++  simpa only [coefficient, AddMonoidHom.coe_mk, ZeroHom.coe_mk, p, he] using h
++
++/-- The existing integer-window phase premise now follows from actual
++coefficient congruences, rather than an assumed fixed-query hom. -/
++theorem readout_integer_row [Nontrivial (ZMod q)]
++    (s : Ring q N) (c : CipherPair (Ring q N)) (k : Nat)
++    (query : Fin (k + 1) → Int) (row : IntegerWindowNoise.Row (k + 1))
++    (hk0 : 0 < k) (hkN : k < N)
++    (hc : ∀ j : Fin (k + 1), coefficient q N j.val (phase s c) = (row.phase j : ZMod q)) :
++    readoutPhase q N s (AdjoinRoot.mk (modulus q N) (reverseQuery q k (fun j => (query j : ZMod q)))) k c =
++      (IntegerWindowNoise.rowPhase query row : ZMod q) := by
++  rw [readout_dot_product q N s c k _ hk0 hkN]
++  simp only [IntegerWindowNoise.rowPhase, Int.cast_sum]
++  apply Finset.sum_congr rfl
++  intro j _
++  rw [hc, Int.cast_mul]
++
++/-- Source coefficient packing, with every coefficient (including padding)
++represented in the finite vector. -/
++noncomputable def pack (values : Fin N → ZMod q) : Polynomial (ZMod q) :=
++  ∑ i : Fin N, C (values i) * X ^ i.val
++
++omit [NeZero N] in
++theorem pack_coefficient (values : Fin N → ZMod q) (j : Fin N) :
++    (pack q N values).coeff j.val = values j := by
++  unfold pack
++  rw [Polynomial.finsetSum_coeff, Finset.sum_eq_single j]
++  · simp
++  · intro i _ hij
++    rw [coeff_C_mul, coeff_X_pow, if_neg (fun h => hij (Fin.val_injective h).symm), mul_zero]
++  · simp
++
++theorem coefficient_pack [Nontrivial (ZMod q)] (values : Fin N → ZMod q) (j : Fin N) :
++    coefficient q N j.val (AdjoinRoot.mk (modulus q N) (pack q N values)) = values j := by
++  change ((pack q N values) %ₘ modulus q N).coeff j.val = values j
++  rw [(modByMonic_eq_self_iff (modulus_monic q N)).mpr]
++  · exact pack_coefficient q N values j
++  · change (∑ i : Fin N, C (values i) * X ^ i.val).degree < (X ^ N + C 1 : Polynomial (ZMod q)).degree
++    rw [degree_X_pow_add_C (Nat.pos_of_ne_zero (NeZero.ne N))]
++    exact degree_sum_fin_lt values
++
++noncomputable def encodeRing (t : Int) (delta : ZMod q) (message : Fin N → Int) : Ring q N :=
++  AdjoinRoot.mk (modulus q N) (pack q N (fun j => sourceEncoded q t (message j) delta))
++
++theorem encoding_coefficient [Nontrivial (ZMod q)] (t : Int) (delta : ZMod q)
++    (message : Fin N → Int) (j : Fin N) (hinv : ScalingPremise q t delta) :
++    coefficient q N j.val (encodeRing q N t delta message) =
++      (((q : Int) * message j / t : Int) : ZMod q) := by
++  rw [encodeRing, coefficient_pack, source_encoded_floor q t (message j) delta hinv]
++
++/-- The public-key noise polynomial follows from the literal key/encrypt
++ring equations; its coefficient range is a separate sampler/convolution fact. -/
++def noise {R : Type} [CommRing R] (s e u e1 e2 : R) : R := u * e + e1 + e2 * s
++
++theorem encrypted_coefficient [Nontrivial (ZMod q)]
++    (s a e u e1 e2 : Ring q N) (t : Int) (delta : ZMod q)
++    (message : Fin N → Int) (j : Fin N) (hinv : ScalingPremise q t delta) :
++    coefficient q N j.val (phase s
++      (encrypt (keygen s a e) u e1 e2 (encodeRing q N t delta message))) =
++      (((q : Int) * message j / t : Int) : ZMod q) + coefficient q N j.val (noise s e u e1 e2) := by
++  rw [encryption_phase]
++  have h : encodeRing q N t delta message + u * e + e1 + e2 * s =
++      encodeRing q N t delta message + noise s e u e1 e2 := by unfold noise; ring
++  rw [h, map_add, encoding_coefficient q N t delta message j hinv]
++
++theorem coefficient_constant [Nontrivial (ZMod q)] (a : ZMod q) (k : Nat) :
++    coefficient q N k (AdjoinRoot.of (modulus q N) a) = if k = 0 then a else 0 := by
++  rw [← AdjoinRoot.mk_C]
++  change ((C a) %ₘ modulus q N).coeff k = _
++  rw [(modByMonic_eq_self_iff (modulus_monic q N)).mpr]
++  · exact coeff_C
++  · change (C a).degree < (X ^ N + C 1 : Polynomial (ZMod q)).degree
++    rw [degree_X_pow_add_C (Nat.pos_of_ne_zero (NeZero.ne N))]
++    exact degree_C_le.trans_lt (by exact_mod_cast Nat.pos_of_ne_zero (NeZero.ne N))
++
++theorem coefficient_intCast [Nontrivial (ZMod q)] (a : Int) (k : Nat) :
++    coefficient q N k (a : Ring q N) = if k = 0 then (a : ZMod q) else 0 := by
++  have h : (a : Ring q N) = AdjoinRoot.of (modulus q N) (a : ZMod q) := by simp
++  rw [h, coefficient_constant]
++
++/-- A selected message/error prefix; all other phase coefficients remain in
++the ring and are handled by `readout_dot_product`, not silently discarded. -/
++def prefixIndex (k : Nat) (hkN : k < N) (j : Fin (k + 1)) : Fin N :=
++  ⟨j.val, by have hj := j.isLt; omega⟩
++
++def integerRow (t : Int) (k : Nat) (hkN : k < N)
++    (message error : Fin N → Int) : IntegerWindowNoise.Row (k + 1) where
++  message j := message (prefixIndex N k hkN j)
++  error j := error (prefixIndex N k hkN j)
++  phase j := (q : Int) * message (prefixIndex N k hkN j) / t + error (prefixIndex N k hkN j)
++
++omit [NeZero N] in
++theorem integerRow_fresh (t E : Int) (k : Nat) (hkN : k < N)
++    (message error : Fin N → Int) (he : ∀ j, |error j| ≤ E) :
++    IntegerWindowNoise.Fresh (q : Int) t E (integerRow q N t k hkN message error) := by
++  intro j
++  exact ⟨rfl, he _⟩
++
++/-- Given a bounded signed lift of the *derived noise polynomial*, the exact
++source key/encrypt equations supply the existing window's coefficient and
++fixed-query phase premises. The noise-lift/support refinement is explicit. -/
++theorem encrypted_integer_row [Nontrivial (ZMod q)]
++    (s a e u e1 e2 : Ring q N) (t : Int) (delta : ZMod q)
++    (message error : Fin N → Int) (k : Nat) (query : Fin (k + 1) → Int)
++    (hk0 : 0 < k) (hkN : k < N) (hinv : ScalingPremise q t delta)
++    (hnoise : ∀ j : Fin N, coefficient q N j.val (noise s e u e1 e2) = (error j : ZMod q)) :
++    readoutPhase q N s
++      (AdjoinRoot.mk (modulus q N) (reverseQuery q k (fun j => (query j : ZMod q)))) k
++      (encrypt (keygen s a e) u e1 e2 (encodeRing q N t delta message)) =
++      (IntegerWindowNoise.rowPhase query (integerRow q N t k hkN message error) : ZMod q) := by
++  apply readout_integer_row q N s _ k query _ hk0 hkN
++  intro j
++  have h := encrypted_coefficient q N s a e u e1 e2 t delta message
++    (prefixIndex N k hkN j) hinv
++  rw [hnoise, ← Int.cast_add] at h
++  exact h
++
++end Negacyclic
++/- Observed axiom closure pins from the successful check. -/
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.keygen_phase' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.keygen_phase
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.encryption_phase' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.encryption_phase
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.phase_plainMul' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.phase_plainMul
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.phase_add_sub' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.phase_add_sub
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.signed_plainMul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.signed_plainMul
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.source_encoded_canonical' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.source_encoded_canonical
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.source_encoded_floor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.source_encoded_floor
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.modulus_monic' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.modulus_monic
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.readout_is_coefficient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.readout_is_coefficient
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.readout_signed_query' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.readout_signed_query
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.readout_encryption' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.readout_encryption
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.root_power' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.root_power
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.reverseQuery_degree' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.reverseQuery_degree
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.reverseQuery_coefficient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.reverseQuery_coefficient
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.selected_coefficient_no_alias' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.selected_coefficient_no_alias
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.packed_readout' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.packed_readout
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.canonical_degree' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.canonical_degree
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.readout_dot_product' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.readout_dot_product
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.readout_integer_row' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.readout_integer_row
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.pack_coefficient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.pack_coefficient
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.coefficient_pack' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.coefficient_pack
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.encoding_coefficient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.encoding_coefficient
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.encrypted_coefficient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.encrypted_coefficient
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.coefficient_constant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.coefficient_constant
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.coefficient_intCast' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.coefficient_intCast
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.integerRow_fresh' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.integerRow_fresh
++/-- info: 'Minidregg.Theory.BfvPhaseAlgebra.encrypted_integer_row' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.BfvPhaseAlgebra.encrypted_integer_row
++
++end Minidregg.Theory.BfvPhaseAlgebra
+diff --git a/Assurance/ResidentBfvSourcePhase.lean b/Assurance/ResidentBfvSourcePhase.lean
+new file mode 100644
+--- /dev/null
++++ b/Assurance/ResidentBfvSourcePhase.lean
+@@ -0,0 +1,222 @@
++/-
++Actual-Q83 source-equation witnesses. Ciphertexts inhabit the mathematical
++negacyclic quotient, not Rust objects. No secret-key erasure/privacy claim.
++The source equations, nonzero error and selected coefficient are exercised;
++full Rust/RNS/NTT, serializer and scaler refinement remain unproved.
++-/
++import Theory.BfvPhaseAlgebra
++import Assurance.ResidentBfvWindowNoise
++
++namespace Minidregg.Assurance.ResidentBfvSourcePhase
++set_option autoImplicit false
++open Minidregg.Theory.BfvPhaseAlgebra
++open Minidregg.Theory.IntegerWindowNoise (Fresh Row rounded centered rowScore)
++open Minidregg.Assurance.ResidentBfvWindowNoise
++open scoped BigOperators
++
++abbrev Q : Nat := 9671406214650060397780993
++abbrev N : Nat := 4096
++instance qLarge : Fact (1 < Q) := ⟨by decide⟩
++noncomputable abbrev R := Minidregg.Theory.BfvPhaseAlgebra.Ring Q N
++def delta : ZMod Q := 9653009781167034675697743
++
++def message (j : Fin N) : Int := if j.val = 0 then 1 else 0
++def row : Row width where
++  message j := if j = firstCoordinate then 1 else 0
++  error j := if j = firstCoordinate then 9 else 0
++  phase j := q83 * (if j = firstCoordinate then 1 else 0) / t32 + (if j = firstCoordinate then 9 else 0)
++noncomputable def cipher : CipherPair R := encrypt (keygen 2 3 1) 4 1 2 (encodeRing Q N t32 delta message)
++def integerLift : Int := -(q83 / t32 + 9)
++noncomputable def queryRing : R := AdjoinRoot.mk (modulus Q N)
++  (reverseQuery Q 576 (fun j => (witnessQuery j : ZMod Q)))
++
++def Subject : Prop :=
++  ScalingPremise Q t32 delta ∧ ActualPremises [row] witnessQuery ∧
++  Minidregg.Theory.BfvPhaseAlgebra.readoutPhase Q N 2 queryRing 576 cipher = (integerLift : ZMod Q) ∧
++  centered t32 (rounded q83 t32 integerLift) = -1
++
++theorem delta_inverse : ScalingPremise Q t32 delta := by
++  unfold ScalingPremise
++  decide
++
++theorem source_q_mod_t : (Q : Int) % t32 = 541778926 := by decide
++
++theorem delta_limb_remainders :
++    (9653009781167034675697743 : Int) % 2199023190017 = 1144893300664 ∧
++    (9653009781167034675697743 : Int) % 4398046486529 = 2396387273630 := by decide
++
++theorem delta_limb_inverses :
++    (-(t32 : ZMod 2199023190017)) * 1144893300664 = 1 ∧
++    (-(t32 : ZMod 4398046486529)) * 2396387273630 = 1 := by decide
++
++theorem source_encoding_actual (m : Int) : sourceEncoded Q t32 m delta = ((q83 * m / t32 : Int) : ZMod Q) :=
++  source_encoded_floor Q t32 m delta delta_inverse
++
++theorem noise_exact : noise (2 : R) 1 4 1 2 = 9 := by norm_num [noise]
++
++def fullIndex (j : Fin width) : Fin N := ⟨j.val, by have hj := j.isLt; dsimp [N, width] at *; omega⟩
++
++theorem source_coefficient (j : Fin width) :
++    coefficient Q N j.val (phase (2 : R) cipher) = (row.phase j : ZMod Q) := by
++  have hj : j.val = 0 ↔ j = firstCoordinate := by
++    constructor
++    · intro h
++      exact Fin.ext h
++    · intro h
++      exact congrArg Fin.val h
++  have hm : message (fullIndex j) = row.message j := by
++    simp only [message, fullIndex, row, hj]
++  have hn : coefficient Q N j.val (noise (2 : R) 1 4 1 2) = (row.error j : ZMod Q) := by
++    rw [noise_exact]
++    have h := coefficient_intCast Q N 9 j.val
++    change coefficient Q N j.val (9 : R) = _ at h
++    simpa only [hj, row, Int.cast_ite, Int.cast_ofNat, Int.cast_zero] using h
++  have h := encrypted_coefficient Q N (2 : R) 3 1 4 1 2 t32 delta message (fullIndex j) delta_inverse
++  change coefficient Q N j.val (phase (2 : R) cipher) =
++    (((Q : Int) * message (fullIndex j) / t32 : Int) : ZMod Q) +
++      coefficient Q N j.val (noise (2 : R) 1 4 1 2) at h
++  rw [hm, hn, ← Int.cast_add] at h
++  exact h
++
++theorem row_fresh : Fresh q83 t32 freshBound row := by
++  intro j
++  constructor
++  · rfl
++  · by_cases hj : j = firstCoordinate <;> simp [row, hj, freshBound, ringDegree, support]
++
++theorem actual_premises : ActualPremises [row] witnessQuery := by
++  refine ⟨?_, by decide, witness_premises.2.2.1, ?_⟩
++  · intro x hx
++    simp only [List.mem_singleton] at hx
++    subst x
++    exact row_fresh
++  · intro x hx j
++    simp only [List.mem_singleton] at hx
++    subst x
++    by_cases hj : j = firstCoordinate <;> simp [row, hj, coordinateBound]
++
++theorem row_phase : Minidregg.Theory.IntegerWindowNoise.rowPhase witnessQuery row = integerLift := by
++  simp [Minidregg.Theory.IntegerWindowNoise.rowPhase, witnessQuery, row, integerLift]
++
++theorem row_score : rowScore witnessQuery row = -1 := by
++  unfold rowScore
++  rw [Finset.sum_eq_single firstCoordinate]
++  · simp [witnessQuery, row]
++  · intro j _ hj
++    simp [witnessQuery, hj]
++  · simp
++
++theorem phase_matches_integer :
++    Minidregg.Theory.BfvPhaseAlgebra.readoutPhase Q N 2 queryRing 576 cipher = (integerLift : ZMod Q) := by
++  have h := readout_integer_row Q N (2 : R) cipher 576 witnessQuery row
++    (by decide) (by decide) source_coefficient
++  change Minidregg.Theory.BfvPhaseAlgebra.readoutPhase Q N 2 queryRing 576 cipher =
++    (Minidregg.Theory.IntegerWindowNoise.rowPhase witnessQuery row : ZMod Q) at h
++  rw [row_phase] at h
++  exact h
++
++theorem decoded : centered t32 (rounded q83 t32 integerLift) = -1 := by
++  have h := actual_signed_window [row] witnessQuery 0 actual_premises
++  simpa [Minidregg.Theory.IntegerWindowNoise.readoutPhase,
++    Minidregg.Theory.IntegerWindowNoise.readoutScore, row_phase, row_score] using h
++
++theorem subject : Subject := ⟨delta_inverse, actual_premises, phase_matches_integer, decoded⟩
++
++theorem source_nonzero :
++    row.message firstCoordinate = 1 ∧ row.error firstCoordinate = 9 ∧
++    cipher ≠ 0 := by
++  refine ⟨by decide, by decide, ?_⟩
++  intro hc
++  have hp := phase_matches_integer
++  rw [hc, map_zero] at hp
++  have hn : (integerLift : ZMod Q) ≠ 0 := by decide
++  exact hn hp.symm
++
++/-- A plus sign in key generation fails the very noise equation that the
++source's subtraction supplies. This is an arithmetic falsifier. -/
++theorem wrong_key_sign : phase (2 : ZMod Q) (1 + 3 * 2, 3) = 13 ∧
++    phase (2 : ZMod Q) (1 + 3 * 2, 3) ≠ 1 := by decide
++
++/-- Dropping the minus sign in inverse(-t) changes the encoded residue. -/
++theorem wrong_scaler_sign : sourceEncoded Q t32 1 (-delta) ≠ sourceEncoded Q t32 1 delta := by decide
++
++/-- High noise coefficients do wrap, but below the selected output. Reading
++coefficient zero here would substitute a different result for target576. -/
++theorem wrapped_noise_wrong_slot :
++    coefficient Q N 576 ((AdjoinRoot.root (modulus Q N)) ^ 4095 * AdjoinRoot.root (modulus Q N)) = 0 ∧
++    coefficient Q N 0 ((AdjoinRoot.root (modulus Q N)) ^ 4095 * AdjoinRoot.root (modulus Q N)) = -1 := by
++  have hw : (AdjoinRoot.root (modulus Q N)) ^ 4095 * AdjoinRoot.root (modulus Q N) = (-1 : R) := by
++    rw [← pow_succ]
++    exact root_power Q N
++  rw [hw]
++  constructor
++  · have h := coefficient_intCast Q N (-1) 576
++    simpa using h
++  · have h := coefficient_intCast Q N (-1) 0
++    simpa using h
++
++/- Observed axiom closure pins from the successful check. -/
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.delta_inverse' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.delta_inverse
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.source_q_mod_t' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.source_q_mod_t
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.delta_limb_remainders' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.delta_limb_remainders
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.delta_limb_inverses' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.delta_limb_inverses
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.source_encoding_actual' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.source_encoding_actual
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.noise_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.noise_exact
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.source_coefficient' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.source_coefficient
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.row_fresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.row_fresh
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.actual_premises' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.actual_premises
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.row_phase' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.row_phase
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.row_score' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.row_score
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.phase_matches_integer' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.phase_matches_integer
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.decoded' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.decoded
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.subject' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.subject
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.source_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.source_nonzero
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.wrong_key_sign' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.wrong_key_sign
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.wrong_scaler_sign' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.wrong_scaler_sign
++/-- info: 'Minidregg.Assurance.ResidentBfvSourcePhase.wrapped_noise_wrong_slot' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvSourcePhase.wrapped_noise_wrong_slot
++
++end Minidregg.Assurance.ResidentBfvSourcePhase
+diff --git a/Theory.lean b/Theory.lean
+--- a/Theory.lean
++++ b/Theory.lean
+@@ -75,3 +75,4 @@
+ import Theory.LaceMerge  -- the replica keyset merge over CausalVersionDag's AddressedEvent: ids_merge and the CRDT laws; the ancestor's anonymously-carried CrossCanonical gap DERIVED from the typed realizer slot BindingPremise (crossCanonical_of_binding, sameView_of_binding, merge_converges — replication converges on CONTENT); premise inhabited (injectiveScheme_binding, ideal digest) and refuted (lengthScheme_not_binding, crossCanonical_is_the_gap, merge_drops_at_collision) over one computable lawful codec. Residuals [LACE-frontier] [LACE-equivocation] [LACE-order] [LACE-catchup]
+ import Theory.RevocationConsensus  -- the negative lifecycle is consensus-bound and the positive one is not: revocation_needs_consensus (cross-vat sound + gated ⇒ Consensus) with its satisfiable and teeth poles, LocalCollect separated from Consensus on ONE decision, and dead_undecidable ported (deadness across the halting family is not computably decidable; resolved operationally by leases). Residuals [LIVENESS-lease] [LIVENESS-crossvat-cycle]
+ import Theory.PrivateTrace  -- the learn/infer-only interface as a state-machine fact, candidate-independent: a deterministic Machine S C O (step, out), an ADAPTIVE policy π : List O → C, trace M π s n. trace_eq_of_preserved (NO axioms): a relation preserved by EVERY allowed command and respected by out gives equal finite traces under every adaptive policy — the multi-step lift of Kernel/PrivateTurn.lean's one-step post_public_agrees (its hblind IS the preservation premise); randomized state needs a coupling version, not done. The byte toy as theorems: with output = high bit and update +128 only, the honest invariant is EQUAL HIGH BIT (highR; lowR fails hout — lowR_traces_differ), flip_trace_eq_of_highR, and the visible state genuinely changes (flip_trace_alternates). Falsifier for preservation: add the update +1 (twoMachine) — equal next answers (highR_two_out) yet not_highR_two_step (127 ↦ 128, 0 ↦ 1) and highR_two_traces_differ: certify the COMBINED learn-and-infer interface, not the two verbs independently. Recovery, sharp both ways: with arbitrary chosen offsets a binary-search policy recovers the byte in 8 observations (search_recovers, decide +kernel over all 256; exists_policy_recovers over all pairs), 7 are insufficient for that policy (search_seven_insufficient) and for EVERY policy (no_policy_recovers_seven, pigeonhole over List.Vector Bool 7); {+1,+128} alone cannot recover in 8 and is used only for the falsifier.
++import Theory.BfvPhaseAlgebra
+diff --git a/Assurance.lean b/Assurance.lean
+--- a/Assurance.lean
++++ b/Assurance.lean
+@@ -126,3 +126,4 @@
+ import Assurance.SpartanR1CS  -- SPARTAN, composed out of engines we already had. The suspicion this file tests and confirms: Spartan is not three things to build but three things to COMPOSE. (1) The ZEROCHECK is Selvage.eqMle_fold (identity) plus Selvage.mle_zero_uniform_bound (multilinear Schwartz-Zippel) -- both LANDED, so AirSumcheckQuadratic's docblock residual (ii), still reading "not yet vocabulary", is STALE and not a gap. (2) The OUTER sumcheck is the degree-3 rung at head eqHead tau and body A-hat*B-hat - C-hat: literally the COMPOSITION of cubicForm_fraction_layer's vocabulary and cubicForm_hadamard, so it costs no realizer. spartan_outer_sound: an UNSATISFIED R1CS survives with probability at most s/|F| + s*3/|F| over the joint draw of the zerocheck point and the s challenges -- two events, two causes, added, and the flattering half never quoted alone. (3) The INNER sumcheck is not the hard part it is usually called: its three claims are literally three Selvage.LinearConstraint values ON THE WITNESS WORD (innerClaim, innerClaim_satisfied_iff), so batch_survives_prob_le retires a wrong triple at 2/|F| with nothing new proved, and the batched summand wt_gamma * z is a prodDiff with C = 0, i.e. the landed degree-2 engine with the FACTORED terminal wt-tilde(r_y) * z-tilde(r_y). mle_matVec is the identity that makes phase 2 exist, obtained as mle2_contraction at nu = 0 (matVec_is_contraction_at_nu_zero exhibits the instance, so there is ONE object and not a twin). THE HAND-OFF IS A THEOREM, not prose: spartanTerminal_eq_honest says the verifier's own terminal expression eq(tau,r_x)*(vA*vB - vC) equals the honest chain's final value exactly when the three v's are the three true row openings -- so phase 2's obligation is exactly three values, no more and no fewer, and the eq factor is NOT one of them. TWO NAMED OBLIGATIONS, neither discharged: [SPARTAN-pcs] SpartanOpeningProtocol over the landed Selvage.MleEvalClaim (the opening PROTOCOL is BaseFold's braided reduction, or Ligerito in the BinarySpartan shape; binding itself is proved here as spartanOpeningsBound), and [SPARTAN-sparse] SpartanSparseEvalOracle -- which is a COST obligation and NOT a soundness one: everything here is sound against a DENSE commitment to the matrices, and Spartan's SPARK layer (sparse multilinear commitment by offline memory checking) is what buys SUBLINEARITY. That layer does not exist in this tree at all -- zero timestamp vectors, zero multiset check -- and sparseEvalOracle_refutable proves the Prop is refutable rather than free. NO CHARACTERISTIC HYPOTHESIS anywhere, and nothing downstream of Proximity's FoldingData (whose two_ne is uninhabitable in char 2): what char-2 costs is the USEFULNESS of a k/|F| bound, not its proof, which is why ring-switching is load-bearing rather than an optimization. ZMod 7 teeth on the SQUARING gate w*w = v -- deliberately not a C = 0 instance the zero witness would satisfy for free: goodZ_sat and badZ_unsat are two live witnesses on one instance, badZ_survives_at_one exhibits a NONEMPTY s/|F| event while badZ_caught_at_three separates elsewhere, the inner claim predicate fires BOTH ways, and terminal_fires computes the hand-off to a specific nonzero element. AND THEN THE COMPOSITION (spartan_sound): the two phases over ONE joint draw ((tau,r_x),(gamma,r_y)), bounded by s/|F| + s*3/|F| + 2/|F| + t*2/|F|, with ADAPTIVE provers (outer sees tau, inner sees (tau,r_x,gamma), the claimed values are functions of (tau,r_x)) -- and, the point of it, against the DEPLOYED verifier. SpartanOuterRealAccepts contains NO honest side: Selvage's SumcheckAccepts renders the terminal oracle check as 'the folded claim equals the HONEST side's final value', which a real verifier cannot evaluate, and left unstated every bound here would have been about an idealized verifier -- the exact shape of a vacuity that survives a green build and passes its axiom pins. outerReal_iff_sumcheckAccepts discharges it: the deployed and idealized predicates coincide EXACTLY when the three claims are true. The case split IS the content -- either the prover told the truth about the three row openings and phase 1 must carry the lie and cannot, or it lied and phase 2 must carry it and cannot. WHAT THE COMPOSITION DID NOT DO, said next to the theorem and not in a footnote: it moved the idealization from phase 1 to phase 2, it did not remove it from the stack; phase 2's terminal is still a comparison against an honest chain, which is [SPARTAN-pcs]. Two elaboration findings paid for in build failures: the product splits must be done ONCE at opaque types (uniformProb_mid_le/_last_le -- inlining them at the concrete event types is a whnf HEARTBEAT TIMEOUT, because spartanBatch unfolds through batchConstraint into three rowPartials into mle's Finset.sum), and naming the events (spartanBatchAt, SpartanInnerAccepts, SpartanInnerFalse) is what made the proof elaborate at all. Final tooth, which is the ring-switching argument in one line: composed_bound_is_vacuous_at_f7 proves 1 < 1/7 + 3/7 + 2/7 + 2/7 = 8/7, so the composed bound at toy parameters is a TRUE statement that constrains nothing -- every term is k/|F|, the proofs are characteristic-free but the USEFULNESS is not, and that is a parameter fact rather than a proof obstruction
+ import Assurance.TwistMemoryFingerprintJoin  -- ⭐ the OFFLINE MEMORY CHECK, both poles priced: Compiler.TwistMultisetInvariant (Nebula Lemma 2 over the sparse typed carriers -- TwistContinuity IFF the IS+WS = RS+FS multiset invariant under the positional stamp discipline, BOTH directions, free absorbed by Option-valued cells with no case split) joined to Selvage.MultisetFingerprint (Corollary 1): a NON-continuous committed bus passes the fingerprinted check on at most (|dom|+|rows|)*(k+1)/|F| of challenge pairs for ANY prover stamps (nonContinuous_fingerprint_accept_le -- the adversarial direction of the bridge's named residual, discharged to the named floor), and every accepted execution's exact bus is accepted at EVERY challenge (exactBusClaim_fingerprint_accepted). Residual [TWIST-FP-BIND] names what is NOT discharged: commitment binding over the committed row/stamp columns, the roots-before-gamma schedule (AcceptedLogupRun), range checks realizing Set.InjOn vec, row-shape checks realizing DisciplineRowValid, and the pre/post audit against the exact state roots. NOTE: this is also the timestamp-vector + multiset-check engine SpartanR1CS's [SPARTAN-sparse] entry records as absent from the tree -- the SPARK sparse-commitment layer now has its combinatorial core, not yet its sparse-matrix instantiation
+ import Assurance.ReleaseGateRouting -- the release-gate routing lemma and its binding control, the handoff's §6B as theorems, joined to the tree at both ends. Routing: an unbound gate that reveals the designated bit of ANY submitted predicate determines the private state (determines_iff_separates; routing_of_projections / routing_of_accept_all; hostReconstruct_exact is the "put secret bit 37 in the output slot" attack, by rfl), and a gate accepting at most one predicate reveals at most one bit (single_predicate_not_determining, pigeonhole; both poles pinned on one carrier). Binding: BindingGate R stateOf outOf gate — acceptance implies the released output stands in the authorized relation to the state — gives routing_refused (an output that is not the authorized function of the public half is refused whatever the private half or proof string) and binding_release_public_only, the gate-level twin of privateTurn_public_indistinguishable; TwoBit instance decided. The tree at both ends: Kernel/PrivateEscrowSettlement's Settlement is a BindingGate BY TYPE (settlement_is_binding_gate, settlement_release_public_only, acceptable_pins_named_relation); and at Stage 0 the relation is y = rt ∧ descriptorHolds evmAddDescriptor (traceOf y) (Iff.rfl), the descriptor FORCES Z = (X + Y) mod 2^256 (stage0_released_output_forced via evmAddDescriptor_means_semantics + fragment_run_eq_iff), the ideal gate refuses every routed Z (stage0_forged_z_refused at Z = 4) while the honest candidate is accepted at the ideal AND the deployed gate (fsProve_complete), and stage0Receipt_is_bound_evidence = fsCheck_ok_fiatShamir ∧ stage0Receipt_price. What the receipt binds: the descriptor and the FULL word, public prefix included, up to the FS price under the ROM. What it does not: hide — the whole word IS the FS statement (stage0_statement_carries_word, rfl); Stage 0 has no private half. Residuals: [RELEASE-hiding], [RELEASE-continuity] (a bound gate does not refuse a replayed stale-but-valid state; the kernel's nullifier/freshness objects are named).
++import Assurance.ResidentBfvSourcePhase

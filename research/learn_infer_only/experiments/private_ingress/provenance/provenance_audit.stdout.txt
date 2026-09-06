@@ -1,0 +1,23 @@
+{
+  "not_encryption_not_zk": true,
+  "public_prover_false_descent_refusals": 255,
+  "honest_private_input_answers": [
+    0,
+    0
+  ],
+  "copied_proof_wrong_opening_refusals": 255,
+  "external_wrapper_bypass_recoveries": 256,
+  "capability_recoveries_without_parent_binding": {
+    "unrestricted_state_signer": 256,
+    "false_proof_simulator": 256
+  },
+  "true_ancestry_only_recoveries": 256,
+  "probes_per_recovery": 8,
+  "valid_wrong_parent_refusals": 256,
+  "fixed_binding_genesis_opening_test": [
+    true,
+    false
+  ],
+  "important_scope": "parent-bound input is an ideal immutable encrypted field; no real authentication, nonmalleability, commitment, proof, or FE is implemented"
+}
+PASS: finite ideal provenance/capability witnesses; no cryptographic realization

@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheRnsModularAccumulation.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheRnsModularAccumulation.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering",
+    "exit_code": 0,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheRnsModularAccumulation.lean:60:29: warning: unused variable `hp`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`\n",
+    "stderr": "",
+    "elapsed_seconds": 3.4399677500041435
+  }
+]

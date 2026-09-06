@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/audit_retained.py", line 86, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/audit_retained.py", line 13, in main
+    report=load(RUN/'report.json');fixture=load(ROOT/'run004_fixture.json');commands=report['commands']
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/audit_retained.py", line 9, in load
+    def load(p):return json.loads(Path(p).read_text())
+                                  ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 787, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/ember/dev/zkml-research/research/learn_infer_only/durable_integration/persistent_journal/results/run_004/report.json'

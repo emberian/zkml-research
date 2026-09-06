@@ -1,0 +1,8 @@
+{
+  "pid": 33108,
+  "request_sha256": "9c6871c9ad6bbced5c58a55882d2de4b3a489d92dfa032cf7ed71a01aba115df",
+  "answer": {
+    "reason": "stalePrefix",
+    "status": "rejected"
+  }
+}

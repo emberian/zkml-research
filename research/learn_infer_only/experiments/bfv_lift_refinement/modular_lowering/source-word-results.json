@@ -1,0 +1,100 @@
+{
+  "label": "EXECUTED complete handwritten source-word path versus integer model and retained actual Rust target arrays",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/check_source_words.py"
+  ],
+  "sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/check_source_words.py",
+      "sha256": "67799918bf1d03f889bdbd08cd4e9681ed04d43d84c256126f44c8b2521f8b9d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/word_model.py",
+      "sha256": "03d84f9e26efb6ca0bd5357b508f5070f4d094448f1c0a29acda0cbf0c0de5d4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/fhe_scaler_model.py",
+      "sha256": "e1394dfd322eb2d8850d81c986ad1bdde1d7c1efa4b8995af1df9035644db5de"
+    }
+  ],
+  "random_and_endpoint_rows": 1002,
+  "negative_sign_rows": 753,
+  "positive_sign_rows": 249,
+  "target_checks": 3021,
+  "max_observed_u128_accumulator": "1246058275122",
+  "actual_retained_rows": [
+    {
+      "label": "N4096_structured_rounding_boundary_-2",
+      "source_integer": "-169790",
+      "actual_target_limbs": [
+        68719233219,
+        68719061187,
+        137438652611
+      ],
+      "negative": false,
+      "magnitude": 8958642537,
+      "v": 2280462326370151209,
+      "max_accumulator": 687193942215
+    },
+    {
+      "label": "N4096_structured_rounding_boundary_-1",
+      "source_integer": "-514751",
+      "actual_target_limbs": [
+        68718888258,
+        68718716226,
+        137438307650
+      ],
+      "negative": true,
+      "magnitude": 5434696903,
+      "v": 2020632828321783769,
+      "max_accumulator": 824632419655
+    },
+    {
+      "label": "N4096_structured_rounding_boundary_0",
+      "source_integer": "172481",
+      "actual_target_limbs": [
+        172481,
+        172481,
+        172481
+      ],
+      "negative": true,
+      "magnitude": 19828036343,
+      "v": 1998569596157577423,
+      "max_accumulator": 962071929288
+    },
+    {
+      "label": "N4096_structured_rounding_boundary_1",
+      "source_integer": "-172480",
+      "actual_target_limbs": [
+        68719230529,
+        68719058497,
+        137438649921
+      ],
+      "negative": true,
+      "magnitude": 7196699911,
+      "v": 3572503225370048309,
+      "max_accumulator": 824632761926
+    },
+    {
+      "label": "N4096_structured_rounding_boundary_2",
+      "source_integer": "514752",
+      "actual_target_limbs": [
+        514752,
+        514752,
+        514752
+      ],
+      "negative": true,
+      "magnitude": 21590039351,
+      "v": 3550439993205841963,
+      "max_accumulator": 824633449158
+    }
+  ],
+  "source_arithmetic_calls_per_three_target_row": {
+    "lazy_shoup": 21,
+    "lazy_barrett": 9,
+    "reduce_one": 6
+  },
+  "extra_emitted_constraints": 0,
+  "elapsed_seconds": 0.050917083004605956
+}

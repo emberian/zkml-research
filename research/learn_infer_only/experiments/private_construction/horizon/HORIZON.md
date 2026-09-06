@@ -141,7 +141,8 @@ previous draft did not distinguish these sampling conventions; the padded
 selector above is the primary executable reduction.
 
 [DERIVED] The path can be unranked without enumerating the tree. Its length is
-at most H, and its rank uses O(H log B) bits. All child challenge pairs are
+at most H, and its rank uses O(log(H+1) + H log B) bits, including the B=1
+case. All child challenge pairs are
 computed from setup-independent Step and initial states before their challenged
 instance's setup. A path selected in response to the host's actual ciphertext
 behavior would not have this selectivity justification; that is not this

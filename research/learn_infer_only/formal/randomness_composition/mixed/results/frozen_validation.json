@@ -1,0 +1,19 @@
+{
+  "modules": [
+    {
+      "source": "Compiler/DisjointOraclePhases.lean",
+      "sha256": "d68ceb0ef64f6e1dd6eae597b10ea68a24e8d1743be0da58d4c892d82d2e8503",
+      "exact_source_green_log": "research/learn_infer_only/formal/randomness_composition/mixed/results/DisjointOraclePhases_12.json",
+      "olean_sha256": "57cdc24303a5b692ad390978319434f0a0a38beda7f185832ca5a1a903be874d"
+    },
+    {
+      "source": "Assurance/ResidentMixedPhases.lean",
+      "sha256": "42ff5733ed7618b5e1b0ef15e57906c77db334429f303b8acb96b13c98d0b560",
+      "exact_source_green_log": "research/learn_infer_only/formal/randomness_composition/mixed/results/ResidentMixedPhases_12.json",
+      "olean_sha256": "aab47a98ea20dc8f8b3c65611581048265d5ba70748e80064578bb73ce9efe60"
+    }
+  ],
+  "pins": 29,
+  "scope": "Exact guarded sources, existing read-only 371-pin dependency overlay; combined 528 batch recorded separately.",
+  "metered_queries": 0
+}

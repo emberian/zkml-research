@@ -1,0 +1,88 @@
+{
+  "classification": "EXECUTED parent reconstruction from five retained local extracts; delegated reading scope from interrupted note, not new independent reduction review",
+  "sources": [
+    {
+      "id": "2020/137",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/137.pdf",
+      "pdf_sha256": "9b242f41700fafd6e6574b13b15f34814c3cbe7e1000067c779f68e01a968f1d",
+      "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/sources/2020-137.txt",
+      "extract_sha256": "c893dd30362b5aeec49e1de40cc9e0628812bdbead6ab1803a6540493a06e11f",
+      "parent_collection_command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/137.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "access_scope": "Delegated source read: section6.1 Figures14-15/Theorems6.1-6.5; Definition2.5; Theorem7.2. Final independent audit interrupted."
+    },
+    {
+      "id": "2016/629",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/629.pdf",
+      "pdf_sha256": "03efd333f5d439d75d7d52c37c1409933ee8a0fc80a65d898719c84600b6c369",
+      "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/sources/2016-629.txt",
+      "extract_sha256": "152963e56cdd4a6f06221dab1db7e84f7c1f1631b1ad6df272a05b3b09b6465e",
+      "parent_collection_command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/629.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "access_scope": "Delegated source read: AppendicesD/G, Definitions12-15, Theorem8. Final independent audit interrupted."
+    },
+    {
+      "id": "2023/268",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/268.pdf",
+      "pdf_sha256": "27c5a1156a9002f60d49b831de877ac135e1599ff5c118664f8edb95e8df634c",
+      "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/sources/2023-268.txt",
+      "extract_sha256": "70dbc77d330fbea5db2cd89a1aebcbf2544789cb2f1578ebddb0d081b572ccce",
+      "parent_collection_command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/268.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "access_scope": "Delegated source read: section4 Definitions8-9. Final independent audit interrupted."
+    },
+    {
+      "id": "2019/238",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/238.pdf",
+      "pdf_sha256": "2ae04d62832cf112fa5fd5a2a8925d67b772f00087a6ce0fed5bcf7a3c92c9af",
+      "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/sources/2019-238.txt",
+      "extract_sha256": "2a8eb6d639f292a257a2953d4bb390b21e779d75b933a14119db64d44ec7b73a",
+      "parent_collection_command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/238.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "access_scope": "Delegated source read: section3.2 Definition5. Final independent audit interrupted."
+    },
+    {
+      "id": "2023/629",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/629.pdf",
+      "pdf_sha256": "0fd19cc8ec2655d5600fba9d891a126841f1b5c7bc24f5e433060e79e399f59a",
+      "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/sources/2023-629.txt",
+      "extract_sha256": "7892c9ee09fa9a820b41385ddacf1d2eff805f5a300a5858c0509410ab328e78",
+      "parent_collection_command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/629.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "access_scope": "Delegated abstract-only scope check; not used as theorem evidence."
+    }
+  ],
+  "previous_source": "2025/330 retained in parent private-ingress source manifest",
+  "new_searches": 0,
+  "pdf_downloads": 0
+}

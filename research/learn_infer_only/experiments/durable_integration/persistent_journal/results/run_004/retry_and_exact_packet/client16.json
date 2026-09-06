@@ -1,0 +1,8 @@
+{
+  "pid": 35105,
+  "request_sha256": "8f97c97477bdca0b5b6f214ed61177113ed7f49a6bd9b1c463f759eb23c86732",
+  "answer": {
+    "reason": "transactionConflict",
+    "status": "rejected"
+  }
+}
