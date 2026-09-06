@@ -1,0 +1,18 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaWitness.lean",
+  "source_sha256": "0c59d6b09bd12b7ac441932740ad977fc892bdc01676e168e90defea1becbe11",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Assurance/ResidentEmaWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaWitness.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Assurance.ResidentEmaWitness.public_ready' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.public_openings' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.public_finality' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.constant_ready' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.constant_openings' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.constant_finality' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.witness_linked' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.witness_descriptor' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.subject' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.public_subject' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.constant_subject' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.constant_wrong_post_materializes' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.constant_wrong_post_descriptor_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentEmaWitness.wrong_next_refused' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+  "stderr": "",
+  "elapsed_seconds": 3.8482141494750977,
+  "olean_sha256": "96880b3fae8cb0239bc0a6bec5773cc719df39e3986e84c72c01ade4da996946"
+}

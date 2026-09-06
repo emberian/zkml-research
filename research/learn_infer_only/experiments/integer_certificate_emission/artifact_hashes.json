@@ -1,0 +1,33 @@
+{
+  "emissions": {
+    "large_descriptor.json": {
+      "raw_sha256": "4743c071364ea13e97fdac3f4dc8d8c6caa3a764aa2728b69c77e9068bce496f",
+      "gzip_sha256": "2327124eb66667fecee6f1ae3ddae476294fd83a7ab91543e17119b6db2c77b5",
+      "raw_bytes": 3542352,
+      "gzip_bytes": 352262
+    },
+    "large_shared_descriptor.json": {
+      "raw_sha256": "420bd26dc25ca59fcfa9922332d9ca6778eb839427d38ccaafd3c5a2cdbf77a8",
+      "gzip_sha256": "52c6aa9e21c6f781f71900229d0c4b2069f4a42cffff9cdc17e34e9ebe944dd4",
+      "raw_bytes": 1513582,
+      "gzip_bytes": 155481
+    }
+  },
+  "artifacts": {
+    "INTEGER_CERTIFICATE_EMISSION.md": "39942b94db761272074c9efc09b9b08ce33ce3bc17a217348d60d2f29bda59bd",
+    "formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+    "formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean": "eb274caae3399f46ccef0377465829645f53b4b5e87bf0b3e34b255b0378aecc",
+    "formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmission.lean": "4330a8f99bf1b325b0c1cecb7f7dc6efe655c24021269cbafef2a854e8a7d579",
+    "formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean": "bbaccda813c6c32c04b0f2c9c8a76a5b1f6ccae3d8bba3485ccb02881962c627",
+    "formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch": "476daa58f31cdcdecaf48909ff30b3f5f1d172b40ff4b8cccec68418e9ebd11e",
+    "experiments/integer_certificate_emission/check.py": "aa8d571371dd3a9a12a3c246c7ead606c8fcc4bd4c9d3456b7f7ae63f60f2f11",
+    "experiments/integer_certificate_emission/package.py": "5821bde46794e01345aa3128c0019473eaab275c6fb9650fc58aa5d02cd1588e",
+    "experiments/integer_certificate_emission/review.py": "e929eb63ca0f85c6e4a44e657118fbc51269b36ffc41e2755f9fff4e8abedb87",
+    "experiments/integer_certificate_emission/checker_results.json": "277526303440b7a9b5b13c04da42d8955026cf5e6b2cdc98b167f4ea6024093c",
+    "experiments/integer_certificate_emission/checker_vectors.json": "3c616069c1b5b7a1a42c1871f162cd0f728641c3f6773166049c0de6d0974a5f",
+    "experiments/integer_certificate_emission/descriptor.json": "3a1119636ff449c8cd38e139e5258f0c2ec7650ef5d81195b79900a41f6887b8",
+    "experiments/integer_certificate_emission/large_results.json": "861ccc029bc7eaf06883108f032715d334953556983914ae910fe38faf219770",
+    "experiments/integer_certificate_emission/large_CSE_costs.json": "772f0bf7fe9978ec986c8d5fb0ff692effaa49823f57b9445ada9c80d94dcba7",
+    "experiments/integer_certificate_emission/review_01.json": "bf774207d985fc5ef6b55bc117062270dc8cdc7e799238002a30a8d3dc3776d5"
+  }
+}

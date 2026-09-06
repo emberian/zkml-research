@@ -1,0 +1,128 @@
+{
+  "classification": "executed reference DDH-IPFE algebra; sourced selective security, no deployed-system claim",
+  "source": "ePrint2015/017 Construction3.1 and Theorem3.2 printedpp7-8",
+  "group": {
+    "source": "RFC3526 section3 group14",
+    "modulus_bits": 2048,
+    "subgroup_order_bits": 2047,
+    "generator": 2,
+    "modulus_sha256": "d66436f79bbd6b2e38c0ffbd079be904d2641415e2e67140e09448be9a60890e",
+    "security_bits": null,
+    "post_quantum": false
+  },
+  "dimension": 3,
+  "issued_projection": [
+    1,
+    1,
+    0
+  ],
+  "issued_span_rank": 1,
+  "common_kernel_dimension": 2,
+  "initial": [
+    1,
+    4,
+    6
+  ],
+  "alternative": [
+    2,
+    3,
+    11
+  ],
+  "public_updates": [
+    [
+      3,
+      1,
+      2
+    ],
+    [
+      -1,
+      2,
+      -4
+    ]
+  ],
+  "represented_states": [
+    [
+      1,
+      4,
+      6
+    ],
+    [
+      4,
+      5,
+      8
+    ],
+    [
+      3,
+      7,
+      4
+    ]
+  ],
+  "authorized_outputs": [
+    5,
+    9,
+    10
+  ],
+  "fixed_output_decode_interval": [
+    -64,
+    64
+  ],
+  "invariant_additions_checked": 605,
+  "derived_span_keys_checked": 6,
+  "positive": {
+    "two_ct_updates_equal_direct_encryption_with_summed_coins": true,
+    "fresh_randomized_ct_loop_matches": true,
+    "ciphertext_zero_refresh_preserves_state": true
+  },
+  "falsifiers": {
+    "retained_master_recovers_all_final_coordinates": [
+      3,
+      7,
+      4
+    ],
+    "ingress_projection_visible_before_release": [
+      4,
+      1
+    ],
+    "retained_input_coins_recover_whole_input": [
+      3,
+      1,
+      2
+    ],
+    "public_ciphertext_substitution_returns_42": true,
+    "outside_decoder_interval_projection_77_still_testable": true,
+    "nonlinear_square_exposes_hidden_pair": [
+      5,
+      7
+    ],
+    "restored_snapshot_still_reads_old_projection": 5
+  },
+  "malformed_group_elements_rejected": 3,
+  "exact_counts": {
+    "state_ciphertext_group_elements": 4,
+    "state_ciphertext_fixed_width_bytes": 1024,
+    "master_public_group_elements": 3,
+    "exposed_function_key_scalars": 1,
+    "online_encoding_modexp": 7,
+    "online_encoding_group_multiplications": 3,
+    "learn_add_group_multiplications": 4,
+    "projection_membership_checks_modexp": 4,
+    "projection_general_modexp_excluding_membership": 4,
+    "projection_mod_inverse": 1,
+    "decode_table_entries": 129,
+    "decode_table_precompute_modexp_as_executed": 129
+  },
+  "privacy_scope": "selective initial pair; fixed keys; public adaptive additions and forkable projection reads; honest initializer erases master, plaintext and coins",
+  "residuals": [
+    "Python pow is not constant-time",
+    "no proof implementation matches source reduction",
+    "no quantum security",
+    "no neural utility",
+    "no hidden nonlinearity",
+    "no private projected input secrecy",
+    "no output binding or continuity",
+    "no security-strength calibration",
+    "source theorem not a simulation theorem"
+  ],
+  "script_sha256": "bc16cd4a834784b71c8e25f75716c53dd4d0c144948a2f23f8ccb816febc36c5",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]"
+}

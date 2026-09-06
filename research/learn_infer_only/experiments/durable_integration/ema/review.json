@@ -1,0 +1,137 @@
+{
+  "source_inventory": {
+    "Compiler/ResidentEmaCertificate.lean": {
+      "source_sha256": "f6b9c07240bc4f5341a8412b7bc00a5c8c6e19e17743d86c3cecc8b3ea72588d",
+      "theorems": 13,
+      "pins": 13,
+      "custom_axiom_or_sorry_tokens": []
+    },
+    "Assurance/ResidentEmaCell.lean": {
+      "source_sha256": "68cdb084b839364328bc0717c5b6fa763a8342efbfc4244c02181603af4a9437",
+      "theorems": 7,
+      "pins": 7,
+      "custom_axiom_or_sorry_tokens": []
+    },
+    "Assurance/ResidentEmaRelease.lean": {
+      "source_sha256": "470a6b5daf54cbd373799fa0b075137d06f5a115395d07ecbabfac130efbc8ee",
+      "theorems": 13,
+      "pins": 13,
+      "custom_axiom_or_sorry_tokens": []
+    },
+    "Assurance/ResidentEmaWitness.lean": {
+      "source_sha256": "e412cad31eba9eac302a597239fcaee14987b79db6b134c0de884e2ca74f3eeb",
+      "theorems": 15,
+      "pins": 15,
+      "custom_axiom_or_sorry_tokens": []
+    }
+  },
+  "direct_import_dependencies": {
+    "Compiler.DescriptorEval": {
+      "source_path": "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean",
+      "source_sha256": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6",
+      "olean_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/DescriptorEval.olean",
+      "olean_sha256": "64954e60e1d392e34e158c231c583ab72c5203d71555e60594fdb649c2e1c80c"
+    },
+    "Compiler.NativeKernelPlan": {
+      "source_path": "/Users/ember/dev/minidregg/Compiler/NativeKernelPlan.lean",
+      "source_sha256": "6dfbaa0427ac4f4b2e45ef8e0ad45f0a8c921632f7deaf00d7a0041bc09b0e15",
+      "olean_path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/NativeKernelPlan.olean",
+      "olean_sha256": "0e196c0b9b129b75770a4cb9f5a6b73788820cb20f811567392f6ee9ab7941f7"
+    },
+    "Assurance.ResidentDurableIntegration": {
+      "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean",
+      "source_sha256": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+      "olean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Assurance/ResidentDurableIntegration.olean",
+      "olean_sha256": "b7069e7c5f3af16399d3006f68af534a09d1ad078120fcc3fbede531c5fbd957"
+    },
+    "Compiler.ResidentEmaCertificate": {
+      "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Compiler/ResidentEmaCertificate.lean",
+      "source_sha256": "f6b9c07240bc4f5341a8412b7bc00a5c8c6e19e17743d86c3cecc8b3ea72588d",
+      "olean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Compiler/ResidentEmaCertificate.olean",
+      "olean_sha256": "a5b51be686ac15f0722624a90f86b93f9d035885a06e762900814672ec382502"
+    },
+    "Assurance.ResidentEmaCell": {
+      "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaCell.lean",
+      "source_sha256": "68cdb084b839364328bc0717c5b6fa763a8342efbfc4244c02181603af4a9437",
+      "olean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Assurance/ResidentEmaCell.olean",
+      "olean_sha256": "ec3462561eedddedc3a58ecf7e5049c6cbca251c0d2e664dca4c31d02776ce86"
+    },
+    "Assurance.ResidentEmaRelease": {
+      "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean",
+      "source_sha256": "470a6b5daf54cbd373799fa0b075137d06f5a115395d07ecbabfac130efbc8ee",
+      "olean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Assurance/ResidentEmaRelease.olean",
+      "olean_sha256": "20c2a6b46fe26d241b7c3572a0061eda00ab9750f626328665243205268e282a"
+    }
+  },
+  "checks": [
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/ema_review/Compiler.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/ema_review",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 5.524458885192871
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/ema_review/Assurance.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/ema_review",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 23.410563945770264
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/minidregg-ema-semantic-bridge.patch"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 0.037737369537353516
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.07236909866333008
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+      "stderr": "",
+      "elapsed_seconds": 0.01908087730407715
+    }
+  ],
+  "patch_sha256": "3f5d9c6895b5a423ce134e586c02141e448052ed559bca0a1aeec707dd99232a",
+  "first_settled_hashes_preserved": {
+    "Assurance/ResidentDurableIntegration.lean": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+    "Assurance/ResidentDurableCollision.lean": "b410206075a03338ef6d569c777c2d2a2420f3ddc8f3280cfcf6d062685a028c",
+    "minidregg-durable-integration.patch": "945d70ab4a7504f25bbc598f70951fae8f1a1a5318459a396bfe1fcbf8e57a5a"
+  },
+  "prerequisites": [
+    "formal/minidregg-resident-release.patch",
+    "formal/durable_integration/minidregg-durable-integration.patch"
+  ],
+  "source_scope": "Only the four new EMA modules are scanned; direct source/olean hashes are recorded, not a claim that prebuilt companion oleans were rebuilt here."
+}

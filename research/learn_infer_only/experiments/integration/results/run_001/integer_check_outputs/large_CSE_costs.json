@@ -1,0 +1,9 @@
+{"shared_zero_checks": 4555,
+ "shared_wires": 56151,
+ "shared_mul_gates": 8017,
+ "shared_gates": 21279,
+ "shared_add_gates": 13262,
+ "raw_zero_product_gates": 16868,
+ "raw_gates": 52378,
+ "raw_constant_product_gates": 22091,
+ "header_compacted": false}

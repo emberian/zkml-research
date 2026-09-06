@@ -1,0 +1,11 @@
+STATUS real_BFV_window_arithmetic test_reader_retains_full_key=true no_PQ_bits_claim
+PARAMS N=4096 t=1032193 Q_factors=[68719403009, 68719230977, 137438822401] width=16 window=8 steps=1024
+WINDOW_POSITIVE seed=23 ct_add=1024 ct_sub=1016 exact_queue_equalities=16 output_ct_pt_mul=1 expected_signed_score=6 observed_residue=6 max_observed_noise_bits=14
+WINDOW_BYTES seed=23 acc=111646 queue=893168 input_total=114325504 answer=111646 public_key=55859 live_acc_plus_queue_raw_RNS_bytes=1769472
+FRESH_REPLACEMENT_FALSIFIER seed=23 cancellation_identity=false same_plaintext_still_correct=true scope=identity_not_immediate_decrypt_failure
+RERANDOMIZED_EXPIRY_DEBT_FAILURE seed=23 zero_amplification_doublings=72 replacements=40 expected_coefficient0=0 observed_coefficient0=1 initial_rerandomized_old_same_plaintext=true
+WINDOW_POSITIVE seed=71 ct_add=1024 ct_sub=1016 exact_queue_equalities=16 output_ct_pt_mul=1 expected_signed_score=6 observed_residue=6 max_observed_noise_bits=14
+WINDOW_BYTES seed=71 acc=111646 queue=893168 input_total=114325504 answer=111646 public_key=55859 live_acc_plus_queue_raw_RNS_bytes=1769472
+FRESH_REPLACEMENT_FALSIFIER seed=71 cancellation_identity=false same_plaintext_still_correct=true scope=identity_not_immediate_decrypt_failure
+RERANDOMIZED_EXPIRY_DEBT_FAILURE seed=71 zero_amplification_doublings=72 replacements=160 expected_coefficient0=0 observed_coefficient0=1032192 initial_rerandomized_old_same_plaintext=true
+PASS exact same-ciphertext window cancellation; fresh-replacement identity falsifier; valid rerandomization debt eventually changes selected plaintext

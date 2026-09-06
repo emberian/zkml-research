@@ -1,0 +1,7 @@
+d,r,steps,private_x,public_mul,secret_public_mul,secret_secret_mul,public_add,private_add,private_state_scalars,base_public_scalars,unpriced
+4096,16,1,False,16777216,65536,65536,16773120,131056,131072,16777216,factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication
+4096,16,1,True,0,16777216,131072,0,16904176,131072,16777216,factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication
+4096,16,128,False,16777216,8388608,8388608,16773120,16775168,16777216,16777216,factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication
+4096,16,128,True,0,16777216,16777216,0,33548288,16777216,16777216,factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication
+4096,16,129,False,16777216,8454144,8454144,16773120,16906224,16908288,16777216,factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication
+4096,16,129,True,0,16777216,16908288,0,33679344,16908288,16777216,factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication

@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/FheRnsScaleDecomposition.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean:211:2: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  e - f \u2264 -1\n  0 \u2264 e - i \u2264 1\n  b \u2265 1\n  b - c \u2265 0\n  a \u2265 1\nwhere\n a := d\n b := B\n c := \u2211 i, r i\n e := roundDiv (\u2211 i, r i * ceilDiv (B * (n * g i - d * omega i)) d) B\n f := roundDiv (\u2211 i, r i * (n * g i - d * omega i)) d\n i := roundDiv (\u2211 i, r i * (fun i => n * g i - d * omega i) i) d\n'Minidregg.Compiler.FheRnsScale.round_add_multiple' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.garner_identity' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.garnerScaleDecomposition' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.roundDiv_eq_nearest' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.oneSidedRoundingRefinement' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.ceil_error' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.weighted_ceil_error' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.ceil_corrected_rounding' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.approximation_premise_inhabited' does not depend on any axioms\n'Minidregg.Compiler.FheRnsScale.magnitude_falsifier' does not depend on any axioms\n'Minidregg.Compiler.FheRnsScale.direction_falsifier' does not depend on any axioms\n'Minidregg.Compiler.FheRnsScale.correction_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.captured_rounding_discrepancy' depends on axioms: [propext]\n'Minidregg.Compiler.FheRnsScale.captured_error_bound' depends on axioms: [propext]\n'Minidregg.Compiler.FheRnsScale.output_exact_iff' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.FheRnsScale.downscale_discrepancy_bound' depends on axioms: [propext,\n sorryAx,\n Classical.choice,\n Quot.sound]\n",
+    "stderr": "",
+    "elapsed_seconds": 6.450395584004582
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build/Assurance.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build/Assurance.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "source_sha256": "46d65844120e4ad61cea730ec5e4b66f5d66cb66f77541ec6c2d94c2f4736b66"
+}

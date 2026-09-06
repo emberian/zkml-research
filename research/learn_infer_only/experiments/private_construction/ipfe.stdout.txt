@@ -1,0 +1,61 @@
+{
+  "represented_states": [
+    [
+      1,
+      4,
+      6
+    ],
+    [
+      4,
+      5,
+      8
+    ],
+    [
+      3,
+      7,
+      4
+    ]
+  ],
+  "authorized_outputs": [
+    5,
+    9,
+    10
+  ],
+  "falsifiers": {
+    "retained_master_recovers_all_final_coordinates": [
+      3,
+      7,
+      4
+    ],
+    "ingress_projection_visible_before_release": [
+      4,
+      1
+    ],
+    "retained_input_coins_recover_whole_input": [
+      3,
+      1,
+      2
+    ],
+    "public_ciphertext_substitution_returns_42": true,
+    "outside_decoder_interval_projection_77_still_testable": true,
+    "nonlinear_square_exposes_hidden_pair": [
+      5,
+      7
+    ],
+    "restored_snapshot_still_reads_old_projection": 5
+  },
+  "exact_counts": {
+    "state_ciphertext_group_elements": 4,
+    "state_ciphertext_fixed_width_bytes": 1024,
+    "master_public_group_elements": 3,
+    "exposed_function_key_scalars": 1,
+    "online_encoding_modexp": 7,
+    "online_encoding_group_multiplications": 3,
+    "learn_add_group_multiplications": 4,
+    "projection_membership_checks_modexp": 4,
+    "projection_general_modexp_excluding_membership": 4,
+    "projection_mod_inverse": 1,
+    "decode_table_entries": 129,
+    "decode_table_precompute_modexp_as_executed": 129
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "audits": [
+    "teaching/query coordinate disjointness",
+    "history-seed disjointness including fixed-point follow-on",
+    "saved target/prediction arrays recompute every main held-out accuracy",
+    "all 289 actual model prompts have 14 tokens"
+  ],
+  "counts_source": {
+    "L": 30,
+    "d": 576,
+    "f": 1536,
+    "kv": 192,
+    "heads": 9,
+    "n": 14
+  },
+  "model_fp32_parameter_bytes": 538060032,
+  "fixed_point_largest_universal_numerator_bound": 39724152619008,
+  "hashes": {
+    "costs.csv": "ab65c245e89c2253800baf0cf792838e492d2f3a47e4588a3e3b46c8170d4faa",
+    "cost_and_audit.py": "398f0ceeb8f05bd0bc094f53e43b6fba3c54a4b059b249e165674faf5a205108",
+    "MODEL_CARD.md": "d1ba68cae64a89b6b434b11526e6e2271ee5ffd2c914ec35ed515f9d84c6085c",
+    "modeling_llama.py": "f4dcfcb9468579f94fce84ea5740d69a8c7934df936070aff863375447ddcabb"
+  }
+}

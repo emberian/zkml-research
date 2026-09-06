@@ -1,0 +1,15 @@
+/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean:112:18: warning: unused variable `hB`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean:183:30: error: failed to synthesize
+  Decidable (quotientCertificate 31 4 15 1 0 19 ∧ 1 % 31 = 32 % 31 ∧ nearest 31 4 32 ≠ 0)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean:206:29: error: failed to synthesize
+  Decidable (canonical 31 ![1, 2])
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean:206:29: error: failed to synthesize
+  Decidable (canonical 31 ![3, 4])
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

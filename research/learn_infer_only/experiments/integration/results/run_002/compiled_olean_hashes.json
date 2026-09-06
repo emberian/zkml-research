@@ -1,0 +1,82 @@
+{
+  "Assurance.ResidentReleaseContext": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance/ResidentReleaseContext.olean",
+    "sha256": "c35f7c19baf546cbe46b1e08ff60fa44060a4e785ae1852bc3627c4f79ceb510"
+  },
+  "Compiler.BFVScaleLiftRefinement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Compiler/BFVScaleLiftRefinement.olean",
+    "sha256": "36a4a6d53ac2ea66f344aabc40a0d4e52bf39ce61739f1a7650dc892f280854f"
+  },
+  "Compiler.IntegerCertificateEmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Compiler/IntegerCertificateEmission.olean",
+    "sha256": "1b3e312c1d7e910ff903112d81eea8b41bf0c5e5fcc00f5aca680e9ea303fbcb"
+  },
+  "Compiler.ResidentEmaCertificate": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Compiler/ResidentEmaCertificate.olean",
+    "sha256": "a5b51be686ac15f0722624a90f86b93f9d035885a06e762900814672ec382502"
+  },
+  "Selvage.RandomnessSelection": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Selvage/RandomnessSelection.olean",
+    "sha256": "a597af8d54a238e26487847bb449933728fa375ed8ae8c0e34fd93bd2c4a262b"
+  },
+  "Theory.PrivatePolicyEvolution": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Theory/PrivatePolicyEvolution.olean",
+    "sha256": "c33bfa41d74073677e86dad8c5e28decd80accb22db98a4eb8bfeb63cb8fcd23"
+  },
+  "Assurance.ResidentAdaptiveContext": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance/ResidentAdaptiveContext.olean",
+    "sha256": "01d0a4b089622a2676d6342c33813fe3350f0568d2147d40328e66c436018789"
+  },
+  "Assurance.ResidentDurableIntegration": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance/ResidentDurableIntegration.olean",
+    "sha256": "b7069e7c5f3af16399d3006f68af534a09d1ad078120fcc3fbede531c5fbd957"
+  },
+  "Assurance.ResidentRestoreFinality": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance/ResidentRestoreFinality.olean",
+    "sha256": "fbd27f5efaf7dd11d2635970b76aacc0e092f03a4963597254eb32f70ce42a5a"
+  },
+  "Compiler.FheRnsScaleDecomposition": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Compiler/FheRnsScaleDecomposition.olean",
+    "sha256": "2a652d43869b47f94553e9a54f7a31331a23c2fd634e9e36f16aec690a6215c8"
+  },
+  "Compiler.LargeIntegerCertificateEmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Compiler/LargeIntegerCertificateEmission.olean",
+    "sha256": "849ad3a654854d2f0875ab60dc7082fe8b850c90c2d709b74b11b855d7b4ab82"
+  },
+  "Selvage": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Selvage.olean",
+    "sha256": "7173e8e569da12bd47d455bff9453301d3d5ac6d0501652f8da03e80f4a5d118"
+  },
+  "Theory": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Theory.olean",
+    "sha256": "1e57a05cd4ddb9178799ebb431a5c1d4f7cb341c47110f7b7518a8e5d47b8466"
+  },
+  "Assurance.ResidentDurableCollision": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance/ResidentDurableCollision.olean",
+    "sha256": "55e7dfbdf1bc72691ee71931973194d0c9f67c5048375ca3e6296db32ae82fa0"
+  },
+  "Assurance.ResidentEmaCell": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance/ResidentEmaCell.olean",
+    "sha256": "ec3462561eedddedc3a58ecf7e5049c6cbca251c0d2e664dca4c31d02776ce86"
+  },
+  "Assurance.ResidentMultiReceiptSchedule": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance/ResidentMultiReceiptSchedule.olean",
+    "sha256": "f851f8c3bef1697a114211e8c38ed88010c4abc2a478c6a1db412efa810fba9a"
+  },
+  "Compiler": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Compiler.olean",
+    "sha256": "6ca02991d508ce71358ae7fca456d9dfc25418791f2239b2c9d0fc2bf5ec70e1"
+  },
+  "Assurance.ResidentEmaRelease": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance/ResidentEmaRelease.olean",
+    "sha256": "20c2a6b46fe26d241b7c3572a0061eda00ab9750f626328665243205268e282a"
+  },
+  "Assurance.ResidentEmaWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance/ResidentEmaWitness.olean",
+    "sha256": "69ea5dfc3ebfeff2f74f787e6539313cbda92e97391893b44e0110df6baec8e2"
+  },
+  "Assurance": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean/Assurance.olean",
+    "sha256": "dd1f04e68a4e66a9d922fecb780ff921b0806d239da2d4f483dfd4b4997bd0fa"
+  }
+}

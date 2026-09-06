@@ -1,36 +1,19 @@
-# Decisive follow-ons — first three now in flight
+# Decisive follow-ons during the active goal
 
-1. [OPEN: runtime integrity integration] Replace the staged restore adapter's
-   empty-rootWrites witness with a real materialized cell/DataIntent carrying the
-   same receipt context. Prove `receipt.next = installed post-root`, accepted genesis/
-   parent openings, and full `Intent.preflight` acceptance. Execute crash/retry
-   controls: consume-before-release, crash after commit, duplicate exact packet,
-   stale snapshot and check/install race. Pass criterion: one actual durable path
-   with its witness and falsifier, not a second parallel gate. Minidregg changes
-   remain patches from a research run.
+[EXECUTED] The goal runs through 2026-09-06 10am EDT / 14:00 UTC. STATUS.md names ownership. Do not duplicate active lanes or edit companion trees.
 
-2. [OPEN: smallest privacy-changing experiment] Instantiate one restricted release
-   and input-issuance mechanism for a tiny closed state update; enumerate every
-   surviving key/program/coin, then expose the union required by tier A. Start with
-   the fixed-Step/NISC or narrowly constrained construction question identified in
-   `CANDIDATES.md`, or explicitly choose C/D as a comparison. Pass criterion: two
-   distinct interface-admissible private states, two continuing protected updates,
-   authorized output, and no equivalent read-all capability in any exposed role.
-   Fail criterion: exhibit the exact surviving credential and a recovery path.
-   Existing GKS23/PCE audits and trace/routing lemmas need no duplication.
+1. [EXECUTED] Canonical signed-byte EMA is checked through actual materialized installation, with48 pins and the−128 boundary. [OPEN; durable lane active] Extend the public transition relation to the exact ciphertext queue/accumulator: identical-old-ciphertext eviction, canonical current queue and arbitrary-length sum invariant. Keep RNS/Rust refinement separate.
 
-3. [OPEN: randomized composition] For a candidate that survives task 2, bind private
-   development coins to a preauthorized parent/command and prove actual distribution,
-   not merely a seed commitment. Model malicious issuer, restore and selective abort/
-   branch grinding together. The current finite witness shifts a fair bit's chance
-   of 1 from 1/2 to 3/4 by selecting from two fair draws; reproduce it as a broken
-   sibling. Add the adaptive multi-context receipt/continuity game and then price
-   all assumptions, including QROM/PQ dependencies if claimed. Deterministic Stage 0
-   and a public beacon do not discharge hidden entropy or this composition.
+2. [OPEN; BFV and integer lanes active] Bind the live engine's deterministic fixed-point Garner correction in an emitted certificate. Its result can be exact-nearest+1; allowing either answer loses the deterministic guarantee. Reuse compiler range/weighted-column gadgets and measure generic simplification. Operand provenance, NTT/refinement and the remaining multiplication stages are separate.
 
-[DERIVED resume instructions] Read `STATUS.md`, `SECURITY_GAME.md`, `DECISION.md`,
-then `formal/README.md`. Reproduction commands are in the latter. Keep the generated
-patch un-applied until the maintainer folds it; never edit companion trees from this
-research run. Inspect current dirty state and the companion before choosing work:
-another run may have landed an object since this tranche. The active swarm and output ownership are recorded in STATUS.md; the current
-goal runs through 2026-09-06 10am EDT. Inspect that table before starting a lane.
+3. [EXECUTED] Pinned CBD20/Q83/Q109 estimates now have72 completed primary calls and16 fresh-process minimum reproductions. [OPEN; HE lane active] Formalize the horizon-independent window correctness inequality from explicit encryption phase/range equations and exact ciphertext expiry. Generic-LWE attack estimates are not PQ proofs or Rust correctness theorems.
+
+4. [EXECUTED] Combined16-module/265-pin integration passes, including EMA. [OPEN; parent/review/integration lanes active] Extend the generic adaptive receipt argument to EMA and integrate the settled simplifier/actual-source certificate when ready. Existing dependency-olean checks are not a fresh whole-source build.
+
+5. [OPEN: decisive privacy construction] Supply a tiny closed learner with authenticated unknown inputs and a restricted output capability surviving every untrusted role's exposed artifacts. DDH/modular-LWE public-addition witnesses are restricted positives, but their projection keys can read fresh inputs directly. FHE/TFHE test secret keys remain full readers. Enumerate erasures for tier A, or declare tier C/D. Prove a nontrivial interface-admissible pair under explicit query/update/fork budgets; utility and privacy must concern the same interface.
+
+6. [OPEN: composition after a surviving candidate] Bind private development coins before host selection and retain exact retry results; separate availability from unbiased delivery. The new receipt theorem covers uniform-field classical ROM. Concrete hash sampling, QROM, recipient encryption and physically durable complete mediation need separate proofs.
+
+7. [OPEN: ideal-interface disclosure] Audit how the exact window's allowed sign queries, chosen inputs and copied histories combine. Distinguish arbitrary bounded vectors from authenticated fixed feature families, and report exact budgets. The assigned follow-on did not execute because an automatic tool risk filter stopped the agent; no result is inferred from that failure.
+
+[DERIVED continuation criteria] A scoped refutation or useful restricted construction is valid progress. Existing SFE/PCE/trace/routing work needs no duplicate survey. Updatable encrypted RAM adds a bounded preissued-token lead with stronger obfuscation/game restrictions recorded in CANDIDATES.md and SOURCES.md.

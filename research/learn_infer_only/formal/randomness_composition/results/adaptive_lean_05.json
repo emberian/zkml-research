@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build/Assurance/ResidentAdaptiveContext.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Assurance.ResidentAdaptiveContext.adaptive_context_receipt_sound' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.fixed_query_roundtrip' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.adaptive_query_roundtrip' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.query_bytes_match_live' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.query_bytes_injective' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.concrete_oracle_match_live' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.wrapper_accepts_global_fiatshamir' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.wrong_arithmetic_is_global_bad' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.adaptive_sound_reading' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.adaptive_price_numeric' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.honest_wrapper_inhabited' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.wrapper_wrong_context_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentAdaptiveContext.omitting_root_breaks_query_binding' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": "",
+  "source_sha256": "c509adf995fdbf65f9ea671fca35655532bd2ae911b6a9f738f0c60adf3e79d7"
+}

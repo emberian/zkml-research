@@ -1,0 +1,102 @@
+{
+  "two_public_updates": {
+    "states": [
+      [
+        1,
+        4,
+        3
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        3,
+        2,
+        4
+      ]
+    ],
+    "outputs": [
+      0,
+      4,
+      0
+    ],
+    "noise_values": [
+      3,
+      3,
+      3
+    ]
+  },
+  "public_update_iterations": 10000,
+  "exhaustive_public_edges": 15625,
+  "noise_contract": {
+    "per_ciphertext_bound": 8,
+    "equation": "epsilon_y=<y,e1>-<z_y,e0>",
+    "correctness_sufficient": "2*abs(epsilon_total)<q/p",
+    "safe_additions_starting_from_zero_noise": 195,
+    "first_worst_case_failure": {
+      "added_zero_ciphertexts": 196,
+      "noise_per_ciphertext": 8,
+      "total_error": 1568,
+      "scale": 3125,
+      "wrong_output": 1,
+      "classification": "bounded-noise worst-case correctness falsifier; not an attack probability"
+    },
+    "zero_ciphertext_addition_is_not_noise_reset": true
+  },
+  "falsifiers": {
+    "naive_floor_scaled_modular_port": {
+      "q": 101,
+      "p": 5,
+      "scale_floor": 20,
+      "public_plus_one_updates": 51,
+      "wraps": 10,
+      "phase": 10,
+      "expected_plain_mod_p": 1,
+      "decoded": 0,
+      "wrap_residual_per_cycle": -1,
+      "classification": "naive floor-scaled modular port; not the ALS modular construction"
+    },
+    "naive_mod_dependent_key_issuance": {
+      "p": 5,
+      "requested_vectors": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "dependent_scalar_mod_p": 3,
+      "naive_integer_determinant": -5,
+      "master_recovered": true,
+      "correct_lift_for_second": [
+        3,
+        6
+      ],
+      "correct_second_key_is_three_times_first": true,
+      "admissible_challenge_pair": [
+        [
+          0,
+          0
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "classification": "source-described attack on naive canonical independent issuance; correct stateful issuer prevents it"
+    },
+    "private_ingress_projection_leaks_before_gate": 4,
+    "unkeyed_substitution_releases_three": true,
+    "retained_master_reads_final_state": [
+      1,
+      2,
+      3
+    ],
+    "public_updates_create_no_new_unknown_state_input": true
+  }
+}

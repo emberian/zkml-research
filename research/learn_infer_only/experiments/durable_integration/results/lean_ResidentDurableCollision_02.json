@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Assurance/ResidentDurableCollision.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableCollision.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Assurance.ResidentDurableCollision.validated_exists' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentDurableCollision.ready' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentDurableCollision.openings' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentDurableCollision.finalized' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentDurableCollision.root_arithmetic_not_logical_step' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentDurableCollision.exact_install_survives' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": "",
+  "elapsed_seconds": 14.481917381286621,
+  "source_sha256": "e3ed932d64a4adfe092ddb14f0497299f7b2301165b23d894082d7f73bcd70bf",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "olean_sha256": "0b3d56a3daa167c2a3a33107ae05b8a3cc7e4f3787073b883d619fc547810323"
+}

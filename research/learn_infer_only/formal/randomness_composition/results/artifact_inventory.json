@@ -1,0 +1,30 @@
+{
+  "scope": "Three proposed source files; no companion mutation or complete system claim",
+  "sources": [
+    {
+      "path": "research/learn_infer_only/formal/randomness_composition/Selvage/RandomnessSelection.lean",
+      "sha256": "670e93843760823413cc2e18bf9bafadba3247dd11f56feaff3d5ebca83dbb57",
+      "theorems": 13,
+      "pins": 13
+    },
+    {
+      "path": "research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean",
+      "sha256": "9eb3318ca21240162355a7e166e258b085aaa038b66f466c2b8f90df777fd90e",
+      "theorems": 13,
+      "pins": 13
+    },
+    {
+      "path": "research/learn_infer_only/formal/randomness_composition/Assurance/ResidentMultiReceiptSchedule.lean",
+      "sha256": "0dcbf2e07534bf430d0f17b969f9174fdd2bda533f537bccddb9f7cb6265ab82",
+      "theorems": 20,
+      "pins": 20
+    }
+  ],
+  "total_theorems": 46,
+  "total_pins": 46,
+  "checks": [
+    "review_manifest.json",
+    "adaptive_review_manifest.json",
+    "schedule_review_manifest.json"
+  ]
+}

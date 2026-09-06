@@ -1,0 +1,298 @@
+{
+  "inputs": [
+    {
+      "file": "first_pass_ready.jsonl",
+      "sha256": "7f7b18290bafe253108f938f30be1376fb4899c6e5591e0e0d127b3336704805",
+      "rows": 24,
+      "status_counts": {
+        "EXECUTED": 24
+      }
+    },
+    {
+      "file": "additional_attacks.jsonl",
+      "sha256": "e89fd672e6fdfd1cf6792a7c7ac21640d56380797e9347f7b4ba41c377e5d1c0",
+      "rows": 48,
+      "status_counts": {
+        "EXECUTED": 48
+      }
+    },
+    {
+      "file": "quantum_depth_width.jsonl",
+      "sha256": "b10a6b0f8ec1a0f343d5307acf465e3104391944fc926ee7e5624c875f5b28d5",
+      "rows": 16,
+      "status_counts": {
+        "EXECUTED": 12,
+        "ERROR": 4
+      }
+    },
+    {
+      "file": "nonlattice_attacks.jsonl",
+      "sha256": "a3efa02a43bfc54710baa4d796c5f0edbf46b8ac0bed8a2690ea63b1146394ce",
+      "rows": 8,
+      "status_counts": {
+        "ERROR": 2,
+        "EXECUTED": 3,
+        "TIMEOUT": 3
+      }
+    },
+    {
+      "file": "bkw_with_maxima.jsonl",
+      "sha256": "351be8bb2b9c6fc9dc61a3c4da4bb1945ce1209af5b0c822ea625348dbeb673c",
+      "rows": 4,
+      "status_counts": {
+        "TIMEOUT": 2,
+        "EXECUTED": 2
+      }
+    }
+  ],
+  "lattice_summary": [
+    {
+      "Q_bits_label": "83",
+      "samples": "4096",
+      "model": "MATZOV_classical",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "bdd",
+      "selected_result_file": "additional_attacks.jsonl",
+      "log2_estimated_cost": 172.57963729006858,
+      "beta": "496",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "83",
+      "samples": "4096",
+      "model": "ADPS16_classical",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "usvp",
+      "selected_result_file": "first_pass_ready.jsonl",
+      "log2_estimated_cost": 145.708,
+      "beta": "499",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "83",
+      "samples": "4096",
+      "model": "ADPS16_quantum_core_svp",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "usvp",
+      "selected_result_file": "first_pass_ready.jsonl",
+      "log2_estimated_cost": 132.235,
+      "beta": "499",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "83",
+      "samples": "4096",
+      "model": "MATZOV_quantum_depth_width",
+      "expected_lattice_attacks": 4,
+      "attempted_lattice_attacks": 4,
+      "finite_completed_lattice_attacks": 3,
+      "coverage_complete_for_named_suite": false,
+      "best_completed_lattice_attack": "bdd",
+      "selected_result_file": "quantum_depth_width.jsonl",
+      "log2_estimated_cost": 164.22449057997963,
+      "beta": "496",
+      "failures": [
+        {
+          "attack": "dual_hybrid",
+          "status": "ERROR",
+          "exception": "SignError('cannot add infinity to minus infinity')"
+        }
+      ]
+    },
+    {
+      "Q_bits_label": "83",
+      "samples": "infinity",
+      "model": "MATZOV_classical",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "bdd",
+      "selected_result_file": "additional_attacks.jsonl",
+      "log2_estimated_cost": 172.56663328905498,
+      "beta": "496",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "83",
+      "samples": "infinity",
+      "model": "ADPS16_classical",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "usvp",
+      "selected_result_file": "first_pass_ready.jsonl",
+      "log2_estimated_cost": 145.708,
+      "beta": "499",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "83",
+      "samples": "infinity",
+      "model": "ADPS16_quantum_core_svp",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "usvp",
+      "selected_result_file": "first_pass_ready.jsonl",
+      "log2_estimated_cost": 132.235,
+      "beta": "499",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "83",
+      "samples": "infinity",
+      "model": "MATZOV_quantum_depth_width",
+      "expected_lattice_attacks": 4,
+      "attempted_lattice_attacks": 4,
+      "finite_completed_lattice_attacks": 3,
+      "coverage_complete_for_named_suite": false,
+      "best_completed_lattice_attack": "bdd",
+      "selected_result_file": "quantum_depth_width.jsonl",
+      "log2_estimated_cost": 164.19289076712812,
+      "beta": "495",
+      "failures": [
+        {
+          "attack": "dual_hybrid",
+          "status": "ERROR",
+          "exception": "SignError('cannot add infinity to minus infinity')"
+        }
+      ]
+    },
+    {
+      "Q_bits_label": "109",
+      "samples": "4096",
+      "model": "MATZOV_classical",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "bdd",
+      "selected_result_file": "additional_attacks.jsonl",
+      "log2_estimated_cost": 127.55609330636673,
+      "beta": "334",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "109",
+      "samples": "4096",
+      "model": "ADPS16_classical",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "usvp",
+      "selected_result_file": "first_pass_ready.jsonl",
+      "log2_estimated_cost": 98.112,
+      "beta": "336",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "109",
+      "samples": "4096",
+      "model": "ADPS16_quantum_core_svp",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "usvp",
+      "selected_result_file": "first_pass_ready.jsonl",
+      "log2_estimated_cost": 89.04,
+      "beta": "336",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "109",
+      "samples": "4096",
+      "model": "MATZOV_quantum_depth_width",
+      "expected_lattice_attacks": 4,
+      "attempted_lattice_attacks": 4,
+      "finite_completed_lattice_attacks": 3,
+      "coverage_complete_for_named_suite": false,
+      "best_completed_lattice_attack": "bdd",
+      "selected_result_file": "quantum_depth_width.jsonl",
+      "log2_estimated_cost": 123.74931817409045,
+      "beta": "334",
+      "failures": [
+        {
+          "attack": "dual_hybrid",
+          "status": "ERROR",
+          "exception": "SignError('cannot add infinity to minus infinity')"
+        }
+      ]
+    },
+    {
+      "Q_bits_label": "109",
+      "samples": "infinity",
+      "model": "MATZOV_classical",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "bdd",
+      "selected_result_file": "additional_attacks.jsonl",
+      "log2_estimated_cost": 127.5577098967924,
+      "beta": "334",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "109",
+      "samples": "infinity",
+      "model": "ADPS16_classical",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "usvp",
+      "selected_result_file": "first_pass_ready.jsonl",
+      "log2_estimated_cost": 98.112,
+      "beta": "336",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "109",
+      "samples": "infinity",
+      "model": "ADPS16_quantum_core_svp",
+      "expected_lattice_attacks": 6,
+      "attempted_lattice_attacks": 6,
+      "finite_completed_lattice_attacks": 6,
+      "coverage_complete_for_named_suite": true,
+      "best_completed_lattice_attack": "usvp",
+      "selected_result_file": "first_pass_ready.jsonl",
+      "log2_estimated_cost": 89.04,
+      "beta": "336",
+      "failures": []
+    },
+    {
+      "Q_bits_label": "109",
+      "samples": "infinity",
+      "model": "MATZOV_quantum_depth_width",
+      "expected_lattice_attacks": 4,
+      "attempted_lattice_attacks": 4,
+      "finite_completed_lattice_attacks": 3,
+      "coverage_complete_for_named_suite": false,
+      "best_completed_lattice_attack": "bdd",
+      "selected_result_file": "quantum_depth_width.jsonl",
+      "log2_estimated_cost": 123.7506598726302,
+      "beta": "334",
+      "failures": [
+        {
+          "attack": "dual_hybrid",
+          "status": "ERROR",
+          "exception": "SignError('cannot add infinity to minus infinity')"
+        }
+      ]
+    }
+  ]
+}

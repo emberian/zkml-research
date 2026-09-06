@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/RestoreSeamWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/RestoreSeamWitness.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review",
+  "started_utc": "2026-09-06T07:38:14.695168+00:00",
+  "elapsed_seconds": 50.29804629199498,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/RestoreSeamWitness.lean": "cb6980b005f854c2b83d9e6b2accc6a4a4b4305452989abd3d3ca2191b38bc0f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean": "1ecebe305a618398fb4d00b904ab28f6e38aeae019bc1663fc2a55700504e286"
+  },
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

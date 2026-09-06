@@ -1,0 +1,135 @@
+{
+  "status": "EXECUTED genuine BFV controls; no secure release or PQ-bit claim",
+  "command": "cargo run --offline --release --manifest-path research/learn_infer_only/experiments/he_closure_costs/bfv_probe/Cargo.toml",
+  "rustc": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)",
+  "cargo": "cargo 1.98.0-nightly (a595d0da2 2026-06-20)",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "selected_coefficient_failure": [
+    {
+      "seed": 7,
+      "additions": 81,
+      "expected": 771091,
+      "observed": 771092
+    },
+    {
+      "seed": 19,
+      "additions": 78,
+      "expected": 741507,
+      "observed": 741506
+    },
+    {
+      "seed": 43,
+      "additions": 79,
+      "expected": 450821,
+      "observed": 450820
+    },
+    {
+      "seed": 101,
+      "additions": 79,
+      "expected": 450821,
+      "observed": 450820
+    }
+  ],
+  "packed_loop": [
+    {
+      "seed": 7,
+      "dimension": 16,
+      "steps": 64,
+      "input_encryptions": 65,
+      "ct_add": 64,
+      "readout_ct_pt_mul": 1,
+      "expected_signed_score": 0,
+      "observed_residue": 0,
+      "private_state_ct": 1
+    },
+    {
+      "seed": 19,
+      "dimension": 16,
+      "steps": 64,
+      "input_encryptions": 65,
+      "ct_add": 64,
+      "readout_ct_pt_mul": 1,
+      "expected_signed_score": 0,
+      "observed_residue": 0,
+      "private_state_ct": 1
+    },
+    {
+      "seed": 43,
+      "dimension": 16,
+      "steps": 64,
+      "input_encryptions": 65,
+      "ct_add": 64,
+      "readout_ct_pt_mul": 1,
+      "expected_signed_score": 0,
+      "observed_residue": 0,
+      "private_state_ct": 1
+    },
+    {
+      "seed": 101,
+      "dimension": 16,
+      "steps": 64,
+      "input_encryptions": 65,
+      "ct_add": 64,
+      "readout_ct_pt_mul": 1,
+      "expected_signed_score": 6,
+      "observed_residue": 6,
+      "private_state_ct": 1
+    }
+  ],
+  "serialized_sizes": [
+    {
+      "seed": 7,
+      "initial_ct": 111646,
+      "total_64_input_ct": 7145344,
+      "state_ct": 111646,
+      "readout_ct": 111646,
+      "public_key": 55859,
+      "ciphertext_components": 2,
+      "raw_RNS_u64_state_bytes": 196608
+    },
+    {
+      "seed": 19,
+      "initial_ct": 111646,
+      "total_64_input_ct": 7145344,
+      "state_ct": 111646,
+      "readout_ct": 111646,
+      "public_key": 55859,
+      "ciphertext_components": 2,
+      "raw_RNS_u64_state_bytes": 196608
+    },
+    {
+      "seed": 43,
+      "initial_ct": 111646,
+      "total_64_input_ct": 7145344,
+      "state_ct": 111646,
+      "readout_ct": 111646,
+      "public_key": 55859,
+      "ciphertext_components": 2,
+      "raw_RNS_u64_state_bytes": 196608
+    },
+    {
+      "seed": 101,
+      "initial_ct": 111646,
+      "total_64_input_ct": 7145344,
+      "state_ct": 111646,
+      "readout_ct": 111646,
+      "public_key": 55859,
+      "ciphertext_components": 2,
+      "raw_RNS_u64_state_bytes": 196608
+    }
+  ],
+  "files": [
+    {
+      "path": "research/learn_infer_only/experiments/he_closure_costs/bfv_probe/Cargo.toml",
+      "sha256": "cf86334ffbc0467d448b1eedfa497d7eddd5ac3ab4848423093727eaeac0b36f"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/he_closure_costs/bfv_probe/Cargo.lock",
+      "sha256": "530ad503bc5ff93923ae7063f74d7ddd344e9c4e834c09d0ce23cf501032b625"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/he_closure_costs/bfv_probe/src/main.rs",
+      "sha256": "87d396f8e112e0bff0ffe379fbe36d9fb974cd64072f86162941e07732797b80"
+    }
+  ]
+}

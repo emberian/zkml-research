@@ -1,0 +1,34 @@
+   ? cannot open `standard.lib`
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/all.py", line 189, in <module>
+    from sage.rings.all import *
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/rings/all.py", line 89, in <module>
+    from sage.rings.qqbar import (AlgebraicRealField, AA,
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/rings/qqbar.py", line 2961, in <module>
+    QQxy = QQ['x', 'y']
+           ~~^^^^^^^^^^
+  File "sage/structure/parent.pyx", line 1281, in sage.structure.parent.Parent.__getitem__
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/categories/rings.py", line 1645, in __getitem__
+    return PolynomialRing(self, elts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/rings/polynomial/polynomial_ring_constructor.py", line 726, in PolynomialRing
+    return _multi_variate(base_ring, names, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/rings/polynomial/polynomial_ring_constructor.py", line 859, in _multi_variate
+    from sage.rings.polynomial.multi_polynomial_libsingular import MPolynomialRing_libsingular
+  File "sage/rings/polynomial/multi_polynomial_libsingular.pyx", line 1, in init sage.rings.polynomial.multi_polynomial_libsingular
+  File "sage/libs/singular/function.pyx", line 1, in init sage.libs.singular.function
+  File "sage/rings/polynomial/plural.pyx", line 137, in init sage.rings.polynomial.plural
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/rings/polynomial/multi_polynomial_ideal.py", line 258, in <module>
+    from sage.interfaces.singular import singular as singular_default
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/interfaces/singular.py", line 2437, in <module>
+    singular = Singular()
+               ^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/interfaces/singular.py", line 407, in __init__
+    shlex.quote(sage.features.singular.Singular().absolute_filename())),
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage/lib/python3.12/site-packages/sage/features/__init__.py", line 760, in absolute_filename
+    raise FeatureNotPresentError(self,
+sage.features.FeatureNotPresentError: singular is not available.
+Executable 'Singular' not found on PATH.

@@ -1,0 +1,17 @@
+Q_bits_label,samples,model,expected_lattice_attacks,attempted_lattice_attacks,finite_completed_lattice_attacks,coverage_complete_for_named_suite,best_completed_lattice_attack,selected_result_file,log2_estimated_cost,beta
+83,4096,MATZOV_classical,6,6,6,True,bdd,additional_attacks.jsonl,172.57963729006858,496
+83,4096,ADPS16_classical,6,6,6,True,usvp,first_pass_ready.jsonl,145.708,499
+83,4096,ADPS16_quantum_core_svp,6,6,6,True,usvp,first_pass_ready.jsonl,132.235,499
+83,4096,MATZOV_quantum_depth_width,4,4,3,False,bdd,quantum_depth_width.jsonl,164.22449057997963,496
+83,infinity,MATZOV_classical,6,6,6,True,bdd,additional_attacks.jsonl,172.56663328905498,496
+83,infinity,ADPS16_classical,6,6,6,True,usvp,first_pass_ready.jsonl,145.708,499
+83,infinity,ADPS16_quantum_core_svp,6,6,6,True,usvp,first_pass_ready.jsonl,132.235,499
+83,infinity,MATZOV_quantum_depth_width,4,4,3,False,bdd,quantum_depth_width.jsonl,164.19289076712812,495
+109,4096,MATZOV_classical,6,6,6,True,bdd,additional_attacks.jsonl,127.55609330636673,334
+109,4096,ADPS16_classical,6,6,6,True,usvp,first_pass_ready.jsonl,98.112,336
+109,4096,ADPS16_quantum_core_svp,6,6,6,True,usvp,first_pass_ready.jsonl,89.04,336
+109,4096,MATZOV_quantum_depth_width,4,4,3,False,bdd,quantum_depth_width.jsonl,123.74931817409045,334
+109,infinity,MATZOV_classical,6,6,6,True,bdd,additional_attacks.jsonl,127.5577098967924,334
+109,infinity,ADPS16_classical,6,6,6,True,usvp,first_pass_ready.jsonl,98.112,336
+109,infinity,ADPS16_quantum_core_svp,6,6,6,True,usvp,first_pass_ready.jsonl,89.04,336
+109,infinity,MATZOV_quantum_depth_width,4,4,3,False,bdd,quantum_depth_width.jsonl,123.7506598726302,334

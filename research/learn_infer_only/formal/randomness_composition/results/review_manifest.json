@@ -1,0 +1,7 @@
+{
+  "source_sha256": "670e93843760823413cc2e18bf9bafadba3247dd11f56feaff3d5ebca83dbb57",
+  "patch_sha256": "6147b1e50e1af7cc614a9d6b7b8fda495fd29574d3353e051acdbce669918a93",
+  "base_umbrella_sha256": "9ca29209aef767d1232ed7a18344b281c9a70167779ea2345e891149ea93db15",
+  "scope": "staged file and umbrella elaboration against read-only companion oleans; not clean full build",
+  "companion_modified": false
+}

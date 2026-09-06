@@ -1,0 +1,11 @@
+{
+  "command": [
+    "git",
+    "init",
+    "-q"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build/adaptive_patch_check",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

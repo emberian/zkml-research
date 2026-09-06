@@ -1,0 +1,18 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Compiler/ResidentEmaCertificate.lean",
+  "source_sha256": "6e5c6c1a331105cc65c62e2e85748189cc122d5346b95e21aff4ab5e533ab46d",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Compiler/ResidentEmaCertificate.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Compiler/ResidentEmaCertificate.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Compiler.ResidentEmaCertificate.no_wrap_equal' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.ResidentEmaCertificate.system_sound' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.ResidentEmaCertificate.descriptor_qr' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.ResidentEmaCertificate.descriptor_semantic' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.ResidentEmaCertificate.ema_fullbyte_closed' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.ResidentEmaCertificate.ema_checked_subset_closed' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.ResidentEmaCertificate.honest_assignment' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.ResidentEmaCertificate.honest_descriptor' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.ResidentEmaCertificate.candidate_pins' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.ResidentEmaCertificate.changed_state_and_order' does not depend on any axioms\n'Minidregg.Compiler.ResidentEmaCertificate.minimum_boundary' does not depend on any axioms\n'Minidregg.Compiler.ResidentEmaCertificate.wrong_logical_post_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": "",
+  "elapsed_seconds": 4.573746919631958,
+  "olean_sha256": "7e2b9f362828c73bde165f2c396670eddfa6e5cbef3b36ae3eccfe62931fd5f1"
+}

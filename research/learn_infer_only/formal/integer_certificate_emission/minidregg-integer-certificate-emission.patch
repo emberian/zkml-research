@@ -1,0 +1,530 @@
+diff --git a/Compiler/IntegerCertificateEmission.lean b/Compiler/IntegerCertificateEmission.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/IntegerCertificateEmission.lean
+@@ -0,0 +1,292 @@
++/-
++Compiler-native signed quotient/remainder certificates, over deployed BabyBear.
++
++Statement-first: `CertificateSound` requires the actual emitted descriptor to force
++the integer QR equation and the remainder range. Positive and negative witnesses
++below inhabit its premises and expose a forged quotient. This module composes the
++existing weighted accumulator, range gadgets, emitter, evaluator and checker.
++It is not an integer-convolution, runtime-engine, or proof-protocol refinement.
++-/
++import Compiler.BfvSignedAccumulatorAir
++import Compiler.DescriptorEval
++
++namespace Minidregg.Compiler.IntegerCertificateEmission
++
++open Minidregg.Compiler
++open Minidregg.Compiler.BfvSignedAccumulatorAir
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Theory
++open scoped BigOperators
++
++set_option autoImplicit false
++set_option maxRecDepth 10000
++
++def CertificateSound (d : ConstraintDescriptor BabyBear) : Prop :=
++  forall v : Nat -> BabyBear, descriptorHolds d v ->
++    4 * ((v 0).val : Int) + 263 =
++      31 * ((v 1).val : Int) + ((v 2).val : Int) + 128 /\
++    (v 2).val < 31
++
++theorem constDigit_lt (base width value : Nat) (hb : 0 < base) (i : Fin width) :
++    AirModularView.constDigit base width value i < base := by
++  exact Bignum.digitsLE_ranged hb width value _
++    (List.get_mem (Bignum.digitsLE base width value)
++      (Fin.cast (Bignum.digitsLE_length base width value).symm i))
++
++theorem sum_products_bound {n : Nat} (d s : Fin n -> Nat) (D S : Nat)
++    (hd : forall i, d i <= D) (hs : forall i, s i <= S) (is : List (Fin n)) :
++    (is.map fun i => d i * s i).sum <= is.length * D * S := by
++  induction is with
++  | nil => simp
++  | cons i is ih =>
++    have hmul := Nat.mul_le_mul (hd i) (hs i)
++    simp only [List.map_cons, List.sum_cons, List.length_cons]
++    nlinarith
++
++/-- The range gadgets, not an unverified witness claim, discharge both local
++field-to-integer lift premises. The two arithmetic budgets are compile-time facts. -/
++theorem ranged_weighted_sound {n width limbBits carryBits scalarBits constant : Nat}
++    (hbasep : 2 ^ limbBits <= babyBearP) (hcarryp : 2 ^ carryBits <= babyBearP)
++    (hscalarp : 2 ^ scalarBits <= babyBearP)
++    (hconstant : constant < (2 ^ limbBits) ^ width)
++    (coefficient : Fin n -> Nat)
++    (hcoefficient : forall j, coefficient j < (2 ^ limbBits) ^ width)
++    (hleftBudget : (2 ^ limbBits - 1) +
++      n * (2 ^ limbBits - 1) * (2 ^ scalarBits - 1) + (2 ^ carryBits - 1) < babyBearP)
++    (hrightBudget : (2 ^ limbBits - 1) +
++      2 ^ limbBits * (2 ^ carryBits - 1) < babyBearP)
++    {J : Type} (asg : J -> BabyBear) (scalar : Fin n -> J)
++    (scalarBit : Fin n -> Fin scalarBits -> J)
++    (w : WeightedSumWires J width limbBits carryBits)
++    (hrange : systemAccepts asg (AirBignum.limbRangeSystem scalar scalarBit))
++    (haccept : systemAccepts asg (weightedSumGadget constant coefficient scalar w)) :
++    Bignum.denoteNat (2 ^ limbBits) (AirBignum.limbVals asg w.result) =
++      constant + ∑ j, coefficient j * (asg (scalar j)).val := by
++  have hscalar : forall j, (asg (scalar j)).val < 2 ^ scalarBits := by
++    intro j
++    exact rangeGadget_val_lt hscalarp asg _ _
++      ((AirBignum.limbRangeSystem_correct asg scalar scalarBit).mp hrange j)
++  obtain ⟨hresult, hcarry, -, -, -⟩ :=
++    (weightedSumGadget_correct asg constant coefficient scalar w).mp haccept
++  have hres : forall j, (asg (w.result j)).val < 2 ^ limbBits :=
++    fun j => rangeGadget_val_lt hbasep asg _ _ (hresult j)
++  have hcar : forall j, (asg (w.carry j)).val < 2 ^ carryBits :=
++    fun j => rangeGadget_val_lt hcarryp asg _ _ (hcarry j)
++  apply (weightedSumGadget_sound hbasep hcarryp hconstant coefficient hcoefficient
++    asg scalar w haccept ?_ ?_).2
++  · intro column
++    have hc := constDigit_lt (2 ^ limbBits) width constant (by positivity) column
++    have hs := sum_products_bound
++      (fun j => AirModularView.constDigit (2 ^ limbBits) width (coefficient j) column)
++      (fun j => (asg (scalar j)).val) (2 ^ limbBits - 1) (2 ^ scalarBits - 1)
++      (fun j => by dsimp only; have := constDigit_lt (2 ^ limbBits) width (coefficient j)
++                    (by positivity) column; omega)
++      (fun j => by dsimp only; have := hscalar j; omega) (List.finRange n)
++    simp only [List.length_finRange] at hs
++    have := hcar column.castSucc
++    omega
++  · intro column
++    have hh := Nat.mul_le_mul_left (2 ^ limbBits)
++      (show (asg (w.carry column.succ)).val <= 2 ^ carryBits - 1 from by
++        have := hcar column.succ; omega)
++    have := hres column
++    omega
++
++/- The concrete layout: four six-bit scalars (z+32,y+8,r,30-r); three
++radix-16 shared result digits; four eight-bit carries on each side. -/
++def scalar : Fin 4 -> Fin 115 := fun i => ⟨i.val, by omega⟩
++def scalarBit (i : Fin 4) (j : Fin 6) : Fin 115 := ⟨91 + 6 * i.val + j.val, by omega⟩
++def left : WeightedSumWires (Fin 115) 3 4 8 where
++  result := fun i => ⟨4 + i.val, by omega⟩
++  resultBit := fun i j => ⟨7 + 4 * i.val + j.val, by omega⟩
++  carry := fun i => ⟨19 + i.val, by omega⟩
++  carryBit := fun i j => ⟨23 + 8 * i.val + j.val, by omega⟩
++def right : WeightedSumWires (Fin 115) 3 4 8 where
++  result := left.result
++  resultBit := left.resultBit
++  carry := fun i => ⟨55 + i.val, by omega⟩
++  carryBit := fun i j => ⟨59 + 8 * i.val + j.val, by omega⟩
++def leftCoefficient : Fin 4 -> Nat := ![4, 0, 0, 0]
++def rightCoefficient : Fin 4 -> Nat := ![0, 31, 1, 0]
++def remainderTerm : Term (AirSig BabyBear (Fin 115)) :=
++  add' (add' (vr (scalar 2)) (vr (scalar 3))) (cst (-30))
++def certificateSystem : ConstraintSystem BabyBear (Fin 115) :=
++  AirBignum.limbRangeSystem scalar scalarBit ++
++  weightedSumGadget 263 leftCoefficient scalar left ++
++  weightedSumGadget 128 rightCoefficient scalar right ++ [remainderTerm]
++def certificateDescriptor : ConstraintDescriptor BabyBear :=
++  emit Fin.val 3 115 certificateSystem
++
++theorem certificateSystem_sound (asg : Fin 115 -> BabyBear)
++    (h : systemAccepts asg certificateSystem) :
++    4 * (asg (scalar 0)).val + 263 =
++      31 * (asg (scalar 1)).val + (asg (scalar 2)).val + 128 /\
++    (asg (scalar 2)).val < 31 := by
++  simp only [certificateSystem, systemAccepts_append,
++    systemAccepts_cons, systemAccepts_nil, and_true] at h
++  obtain ⟨⟨⟨hr, hl⟩, hh⟩, ht⟩ := h
++  have hleft := ranged_weighted_sound
++    (by norm_num [babyBearP]) (by norm_num [babyBearP])
++    (by norm_num [babyBearP]) (by norm_num)
++    leftCoefficient (by intro j; fin_cases j <;> norm_num [leftCoefficient])
++    (by norm_num [babyBearP]) (by norm_num [babyBearP])
++    asg scalar scalarBit left hr hl
++  have hright := ranged_weighted_sound
++    (by norm_num [babyBearP]) (by norm_num [babyBearP])
++    (by norm_num [babyBearP]) (by norm_num)
++    rightCoefficient (by intro j; fin_cases j <;> norm_num [rightCoefficient])
++    (by norm_num [babyBearP]) (by norm_num [babyBearP])
++    asg scalar scalarBit right hr hh
++  have heq : 263 + ∑ j, leftCoefficient j * (asg (scalar j)).val =
++      128 + ∑ j, rightCoefficient j * (asg (scalar j)).val :=
++    hleft.symm.trans hright
++  simp [leftCoefficient, rightCoefficient, Fin.sum_univ_succ] at heq
++  constructor
++  · omega
++  · have hranges := (AirBignum.limbRangeSystem_correct asg scalar scalarBit).mp hr
++    have hr2 := rangeGadget_val_lt (by norm_num [babyBearP] : 2 ^ 6 <= babyBearP)
++      asg (scalar 2) (scalarBit 2) (hranges 2)
++    have hr3 := rangeGadget_val_lt (by norm_num [babyBearP] : 2 ^ 6 <= babyBearP)
++      asg (scalar 3) (scalarBit 3) (hranges 3)
++    have ht' : asg (scalar 2) + asg (scalar 3) = 30 := by
++      simp only [accepts, remainderTerm, eval_add', eval_vr, eval_cst] at ht
++      linear_combination ht
++    have heqCast : (((asg (scalar 2)).val + (asg (scalar 3)).val : Nat) : BabyBear) = 30 := by
++      simpa using ht'
++    have hlt : (asg (scalar 2)).val + (asg (scalar 3)).val < babyBearP := by
++      norm_num [babyBearP] at *; omega
++    have hv := congrArg ZMod.val heqCast
++    rw [ZMod.val_cast_of_lt hlt] at hv
++    have hv30 : (30 : BabyBear).val = 30 := by decide +kernel
++    rw [hv30] at hv
++    omega
++
++theorem certificateDescriptor_sound : CertificateSound certificateDescriptor := by
++  intro v h
++  have hs := (emit_accepts_iff_fin 115 3 (fun i => v i.val) certificateSystem).mp
++    ⟨v, fun _ => rfl, h⟩
++  have hc := certificateSystem_sound (fun i => v i.val) hs
++  change 4 * (v 0).val + 263 = 31 * (v 1).val + (v 2).val + 128 /\
++    (v 2).val < 31 at hc
++  exact ⟨by exact_mod_cast hc.1, hc.2⟩
++
++/-- The offset normalization recovers signed coefficients, including negatives. -/
++theorem certificateDescriptor_signed (v : Nat -> BabyBear)
++    (h : descriptorHolds certificateDescriptor v) :
++    4 * (((v 0).val : Int) - 32) + 15 =
++      31 * (((v 1).val : Int) - 8) + ((v 2).val : Int) /\ (v 2).val < 31 := by
++  obtain ⟨heq, hr⟩ := certificateDescriptor_sound v h
++  exact ⟨by omega, hr⟩
++
++/-- The selected nearest/ties-up quotient is forced, not merely bound as a field word. -/
++theorem certificateDescriptor_quotient (v : Nat -> BabyBear)
++    (h : descriptorHolds certificateDescriptor v) :
++    ((v 1).val : Int) - 8 = (4 * (((v 0).val : Int) - 32) + 15) / 31 := by
++  obtain ⟨heq, hr⟩ := certificateDescriptor_signed v h
++  have hr0 : (0 : Int) <= (v 2).val := Int.natCast_nonneg _
++  have hr31 : ((v 2).val : Int) < 31 := by exact_mod_cast hr
++  omega
++
++/-- A forged quotient is representable but every auxiliary assignment is refused. -/
++theorem forged_quotient_refused (v : Nat -> BabyBear)
++    (hz : v 0 = 24) (hy : v 1 = 8) :
++    ¬ descriptorHolds certificateDescriptor v := by
++  intro h
++  have hq := certificateDescriptor_quotient v h
++  rw [hz, hy] at hq
++  have hv24 : (24 : BabyBear).val = 24 := by decide +kernel
++  have hv8 : (8 : BabyBear).val = 8 := by decide +kernel
++  rw [hv24, hv8] at hq
++  norm_num at hq
++
++def digit (base value index : Nat) : Nat := value / base ^ index % base
++def carryValue (constant : Nat) (coefficient value : Fin 4 -> Nat) : Nat -> Nat
++  | 0 => 0
++  | i + 1 => (digit 16 constant i +
++      ∑ j, digit 16 (coefficient j) i * value j + carryValue constant coefficient value i) / 16
++def values (zEnc yEnc r : Nat) : Fin 4 -> Nat := ![zEnc, yEnc, r, 30-r]
++def variableValue (v : Fin 4 -> Nat) (i : Nat) : Nat :=
++  if h : i < 4 then v ⟨i, h⟩
++  else if i < 7 then digit 16 (4 * v 0 + 263) (i-4)
++  else if i < 19 then digit 2 (digit 16 (4 * v 0 + 263) ((i-7)/4)) ((i-7)%4)
++  else if i < 23 then carryValue 263 leftCoefficient v (i-19)
++  else if i < 55 then digit 2 (carryValue 263 leftCoefficient v ((i-23)/8)) ((i-23)%8)
++  else if i < 59 then carryValue 128 rightCoefficient v (i-55)
++  else if i < 91 then digit 2 (carryValue 128 rightCoefficient v ((i-59)/8)) ((i-59)%8)
++  else if h : (i-91)/6 < 4 then digit 2 (v ⟨(i-91)/6, h⟩) ((i-91)%6)
++  else 0
++def assignment (zEnc yEnc r : Nat) : Fin 115 -> BabyBear :=
++  fun i => (variableValue (values zEnc yEnc r) i.val : BabyBear)
++def candidate (zEnc yEnc r : Nat) : Array BabyBear :=
++  fillAux certificateDescriptor (Array.ofFn (assignment zEnc yEnc r))
++def check (a : Array BabyBear) : Bool :=
++  descriptorHoldsCheck certificateDescriptor (fun i => a.getD i 0)
++
++set_option maxHeartbeats 1000000 in
++theorem honest_assignment_accepts : systemAccepts (assignment 24 7 14) certificateSystem := by
++  decide +kernel
++
++theorem honest_candidate_holds : descriptorHolds certificateDescriptor
++    (fun i => (candidate 24 7 14).getD i 0) :=
++  fillAux_emit_holds 115 3 (by omega) (assignment 24 7 14) certificateSystem
++    honest_assignment_accepts
++
++theorem premise_inhabited : exists v : Nat -> BabyBear,
++    descriptorHolds certificateDescriptor v :=
++  ⟨_, honest_candidate_holds⟩
++
++theorem honest_candidate_pins (i : Fin 3) :
++    (candidate 24 7 14).getD i.val 0 = (![24, 7, 14] : Fin 3 -> BabyBear) i := by
++  have hwf : certificateDescriptor.WellFormed := emit_wellFormed Fin.val 3 115 (by omega)
++    (fun i : Fin 115 => i.isLt) certificateSystem
++  have hsize : (Array.ofFn (assignment 24 7 14)).size = certificateDescriptor.nVars :=
++    Array.size_ofFn
++  unfold candidate
++  rw [fillAux_getD_of_lt _ _ hwf hsize (by show i.val < 115; omega)]
++  fin_cases i <;> decide +kernel
++
++/-- The accepting set contains an actual negative signed coefficient and quotient. -/
++theorem signed_premise_inhabited : exists v : Nat -> BabyBear,
++    descriptorHolds certificateDescriptor v /\
++    ((v 0).val : Int)-32 = -8 /\ ((v 1).val : Int)-8 = -1 := by
++  refine ⟨fun i => (candidate 24 7 14).getD i 0, honest_candidate_holds, ?_, ?_⟩
++  · have hp := honest_candidate_pins 0
++    change (candidate 24 7 14).getD 0 0 = 24 at hp
++    dsimp only
++    rw [hp]
++    decide +kernel
++  · have hp := honest_candidate_pins 1
++    change (candidate 24 7 14).getD 1 0 = 7 at hp
++    dsimp only
++    rw [hp]
++    decide +kernel
++
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.constDigit_lt' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms constDigit_lt
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.sum_products_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms sum_products_bound
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.ranged_weighted_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms ranged_weighted_sound
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.certificateSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms certificateSystem_sound
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.certificateDescriptor_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms certificateDescriptor_sound
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.certificateDescriptor_signed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms certificateDescriptor_signed
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.certificateDescriptor_quotient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms certificateDescriptor_quotient
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.forged_quotient_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms forged_quotient_refused
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.honest_assignment_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms honest_assignment_accepts
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.honest_candidate_holds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms honest_candidate_holds
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms premise_inhabited
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.honest_candidate_pins' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms honest_candidate_pins
++/-- info: 'Minidregg.Compiler.IntegerCertificateEmission.signed_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms signed_premise_inhabited
++
++end Minidregg.Compiler.IntegerCertificateEmission
+diff --git a/Compiler/LargeIntegerCertificateEmission.lean b/Compiler/LargeIntegerCertificateEmission.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/LargeIntegerCertificateEmission.lean
+@@ -0,0 +1,219 @@
++/- Full-modulus compiler-native signed QR slice. The inherited rounding reference remains
++separate from actual engine semantics, convolution, and source-ciphertext binding. -/
++import Compiler.IntegerCertificateEmission
++
++namespace Minidregg.Compiler.LargeIntegerCertificateEmission
++open Minidregg.Compiler
++open Minidregg.Compiler.BfvSignedAccumulatorAir
++open Minidregg.Compiler.IntegerCertificateEmission
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Theory
++open scoped BigOperators
++open Lean (Json toJson)
++
++set_option autoImplicit false
++set_option maxRecDepth 10000
++
++def Q : Nat := 649033470896967801447398927572993
++def t : Nat := 2^20
++def zOffset : Nat := 2^231
++def yOffset : Nat := 2^142
++def scalar : Fin 101 -> Fin 3773 := fun i => ⟨i.val, by omega⟩
++def scalarBit (i : Fin 101) (j : Fin 6) : Fin 3773 :=
++  ⟨101 + 6*i.val + j.val, by omega⟩
++def wireSet (resultBase carryBase : Nat)
++    (hresult : resultBase+301 <= 3773) (hcarry : carryBase+616 <= 3773) :
++    WeightedSumWires (Fin 3773) 43 6 13 where
++  result := fun i => ⟨resultBase+i.val, by omega⟩
++  resultBit := fun i j => ⟨resultBase+43+6*i.val+j.val, by omega⟩
++  carry := fun i => ⟨carryBase+i.val, by omega⟩
++  carryBit := fun i j => ⟨carryBase+44+13*i.val+j.val, by omega⟩
++def qleft := wireSet 707 1008 (by omega) (by omega)
++def qright := wireSet 707 1624 (by omega) (by omega)
++def rleft := wireSet 2240 2541 (by omega) (by omega)
++def rright := wireSet 2240 3157 (by omega) (by omega)
++def zCoefficient (i : Fin 101) : Nat := if i.val < 39 then 64^i.val else 0
++def yCoefficient (i : Fin 101) : Nat :=
++  if 39 <= i.val ∧ i.val < 63 then 64^(i.val-39) else 0
++def rCoefficient (i : Fin 101) : Nat :=
++  if 63 <= i.val ∧ i.val < 82 then 64^(i.val-63) else 0
++def sCoefficient (i : Fin 101) : Nat :=
++  if 82 <= i.val then 64^(i.val-82) else 0
++def leftCoefficient (i : Fin 101) : Nat := t*zCoefficient i
++def rightCoefficient (i : Fin 101) : Nat := Q*yCoefficient i+rCoefficient i
++def remainderCoefficient (i : Fin 101) : Nat := rCoefficient i+sCoefficient i
++def system : ConstraintSystem BabyBear (Fin 3773) :=
++  AirBignum.limbRangeSystem scalar scalarBit ++
++  weightedSumGadget (Q/2+Q*yOffset) leftCoefficient scalar qleft ++
++  weightedSumGadget (t*zOffset) rightCoefficient scalar qright ++
++  weightedSumGadget 0 remainderCoefficient scalar rleft ++
++  weightedSumGadget (Q-1) (fun _ : Fin 101 => 0) scalar rright
++def descriptor := emit Fin.val 0 3773 system
++
++theorem descriptor_wellFormed : descriptor.WellFormed :=
++  emit_wellFormed Fin.val 0 3773 (by omega) (fun i => i.isLt) system
++
++/-- The exact generic range-derived bounds for all four chosen accumulators. -/
++theorem column_budgets :
++    63 + 101*63*63 + (2^13-1) < babyBearP /\
++    63 + 64*(2^13-1) < babyBearP /\
++    Q/2+Q*yOffset < 64^43 /\ t*zOffset < 64^43 /\ Q-1 < 64^43 := by
++  norm_num [babyBearP,Q,t,yOffset,zOffset]
++
++def encoded (coefficient : Fin 101 -> Nat) (v : Nat -> BabyBear) : Nat :=
++  ∑ i, coefficient i * (v (scalar i).val).val
++
++def CertificateSound (d : ConstraintDescriptor BabyBear) : Prop := forall v : Nat -> BabyBear,
++  descriptorHolds d v ->
++    (t : Int) * ((encoded zCoefficient v : Int) - zOffset) + (Q/2 : Nat) =
++      (Q : Int) * ((encoded yCoefficient v : Int) - yOffset) + encoded rCoefficient v /\
++    encoded rCoefficient v < Q
++
++theorem coefficient_capacities :
++    (forall i, leftCoefficient i < 64^43) /\
++    (forall i, rightCoefficient i < 64^43) /\
++    (forall i, remainderCoefficient i < 64^43) := by
++  constructor
++  · intro i; fin_cases i <;> norm_num [leftCoefficient,zCoefficient,t]
++  constructor
++  · intro i; fin_cases i <;> norm_num [rightCoefficient,yCoefficient,rCoefficient,Q]
++  · intro i; fin_cases i <;> norm_num [remainderCoefficient,rCoefficient,sCoefficient]
++
++theorem descriptor_sound : CertificateSound descriptor := by
++  intro v hd
++  let asg : Fin 3773 -> BabyBear := fun i => v i.val
++  have hs := (emit_accepts_iff_fin 3773 0 asg system).mp ⟨v,fun _ => rfl,hd⟩
++  simp only [system, systemAccepts_append] at hs
++  obtain ⟨⟨⟨⟨hr,hql⟩,hqr⟩,hrl⟩,hrr⟩ := hs
++  have run (c : Nat) (cf : Fin 101 -> Nat)
++      (w : WeightedSumWires (Fin 3773) 43 6 13)
++      (hc : c < 64^43) (hcf : forall i, cf i < 64^43)
++      (ha : systemAccepts asg (weightedSumGadget c cf scalar w)) :
++      Bignum.denoteNat 64 (AirBignum.limbVals asg w.result) =
++        c + ∑ i, cf i * (v (scalar i).val).val := by
++    exact ranged_weighted_sound
++      (by norm_num [babyBearP]) (by norm_num [babyBearP])
++      (by norm_num [babyBearP]) hc cf hcf
++      (by norm_num [babyBearP]) (by norm_num [babyBearP])
++      asg scalar scalarBit w hr ha
++  have eql := run _ _ _ column_budgets.2.2.1 coefficient_capacities.1 hql
++  have eqr := run _ _ _ column_budgets.2.2.2.1 coefficient_capacities.2.1 hqr
++  have erl := run _ _ _ (by norm_num) coefficient_capacities.2.2 hrl
++  have err := run _ _ _ column_budgets.2.2.2.2 (by intro i; norm_num) hrr
++  have heq := eql.symm.trans eqr
++  have hre := erl.symm.trans err
++  change Q/2+Q*yOffset+encoded leftCoefficient v =
++    t*zOffset+encoded rightCoefficient v at heq
++  change 0+encoded remainderCoefficient v = Q-1+encoded (fun _ => 0) v at hre
++  have ez : encoded leftCoefficient v = t*encoded zCoefficient v := by
++    simp [encoded,leftCoefficient,Finset.mul_sum,mul_assoc]
++  have ey : encoded rightCoefficient v = Q*encoded yCoefficient v+encoded rCoefficient v := by
++    simp [encoded,rightCoefficient,Finset.mul_sum,add_mul,Finset.sum_add_distrib,mul_assoc]
++  have er : encoded remainderCoefficient v = encoded rCoefficient v+encoded sCoefficient v := by
++    simp [encoded,remainderCoefficient,add_mul,Finset.sum_add_distrib]
++  rw [ez,ey] at heq
++  rw [er] at hre
++  have hz0 : encoded (fun _ => 0) v = 0 := by simp [encoded]
++  rw [zero_add,hz0,add_zero] at hre
++  constructor
++  · have heqi := congrArg (fun n : Nat => (n : Int)) heq
++    simp only [Nat.cast_add,Nat.cast_mul] at heqi
++    linear_combination heqi
++  · have hQ : 0 < Q := by norm_num [Q]
++    omega
++
++theorem descriptor_quotient (v : Nat -> BabyBear) (hd : descriptorHolds descriptor v) :
++    (encoded yCoefficient v : Int)-yOffset =
++      ((t : Int)*((encoded zCoefficient v : Int)-zOffset)+(Q/2 : Nat))/(Q : Int) := by
++  obtain ⟨heq,hr⟩ := descriptor_sound v hd
++  have hr0 : (0 : Int) <= encoded rCoefficient v := Int.natCast_nonneg _
++  have hrQ : (encoded rCoefficient v : Int) < Q := by exact_mod_cast hr
++  have hQ : (0 : Int) < Q := by norm_num [Q]
++  apply le_antisymm
++  · rw [Int.le_ediv_iff_mul_le hQ]
++    nlinarith
++  · have hh : ((t : Int)*((encoded zCoefficient v : Int)-zOffset)+(Q/2 : Nat))/(Q : Int)
++        < ((encoded yCoefficient v : Int)-yOffset)+1 := by
++      rw [Int.ediv_lt_iff_lt_mul hQ]
++      nlinarith
++    omega
++
++theorem forged_quotient_refused (v : Nat -> BabyBear)
++    (hz : (encoded zCoefficient v : Int)-zOffset = -(Q : Int))
++    (hy : (encoded yCoefficient v : Int)-yOffset = 1-(t : Int)) :
++    ¬ descriptorHolds descriptor v := by
++  intro hd
++  have hq := descriptor_quotient v hd
++  rw [hz,hy] at hq
++  norm_num [Q,t] at hq
++
++instance : Hashable BabyBear := ⟨fun x => hash x.val⟩
++def sharedDescriptor : ConstraintDescriptor BabyBear := cse descriptor
++
++/-- The already-proved generic compiler CSE pass preserves this exact certificate. -/
++theorem sharedDescriptor_sound : CertificateSound sharedDescriptor := by
++  intro v hd
++  let asg : Fin 3773 -> BabyBear := fun i => v i.val
++  have hs := (cse_emit_accepts_iff_fin 3773 0 asg system).mp ⟨v,fun _ => rfl,hd⟩
++  obtain ⟨v',hpin,hd'⟩ := (emit_accepts_iff_fin 3773 0 asg system).mpr hs
++  have hc := descriptor_sound v' hd'
++  have he (cf : Fin 101 -> Nat) : encoded cf v' = encoded cf v := by
++    apply Finset.sum_congr rfl
++    intro i _
++    rw [hpin (scalar i)]
++  simpa only [he] using hc
++
++def scalarValues (z y : Int) (r : Nat) (i : Fin 101) : Nat :=
++  if i.val < 39 then digit 64 (z+zOffset).toNat i.val
++  else if i.val < 63 then digit 64 (y+yOffset).toNat (i.val-39)
++  else if i.val < 82 then digit 64 r (i.val-63)
++  else digit 64 (Q-1-r) (i.val-82)
++def carryValues (constant : Nat) (coefficient value : Fin 101 -> Nat) : Nat -> Nat
++  | 0 => 0
++  | i+1 => (digit 64 constant i +
++      ∑ j, digit 64 (coefficient j) i * value j + carryValues constant coefficient value i)/64
++def install (a : Array BabyBear) (offset : Nat) (values : Array Nat) : Array BabyBear :=
++  (List.range values.size).foldl (fun a i => a.set! (offset+i) (values[i]! : BabyBear)) a
++def bitArray (width : Nat) (values : Array Nat) : Array Nat :=
++  values.flatMap fun value => (List.range width).toArray.map fun i => digit 2 value i
++def setGroup (a : Array BabyBear) (offset width : Nat) (values : Array Nat) : Array BabyBear :=
++  install (install a offset values) (offset+values.size) (bitArray width values)
++def setAccumulator (a : Array BabyBear) (resultBase carryBase : Nat)
++    (constant : Nat) (coefficient value : Fin 101 -> Nat) : Array BabyBear :=
++  let total := constant + ∑ j, coefficient j * value j
++  let ds := (List.range 43).toArray.map (digit 64 total)
++  let cs := (List.range 44).toArray.map (carryValues constant coefficient value)
++  setGroup (setGroup a resultBase 6 ds) carryBase 13 cs
++def variableArray (z y : Int) (r : Nat) : Array BabyBear := Id.run do
++  let v := scalarValues z y r
++  let mut a : Array BabyBear := Array.replicate 3773 0
++  a := setGroup a 0 6 (Array.ofFn v)
++  a := setAccumulator a 707 1008 (Q/2+Q*yOffset) leftCoefficient v
++  -- The right gadget shares the left result; only its carry values are installed.
++  a := setGroup a 1624 13 ((List.range 44).toArray.map
++    (carryValues (t*zOffset) rightCoefficient v))
++  a := setAccumulator a 2240 2541 0 remainderCoefficient v
++  a := setGroup a 3157 13 ((List.range 44).toArray.map
++    (carryValues (Q-1) (fun _ => 0) v))
++  return a
++def candidate (z y : Int) (r : Nat) : Array BabyBear := fillAux descriptor (variableArray z y r)
++def check (a : Array BabyBear) : Bool := descriptorHoldsCheck descriptor (fun i => a.getD i 0)
++
++/-- info: 'Minidregg.Compiler.LargeIntegerCertificateEmission.descriptor_wellFormed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms descriptor_wellFormed
++/-- info: 'Minidregg.Compiler.LargeIntegerCertificateEmission.column_budgets' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms column_budgets
++/-- info: 'Minidregg.Compiler.LargeIntegerCertificateEmission.coefficient_capacities' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms coefficient_capacities
++/-- info: 'Minidregg.Compiler.LargeIntegerCertificateEmission.descriptor_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms descriptor_sound
++/-- info: 'Minidregg.Compiler.LargeIntegerCertificateEmission.descriptor_quotient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms descriptor_quotient
++/-- info: 'Minidregg.Compiler.LargeIntegerCertificateEmission.forged_quotient_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms forged_quotient_refused
++/-- info: 'Minidregg.Compiler.LargeIntegerCertificateEmission.sharedDescriptor_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms sharedDescriptor_sound
++
++
++end Minidregg.Compiler.LargeIntegerCertificateEmission
+diff --git a/Compiler.lean b/Compiler.lean
+--- a/Compiler.lean
++++ b/Compiler.lean
+@@ -104,3 +104,5 @@
+ import Compiler.CommittedTerminalController  -- [CT-controller-lanes] the computable controller: check : … → Except Failure (Receipt Root m) with check_accepts by reflection, gateProof_sound_lane, an honest lane prover via residualSum_sparse (readPoly1_laneRound = mleHonest), receipt_complete / receipt_refuses_tamper / receipt_refuses_false_claim — the demo (m = 5) kernel-decided, and STAGE 0 (4,148 residuals, 13 rounds) as a compiled exhibit: the honest (1,2) proof ACCEPTED END TO END with terminal 0, a forged word refused at the root, at a round check, and at the terminal. The existing noncomputable controller is untouched; its obstruction is exhibited (AdjoinRoot.instField on every Receipt field, toExt6 in digestToExt6, the Finsupp aggregate). Remaining, sized: [CT-factored-prover] ~300, [CT-fiat-shamir-lanes] ~200 (the hash is a def), [CT-joint-price] ~60, [CT-sampled], [CT-merkle-profile].
+ import Compiler.CommittedTerminalFiatShamir  -- [CT-fiat-shamir-lanes] + [CT-joint-price]: the Stage-0 receipt made NON-INTERACTIVE under the tree's own keystone, not an invented oracle model. The controller's protocol is a Reduction (k = m+1: the γ round + m sumcheck rounds; verify IS check) with a PROVED RbrKnowledgeSoundness instance (round 0 priced by gammaZero_prob_le, rounds 1..m by one root, card_agreeFinset_lt); gateProof_fs_sound := fsKeystone_proved.sound at this instance, read out as (t + (m+1)) · (0 + (N−1)/|F| + m·(1/|F|)) in gateProof_fs_sound_reading. The deployed oracle is cSHAKE256 over a lawful-codec encoding of the transcript prefix (encodeMove_injective); fsCheck reflects into fiatShamir (fsCheck_ok_fiatShamir); the causal prover fsProve is complete. Demo kernel-decided (accepted; γ+1 refused as challengeMismatch though check accepts it — the fiatShamir_teeth shape); Stage 0 compiled: honest FS receipt accepted, altered challenge refused, a forged word's own FS run refused. THE PRICE, one expression, every term visible: stage0Receipt_price = (t + 14)·(0 + 4147/p⁶ + 13·(1/p⁶)) with S : BindingCommitment named (only S.commit consumed at full word), stage0Price_value = 4160/2013265921⁶ < 2^−173 by norm_num — FULL-WORD label: [CT-sampled] and [CT-merkle-profile] are not in it; "the deployed cSHAKE realizes the oracle" is [FS-ROM].
+ import Compiler.CommittedTerminalFactoredProver  -- [CT-factored-prover]: the honest prover for the seven factored openings — dense bit-corner tables + pairwise fold, check7 / check7_accepts, gateProof7_sound, sumcheck7_prob_le, and the bridge gammaBatched_eq_sum_table; Stage 0 compiled, demo decided (check7_complete_demo). Named, not closed: [CT-factored-prover-honest] (FactoredProverHonest : the fold messages read to factoredRounds), with its consumer factoredProver_complete_of_honest PROVED.
++import Compiler.IntegerCertificateEmission
++import Compiler.LargeIntegerCertificateEmission

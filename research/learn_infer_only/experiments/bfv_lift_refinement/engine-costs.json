@@ -1,0 +1,94 @@
+{
+  "label": "DERIVED exact naive source-arithmetic arity/range bill, computed here; no emitted circuit, latency, or lower-bound claim",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_costs.py"
+  ],
+  "source_sha256": "a7122e75eab704061476dc9f2579d32276410f32540269398648762479c7861e",
+  "N": 4096,
+  "Q": "649033470896967801447398927572993",
+  "P": "63657017601423447469844788570668366246758260020405327828579335270495845505447102168432641",
+  "Q_bits": 109,
+  "P_bits": 295,
+  "t": 1032193,
+  "input_limb_bits": [
+    36,
+    36,
+    37,
+    62,
+    62,
+    62
+  ],
+  "ranges": [
+    {
+      "name": "Garner fixed accumulator Tg",
+      "minimum": "0",
+      "maximum": "473934461499582865381703361638417846716997990757300797440",
+      "offset_bits": 189,
+      "radix64_digits": 32,
+      "naive_bit_checks_over_3N": 2322432
+    },
+    {
+      "name": "signed fixed correction T",
+      "minimum": "-9196030944563507523487325793218139546207928320000",
+      "maximum": "4598010335430758317395999484164290134599565451264",
+      "offset_bits": 164,
+      "radix64_digits": 28,
+      "naive_bit_checks_over_3N": 2015232
+    },
+    {
+      "name": "selected index v",
+      "minimum": "0",
+      "maximum": "5571072821527625729",
+      "offset_bits": 63,
+      "radix64_digits": 11,
+      "naive_bit_checks_over_3N": 774144
+    },
+    {
+      "name": "signed rounded correction w",
+      "minimum": "-54049412127",
+      "maximum": "27024675872",
+      "offset_bits": 37,
+      "radix64_digits": 7,
+      "naive_bit_checks_over_3N": 454656
+    },
+    {
+      "name": "integer projection sum S",
+      "minimum": "0",
+      "maximum": "563999784856942474002087832166531667022918929077948010642350245557332714280198144",
+      "offset_bits": 269,
+      "radix64_digits": 45,
+      "naive_bit_checks_over_3N": 3305472
+    }
+  ],
+  "source_downscale_arities": {
+    "output_coefficients": 12288,
+    "garner_constant_products_per_coefficient": 6,
+    "correction_constant_products_per_coefficient": 6,
+    "nonzero_correction_constant_products_per_coefficient": 3,
+    "projected_modular_constant_products_per_coefficient": 18,
+    "garner_products_total": 73728,
+    "correction_loop_products_total": 73728,
+    "nonzero_correction_products_total": 36864,
+    "projected_modular_products_total": 221184
+  },
+  "source_extension_arities": {
+    "input_coefficients": 16384,
+    "garner_constant_products_per_coefficient": 3,
+    "new_output_limbs_per_coefficient": 3,
+    "projected_modular_constant_products_per_coefficient": 9,
+    "garner_products_total": 49152,
+    "projected_modular_products_total": 147456
+  },
+  "fixed_approximation_error": {
+    "description": "Normalized positive error from ceil projections is at most sum of residues with nonzero residual divided by 2^127. This tiny nonzero error still crosses exact rounding boundaries.",
+    "strict_numerator_bound": 274877456387,
+    "denominator": "170141183460469231731687303715884105728"
+  },
+  "residuals": [
+    "Ranges above use only independent canonical limb bounds and need not be simultaneously tight.",
+    "Choosing which intermediates to witness is a compiler decision; do not add all figures to the first-reference certificate as a mandatory cost.",
+    "Integer reconstruction, carry propagation, exact endpoint comparison, convolution/NTT relations, transcript binding and proof overhead are not included.",
+    "Constants multiply witnesses; they are not arbitrary witness-by-witness products. A scalar field equation still needs a no-wrap or limb argument."
+  ]
+}

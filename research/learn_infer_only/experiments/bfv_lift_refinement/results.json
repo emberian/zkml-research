@@ -1,0 +1,252 @@
+{
+  "label": "EXECUTED finite exact integer and toy RNS models; no encrypted computation and no SEAL execution",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/audit.py"
+  ],
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "seed": 20260906,
+  "script_sha256": "05e45f9e9e513620dba9a5f082eaadba2b9e0e2725c8f89ad7af2521dcc555b5",
+  "counts": {
+    "scalar_cases_with_negative_values_and_even_moduli": 119301,
+    "polynomial_pairs_exhaustive_N2_Q2to9_plus_seeded": 15732,
+    "single_field_mutations_refused": 61328,
+    "seeded_polynomial_cases": 400,
+    "full_size2_tensor_cases_exhaustive_N1_Q2to9": 15332,
+    "toy_RNS_fast_floor_cases": 933,
+    "toy_RNS_fast_floor_differs_from_plain_floor": 492,
+    "toy_RNS_alpha_histogram": {
+      "0": 441,
+      "1": 468,
+      "2": 24
+    }
+  },
+  "teeth": {
+    "residue_only": {
+      "Q": 31,
+      "t": 4,
+      "products": [
+        1,
+        32
+      ],
+      "residues": [
+        1,
+        1
+      ],
+      "scaled": [
+        0,
+        4
+      ]
+    },
+    "modular_certificate": {
+      "Q": 31,
+      "t": 4,
+      "z": 1,
+      "y": 17,
+      "r": 19,
+      "modQ_passes": true,
+      "integer_passes": false
+    },
+    "proof_field_wrap": {
+      "Q": 31,
+      "p": 7,
+      "t": 4,
+      "z": 1,
+      "y": 7,
+      "r": 19,
+      "all_witness_ranges_hold": true,
+      "residual_mod_p": 0
+    },
+    "missing_remainder_range": {
+      "Q": 31,
+      "z": 1,
+      "t": 4,
+      "y": 1,
+      "r": -12,
+      "equality_holds": true
+    },
+    "wrong_rounding": {
+      "Q": 31,
+      "t": 4,
+      "z": 4,
+      "floor": 0,
+      "nearest": 1
+    },
+    "negative_tie": {
+      "Q": 4,
+      "t": 1,
+      "z": -2,
+      "nearest": 0,
+      "away_from_zero": -1
+    },
+    "tensor_cross_terms": {
+      "Q": 31,
+      "t": 4,
+      "raw_terms": [
+        4,
+        4
+      ],
+      "correct_round_after_sum": 1,
+      "wrong_sum_after_round": 2
+    },
+    "fast_floor_not_plain_floor": {
+      "base": [
+        3,
+        5
+      ],
+      "x": 1,
+      "redundant_lift": 16,
+      "fast_floor_integer": -1,
+      "plain_floor": 0
+    },
+    "noncanonical_operand_lift": {
+      "Q": 31,
+      "t": 4,
+      "a_canonical": 1,
+      "a_shifted": 32,
+      "b": 1,
+      "same_residue": true,
+      "scaled": [
+        0,
+        4
+      ]
+    },
+    "nonzero_negacyclic": {
+      "a": [
+        1,
+        2
+      ],
+      "b": [
+        3,
+        4
+      ],
+      "witness": {
+        "z": [
+          -5,
+          10
+        ],
+        "y": [
+          -1,
+          1
+        ],
+        "r": [
+          26,
+          24
+        ],
+        "out": [
+          30,
+          1
+        ]
+      }
+    }
+  },
+  "costs": {
+    "label": "DERIVED exact representation counts; no emitter, benchmark, or lower bound",
+    "N": 4096,
+    "Q": 649033470896967801447398927572993,
+    "Q_bits": 109,
+    "t": 1048576,
+    "BabyBear": 2013265921,
+    "moduli": [
+      68719403009,
+      68719230977,
+      137438822401
+    ],
+    "input_coefficients": 16384,
+    "raw_output_coefficients": 12288,
+    "input_booleanity_if_naive": 1785856,
+    "output_booleanity_if_naive": 1339392,
+    "remainder_booleanity_if_naive": 1339392,
+    "lifted_quotient_remainder_booleanity_if_naive": 5931008,
+    "direct_scalar_products": 67108864,
+    "rows": [
+      {
+        "component": 0,
+        "convolution_terms_per_coefficient": 4096,
+        "z_abs_bound": 1725417252227338854841974512465247509522250149292635509913550160134144,
+        "z_signed_offset_range_bits": 231,
+        "y_abs_bound": 2787577531511844492781599858191468997902336,
+        "y_signed_offset_range_bits": 142,
+        "remainder_bits": 109,
+        "output_residue_bits": 109,
+        "witness_range_bits_per_coefficient": 482,
+        "witness_range_bits_all_coefficients": 1974272
+      },
+      {
+        "component": 1,
+        "convolution_terms_per_coefficient": 8192,
+        "z_abs_bound": 3450834504454677709683949024930495019044500298585271019827100320268288,
+        "z_signed_offset_range_bits": 232,
+        "y_abs_bound": 5575155063023688985563199716382937995804672,
+        "y_signed_offset_range_bits": 143,
+        "remainder_bits": 109,
+        "output_residue_bits": 109,
+        "witness_range_bits_per_coefficient": 484,
+        "witness_range_bits_all_coefficients": 1982464
+      },
+      {
+        "component": 2,
+        "convolution_terms_per_coefficient": 4096,
+        "z_abs_bound": 1725417252227338854841974512465247509522250149292635509913550160134144,
+        "z_signed_offset_range_bits": 231,
+        "y_abs_bound": 2787577531511844492781599858191468997902336,
+        "y_signed_offset_range_bits": 142,
+        "remainder_bits": 109,
+        "output_residue_bits": 109,
+        "witness_range_bits_per_coefficient": 482,
+        "witness_range_bits_all_coefficients": 1974272
+      }
+    ],
+    "digit_rows": [
+      {
+        "digit_bits": 8,
+        "digits_per_input": 14,
+        "direct_schoolbook_digit_products": 13153337344,
+        "max_single_digit_product": 65025,
+        "single_digit_product_below_BabyBear": true
+      },
+      {
+        "digit_bits": 14,
+        "digits_per_input": 8,
+        "direct_schoolbook_digit_products": 4294967296,
+        "max_single_digit_product": 268402689,
+        "single_digit_product_below_BabyBear": true
+      },
+      {
+        "digit_bits": 15,
+        "digits_per_input": 8,
+        "direct_schoolbook_digit_products": 4294967296,
+        "max_single_digit_product": 1073676289,
+        "single_digit_product_below_BabyBear": true
+      },
+      {
+        "digit_bits": 16,
+        "digits_per_input": 7,
+        "direct_schoolbook_digit_products": 3288334336,
+        "max_single_digit_product": 4294836225,
+        "single_digit_product_below_BabyBear": false
+      }
+    ],
+    "byte_tile": {
+      "terms": 256,
+      "term_max": 65025,
+      "sum_bound": 16646400,
+      "below_2pow24": true,
+      "below_BabyBear": true
+    },
+    "excluded": [
+      "canonical residue/CRT reconstruction wiring",
+      "digit reconstruction and carries",
+      "range comparisons below Q, not merely below 2^109",
+      "operand provenance/commitments",
+      "negacyclic convolution argument",
+      "proof protocol and hashing",
+      "SEAL base extension/NTT/fast floor/Shenoy-Kumaresan refinement",
+      "relinearization"
+    ]
+  },
+  "elapsed_seconds": 2.0541636669950094,
+  "metered_search_queries": 0,
+  "primary_source_fetches": 2
+}

@@ -1,0 +1,60 @@
+{
+  "label": "EXECUTED independent scalar arithmetic review; no universal Rust implementation claim",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/bfv_scalar_review.py"
+  ],
+  "started_utc": "2026-09-06T08:43:44.736812+00:00",
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine-run.json": "aa8b17d20918bd424d6e5aed5021faa530be314549e66adcf82108a9a828a718",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/captured-rounding-witness.json": "941b02851dbbdeaf2b536cfd789e1a08df9da81013d7e186de975331569458bc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/bfv_scalar_review.py": "048ff8c6627ffcc4ca5a2931b63a71a88f05f9d6df3fc54fe7cf84a0289e4865"
+  },
+  "inputs_unchanged": true,
+  "canonical_vectors_checked": 1065,
+  "constructor_tables_recomputed": true,
+  "literal_word_branch_checks": 1065,
+  "shift": 126,
+  "discrepancies": [
+    {
+      "residues": [
+        9675007914,
+        2505552642,
+        57236360992,
+        4252961403400044537,
+        411888490947559416,
+        2145767979390943224
+      ],
+      "selected_lift": 108454153028594899284870262370752,
+      "source": 172481,
+      "nearest": 172480
+    }
+  ],
+  "current_engine_sources_match_retained_manifest": {
+    "/Users/ember/dev/breadstuffs/Cargo.toml": true,
+    "/Users/ember/dev/breadstuffs/Cargo.lock": true,
+    "/Users/ember/dev/breadstuffs/fhegg-fhe/src/bfv_mul.rs": true,
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/Cargo.toml": true,
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mul.rs": true,
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/parameters.rs": true,
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ciphertext.rs": true,
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/Cargo.toml": true,
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/scaler.rs": true,
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/mod.rs": true,
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/scaler.rs": true,
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/mod.rs": true,
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/convert.rs": true,
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/ops.rs": true,
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/Cargo.toml": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/Cargo.lock": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/src/main.rs": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/fhe_scaler_model.py": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/check_engine.py": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/run_engine.py": true
+  },
+  "same_row_envelope_accepts_wrong_source_residue": 172480,
+  "exact_source_residue": 172481,
+  "domain": "all reviewed cases have 0 <= r_i < q_i; no decryption correctness or fresh-ciphertext failure probability claim"
+}

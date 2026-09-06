@@ -1,0 +1,31 @@
+{
+  "first_tranche_unchanged": true,
+  "compressed": {
+    "large_simplified_descriptor.json": {
+      "raw_sha256": "8260b49530c1b16e7bb3793741d94c3df69123b1b3d57aba1af408d8ce7f83fd",
+      "gzip_sha256": "c7c64d5b0dd9d7d76599bb3251ad9cca9195306e71ed75dd7a0e5696ee51cf3c",
+      "raw_bytes": 1249813,
+      "gzip_bytes": 123503
+    },
+    "large_simplified_CSE_descriptor.json": {
+      "raw_sha256": "9a90b4283754b308e6a3c2a25559256708f3f64f646087688a5e44e2fd75979a",
+      "gzip_sha256": "aded700f23d1d371f8b8cdae945fd303274ca19df67624081752cb9cc2e5d3dc",
+      "raw_bytes": 1103951,
+      "gzip_bytes": 108741
+    }
+  },
+  "artifacts": {
+    "formal/integer_certificate_emission/optimization/OPTIMIZATION.md": "68efdeb24e28b9a7e1b1072cd7d1301d4e8ec89fe1f4543500bb4bdf90fbf199",
+    "formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+    "formal/integer_certificate_emission/optimization/Compiler/IntegerCertificateSimplification.lean": "0cf4b3cbc725e186264c13eac1b681b66f65bcc8a1d5544108b0da84c8b7c8ef",
+    "formal/integer_certificate_emission/optimization/Compiler/SimplificationChecks.lean": "ef2da300dec5c4da185bcfa666952a85eff86014bd40ea4b9f7ef07a691a197a",
+    "formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch": "389015b446a8a09b4327de4dcc1008ef0d0a8a8a95342dc2a9b8b4b65f2d375f",
+    "experiments/integer_certificate_emission/optimization/check.py": "49638d6e0884d23e218e33ab3973035c78a0ee410760093de39b163a4da6670b",
+    "experiments/integer_certificate_emission/optimization/package.py": "6ac19161fc29a57a4ab82a3aeb53e1eef4d55d207da93dbc07c18450e776bd18",
+    "experiments/integer_certificate_emission/optimization/review.py": "486b2dd5a5f2ee090084189f720405686e99e6f96f8d200e0956a87cd7c8331e",
+    "experiments/integer_certificate_emission/optimization/results.json": "d5c385ea96813929255628f5d70526a724d42cd3db22cb25d27f2bb05a36063c",
+    "experiments/integer_certificate_emission/optimization/review_01.json": "d248a50ae7b61d4a72e45e95abe9fbc2f1662a3f2e4b45244b3e5cb1cd64c8fe",
+    "experiments/integer_certificate_emission/optimization/small_simplified_descriptor.json": "a319a431b244bcc7a9c1e68e63bca66c604957e1e0a37756bcd89b4e99ff654e",
+    "experiments/integer_certificate_emission/optimization/small_simplified_CSE_descriptor.json": "257119148b9944933f1ba002a23024bbe35e79054a4b0dc8066a1a4982a183fd"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "source": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+  "url": "https://eprint.iacr.org/2025/330",
+  "sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+  "bytes": 786047,
+  "read_utc": "2026-09-06T07:43:47.578946+00:00",
+  "extraction": {
+    "command": [
+      "pdftotext",
+      "-layout",
+      "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+      "research/learn_infer_only/experiments/randomness_composition/source/rfe_2025_330.txt"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "output_sha256": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54"
+  },
+  "pdfinfo": {
+    "command": [
+      "pdfinfo",
+      "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf"
+    ],
+    "exit_code": 0,
+    "stdout": "Title:           \nSubject:         \nKeywords:        \nAuthor:          \nCreator:         LaTeX with hyperref\nProducer:        pdfTeX-1.40.25\nCreationDate:    Sat Dec  6 10:47:26 2025 EST\nModDate:         Sat Dec  6 10:47:26 2025 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           78\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       786047 bytes\nOptimized:       yes\nPDF version:     1.5\n",
+    "stderr": ""
+  },
+  "inspected": [
+    {
+      "location": "Definition4.3-4.5, printed pp.22-25",
+      "level": "security games",
+      "what_seen": "All queried function keys in compatibility condition; exact key-index/ciphertext-tuple output caching; fresh ideal coins for new tuple; extractor has MSK."
+    },
+    {
+      "location": "Section5.4, printed pp.47-48",
+      "level": "counterexample construction",
+      "what_seen": "Malicious encryptor PRF key with hardcoded output; consistency NIZK remains satisfiable."
+    },
+    {
+      "location": "Theorem6.9/Section6.4, printed pp.67-70",
+      "level": "hybrid reduction read",
+      "what_seen": "Function-key-held PRF key supplies randomized outputs; exact tuple caching; not an application finality game."
+    }
+  ],
+  "metered_queries": {
+    "scry": 0,
+    "kagi": 0
+  }
+}

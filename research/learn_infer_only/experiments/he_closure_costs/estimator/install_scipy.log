@@ -1,0 +1,43 @@
+Using Cached Shard Index for conda-forge/noarch                                                     ✔ Done
+Using Cached Shard Index for conda-forge/osx-arm64                                                  ✔ Done
+Fetching and Parsing Packages' Shards                                                           ⧖ Starting
+Fetching and Parsing Packages' Shards                                                     ✔ Done (0.2 sec)
+
+Pinned packages:
+
+  - python=3.12
+
+Resolving Environment                                                                           ⧖ Starting
+Resolving Environment                                                                     ✔ Done (0.1 sec)
+
+Transaction
+
+  Prefix: /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage
+
+  Updating specs:
+
+   - scipy
+
+
+  Package  Version  Build            Channel         Size
+───────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────
+
+  + scipy   1.18.0  py312h4519d97_0  conda-forge     14MB
+
+  Summary:
+
+  Install: 1 packages
+
+  Total download: 14MB
+
+───────────────────────────────────────────────────────────
+
+
+
+Transaction starting
+Linking scipy-1.18.0-py312h4519d97_0
+
+Transaction finished
+

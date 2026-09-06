@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/run_estimates.py", line 29, in <module>
+    from estimator import LWE, ND  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/__init__.py", line 6, in <module>
+    from .reduction import RC
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/reduction.py", line 7, in <module>
+    from scipy.optimize import newton
+ModuleNotFoundError: No module named 'scipy'

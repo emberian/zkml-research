@@ -44,11 +44,15 @@ does not conceal which memory was accessed. A future stronger leakage theorem mu
 explicitly remove each item from both the implementation view and its leakage contract.
 
 [DERIVED specification] Numerical semantics are chosen bounded-integer/fixed-point
-operations, with specified overflow, rounding, serialization and ranges. The compiled
-witness here is exactly public EVM addition modulo `2^256`, not a neural update. For BFV
-the required relation includes integer multiplication/rescale witnesses, with
-`t*z + floor(Q/2) = Q*y + remainder` and a range on the remainder and all integer lifts.
-A mod-Q product identity alone does not constrain that quotient (`VERDICTS.md` §7.5).
+operations, with specified overflow, rounding, serialization and ranges. The first
+receipt witness is public EVM addition modulo `2^256`; the signed-byte EMA successor
+is checked separately under its own descriptor premise and fixed-context ROM price. BFV's exact-nearest reference includes integer
+`t*z + floor(Q/2) = Q*y + remainder`, with remainder and lift ranges. The live
+engine instead uses a deterministic fixed-point Garner correction and can return
+nearest+1: its source-specific relation must be enforced, not either acceptable
+rounding choice. A mod-Q identity alone does not constrain the quotient. See
+BFV_LIFT_REFINEMENT.md and INTEGER_CERTIFICATE_EMISSION.md for the separate checked
+source and compiler results; their complete binding remains open.
 
 ## Corruption and capabilities
 
@@ -136,12 +140,12 @@ uses these actual objects, with residuals documented in `formal/README.md`.
 
 | Label | Needed property | Realizer in this tranche |
 |---|---|---|
-| [SOURCE] FS full-word integrity | Existing fixed-context ROM theorem, exact descriptor | Imported Stage-0 modules; new context-parametric instance |
-| [DERIVED] Context policy | Trusted genesis/current policy selects intended values; boundary checks enforce their meaning | Public addition witness and explicit toy policy |
-| [DERIVED] Continuity | Authenticated votes, cross-time prefix discipline, non-rollbackable authority, atomic install | Existing mathematical carriers plus proposed adapter; Python compromise controls |
+| [EXECUTED] FS full-word integrity | Root-selected descriptor and complete shared oracle query accounting | Adaptive-context and collected-output proposed theorems; uniform-field classical ROM |
+| [DERIVED] Context policy | Trusted genesis/current policy selects intended values; boundary checks enforce their meaning | Public addition and canonical signed-byte EMA witnesses; explicit policy selection |
+| [EXECUTED] Continuity | Authenticated votes, cross-time prefix discipline, non-rollbackable authority, atomic install | Actual materialized DataIntent/full preflight and journal-derived packet; physical refinement remains open |
 | [OPEN] RELEASE-hiding | Hide witness/trace and unauthorized predicates after allowed role exposures | None; Stage 0 exposes the complete word |
-| [OPEN] NoSurvivingReadAll | No exposed coalition can derive unrestricted decryption beyond ideal interface | No A/B construction supplied |
-| [OPEN] Private input ingress | Encrypted authenticated observations with no writer-side read-all secret | None under full software exposure |
+| [OPEN] NoSurvivingReadAll | No exposed coalition can derive unrestricted decryption beyond ideal interface | Restricted DDH/LWE fixed-projection positives; no realization of the full resident target |
+| [OPEN] Private input ingress | Encrypted authenticated observations with no writer-side read-all secret and only authorized release | Public encryption works in restricted witnesses, but projection credentials bypass the learn-only gate; authentication uninstantiated |
 | [OPEN] Development entropy | Fresh unknown state coins, bound to a preauthorized transition, resistant to host selection | None; Stage-0 rule explicitly deterministic |
 | [OPEN] PQ composition | Encryption, proof/QROM, authentication, key exchange and release dependencies | No combined claim; current inherited proof uses classical ROM |
 | [OPEN] Private witness source | Sound relation proof without leaking observations; any knowledge claim names extraction source | Existing full-word theorem uses Unit witness; not an extractor of private resident state |

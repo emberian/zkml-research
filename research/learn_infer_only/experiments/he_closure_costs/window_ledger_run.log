@@ -1,0 +1,150 @@
+{
+  "status": "EXECUTED exact algebra plus parsed saved genuine BFV run; not a confidentiality theorem",
+  "algebra_checks": {
+    "floor_carry_cases": 2401,
+    "floor_carry_extrema": [
+      -3,
+      0
+    ],
+    "signed_rounding_bound_cases": 2401,
+    "exact_group_queue_steps": 10000,
+    "replacement_debt_identity": "bad_acc = true_queue_sum - expiries*Z (mod Q)"
+  },
+  "uniform_horizon_bounds": [
+    {
+      "width": 16,
+      "window": 8,
+      "contribution_abs_bound": 1,
+      "query_abs_bound": 1,
+      "plaintext_modulus": 1032193,
+      "state_coefficient_abs_bound": 8,
+      "score_abs_bound": 128,
+      "query_l1_bound": 16,
+      "fresh_integer_noise_abs_bound": 3276820,
+      "readout_ideal_phase_error_abs_bound": 419433088,
+      "correctness_inequality": "865871794803968 < 649033470896967801447398927572993",
+      "minimum_ciphertext_modulus_exclusive": 865871794803968,
+      "minimum_integer_modulus_bit_length": 50,
+      "sampled_bit_counts_are_not_this_bound": true,
+      "nonwrap_product_degree": 30,
+      "live_acc_plus_queue_raw_RNS_bytes": 1769472,
+      "update_peak_ciphertext_raw_RNS_bytes": 1966080,
+      "signed_readout_peak_ciphertext_raw_RNS_bytes": 2162688,
+      "raw_buffer_scope": "ct RNS arrays only; excludes plaintext/key/codec/allocator/test-oracle buffers",
+      "security_estimate": null,
+      "parameter_frontier_scope": "sufficient-bound threshold in this algebra only, not a necessary condition; no prime selection or security certification"
+    },
+    {
+      "width": 577,
+      "window": 128,
+      "contribution_abs_bound": 127,
+      "query_abs_bound": 127,
+      "plaintext_modulus": 4294828033,
+      "state_coefficient_abs_bound": 16256,
+      "score_abs_bound": 1191223424,
+      "query_l1_bound": 73279,
+      "fresh_integer_noise_abs_bound": 3276820,
+      "readout_ideal_phase_error_abs_bound": 30735637255552,
+      "correctness_inequality": "264008552994527828978432 < 649033470896967801447398927572993",
+      "minimum_ciphertext_modulus_exclusive": 264008552994527828978432,
+      "minimum_integer_modulus_bit_length": 78,
+      "sampled_bit_counts_are_not_this_bound": true,
+      "nonwrap_product_degree": 1152,
+      "live_acc_plus_queue_raw_RNS_bytes": 25362432,
+      "update_peak_ciphertext_raw_RNS_bytes": 25559040,
+      "signed_readout_peak_ciphertext_raw_RNS_bytes": 25755648,
+      "raw_buffer_scope": "ct RNS arrays only; excludes plaintext/key/codec/allocator/test-oracle buffers",
+      "security_estimate": null,
+      "parameter_frontier_scope": "sufficient-bound threshold in this algebra only, not a necessary condition; no prime selection or security certification"
+    }
+  ],
+  "actual_BFV_cases": [
+    {
+      "N": 4096,
+      "t": 1032193,
+      "width": 16,
+      "window": 8,
+      "steps": 1024,
+      "input_bound": 1,
+      "seed": 23,
+      "ct_add": 1024,
+      "ct_sub": 1016,
+      "exact_queue_equalities": 16,
+      "output_ct_pt_mul": 1,
+      "output_ct_sub": 0,
+      "expected_signed_score": 6,
+      "observed_residue": 6,
+      "max_observed_noise_bits": 14,
+      "bytes": {
+        "acc": 111646,
+        "queue": 893168,
+        "input_total": 114325504,
+        "answer": 111646,
+        "public_key": 55859,
+        "live_acc_plus_queue_raw_RNS_bytes": 1769472
+      },
+      "rerandomized_expiry_falsifier": {
+        "zero_amplification_doublings": 72,
+        "replacements": 40,
+        "expected_coefficient0": 0,
+        "observed_coefficient0": 1
+      }
+    },
+    {
+      "N": 4096,
+      "t": 1032193,
+      "width": 16,
+      "window": 8,
+      "steps": 1024,
+      "input_bound": 1,
+      "seed": 71,
+      "ct_add": 1024,
+      "ct_sub": 1016,
+      "exact_queue_equalities": 16,
+      "output_ct_pt_mul": 1,
+      "output_ct_sub": 0,
+      "expected_signed_score": 6,
+      "observed_residue": 6,
+      "max_observed_noise_bits": 14,
+      "bytes": {
+        "acc": 111646,
+        "queue": 893168,
+        "input_total": 114325504,
+        "answer": 111646,
+        "public_key": 55859,
+        "live_acc_plus_queue_raw_RNS_bytes": 1769472
+      },
+      "rerandomized_expiry_falsifier": {
+        "zero_amplification_doublings": 72,
+        "replacements": 160,
+        "expected_coefficient0": 0,
+        "observed_coefficient0": 1032192
+      }
+    },
+    {
+      "N": 4096,
+      "t": 4294828033,
+      "width": 577,
+      "window": 128,
+      "steps": 1024,
+      "input_bound": 127,
+      "seed": 109,
+      "ct_add": 1024,
+      "ct_sub": 896,
+      "exact_queue_equalities": 16,
+      "output_ct_pt_mul": 2,
+      "output_ct_sub": 1,
+      "expected_signed_score": 3594582,
+      "observed_residue": 3594582,
+      "max_observed_noise_bits": 16,
+      "bytes": {
+        "acc": 111646,
+        "queue": 14290688,
+        "input_total": 114325504,
+        "answer": 111646,
+        "public_key": 55859,
+        "live_acc_plus_queue_raw_RNS_bytes": 25362432
+      }
+    }
+  ]
+}

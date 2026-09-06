@@ -8,7 +8,7 @@ and olean hashes are recorded separately; this is not a clean rebuild of every
 upstream dependency. Lean is 4.30.0; dependencies were consumed from the existing
 absolute LEAN_PATH. Nothing was installed in either companion source tree.
 
-[EXECUTED access accounting] Kagi queries: 0. Scry queries: 0. Web searches: 0.
+[EXECUTED first-tranche access accounting] Kagi queries: 0. Scry queries: 0. Web searches: 0.
 One browser-tool open of the primary DROPS metadata/abstract page, linked below.
 No eprint PDF downloads. Three PDFs read from the local mirror using `pdftotext`;
 full extracted texts are ignored scratch artifacts, reproducible from recorded
@@ -65,3 +65,50 @@ remaining-work list governed the continuation.
 instrument `rg --files ... -g AGENTS.md` found no companion AGENTS.md; its root
 CLAUDE/ATLAS instructions were read instead. This absence claim is only about that
 local file inventory, not about other instructions or repositories.
+
+## Autonomous swarm additions: root discovery, 2026-09-06
+
+[EXECUTED] Root used **1 Scry SQL query, 0 new schema calls, 0 Kagi queries** for
+updatable/homomorphic/reusable FE discovery. The schema was reused from the HE
+lane. `experiments/results/scry_updatable_fe_01.json` retains SQL, complete result,
+duration and source coverage; Scry reported `spend_nanodollars=0`. Root then used
+one web search and opened two publisher pages to resolve the exact papers. The
+search result is discovery metadata only. Other lanes keep separate counts in
+their own source manifests; checkpoint totals follow below.
+
+| ID | Primary source / pinned local file | Access and scope |
+|---|---|---|
+| [SOURCE] AIT-UFE | `/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/1179.pdf`, SHA256 `4b60ee7dca5ff2e0346205af88f180b74fbba544a06b222f67e5ac61c4edcf86`; [publisher](https://link.springer.com/chapter/10.1007/978-3-319-61273-7_17) | Local §3 pp.9–15: syntax, displayed selective game, construction and complete proof outline; Figure9 p.17 transition circuit; §4 future work. Extra DI-obfuscation sampler requirement is a source assumption, not a reduction verified by us. |
+| [SOURCE] CUFE | `/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1284.pdf`, SHA256 `30e8daf540902da9c2e386cf9326a3bf1b2cba28e06a6f4effc03671f0f64e52`; [published full text](https://link.springer.com/article/10.1007/s00145-023-09486-y) | Published §1.1, §3 Definition5 and §5.2 read: one-hop access-tag changes, master-issued update tokens, lattice/ROM branch. Local PDF extracted/pinned; full lattice reduction not audited. |
+
+[EXECUTED] `experiments/recovery_policy/source_reads.json` records local extraction
+commands and text hashes. No PDFs were downloaded; ignored extracted text can be
+regenerated from the absolute mirror paths. `CANDIDATES.md` records the scoped
+closure/migration consequence and the displayed-game exposure residuals.
+
+## Swarm source and execution register
+
+[EXECUTED checkpoint accounting, 2026-09-06 04:46 EDT] Six Scry SQL queries and two
+schema calls were recorded: private construction 3+1, HE 2+1, parent 1+0. Returned
+spend was zero; Kagi queries were zero. Primary web reads/fetches and local corpus
+reads are distinct from those metered queries and are listed in the lane registers.
+No secret key was printed and no eprint PDF was downloaded.
+
+| Register | Actually inspected / executed | Boundary |
+|---|---|---|
+| [SOURCE/EXECUTED] PRIVATE_CONSTRUCTION.md; experiments/private_construction/sources_manifest.json | Local 2015/017 Construction3.1/Theorem3.2 and §6; 2015/608 §4.1/§4.2; DDH implementation and insecure LWE equation controls | Selective initial-vector game versus adaptive/stateful issuance distinguished; no full resident/QPT reduction |
+| [SOURCE/EXECUTED] experiments/private_construction/RLWE_AUDIT.md; results/rlwe_source_results.json | Local 2021/046 §2.3/§4/§5 and 2023/721 §3.4; pinned author repositories, literal PRG call sites and extracted native decoder | Native full build fails on AVX2/arm64; source findings and isolated decoder execution do not establish a full exploit or working scheme |
+| [SOURCE/EXECUTED] HE_CLOSURE_COSTS.md; experiments/he_closure_costs/ | Pinned fhe-dregg/fhe-math source, TFHE-rs1.6.3 Boolean EMA, exact BFV window; local 2024/463 parameter guidance and pinned Apple tables | Source-equation noise bound, actual ciphertext controls and table assumptions separated; pinned estimator follow-on completed with exact model/attack census in estimator/AUDIT.md |
+| [SOURCE/EXECUTED] BFV_LIFT_REFINEMENT.md; experiments/bfv_lift_refinement/engine-run.json | Actual breadstuffs dependency paths and hashes, integer/extension/scaling code and retained full fixtures; primary SEAL source comparison | Independent literal source-model match and Lean scalar refinement; NTT/Rust lowering and encrypted relation binding unproved |
+| [SOURCE/EXECUTED] INTEGER_CERTIFICATE_EMISSION.md; formal/integer_certificate_emission/VALIDATION.md | Existing weighted/range gadgets, Emit/DescriptorEval/checker/CSE; generated small/full109-bit descriptors | Kernel-proved universal relations and small inhabitant; large positive assignments are compiled checks |
+| [SOURCE/EXECUTED] RANDOMNESS_COMPOSITION.md; experiments/randomness_composition/source_manifest.json | Local 2025/330 Def4.3–4.5 and Thm6.9 context; exact ciphertext-tuple cache; actual companion FS reduction | No unbiased-delivery consequence inferred from rFE; new uniform-field ROM composition is a separate local theorem |
+| [SOURCE/EXECUTED] DURABLE_INTEGRATION.md; experiments/durable_integration/results/review.json | Actual Materialized/ValidatedPatch/DataIntent/Candidate/execute paths; positive full-preflight witness and retained broken siblings | Mathematical atomicity/prefix assumptions are not a physical handler implementation |
+| [SOURCE/EXECUTED] ADAPTATION_UTILITY.md; experiments/adaptation_utility/model_manifest.json | Cached SmolLM2-135M pinned revision/license/model card/runtime and 673 synthetic model prompts; disjoint controls and integer audits | Local plaintext synthetic utility, not protected execution or broad language-model evaluation |
+| [SOURCE/EXECUTED] ADVERSARIAL_REVIEW.md; experiments/adversarial_review/ | Independent Lean overlays, source-pinned packet/collision/ROM/BFV checks and executable arithmetic controls | Each review pins its own source hash; later source edits require a new matching record |
+
+[DERIVED provenance discipline] These pointers reuse the lane's exact source
+register rather than copying a second set of version claims. Full extracted paper
+texts and vendored/runtime build trees are ignored; hashes, extraction/build
+commands, relevant source excerpts with attribution, finite results and failure logs
+remain reviewable. Absence statements in lane notes name their actual local corpus
+and search instrument; none is a literature-wide impossibility claim.

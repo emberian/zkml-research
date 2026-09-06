@@ -1,0 +1,61 @@
+{
+  "scope": "public finite model; no cryptography or physical storage",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/audit.py"
+  ],
+  "script_sha256": "cb79bdc1a14c4735b609e6fc47fa85ec455805466f7ef8fed001cc530d5675c8",
+  "outcomes": {
+    "materialized_install": {
+      "parent": [
+        0
+      ],
+      "post": [
+        1
+      ],
+      "installed_root": 1,
+      "fresh": 1
+    },
+    "crash_before": {
+      "state_unchanged": true,
+      "packet_released": false
+    },
+    "crash_after_retry": {
+      "exact_packet": [
+        7,
+        0,
+        0,
+        1,
+        1,
+        19,
+        23,
+        0,
+        0,
+        1,
+        1
+      ],
+      "fresh_on_retry": 0,
+      "budget_after": 9,
+      "journal_entries": 1
+    },
+    "duplicate_exact_packet": {
+      "same_packet": true,
+      "fresh": 0
+    },
+    "recipient_substitution": "transactionConflict",
+    "release_helper_relabel": {
+      "old_recipient": 999,
+      "journal_recipient": 23
+    },
+    "host_restore": "openingRefused",
+    "authority_rollback": "accepted",
+    "equal_root_wrong_opening": {
+      "root_preflight": "ready",
+      "exact_opening": "refused"
+    },
+    "split_check_install_race": {
+      "broken_fresh": 2,
+      "serialized_fresh": 1
+    }
+  }
+}

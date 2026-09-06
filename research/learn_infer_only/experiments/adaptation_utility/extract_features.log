@@ -1,0 +1,21 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+{"batch_start": 0, "batch_seconds": 0.5832387090049451, "max_tokens": 14}
+{"batch_start": 16, "batch_seconds": 0.6384424170100829, "max_tokens": 14}
+{"batch_start": 32, "batch_seconds": 0.6852132089989027, "max_tokens": 14}
+{"batch_start": 48, "batch_seconds": 0.6883154999959515, "max_tokens": 14}
+{"batch_start": 64, "batch_seconds": 0.6286579159932444, "max_tokens": 14}
+{"batch_start": 80, "batch_seconds": 0.5622256670030765, "max_tokens": 14}
+{"batch_start": 96, "batch_seconds": 0.5760630410077283, "max_tokens": 14}
+{"batch_start": 112, "batch_seconds": 0.4597566669981461, "max_tokens": 14}
+{"batch_start": 128, "batch_seconds": 0.39233595799305476, "max_tokens": 14}
+{"batch_start": 144, "batch_seconds": 0.43832737499906216, "max_tokens": 14}
+{"batch_start": 160, "batch_seconds": 0.4158985409885645, "max_tokens": 14}
+{"batch_start": 176, "batch_seconds": 0.43212149999453686, "max_tokens": 14}
+{"batch_start": 192, "batch_seconds": 0.4338300410017837, "max_tokens": 14}
+{"batch_start": 208, "batch_seconds": 0.4010715829936089, "max_tokens": 14}
+{"batch_start": 224, "batch_seconds": 0.4436179579934105, "max_tokens": 14}
+{"batch_start": 240, "batch_seconds": 0.6480160000064643, "max_tokens": 14}
+{"batch_start": 256, "batch_seconds": 0.7485922499909066, "max_tokens": 14}
+{"batch_start": 272, "batch_seconds": 0.4702356250054436, "max_tokens": 14}
+{"batch_start": 288, "batch_seconds": 0.19302554200112354, "max_tokens": 14}
+{"complete": true, "load_seconds": 1.52951220900286, "feature_seconds": 9.838985498980037, "hidden_shape": [289, 576], "parameter_count": 134515008}

@@ -1,0 +1,17 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean",
+  "source_sha256": "bd309eb1bc9a43e2a3c76428235a26c337339eb20d0f0c7806331d4fea0154d4",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Assurance/ResidentEmaRelease.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean:70:12: error: Type mismatch\n  fsCheck_ok_fiatShamir (\u2191(scheme p.plan.context)).commit descriptor\nhas type\n  \u2200 (encNat : \u2115 \u2192 Fin ?m.93 \u2192 Bool) (hn : 0 < descriptor.nWires)\n    (O : SrMove (gateReduction (\u2191(scheme p.plan.context)).commit descriptor encNat hn) 0 \u2192 Ext6L)\n    (rc : FsReceipt (Context \u00d7 (Fin descriptor.nWires \u2192 BabyBear)) descriptor.nWires ?m.93)\n    (r : CommittedTerminalController.Receipt (Context \u00d7 (Fin descriptor.nWires \u2192 BabyBear)) ?m.93),\n    fsCheck (\u2191(scheme p.plan.context)).commit descriptor encNat hn O rc = Except.ok r \u2192\n      fiatShamir (gateReduction (\u2191(scheme p.plan.context)).commit descriptor encNat hn) 0 O\n          (FsReceipt.output (\u2191(scheme p.plan.context)).commit descriptor encNat hn rc) =\n        some ((), fun x => ())\nbut is expected to have type\n  fiatShamir (reduction p.plan.context) 0 O\n      (FsReceipt.output (\u2191(scheme p.plan.context)).commit descriptor (bitCorner 10) descriptor_nonempty rc) =\n    some ((), fun x => ())\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean:69:2: error: Alternative `error` has not been provided\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean:71:6: error: unexpected token '('; expected command\n",
+  "stderr": "",
+  "elapsed_seconds": 3.825711965560913
+}

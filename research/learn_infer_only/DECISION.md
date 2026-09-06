@@ -1,111 +1,35 @@
-# Decision: extend the integrity boundary; keep the privacy gap explicit
+# Decision: join working numerical and integrity paths; keep release decisive
 
-[DERIVED decision, 2026-09-06] Keep proof-bound release as the leading construction
-attempt, with a narrower current result: context-bound public computation and
-keyless release continuity. No audited candidate here survives the combined tier-A/B
-exposure as a closed private learner. §6C now has an executed symbolic transcript;
-§6D has an executed model and a checked proposed Lean adapter; §6E has a checked
-context-binding extension, not a private end-to-end realization.
+[DERIVED decision, 2026-09-06 04:46 EDT] Keep proof-bound release as the main integrity architecture, with the exact additive window and signed-byte EMA as small continuation targets. The swarm has produced genuine encrypted loops, restricted FE continuations, materialized durable release and adaptive receipt composition. No artifact yet combines useful private adaptation, authenticated fresh inputs, recipient-only release, no surviving read-all authority and an audited PQ composition. This is a result about the recorded attempts, not an impossibility claim.
 
-## What is new
+## Supported advances and their boundaries
 
-[EXECUTED] The writer exposure derivation is now an ideal-primitive program:
-64 synthetic histories, 288 recovered values, no outer master key or authorized
-outer function key. It has missing-credential, wrong-setup/branch and incomplete-
-prefix controls. Same-setup, correct-index replacement is accepted rather than
-silently ruled out. These checks support the specified correctness path, not
-cryptographic robustness or a claim that every SFE variant fails.
+[EXECUTED] The durable witness now writes real materialized state. Its 45-pin patch uses the validator, DataIntent, full preflight, Candidate.ofData and journal-first execute. Packets come from the installed journal; retry returns the identical packet. Independent review found and fixed an earlier helper API that could relabel a genuine result with another Plan's recipient. Exact bytes/root installation is proved. A genuine-receipt constant-root sibling shows why arithmetic on roots does not force logical Step. The48-pin EMA successor proves that a satisfying descriptor plus canonical pre/post byte openings forces exact signed-byte floor semantics at actual installation, even with a constant root. It has its own153-wire full-word descriptor and fixed-context bound (t+9)*161/p^6; exact false-Step reading requires δ<1/153. Its fixed acknowledgement packet does not hide the public receipt word. See [DURABLE_INTEGRATION.md](DURABLE_INTEGRATION.md).
 
-[EXECUTED] The restore model performs two authorized continuing transitions. An old
-finalized certificate remains final, yet the current-head/consumption gate refuses
-a fresh release from its restored manifest. Authority rollback re-enables it;
-non-atomic check/install permits duplicate authorizations; compromised prefix
-discipline permits conflicting finality; silent local copies remain possible.
+[EXECUTED] Adaptive contexts now share one classical-ROM reduction: the context in the root selects the descriptor relation and canonical queries. For a query-complete collection of public full-word receipts, selecting any false accepted receipt adds zero queries. The bound remains (t+14)*4160/2013265921^6, charging all prover/service/verifier queries to t, with no additional receipt-count factor in that model. A positive witness includes two real receipts and acceptance under an actual sampled shared log. Final-log completeness is not physical publication ordering. Concrete cSHAKE sampling, QROM and hiding remain outside this theorem. See [RANDOMNESS_COMPOSITION.md](RANDOMNESS_COMPOSITION.md).
 
-[EXECUTED] Both proposed Lean modules check with 31 exact-output axiom pins. They
-reuse the actual Stage-0 receipt, finality checker and durable consumption objects.
-The receipt root and concrete transcript encoding now contain genesis, parent,
-program/version, command/authorization, recipient, randomness rule/commitment,
-next state and output. Explicit semantic checks connect the arithmetic fields to
-the descriptor. Accepted context substitution is refused; under the actual finality
-prefix discipline, same-slot checked candidates have identical Context events.
+[EXECUTED] Actual BFV maintains a W128 queue and subtracts the identical expired ciphertext, leaving only the current window's error. At Q83/N4096/r577, two seeds complete 1,024 updates and exact signed-score controls. Accumulator plus queue uses 10,967,838 serialized bytes; public key 42,547 bytes; input/output ciphertext 85,022 bytes. Learn uses one add and, after filling, one subtraction; signed public-query scoring uses two ciphertext/plaintext products and one subtraction. The full reader key remains in the test harness. Private sign/scalar release, input authenticity/ranges and queue provenance remain unimplemented. Re-encrypting an expired plaintext does not cancel its original error. Actual TFHE separately runs four exact signed-byte EMA updates without intermediate decrypt/reencrypt. These are encrypted computation results, not credential-absence results. See [HE_CLOSURE_COSTS.md](HE_CLOSURE_COSTS.md); the pinned estimator now reports model-specific attack costs with fresh-process checks and explicit coverage limits.
 
-[DERIVED] This is stronger than attaching metadata to an old proof: the proposed
-root participates in the existing verifier and FS query encoding, boundary fields
-are checked against the word, the same context enters finality's exact event, and
-the independent authority checks currentness. Its limits remain concrete: public
-addition; deterministic randomness; public delivery pair; no materialized rootWrites
-or full durable preflight in the adapter's closed witness.
+[SOURCE/EXECUTED] Restricted no-master writer continuations exist. DDH inner-product FE supports compact public additive updates with a fixed projection key after honest master-key erasure. ALS modular LWE with q=p^k permits public additions modulo p without new noise; the local equation witness checks 10,000 steps at deliberately insecure parameters. The surviving projection key also reads a fresh input's projection directly, bypassing a learn-only acknowledgement gate. Hidden kernel directions never affect the fixed permitted behavior. Practical RLWE author-code inspection found uninitialized PRG contexts and an executed decoder boundary discrepancy; no audited working deployment was established. See [PRIVATE_CONSTRUCTION.md](PRIVATE_CONSTRUCTION.md).
 
-[EXECUTED] The original interface seed also passes: all 256 bytes recovered with
-eight chosen-update observations, restricted positive relation preserved, 2,048
-output-routing cases and 990 bounded-history checks. These results validate finite
-interface reasoning, not an encryption implementation.
+[EXECUTED] BFV arithmetic reaches the live source and the compiler through separate checked steps. An independent source model matches 86,208 full output coefficients; three structured witnesses give deterministic exact-nearest+1 results. A 33-pin refinement proves the scalar formula and sharp envelope for every canonical input at the pinned six-limb parameters. Separately, 20 pinned compiler theorems force small/full109-bit signed QR; existing CSE reduces the large descriptor from 52,378 to 21,279 gates per coefficient. That certificate is not yet bound to live correction or operand provenance. Accepting either nearest or nearest+1 would weaken the deterministic relation. See [BFV_LIFT_REFINEMENT.md](BFV_LIFT_REFINEMENT.md) and [INTEGER_CERTIFICATE_EMISSION.md](INTEGER_CERTIFICATE_EMISSION.md).
 
-## Strongest supported conditional statement
+[EXECUTED] Utility narrowed the target. The cached 135M model's learned readout reached 77.84% on a synthetic coordinate task, below same-feature retrieval's 82.76%. Disjoint text/paraphrase controls stayed near chance; the explicitly privileged eight-coordinate structured control updated one skill and retained another at 100%. Exact integer/window controls match independent arithmetic checks. These results support a small structured target and retain a negative result for this neural representation; they do not demonstrate private semantic adaptation. See [ADAPTATION_UTILITY.md](ADAPTATION_UTILITY.md).
 
-[DERIVED] In the staged control model, accepted finality plus independent current
-genesis/head/policy/token checks and accepted context-linked receipt force the
-selected context. If the existing descriptor is true, the public next state and
-output equal the specified wrapped sum. Under the existing cross-epoch
-`PrefixDiscipline`, two accepted candidates at one slot carry the same complete
-context. Following an authority advance, restoring the same host manifest cannot
-obtain a fresh authorization. The proof uses an inhabited, state-changing witness.
+## What decides the architecture
 
-[SOURCE/DERIVED] The inherited full-word receipt has fixed-context classical-ROM
-price `(t+14)*4160/2013265921^6`. `bad_release_implies_bad_descriptor` exposes the
-event inclusion needed to use it. The price does not include adaptive multi-context
-composition, a concrete cSHAKE reduction, QROM, input authentication, consensus,
-durability or hiding. It is not a whole-resident security level or a private-state
-knowledge/extraction theorem. See `formal/README.md` for exact theorem boundaries.
+[DERIVED] An observation issuer may encode features it already knows through a fixed authenticated transformation, without learning prior resident memory. This can avoid private backbone evaluation on that observation, but moves feature-extraction/provenance obligations to a named role. If private memory enters earlier activations, downstream backbone work remains private.
 
-## Where private information and authority went
+[DERIVED] The decisive missing authority is a release mechanism whose exposed software cannot reveal extra predicates. A program containing a full FHE key remains a reader. A projection FE key removes a universal key while granting its projection on accessible fresh inputs and copied branches. Keyless continuity can regulate a published history; it does not erase those bypass capabilities. C/D custody/hardware remain explicit comparisons.
 
-[DERIVED] Fresh private observations must come from a source outside the host's
-knowledge and enter the protected computation without an exposed writer/read-all
-credential. Unknown initialization or development randomness can also contribute
-private information. Public encryption coins alone do not. None of those ingress/
-entropy mechanisms is instantiated here; the public arithmetic witness has no
-unknown state or random input.
+[EXECUTED] Policy evolution has an axiom-free adaptive trace theorem: admitted migrations preserve a version-indexed relation and observation blindness. Two individually permitted policies can jointly identify one semantic state when both capabilities remain usable. This is not a claim that retired keys decrypt rekeyed ciphertexts. See [RECOVERY_POLICY.md](RECOVERY_POLICY.md).
 
-[DERIVED] The most restrictive remaining assumption is a release mechanism that
-both completely mediates outward decryption and remains restricted when all its
-claimed-untrusted software artifacts are exposed. An ordinary helper containing
-the FHE secret key fails that condition. The keyless continuity authority can
-govern release without reading the resident, but does not make a decryption helper
-unreadable. Its own mutable state must additionally resist rollback and races.
+[EXECUTED] Context-bound coins do not prevent selection: choosing among eight fair context draws yields 255/256 chance of releasing 1. Pre-draw commitment still permits selective delivery. Exact durable replay prevents retry resampling only within physical-authority assumptions. Hidden entropy and host-independent completion/delivery remain open.
 
-[REFUTED: audited plain writer deployment] The GKS23 writer credential gives a
-correctness-based recovery path. Restricting the writer to a separate custodian
-changes the threat model; it does not eliminate that authority. [OPEN] No new
-software-only A/B construction closes this seam. Tier C/D remain explicit controls.
+## Maintainer corrections and evidence
 
-## Proposed corrections for the maintainer, without editing VERDICTS
+[DERIVED proposed corrections; VERDICTS unchanged] Mark the empty-rootWrites gap closed for the public materialized witness. Mark adaptive context and query-complete full-word receipt composition proved in uniform-field classical ROM. Keep physical durable implementation, logical/private Step binding, release hiding and PQ composition separate. Enforce the live BFV deterministic correction: the exact-nearest certificate is a reference, not an automatic runtime refinement.
 
-[DERIVED] Add the explicit distinction “finalized historically” versus “eligible
-for fresh release now”; the new restore theorem composes the latter from independent
-prefix/head/consumption checks. Keep complete mediation, durable atomicity, private
-inputs and entropy as separately named obligations.
+[DERIVED retained corrections] A fixed Step can accept observations as data. Lack of function hiding does not prove recovery of an entire function representation. General-circuit PCE closure inherits the reported obfuscation obligation, without proving every restricted fixed Step needs iO. Explicit SFE writer recovery stands independently of those overstatements. Updatable encrypted RAM adds bounded closure with master-issued tokens and stronger obfuscation/game assumptions.
 
-[DERIVED] Narrow two phrases in the companion/lane notes. A fixed Step can accept
-new observations as data; static functions alone do not prove recurrent closure
-impossible. Lack of function hiding does not itself prove recovery of the function's
-entire representation. The stronger credential failure stands on the explicit
-writer path, without either overstatement. General-circuit PCE closure inherits
-the reported iO obligation; no lower bound for every restricted Step was proved here.
-
-## Verification and next decision
-
-[EXECUTED evidence] `experiments/results/` retains commands, stdout/stderr, source
-hashes, successful tests and failed Lean attempts. The latest successful Lean logs
-check the pinned sources. `patch_review.json` records staged umbrella elaboration,
-import-boundary check, patch applicability and CSV checks. The companion patch is
-provided for maintainer folding, with root imports; it has not been applied.
-
-[DERIVED next decision] The smallest useful integration is to replace the public
-adapter's empty rootWrites with an existing materialized cell/DataIntent and prove
-that accepted receipt next state is exactly the installed root, with atomic
-consumption/retry behavior. This can establish a stronger actual integrity path.
-It cannot by itself change the A/B privacy verdict: that requires a concrete
-restricted-release/private-input mechanism whose full credential exposure survives.
-`NEXT.md` separates these decisive tasks.
+[EXECUTED verification] Lane notes retain exact commands, source hashes, successful/failed checks, inhabitants and refusal witnesses. Proposed modules and umbrella checks use existing companion dependency oleans; no clean whole-tree build is claimed. Independent reviews pin their checked versions. The combined baseline passes for12 modules/217 pins, and the EMA extension passes for16 modules/265 pins; all four umbrellas and patch application are green. STATUS.md and NEXT.md name active owners and next tests; the goal continues until the requested deadline.

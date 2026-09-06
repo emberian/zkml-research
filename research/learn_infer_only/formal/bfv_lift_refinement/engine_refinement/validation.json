@@ -1,0 +1,102 @@
+[
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+    "stderr": "",
+    "elapsed_seconds": 0.019049666996579617
+  },
+  {
+    "command": [
+      "lean",
+      "--version"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+    "stderr": "",
+    "elapsed_seconds": 0.03646179099450819
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.validation-u2twialj/Compiler/BFVScaleLiftRefinement.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 17.368046999996295
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.validation-u2twialj/Compiler/FheRnsScaleDecomposition.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 5.042489083003602
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.validation-u2twialj/Compiler.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.validation-u2twialj/Compiler.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.validation-u2twialj",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 4.29970862501068
+  },
+  {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": "",
+    "elapsed_seconds": 0.24009241699241102
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 0.02569704200141132
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 0.018104374990798533
+  }
+]

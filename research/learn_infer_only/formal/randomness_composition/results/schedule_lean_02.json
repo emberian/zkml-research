@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build/Assurance/ResidentMultiReceiptSchedule.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentMultiReceiptSchedule.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentMultiReceiptSchedule.lean:66:2: error: 'change' tactic failed, pattern\n  (match\n      List.find? (fun e => decide (e.1 = (outputs j (List.map Prod.snd (srTrace P coins))).query i))\n        (srTrace P coins) with\n    | some e => e.2\n    | none => fallback i) =\n    ?m.119\nis not definitionally equal to target\n  srFinalChal (withOutput P (outputs j)) coins fallback i =\n    loggedOracle P coins ((outputs j (List.map Prod.snd (srTrace P coins))).query i)\n",
+  "stderr": "",
+  "source_sha256": "c4f074d16c66fc4de24cce80f3824cb3ebac8590708ca377c20eeaf2a0bdadbd"
+}

@@ -1,0 +1,6 @@
+     Locking 71 packages to latest compatible versions
+      Adding generic-array v0.14.7 (available: v0.14.9)
+      Adding rand v0.9.2 (available: v0.9.5)
+   Compiling resident-bfv-window-probe v0.1.0 (/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_probe)
+    Finished `release` profile [optimized] target(s) in 1.82s
+     Running `research/learn_infer_only/experiments/he_closure_costs/bfv_probe/target/release/resident-bfv-window-probe`

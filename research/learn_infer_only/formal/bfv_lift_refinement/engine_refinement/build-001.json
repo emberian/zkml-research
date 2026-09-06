@@ -1,0 +1,28 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/BFVScaleLiftRefinement.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 9.131521874995087
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/FheRnsScaleDecomposition.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean:142:33: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern\n  (\u2211 i \u2208 ?s, ?f i) * ?a\nin the target expression\n  \u2211 i, r i * d = d * \u2211 i, r i\n\nL : \u2115\nd B : \u2124\nr theta : Fin L \u2192 \u2124\nhd : 0 < d\nhB : 0 < B\nhr : \u2200 (i : Fin L), 0 \u2264 r i\nhs : \u2211 i, r i \u2264 B\nheq :\n  d * \u2211 i, r i * ceilDiv (B * theta i) d - B * \u2211 i, r i * theta i =\n    \u2211 i, r i * (d * ceilDiv (B * theta i) d - B * theta i)\n\u22a2 \u2211 i, r i * d = d * \u2211 i, r i\n",
+    "stderr": "",
+    "elapsed_seconds": 9.046087249997072
+  }
+]

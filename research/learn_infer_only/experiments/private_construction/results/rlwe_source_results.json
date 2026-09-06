@@ -1,0 +1,223 @@
+{
+  "classification": "Source/cost audit; complete cryptographic reproduction blocked by architecture",
+  "full_library_build": {
+    "command": "make -C vendor/IPFE-RLWE/src",
+    "exit": 2,
+    "log_sha256": "7da82e1aa6b0df6a2ca579f49708fc020146afc72f17db6f5e7b6a3dab6f5344",
+    "reason": "unsupported -mavx2 for arm64-apple-darwin25.6.0",
+    "installation_path_stopped": true
+  },
+  "parameters": {
+    "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/vendor/IPFE-RLWE/src/params.h",
+    "sha256": "592e800e37fcbb64094dadd9d2348eed344277abb9faf5c2915ef2e724097753",
+    "sets": [
+      {
+        "level": 0,
+        "n": 2048,
+        "d": 64,
+        "crt_moduli": [
+          12289,
+          8257537,
+          536608769
+        ],
+        "q": 54453379469456060417,
+        "q_bits": 66,
+        "K": 257,
+        "delta_floor": 211880853966755098,
+        "q_mod_K": 231,
+        "Bx": 2,
+        "By": 2,
+        "public_key_bytes": 1597440,
+        "ciphertext_bytes": 1597440,
+        "master_key_bytes": 1572864,
+        "function_key_bytes": 24576,
+        "state_plus_window8_bytes": 14376960,
+        "fresh_enc_gaussian_coefficients": 135168,
+        "fresh_enc_forward_ntts": 3,
+        "fresh_enc_inverse_ntts": 195,
+        "fresh_enc_pointwise_modular_multiplies": 399360,
+        "additive_ciphertext_residue_additions": 399360,
+        "public_offset_additions": 393216,
+        "keygen_residue_multiplies": 393216,
+        "security_bits_verified": null
+      },
+      {
+        "level": 1,
+        "n": 4096,
+        "d": 785,
+        "crt_moduli": [
+          16760833,
+          2147352577,
+          2130706433
+        ],
+        "q": 76687145727357674227351553,
+        "q_bits": 86,
+        "K": 50241,
+        "delta_floor": 1526385735302993058007,
+        "q_mod_K": 21866,
+        "Bx": 4,
+        "By": 16,
+        "public_key_bytes": 38633472,
+        "ciphertext_bytes": 38633472,
+        "master_key_bytes": 38584320,
+        "function_key_bytes": 49152,
+        "state_plus_window8_bytes": 347701248,
+        "fresh_enc_gaussian_coefficients": 3223552,
+        "fresh_enc_forward_ntts": 3,
+        "fresh_enc_inverse_ntts": 2358,
+        "fresh_enc_pointwise_modular_multiplies": 9658368,
+        "additive_ciphertext_residue_additions": 9658368,
+        "public_offset_additions": 9646080,
+        "keygen_residue_multiplies": 9646080,
+        "security_bits_verified": null
+      },
+      {
+        "level": 2,
+        "n": 8192,
+        "d": 1024,
+        "crt_moduli": [
+          114689,
+          1032193,
+          4293918721,
+          3221225473
+        ],
+        "q": 1637410683940770091786553098241,
+        "q_bits": 101,
+        "K": 1048577,
+        "delta_floor": 1561555025468582747653775,
+        "q_mod_K": 670066,
+        "Bx": 32,
+        "By": 32,
+        "public_key_bytes": 134348800,
+        "ciphertext_bytes": 134348800,
+        "master_key_bytes": 134217728,
+        "function_key_bytes": 131072,
+        "state_plus_window8_bytes": 1209139200,
+        "fresh_enc_gaussian_coefficients": 8404992,
+        "fresh_enc_forward_ntts": 4,
+        "fresh_enc_inverse_ntts": 4100,
+        "fresh_enc_pointwise_modular_multiplies": 33587200,
+        "additive_ciphertext_residue_additions": 33587200,
+        "public_offset_additions": 33554432,
+        "keygen_residue_multiplies": 33554432,
+        "security_bits_verified": null
+      }
+    ]
+  },
+  "source_findings": [
+    {
+      "repository": "IPFE-RLWE",
+      "commit": "283975175b2407ab5a77e718e254d4d01671ca3a",
+      "files": {
+        "rlwe_sife.c": "4f73de724fc3de5a6da091d04aada06fdb79487c6fad40d7a9681de24eb69155",
+        "gauss.c": "40989213e4b9dc4294dc65acfdaec638450773b600b13b1dc269dc708a8d56ce",
+        "aes256ctr.c": "d7a9a08682b232e62cead8aa79dfb9730cab750481b88dc84eb1c906ee506994",
+        "params.h": "592e800e37fcbb64094dadd9d2348eed344277abb9faf5c2915ef2e724097753",
+        "Makefile": "24f18beb208e9f04a44ee2262ad6c189e45d8470bd3d919c99c31a416b525f27"
+      },
+      "secret_sample_line": 41,
+      "encryption_error_sample_line": 100,
+      "uninitialized_contexts": [
+        "setup.state_secret",
+        "encrypt.state_s3",
+        "encrypt_vec.state_s3"
+      ],
+      "classification": "SOURCE caller/callee inspection plus pinned syntactic assertions; no uninitialized-read runtime exploit",
+      "shared_parallel_contexts": []
+    },
+    {
+      "repository": "IPFE-2023",
+      "commit": "06801d086b1468cdf1a5db84ef9f43552035f3f1",
+      "files": {
+        "rlwe_sife.c": "337684c15917e3b5b8412ee1c4c3df96845f833b208b166321710281b084aae9",
+        "gauss.c": "ababd53d443f1a264043ec138c1d666d679cf52788d121e8f2659be79db3b686",
+        "aes256ctr.c": "5c11f4c55b50d19e7b3feabfa0a4225d237c4be0492b094f9530efd616b829b1",
+        "params.h": "4b279a45082a715a184df8328d479d9a81512278108ff11865abde79e5e80c99",
+        "Makefile": "35e051dd8ba1849004e91884445db67bdd4cc6db5123f919352d662525e689f9"
+      },
+      "secret_sample_line": 45,
+      "encryption_error_sample_line": 117,
+      "uninitialized_contexts": [
+        "setup.state_secret",
+        "encrypt.state_s3",
+        "encrypt_vec.state_s3"
+      ],
+      "classification": "SOURCE caller/callee inspection plus pinned syntactic assertions; no uninitialized-read runtime exploit",
+      "shared_parallel_contexts": [
+        "setup.state_secret",
+        "setup.state_error",
+        "encrypt.state_s2",
+        "encrypt.state_s3"
+      ]
+    }
+  ],
+  "standalone_decoder_checks": [
+    {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/vendor/IPFE-RLWE/src/rlwe_sife.c",
+      "source_sha256": "4f73de724fc3de5a6da091d04aada06fdb79487c6fad40d7a9681de24eb69155",
+      "function_start_line": 257,
+      "parameter_scope": "original medium params for both exact extracted functions; optimized OpenMP pragmas run serially",
+      "harness_sha256": "d943ac7e9018e47816f596f82b1b2a8c7f15f4382bd3c50bb54a0717823d5820",
+      "binary_sha256": "ae5b4684a44afac66aa19b28d7194f08d9e8f4fc548b6567209ff145410fbc38",
+      "build_command": [
+        "clang",
+        "-O1",
+        "-Wno-unknown-pragmas",
+        "-I/opt/homebrew/include",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/build/IPFE-RLWE/rounding_extracted.c",
+        "-L/opt/homebrew/lib",
+        "-lgmp",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/build/IPFE-RLWE/rounding_extracted"
+      ],
+      "build_exit": 0,
+      "run_exit": 0,
+      "result": {
+        "phase_q_minus_one_decoded": 50241,
+        "positive_five_decoded": 5
+      },
+      "classification": "EXECUTED exact decoder boundary falsifier for valid phase -1 mod q; not a sampled encryption or complete library run"
+    },
+    {
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/vendor/IPFE-2023/src/rlwe_sife.c",
+      "source_sha256": "337684c15917e3b5b8412ee1c4c3df96845f833b208b166321710281b084aae9",
+      "function_start_line": 303,
+      "parameter_scope": "original medium params for both exact extracted functions; optimized OpenMP pragmas run serially",
+      "harness_sha256": "910392e3ef3c4a679f49b9cf4b8df8e604c1f07266c28b5b5b53dfceebea61c2",
+      "binary_sha256": "096cf19af256f6616d635e963bbe6882990d88baa0556321fa95fa03a6f33bbc",
+      "build_command": [
+        "clang",
+        "-O1",
+        "-Wno-unknown-pragmas",
+        "-I/opt/homebrew/include",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/build/IPFE-2023/rounding_extracted.c",
+        "-L/opt/homebrew/lib",
+        "-lgmp",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/build/IPFE-2023/rounding_extracted"
+      ],
+      "build_exit": 0,
+      "run_exit": 0,
+      "result": {
+        "phase_q_minus_one_decoded": 50241,
+        "positive_five_decoded": 5
+      },
+      "classification": "EXECUTED exact decoder boundary falsifier for valid phase -1 mod q; not a sampled encryption or complete library run"
+    }
+  ],
+  "counts": {
+    "additional_scry_queries": 0,
+    "additional_web_search_queries": 0,
+    "github_primary_pages_opened": 2,
+    "public_source_clones": 2
+  },
+  "not_executed": [
+    "encryption",
+    "Gaussian sampling",
+    "ciphertext additive continuation",
+    "master-retention attack",
+    "parallel race or uninitialized-read exploit",
+    "security estimator",
+    "post-quantum reduction"
+  ]
+}

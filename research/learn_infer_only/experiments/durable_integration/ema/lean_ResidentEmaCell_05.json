@@ -1,0 +1,18 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaCell.lean",
+  "source_sha256": "a471512dd5074a50df4317fdd218c4cc46f02c9af8e5d62cde0bcf9f54fc22c0",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Assurance/ResidentEmaCell.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaCell.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Assurance.ResidentEmaCell.biased_representation_exact' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.ResidentEmaCell.state_ext' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaCell.cell_bytes' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaCell.canonical_opens' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaCell.signed_opening' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaCell.writePatch_accepted' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.ResidentEmaCell.patch_post' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+  "stderr": "",
+  "elapsed_seconds": 3.2676799297332764,
+  "olean_sha256": "ec3462561eedddedc3a58ecf7e5049c6cbca251c0d2e664dca4c31d02776ce86"
+}

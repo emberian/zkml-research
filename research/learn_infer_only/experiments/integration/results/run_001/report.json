@@ -1,0 +1,469 @@
+{
+  "label": "EXECUTED integration of selected proposed Lean modules",
+  "status": "passed",
+  "started_utc": "2026-09-06T08:46:05.436240+00:00",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "research/learn_infer_only/experiments/integration/check_all_formal.py",
+    "--checks"
+  ],
+  "commands": [
+    {
+      "label": "companion_head_before",
+      "log": "001_companion_head_before.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_status_before",
+      "log": "002_companion_status_before.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_version",
+      "log": "003_lean_version.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_source_list",
+      "log": "004_companion_source_list.json",
+      "exit_code": 0
+    },
+    {
+      "label": "isolated_git_init",
+      "log": "005_isolated_git_init.json",
+      "exit_code": 0
+    },
+    {
+      "label": "combined_patch_check",
+      "log": "006_combined_patch_check.json",
+      "exit_code": 0
+    },
+    {
+      "label": "combined_patch_apply",
+      "log": "007_combined_patch_apply.json",
+      "exit_code": 0
+    },
+    {
+      "label": "boundary_applied_source",
+      "log": "008_boundary_applied_source.json",
+      "exit_code": 0
+    },
+    {
+      "label": "boundary_existing_companion",
+      "log": "009_boundary_existing_companion.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Assurance_ResidentReleaseContext",
+      "log": "010_lean_Assurance_ResidentReleaseContext.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Compiler_BFVScaleLiftRefinement",
+      "log": "011_lean_Compiler_BFVScaleLiftRefinement.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Compiler_IntegerCertificateEmission",
+      "log": "012_lean_Compiler_IntegerCertificateEmission.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Selvage_RandomnessSelection",
+      "log": "013_lean_Selvage_RandomnessSelection.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Theory_PrivatePolicyEvolution",
+      "log": "014_lean_Theory_PrivatePolicyEvolution.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Assurance_ResidentAdaptiveContext",
+      "log": "015_lean_Assurance_ResidentAdaptiveContext.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Assurance_ResidentDurableIntegration",
+      "log": "016_lean_Assurance_ResidentDurableIntegration.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Assurance_ResidentRestoreFinality",
+      "log": "017_lean_Assurance_ResidentRestoreFinality.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Compiler_FheRnsScaleDecomposition",
+      "log": "018_lean_Compiler_FheRnsScaleDecomposition.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Compiler_LargeIntegerCertificateEmission",
+      "log": "019_lean_Compiler_LargeIntegerCertificateEmission.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Selvage",
+      "log": "020_lean_Selvage.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Theory",
+      "log": "021_lean_Theory.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Assurance_ResidentDurableCollision",
+      "log": "022_lean_Assurance_ResidentDurableCollision.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Assurance_ResidentMultiReceiptSchedule",
+      "log": "023_lean_Assurance_ResidentMultiReceiptSchedule.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Compiler",
+      "log": "024_lean_Compiler.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_Assurance",
+      "log": "025_lean_Assurance.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_checks_IntegerCertificateEmissionChecks",
+      "log": "026_lean_checks_IntegerCertificateEmissionChecks.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_checks_LargeIntegerCertificateEmissionChecks",
+      "log": "027_lean_checks_LargeIntegerCertificateEmissionChecks.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_head_after",
+      "log": "028_companion_head_after.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_status_after",
+      "log": "029_companion_status_after.json",
+      "exit_code": 0
+    }
+  ],
+  "no_clean_full_build_claim": true,
+  "metered_search_queries": 0,
+  "manifest": {
+    "schema": 1,
+    "expected_theorem_pins": 217,
+    "scope": "Finished proposed modules only; current read-only companion dependency oleans; not a clean full build.",
+    "lanes": [
+      {
+        "name": "resident",
+        "root": "formal",
+        "patch": "formal/minidregg-resident-release.patch",
+        "expected_pins": 31
+      },
+      {
+        "name": "policy",
+        "root": "formal/recovery_policy",
+        "patch": "formal/recovery_policy/minidregg-private-policy-evolution.patch",
+        "expected_pins": 15
+      },
+      {
+        "name": "durable",
+        "root": "formal/durable_integration",
+        "patch": "formal/durable_integration/minidregg-durable-integration.patch",
+        "expected_pins": 45
+      },
+      {
+        "name": "randomness",
+        "root": "formal/randomness_composition",
+        "patch": "formal/randomness_composition/minidregg-randomness-selection.patch",
+        "expected_pins": 13
+      },
+      {
+        "name": "adaptive",
+        "root": "formal/randomness_composition",
+        "patch": "formal/randomness_composition/minidregg-adaptive-context.patch",
+        "expected_pins": 13
+      },
+      {
+        "name": "schedule",
+        "root": "formal/randomness_composition",
+        "patch": "formal/randomness_composition/minidregg-multi-receipt-schedule.patch",
+        "expected_pins": 20
+      },
+      {
+        "name": "bfv_lift",
+        "root": "formal/bfv_lift_refinement",
+        "patch": "formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch",
+        "expected_pins": 27
+      },
+      {
+        "name": "bfv_engine",
+        "root": "formal/bfv_lift_refinement/engine_refinement",
+        "patch": "formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch",
+        "expected_pins": 33
+      },
+      {
+        "name": "integer",
+        "root": "formal/integer_certificate_emission",
+        "patch": "formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch",
+        "expected_pins": 20
+      }
+    ],
+    "checks": [
+      "formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean",
+      "formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean"
+    ],
+    "excluded": [
+      {
+        "glob": "formal/durable_integration/**/ResidentEma*.lean",
+        "reason": "In-flight EMA tranche excluded from initial integration."
+      },
+      {
+        "glob": "formal/bfv_lift_refinement/**/garner*/**",
+        "reason": "New Garner-certificate tranche excluded; finished FheRnsScaleDecomposition is included."
+      },
+      {
+        "glob": "formal/integer_certificate_emission/optimization/**",
+        "reason": "In-flight algebraic simplifier/optimizer excluded."
+      },
+      {
+        "glob": "experiments/adversarial_review/**/*.lean",
+        "reason": "Independent review witnesses and source snapshots are not proposed umbrella modules."
+      }
+    ]
+  },
+  "companion_head_before": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+  "companion_status_before": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+  "lane_patches": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/minidregg-resident-release.patch",
+      "sha256": "440c14ff480a113431b6bc4684feb70c136deffcdf72093ff71c712f9ab5b49d",
+      "lane": "resident",
+      "discovered_destinations": [
+        "Assurance/ResidentReleaseContext.lean",
+        "Assurance/ResidentRestoreFinality.lean",
+        "Assurance.lean"
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/minidregg-private-policy-evolution.patch",
+      "sha256": "072c08f2a587ca2774dddeb6eb1d1afff27b0ccb7d2a68c2b4ded20daaa1b556",
+      "lane": "policy",
+      "discovered_destinations": [
+        "Theory.lean",
+        "Theory/PrivatePolicyEvolution.lean"
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/minidregg-durable-integration.patch",
+      "sha256": "945d70ab4a7504f25bbc598f70951fae8f1a1a5318459a396bfe1fcbf8e57a5a",
+      "lane": "durable",
+      "discovered_destinations": [
+        "Assurance/ResidentDurableIntegration.lean",
+        "Assurance/ResidentDurableCollision.lean",
+        "Assurance.lean"
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-randomness-selection.patch",
+      "sha256": "6147b1e50e1af7cc614a9d6b7b8fda495fd29574d3353e051acdbce669918a93",
+      "lane": "randomness",
+      "discovered_destinations": [
+        "Selvage.lean",
+        "Selvage/RandomnessSelection.lean"
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-adaptive-context.patch",
+      "sha256": "369cba799fa20f5d9c56ab08135c2e8793d819479cbbd5d12e3c5f0eb4f823de",
+      "lane": "adaptive",
+      "discovered_destinations": [
+        "Assurance.lean",
+        "Assurance/ResidentAdaptiveContext.lean"
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-multi-receipt-schedule.patch",
+      "sha256": "d57e13912dea6c0476ddf577438491036934100253db8c0341ab4e5075dcdb85",
+      "lane": "schedule",
+      "discovered_destinations": [
+        "Assurance.lean",
+        "Assurance/ResidentMultiReceiptSchedule.lean"
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch",
+      "sha256": "929f79e168a1e236b04a2fa6edbf9448e22da5041124b7484e0fd9348072dc11",
+      "lane": "bfv_lift",
+      "discovered_destinations": [
+        "Compiler.lean",
+        "Compiler/BFVScaleLiftRefinement.lean"
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch",
+      "sha256": "de9490c464d332810bd5de79d21fd9b8db03c6bd29f2a28d8de26a78d41114b0",
+      "lane": "bfv_engine",
+      "discovered_destinations": [
+        "Compiler.lean",
+        "Compiler/FheRnsScaleDecomposition.lean"
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch",
+      "sha256": "476daa58f31cdcdecaf48909ff30b3f5f1d172b40ff4b8cccec68418e9ebd11e",
+      "lane": "integer",
+      "discovered_destinations": [
+        "Compiler/IntegerCertificateEmission.lean",
+        "Compiler/LargeIntegerCertificateEmission.lean",
+        "Compiler.lean"
+      ]
+    }
+  ],
+  "module_count": 12,
+  "theorem_pins": 217,
+  "axiom_sets": {
+    "Classical.choice,Quot.sound,propext": 174,
+    "(none)": 26,
+    "propext": 10,
+    "Quot.sound,propext": 7
+  },
+  "module_compile_order": [
+    "Assurance.ResidentReleaseContext",
+    "Compiler.BFVScaleLiftRefinement",
+    "Compiler.IntegerCertificateEmission",
+    "Selvage.RandomnessSelection",
+    "Theory.PrivatePolicyEvolution",
+    "Assurance.ResidentAdaptiveContext",
+    "Assurance.ResidentDurableIntegration",
+    "Assurance.ResidentRestoreFinality",
+    "Compiler.FheRnsScaleDecomposition",
+    "Compiler.LargeIntegerCertificateEmission",
+    "Assurance.ResidentDurableCollision",
+    "Assurance.ResidentMultiReceiptSchedule"
+  ],
+  "combined_patch": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integration/minidregg-combined-resident.patch",
+    "sha256": "cba1e801dcc5fcd8578a934f131de2866b0a9a5c755f2ea3eeaf35d01b65ab6e",
+    "baseline": "Current companion source bytes, including dirty Compiler.lean."
+  },
+  "combined_patch_exact_content_verified": true,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_001/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "environment_provenance": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/results/environment.json",
+    "sha256": "ec7e407ac7c21d1fa34523d3df58cff54a62bf77701e4f475b36ea907c9b71ef",
+    "source_command": [
+      "lake",
+      "env",
+      "printenv",
+      "LEAN_PATH"
+    ],
+    "reused_dependency_paths": true
+  },
+  "full_compile_order": [
+    "Assurance.ResidentReleaseContext",
+    "Compiler.BFVScaleLiftRefinement",
+    "Compiler.IntegerCertificateEmission",
+    "Selvage.RandomnessSelection",
+    "Theory.PrivatePolicyEvolution",
+    "Assurance.ResidentAdaptiveContext",
+    "Assurance.ResidentDurableIntegration",
+    "Assurance.ResidentRestoreFinality",
+    "Compiler.FheRnsScaleDecomposition",
+    "Compiler.LargeIntegerCertificateEmission",
+    "Selvage",
+    "Theory",
+    "Assurance.ResidentDurableCollision",
+    "Assurance.ResidentMultiReceiptSchedule",
+    "Compiler",
+    "Assurance"
+  ],
+  "umbrella_builds": [
+    "Theory",
+    "Compiler",
+    "Selvage",
+    "Assurance"
+  ],
+  "checks_executed": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean"
+  ],
+  "check_output_hashes": {
+    "checker_results.json": "277526303440b7a9b5b13c04da42d8955026cf5e6b2cdc98b167f4ea6024093c",
+    "checker_vectors.json": "3c616069c1b5b7a1a42c1871f162cd0f728641c3f6773166049c0de6d0974a5f",
+    "descriptor.json": "3a1119636ff449c8cd38e139e5258f0c2ec7650ef5d81195b79900a41f6887b8",
+    "large_CSE_costs.json": "772f0bf7fe9978ec986c8d5fb0ff692effaa49823f57b9445ada9c80d94dcba7",
+    "large_descriptor.json": "4743c071364ea13e97fdac3f4dc8d8c6caa3a764aa2728b69c77e9068bce496f",
+    "large_results.json": "861ccc029bc7eaf06883108f032715d334953556983914ae910fe38faf219770",
+    "large_shared_descriptor.json": "420bd26dc25ca59fcfa9922332d9ca6778eb839427d38ccaafd3c5a2cdbf77a8"
+  },
+  "input_hashes_before": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py": "65d6a514b98ce92cab71722ff197afa386b3c0159c48bb1b70e0130f322acf5e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/modules.json": "725314798ae2467262fab5edd4e1c14fd15b8a824ee62e126abe9ede0e4cc081",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/results/environment.json": "ec7e407ac7c21d1fa34523d3df58cff54a62bf77701e4f475b36ea907c9b71ef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean": "1ecebe305a618398fb4d00b904ab28f6e38aeae019bc1663fc2a55700504e286",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch": "de9490c464d332810bd5de79d21fd9b8db03c6bd29f2a28d8de26a78d41114b0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch": "929f79e168a1e236b04a2fa6edbf9448e22da5041124b7484e0fd9348072dc11",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableCollision.lean": "b410206075a03338ef6d569c777c2d2a2420f3ddc8f3280cfcf6d062685a028c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/minidregg-durable-integration.patch": "945d70ab4a7504f25bbc598f70951fae8f1a1a5318459a396bfe1fcbf8e57a5a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean": "eb274caae3399f46ccef0377465829645f53b4b5e87bf0b3e34b255b0378aecc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmission.lean": "4330a8f99bf1b325b0c1cecb7f7dc6efe655c24021269cbafef2a854e8a7d579",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean": "bbaccda813c6c32c04b0f2c9c8a76a5b1f6ccae3d8bba3485ccb02881962c627",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch": "476daa58f31cdcdecaf48909ff30b3f5f1d172b40ff4b8cccec68418e9ebd11e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/minidregg-resident-release.patch": "440c14ff480a113431b6bc4684feb70c136deffcdf72093ff71c712f9ab5b49d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean": "9eb3318ca21240162355a7e166e258b085aaa038b66f466c2b8f90df777fd90e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentMultiReceiptSchedule.lean": "0dcbf2e07534bf430d0f17b969f9174fdd2bda533f537bccddb9f7cb6265ab82",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Selvage/RandomnessSelection.lean": "670e93843760823413cc2e18bf9bafadba3247dd11f56feaff3d5ebca83dbb57",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-adaptive-context.patch": "369cba799fa20f5d9c56ab08135c2e8793d819479cbbd5d12e3c5f0eb4f823de",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-multi-receipt-schedule.patch": "d57e13912dea6c0476ddf577438491036934100253db8c0341ab4e5075dcdb85",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-randomness-selection.patch": "6147b1e50e1af7cc614a9d6b7b8fda495fd29574d3353e051acdbce669918a93",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/Theory/PrivatePolicyEvolution.lean": "b1b36ecd921a4b2dacc122fb70e25804fc30893d07de42644bcb6ccb1f3f209a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/minidregg-private-policy-evolution.patch": "072c08f2a587ca2774dddeb6eb1d1afff27b0ccb7d2a68c2b4ded20daaa1b556"
+  },
+  "input_hashes_after": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py": "65d6a514b98ce92cab71722ff197afa386b3c0159c48bb1b70e0130f322acf5e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/modules.json": "725314798ae2467262fab5edd4e1c14fd15b8a824ee62e126abe9ede0e4cc081",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/results/environment.json": "ec7e407ac7c21d1fa34523d3df58cff54a62bf77701e4f475b36ea907c9b71ef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean": "1ecebe305a618398fb4d00b904ab28f6e38aeae019bc1663fc2a55700504e286",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch": "de9490c464d332810bd5de79d21fd9b8db03c6bd29f2a28d8de26a78d41114b0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch": "929f79e168a1e236b04a2fa6edbf9448e22da5041124b7484e0fd9348072dc11",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableCollision.lean": "b410206075a03338ef6d569c777c2d2a2420f3ddc8f3280cfcf6d062685a028c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/minidregg-durable-integration.patch": "945d70ab4a7504f25bbc598f70951fae8f1a1a5318459a396bfe1fcbf8e57a5a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean": "eb274caae3399f46ccef0377465829645f53b4b5e87bf0b3e34b255b0378aecc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmission.lean": "4330a8f99bf1b325b0c1cecb7f7dc6efe655c24021269cbafef2a854e8a7d579",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean": "bbaccda813c6c32c04b0f2c9c8a76a5b1f6ccae3d8bba3485ccb02881962c627",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch": "476daa58f31cdcdecaf48909ff30b3f5f1d172b40ff4b8cccec68418e9ebd11e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/minidregg-resident-release.patch": "440c14ff480a113431b6bc4684feb70c136deffcdf72093ff71c712f9ab5b49d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean": "9eb3318ca21240162355a7e166e258b085aaa038b66f466c2b8f90df777fd90e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentMultiReceiptSchedule.lean": "0dcbf2e07534bf430d0f17b969f9174fdd2bda533f537bccddb9f7cb6265ab82",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Selvage/RandomnessSelection.lean": "670e93843760823413cc2e18bf9bafadba3247dd11f56feaff3d5ebca83dbb57",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-adaptive-context.patch": "369cba799fa20f5d9c56ab08135c2e8793d819479cbbd5d12e3c5f0eb4f823de",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-multi-receipt-schedule.patch": "d57e13912dea6c0476ddf577438491036934100253db8c0341ab4e5075dcdb85",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-randomness-selection.patch": "6147b1e50e1af7cc614a9d6b7b8fda495fd29574d3353e051acdbce669918a93",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/Theory/PrivatePolicyEvolution.lean": "b1b36ecd921a4b2dacc122fb70e25804fc30893d07de42644bcb6ccb1f3f209a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/minidregg-private-policy-evolution.patch": "072c08f2a587ca2774dddeb6eb1d1afff27b0ccb7d2a68c2b4ded20daaa1b556"
+  },
+  "changed_inputs": [],
+  "changed_companion_sources": [],
+  "companion_head_after": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+  "companion_status_after": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+  "elapsed_seconds": 149.30097604199545,
+  "finished_utc": "2026-09-06T08:48:34.740297+00:00"
+}

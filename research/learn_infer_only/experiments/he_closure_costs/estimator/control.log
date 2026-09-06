@@ -1,0 +1,8 @@
+{
+  "status": "EXECUTED",
+  "control": "pinned README Kyber512 primal_usvp default",
+  "expected_rounded_log2_rop": 143.8,
+  "observed_log2_rop": 143.77173340505107,
+  "repr": "rop: \u22482^143.8, red: \u22482^143.8, \u03b4: 1.003941, \u03b2: 406, d: 998, tag: usvp",
+  "scope": "estimator environment/regression control, not an attack benchmark"
+}

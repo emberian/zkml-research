@@ -1,0 +1,9 @@
+{"selected": "no_memory", "config": {}, "selection_accuracy": 0.5}
+{"selected": "model_knn_shared", "config": {"k": 7, "capacity": 128}, "selection_accuracy": 0.50146484375}
+{"selected": "model_knn_routed", "config": {"k": 7, "capacity": 128}, "selection_accuracy": 0.515625}
+{"selected": "model_lms_shared", "config": {"eta": 0.03, "rho": 1.0}, "selection_accuracy": 0.5380859375}
+{"selected": "model_lms_routed", "config": {"eta": 0.1, "rho": 0.995}, "selection_accuracy": 0.54443359375}
+{"selected": "lexical_knn_routed", "config": {"k": 7, "capacity": 32}, "selection_accuracy": 0.4453125}
+{"selected": "lexical_lms_routed", "config": {"eta": 0.03, "rho": 0.95}, "selection_accuracy": 0.4375}
+{"selected": "attribute_lms_8", "config": {"eta": 0.03, "rho": 0.95}, "selection_accuracy": 1.0}
+{"complete": true, "runtime_seconds": 3.8139541249984177, "final_mean": {"no_memory": 0.5, "model_knn_shared": 0.512451171875, "model_knn_routed": 0.5048828125, "model_lms_shared": 0.503662109375, "model_lms_routed": 0.487060546875, "lexical_knn_routed": 0.5, "lexical_lms_routed": 0.5, "attribute_lms_8": 1.0}}

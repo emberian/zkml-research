@@ -1,0 +1,29 @@
+{
+  "status": "EXECUTED Boolean circuit, NOT FHE",
+  "command": "python3 research/learn_infer_only/experiments/he_closure_costs/ema_bits.py",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "script_sha256": "f13ebe9b9e1ab0227bb877a39106d9c59c20c00d8289a9c6c422710b39c1f230",
+  "exhaustive_learn_pairs": 65025,
+  "inference_cases": 196608,
+  "bits_per_state_coefficient": 8,
+  "private_state_bits_r16": 128,
+  "learn_per_coefficient": {
+    "AND": 44,
+    "XOR": 66,
+    "NOT": 11,
+    "floor_wire_selections": 8
+  },
+  "learn_r16": {
+    "AND": 704,
+    "XOR": 1056,
+    "NOT": 176,
+    "floor_wire_selections": 128
+  },
+  "infer_r16": {
+    "AND": 360,
+    "XOR": 540
+  },
+  "nonlinear_AND_total_one_learn_one_infer": 1064,
+  "lowering": "fixed ripple carry; signed 11-bit numerator; drop3bits; 12-bit public-feature score accumulator",
+  "unresolved": "bit ciphertext encoding; actual gate lowering and key sizes; bootstrapping/key-switch counts; noise/security; private ingress proof; recipient-bound output; timing; actual utility"
+}

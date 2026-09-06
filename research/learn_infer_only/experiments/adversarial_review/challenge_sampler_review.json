@@ -1,0 +1,65 @@
+{
+  "label": "EXECUTED exact finite sampler audit; uniform-byte input is hypothetical",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/challenge_sampler_review.py"
+  ],
+  "started_utc": "2026-09-06T08:08:05.579478+00:00",
+  "sources": {
+    "/Users/ember/dev/minidregg/Compiler/CommittedTerminalFiatShamir.lean": "9171de60416c10d504c44a6d664fcdbd8c28fd09134f7cc9f1f26dc71c59cde4",
+    "/Users/ember/dev/minidregg/Compiler/Sp800185Cshake256Core.lean": "38dee253180ecf9fb9f19db741dff830102085a05364381d16fa0693023d6123"
+  },
+  "p": 2013265921,
+  "field_cardinality": 66589668549341940845377978930048497497013284102492651521,
+  "digest_domain": 115792089237316195423570985008687907853269984665640564039457584007913129639936,
+  "quotient": 1738889707064933088846,
+  "remainder": 226743016697890581566590486987070183394949637919605170,
+  "max_atom": "1738889707064933088847/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+  "uniform_atom": "1/66589668549341940845377978930048497497013284102492651521",
+  "min_atom": "869444853532466544423/57896044618658097711785492504343953926634992332820282019728792003956564819968",
+  "total_variation": "7523664966084589552854741435479645918706547662219178974583345513360341220473963001529699014861089927014617335/3855278421474354850223596414547648791492338203198724862922224465078861933638880297988937193919718748206712388418975906225228326371328",
+  "total_variation_log2": -78.761673724015,
+  "max_density_ratio": "115792089237316195423637347934220551903533796054083625466771202342377702686287/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+  "max_density_excess": "66362925532644050263811388443061427313618334464573046351/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+  "max_density_excess_log2": -70.56357729396089,
+  "small_analogue": {
+    "domain": 256,
+    "target": 25,
+    "histogram": [
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10
+    ],
+    "tv": "57/3200",
+    "event_checks": 1024
+  },
+  "derived_bounds": {
+    "fixed_event": "Pr_D[E] <= rho * Pr_uniform[E]",
+    "joint_n_draws": "Pr_D^n[E] <= rho^n * Pr_uniform^n[E]",
+    "generic_FS_game_transport": "n=t+14; multiply the uniform-game bound by rho^(t+14)",
+    "possible_tighter_route": "Redo per-fresh-challenge bad-event argument using max atom; not proved in Lean here"
+  },
+  "scope": "Exact uniform-field equality is false even with an ideal uniform256-bit hash. Actual cSHAKE cryptanalysis/ROM realization remains separate."
+}

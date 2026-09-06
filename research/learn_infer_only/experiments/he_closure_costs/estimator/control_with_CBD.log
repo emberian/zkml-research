@@ -1,0 +1,17 @@
+{
+  "status": "EXECUTED",
+  "control": "pinned README Kyber512 primal_usvp default",
+  "expected_rounded_log2_rop": 143.8,
+  "observed_log2_rop": 143.77173340505107,
+  "repr": "rop: \u22482^143.8, red: \u22482^143.8, \u03b4: 1.003941, \u03b2: 406, d: 998, tag: usvp",
+  "scope": "estimator environment/regression control, not an attack benchmark",
+  "CBD20_exact_PMF_check": {
+    "formula": "Pr[X=x]=binomial(40,20+x)/2^40 for -20<=x<=20",
+    "mass": "1",
+    "mean": "0",
+    "variance": "10",
+    "support_points": 41,
+    "nonzero_probability": "240416274739/274877906944",
+    "numerical_entropy_bits": 3.7079804000177026
+  }
+}

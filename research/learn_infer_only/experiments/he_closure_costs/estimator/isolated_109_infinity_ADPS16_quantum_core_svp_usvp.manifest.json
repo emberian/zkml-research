@@ -1,0 +1,34 @@
+{
+  "estimator_commit": "53da5982597709ba0fdf94ea37a84d822310fd84",
+  "sage_version": "10.8",
+  "python_version": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "model_source_sha256": "b1354702c88a8309f78d373ae7f4b0b4347799abfd1a13c07e0fa75bf87bd59a",
+  "distribution_class": "CenteredBinomial",
+  "eta": 20,
+  "variance_exact_by_definition": 10,
+  "bounds": [
+    -20,
+    20
+  ],
+  "distribution_repr": "D(\u03c3=3.16)",
+  "is_Gaussian_like_flag": true,
+  "generic_LWE_proxy_not_ring_reduction": true,
+  "quantum_scope": "quantum lattice-reduction cost model substitution; does not quantize all guessing/FFT/attack costs",
+  "shape_model": "gsa",
+  "per_attack_seconds": 60,
+  "invocation": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/run_estimates.py",
+    "--qbits",
+    "109",
+    "--samples",
+    "infinity",
+    "--models",
+    "ADPS16_quantum_core_svp",
+    "--attacks",
+    "usvp",
+    "--seconds",
+    "60",
+    "--output",
+    "isolated_109_infinity_ADPS16_quantum_core_svp_usvp.jsonl"
+  ]
+}

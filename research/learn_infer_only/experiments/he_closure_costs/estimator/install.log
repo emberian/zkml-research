@@ -1,0 +1,502 @@
+Transaction
+
+  Prefix: /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage
+
+  Updating specs:
+
+   - planarity==4.0.1.0=hc919400_0
+   - symmetrica==3.1.0=hc919400_0
+   - cliquer==1.23=hc919400_0
+   - libcxx==23.1.0=h55c6f16_0
+   - libexpat==2.8.1=hf6b4638_1
+   - libzlib==1.3.2=h8088a28_3
+   - libiconv==1.18=he4c29f2_3
+   - ncurses==6.6=he64c551_1
+   - nauty==2.9.3=h88b7d96_0
+   - libjpeg-turbo==3.2.0=h84a0fba_1
+   - libwebp-base==1.6.0=h202fb40_1
+   - perl==5.32.1=7_h4614cfb_perl5
+   - liblzma==5.8.3=h8088a28_1
+   - libffi==3.7.0=h47dc5ef_1
+   - bzip2==1.0.8=h4e30115_10
+   - libdeflate==1.25=he7e0567_1
+   - llvm-openmp==23.1.0=hdb3d66b_0
+   - libev==4.33=h1a92334_3
+   - c-ares==1.34.8=h74c22ad_2
+   - icu==78.3=py310h579977c_2
+   - lrcalc==2.1=hf6b4638_8
+   - primesieve==12.10=haf25636_1
+   - lerc==4.2.0=h1eee2c3_0
+   - bdw-gc==8.2.12=h784d473_0
+   - gf2x==1.3.0=hf8f8af4_3
+   - bliss==0.77=h2ffa867_1
+   - libbraiding==1.3.2=hf6b4638_0
+   - gmp==6.3.0=hf5e55b1_3
+   - libasprintf==0.25.1=h493aca8_0
+   - libpython==3.12.14=h4e5ec87_3_cpython
+   - expat==2.8.1=hf6b4638_1
+   - zstd==1.5.7=hf451053_7
+   - tk==8.6.13=hbeba79b_4
+   - zlib==1.3.2=h8088a28_3
+   - libpng==1.6.58=hf5e6511_1
+   - libintl==0.25.1=h493aca8_0
+   - libedit==3.1.20250104=pl5321h26f1114_1
+   - readline==8.3=h8b90a29_1
+   - _openmp_mutex==4.5=8_kmp_llvm
+   - libxml2-16==2.15.4=heb56d2d_0
+   - libsqlite==3.53.4=hca69786_1
+   - libpsl==0.23.1=hdb0c161_1
+   - primecount==7.20=h434beaa_0
+   - libhomfly==1.3=h6caf38d_0
+   - cddlib==1!0.94n=hd70dbc6_0
+   - mpfr==4.2.2=h72846b0_1
+   - givaro==4.2.1=h73034e7_1
+   - glpk==5.0=h6d7a090_0
+   - ecm==7.0.6=hdd59bce_0
+   - ntl==11.6.0=h99f6ba7_0
+   - libasprintf-devel==0.25.1=h493aca8_0
+   - libtiff==4.7.2=hf67920b_1
+   - libfreetype6==2.14.3=h2ed5691_2
+   - m4ri==20250128=h0f65c67_0
+   - gettext-tools==0.25.1=h493aca8_0
+   - libintl-devel==0.25.1=h493aca8_0
+   - libgettextpo==0.25.1=h493aca8_0
+   - gap-core==4.14.0=h25f1785_5
+   - ecl==24.5.10=hc6c598b_1
+   - libgcc==16.2.0=h3cf6597_4
+   - libxml2==2.15.4=h550178d_0
+   - mpc==1.4.0=h071a35a_1
+   - libflint==3.3.1=h7fd091f_1
+   - mpfi==1.5.4=hbde5f5b_1001
+   - sirocco==2.1.1=h24ce579_0
+   - ppl==1.2=h8b147cf_1006
+   - libfreetype==2.14.3=hce30654_2
+   - libbrial==1.2.15=he660457_0
+   - m4rie==20250128=h0f65c67_0
+   - libgettextpo-devel==0.25.1=h493aca8_0
+   - libgfortran5==16.2.0=hdb7a957_4
+   - libxml2-devel==2.15.4=h550178d_0
+   - singular==4.4.1.p5=hf33d76d_0
+   - fontconfig==2.18.3=h81aa574_1
+   - gettext==0.25.1=h3dcc1bd_0
+   - libgfortran==16.2.0=h07b0088_4
+   - libopenblas==0.3.34=openmp_h4f80526_1
+   - libblas==3.11.0=10_h51639a9_openblas
+   - libcblas==3.11.0=10_hb0561ab_openblas
+   - liblapack==3.11.0=10_hd9741b5_openblas
+   - iml==1.0.5=hd73f12c_1004
+   - gsl==2.7=h6e638da_0
+   - arpack==3.9.1=nompi_h1f29f7c_102
+   - fflas-ffpack==2.5.0=h5f27e24_2
+   - liblapacke==3.11.0=10_h1b118fd_openblas
+   - igraph==0.10.17=h73cadaf_1
+   - linbox==1.7.1=hc59a8de_3
+   - rw==0.9=h93a5062_2
+   - pari-galdata==0.0.20180411=0
+   - pari-seadata-small==0.0.20090618=0
+   - font-ttf-dejavu-sans-mono==2.37=hab24e00_0
+   - font-ttf-inconsolata==3.0=h77eed37_0
+   - font-ttf-source-code-pro==2.38=h77eed37_0
+   - font-ttf-ubuntu==0.83=h77eed37_3
+   - three.js==122=hd8ed1ab_2
+   - python_abi==3.12=9_cp312
+   - ca-certificates==2026.7.22=hbd8a1cb_0
+   - tzdata==2026c=h151e31d_0
+   - fonts-conda-forge==1=hc364b38_1
+   - threejs-sage==122=hd8ed1ab_2
+   - fonts-conda-ecosystem==1=0
+   - openssl==3.6.4=h55eecbc_0
+   - libgd==2.3.3=h05bcc79_12
+   - libssh2==1.11.1=hbf2880b_1
+   - krb5==1.22.2=h34f8a20_2
+   - libnghttp2==1.68.1=h435687b_1
+   - pari==2.17.3=h6fad181_0_pthread
+   - python==3.12.14=hd05a0c4_3_cpython
+   - libcurl==8.22.0=h6651222_0
+   - eclib==20250627=hce4aed7_2
+   - lcalc==2.1.1=hdaf6845_0
+   - python-lrcalc==2.1=py312h6d95f44_8
+   - markupsafe==3.0.3=py312h04c11ed_1
+   - cython==3.3.0=py312h12d0071_0
+   - cysignals==1.12.6=py312h6d95f44_2
+   - gmpy2==2.3.1=py312h1af6244_0
+   - numpy==2.5.2=py312hff34920_1
+   - giac==1.9.0.21=hb6ffb2f_4
+   - memory-allocator==0.2.0=py312h2bbb03f_1
+   - primecountpy==0.1.1=py312h766f71e_1
+   - cypari2==2.2.4=py312h6dd9710_2
+   - pplpy==0.8.10=py312ha45f85e_0
+   - wcwidth==0.8.3=pyhcf101f3_0
+   - parso==0.8.7=pyhcf101f3_0
+   - pure_eval==0.2.3=pyhd8ed1ab_1
+   - executing==2.2.1=pyhd8ed1ab_0
+   - asttokens==3.0.2=pyhd8ed1ab_0
+   - colorama==0.4.6=pyhd8ed1ab_1
+   - pluggy==1.6.0=pyhf9edf01_1
+   - iniconfig==2.3.0=pyhd8ed1ab_0
+   - tomli==2.4.1=pyhcf101f3_0
+   - pickleshare==0.7.5=pyhd8ed1ab_1004
+   - pygments==2.21.0=pyhcf101f3_0
+   - typing_extensions==4.16.0=pyhcf101f3_0
+   - decorator==5.3.1=pyhd8ed1ab_0
+   - ptyprocess==0.7.0=pyhd8ed1ab_1
+   - future==1.0.0=pyhd8ed1ab_2
+   - six==1.17.0=pyhe01879c_1
+   - packaging==26.3=pyhc364b38_0
+   - setuptools==84.0.0=pyh332efcf_0
+   - platformdirs==4.11.6=pyh5ded981_0
+   - traitlets==5.16.1=pyhcf101f3_0
+   - jinja2==3.1.6=pyhcf101f3_1
+   - prompt-toolkit==3.0.53=pyha770c72_0
+   - jedi==0.20.0=pyhcf101f3_0
+   - stack_data==0.6.3=pyhd8ed1ab_1
+   - exceptiongroup==1.3.1=pyhd8ed1ab_0
+   - pexpect==4.9.0=pyhd8ed1ab_1
+   - wheel==0.48.0=pyhd8ed1ab_0
+   - matplotlib-inline==0.2.2=pyhd8ed1ab_0
+   - jupyter_core==5.9.1=pyhc90fa1f_0
+   - pytest==9.1.1=pyhc364b38_2
+   - pip==26.2.1=pyh8b19718_0
+   - ipython==8.37.0=pyh8f84b5b_0
+   - sagelib==10.8=np2py312h37053f4_2
+
+
+  Package                           Version  Build                 Channel         Size
+─────────────────────────────────────────────────────────────────────────────────────────
+  Install:
+─────────────────────────────────────────────────────────────────────────────────────────
+
+  + _openmp_mutex                       4.5  8_kmp_llvm            conda-forge         
+  + arpack                            3.9.1  nompi_h1f29f7c_102    conda-forge         
+  + asttokens                         3.0.2  pyhd8ed1ab_0          conda-forge         
+  + bdw-gc                           8.2.12  h784d473_0            conda-forge         
+  + bliss                              0.77  h2ffa867_1            conda-forge         
+  + bzip2                             1.0.8  h4e30115_10           conda-forge         
+  + c-ares                           1.34.8  h74c22ad_2            conda-forge         
+  + ca-certificates               2026.7.22  hbd8a1cb_0            conda-forge         
+  + cddlib                          1!0.94n  hd70dbc6_0            conda-forge         
+  + cliquer                            1.23  hc919400_0            conda-forge         
+  + colorama                          0.4.6  pyhd8ed1ab_1          conda-forge         
+  + cypari2                           2.2.4  py312h6dd9710_2       conda-forge         
+  + cysignals                        1.12.6  py312h6d95f44_2       conda-forge         
+  + cython                            3.3.0  py312h12d0071_0       conda-forge         
+  + decorator                         5.3.1  pyhd8ed1ab_0          conda-forge         
+  + ecl                             24.5.10  hc6c598b_1            conda-forge         
+  + eclib                          20250627  hce4aed7_2            conda-forge         
+  + ecm                               7.0.6  hdd59bce_0            conda-forge         
+  + exceptiongroup                    1.3.1  pyhd8ed1ab_0          conda-forge         
+  + executing                         2.2.1  pyhd8ed1ab_0          conda-forge         
+  + expat                             2.8.1  hf6b4638_1            conda-forge         
+  + fflas-ffpack                      2.5.0  h5f27e24_2            conda-forge         
+  + font-ttf-dejavu-sans-mono          2.37  hab24e00_0            conda-forge         
+  + font-ttf-inconsolata              3.000  h77eed37_0            conda-forge         
+  + font-ttf-source-code-pro          2.038  h77eed37_0            conda-forge         
+  + font-ttf-ubuntu                    0.83  h77eed37_3            conda-forge         
+  + fontconfig                       2.18.3  h81aa574_1            conda-forge         
+  + fonts-conda-ecosystem                 1  0                     conda-forge         
+  + fonts-conda-forge                     1  hc364b38_1            conda-forge         
+  + future                            1.0.0  pyhd8ed1ab_2          conda-forge         
+  + gap-core                         4.14.0  h25f1785_5            conda-forge         
+  + gettext                          0.25.1  h3dcc1bd_0            conda-forge         
+  + gettext-tools                    0.25.1  h493aca8_0            conda-forge         
+  + gf2x                              1.3.0  hf8f8af4_3            conda-forge         
+  + giac                           1.9.0.21  hb6ffb2f_4            conda-forge         
+  + givaro                            4.2.1  h73034e7_1            conda-forge         
+  + glpk                                5.0  h6d7a090_0            conda-forge         
+  + gmp                               6.3.0  hf5e55b1_3            conda-forge         
+  + gmpy2                             2.3.1  py312h1af6244_0       conda-forge         
+  + gsl                                 2.7  h6e638da_0            conda-forge         
+  + icu                                78.3  py310h579977c_2       conda-forge         
+  + igraph                          0.10.17  h73cadaf_1            conda-forge         
+  + iml                               1.0.5  hd73f12c_1004         conda-forge         
+  + iniconfig                         2.3.0  pyhd8ed1ab_0          conda-forge         
+  + ipython                          8.37.0  pyh8f84b5b_0          conda-forge         
+  + jedi                             0.20.0  pyhcf101f3_0          conda-forge         
+  + jinja2                            3.1.6  pyhcf101f3_1          conda-forge         
+  + jupyter_core                      5.9.1  pyhc90fa1f_0          conda-forge         
+  + krb5                             1.22.2  h34f8a20_2            conda-forge         
+  + lcalc                             2.1.1  hdaf6845_0            conda-forge         
+  + lerc                              4.2.0  h1eee2c3_0            conda-forge         
+  + libasprintf                      0.25.1  h493aca8_0            conda-forge         
+  + libasprintf-devel                0.25.1  h493aca8_0            conda-forge         
+  + libblas                          3.11.0  10_h51639a9_openblas  conda-forge         
+  + libbraiding                       1.3.2  hf6b4638_0            conda-forge         
+  + libbrial                         1.2.15  he660457_0            conda-forge         
+  + libcblas                         3.11.0  10_hb0561ab_openblas  conda-forge         
+  + libcurl                          8.22.0  h6651222_0            conda-forge         
+  + libcxx                           23.1.0  h55c6f16_0            conda-forge         
+  + libdeflate                         1.25  he7e0567_1            conda-forge         
+  + libedit                    3.1.20250104  pl5321h26f1114_1      conda-forge         
+  + libev                              4.33  h1a92334_3            conda-forge         
+  + libexpat                          2.8.1  hf6b4638_1            conda-forge         
+  + libffi                            3.7.0  h47dc5ef_1            conda-forge         
+  + libflint                          3.3.1  h7fd091f_1            conda-forge         
+  + libfreetype                      2.14.3  hce30654_2            conda-forge         
+  + libfreetype6                     2.14.3  h2ed5691_2            conda-forge         
+  + libgcc                           16.2.0  h3cf6597_4            conda-forge         
+  + libgd                             2.3.3  h05bcc79_12           conda-forge         
+  + libgettextpo                     0.25.1  h493aca8_0            conda-forge         
+  + libgettextpo-devel               0.25.1  h493aca8_0            conda-forge         
+  + libgfortran                      16.2.0  h07b0088_4            conda-forge         
+  + libgfortran5                     16.2.0  hdb7a957_4            conda-forge         
+  + libhomfly                          1.03  h6caf38d_0            conda-forge         
+  + libiconv                           1.18  he4c29f2_3            conda-forge         
+  + libintl                          0.25.1  h493aca8_0            conda-forge         
+  + libintl-devel                    0.25.1  h493aca8_0            conda-forge         
+  + libjpeg-turbo                     3.2.0  h84a0fba_1            conda-forge         
+  + liblapack                        3.11.0  10_hd9741b5_openblas  conda-forge         
+  + liblapacke                       3.11.0  10_h1b118fd_openblas  conda-forge         
+  + liblzma                           5.8.3  h8088a28_1            conda-forge         
+  + libnghttp2                       1.68.1  h435687b_1            conda-forge         
+  + libopenblas                      0.3.34  openmp_h4f80526_1     conda-forge         
+  + libpng                           1.6.58  hf5e6511_1            conda-forge         
+  + libpsl                           0.23.1  hdb0c161_1            conda-forge         
+  + libpython                       3.12.14  h4e5ec87_3_cpython    conda-forge         
+  + libsqlite                        3.53.4  hca69786_1            conda-forge         
+  + libssh2                          1.11.1  hbf2880b_1            conda-forge         
+  + libtiff                           4.7.2  hf67920b_1            conda-forge         
+  + libwebp-base                      1.6.0  h202fb40_1            conda-forge         
+  + libxml2                          2.15.4  h550178d_0            conda-forge         
+  + libxml2-16                       2.15.4  heb56d2d_0            conda-forge         
+  + libxml2-devel                    2.15.4  h550178d_0            conda-forge         
+  + libzlib                           1.3.2  h8088a28_3            conda-forge         
+  + linbox                            1.7.1  hc59a8de_3            conda-forge         
+  + llvm-openmp                      23.1.0  hdb3d66b_0            conda-forge         
+  + lrcalc                              2.1  hf6b4638_8            conda-forge         
+  + m4ri                           20250128  h0f65c67_0            conda-forge         
+  + m4rie                          20250128  h0f65c67_0            conda-forge         
+  + markupsafe                        3.0.3  py312h04c11ed_1       conda-forge         
+  + matplotlib-inline                 0.2.2  pyhd8ed1ab_0          conda-forge         
+  + memory-allocator                  0.2.0  py312h2bbb03f_1       conda-forge         
+  + mpc                               1.4.0  h071a35a_1            conda-forge         
+  + mpfi                              1.5.4  hbde5f5b_1001         conda-forge         
+  + mpfr                              4.2.2  h72846b0_1            conda-forge         
+  + nauty                             2.9.3  h88b7d96_0            conda-forge         
+  + ncurses                             6.6  he64c551_1            conda-forge         
+  + ntl                              11.6.0  h99f6ba7_0            conda-forge         
+  + numpy                             2.5.2  py312hff34920_1       conda-forge         
+  + openssl                           3.6.4  h55eecbc_0            conda-forge         
+  + packaging                          26.3  pyhc364b38_0          conda-forge         
+  + pari                             2.17.3  h6fad181_0_pthread    conda-forge         
+  + pari-galdata               0.0.20180411  0                     conda-forge         
+  + pari-seadata-small         0.0.20090618  0                     conda-forge         
+  + parso                             0.8.7  pyhcf101f3_0          conda-forge         
+  + perl                             5.32.1  7_h4614cfb_perl5      conda-forge         
+  + pexpect                           4.9.0  pyhd8ed1ab_1          conda-forge         
+  + pickleshare                       0.7.5  pyhd8ed1ab_1004       conda-forge         
+  + pip                              26.2.1  pyh8b19718_0          conda-forge         
+  + planarity                       4.0.1.0  hc919400_0            conda-forge         
+  + platformdirs                     4.11.6  pyh5ded981_0          conda-forge         
+  + pluggy                            1.6.0  pyhf9edf01_1          conda-forge         
+  + ppl                                 1.2  h8b147cf_1006         conda-forge         
+  + pplpy                            0.8.10  py312ha45f85e_0       conda-forge         
+  + primecount                         7.20  h434beaa_0            conda-forge         
+  + primecountpy                      0.1.1  py312h766f71e_1       conda-forge         
+  + primesieve                        12.10  haf25636_1            conda-forge         
+  + prompt-toolkit                   3.0.53  pyha770c72_0          conda-forge         
+  + ptyprocess                        0.7.0  pyhd8ed1ab_1          conda-forge         
+  + pure_eval                         0.2.3  pyhd8ed1ab_1          conda-forge         
+  + pygments                         2.21.0  pyhcf101f3_0          conda-forge         
+  + pytest                            9.1.1  pyhc364b38_2          conda-forge         
+  + python                          3.12.14  hd05a0c4_3_cpython    conda-forge         
+  + python-lrcalc                       2.1  py312h6d95f44_8       conda-forge         
+  + python_abi                         3.12  9_cp312               conda-forge         
+  + readline                            8.3  h8b90a29_1            conda-forge         
+  + rw                                  0.9  h93a5062_2            conda-forge         
+  + sagelib                            10.8  np2py312h37053f4_2    conda-forge         
+  + setuptools                       84.0.0  pyh332efcf_0          conda-forge         
+  + singular                       4.4.1.p5  hf33d76d_0            conda-forge         
+  + sirocco                           2.1.1  h24ce579_0            conda-forge         
+  + six                              1.17.0  pyhe01879c_1          conda-forge         
+  + stack_data                        0.6.3  pyhd8ed1ab_1          conda-forge         
+  + symmetrica                        3.1.0  hc919400_0            conda-forge         
+  + three.js                            122  hd8ed1ab_2            conda-forge         
+  + threejs-sage                        122  hd8ed1ab_2            conda-forge         
+  + tk                               8.6.13  hbeba79b_4            conda-forge         
+  + tomli                             2.4.1  pyhcf101f3_0          conda-forge         
+  + traitlets                        5.16.1  pyhcf101f3_0          conda-forge         
+  + typing_extensions                4.16.0  pyhcf101f3_0          conda-forge         
+  + tzdata                            2026c  h151e31d_0            conda-forge         
+  + wcwidth                           0.8.3  pyhcf101f3_0          conda-forge         
+  + wheel                            0.48.0  pyhd8ed1ab_0          conda-forge         
+  + zlib                              1.3.2  h8088a28_3            conda-forge         
+  + zstd                              1.5.7  hf451053_7            conda-forge         
+
+  Summary:
+
+  Install: 155 packages
+
+  Total download: 0 B
+
+─────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+Transaction starting
+Linking planarity-4.0.1.0-hc919400_0
+Linking symmetrica-3.1.0-hc919400_0
+Linking cliquer-1.23-hc919400_0
+Linking libcxx-23.1.0-h55c6f16_0
+Linking libexpat-2.8.1-hf6b4638_1
+Linking libzlib-1.3.2-h8088a28_3
+Linking libiconv-1.18-he4c29f2_3
+Linking ncurses-6.6-he64c551_1
+Linking nauty-2.9.3-h88b7d96_0
+Linking libjpeg-turbo-3.2.0-h84a0fba_1
+Linking libwebp-base-1.6.0-h202fb40_1
+Linking perl-5.32.1-7_h4614cfb_perl5
+Linking liblzma-5.8.3-h8088a28_1
+Linking libffi-3.7.0-h47dc5ef_1
+Linking bzip2-1.0.8-h4e30115_10
+Linking libdeflate-1.25-he7e0567_1
+Linking llvm-openmp-23.1.0-hdb3d66b_0
+Linking libev-4.33-h1a92334_3
+Linking c-ares-1.34.8-h74c22ad_2
+Linking icu-78.3-py310h579977c_2
+Linking lrcalc-2.1-hf6b4638_8
+Linking primesieve-12.10-haf25636_1
+Linking lerc-4.2.0-h1eee2c3_0
+Linking bdw-gc-8.2.12-h784d473_0
+Linking gf2x-1.3.0-hf8f8af4_3
+Linking bliss-0.77-h2ffa867_1
+Linking libbraiding-1.3.2-hf6b4638_0
+Linking gmp-6.3.0-hf5e55b1_3
+Linking libasprintf-0.25.1-h493aca8_0
+Linking libpython-3.12.14-h4e5ec87_3_cpython
+Linking expat-2.8.1-hf6b4638_1
+Linking zstd-1.5.7-hf451053_7
+Linking tk-8.6.13-hbeba79b_4
+Linking zlib-1.3.2-h8088a28_3
+Linking libpng-1.6.58-hf5e6511_1
+Linking libintl-0.25.1-h493aca8_0
+Linking libedit-3.1.20250104-pl5321h26f1114_1
+Linking readline-8.3-h8b90a29_1
+Linking _openmp_mutex-4.5-8_kmp_llvm
+Linking libxml2-16-2.15.4-heb56d2d_0
+Linking libsqlite-3.53.4-hca69786_1
+Linking libpsl-0.23.1-hdb0c161_1
+Linking primecount-7.20-h434beaa_0
+Linking libhomfly-1.03-h6caf38d_0
+Linking cddlib-1!0.94n-hd70dbc6_0
+Linking mpfr-4.2.2-h72846b0_1
+Linking givaro-4.2.1-h73034e7_1
+Linking glpk-5.0-h6d7a090_0
+Linking ecm-7.0.6-hdd59bce_0
+Linking ntl-11.6.0-h99f6ba7_0
+Linking libasprintf-devel-0.25.1-h493aca8_0
+Linking libtiff-4.7.2-hf67920b_1
+Linking libfreetype6-2.14.3-h2ed5691_2
+Linking m4ri-20250128-h0f65c67_0
+Linking gettext-tools-0.25.1-h493aca8_0
+Linking libintl-devel-0.25.1-h493aca8_0
+Linking libgettextpo-0.25.1-h493aca8_0
+Linking gap-core-4.14.0-h25f1785_5
+Linking ecl-24.5.10-hc6c598b_1
+Linking libgcc-16.2.0-h3cf6597_4
+Linking libxml2-2.15.4-h550178d_0
+Linking mpc-1.4.0-h071a35a_1
+Linking libflint-3.3.1-h7fd091f_1
+Linking mpfi-1.5.4-hbde5f5b_1001
+Linking sirocco-2.1.1-h24ce579_0
+Linking ppl-1.2-h8b147cf_1006
+Linking libfreetype-2.14.3-hce30654_2
+Linking libbrial-1.2.15-he660457_0
+Linking m4rie-20250128-h0f65c67_0
+Linking libgettextpo-devel-0.25.1-h493aca8_0
+Linking libgfortran5-16.2.0-hdb7a957_4
+Linking libxml2-devel-2.15.4-h550178d_0
+Linking singular-4.4.1.p5-hf33d76d_0
+Linking fontconfig-2.18.3-h81aa574_1
+Linking gettext-0.25.1-h3dcc1bd_0
+Linking libgfortran-16.2.0-h07b0088_4
+Linking libopenblas-0.3.34-openmp_h4f80526_1
+Linking libblas-3.11.0-10_h51639a9_openblas
+Linking libcblas-3.11.0-10_hb0561ab_openblas
+Linking liblapack-3.11.0-10_hd9741b5_openblas
+Linking iml-1.0.5-hd73f12c_1004
+Linking gsl-2.7-h6e638da_0
+Linking arpack-3.9.1-nompi_h1f29f7c_102
+Linking fflas-ffpack-2.5.0-h5f27e24_2
+Linking liblapacke-3.11.0-10_h1b118fd_openblas
+Linking igraph-0.10.17-h73cadaf_1
+Linking linbox-1.7.1-hc59a8de_3
+Linking rw-0.9-h93a5062_2
+Linking pari-galdata-0.0.20180411-0
+Linking pari-seadata-small-0.0.20090618-0
+Linking font-ttf-dejavu-sans-mono-2.37-hab24e00_0
+Linking font-ttf-inconsolata-3.000-h77eed37_0
+Linking font-ttf-source-code-pro-2.038-h77eed37_0
+Linking font-ttf-ubuntu-0.83-h77eed37_3
+Linking three.js-122-hd8ed1ab_2
+Linking python_abi-3.12-9_cp312
+Linking ca-certificates-2026.7.22-hbd8a1cb_0
+Linking tzdata-2026c-h151e31d_0
+Linking fonts-conda-forge-1-hc364b38_1
+Linking threejs-sage-122-hd8ed1ab_2
+Linking fonts-conda-ecosystem-1-0
+Linking openssl-3.6.4-h55eecbc_0
+Linking libgd-2.3.3-h05bcc79_12
+Linking libssh2-1.11.1-hbf2880b_1
+Linking krb5-1.22.2-h34f8a20_2
+Linking libnghttp2-1.68.1-h435687b_1
+Linking pari-2.17.3-h6fad181_0_pthread
+Linking python-3.12.14-hd05a0c4_3_cpython
+Linking libcurl-8.22.0-h6651222_0
+Linking eclib-20250627-hce4aed7_2
+Linking lcalc-2.1.1-hdaf6845_0
+Linking python-lrcalc-2.1-py312h6d95f44_8
+Linking markupsafe-3.0.3-py312h04c11ed_1
+Linking cython-3.3.0-py312h12d0071_0
+Linking cysignals-1.12.6-py312h6d95f44_2
+Linking gmpy2-2.3.1-py312h1af6244_0
+Linking numpy-2.5.2-py312hff34920_1
+Linking giac-1.9.0.21-hb6ffb2f_4
+Linking memory-allocator-0.2.0-py312h2bbb03f_1
+Linking primecountpy-0.1.1-py312h766f71e_1
+Linking cypari2-2.2.4-py312h6dd9710_2
+Linking pplpy-0.8.10-py312ha45f85e_0
+Linking wcwidth-0.8.3-pyhcf101f3_0
+Linking parso-0.8.7-pyhcf101f3_0
+Linking pure_eval-0.2.3-pyhd8ed1ab_1
+Linking executing-2.2.1-pyhd8ed1ab_0
+Linking asttokens-3.0.2-pyhd8ed1ab_0
+Linking colorama-0.4.6-pyhd8ed1ab_1
+Linking pluggy-1.6.0-pyhf9edf01_1
+Linking iniconfig-2.3.0-pyhd8ed1ab_0
+Linking tomli-2.4.1-pyhcf101f3_0
+Linking pickleshare-0.7.5-pyhd8ed1ab_1004
+Linking pygments-2.21.0-pyhcf101f3_0
+Linking typing_extensions-4.16.0-pyhcf101f3_0
+Linking decorator-5.3.1-pyhd8ed1ab_0
+Linking ptyprocess-0.7.0-pyhd8ed1ab_1
+Linking future-1.0.0-pyhd8ed1ab_2
+Linking six-1.17.0-pyhe01879c_1
+Linking packaging-26.3-pyhc364b38_0
+Linking setuptools-84.0.0-pyh332efcf_0
+Linking platformdirs-4.11.6-pyh5ded981_0
+Linking traitlets-5.16.1-pyhcf101f3_0
+Linking jinja2-3.1.6-pyhcf101f3_1
+Linking prompt-toolkit-3.0.53-pyha770c72_0
+Linking jedi-0.20.0-pyhcf101f3_0
+Linking stack_data-0.6.3-pyhd8ed1ab_1
+Linking exceptiongroup-1.3.1-pyhd8ed1ab_0
+Linking pexpect-4.9.0-pyhd8ed1ab_1
+Linking wheel-0.48.0-pyhd8ed1ab_0
+Linking matplotlib-inline-0.2.2-pyhd8ed1ab_0
+Linking jupyter_core-5.9.1-pyhc90fa1f_0
+Linking pytest-9.1.1-pyhc364b38_2
+Linking pip-26.2.1-pyh8b19718_0
+Linking ipython-8.37.0-pyh8f84b5b_0
+Linking sagelib-10.8-np2py312h37053f4_2
+
+Transaction finished
+
+
+To activate this environment, use:
+
+    micromamba activate /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage
+
+Or to execute a single command in this environment, use:
+
+    micromamba run -p /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage mycommand
+

@@ -93,3 +93,35 @@ The 31 axiom inventories are pinned with `#guard_msgs`; they use subsets of
 [SOURCE] The existing `Theory/PrivateTrace.lean` and `Assurance/ReleaseGateRouting.lean`
 are cited in `../SOURCES.md` rather than copied/re-proved. No Theory or Selvage
 import boundary is changed by this patch.
+# Autonomous swarm integration checkpoint
+
+[EXECUTED successor] The EMA extension also passes: 16 modules, 265 exact pins,
+all four umbrellas and combined patch application, with unchanged source hashes.
+Use [minidregg-combined-resident-265.patch](integration/minidregg-combined-resident-265.patch),
+SHA256 `5da935fd45db2a8c196fd2333df8b0ae757001dd33fdd831d7b50787060113ff`,
+and [integration report](../experiments/integration/REPORT.md). It includes the
+baseline below plus four canonical signed-byte EMA modules. The baseline and its
+executable integer-check outputs remain preserved; do not apply both combined patches.
+
+[EXECUTED, 2026-09-06] The combined baseline now passes: 12 proposed modules,
+217 exact axiom pins, all four umbrella modules, both integer executable checks,
+combined patch application/exact-content comparison and import-boundary scripts.
+The check copied 524 current companion Lean sources into an isolated source tree;
+selected proof elaboration used existing dependency oleans. Companion source hashes,
+HEAD and dirty status were unchanged. This is not a clean whole-tree rebuild.
+
+[EXECUTED] Baseline combined patch:
+[minidregg-combined-resident-217.patch](integration/minidregg-combined-resident-217.patch),
+SHA256 `cba1e801dcc5fcd8578a934f131de2866b0a9a5c755f2ea3eeaf35d01b65ab6e`.
+Exact commands and result:
+[run_001/report.json](../experiments/integration/results/run_001/report.json).
+The patch contains first-tranche context/restore, policy evolution, materialized
+durable integration/collision, randomness/adaptive-context/collected-receipt
+composition, BFV integer/live-source refinement and integer certificate emission.
+It combines independently rooted umbrella additions without rewriting those lane
+patches. Apply this combined patch OR its compatible constituent changes, not both.
+
+[OPEN] Compiler optimization/source-certificate extensions have separate checks in
+progress. EMA is in the 265-pin successor, not the 217-pin baseline. The historical
+first-tranche description below retains its own scope; current lane notes and
+STATUS.md name the successive stronger witnesses and remaining gaps.

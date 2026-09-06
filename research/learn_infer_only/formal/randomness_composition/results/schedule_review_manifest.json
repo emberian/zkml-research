@@ -1,0 +1,12 @@
+{
+  "source_sha256": "0dcbf2e07534bf430d0f17b969f9174fdd2bda533f537bccddb9f7cb6265ab82",
+  "patch_sha256": "d57e13912dea6c0476ddf577438491036934100253db8c0341ab4e5075dcdb85",
+  "base_umbrella_sha256": "46d65844120e4ad61cea730ec5e4b66f5d66cb66f77541ec6c2d94c2f4736b66",
+  "required_prior_patches": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/minidregg-resident-release.patch",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-adaptive-context.patch"
+  ],
+  "dependency_source_sha256": "9eb3318ca21240162355a7e166e258b085aaa038b66f466c2b8f90df777fd90e",
+  "scope": "query-complete shared-log schedule; public full-word badness selection; total prover+verifier queries; uniform-field classical ROM",
+  "companion_modified": false
+}

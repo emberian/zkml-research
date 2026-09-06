@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_results_review.py"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "started_utc": "2026-09-06T08:57:52.357524+00:00",
+  "elapsed_seconds": 0.06431733300269116,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_results_review.py": "85861877d6087432471bc11074de85a59fde76182aaf536a2b0d0710b7cfded6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/summary.json": "f3afdca8e73c438c6f74f674001991f1b77f176bc0b5ce48da497385cc935068"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_results_review.py\", line 97, in <module>\n    if __name__=='__main__':main()\n                            ~~~~^^\n  File \"/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_results_review.py\", line 49, in main\n    assert abs(math.log2(float(row['fields']['rop']))-row['log2_fields']['rop'])<1e-10\n                         ~~~~~^^^^^^^^^^^^^^^^^^^^^^\nValueError: could not convert string to float: '1.1406419e48*e^(-5) + 4.36593432632000e52'\n"
+}

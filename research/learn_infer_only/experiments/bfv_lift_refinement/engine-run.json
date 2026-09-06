@@ -1,0 +1,205 @@
+{
+  "label": "EXECUTED live engine plus independent full-coefficient oracle; no decryption/security theorem",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "versions": {
+    "rustc": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7",
+    "cargo": "cargo 1.98.0-nightly (a595d0da2 2026-06-20)",
+    "python": "Python 3.14.7",
+    "breadstuffs_HEAD": "3e51def6a5a95424e54fbe7432539b06088de5c3"
+  },
+  "commands": [
+    {
+      "command": [
+        "rustc",
+        "-Vv"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement",
+      "exit_code": 0,
+      "elapsed_seconds": 0.22869629100023303,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement",
+      "exit_code": 0,
+      "elapsed_seconds": 0.04030383299686946,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "--version"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement",
+      "exit_code": 0,
+      "elapsed_seconds": 0.01273462499375455,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/Users/ember/dev/breadstuffs",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement",
+      "exit_code": 0,
+      "elapsed_seconds": 0.06903750001220033,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/Cargo.toml"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement",
+      "exit_code": 0,
+      "elapsed_seconds": 1.27382404099626,
+      "stderr": "    Finished `release` profile [optimized] target(s) in 0.22s\n     Running `engine_probe/target/release/bfv-integer-refinement-oracle`\n"
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/check_engine.py",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/full-coefficients.jsonl.gz"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement",
+      "exit_code": 0,
+      "elapsed_seconds": 6.494092666005599,
+      "stderr": ""
+    }
+  ],
+  "sources": [
+    {
+      "path": "/Users/ember/dev/breadstuffs/Cargo.toml",
+      "sha256": "1c3572d9d73d88899c3652488b69b2e3d1e1faa2309b6c7338128c9eb3bc96a8",
+      "bytes": 50520
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/Cargo.lock",
+      "sha256": "51be5800e17dc464edc4b5c8c34abf242543b23e211a6c036c9cb5e2d1326033",
+      "bytes": 648886
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/fhegg-fhe/src/bfv_mul.rs",
+      "sha256": "de88247837b27c1aab745d795c7db48a943a8ff21136e1c5af4ed2c5b67cf174",
+      "bytes": 10757
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/Cargo.toml",
+      "sha256": "c0219e8207ba4c8a79b37e3524ff765bc4c7b0a5518128585347ec93fb651001",
+      "bytes": 4067
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mul.rs",
+      "sha256": "930cbd009048f11ebb10b66b1f1d9bf5bb033ccb96154e1d95ac3d779f553cfc",
+      "bytes": 15406
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/parameters.rs",
+      "sha256": "7f6b1d364cbc8547b3f381551ec14f1ec0272c07b3c8a4ee03c4df1fc9aece30",
+      "bytes": 24392
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ciphertext.rs",
+      "sha256": "236b1b3f42d96c1ec1f0a66e4abe215b29ba9c8e6096fd9bf963b81e5fba8d85",
+      "bytes": 12262
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/Cargo.toml",
+      "sha256": "17c2200226c1350dce916a93c45c944639d8db5fce693700d707af2c44937950",
+      "bytes": 2089
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/scaler.rs",
+      "sha256": "82719d9ba27cc48542a6ba6989240217cc50d9005591208e7d7648b211f33c4f",
+      "bytes": 17690
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/mod.rs",
+      "sha256": "f0a88975e063a68febcf18559eb40b9445ef519f60305687a3c4becf3c5bc5c7",
+      "bytes": 7534
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/scaler.rs",
+      "sha256": "8ee2370b84d30a5c9fdcc890c65e3bfb64c03b7ed7c7bbb3da1596175a545d14",
+      "bytes": 7751
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/mod.rs",
+      "sha256": "e57c981bd82f8834ddac280f6d2aaaf8d93e95f2970d70815cd17f18e1731543",
+      "bytes": 38900
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/convert.rs",
+      "sha256": "d1f828ee3e233c644734a01ad7df6286765600fd54a94f888191dc3b6d27d8ac",
+      "bytes": 24780
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/ops.rs",
+      "sha256": "909562e519eba1cddd77f0d1d1e75a4ea2634f06527f8980854a43fbef6115a3",
+      "bytes": 29086
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs",
+      "sha256": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3",
+      "bytes": 41838
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/Cargo.toml",
+      "sha256": "e6232c075170bf210f0da9235eef14cae6b6aa2e3097b6b45cae1191a7b5c355",
+      "bytes": 328
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/Cargo.lock",
+      "sha256": "25c47085a5e457566b59e8f37d4cb09f8ef4b0664c9740c2a1cac5a151ccec8c",
+      "bytes": 17632
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/src/main.rs",
+      "sha256": "1e19ef907d7937892b1951bdf9dd4180d3c66b5e796014233220b3ee8ededa18",
+      "bytes": 7163
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/fhe_scaler_model.py",
+      "sha256": "e1394dfd322eb2d8850d81c986ad1bdde1d7c1efa4b8995af1df9035644db5de",
+      "bytes": 2264
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/check_engine.py",
+      "sha256": "d1df242e78cf44e462ed23ac7e104809fe0c783a86a717003e0ef9b435e2d035",
+      "bytes": 6420
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/run_engine.py",
+      "sha256": "6e254ed56abed4a509cc06c1dc5c9658b7279a4ca4709de632ab2cd6744b364a",
+      "bytes": 3828
+    }
+  ],
+  "fixture": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/full-coefficients.jsonl.gz",
+    "sha256": "a64d1088545f6a0c3dd980d3f7dca4a24a30384453bad3f0e87e01a3e9e6b2d3",
+    "uncompressed_sha256": "370910d05d61e055cb2434d009f9e01a98bfc0790c20932fab403c2938402d5f",
+    "bytes": 6948524
+  },
+  "upstream_mul_comparison": {
+    "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-0.1.1/src/bfv/ops/mul.rs",
+    "sha256": "930cbd009048f11ebb10b66b1f1d9bf5bb033ccb96154e1d95ac3d779f553cfc",
+    "byte_identical": true
+  },
+  "paper": {
+    "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2021/204.pdf",
+    "sha256": "3e77f5330fec439e5a625071e92bfc31d07c2f2b7d66983cc2ef5caf50f4509c",
+    "read": "Remark3.2 and section3.3; PDF pages19,21,22 via local pdftotext and rendered visual inspection; no paper refutation claim"
+  },
+  "metered_search_queries": 0,
+  "pdf_downloads": 0
+}

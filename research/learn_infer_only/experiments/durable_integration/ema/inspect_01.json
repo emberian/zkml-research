@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/ema/InspectEma.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/ema",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 1,
+  "stdout": "(4, 31, 153, 122, 32)\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/ema/InspectEma.lean:5:6: error(lean.unknownIdentifier): Unknown identifier `descriptorHoldsCheck`\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/ema/InspectEma.lean:6:6: error(lean.unknownIdentifier): Unknown identifier `descriptorHoldsCheck`\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/ema/InspectEma.lean:7:6: error(lean.unknownIdentifier): Unknown identifier `descriptorHoldsCheck`\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/ema/InspectEma.lean:8:6: error(lean.unknownIdentifier): Unknown identifier `descriptorHoldsCheck`\n",
+  "stderr": "",
+  "elapsed_seconds": 5.455820083618164,
+  "source_sha256": "8bc57ef92bc0f27e513f55bede3ede34aa35d0cc6169722c9f6a2e764f7ebfbd"
+}

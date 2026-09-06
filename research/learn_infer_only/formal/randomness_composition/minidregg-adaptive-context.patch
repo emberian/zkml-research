@@ -1,0 +1,270 @@
+--- a/Assurance.lean
++++ b/Assurance.lean
+@@ -128,3 +128,5 @@
+ import Assurance.ReleaseGateRouting -- the release-gate routing lemma and its binding control, the handoff's §6B as theorems, joined to the tree at both ends. Routing: an unbound gate that reveals the designated bit of ANY submitted predicate determines the private state (determines_iff_separates; routing_of_projections / routing_of_accept_all; hostReconstruct_exact is the "put secret bit 37 in the output slot" attack, by rfl), and a gate accepting at most one predicate reveals at most one bit (single_predicate_not_determining, pigeonhole; both poles pinned on one carrier). Binding: BindingGate R stateOf outOf gate — acceptance implies the released output stands in the authorized relation to the state — gives routing_refused (an output that is not the authorized function of the public half is refused whatever the private half or proof string) and binding_release_public_only, the gate-level twin of privateTurn_public_indistinguishable; TwoBit instance decided. The tree at both ends: Kernel/PrivateEscrowSettlement's Settlement is a BindingGate BY TYPE (settlement_is_binding_gate, settlement_release_public_only, acceptable_pins_named_relation); and at Stage 0 the relation is y = rt ∧ descriptorHolds evmAddDescriptor (traceOf y) (Iff.rfl), the descriptor FORCES Z = (X + Y) mod 2^256 (stage0_released_output_forced via evmAddDescriptor_means_semantics + fragment_run_eq_iff), the ideal gate refuses every routed Z (stage0_forged_z_refused at Z = 4) while the honest candidate is accepted at the ideal AND the deployed gate (fsProve_complete), and stage0Receipt_is_bound_evidence = fsCheck_ok_fiatShamir ∧ stage0Receipt_price. What the receipt binds: the descriptor and the FULL word, public prefix included, up to the FS price under the ROM. What it does not: hide — the whole word IS the FS statement (stage0_statement_carries_word, rfl); Stage 0 has no private half. Residuals: [RELEASE-hiding], [RELEASE-continuity] (a bound gate does not refuse a replayed stale-but-valid state; the kernel's nullifier/freshness objects are named).
+ import Assurance.ResidentReleaseContext
+ import Assurance.ResidentRestoreFinality
++
++import Assurance.ResidentAdaptiveContext
+--- /dev/null
++++ b/Assurance/ResidentAdaptiveContext.lean
+@@ -0,0 +1,259 @@
++/-
++Statement-first target: the existing context-bearing full-word receipt lives in
++ONE state-restoration ROM game, even when oracle queries change contexts. The
++root carries the context; the local recommit/check uses that root's context.
++The authorization wrapper still selects its expected context independently.
++
++ATLAS: the local gateRbr is the actual existing realizer. Receipt completeness
++is inherited from honest_context_receipt and its full-word witness. Root-context
++substitution is refused by the existing wrapper. Dropping the root encoding is
++the broken sibling for the joint oracle address; no hash injectivity is assumed.
++
++The target is ONE final false receipt after a total query budget. It is not yet
++a schedule theorem for multiple released outputs, a QROM result, or hiding.
++-/
++import Assurance.ResidentReleaseContext
++
++namespace Minidregg.Assurance.ResidentAdaptiveContext
++
++open Minidregg.Selvage
++open Minidregg.Compiler
++open Minidregg.Compiler.CommittedTerminalFiatShamir
++open Minidregg.Compiler.CommittedTerminalFiatShamir.Stage0
++open Minidregg.Compiler.CommittedTerminalRealizer
++open Minidregg.Compiler.CommittedTerminalRealizer.Stage0Exhibit (stage0_residuals_fit)
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.EvmAddAir
++open Minidregg.Assurance.ResidentReleaseContext
++
++set_option autoImplicit false
++set_option maxRecDepth 10000
++
++private def baseContext : Context := honestContext 0 0
++
++/-- Same alphabets as the live full-word checker; only the relation and verifier
++are generalized from fixed c to the Context already carried by the root. -/
++noncomputable def adaptiveReduction : Reduction :=
++  { reduction baseContext with
++    R := fun _ rt w _ => (S rt.1).commit w = rt ∧ descriptorHolds evmAddDescriptor (traceOf w)
++    verify := fun _ rt w πs ρs =>
++      gateVerify (S rt.1).commit evmAddDescriptor (bitCorner 13) rt w πs ρs }
++
++private noncomputable def encFor (wv : Nat → BabyBear) :=
++  residualEmbedding evmAddDescriptor wv stage0_residuals_fit
++
++private noncomputable def localRbr (c : Context) : RbrKnowledgeSoundness (reduction c) :=
++  gateRbr (S c).commit evmAddDescriptor (bitCorner 13) encFor (fun _ _ => rfl) (by norm_num)
++
++private def localStmt (st : Stmt adaptiveReduction) : Stmt (reduction st.x.1) :=
++  ⟨st.idx, st.x, st.y⟩
++
++private noncomputable def adaptiveKState : KStateFn adaptiveReduction where
++  state := fun δ st tr w => (localRbr st.x.1).kstate.state δ (localStmt st) tr w
++  empty_iff := by
++    intro δ hδ st w
++    exact (localRbr st.x.1).kstate.empty_iff δ hδ (localStmt st) w
++  prover_monotone := by
++    intro δ hδ st rs w hlen h π
++    exact (localRbr st.x.1).kstate.prover_monotone δ hδ (localStmt st) rs w hlen h π
++  full_iff := by
++    intro δ hδ st πs ρs w
++    exact (localRbr st.x.1).kstate.full_iff δ hδ (localStmt st) πs ρs w
++
++noncomputable def adaptiveRbr : RbrKnowledgeSoundness adaptiveReduction where
++  kstate := adaptiveKState
++  extract := fun _ _ w => w
++  err := fun i _ _ => gateErr evmAddDescriptor i
++  extractTime := fun _ => 0
++  extract_sound := by
++    intro δ hδ st i rs hlen π
++    exact (localRbr st.x.1).extract_sound δ hδ (localStmt st) i rs hlen π
++
++def AdaptiveContextReceiptSoundness : Prop :=
++  FsStraightlineKnowledgeSoundness adaptiveReduction Set.univ
++    (fun _s t _δ => ((t : ℝ) + (14 : ℝ)) * gatePrice evmAddDescriptor 13)
++
++theorem adaptive_context_receipt_sound : AdaptiveContextReceiptSoundness :=
++  fsKeystone_proved.sound adaptiveReduction adaptiveRbr Set.univ
++    (fun _ => gatePrice evmAddDescriptor 13) (fun _ _ => gatePrice_nonneg evmAddDescriptor)
++    (fun i _ _ _ _ => gateErr_le_gatePrice evmAddDescriptor i)
++
++/-- Explicit live-query transport. No validation is imposed on intermediate
++queries: an adversary may waste a query on any root, word or prefix. -/
++def toFixed (c : Context) (q : SrMove adaptiveReduction 0) : SrMove (reduction c) 0 :=
++  ⟨⟨q.stmt.idx, q.stmt.x, q.stmt.y⟩, q.pfx⟩
++
++def fromFixed (c : Context) (q : SrMove (reduction c) 0) : SrMove adaptiveReduction 0 :=
++  ⟨⟨q.stmt.idx, q.stmt.x, q.stmt.y⟩, q.pfx⟩
++
++theorem fixed_query_roundtrip (c : Context) (q : SrMove (reduction c) 0) :
++    toFixed c (fromFixed c q) = q := by cases q; rfl
++
++theorem adaptive_query_roundtrip (c : Context) (q : SrMove adaptiveReduction 0) :
++    fromFixed c (toFixed c q) = q := by cases q; rfl
++
++def queryBytes (q : SrMove adaptiveReduction 0) : List UInt8 :=
++  encodeMove (S baseContext).commit evmAddDescriptor (bitCorner 13) (by norm_num)
++    rootBytes (toFixed baseContext q)
++
++/-- The external fixed c never appears separately in the existing wire address;
++the address encodes the complete Context IN THE ROOT. -/
++theorem query_bytes_match_live (c : Context) (q : SrMove adaptiveReduction 0) :
++    queryBytes q = encodeMove (S c).commit evmAddDescriptor (bitCorner 13) (by norm_num)
++      rootBytes (toFixed c q) := rfl
++
++theorem query_bytes_injective : Function.Injective queryBytes := by
++  intro a b h
++  have he := context_query_encoding_injective baseContext h
++  have hr := congrArg (fromFixed baseContext) he
++  simpa only [adaptive_query_roundtrip] using hr
++
++def adaptiveOracle (q : SrMove adaptiveReduction 0) : Ext6L :=
++  digestToExt6L (fsHash.xofDigest
++    (Tower256ConcreteBackend.utf8 "MINIDREGG/RESIDENT/CT/FS/V1") (queryBytes q))
++
++theorem concrete_oracle_match_live (c : Context) (q : SrMove adaptiveReduction 0) :
++    adaptiveOracle q = contextOracle c (toFixed c q) := rfl
++
++def output (rc : FsReceipt Root 4131 13) : SrOutput adaptiveReduction 0 :=
++  ⟨⟨(), rc.root, rc.word⟩, rc.messages, fun _ => fun z => Fin.elim0 z, ()⟩
++
++/-- Exact old wrapper with its oracle transported into the one global domain. -/
++def wrapperCheck (expected : Context) (O : SrMove adaptiveReduction 0 → Ext6L)
++    (rc : FsReceipt Root 4131 13) : Bool :=
++  ResidentReleaseContext.check expected (fun q => O (fromFixed expected q)) rc
++
++theorem wrapper_accepts_global_fiatshamir (expected : Context)
++    (O : SrMove adaptiveReduction 0 → Ext6L) (rc : FsReceipt Root 4131 13)
++    (h : wrapperCheck expected O rc = true) :
++    fiatShamir adaptiveReduction 0 O (output rc) = some ((), fun _ => ()) := by
++  have hc : rc.root.1 = expected := context_binding expected _ rc h
++  obtain ⟨r, hr⟩ := accepted_fs expected (fun q => O (fromFixed expected q)) rc h
++  have hf := fsCheck_ok_fiatShamir (S expected).commit evmAddDescriptor (bitCorner 13)
++    (by norm_num) (fun q => O (fromFixed expected q)) rc r hr
++  unfold fiatShamir at hf ⊢
++  change gateVerify (S rc.root.1).commit evmAddDescriptor (bitCorner 13) rc.root rc.word
++    rc.messages (fun i => O ((output rc).query i)) = _
++  rw [hc]
++  exact hf
++
++theorem wrong_arithmetic_is_global_bad (expected : Context)
++    (O : SrMove adaptiveReduction 0 → Ext6L) (rc : FsReceipt Root 4131 13)
++    (h : wrapperCheck expected O rc = true) (bad : ¬ Forced expected) :
++    ¬ adaptiveReduction.R () rc.root rc.word () := by
++  have hd := bad_release_implies_bad_descriptor expected
++    (fun q => O (fromFixed expected q)) rc h bad
++  exact fun hrel => hd hrel.2
++
++/-- The actual game already counts every query, across every root Context.
++There is one final candidate. An M-output application still owes its schedule. -/
++theorem adaptive_sound_reading (s t : Nat) {δ : ℝ}
++    (hδ : δ ∈ Set.Ioo (0 : ℝ) (1 / (4131 : ℝ)))
++    (P : SrProver adaptiveReduction s) :
++    uniformProb ((Fin t → adaptiveReduction.Chal) ×
++      (Fin adaptiveReduction.k → adaptiveReduction.Chal))
++      (fun coins =>
++        let o := P.out ((srTrace P coins.1).map Prod.snd)
++        ¬ adaptiveReduction.R o.stmt.idx o.stmt.x o.stmt.y () ∧
++          fiatShamir adaptiveReduction s
++            (fsOracle o (srFinalChal P coins.1 coins.2)) o ≠ none) ≤
++      ((t : ℝ) + (14 : ℝ)) * gatePrice evmAddDescriptor 13 := by
++  obtain ⟨E, hE⟩ := adaptive_context_receipt_sound
++  refine le_trans (le_of_eq (uniformProb_congr fun coins => ?_)) (hE s t δ hδ P)
++  dsimp only
++  constructor
++  · rintro ⟨hfalse, hacc⟩
++    obtain ⟨v, hv⟩ := Option.ne_none_iff_exists'.mp hacc
++    refine ⟨Set.mem_univ _, ?_, v.1, v.2, hv, ?_⟩
++    · intro hrel
++      exact hfalse ((relaxedMem_iff (by norm_num : 0 < 4131)
++        adaptiveReduction.R hδ _ _ _).mp hrel)
++    · exact ⟨v.2, trivial, by rw [fracHamming_self]; exact le_of_lt hδ.1⟩
++  · rintro ⟨-, hrel, x', y', hv, -⟩
++    refine ⟨?_, ?_⟩
++    · intro hR
++      exact hrel ((relaxedMem_iff (by norm_num : 0 < 4131)
++        adaptiveReduction.R hδ _ _ _).mpr hR)
++    · rw [hv]
++      exact Option.some_ne_none _
++
++theorem adaptive_price_numeric (t : Nat) :
++    ((t : ℝ) + (14 : ℝ)) * gatePrice evmAddDescriptor 13 =
++      ((t : ℝ) + 14) * (4160 / ((2013265921 : ℝ)^6)) := by
++  rw [gatePrice_stage0]
++  norm_num
++
++theorem honest_wrapper_inhabited (O : SrMove adaptiveReduction 0 → Ext6L) :
++    ∃ rc : FsReceipt Root 4131 13,
++      wrapperCheck (honestContext 1 2) O rc = true ∧
++      fiatShamir adaptiveReduction 0 O (output rc) = some ((), fun _ => ()) := by
++  obtain ⟨rc, hr⟩ := honest_context_receipt 1 2 (by norm_num) (by norm_num)
++    (fun q => O (fromFixed (honestContext 1 2) q))
++  exact ⟨rc, hr, wrapper_accepts_global_fiatshamir (honestContext 1 2) O rc hr⟩
++
++theorem wrapper_wrong_context_refused (expected : Context)
++    (O : SrMove adaptiveReduction 0 → Ext6L) (rc : FsReceipt Root 4131 13)
++    (wrong : rc.root.1 ≠ expected) : wrapperCheck expected O rc = false :=
++  wrong_context_refused expected (fun q => O (fromFixed expected q)) rc wrong
++
++private def queryAt (c : Context) : SrMove adaptiveReduction 0 :=
++  ⟨⟨(), (c, fun _ : Fin 4131 => (0 : BabyBear)), fun _ : Fin 4131 => (0 : BabyBear)⟩, []⟩
++
++/-- Dropping the root makes distinct Context queries alias before hashing. -/
++private def dropRootBytes (q : SrMove adaptiveReduction 0) : List Nat × List (List Nat) :=
++  let y : Word := q.stmt.y
++  (List.ofFn fun i => (y i).val, q.pfx.map fun e => msgLimbs e.1)
++
++theorem omitting_root_breaks_query_binding :
++    ∃ a b : SrMove adaptiveReduction 0,
++      queryBytes a ≠ queryBytes b ∧ dropRootBytes a = dropRootBytes b := by
++  let c0 := baseContext
++  let c1 : Context := { baseContext with genesis := baseContext.genesis + 1 }
++  refine ⟨queryAt c0, queryAt c1, ?_, rfl⟩
++  intro h
++  have he := query_bytes_injective h
++  have hg := congrArg (fun q : SrMove adaptiveReduction 0 => q.stmt.x.1.genesis) he
++  change baseContext.genesis = baseContext.genesis + 1 at hg
++  omega
++
++end Minidregg.Assurance.ResidentAdaptiveContext
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.adaptive_context_receipt_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.adaptive_context_receipt_sound
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.fixed_query_roundtrip' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.fixed_query_roundtrip
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.adaptive_query_roundtrip' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.adaptive_query_roundtrip
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.query_bytes_match_live' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.query_bytes_match_live
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.query_bytes_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.query_bytes_injective
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.concrete_oracle_match_live' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.concrete_oracle_match_live
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.wrapper_accepts_global_fiatshamir' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.wrapper_accepts_global_fiatshamir
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.wrong_arithmetic_is_global_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.wrong_arithmetic_is_global_bad
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.adaptive_sound_reading' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.adaptive_sound_reading
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.adaptive_price_numeric' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.adaptive_price_numeric
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.honest_wrapper_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.honest_wrapper_inhabited
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.wrapper_wrong_context_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.wrapper_wrong_context_refused
++
++/-- info: 'Minidregg.Assurance.ResidentAdaptiveContext.omitting_root_breaks_query_binding' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentAdaptiveContext.omitting_root_breaks_query_binding
++

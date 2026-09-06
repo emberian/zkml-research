@@ -1,0 +1,6 @@
+{"selected": "model_window_shared", "W": 128, "selection": 0.5302734375}
+{"selected": "model_window_routed", "W": 128, "selection": 0.52294921875}
+{"selected": "lexical_window_routed", "W": 64, "selection": 0.4609375}
+{"selected": "attribute_window_shared", "W": 128, "selection": 1.0}
+{"selected": "attribute_window_routed", "W": 64, "selection": 1.0}
+{"complete": true, "runtime_seconds": 252.22061508298793, "final_mean": {"model_window_shared": 0.482421875, "model_window_routed": 0.497802734375, "lexical_window_routed": 0.5, "attribute_window_shared": 1.0, "attribute_window_routed": 1.0}, "checks": {"queue_recomputations": 122880, "score_reference_agreements": 143360, "max_observed_score": 258064}}

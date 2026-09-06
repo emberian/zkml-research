@@ -1,0 +1,35 @@
+STATUS real_BFV_arithmetic_only no_PQ_bits_claim no_private_release no_latency
+MODULI [68719403009, 68719230977, 137438822401]
+RANK_ONE_CORRECT seed=7 additions=1 library_noise_bits=13
+RANK_ONE_CORRECT seed=7 additions=16 library_noise_bits=28
+RANK_ONE_CORRECT seed=7 additions=32 library_noise_bits=44
+RANK_ONE_CORRECT seed=7 additions=48 library_noise_bits=60
+RANK_ONE_CORRECT seed=7 additions=64 library_noise_bits=76
+RANK_ONE_FIRST_FAILURE seed=7 additions=81 expected=771091 observed=771092
+ROUNDING_CONTROL seed=7 Enc(1)*inverse8=903169 floor(1/8)=0 Enc(16)*inverse8=2
+FRESH_INPUT_POSITIVE seed=7 input_encryptions=129 additions=128 output=129
+RANK_ONE_CORRECT seed=19 additions=1 library_noise_bits=13
+RANK_ONE_CORRECT seed=19 additions=16 library_noise_bits=28
+RANK_ONE_CORRECT seed=19 additions=32 library_noise_bits=44
+RANK_ONE_CORRECT seed=19 additions=48 library_noise_bits=60
+RANK_ONE_CORRECT seed=19 additions=64 library_noise_bits=76
+RANK_ONE_FIRST_FAILURE seed=19 additions=78 expected=741507 observed=741506
+ROUNDING_CONTROL seed=19 Enc(1)*inverse8=903169 floor(1/8)=0 Enc(16)*inverse8=2
+FRESH_INPUT_POSITIVE seed=19 input_encryptions=129 additions=128 output=129
+RANK_ONE_CORRECT seed=43 additions=1 library_noise_bits=13
+RANK_ONE_CORRECT seed=43 additions=16 library_noise_bits=28
+RANK_ONE_CORRECT seed=43 additions=32 library_noise_bits=44
+RANK_ONE_CORRECT seed=43 additions=48 library_noise_bits=60
+RANK_ONE_CORRECT seed=43 additions=64 library_noise_bits=76
+RANK_ONE_FIRST_FAILURE seed=43 additions=79 expected=450821 observed=450820
+ROUNDING_CONTROL seed=43 Enc(1)*inverse8=903169 floor(1/8)=0 Enc(16)*inverse8=2
+FRESH_INPUT_POSITIVE seed=43 input_encryptions=129 additions=128 output=129
+RANK_ONE_CORRECT seed=101 additions=1 library_noise_bits=13
+RANK_ONE_CORRECT seed=101 additions=16 library_noise_bits=28
+RANK_ONE_CORRECT seed=101 additions=32 library_noise_bits=44
+RANK_ONE_CORRECT seed=101 additions=48 library_noise_bits=60
+RANK_ONE_CORRECT seed=101 additions=64 library_noise_bits=76
+RANK_ONE_FIRST_FAILURE seed=101 additions=79 expected=450821 observed=450820
+ROUNDING_CONTROL seed=101 Enc(1)*inverse8=903169 floor(1/8)=0 Enc(16)*inverse8=2
+FRESH_INPUT_POSITIVE seed=101 input_encryptions=129 additions=128 output=129
+PASS four seeds: genuine BFV bounded addition positive, rank-one no-refresh falsifier, modular-rounding falsifier

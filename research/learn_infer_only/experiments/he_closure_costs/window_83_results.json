@@ -1,0 +1,133 @@
+{
+  "status": "EXECUTED genuine BFV Q83 fixed-window core; not a PQ estimate or protected-release construction",
+  "moduli": [
+    2199023190017,
+    4398046486529
+  ],
+  "Q": 9671406214650060397780993,
+  "Q_bit_length": 83,
+  "Q_log2": 82.99999994894364,
+  "N": 4096,
+  "t": 4294828033,
+  "variance": 10,
+  "sampler": "CBD support -20..20; secret,u,error use same variance",
+  "computation_primes": 2,
+  "special_keyswitch_primes": 0,
+  "rotations": 0,
+  "relinearizations": 0,
+  "ct_ct_products": 0,
+  "conditional_algebra_bound": {
+    "width": 577,
+    "window": 128,
+    "contribution_abs_bound": 127,
+    "query_abs_bound": 127,
+    "plaintext_modulus": 4294828033,
+    "state_coefficient_abs_bound": 16256,
+    "score_abs_bound": 1191223424,
+    "query_l1_bound": 73279,
+    "fresh_integer_noise_abs_bound": 3276820,
+    "readout_ideal_phase_error_abs_bound": 30735637255552,
+    "correctness_inequality": "264008552994527828978432 < 9671406214650060397780993",
+    "minimum_ciphertext_modulus_exclusive": 264008552994527828978432,
+    "minimum_integer_modulus_bit_length": 78,
+    "sampled_bit_counts_are_not_this_bound": true,
+    "nonwrap_product_degree": 1152,
+    "live_acc_plus_queue_raw_RNS_bytes": 16908288,
+    "update_peak_ciphertext_raw_RNS_bytes": 17039360,
+    "signed_readout_peak_ciphertext_raw_RNS_bytes": 17170432,
+    "raw_buffer_scope": "ct RNS arrays only; excludes plaintext/key/codec/allocator/test-oracle buffers",
+    "security_estimate": null,
+    "parameter_frontier_scope": "sufficient-bound threshold in this algebra only, not a necessary condition; no prime selection or security certification"
+  },
+  "cases": [
+    {
+      "seed": 109,
+      "ct_add": 1024,
+      "ct_sub": 896,
+      "exact_queue_equalities": 16,
+      "output_ct_pt_mul": 2,
+      "output_ct_sub": 1,
+      "expected_signed_score": 3594582,
+      "observed_residue": 3594582,
+      "max_observed_noise_bits": 16,
+      "bytes": {
+        "acc": 85022,
+        "queue": 10882816,
+        "input_total": 87062528,
+        "answer": 85022,
+        "public_key": 42547,
+        "live_acc_plus_queue_raw_RNS_bytes": 16908288
+      }
+    },
+    {
+      "seed": 137,
+      "ct_add": 1024,
+      "ct_sub": 896,
+      "exact_queue_equalities": 16,
+      "output_ct_pt_mul": 2,
+      "output_ct_sub": 1,
+      "expected_signed_score": 1702855,
+      "observed_residue": 1702855,
+      "max_observed_noise_bits": 16,
+      "bytes": {
+        "acc": 85022,
+        "queue": 10882816,
+        "input_total": 87062528,
+        "answer": 85022,
+        "public_key": 42547,
+        "live_acc_plus_queue_raw_RNS_bytes": 16908288
+      }
+    }
+  ],
+  "security_scope": "Apple pinned quantum128 ceiling83 bits uses ternary secret and error sigma3.2, not this exactCBD distribution; neither match nor security bits established",
+  "correctness_scope": "tested two fixtures plus conditional source-equation bound; no full-library refinement; valid authenticated inputs and exact queue expiry assumed",
+  "retained_credentials": "Test reader retains full secretkey; all ciphertexts/states readable by that role; no scalar-only release",
+  "actual_command": "CARGO_TARGET_DIR=research/learn_infer_only/experiments/he_closure_costs/bfv_probe/target cargo run --offline --release --manifest-path research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/Cargo.toml",
+  "comparison": {
+    "Q109_ct_bytes": 111646,
+    "Q83_ct_bytes": 85022,
+    "Q109_state_queue_bytes": 14402334,
+    "Q83_state_queue_bytes": 10967838,
+    "serialized_ct_ratio": 0.761531985024094,
+    "Q109_live_raw_RNS_bytes": 25362432,
+    "Q83_live_raw_RNS_bytes": 16908288,
+    "raw_RNS_ratio": "2/3"
+  },
+  "manifest": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/Cargo.toml",
+      "sha256": "f597c944ce3d433c74c504e2cbef5103a5f9c4fa2f6fef6a6bec091fb97442a8",
+      "bytes": 254
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/Cargo.lock",
+      "sha256": "f9d395a9b54a74a1f11d35dddf8a8753870d860bf20068d8e9b79d2c2e6ea805",
+      "bytes": 16736
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/src/main.rs",
+      "sha256": "5ad614cf33ceca02e61ad7282d4e263bb063eb44ca96a2136e8f41e9f9a1c29e",
+      "bytes": 8628
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_run.log",
+      "sha256": "5a1712e1ff4be1c64efa62c8b8c125d52e42c49e5147004848b83803892f6b6d",
+      "bytes": 1184
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_build.log",
+      "sha256": "19c276b01f0619b783acec37469d819dc7f4d653449cdbb7f824fd7fcf9ac58f",
+      "bytes": 347
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/window_results.json",
+      "sha256": "1439a9cedcef3dcb764eb364249f166eca2c98f5228b29cbb0f0bdd05f2c8de6",
+      "bytes": 8983
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/window_ledger.py",
+      "sha256": "4f809f3b705105048e483dbf38f91fd9d508d408e32850a97883394a25cd92fe",
+      "bytes": 7811
+    }
+  ]
+}
