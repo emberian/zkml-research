@@ -112,6 +112,11 @@ top-3 upgrades named with exact statement changes. `fold-extractor-upgrade.md` �
 the other way: FoldRoundBound is false for every extractor (zero-absorb attack, proved at toy and
 production); the carried-witness reduction has error 0 at the cost of succinctness and half the capacity.
 
+**The learn/infer-only resident (2026-09-06)** — `swarm/astra-handoff/` holds the external
+handoff + our companion; `streaming-fe-credential-audit.md` — the SFE writer state IS the inner
+master secret: appending and reading are the same credential (dissertation §3.2 = GKS23 §6.2,
+derived path reproduced); not a theorem break, a structural mismatch with the host-appends model.
+
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its
 instrument; absence claims are only as good as those two lines.
