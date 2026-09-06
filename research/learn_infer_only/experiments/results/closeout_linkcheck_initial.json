@@ -1,0 +1,5 @@
+{
+  "classification": "EXECUTED tooling false positive; before staging",
+  "error": "Naive Markdown regex treated inline-code G[x](f) as a file link to f",
+  "repair": "Exclude fenced and inline code before scanning Markdown links; no source link changed"
+}

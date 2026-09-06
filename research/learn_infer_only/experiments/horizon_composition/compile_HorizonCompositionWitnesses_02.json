@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/build/Theory/HorizonCompositionWitnesses.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonCompositionWitnesses.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "ee6560833cf55585bc672f7741424549af369524876bc233d61d7edf37812f45",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonCompositionWitnesses.lean:54:45: error: unsolved goals\n\u22a2 \u2191(Fintype.card (Node 2 0)) * (1 / 2) / 4 / 2 = 1 / 16\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonCompositionWitnesses.lean:93:34: error: unsolved goals\n\u22a2 2 ^ ((Nat.clog.go 6 2 6).2 + 1) = 8\n",
+  "stderr": ""
+}

@@ -1,0 +1,1 @@
+{"installed_state":[1],"nonce":{"canonical_bytes":[2,255,7,255,255],"codec_version":1,"domain":101,"nullifier_id":7},"packet":{"canonical_bytes":[11,255,7,255,255,255,1,255,1,255,19,255,23,255,255,255,1,255,1,255],"codec_version":1,"domain":102,"event_id":91},"publication":"stored","sequence":1,"status":"accepted","transaction_id":91}

@@ -333,3 +333,5 @@ zero schema, zero Kagi, two web search queries, zero PDF downloads**. Web
 search identified the precursor metadata; every load-bearing game/algorithm
 claim above was checked in the local primary PDF. No literature-wide absence
 claim is made.
+
+[DERIVED/EXECUTED draft successor] [PROVENANCE.md](experiments/private_ingress/provenance/PROVENANCE.md) investigates an internal public-proof guard and exact observation-parent binding. Its ideal controls reject false/cross-parent paths and exhibit ancestry-only and unrestricted-certifier failures. The actual joint commitment/proof/FE privacy hybrid is still missing. Five local source/extract pairs were pinned during final collection; independent review was interrupted. No encryption or ZK implementation is supplied.

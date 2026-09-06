@@ -1,17 +1,17 @@
 # Formal handback
 
-[EXECUTED current combined proposal] The latest passed set is **39 modules / 499
+[EXECUTED current combined proposal] The latest passed set is **49 modules / 651
 exact theorem pins**, with all four umbrellas, actual patch application/content
 comparison and both import-boundary instruments. The combined patch is
-[minidregg-combined-resident-499.patch](integration/minidregg-combined-resident-499.patch),
-SHA256 `8f825765a1dd9dbdbf63e3f0013c8a3428f4a94ab93fd310b20efb83ec5efbcc`.
-See [run_009/report.json](../experiments/integration/results/run_009/report.json)
+[minidregg-combined-resident-651.patch](integration/minidregg-combined-resident-651.patch),
+SHA256 `9398b530f3640d5f279c4f3958ccf57abcbb113f43ca608825ca41d935ed8e42`.
+See [run_011/report.json](../experiments/integration/results/run_011/report.json)
 and [integration index](integration/README.md) for selected sources and exact
 commands. Companion files, HEAD and dirty status stayed unchanged. Existing
 dependency oleans were reused; no clean whole-tree build is claimed.
 
 [DERIVED application scope] Apply one compatible combined proposal, not every
-historical patch in sequence. The 499-pin set includes context/restore, policy
+historical patch in sequence. The 651-pin set includes context/restore, policy
 and distribution, durable Bool/EMA/window, conditional HE noise, generic
 contextual receipts, live BFV source/target certificates and compiler
 simplification. It remains a proposal for maintainer application. Its proof

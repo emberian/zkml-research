@@ -1,0 +1,113 @@
+{
+  "label": "EXECUTED finite symbolic cache audit",
+  "timestamp_utc": "2026-09-06T10:05:06.610450+00:00",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/randomness_composition/mixed/audit.py"
+  ],
+  "source_sha256": "a353c48a8f067db13c9e97adf64ce191718db5ff0c3baf021e05a834a9a9038e",
+  "counts": {
+    "answer_transports": 384,
+    "samples": 64,
+    "left_event": 32,
+    "right_event": 32,
+    "union_event": 48,
+    "omitted_tag_right_event": 64,
+    "omitted_tag_union_event": 64,
+    "omitted_tag_pathwise_failures": 40
+  },
+  "phase0_queries": 3,
+  "phase1_queries": 3,
+  "global_queries": 6,
+  "right_conditional_probability_every_first_coin_vector": "1/2",
+  "tagged_union_probability": "3/4",
+  "omitted_tag_union_probability": "1",
+  "first_falsifier": {
+    "raw_coins": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "tagged": [
+      [
+        [
+          0,
+          0
+        ],
+        0
+      ],
+      [
+        [
+          0,
+          0
+        ],
+        0
+      ],
+      [
+        [
+          0,
+          1
+        ],
+        0
+      ],
+      [
+        [
+          1,
+          0
+        ],
+        0
+      ],
+      [
+        [
+          1,
+          0
+        ],
+        0
+      ],
+      [
+        [
+          1,
+          1
+        ],
+        1
+      ]
+    ],
+    "untagged": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ]
+    ]
+  },
+  "claims_excluded": [
+    "encryption",
+    "hash sampling",
+    "full-field security estimate",
+    "arbitrary interleaving proof"
+  ],
+  "source_scope": "Exhaustive 64 raw positional coin vectors; repeated queries consume a position but reuse the first answer.",
+  "metered_search_queries": 0
+}

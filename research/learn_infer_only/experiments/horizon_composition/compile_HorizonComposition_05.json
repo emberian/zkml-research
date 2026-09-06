@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/build/Theory/HorizonComposition.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "c94120d9f62b05e49ca5a827daf842eccae0d318c2a5af0ea0544861890beb0b",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean:211:26: warning: This simp argument is unused:\n  Nat.lt_succ_iff\n\nHint: Omit it from the simp argument list.\n  simp [Finset.mem_range, N\u0335a\u0335t\u0335.\u0335l\u0335t\u0335_\u0335s\u0335u\u0335c\u0335c\u0335_\u0335i\u0335f\u0335f\u0335,\u0335 \u0335depth_le n]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean:261:87: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  d \u2265 0\n  b \u2265 1\n  b - d \u2265 2\n  a \u2265 1\n  2*a - c \u2265 1\nwhere\n a := \u2191(nodeCount B H)\n b := \u2191(Nat.clog 2 (2 * nodeCount B H))\n c := \u21912 ^ (Nat.clog 2 (2 * nodeCount B H)).pred\n d := \u2191(Nat.clog 2 (2 * nodeCount B H)).pred\n",
+  "stderr": ""
+}

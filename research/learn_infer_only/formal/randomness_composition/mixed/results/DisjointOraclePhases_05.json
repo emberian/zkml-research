@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/build/Compiler/DisjointOraclePhases.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Compiler/DisjointOraclePhases.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/build:/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_006/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256_before": "cf8bb7f1e7fa9a17401041e6cac6b975d1dae6ebb87368d75444181b8f989eb3",
+  "source_sha256_after": "cf8bb7f1e7fa9a17401041e6cac6b975d1dae6ebb87368d75444181b8f989eb3",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Compiler/DisjointOraclePhases.lean",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Compiler/DisjointOraclePhases.lean:168:4: error: Tactic `apply` failed: could not unify the conclusion of `congrArg fun o => ?m.93`\n  ?m.94 ?m.91 = ?m.94 ?m.92\nwith the goal\n  (match List.find? (fun e => decide (e.1 = P.move (List.map Prod.snd L))) L with\n    | some e => e.2\n    | none => c) =\n    match List.find? (fun e => decide (e.1 = P.move (List.map Prod.snd L))) L with\n    | some e => e.2\n    | none => c\n\nNote: The full type of `congrArg fun o => ?m.93` is\n  ?m.91 = ?m.92 \u2192 ?m.94 ?m.91 = ?m.94 ?m.92\n\ncase h.h.e_a.e_head.e_snd\nr : Reduction\ns t : \u2115\nP : SrProver r s\ncoins : Fin t \u2192 r.Chal\nL : List (SrMove r s \u00d7 r.Chal)\nc : r.Chal\n\u22a2 (match List.find? (fun e => decide (e.1 = P.move (List.map Prod.snd L))) L with\n    | some e => e.2\n    | none => c) =\n    match List.find? (fun e => decide (e.1 = P.move (List.map Prod.snd L))) L with\n    | some e => e.2\n    | none => c\n",
+  "stderr": "",
+  "elapsed_seconds": 1.9963807500025723,
+  "dependency_report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/results/run_006/report.json",
+  "dependency_report_sha256": "77e62e7f44a8e5d6fc8877243110597a06e3362d118ab0eab24fe6c79556d445"
+}

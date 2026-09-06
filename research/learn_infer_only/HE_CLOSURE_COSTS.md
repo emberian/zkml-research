@@ -398,3 +398,5 @@ web construction read worked. No companion or shared truth file was written.
 profile; join issuer-side fixed features to utility/provenance controls;
 then audit one bootstrapped changed-learner implementation including weights,
 velocities,readout,error/leakage. Do not seek refresh in the low-rank identity.
+
+[EXECUTED final source core] [Source phase45](formal/he_closure_costs/source_phase/README.md) constructs the negacyclic phase homomorphism from source encryption equations, proves the selected reversed-query coefficient, and supplies nonzero/failure witnesses. It passes the final651-pin collection check. The additional BfvNoiseSource/ResidentBfvSourceWindow successor is explicitly unfinished and excluded; this is not a completed Rust/NTT/sampler refinement or secrecy proof.

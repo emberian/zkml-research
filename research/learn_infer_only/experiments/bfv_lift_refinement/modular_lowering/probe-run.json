@@ -1,0 +1,45 @@
+{
+  "label": "EXECUTED actual cached fhe-math API word probe",
+  "source_sha256": "fc5cbc3bcaaa45b65776a858d72211f670abe5815080517b68020ee77c7d191f",
+  "rlib_sha256": "c1df5b095d917b7bb809342f20aabb5fa390db40c635ed6812cba462229dcd41",
+  "records": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.027569415993639268,
+      "stderr": "",
+      "stdout": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\n"
+    },
+    {
+      "command": [
+        "rustc",
+        "--edition=2021",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/word_probe.rs",
+        "-L",
+        "dependency=/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/target/release/deps",
+        "--extern",
+        "fhe_math=/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe/target/release/deps/libfhe_math-6bfde6bc930a05a6.rlib",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/.build/word_probe"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.1879648749891203,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/.build/word_probe"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.006125792002421804,
+      "stderr": "",
+      "stdout_gzip": "actual-words.jsonl.gz",
+      "rows": 1904,
+      "stdout_sha256": "6266ccb48b2d0aa6c46f8fc45d466d9beea1d8d4c28e39d9b0bee64a5d497e4e"
+    }
+  ]
+}

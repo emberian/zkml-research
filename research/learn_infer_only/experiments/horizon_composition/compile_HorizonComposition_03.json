@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/build/Theory/HorizonComposition.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "7dcb20c5adba2339a8e76aade91520cd05d38daa512ff6930938db98263ea360",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean:95:4: error: Type mismatch: After simplification, term\n  h\n has type\n  Fintype.card (Node B (H + 1)) = 1 + \u2211 b, \u2211 n, sub (fun n => 1) b n\nbut is expected to have type\n  Fintype.card (Node B (H + 1)) = 1 + B * nodeCount B H\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean:110:8: warning: This simp argument is unused:\n  Fintype.sum_bool\n\nHint: Omit it from the simp argument list.\n  simp [Fi\u0335n\u0335t\u0335y\u0335p\u0335e\u0335.\u0335s\u0335u\u0335m\u0335_\u0335b\u0335o\u0335o\u0335l\u0335,\u0335 \u0335F\u0335rame.realTest, Frame.idealTest, Frame.leftGap, Frame.rightGap]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean:171:36: error: No goals to be solved\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean:171:9: error: unsolved goals\ncase zero\nB d : \u2115\nhd : d \u2264 0\nthis : d = 0\n\u22a2 levelCount B 0 d = B ^ d\n",
+  "stderr": ""
+}

@@ -404,3 +404,7 @@ transition: a public first-component encryption comparison has gap at least
 This is a compatibility-premise failure, not a security break. Exact fraction,
 size and continuing-interface controls are preserved. One additional Scry query
 brings this lane to eight SQL plus one schema; the static predicate positive stays.
+
+## Bounded encrypted-state successor
+
+[SOURCE/DERIVED/EXECUTED] [FINITE_LADDER.md](experiments/private_construction/FINITE_LADDER.md) records the H2 reverse-setup randomized-FE construction, complete future-key exposure and symbolic witnesses. [HORIZON.md](experiments/private_construction/horizon/HORIZON.md) gives the reviewed uniform logarithmic-horizon extension and exact padded-selector reduction, with uniform host/initial-sampler premises. These are classical conditional constructions after honest erasure, with public commands and full forks. They do not supply private fresh ingress, indefinite extension, practical obfuscation or PQ security. The independent review is in ADVERSARIAL_REVIEW.md section17; finite arithmetic has a separate40-pin proposed patch.

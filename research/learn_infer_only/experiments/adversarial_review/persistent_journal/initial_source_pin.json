@@ -1,0 +1,17 @@
+{
+  "protocol.py": {
+    "sha256": "0db1c116a4d9b3990e02d249d1140feea8605be4e6b031fa7096571ef6f545a6",
+    "run004_expected": "0db1c116a4d9b3990e02d249d1140feea8605be4e6b031fa7096571ef6f545a6",
+    "matches": true
+  },
+  "run.py": {
+    "sha256": "2370c4632ad06b86b4e833228d819c39daec2f2183a8d849798877f5b35a1f68",
+    "run004_expected": "2370c4632ad06b86b4e833228d819c39daec2f2183a8d849798877f5b35a1f68",
+    "matches": true
+  },
+  "fixture.json": {
+    "sha256": "584e575c782a5b0c6c350f957912ac40a2791df8e604b68a51e8e7baad422801",
+    "run004_expected": "584e575c782a5b0c6c350f957912ac40a2791df8e604b68a51e8e7baad422801",
+    "matches": true
+  }
+}

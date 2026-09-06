@@ -1,0 +1,28 @@
+{
+  "not_encryption_not_zk": true,
+  "public_prover_false_descent_refusals": 255,
+  "honest_private_input_answers": [
+    0,
+    0
+  ],
+  "copied_proof_wrong_opening_refusals": 255,
+  "external_wrapper_bypass_recoveries": 256,
+  "capability_recoveries_without_parent_binding": {
+    "unrestricted_state_signer": 256,
+    "false_proof_simulator": 256
+  },
+  "true_ancestry_only_recoveries": 256,
+  "probes_per_recovery": 8,
+  "valid_wrong_parent_refusals": 256,
+  "fixed_binding_genesis_opening_test": [
+    true,
+    false
+  ],
+  "important_scope": "parent-bound input is an ideal immutable encrypted field; no real authentication, nonmalleability, commitment, proof, or FE is implemented",
+  "provenance": {
+    "command": "python3 research/learn_infer_only/experiments/private_ingress/provenance/provenance_audit.py",
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "source_sha256": "3c37054f28724196f77e2a64f7627009b77bc6f6b63a1b5f8f5b80dc40d99770"
+  }
+}

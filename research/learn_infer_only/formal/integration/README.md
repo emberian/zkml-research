@@ -31,3 +31,9 @@ outside this research run. The tool writes only inside the research integration
 directories. The proof statements retain their original assumptions and scope;
 integration does not upgrade receipt binding into confidentiality or an engine
 model into a runtime implementation theorem.
+
+## Final collection check
+
+[EXECUTED final collection, 2026-09-06] Run011 passed: **49 modules /651 exact theorem pins**, all four umbrellas, actual patch application/content comparison and both import-boundary instruments. Elapsed213.909 seconds. No selected input or companion source changed; companion HEAD/status were unchanged. Existing dependency oleans were reused; no clean whole-tree build is claimed. The final snapshot is formal/integration/minidregg-combined-resident-651.patch, SHA256 9398b530f3640d5f279c4f3958ccf57abcbb113f43ca608825ca41d935ed8e42.
+
+[DERIVED scope] This adds saved modular-word38, guarded horizon arithmetic 40 and source-phase 45 to the morning 528-pin pass. It excludes unfinished mixed-journal and source-noise successors. Apply one compatible combined proposal; earlier snapshots are retained as historical evidence.

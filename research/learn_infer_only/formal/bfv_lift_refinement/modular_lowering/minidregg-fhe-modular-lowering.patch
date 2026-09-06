@@ -1,0 +1,812 @@
+--- a/Compiler.lean
++++ b/Compiler.lean
+@@ -15,6 +15,7 @@
+ import Compiler.BfvSignedAccumulatorAir  -- exact radix-64 weighted positive/negative accumulators over that same witness and accepted quotient call imply numerator = q * centered quotient
+ import Compiler.BfvReceiptClause  -- one committed BFV batch plus checked returned buffers yields all 384 exact integer equations; the native producer remains semantically opaque
+ import Compiler.BfvProofController  -- deterministic BFV statement/receipt framing over opaque bytes; proof-codec/suite/controller pins stay zero and the succinct suite is deliberately uninstantiated
++import Compiler.FheRnsSourceWord  -- pinned source-word arithmetic; Rust arrays/NTT/provenance remain open
+ import Compiler.BfvCompressedEquation  -- audited FHEgg 12,435-coordinate/384-row schema and the first exact q0 shifted-quotient AIR join; the full signed accumulator and Lean-owned transcript control stay explicit
+ import Compiler.WideDigestAir  -- [AIR-wide-digest] WDG1/domain/9-limb encoding pinned through emit; canonicality and 248-bit capacity proved; sponge schedule, concrete permutation, native-output checks, and [COMMIT-CR] remain explicit
+ import Compiler.WideDigestByteDecodeAir  -- raw four-byte little-endian limbs are range-checked and proved < BabyBear before field recomposition; raw p is universally rejected
+--- /dev/null
++++ b/Compiler/FheShoupWord.lean
+@@ -0,0 +1,152 @@
++/- Statement first: the pinned lazy Shoup instruction formula is a correct lazy
++residue for an ARBITRARY u64 first operand, a canonical second operand, and its
++exact Shoup reciprocal. Products/subtraction fit u128 and the result fits u64.
++This is a handwritten integer model of source word operations, not Rust semantics.
++The a<wordBase condition is intentionally weaker than a<p: RnsScaler feeds
++extended-base residues directly to a smaller target modulus. -/
++import Compiler.FheTargetProjectionVerifier
++
++namespace Minidregg.Compiler.FheShoupWord
++set_option autoImplicit false
++
++def shoup (B p b : ℤ) : ℤ := B*b/p
++def quotient (B p a b : ℤ) : ℤ := a*shoup B p b/B
++def remainder (B p a b : ℤ) : ℤ := a*b-quotient B p a b*p
++
++def ShoupRefinement : Prop := ∀ B p a b : ℤ,
++  0<B → 0<p → 0≤a → a<B → 0≤b → b<p →
++  0≤remainder B p a b ∧ remainder B p a b<2*p ∧
++  remainder B p a b%p=a*b%p
++
++/-- Two Euclidean remainders give the exact error of the approximate quotient. -/
++theorem error_identity (B p a b : ℤ) :
++    B*remainder B p a b = a*((B*b)%p)+p*((a*shoup B p b)%B) := by
++  have h1 := congrArg (fun x : ℤ => a*x) (Int.mul_ediv_add_emod (B*b) p)
++  have h2 := congrArg (fun x : ℤ => p*x) (Int.mul_ediv_add_emod (a*shoup B p b) B)
++  dsimp [remainder,quotient,shoup] at *
++  nlinarith
++
++/-- Shoup reciprocal truncation fits one word whenever b is canonical. -/
++theorem shoup_range (B p b : ℤ) (hB : 0<B) (hp : 0<p) (hb0 : 0≤b) (hb : b<p) :
++    0≤shoup B p b ∧ shoup B p b<B := by
++  have hn : 0≤B*b := mul_nonneg hB.le hb0
++  have he := Int.mul_ediv_add_emod (B*b) p
++  have hr := Int.emod_nonneg (B*b) (ne_of_gt hp)
++  have hh := mul_lt_mul_of_pos_left hb hB
++  dsimp [shoup]
++  exact ⟨Int.ediv_nonneg hn hp.le,by nlinarith⟩
++
++/-- Canonical b and one-word a imply a nonnegative residual strictly below 2p. -/
++theorem shoupRefinement : ShoupRefinement := by
++  intro B p a b hB hp ha0 ha hb0 hb
++  have e0 := Int.emod_nonneg (B*b) (ne_of_gt hp)
++  have e1 := Int.emod_lt_of_pos (B*b) hp
++  have s0 := Int.emod_nonneg (a*shoup B p b) (ne_of_gt hB)
++  have s1 := Int.emod_lt_of_pos (a*shoup B p b) hB
++  have h := error_identity B p a b
++  have hlow := add_nonneg (mul_nonneg ha0 e0) (mul_nonneg hp.le s0)
++  have he : a*((B*b)%p)<B*p :=
++    lt_of_le_of_lt (mul_le_mul_of_nonneg_left e1.le ha0) (mul_lt_mul_of_pos_right ha hp)
++  have hs : p*((a*shoup B p b)%B)<B*p := by
++    nlinarith [mul_lt_mul_of_pos_left s1 hp]
++  refine ⟨by nlinarith,by nlinarith,?_⟩
++  simp [remainder,Int.sub_emod]
++
++/-- Every u128 multiplication/subtraction in lazy Shoup has an exact integer lift.
++The second conjunct is the explicit no-underflow fact for the source subtraction. -/
++theorem product_bounds (B p a b : ℤ) (hB : 0<B) (hp : 0<p) (hpB : p<B)
++    (ha0 : 0≤a) (ha : a<B) (hb0 : 0≤b) (hb : b<p) :
++    (0≤a*b ∧ a*b<B^2) ∧
++    (0≤quotient B p a b*p ∧ quotient B p a b*p≤a*b) ∧
++    (0≤a*shoup B p b ∧ a*shoup B p b<B^2) ∧
++    (0≤B*b ∧ B*b<B^2) := by
++  have sr := shoup_range B p b hB hp hb0 hb
++  have rr := shoupRefinement B p a b hB hp ha0 ha hb0 hb
++  have q0 : 0≤quotient B p a b := Int.ediv_nonneg (mul_nonneg ha0 sr.1) hB.le
++  have ab := mul_le_mul_of_nonneg_left (lt_trans hb hpB).le ha0
++  have asb := mul_le_mul_of_nonneg_left sr.2.le ha0
++  have aB := mul_lt_mul_of_pos_right ha hB
++  have Bb := mul_lt_mul_of_pos_left (lt_trans hb hpB) hB
++  dsimp [remainder] at rr
++  exact ⟨⟨mul_nonneg ha0 hb0,by nlinarith⟩,
++    ⟨mul_nonneg q0 hp.le,by nlinarith⟩,
++    ⟨mul_nonneg ha0 sr.1,by nlinarith⟩,
++    ⟨mul_nonneg hB.le hb0,by nlinarith⟩⟩
++
++/-- Literal source shape: u128 product/shift, u128 subtraction, and u64 result cast.
++All casts/wrapping are modeled explicitly; the theorem below discharges them. -/
++def wordLazyShoup (B p a b : ℤ) : ℤ :=
++  let bs := (((B*b)%(B^2))/p)%B
++  let q := ((a*bs)%(B^2))/B
++  (((a*b)%(B^2)-(q*p)%(B^2))%(B^2))%B
++
++/-- The literal word model equals the exact lazy residual under actual source bounds. -/
++theorem wordLazyShoup_correct (B p a b : ℤ) (hB : 0<B) (hp : 0<p) (hpB : 2*p<B)
++    (ha0 : 0≤a) (ha : a<B) (hb0 : 0≤b) (hb : b<p) :
++    wordLazyShoup B p a b=remainder B p a b := by
++  have hpB' : p<B := by omega
++  have bounds := product_bounds B p a b hB hp hpB' ha0 ha hb0 hb
++  have sr := shoup_range B p b hB hp hb0 hb
++  have rr := shoupRefinement B p a b hB hp ha0 ha hb0 hb
++  have rB : remainder B p a b<B := lt_trans rr.2.1 hpB
++  have rBB : remainder B p a b<B^2 := by
++    have h1 : 1≤B := by omega
++    nlinarith
++  have qpB : quotient B p a b*p<B^2 := lt_of_le_of_lt bounds.2.1.2 bounds.1.2
++  simp only [wordLazyShoup,Int.emod_eq_of_lt bounds.2.2.2.1 bounds.2.2.2.2]
++  change (((a*b)%(B^2)-(((a*(shoup B p b%B))%(B^2))/B*p)%(B^2))%(B^2))%B = _
++  rw [Int.emod_eq_of_lt sr.1 sr.2,Int.emod_eq_of_lt bounds.2.2.1.1 bounds.2.2.1.2,
++    Int.emod_eq_of_lt bounds.1.1 bounds.1.2]
++  change ((a*b-(quotient B p a b*p)%(B^2))%(B^2))%B = _
++  rw [Int.emod_eq_of_lt bounds.2.1.1 qpB]
++  change (remainder B p a b%(B^2))%B = _
++  rw [Int.emod_eq_of_lt rr.1 rBB,Int.emod_eq_of_lt rr.1 rB]
++
++/-- The API's actual modulus bound is stronger than the required 2p<2^64. -/
++theorem source_u64_bounds (p : ℤ) (hp0 : 2≤p) (hp : p<2^62) :
++    0<p ∧ 2*p<(2^64 : ℤ) := by omega
++
++/-- A valid first operand can exceed p; imposing a<p would miss RnsScaler's use. -/
++theorem wide_first_operand_inhabited :
++    (31 : ℤ)<34 ∧ wordLazyShoup 256 31 34 11=33 ∧
++    33%31=34*11%31 := by decide
++
++/-- Omitting the canonical-second-operand premise can truncate the reciprocal. -/
++theorem noncanonical_second_falsifier :
++    wordLazyShoup 256 31 8 32%31 ≠ 8*32%31 := by decide
++
++end Minidregg.Compiler.FheShoupWord
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheShoupWord.error_identity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheShoupWord.error_identity
++
++/-- info: 'Minidregg.Compiler.FheShoupWord.shoup_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheShoupWord.shoup_range
++
++/-- info: 'Minidregg.Compiler.FheShoupWord.shoupRefinement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheShoupWord.shoupRefinement
++
++/-- info: 'Minidregg.Compiler.FheShoupWord.product_bounds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheShoupWord.product_bounds
++
++/-- info: 'Minidregg.Compiler.FheShoupWord.wordLazyShoup_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheShoupWord.wordLazyShoup_correct
++
++/-- info: 'Minidregg.Compiler.FheShoupWord.source_u64_bounds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheShoupWord.source_u64_bounds
++
++/-- info: 'Minidregg.Compiler.FheShoupWord.wide_first_operand_inhabited' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheShoupWord.wide_first_operand_inhabited
++
++/-- info: 'Minidregg.Compiler.FheShoupWord.noncanonical_second_falsifier' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheShoupWord.noncanonical_second_falsifier
+--- /dev/null
++++ b/Compiler/FheBarrettWord.lean
+@@ -0,0 +1,231 @@
++/- Exact two-word Barrett quotient decomposition used by zq/mod.rs:674-682.
++The proof separates the universal algebra from explicit no-wrap premises for
++the literal u128 additions. This handwritten integer model is not Rust semantics. -/
++import Compiler.FheShoupWord
++
++namespace Minidregg.Compiler.FheBarrettWord
++open Minidregg.Compiler.FheShoupWord
++set_option autoImplicit false
++
++def middle (B a c : ℤ) : ℤ :=
++  (a%B)*(c/B)+(a/B)*(c%B)+((a%B)*(c%B))/B
++def splitQuotient (B a c : ℤ) : ℤ := middle B a c/B+(a/B)*(c/B)
++
++/-- The split high-word arithmetic computes floor(a*c/B²) exactly. -/
++theorem split_quotient_exact (B a c : ℤ) (hB : 0<B) :
++    splitQuotient B a c=a*c/(B^2) := by
++  have ha := Int.mul_ediv_add_emod a B
++  have hc := Int.mul_ediv_add_emod c B
++  have hlo := Int.mul_ediv_add_emod ((a%B)*(c%B)) B
++  have hm := Int.mul_ediv_add_emod (middle B a c) B
++  let rem := B*(middle B a c%B)+((a%B)*(c%B))%B
++  have h0 := Int.emod_nonneg (middle B a c) (ne_of_gt hB)
++  have h1 := Int.emod_lt_of_pos (middle B a c) hB
++  have h2 := Int.emod_nonneg ((a%B)*(c%B)) (ne_of_gt hB)
++  have h3 := Int.emod_lt_of_pos ((a%B)*(c%B)) hB
++  have he : a*c=B^2*splitQuotient B a c+rem := by
++    have hproduct : a*c=(B*(a/B)+a%B)*(B*(c/B)+c%B) := by rw [ha,hc]
++    dsimp [rem,splitQuotient,middle] at *
++    nlinarith [congrArg (fun x : ℤ => B*x) hlo,congrArg (fun x : ℤ => B*x) hm]
++  exact Minidregg.Compiler.FheSourceCertificate.qr_forced _ _ _ _
++    (by positivity) (by dsimp [rem]; positivity) (by dsimp [rem];nlinarith) he
++
++/-- Canonical one-word pieces imply the source middle sum stays below u128 when
++the reciprocal's low+high pieces fit one word. This is checked for the target constants. -/
++theorem middle_range (B a c : ℤ) (hB : 0<B) (ha0 : 0≤a) (ha : a<B^2)
++    (hc0 : 0≤c) (_hc : c<B^2) (hparts : c%B+c/B<B) :
++    0≤middle B a c ∧ middle B a c<B^2 := by
++  have a0 := Int.emod_nonneg a (ne_of_gt hB)
++  have a1 := Int.emod_lt_of_pos a hB
++  have c0 := Int.emod_nonneg c (ne_of_gt hB)
++  have c1 := Int.emod_lt_of_pos c hB
++  have ah0 := Int.ediv_nonneg ha0 hB.le
++  have ch0 := Int.ediv_nonneg hc0 hB.le
++  have haqr := Int.mul_ediv_add_emod a B
++  have ah1 : a/B<B := by nlinarith
++  have lo0 : 0≤((a%B)*(c%B))/B := Int.ediv_nonneg (mul_nonneg a0 c0) hB.le
++  have loqr := Int.mul_ediv_add_emod ((a%B)*(c%B)) B
++  have lorem := Int.emod_nonneg ((a%B)*(c%B)) (ne_of_gt hB)
++  have lobound := mul_le_mul_of_nonneg_right a1.le c0
++  have lo1 : ((a%B)*(c%B))/B≤c%B := by nlinarith
++  have hleft := mul_le_mul_of_nonneg_right (show a%B≤B-1 by omega) ch0
++  have hright := mul_le_mul_of_nonneg_right (show a/B≤B-1 by omega) c0
++  have hparts' := mul_le_mul_of_nonneg_left (show c%B+c/B≤B-1 by omega) hB.le
++  dsimp [middle]
++  constructor
++  · positivity
++  · nlinarith
++
++/-- Literal u128 middle products/addition, quotient addition and residual/cast. -/
++def wordLazyBarrett (B p a : ℤ) : ℤ :=
++  let c := B^2/p
++  let lo := c%B
++  let hi := c/B
++  let aLo := a%B
++  let aHi := a/B
++  let ll := ((aLo*lo)%(B^2))/B
++  let hl := (aHi*lo)%(B^2)
++  let lh := (aLo*hi)%(B^2)
++  let q := ((((lh+hl+ll)%(B^2))/B)+(aHi*hi)%(B^2))%(B^2)
++  ((a-(q*p)%(B^2))%(B^2))%B
++
++/-- Reference lazy Barrett is the already proved Shoup formula at the double word base. -/
++theorem barrett_reference (B p a : ℤ) (hB : 0<B) (hp : 1<p)
++    (ha0 : 0≤a) (ha : a<B^2) :
++    0≤a-(a*(B^2/p)/(B^2))*p ∧ a-(a*(B^2/p)/(B^2))*p<2*p ∧
++    (a-(a*(B^2/p)/(B^2))*p)%p=a%p := by
++  simpa [remainder,quotient,shoup] using
++    shoupRefinement (B^2) p a 1 (by positivity) (by omega) ha0 ha (by omega) hp
++
++/-- A product of two one-word values cannot overflow a double word. -/
++theorem word_product_bound (B a b : ℤ) (hB : 0<B)
++    (ha0 : 0≤a) (ha : a<B) (hb0 : 0≤b) (hb : b<B) :
++    0≤a*b ∧ a*b<B^2 := by
++  have h1 := mul_le_mul_of_nonneg_left hb.le ha0
++  have h2 := mul_lt_mul_of_pos_right ha hB
++  exact ⟨mul_nonneg ha0 hb0,by nlinarith⟩
++
++/-- Literal Barrett word arithmetic equals its exact lazy integer residual.
++The low+high reciprocal bound discharges the source's three-term u128 addition. -/
++theorem wordLazyBarrett_correct (B p a : ℤ) (hB : 0<B) (hp : 1<p) (hpB : 2*p<B)
++    (ha0 : 0≤a) (ha : a<B^2)
++    (hparts : (B^2/p)%B+(B^2/p)/B<B) :
++    wordLazyBarrett B p a=a-(a*(B^2/p)/(B^2))*p := by
++  let c := B^2/p
++  have c0 : 0≤c := Int.ediv_nonneg (by positivity) (by omega)
++  have cB : c<B^2 := by
++    have hr := Int.emod_nonneg (B^2) (by omega : p≠0)
++    have hq := Int.mul_ediv_add_emod (B^2) p
++    dsimp [c] at *
++    have hpow : 0<B^2 := by positivity
++    nlinarith
++  have al0 := Int.emod_nonneg a (ne_of_gt hB)
++  have al1 := Int.emod_lt_of_pos a hB
++  have cl0 := Int.emod_nonneg c (ne_of_gt hB)
++  have cl1 := Int.emod_lt_of_pos c hB
++  have ah0 := Int.ediv_nonneg ha0 hB.le
++  have ch0 := Int.ediv_nonneg c0 hB.le
++  have aqr := Int.mul_ediv_add_emod a B
++  have cqr := Int.mul_ediv_add_emod c B
++  have ah1 : a/B<B := by nlinarith
++  have ch1 : c/B<B := by nlinarith
++  have ll := word_product_bound B _ _ hB al0 al1 cl0 cl1
++  have hl := word_product_bound B _ _ hB ah0 ah1 cl0 cl1
++  have lh := word_product_bound B _ _ hB al0 al1 ch0 ch1
++  have hh := word_product_bound B _ _ hB ah0 ah1 ch0 ch1
++  have mid := middle_range B a c hB ha0 ha c0 cB hparts
++  have qe := split_quotient_exact B a c hB
++  have rr := barrett_reference B p a hB hp ha0 ha
++  have q0 : 0≤a*c/(B^2) := Int.ediv_nonneg (mul_nonneg ha0 c0) (by positivity)
++  have qp0 : 0≤(a*c/(B^2))*p := mul_nonneg q0 (by omega)
++  have qp1 : (a*c/(B^2))*p<B^2 := by
++    have hrr := rr.1
++    change 0≤a-(a*c/(B^2))*p at hrr
++    omega
++  have q1 : a*c/(B^2)<B^2 := by
++    have h := mul_le_mul_of_nonneg_left (show 1≤p by omega) q0
++    nlinarith
++  have rB : a-(a*c/(B^2))*p<B := lt_trans rr.2.1 hpB
++  have rBB : a-(a*c/(B^2))*p<B^2 := by
++    have h1 : 1≤B := by omega
++    nlinarith
++  dsimp only [wordLazyBarrett]
++  rw [Int.emod_eq_of_lt ll.1 ll.2,Int.emod_eq_of_lt hl.1 hl.2,
++    Int.emod_eq_of_lt lh.1 lh.2,Int.emod_eq_of_lt hh.1 hh.2]
++  change ((a-(((middle B a c)%(B^2)/B+(a/B)*(c/B))%(B^2)*p)%(B^2))%(B^2))%B = _
++  rw [Int.emod_eq_of_lt mid.1 mid.2]
++  change ((a-((splitQuotient B a c)%(B^2)*p)%(B^2))%(B^2))%B = _
++  rw [qe,Int.emod_eq_of_lt q0 q1,Int.emod_eq_of_lt qp0 qp1,
++    Int.emod_eq_of_lt rr.1 rBB,Int.emod_eq_of_lt rr.1 rB]
++
++/-- Conditional subtraction models reduce1's selected result; the unselected
++wrapping subtraction may wrap, but its value is not returned. -/
++def wordReduceOne (B p x : ℤ) : ℤ := if x<p then x else (x-p)%B
++
++/-- One correction canonicalizes a lazy representative without changing its residue. -/
++theorem wordReduceOne_correct (B p x : ℤ) (_hp : 0<p) (hpB : p<B)
++    (hx0 : 0≤x) (hx : x<2*p) : wordReduceOne B p x=x%p := by
++  unfold wordReduceOne
++  split_ifs with h
++  · exact (Int.emod_eq_of_lt hx0 h).symm
++  · have hd0 : 0≤x-p := by omega
++    have hd1 : x-p<p := by omega
++    rw [Int.emod_eq_of_lt hd0 (lt_trans hd1 hpB)]
++    calc
++      x-p = (x-p)%p := (Int.emod_eq_of_lt hd0 hd1).symm
++      _ = x%p := by simp
++
++def wordReduce (B p x : ℤ) : ℤ := wordReduceOne B p (wordLazyBarrett B p x)
++
++/-- The pinned Barrett plus one-subtraction source formula is exact canonical reduction. -/
++theorem wordReduce_correct (B p a : ℤ) (hB : 0<B) (hp : 1<p) (hpB : 2*p<B)
++    (ha0 : 0≤a) (ha : a<B^2)
++    (hparts : (B^2/p)%B+(B^2/p)/B<B) : wordReduce B p a=a%p := by
++  have hr := barrett_reference B p a hB hp ha0 ha
++  unfold wordReduce
++  rw [wordLazyBarrett_correct B p a hB hp hpB ha0 ha hparts,
++    wordReduceOne_correct B p _ (by omega) (by omega) hr.1 hr.2.1]
++  exact hr.2.2
++
++/-- The source's mask/xor conditional selector returns precisely its selected word. -/
++theorem mask_selection (onTrue onFalse : BitVec 64) (condition : Bool) :
++    ((onTrue ^^^ onFalse) &&& (if condition then (-1 : BitVec 64) else 0)) ^^^ onFalse =
++      (if condition then onTrue else onFalse) := by
++  cases condition with
++  | false => simp
++  | true =>
++    change ((onTrue ^^^ onFalse) &&& (-1 : BitVec 64)) ^^^ onFalse=onTrue
++    have hmask : (-1 : BitVec 64)=BitVec.allOnes 64 := by decide
++    rw [hmask,BitVec.and_allOnes,BitVec.xor_assoc,BitVec.xor_self,BitVec.xor_zero]
++
++/-- A full-double-word input can produce a noncanonical lazy residual, then reduce exactly. -/
++theorem barrett_premises_inhabited :
++    ((256 : ℤ)^2/31)%256+((256 : ℤ)^2/31)/256<256 ∧
++    wordLazyBarrett 256 31 65535=32 ∧ wordReduce 256 31 65535=1 := by decide
++
++/-- A single correction is insufficient if its strict lazy-input range is omitted. -/
++theorem reduce_one_range_falsifier : wordReduceOne 256 31 62 ≠ 62%31 := by decide
++
++end Minidregg.Compiler.FheBarrettWord
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.split_quotient_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.split_quotient_exact
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.middle_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.middle_range
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.barrett_reference' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.barrett_reference
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.word_product_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.word_product_bound
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.wordLazyBarrett_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.wordLazyBarrett_correct
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.wordReduceOne_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.wordReduceOne_correct
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.wordReduce_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.wordReduce_correct
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.mask_selection' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.mask_selection
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.barrett_premises_inhabited' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.barrett_premises_inhabited
++
++/-- info: 'Minidregg.Compiler.FheBarrettWord.reduce_one_range_falsifier' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheBarrettWord.reduce_one_range_falsifier
+--- /dev/null
++++ b/Compiler/FheRnsModularAccumulation.lean
+@@ -0,0 +1,163 @@
++/- Statement first: RnsScaler's per-target lazy residues, 2p negations and signed
++correction compose to its exact integer source representative modulo p. This
++models scaler.rs:321-340 and does not assume canonical intermediate residues.
++Primitive reduction correctness is explicit; Shoup is discharged by its separate
++literal-word theorem. Rust arrays/unsafe access/compiler semantics remain outside. -/
++import Compiler.FheShoupWord
++import Mathlib.Data.Int.ModEq
++
++namespace Minidregg.Compiler.FheRnsModularAccumulation
++open Minidregg.Compiler.FheRnsScale
++open Minidregg.Compiler.FheShoupWord
++open scoped BigOperators
++set_option autoImplicit false
++
++def signed (negative : Bool) (w : ℤ) : ℤ := if negative then -w else w
++def correctionTerm (p : ℤ) (negative : Bool) (lazyW : ℤ) : ℤ :=
++  if negative then 2*p-lazyW else lazyW
++def accumulation {L : ℕ} (p lazyGamma lazyW : ℤ) (negative : Bool)
++    (lazyTerms : Fin L → ℤ) : ℤ :=
++  2*p-lazyGamma+correctionTerm p negative lazyW+∑ i,lazyTerms i
++
++def ModularAccumulationSound : Prop := ∀ {L : ℕ} (p : ℤ)
++  (r omega lazyTerms : Fin L → ℤ) (v gamma w lazyGamma lazyW : ℤ) (negative : Bool),
++  lazyGamma%p=v*gamma%p → lazyW%p=w%p →
++  (∀ i,lazyTerms i%p=r i*omega i%p) →
++  accumulation p lazyGamma lazyW negative lazyTerms%p=
++    (integerPart r omega v gamma+signed negative w)%p
++
++/-- Pointwise congruence is preserved by the actual finite coefficient sum. -/
++theorem sum_congruent {L : ℕ} (p : ℤ) (a b : Fin L → ℤ)
++    (h : ∀ i,Int.ModEq p (a i) (b i)) :
++    Int.ModEq p (∑ i,a i) (∑ i,b i) := by
++  have hs (s : Finset (Fin L)) : Int.ModEq p (∑ i∈s,a i) (∑ i∈s,b i) := by
++    induction s using Finset.induction_on with
++    | empty => simp [Int.ModEq]
++    | @insert i s hi ih =>
++      simp only [Finset.sum_insert hi]
++      exact (h i).add ih
++  simpa using hs Finset.univ
++
++/-- Exact source accumulation equation; lazy representatives may differ by p. -/
++theorem modularAccumulationSound : ModularAccumulationSound := by
++  intro L p r omega lazyTerms v gamma w lazyGamma lazyW negative hg hw ht
++  have hp : Int.ModEq p (2*p) 0 := by simp [Int.ModEq]
++  have hstart := hp.sub (show Int.ModEq p lazyGamma (v*gamma) from hg)
++  have hcorr : Int.ModEq p (correctionTerm p negative lazyW) (signed negative w) := by
++    cases negative with
++    | false => exact hw
++    | true => simpa [correctionTerm,signed] using hp.sub (show Int.ModEq p lazyW w from hw)
++  have hs := sum_congruent p lazyTerms (fun i => r i*omega i) ht
++  have hh := (hstart.add hcorr).add hs
++  change (2*p-lazyGamma+correctionTerm p negative lazyW+∑ i,lazyTerms i)%p=
++    (0-v*gamma+signed negative w+∑ i,r i*omega i)%p at hh
++  rw [show 0-v*gamma+signed negative w+∑ i,r i*omega i=
++    integerPart r omega v gamma+signed negative w by dsimp [integerPart];ring] at hh
++  exact hh
++
++/-- Lazy ranges make both source 2p-subtractions nonnegative and bound the u128 sum. -/
++theorem accumulation_range {L : ℕ} (p lazyGamma lazyW : ℤ) (negative : Bool)
++    (lazyTerms : Fin L → ℤ) (_hp : 0<p)
++    (hg : 0≤lazyGamma ∧ lazyGamma<2*p) (hw : 0≤lazyW ∧ lazyW<2*p)
++    (ht : ∀ i,0≤lazyTerms i ∧ lazyTerms i<2*p) :
++    0≤2*p-lazyGamma ∧ 2*p-lazyGamma≤2*p ∧
++    0≤correctionTerm p negative lazyW ∧ correctionTerm p negative lazyW≤2*p ∧
++    0≤accumulation p lazyGamma lazyW negative lazyTerms ∧
++    accumulation p lazyGamma lazyW negative lazyTerms≤((L : ℤ)+2)*(2*p) := by
++  have hc : 0≤correctionTerm p negative lazyW ∧ correctionTerm p negative lazyW≤2*p := by
++    cases negative <;> simp only [correctionTerm] <;> omega
++  have hs0 : 0≤∑ i,lazyTerms i := Finset.sum_nonneg (fun i _ => (ht i).1)
++  have hs1 : (∑ i,lazyTerms i)≤(L : ℤ)*(2*p) := by
++    calc
++      _ ≤ ∑ _i : Fin L,2*p := Finset.sum_le_sum (fun i _ => (ht i).2.le)
++      _ = _ := by simp
++  dsimp [accumulation]
++  exact ⟨by omega,by omega,hc.1,hc.2,by omega,by nlinarith⟩
++
++/-- Six source limbs and a legal 62-bit modulus cannot overflow the target u128 accumulator. -/
++theorem six_limb_accumulator_fits (p : ℤ) (hp : 2≤p ∧ p<2^62)
++    (lazyGamma lazyW : ℤ) (negative : Bool) (lazyTerms : Fin 6 → ℤ)
++    (hg : 0≤lazyGamma ∧ lazyGamma<2*p) (hw : 0≤lazyW ∧ lazyW<2*p)
++    (ht : ∀ i,0≤lazyTerms i ∧ lazyTerms i<2*p) :
++    0≤accumulation p lazyGamma lazyW negative lazyTerms ∧
++    accumulation p lazyGamma lazyW negative lazyTerms<(2^128 : ℤ) := by
++  have h := accumulation_range p lazyGamma lazyW negative lazyTerms (by omega) hg hw ht
++  norm_num at h
++  exact ⟨h.2.2.2.2.1,by omega⟩
++
++/-- Projection of the huge omega coefficient before multiplication preserves its product. -/
++theorem projected_product (p a b : ℤ) : a*(b%p)%p=a*b%p := by
++  simp [Int.mul_emod]
++
++/-- The first argument is reduced for gamma, but the six rest operands need not be. -/
++theorem shoup_projected {L : ℕ} (p : ℤ) (r omega : Fin L → ℤ)
++    (hp : 2≤p ∧ p<2^62) (hr : ∀ i,0≤r i ∧ r i<2^64) :
++    ∀ i, 0≤wordLazyShoup (2^64) p (r i) (omega i%p) ∧
++      wordLazyShoup (2^64) p (r i) (omega i%p)<2*p ∧
++      wordLazyShoup (2^64) p (r i) (omega i%p)%p=r i*omega i%p := by
++  intro i
++  have hpp := source_u64_bounds p hp.1 hp.2
++  have hb0 := Int.emod_nonneg (omega i) (ne_of_gt hpp.1)
++  have hb1 := Int.emod_lt_of_pos (omega i) hpp.1
++  rw [wordLazyShoup_correct _ _ _ _ (by norm_num) hpp.1 hpp.2 (hr i).1 (hr i).2 hb0 hb1]
++  have hs := shoupRefinement _ _ _ _ (by norm_num) hpp.1 (hr i).1 (hr i).2 hb0 hb1
++  exact ⟨hs.1,hs.2.1,hs.2.2.trans (projected_product _ _ _)⟩
++
++/-- A nontrivial signed source example uses lazy gamma, correction, and term representatives. -/
++theorem lazy_signed_premises_inhabited :
++    (33 : ℤ)%31=34*11%31 ∧ (35 : ℤ)%31=4%31 ∧
++    (32 : ℤ)%31=1*1%31 ∧
++    accumulation 31 33 35 true ![32]%31=(integerPart ![1] ![1] 34 11-4)%31 := by decide
++
++/-- Flipping the source correction sign changes an otherwise valid modular result. -/
++theorem correction_sign_falsifier :
++    accumulation 31 33 35 false ![32]%31 ≠
++      (integerPart ![1] ![1] 34 11-4)%31 := by decide
++
++end Minidregg.Compiler.FheRnsModularAccumulation
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheRnsModularAccumulation.sum_congruent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsModularAccumulation.sum_congruent
++
++/-- info: 'Minidregg.Compiler.FheRnsModularAccumulation.modularAccumulationSound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsModularAccumulation.modularAccumulationSound
++
++/-- info: 'Minidregg.Compiler.FheRnsModularAccumulation.accumulation_range' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsModularAccumulation.accumulation_range
++
++/-- info: 'Minidregg.Compiler.FheRnsModularAccumulation.six_limb_accumulator_fits' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsModularAccumulation.six_limb_accumulator_fits
++
++/-- info: 'Minidregg.Compiler.FheRnsModularAccumulation.projected_product' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsModularAccumulation.projected_product
++
++/-- info: 'Minidregg.Compiler.FheRnsModularAccumulation.shoup_projected' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsModularAccumulation.shoup_projected
++
++/-- info: 'Minidregg.Compiler.FheRnsModularAccumulation.lazy_signed_premises_inhabited' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsModularAccumulation.lazy_signed_premises_inhabited
++
++/-- info: 'Minidregg.Compiler.FheRnsModularAccumulation.correction_sign_falsifier' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsModularAccumulation.correction_sign_falsifier
+--- /dev/null
++++ b/Compiler/FheRnsSourceWord.lean
+@@ -0,0 +1,244 @@
++/- Closed handwritten source-equation model for the deployed six-to-three BFV
++downscaler: actual correction branches, Barrett calls, Shoup products, lazy 2p
++negations, u128 accumulation, and canonical output. This is not a Rust semantics,
++constructor, pointer/array, NTT, or ciphertext provenance theorem. -/
++import Compiler.FheBarrettWord
++import Compiler.FheRnsModularAccumulation
++
++namespace Minidregg.Compiler.FheRnsSourceWord
++open Minidregg.Compiler.FheRnsScale
++open Minidregg.Compiler.FheShoupWord
++open Minidregg.Compiler.FheBarrettWord
++open Minidregg.Compiler.FheRnsModularAccumulation
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxHeartbeats 3000000
++
++def target (i : Fin 3) : ℤ := FheTargetProjection.targetPrime i
++
++def sourceNegative (T : ℤ) : Bool := decide (0<(T%(2^256))/(2^191))
++def sourceMagnitude (T : ℤ) : ℤ :=
++  if sourceNegative T then
++    (((((2^256-1-T%(2^256))/(2^126))%(2^128))+1)/2)
++  else
++    (((((T%(2^256))/(2^126))%(2^128))+1)/2)
++
++/-- The scalar sign/magnitude pair is exactly the existing source word branch. -/
++theorem signed_magnitude (T : ℤ) : signed (sourceNegative T) (sourceMagnitude T)=wordCorrection T := by
++  simp [signed,sourceNegative,sourceMagnitude,wordCorrection]
++  split_ifs <;> rfl
++
++/-- Legal signed accumulators make the magnitude fit u128, including the branch +1. -/
++theorem magnitude_range (T : ℤ) (hlo : -(2^191)<T) (hhi : T<2^191) :
++    0≤sourceMagnitude T ∧ sourceMagnitude T<(2^128 : ℤ) := by
++  norm_num [sourceMagnitude,sourceNegative] at *
++  split_ifs <;> omega
++
++/-- The negative branch's literal u128 +1 cannot overflow under the established sign range. -/
++theorem negative_increment_fits (T : ℤ) (hlo : -(2^191)<T) (hhi : T<2^191)
++    (hnegative : sourceNegative T=true) :
++    ((((2^256-1-T%(2^256))/(2^126))%(2^128))+1)<(2^128 : ℤ) := by
++  norm_num [sourceNegative] at *
++  omega
++
++/-- Actual target moduli and split Barrett reciprocals satisfy every word-bound premise. -/
++theorem target_word_bounds : ∀ i : Fin 3,
++    2≤target i ∧ target i<2^62 ∧
++    ((2^64 : ℤ)^2/target i)%(2^64)+((2^64 : ℤ)^2/target i)/(2^64)<2^64 := by decide
++
++/-- Every canonical source residue is a valid full-word first operand to Shoup. -/
++theorem source_rest_bounds (r : Fin 6 → ℤ) (hr : ∀ i,0≤r i ∧ r i<deployedBase i) :
++    ∀ i,0≤r i ∧ r i<2^64 := by
++  have hb : ∀ i : Fin 6,deployedBase i<(2^64 : ℤ) := by decide
++  exact fun i => ⟨(hr i).1,lt_trans (hr i).2 (hb i)⟩
++
++/-- The selected Garner index fits the source's u128 reduction input. -/
++theorem source_v_range (r : Fin 6 → ℤ) (hr : ∀ i,0≤r i ∧ r i<deployedBase i) :
++    0≤deployedV r ∧ deployedV r<(2^128 : ℤ) := by
++  have h := deployed_garner_range r hr
++  rw [deployedV_correct r hr]
++  norm_num [roundDiv] at *
++  omega
++
++def sourceWordTarget (r : Fin 6 → ℤ) (i : Fin 3) : ℤ :=
++  let p := target i
++  let T := ∑ j,r j*deployedThetaF j
++  let v := deployedV r
++  let lg := wordLazyShoup (2^64) p (wordReduce (2^64) p v) (deployedGamma%p)
++  let lw := wordLazyBarrett (2^64) p (sourceMagnitude T)
++  let terms := fun j => wordLazyShoup (2^64) p (r j) (deployedOmega j%p)
++  wordReduce (2^64) p (accumulation p lg lw (sourceNegative T) terms%(2^128))
++
++def SourceWordRefinement : Prop := ∀ (r : Fin 6 → ℤ),
++  (∀ j,0≤r j ∧ r j<deployedBase j) →
++  ∀ i, sourceWordTarget r i=deployedOutput r%target i
++
++/-- Every modular reduction call is exact at a deployed target, for all u128 inputs. -/
++theorem target_reduce_correct (i : Fin 3) (a : ℤ) (ha0 : 0≤a) (ha : a<2^128) :
++    wordReduce (2^64) (target i) a=a%target i := by
++  obtain ⟨hp0,hp,hparts⟩ := target_word_bounds i
++  exact wordReduce_correct _ _ _ (by norm_num) (by omega)
++    (source_u64_bounds _ hp0 hp).2 ha0 (by norm_num;exact ha) hparts
++
++/-- Closed source-equation refinement. All Shoup, Barrett, projection, lazy range,
++sign and u128 accumulation premises are discharged for canonical six-limb inputs. -/
++theorem sourceWordRefinement : SourceWordRefinement := by
++  intro r hr i
++  let p := target i
++  let T := ∑ j,r j*deployedThetaF j
++  let mag := sourceMagnitude T
++  let vr := deployedV r
++  let lg := wordLazyShoup (2^64) p (wordReduce (2^64) p vr) (deployedGamma%p)
++  let lw := wordLazyBarrett (2^64) p mag
++  let terms := fun j => wordLazyShoup (2^64) p (r j) (deployedOmega j%p)
++  obtain ⟨hp0,hp,hparts⟩ := target_word_bounds i
++  have hp' : 0<p := by dsimp [p];omega
++  have hpB : 2*p<(2^64 : ℤ) := (source_u64_bounds _ hp0 hp).2
++  have vBounds := source_v_range r hr
++  have vReduce : wordReduce (2^64) p vr=vr%p := target_reduce_correct i vr vBounds.1 vBounds.2
++  have vg0 := Int.emod_nonneg vr (ne_of_gt hp')
++  have vg1 := Int.emod_lt_of_pos vr hp'
++  have gg0 := Int.emod_nonneg deployedGamma (ne_of_gt hp')
++  have gg1 := Int.emod_lt_of_pos deployedGamma hp'
++  have glazy : 0≤lg ∧ lg<2*p ∧ lg%p=vr*deployedGamma%p := by
++    have hlg : lg=remainder (2^64) p (vr%p) (deployedGamma%p) := by
++      change wordLazyShoup (2^64) p (wordReduce (2^64) p vr) (deployedGamma%p)=_
++      rw [vReduce,wordLazyShoup_correct _ _ _ _ (by norm_num) hp' hpB vg0 (by omega) gg0 gg1]
++    rw [hlg]
++    have h := shoupRefinement (2^64) p (vr%p) (deployedGamma%p) (by norm_num) hp' vg0 (by omega) gg0 gg1
++    refine ⟨h.1,h.2.1,?_⟩
++    rw [h.2.2]
++    simp [Int.mul_emod]
++  have tr := abs_lt.mp (deployed_correction_range r hr)
++  have magBounds := magnitude_range T tr.1 tr.2
++  have wlazy : 0≤lw ∧ lw<2*p ∧ lw%p=mag%p := by
++    have hlw : lw=mag-(mag*((2^64 : ℤ)^2/p)/((2^64 : ℤ)^2))*p := by
++      exact wordLazyBarrett_correct (2^64) p mag (by norm_num) (by dsimp [p];omega) hpB magBounds.1
++        (by norm_num;exact magBounds.2) hparts
++    rw [hlw]
++    exact barrett_reference _ _ _ (by norm_num) (by dsimp [p];omega) magBounds.1 (by norm_num;exact magBounds.2)
++  have tlazy := shoup_projected p r deployedOmega ⟨hp0,hp⟩ (source_rest_bounds r hr)
++  have arange := six_limb_accumulator_fits p ⟨hp0,hp⟩ lg lw (sourceNegative T) terms
++    ⟨glazy.1,glazy.2.1⟩ ⟨wlazy.1,wlazy.2.1⟩ (fun j => ⟨(tlazy j).1,(tlazy j).2.1⟩)
++  change wordReduce (2^64) p (accumulation p lg lw (sourceNegative T) terms%(2^128)) = _
++  rw [Int.emod_eq_of_lt arange.1 arange.2,
++    target_reduce_correct i _ arange.1 arange.2]
++  have h := modularAccumulationSound p r deployedOmega terms vr deployedGamma mag lg lw
++    (sourceNegative T) glazy.2.2 wlazy.2.2 (fun j => (tlazy j).2.2)
++  rw [h]
++  change (integerPart r deployedOmega (deployedV r) deployedGamma+
++    signed (sourceNegative T) (sourceMagnitude T))%p=deployedOutput r%p
++  rw [signed_magnitude]
++  rfl
++
++/-- The actual captured nearest+1 coefficient inhabits the complete source-word model. -/
++theorem captured_source_word_inhabited :
++    (∀ i,0≤capturedResidues i ∧ capturedResidues i<deployedBase i) ∧
++    (∀ i,sourceWordTarget capturedResidues i=172481) := by
++  refine ⟨deployed_witness_inhabited.1,?_⟩
++  intro i
++  rw [sourceWordRefinement capturedResidues deployed_witness_inhabited.1 i,
++    deployed_witness_inhabited.2.2.1]
++  fin_cases i <;> norm_num [target,FheTargetProjection.targetPrime]
++
++/-- The complete word model refuses the exact-nearest neighbor on the actual +1 row. -/
++theorem captured_wrong_neighbor : sourceWordTarget capturedResidues 0 ≠ 172480 := by
++  rw [captured_source_word_inhabited.2 0]
++  norm_num
++
++/-- The frozen source descriptor already enforces canonicality; callers need not
++assert it again to apply the source-word refinement. -/
++theorem source_check_canonical (r : Fin 6 → ℤ) (y : ℤ)
++    (v : ℕ → Minidregg.Compiler.BabyBear)
++    (h : FheSourceCertificate.pinnedSourceCheck r y v=true) :
++    ∀ i,0≤r i ∧ r i<deployedBase i := by
++  open Minidregg.Compiler Minidregg.Compiler.FheSourceCertificate
++    Minidregg.Compiler.AirSimplify Minidregg.Compiler.DescriptorEval
++    Minidregg.Compiler.NativeKernelPlan in
++  have hc : FheSourceCertificate.accepts r y
++      (FheSourceCertificate.readCertificate (FheSourceCertificate.decoded v)) := by
++    simp only [pinnedSourceCheck,Bool.and_eq_true,decide_eq_true_eq] at h
++    obtain ⟨⟨hr,hy⟩,hd⟩ := h
++    let asg : Fin 30294 → BabyBear := fun i => v i.val
++    have hs := (cse_emitSimplified_accepts_iff Fin.val Fin.val_injective 0 30294
++      (fun i : Fin 30294 => i.isLt) asg sourceSystem).mp
++      ⟨v,fun _ => rfl,(descriptorHoldsCheck_eq_true_iff _ _).mp hd⟩
++    obtain ⟨v',hp,hd'⟩ := (emit_accepts_iff_fin 30294 0 asg sourceSystem).mpr hs
++    have he : decoded v'=decoded v := by
++      funext g
++      apply Finset.sum_congr rfl
++      intro d _
++      rw [hp (scalarWire (groupDigit (g,d)))]
++    have hcert := balanced_source_accepts (decoded v') (sourceDescriptor_balanced v' hd')
++    rw [he,hr,hy] at hcert
++    exact hcert
++  exact hc.1
++
++/-- Canonical target limbs accepted by the frozen extended boundary equal the
++entire handwritten source-word output, not merely an independent integer reference. -/
++theorem accepted_target_matches_source (r : Fin 6 → ℤ) (y : ℕ) (limbs : Fin 3 → ℕ)
++    (sv tv : ℕ → Minidregg.Compiler.BabyBear)
++    (h : FheTargetProjection.pinnedTargetCheck r y limbs sv tv=true) :
++    ∀ i,(limbs i : ℤ)=sourceWordTarget r i := by
++  have hs := h
++  simp only [FheTargetProjection.pinnedTargetCheck,Bool.and_eq_true] at hs
++  have hr := source_check_canonical r y sv hs.1.1.1
++  intro i
++  rw [sourceWordRefinement r hr i]
++  exact (FheTargetProjection.pinnedTargetCheck_sound r y limbs sv tv h i).2
++
++end Minidregg.Compiler.FheRnsSourceWord
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.signed_magnitude' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.signed_magnitude
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.magnitude_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.magnitude_range
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.negative_increment_fits' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.negative_increment_fits
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.target_word_bounds' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.target_word_bounds
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.source_rest_bounds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.source_rest_bounds
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.source_v_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.source_v_range
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.target_reduce_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.target_reduce_correct
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.sourceWordRefinement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.sourceWordRefinement
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.captured_source_word_inhabited' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.captured_source_word_inhabited
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.captured_wrong_neighbor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.captured_wrong_neighbor
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.source_check_canonical' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.source_check_canonical
++
++/-- info: 'Minidregg.Compiler.FheRnsSourceWord.accepted_target_matches_source' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheRnsSourceWord.accepted_target_matches_source

@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/build/Compiler/DisjointOraclePhases.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Compiler/DisjointOraclePhases.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/build:/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_006/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256_before": "87c68dd786f93684de4241738540b915e4838d8d3a59a3aa711e0088e0380de6",
+  "source_sha256_after": "87c68dd786f93684de4241738540b915e4838d8d3a59a3aa711e0088e0380de6",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Compiler/DisjointOraclePhases.lean",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsed_seconds": 2.0978705000015907,
+  "dependency_report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/results/run_006/report.json",
+  "dependency_report_sha256": "77e62e7f44a8e5d6fc8877243110597a06e3362d118ab0eab24fe6c79556d445",
+  "olean_sha256": "613d0a276d5e377c3dcd9c38c838e02228c09dd1d9b8deb13c31a0c5f63102be"
+}

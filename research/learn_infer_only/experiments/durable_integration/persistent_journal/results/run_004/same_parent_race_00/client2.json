@@ -1,0 +1,52 @@
+{
+  "pid": 35123,
+  "request_sha256": "9c6871c9ad6bbced5c58a55882d2de4b3a489d92dfa032cf7ed71a01aba115df",
+  "answer": {
+    "installed_state": [
+      1
+    ],
+    "nonce": {
+      "canonical_bytes": [
+        2,
+        255,
+        7,
+        255,
+        255
+      ],
+      "codec_version": 1,
+      "domain": 101,
+      "nullifier_id": 7
+    },
+    "packet": {
+      "canonical_bytes": [
+        11,
+        255,
+        7,
+        255,
+        255,
+        255,
+        1,
+        255,
+        1,
+        255,
+        19,
+        255,
+        23,
+        255,
+        255,
+        255,
+        1,
+        255,
+        1,
+        255
+      ],
+      "codec_version": 1,
+      "domain": 102,
+      "event_id": 92
+    },
+    "publication": "stored",
+    "sequence": 1,
+    "status": "accepted",
+    "transaction_id": 92
+  }
+}

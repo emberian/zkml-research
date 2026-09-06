@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/.build/Compiler/FheBarrettWord.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:173:49: error: unsolved goals\ncase true\nonTrue onFalse : BitVec 64\n\u22a2 (onTrue ^^^ onFalse) &&& 18446744073709551615#64 ^^^ onFalse = onTrue\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean:174:28: warning: This simp argument is unused:\n  BitVec.xor_assoc\n\nHint: Omit it from the simp argument list.\n  simp \u0335[\u0335B\u0335i\u0335t\u0335V\u0335e\u0335c\u0335.\u0335x\u0335o\u0335r\u0335_\u0335a\u0335s\u0335s\u0335o\u0335c\u0335]\u0335\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n",
+    "stderr": "",
+    "elapsed_seconds": 6.104655584000284
+  }
+]

@@ -1,0 +1,97 @@
+{
+  "label": "EXECUTED artifact/source pins; no Rust-language refinement claim",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/finalize.py"
+  ],
+  "formal_patch_sha256": "994e75fece5090d9cc29a8408dd18b105f25d05825ae01048cf8216e16bfc464",
+  "exact_axiom_pins": 38,
+  "previous_patches_unchanged": {
+    "minidregg-bfv-lift-refinement.patch": "929f79e168a1e236b04a2fa6edbf9448e22da5041124b7484e0fd9348072dc11",
+    "engine_refinement/minidregg-fhe-rns-scale-decomposition.patch": "de9490c464d332810bd5de79d21fd9b8db03c6bd29f2a28d8de26a78d41114b0",
+    "source_certificate/minidregg-fhe-source-certificate.patch": "55ffecdf2db1d330b0cc76126781dbc39c4ea581fe4edc4fbb7da7830e771d2f",
+    "target_projection/minidregg-fhe-target-projection.patch": "61f35e724f5de29d7338a381232b31e60c36cf39845665f8ac4073f150e0ea97"
+  },
+  "actual_fixture": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/actual-words.jsonl.gz",
+    "sha256": "6be386d120b6c0d85aa7b3e1995b997b15d99c5d18ce2d0718101de752f56ed4",
+    "uncompressed_sha256": "6266ccb48b2d0aa6c46f8fc45d466d9beea1d8d4c28e39d9b0bee64a5d497e4e",
+    "rows": 1904,
+    "compressed_bytes": 116765,
+    "uncompressed_bytes": 395729
+  },
+  "sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/check_source_words.py",
+      "sha256": "67799918bf1d03f889bdbd08cd4e9681ed04d43d84c256126f44c8b2521f8b9d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/check_words.py",
+      "sha256": "006f30c29e2cde6dcc33fed7aa8d83b15dc82632646b96f0b0d2ed0ea0429dae"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/finalize.py",
+      "sha256": "924bc32630fb47345bb547c9c15178b5c07349f55cca94038f28412b13343bad"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/run_probe.py",
+      "sha256": "39233115233901ec29ff960aa04d842375dfcb2fa328ddd1b5201401515f3219"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/source_map.py",
+      "sha256": "d6b635857f3c4e3d0fb9c439927edd9b1afe9e2b993ab21fb52076fa5f75f84b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/word_model.py",
+      "sha256": "03d84f9e26efb6ca0bd5357b508f5070f4d094448f1c0a29acda0cbf0c0de5d4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/word_probe.rs",
+      "sha256": "fc5cbc3bcaaa45b65776a858d72211f670abe5815080517b68020ee77c7d191f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean",
+      "sha256": "8cf7b57f258b9138afaebd1b924b50005b8ad0b0185a07bd0835044910098b01"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheModularAxiomReport.lean",
+      "sha256": "2733344286ba52b80be60f9776838cb2a7293678c3e007b72482b808d9878251"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheRnsModularAccumulation.lean",
+      "sha256": "69264039ef3001828d428668d1d78e3837443e23737425da3d20d4440fb671dc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheRnsSourceWord.lean",
+      "sha256": "4a5e6c29c511897ea7db15a302c863fa8f44acceb33ad2a447dfbd53b48d630a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheShoupWord.lean",
+      "sha256": "90c097acc41372fa7a350d515967c88c68380884a066bb2f7a7e748f6b528d0e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/REPORT.md",
+      "sha256": "33d2c00c615efe131290d34c7d31cda868bb11fedf88759efa72fed2222a2c1e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/build.py",
+      "sha256": "a4e03fe12e22f55209970b28310a2478307e44919ca3195e46a532587c373c7e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/pin_axioms.py",
+      "sha256": "ed5e16d1de3fbf49f33bf88d5bf0804d3e68e537ce5d7d0958de3a081db69a75"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/validate.py",
+      "sha256": "aa12245b0bb91601a4aaccc20bc1c04e9c32e123e54fba760b8f952390b866dd"
+    }
+  ],
+  "primary_source_hashes": {
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3",
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/scaler.rs": "82719d9ba27cc48542a6ba6989240217cc50d9005591208e7d7648b211f33c4f",
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rns/mod.rs": "f0a88975e063a68febcf18559eb40b9445ef519f60305687a3c4becf3c5bc5c7"
+  },
+  "extra_emitted_constraints": 0,
+  "metered_search_queries": 0,
+  "pdf_downloads": 0
+}

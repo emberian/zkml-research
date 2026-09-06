@@ -1,0 +1,434 @@
+[
+  {
+    "index": 0,
+    "thread_id": 6151598080,
+    "started_ns": 1788689578602539000,
+    "finished_ns": 1788689579636049000,
+    "answer": {
+      "installed_state": [
+        1
+      ],
+      "nonce": {
+        "canonical_bytes": [
+          2,
+          255,
+          7,
+          255,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 101,
+        "nullifier_id": 7
+      },
+      "packet": {
+        "canonical_bytes": [
+          11,
+          255,
+          7,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255,
+          19,
+          255,
+          23,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 102,
+        "event_id": 91
+      },
+      "publication": "duplicateSamePacket",
+      "sequence": 1,
+      "status": "replayed",
+      "transaction_id": 91
+    }
+  },
+  {
+    "index": 1,
+    "thread_id": 6168424448,
+    "started_ns": 1788689578602366000,
+    "finished_ns": 1788689579651086000,
+    "answer": {
+      "installed_state": [
+        1
+      ],
+      "nonce": {
+        "canonical_bytes": [
+          2,
+          255,
+          7,
+          255,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 101,
+        "nullifier_id": 7
+      },
+      "packet": {
+        "canonical_bytes": [
+          11,
+          255,
+          7,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255,
+          19,
+          255,
+          23,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 102,
+        "event_id": 91
+      },
+      "publication": "duplicateSamePacket",
+      "sequence": 1,
+      "status": "replayed",
+      "transaction_id": 91
+    }
+  },
+  {
+    "index": 2,
+    "thread_id": 6185250816,
+    "started_ns": 1788689578602229000,
+    "finished_ns": 1788689579821566000,
+    "answer": {
+      "installed_state": [
+        1
+      ],
+      "nonce": {
+        "canonical_bytes": [
+          2,
+          255,
+          7,
+          255,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 101,
+        "nullifier_id": 7
+      },
+      "packet": {
+        "canonical_bytes": [
+          11,
+          255,
+          7,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255,
+          19,
+          255,
+          23,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 102,
+        "event_id": 91
+      },
+      "publication": "duplicateSamePacket",
+      "sequence": 1,
+      "status": "replayed",
+      "transaction_id": 91
+    }
+  },
+  {
+    "index": 3,
+    "thread_id": 6202077184,
+    "started_ns": 1788689578602330000,
+    "finished_ns": 1788689579642961000,
+    "answer": {
+      "installed_state": [
+        1
+      ],
+      "nonce": {
+        "canonical_bytes": [
+          2,
+          255,
+          7,
+          255,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 101,
+        "nullifier_id": 7
+      },
+      "packet": {
+        "canonical_bytes": [
+          11,
+          255,
+          7,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255,
+          19,
+          255,
+          23,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 102,
+        "event_id": 91
+      },
+      "publication": "duplicateSamePacket",
+      "sequence": 1,
+      "status": "replayed",
+      "transaction_id": 91
+    }
+  },
+  {
+    "index": 4,
+    "thread_id": 6218903552,
+    "started_ns": 1788689578602468000,
+    "finished_ns": 1788689579745995000,
+    "answer": {
+      "installed_state": [
+        1
+      ],
+      "nonce": {
+        "canonical_bytes": [
+          2,
+          255,
+          7,
+          255,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 101,
+        "nullifier_id": 7
+      },
+      "packet": {
+        "canonical_bytes": [
+          11,
+          255,
+          7,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255,
+          19,
+          255,
+          23,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 102,
+        "event_id": 91
+      },
+      "publication": "duplicateSamePacket",
+      "sequence": 1,
+      "status": "replayed",
+      "transaction_id": 91
+    }
+  },
+  {
+    "index": 5,
+    "thread_id": 6235729920,
+    "started_ns": 1788689578602406000,
+    "finished_ns": 1788689579711700000,
+    "answer": {
+      "installed_state": [
+        1
+      ],
+      "nonce": {
+        "canonical_bytes": [
+          2,
+          255,
+          7,
+          255,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 101,
+        "nullifier_id": 7
+      },
+      "packet": {
+        "canonical_bytes": [
+          11,
+          255,
+          7,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255,
+          19,
+          255,
+          23,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 102,
+        "event_id": 91
+      },
+      "publication": "duplicateSamePacket",
+      "sequence": 1,
+      "status": "replayed",
+      "transaction_id": 91
+    }
+  },
+  {
+    "index": 6,
+    "thread_id": 6252556288,
+    "started_ns": 1788689578602431000,
+    "finished_ns": 1788689579641099000,
+    "answer": {
+      "installed_state": [
+        1
+      ],
+      "nonce": {
+        "canonical_bytes": [
+          2,
+          255,
+          7,
+          255,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 101,
+        "nullifier_id": 7
+      },
+      "packet": {
+        "canonical_bytes": [
+          11,
+          255,
+          7,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255,
+          19,
+          255,
+          23,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 102,
+        "event_id": 91
+      },
+      "publication": "duplicateSamePacket",
+      "sequence": 1,
+      "status": "replayed",
+      "transaction_id": 91
+    }
+  },
+  {
+    "index": 7,
+    "thread_id": 6269382656,
+    "started_ns": 1788689578602302000,
+    "finished_ns": 1788689579608371000,
+    "answer": {
+      "installed_state": [
+        1
+      ],
+      "nonce": {
+        "canonical_bytes": [
+          2,
+          255,
+          7,
+          255,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 101,
+        "nullifier_id": 7
+      },
+      "packet": {
+        "canonical_bytes": [
+          11,
+          255,
+          7,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255,
+          19,
+          255,
+          23,
+          255,
+          255,
+          255,
+          1,
+          255,
+          1,
+          255
+        ],
+        "codec_version": 1,
+        "domain": 102,
+        "event_id": 91
+      },
+      "publication": "stored",
+      "sequence": 1,
+      "status": "replayed",
+      "transaction_id": 91
+    }
+  }
+]

@@ -1,0 +1,77 @@
+{
+  "label": "EXECUTED",
+  "scope": "Finite program-premise and coefficient checks only. No real encryption, obfuscation, quantum game or PQ instantiation.",
+  "simulated_key_equivalence_cases": 128,
+  "soundness_removed_counterexample": {
+    "tag": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      0
+    ],
+    "outputs": [
+      0,
+      1
+    ]
+  },
+  "accepted_special_tag_oracle_outputs": [
+    1,
+    0
+  ],
+  "honest_signature_source_literal_rejects": true,
+  "honest_signature_normalized_rejects": false,
+  "pointwise_correctness_control": {
+    "domain_size": 16,
+    "each_fixed_input_error": "1/16",
+    "all_input_failure_probability": "1",
+    "adaptive_code_reader_failure_probability": "1"
+  },
+  "eleven_transition_coefficient_checks": 289,
+  "zero_decryption_ledger_at_qk_3": [
+    {
+      "IO": 3
+    },
+    {
+      "PPRF": 3
+    },
+    {
+      "COM": 1
+    },
+    {
+      "WI": 1
+    },
+    {
+      "PKE": 1
+    },
+    {
+      "IO": 3,
+      "NIWI_BAD": 3
+    },
+    {
+      "SUF": 0,
+      "NIWI_BAD": 0,
+      "IO_CORR": 0
+    },
+    {
+      "PKE": 1
+    },
+    {
+      "SUF": 0,
+      "NIWI_BAD": 0,
+      "IO_CORR": 0
+    },
+    {
+      "IO": 3,
+      "NIWI_BAD": 3
+    },
+    {
+      "PPRF": 0,
+      "IO_CORR": 0
+    }
+  ]
+}

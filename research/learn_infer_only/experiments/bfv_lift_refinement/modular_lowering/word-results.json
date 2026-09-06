@@ -1,0 +1,19 @@
+{
+  "label": "EXECUTED literal word models versus actual fhe-math calls plus exhaustive reduced-word checks",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/modular_lowering/check_words.py"
+  ],
+  "source_sha256": "006f30c29e2cde6dcc33fed7aa8d83b15dc82632646b96f0b0d2ed0ea0429dae",
+  "model_sha256": "03d84f9e26efb6ca0bd5357b508f5070f4d094448f1c0a29acda0cbf0c0de5d4",
+  "actual_fixture_sha256": "6be386d120b6c0d85aa7b3e1995b997b15d99c5d18ce2d0718101de752f56ed4",
+  "actual_rows": 1904,
+  "full_width_a_exceeds_modulus": 1805,
+  "noncanonical_lazy_shoup": 405,
+  "noncanonical_lazy_barrett": 320,
+  "max_middle_bits": 128,
+  "finite_shoup_cases": 35920,
+  "finite_barrett_cases": 138752,
+  "canonical_b_and_lazy_range_falsifiers_refused": true,
+  "elapsed_seconds": 0.16583108399936464
+}

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/build/Theory/HorizonComposition.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "5ef2e4e690a51aa9ff7c9859684ff17efd7716db6a7a3833e1711aa6745dbf79",
+  "exit_code": 0,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean:295:8: warning: This simp argument is unused:\n  Fintype.card_fun\n\nHint: Omit it from the simp argument list.\n  simp [\u0335F\u0335i\u0335n\u0335t\u0335y\u0335p\u0335e\u0335.\u0335c\u0335a\u0335r\u0335d\u0335_\u0335f\u0335u\u0335n\u0335,\u0335d\u0335y\u0335a\u0335d\u0335i\u0335c\u0335S\u0335i\u0335z\u0335e\u0335]\u0335[\u0332d\u0332y\u0332a\u0332d\u0332i\u0332c\u0332S\u0332i\u0332z\u0332e\u0332]\u0332\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n",
+  "stderr": ""
+}

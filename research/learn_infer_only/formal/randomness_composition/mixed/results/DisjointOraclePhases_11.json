@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/build/Compiler/DisjointOraclePhases.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Compiler/DisjointOraclePhases.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/build:/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_006/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256_before": "d0b307acd17669ecdebc15d47ccd28249eb0bb8fa7cab9b2268480508b4b3230",
+  "source_sha256_after": "d0b307acd17669ecdebc15d47ccd28249eb0bb8fa7cab9b2268480508b4b3230",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Compiler/DisjointOraclePhases.lean",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Compiler.DisjointOraclePhases.answer_append' depends on axioms: [propext]\n'Minidregg.Compiler.DisjointOraclePhases.tagged_answers' depends on axioms: [propext]\n'Minidregg.Compiler.DisjointOraclePhases.tagged_projections' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.DisjointOraclePhases.left_step_transport' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.DisjointOraclePhases.right_step_transport' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.DisjointOraclePhases.left_run_transport' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.DisjointOraclePhases.right_run_transport' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.DisjointOraclePhases.mixed_trace_coupling' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.DisjointOraclePhases.run_length' depends on axioms: [propext]\n'Minidregg.Compiler.DisjointOraclePhases.mixed_query_budget' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.DisjointOraclePhases.answer_eq_find' depends on axioms: [propext]\n'Minidregg.Compiler.DisjointOraclePhases.run_is_srTrace' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.DisjointOraclePhases.two_phase_union_bound' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.DisjointOraclePhases.encoded_answer_transport' depends on axioms: [propext]\n'Minidregg.Compiler.DisjointOraclePhases.answer_eq_getD' depends on axioms: [propext]\n",
+  "stderr": "",
+  "elapsed_seconds": 2.0985852500016335,
+  "dependency_report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/results/run_006/report.json",
+  "dependency_report_sha256": "77e62e7f44a8e5d6fc8877243110597a06e3362d118ab0eab24fe6c79556d445",
+  "olean_sha256": "57cdc24303a5b692ad390978319434f0a0a38beda7f185832ca5a1a903be874d"
+}

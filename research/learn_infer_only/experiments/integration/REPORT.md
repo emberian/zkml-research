@@ -1,7 +1,7 @@
 # Finished-proposal integration, 2026-09-06
 
-[EXECUTED] The final batched integration passed. It compiles **39 proposed
-modules, 499 guarded theorem pins, and all four Theory/Compiler/Selvage/Assurance
+[EXECUTED] The final batched integration passed. It compiles **41 proposed
+modules, 528 guarded theorem pins, and all four Theory/Compiler/Selvage/Assurance
 umbrellas together in one fresh overlay**. This is integration against existing
 read-only dependency oleans, not a clean full companion build.
 
@@ -10,6 +10,7 @@ read-only dependency oleans, not a clean full companion build.
 | `results/run_001/report.json` | 12 baseline modules; four umbrellas; two integer executable checks | 217 | 149.300976 | Passed |
 | `results/run_002/report.json` | Baseline plus four stable EMA modules; four umbrellas | 265 | 122.319557 | Passed |
 | `results/run_003/report.json` | Previous set plus generic contextual gate and actual EMA adaptive adapter; four umbrellas | 307 | 89.049419 | Passed |
+| `results/run_010/report.json` | Previous set plus actual mixed Stage0/EMA oracle phases; four umbrellas | 528 | 179.520435 | Passed |
 | `results/run_009/report.json` | Previous set plus ciphertext window, integer noise bridge, and BFV target projection; four umbrellas | 499 | 174.616221 | Passed |
 | `results/run_006/report.json` | Previous set plus distribution budget, two simplifier modules, and six BFV source-certificate modules; four umbrellas | 371 | 142.107070 | Passed |
 
@@ -44,10 +45,11 @@ elaborating all those actual guards. The extended census is:
 | Ciphertext window core/cell/witness | 3 | 44 |
 | Integer window noise and actual BFV bridge | 4 | 62 |
 | BFV target projection library | 5 | 22 |
+| Mixed oracle phases and actual Stage0/EMA adapter | 2 | 29 |
 
-[EXECUTED] All 499 pins use only the recorded standard kernel axiom vocabulary:
-44 use no axioms; 22 use only `propext`; 36 use `propext, Quot.sound`; 4 use only
-`Quot.sound`; 393 use
+[EXECUTED] All 528 pins use only the recorded standard kernel axiom vocabulary:
+45 use no axioms; 28 use only `propext`; 43 use `propext, Quot.sound`; 4 use only
+`Quot.sound`; 408 use
 `propext, Classical.choice, Quot.sound`. No forbidden construct was found in the
 selected proof sources by the comment/string-masking lexical instrument. The
 final run's Lean compilation logs contain no warning or stderr output. Exact per-name
@@ -106,3 +108,11 @@ refinement; the EMA privacy/collision residuals retain their named scope.
 made by this integration lane.
 
 [EXECUTED] Frozen 499-pin combined patch: `formal/integration/minidregg-combined-resident-499.patch`, SHA256 `8f825765a1dd9dbdbf63e3f0013c8a3428f4a94ab93fd310b20efb83ec5efbcc`. The 217/265/307/371 snapshots remain unchanged. The corresponding explicit manifest is `modules_window_batch.json`; the baseline default remains `modules.json`.
+
+[EXECUTED] Frozen 528-pin combined patch: `formal/integration/minidregg-combined-resident-528.patch`, SHA256 `b6a5d16768fe3b82b4a2cd0a8f30780e650a921061ddda8da1c46bddea5a5153`. Manifest `modules_with_mixed_phases.json` extends the preserved 499 selection by exactly the two frozen mixed-phase modules. Run 010 compiled all 41 modules and all four umbrellas with no warning/stderr, applied and checked the combined patch, and preserved every selected/companion input hash and companion HEAD/status. The separately announced BFV modular-lowering 38-pin patch is not in this selection.
+
+## Final collection check
+
+[EXECUTED final collection, 2026-09-06] Run011 passed: **49 modules /651 exact theorem pins**, all four umbrellas, actual patch application/content comparison and both import-boundary instruments. Elapsed213.909 seconds. No selected input or companion source changed; companion HEAD/status were unchanged. Existing dependency oleans were reused; no clean whole-tree build is claimed. The final snapshot is formal/integration/minidregg-combined-resident-651.patch, SHA256 9398b530f3640d5f279c4f3958ccf57abcbb113f43ca608825ca41d935ed8e42.
+
+[DERIVED scope] This adds saved modular-word38, guarded horizon arithmetic 40 and source-phase 45 to the morning 528-pin pass. It excludes unfinished mixed-journal and source-noise successors. Apply one compatible combined proposal; earlier snapshots are retained as historical evidence.

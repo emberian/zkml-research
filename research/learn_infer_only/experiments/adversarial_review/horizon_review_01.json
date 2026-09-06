@@ -1,0 +1,242 @@
+{
+  "label": "EXECUTED exact reduction-wiring controls; deliberately insecure finite channel",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/horizon_review.py"
+  ],
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/horizon_review.py": "78e13865f4b72a807a1861eb6b6aafe1e47b7eb077d5d18ed705890f200b25e3",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf": "58bb2eb72bc8e5c3eaf3193fefd6c72754ff428265231fb459b0de6c8db32e30",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/FINITE_LADDER.md": "3c94a21d5a529b568da5392702c65cda7e22ace8e5f7be40a783ae93c43cb71c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/finite_ladder.py": "c27cdf74e4eab4c68bdd608b7e66aa12783925319675ccef40d1ba2f15455831",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/horizon/HORIZON.md": "f1415e2c95600e52a00c9fdb5e3b6c7bcf55cf2d726ffa9341f1abe9ff3d5743",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/horizon/audit.py": "7fc7e24fc84152feb199cea4c83758557ff889f5b513fb902fa63e038950e6e9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/horizon/results.json": "0ae1ec22377b36443aa0867e933a7f592fa9fbf0baf95a7f8573f0591b523b61"
+  },
+  "inputs_unchanged": true,
+  "paper_extraction_command": [
+    "pdftotext",
+    "-layout",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/2013_729_review.txt"
+  ],
+  "full_extract_is_ignored_scratch": true,
+  "owner_function_outputs_match_saved": true,
+  "independent_rank_cases": 1408,
+  "finite_channel_wrappers": [
+    {
+      "horizon": 0,
+      "root_gap": "3/4",
+      "sides": [
+        {
+          "path": [],
+          "side": "left",
+          "real_minus_ideal": "0",
+          "oriented_gap": "0"
+        },
+        {
+          "path": [],
+          "side": "right",
+          "real_minus_ideal": "-3/4",
+          "oriented_gap": "3/4"
+        }
+      ],
+      "uniform_mathematical_gap": "3/8",
+      "strict_fair_coin_choices": 2,
+      "dummy_choices": 0,
+      "exact_padded_gap": "3/8",
+      "sum_without_right_complement": "-3/4",
+      "right_complement_is_load_bearing": true
+    },
+    {
+      "horizon": 1,
+      "root_gap": "-1/8",
+      "sides": [
+        {
+          "path": [],
+          "side": "left",
+          "real_minus_ideal": "-1/8",
+          "oriented_gap": "-1/8"
+        },
+        {
+          "path": [],
+          "side": "right",
+          "real_minus_ideal": "5/16",
+          "oriented_gap": "-5/16"
+        },
+        {
+          "path": [
+            0
+          ],
+          "side": "left",
+          "real_minus_ideal": "0",
+          "oriented_gap": "0"
+        },
+        {
+          "path": [
+            0
+          ],
+          "side": "right",
+          "real_minus_ideal": "-1/32",
+          "oriented_gap": "1/32"
+        },
+        {
+          "path": [
+            1
+          ],
+          "side": "left",
+          "real_minus_ideal": "1/32",
+          "oriented_gap": "1/32"
+        },
+        {
+          "path": [
+            1
+          ],
+          "side": "right",
+          "real_minus_ideal": "-1/4",
+          "oriented_gap": "1/4"
+        }
+      ],
+      "uniform_mathematical_gap": "-1/48",
+      "strict_fair_coin_choices": 8,
+      "dummy_choices": 2,
+      "exact_padded_gap": "-1/64",
+      "sum_without_right_complement": "-1/16",
+      "right_complement_is_load_bearing": true
+    },
+    {
+      "horizon": 2,
+      "root_gap": "1/16",
+      "sides": [
+        {
+          "path": [],
+          "side": "left",
+          "real_minus_ideal": "3/64",
+          "oriented_gap": "3/64"
+        },
+        {
+          "path": [],
+          "side": "right",
+          "real_minus_ideal": "5/64",
+          "oriented_gap": "-5/64"
+        },
+        {
+          "path": [
+            0
+          ],
+          "side": "left",
+          "real_minus_ideal": "19/256",
+          "oriented_gap": "19/256"
+        },
+        {
+          "path": [
+            0
+          ],
+          "side": "right",
+          "real_minus_ideal": "1/8",
+          "oriented_gap": "-1/8"
+        },
+        {
+          "path": [
+            0,
+            0
+          ],
+          "side": "left",
+          "real_minus_ideal": "1/16",
+          "oriented_gap": "1/16"
+        },
+        {
+          "path": [
+            0,
+            0
+          ],
+          "side": "right",
+          "real_minus_ideal": "5/256",
+          "oriented_gap": "-5/256"
+        },
+        {
+          "path": [
+            0,
+            1
+          ],
+          "side": "left",
+          "real_minus_ideal": "-1/16",
+          "oriented_gap": "-1/16"
+        },
+        {
+          "path": [
+            0,
+            1
+          ],
+          "side": "right",
+          "real_minus_ideal": "-3/128",
+          "oriented_gap": "3/128"
+        },
+        {
+          "path": [
+            1
+          ],
+          "side": "left",
+          "real_minus_ideal": "17/128",
+          "oriented_gap": "17/128"
+        },
+        {
+          "path": [
+            1
+          ],
+          "side": "right",
+          "real_minus_ideal": "1/64",
+          "oriented_gap": "-1/64"
+        },
+        {
+          "path": [
+            1,
+            0
+          ],
+          "side": "left",
+          "real_minus_ideal": "-1/256",
+          "oriented_gap": "-1/256"
+        },
+        {
+          "path": [
+            1,
+            0
+          ],
+          "side": "right",
+          "real_minus_ideal": "13/256",
+          "oriented_gap": "-13/256"
+        },
+        {
+          "path": [
+            1,
+            1
+          ],
+          "side": "left",
+          "real_minus_ideal": "11/128",
+          "oriented_gap": "11/128"
+        },
+        {
+          "path": [
+            1,
+            1
+          ],
+          "side": "right",
+          "real_minus_ideal": "1/128",
+          "oriented_gap": "-1/128"
+        }
+      ],
+      "uniform_mathematical_gap": "1/224",
+      "strict_fair_coin_choices": 16,
+      "dummy_choices": 2,
+      "exact_padded_gap": "1/256",
+      "sum_without_right_complement": "39/64",
+      "right_complement_is_load_bearing": true
+    }
+  ],
+  "auxiliary_pad_control": {
+    "ciphertext_marginals_equal": true,
+    "full_exposed_joint_worlds_distinct": true
+  },
+  "strict_sampling_repair": "M=2^ceil(log2(2N)); dummy one-message, zero-key, constant-output ranks; exact Delta/M",
+  "scope": "No primitive theorem, encrypted execution, measured cryptographic advantage, or full source reduction formalization."
+}
