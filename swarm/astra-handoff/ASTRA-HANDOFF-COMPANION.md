@@ -167,13 +167,23 @@ re-derive. Put this in `SECURITY_GAME.md`'s "who originates each observation" li
      evidence *semantically assigned* to a registered proof suite; a zero/unassigned suite
      is refused. The BFV path has an exact 384-row relation with controller framing
      (FORMAL_STATUS row "Private turns, sealed escrow, BFV, and note spend").
-  3. **[LANE] `Assurance/ReleaseGateRouting.lean`** — the handoff's §6B as theorems: an
-     unbound gate that reveals any predicate's bit determines the state (the "route bit
-     37" attack, with a class containing the projections); the binding control (a gate
-     accepting only evidence bound to the authorized relation refuses the substitution);
-     and the connection: the Stage-0 receipt as an inhabitant of the evidence type, with
-     `[RELEASE-hiding]` and `[RELEASE-continuity]` named. Note:
-     `notes/release-gate-routing.md`.
+  3. **[LEAN, landed 09-06] `Assurance/ReleaseGateRouting.lean`** (18 pins) — the
+     handoff's §6B as theorems, joined at both ends. Routing: an unbound gate that reveals
+     the designated bit of any submitted predicate determines the state
+     (`determines_iff_separates`, `hostReconstruct_exact` — the "route bit 37" attack by
+     `rfl`); at most one predicate ⇒ at most one bit (`single_predicate_not_determining`).
+     Binding: `BindingGate` ⇒ `routing_refused` (an output that is not the authorized
+     function of the public half is refused whatever the private half or proof string) and
+     `binding_release_public_only`. **The kernel's `Settlement` is a `BindingGate` by
+     type** (`settlement_is_binding_gate`). **At Stage 0 the descriptor FORCES
+     `Z = (X+Y) mod 2^256`** (`stage0_released_output_forced`), a routed `Z` is refused at
+     the ideal gate (`stage0_forged_z_refused`), the honest candidate passes both the ideal
+     and the deployed FS gate, and `stage0Receipt_is_bound_evidence` holds. What the
+     receipt binds: the descriptor and the full word, up to the FS price under the ROM.
+     What it does not: hide — `stage0_statement_carries_word` (`rfl`), there is no private
+     half at Stage 0. Residuals `[RELEASE-hiding]`, `[RELEASE-continuity]`. Note:
+     `notes/release-gate-routing.md`. **For `formal/`: cite these; the routing lemma and
+     the binding control do not need to be written again.**
 - **The vFHE relation itself, and its sharpest hole.** VERDICTS §3/§3b (zkml-research):
   BFV at N = 4096, log q ≈ 109, t = 2²⁰, deployed depth 2; the relation is
   coefficient-domain (no NTT in it). **[VERIFIED, 09-05] Hole B at its sharpest**
@@ -278,14 +288,20 @@ re-derive. Put this in `SECURITY_GAME.md`'s "who originates each observation" li
 4. **§6D** — a finality gate without a key exists in the tree as of 09-05; the handoff
    proposes to "separately model" it; model *that one*.
 
-## 4. What is running now (do not duplicate)
+## 4. What has already been done (do not duplicate) — all four landed 2026-09-06
 
-| lane | output |
-|---|---|
-| pre-constrained encryption read at source (Route 1) | `notes/pre-constrained-encryption-read.md` |
-| streaming-FE credential audit (Route 2, §6C) | `notes/streaming-fe-credential-audit.md` |
-| trace-privacy lemma in Lean (§6A) | `Theory/PrivateTrace.lean`, `notes/private-trace-lemma.md` |
-| release-gate routing + binding control (§6B, Route 3) | `Assurance/ReleaseGateRouting.lean`, `notes/release-gate-routing.md` |
+| item | output | headline |
+|---|---|---|
+| Route 1 read at source | `notes/pre-constrained-encryption-read.md` | one hop; closure needs general-circuit constraints = iO; extractor warning confirmed |
+| Route 2 / §6C credential audit | `notes/streaming-fe-credential-audit.md` | writer state = inner msk, static; appending = reading; not a theorem break |
+| §6A trace-privacy lemma | minidregg `Theory/PrivateTrace.lean` (no axioms on the main theorem) | preserved relation ⇒ equal adaptive traces; byte toy honest; 8 recovers, 7 cannot for any policy |
+| §6B routing + binding | minidregg `Assurance/ReleaseGateRouting.lean` | unbound gate determines state; `Settlement` is a `BindingGate` by type; Stage 0 forces `Z`, routed `Z` refused, receipt is bound evidence |
+
+Remaining from the handoff's §6: **C** is done as a derivation (not a symbolic transcript
+script — that is a small executable task left for Codex); **D** continuity has the objects
+named but no theorem models `restore(manifest)` against the finality gate yet; **E** is the
+prize and is where Route 3 should now go (genesis / parent / recipient / randomness
+fields on the receipt's binding).
 
 ## 5. Suggested first tranche, given all of the above
 
