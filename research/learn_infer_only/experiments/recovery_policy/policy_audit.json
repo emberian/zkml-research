@@ -1,0 +1,122 @@
+{
+  "scope": "exhaustive finite functionality, no encryption implementation",
+  "field": 5,
+  "states": 25,
+  "old_policy": {
+    "classes": 5,
+    "class_sizes": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  "new_policy": {
+    "classes": 5,
+    "class_sizes": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  "retained_old_plus_new": {
+    "classes": 25,
+    "class_sizes": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "retained_old_plus_compatible": {
+    "classes": 5,
+    "class_sizes": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  "revocation_erases_saved_information": false,
+  "migration": {
+    "model_states": 8,
+    "related_ordered_pairs": 16,
+    "max_commands": 8,
+    "path_pair_checks": 8176,
+    "representation_changing_trace": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "unsafe_left_trace": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "unsafe_right_trace": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ]
+    ]
+  },
+  "export_recovery_classes": 25,
+  "public_manifest_classes": 5,
+  "all_assertions_passed": true,
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/recovery_policy/policy_audit.py"
+  ],
+  "source_sha256": "9c5b5390a15d948c4e938368e2167beb41d95527605d3ad433dde0c9eb68d945"
+}

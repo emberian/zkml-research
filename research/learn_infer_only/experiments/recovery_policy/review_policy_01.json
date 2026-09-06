@@ -1,0 +1,57 @@
+{
+  "scope": "isolated module/umbrella against existing oleans, not a full clean build",
+  "source_sha256": "b1b36ecd921a4b2dacc122fb70e25804fc30893d07de42644bcb6ccb1f3f209a",
+  "patch_sha256": "072c08f2a587ca2774dddeb6eb1d1afff27b0ccb7d2a68c2b4ded20daaa1b556",
+  "base_umbrella_sha256": "8f8ffa996db7929d0146f597223ea14a97667d0741ae56e281585eb0c4321b11",
+  "checks": [
+    {
+      "label": "umbrella",
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build/Theory.olean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build/Theory.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "boundary_staged",
+      "command": [
+        "bash",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "label": "boundary_existing",
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "label": "patch",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/minidregg-private-policy-evolution.patch"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_passed": true
+}

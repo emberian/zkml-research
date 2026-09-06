@@ -1,0 +1,210 @@
+/-
+# Private policy evolution: migrations enter the same adaptive trace game
+
+Statement first: `Safe` requires output blindness, ordinary-step preservation,
+and preservation for every admitted migration. `versioned_trace_eq` lifts these
+conditions through the EXISTING PrivateTrace machine. The version is observable;
+admission and destination depend on public version/command, not hidden state.
+
+Witness: two Boolean coordinates, one visible and one hidden. Learning toggles
+the visible coordinate. Migration swaps the representation and switches which
+coordinate is read, so the public value is preserved while representation changes.
+The old hidden bit stays hidden under arbitrary interleavings. Falsifier: an
+equally admitted migration that switches reader without swapping leaks that bit.
+
+The second seam reuses ReleaseSemantics. All historically exposed policies must
+be checked jointly. Two authorized coordinate projections each leave ambiguity;
+together they identify the whole two-bit state. Admission revocation cannot erase
+copied old outputs. These are ideal-functionality facts, not cryptographic claims.
+-/
+import Theory.PrivateTrace
+import Theory.PrivacyProfile
+
+namespace Minidregg.Theory.PrivatePolicyEvolution
+
+set_option autoImplicit false
+open PrivateTrace
+
+structure Evolution (V S C U O : Type*) where
+  out : V → S → O
+  learn : V → S → C → S
+  admitted : V → U → Bool
+  destination : V → U → V
+  migrate : V → S → U → S
+
+def Evolution.machine {V S C U O : Type*} (E : Evolution V S C U O) :
+    Machine (V × S) (Sum C U) (V × O) where
+  out x := (x.1, E.out x.1 x.2)
+  step x command := match command with
+    | .inl c => (x.1, E.learn x.1 x.2 c)
+    | .inr u => if E.admitted x.1 u then
+        (E.destination x.1 u, E.migrate x.1 x.2 u) else x
+
+def Related {V S : Type*} (R : V → S → S → Prop) (x y : V × S) : Prop :=
+  x.1 = y.1 ∧ R x.1 x.2 y.2
+
+structure Safe {V S C U O : Type*} (E : Evolution V S C U O)
+    (R : V → S → S → Prop) : Prop where
+  output : ∀ v s t, R v s t → E.out v s = E.out v t
+  learn : ∀ v s t c, R v s t → R v (E.learn v s c) (E.learn v t c)
+  migrate : ∀ v s t u, E.admitted v u = true → R v s t →
+    R (E.destination v u) (E.migrate v s u) (E.migrate v t u)
+
+theorem safe_output {V S C U O : Type*} (E : Evolution V S C U O)
+    (R : V → S → S → Prop) (h : Safe E R) :
+    ∀ x y, Related R x y → E.machine.out x = E.machine.out y := by
+  rintro ⟨v, s⟩ ⟨w, t⟩ ⟨hvw, hst⟩
+  cases hvw
+  exact Prod.ext rfl (h.output v s t hst)
+
+theorem safe_step {V S C U O : Type*} (E : Evolution V S C U O)
+    (R : V → S → S → Prop) (h : Safe E R) :
+    ∀ x y c, Related R x y → Related R (E.machine.step x c) (E.machine.step y c) := by
+  rintro ⟨v, s⟩ ⟨w, t⟩ command ⟨hvw, hst⟩
+  cases hvw
+  cases command with
+  | inl c => exact ⟨rfl, h.learn v s t c hst⟩
+  | inr u =>
+    change Related R
+      (if E.admitted v u then (E.destination v u, E.migrate v s u) else (v, s))
+      (if E.admitted v u then (E.destination v u, E.migrate v t u) else (v, t))
+    cases hadmit : E.admitted v u with
+    | false => exact ⟨rfl, hst⟩
+    | true =>
+      exact ⟨rfl, h.migrate v s t u hadmit hst⟩
+
+/-- All lengths and adaptive policies; migration is an ordinary adversarial command. -/
+theorem versioned_trace_eq {V S C U O : Type*} (E : Evolution V S C U O)
+    (R : V → S → S → Prop) (h : Safe E R)
+    (π : Policy (Sum C U) (V × O)) (n : Nat) (x y : V × S)
+    (hxy : Related R x y) : trace E.machine π x n = trace E.machine π y n :=
+  trace_eq_of_preserved E.machine (Related R) (safe_output E R h) (safe_step E R h)
+    π n x y hxy
+
+def visible (v : Bool) (s : Bool × Bool) : Bool := if v then s.2 else s.1
+
+def swapping : Evolution Bool (Bool × Bool) Unit Unit Bool where
+  out := visible
+  learn v s _ := if v then (s.1, !s.2) else (!s.1, s.2)
+  admitted _ _ := true
+  destination v _ := !v
+  migrate _ s _ := s.swap
+
+def SameVisible (v : Bool) (s t : Bool × Bool) : Prop := visible v s = visible v t
+
+theorem swapping_safe : Safe swapping SameVisible := by
+  constructor
+  · intro v s t h; exact h
+  · intro v s t c h
+    cases v <;> simp_all [SameVisible, swapping, visible]
+  · intro v s t u _ h
+    cases v <;> simp_all [SameVisible, swapping, visible, Prod.swap]
+
+def left : Bool × (Bool × Bool) := (false, (false, true))
+def right : Bool × (Bool × Bool) := (false, (false, false))
+
+theorem premise_inhabited : Related SameVisible left right ∧ left ≠ right := by
+  unfold Related SameVisible
+  decide
+
+theorem safe_adaptive_witness (π : Policy (Sum Unit Unit) (Bool × Bool)) (n : Nat) :
+    trace swapping.machine π left n = trace swapping.machine π right n :=
+  versioned_trace_eq swapping SameVisible swapping_safe π n left right premise_inhabited.1
+
+theorem representation_changes :
+    swapping.machine.step left (.inr ()) = (true, (true, false)) := by decide
+
+theorem learn_changes_visible :
+    trace swapping.machine (fun _ => .inl ()) left 3 =
+      [(false, false), (false, true), (false, false)] := by decide
+
+def leaking : Evolution Bool (Bool × Bool) Unit Unit Bool :=
+  { swapping with migrate := fun _ s _ => s }
+
+theorem admitted_migration_can_leak :
+    leaking.admitted false () = true ∧ Related SameVisible left right ∧
+      trace leaking.machine (fun _ => .inr ()) left 2 ≠
+        trace leaking.machine (fun _ => .inr ()) right 2 := by
+  unfold Related SameVisible
+  decide
+
+theorem leaking_not_safe : ¬Safe leaking SameVisible := by
+  intro h
+  exact admitted_migration_can_leak.2.2
+    (versioned_trace_eq leaking SameVisible h (fun _ => .inr ()) 2 left right
+      premise_inhabited.1)
+
+/-- Cumulative policies refer to all retained release capabilities, not just active admission. -/
+def JointlyEquivalent {P R U S O : Type*} (sem : ReleaseSemantics P R U S O)
+    (policies : Set P) (recipient : R) (purpose : U) (s t : S) : Prop :=
+  ∀ p ∈ policies, sem.project p recipient purpose s = sem.project p recipient purpose t
+
+theorem joint_union_iff {P R U S O : Type*} (sem : ReleaseSemantics P R U S O)
+    (old fresh : Set P) (r : R) (u : U) (s t : S) :
+    JointlyEquivalent sem (old ∪ fresh) r u s t ↔
+      JointlyEquivalent sem old r u s t ∧ JointlyEquivalent sem fresh r u s t := by
+  constructor
+  · intro h
+    exact ⟨fun p hp => h p (Or.inl hp), fun p hp => h p (Or.inr hp)⟩
+  · rintro ⟨hold, hfresh⟩ p (hp | hp)
+    · exact hold p hp
+    · exact hfresh p hp
+
+theorem cumulative_disclosure_monotone {P R U S O : Type*}
+    (sem : ReleaseSemantics P R U S O) (small large : Set P) (r : R) (u : U)
+    (s t : S) (hsub : small ⊆ large) :
+    JointlyEquivalent sem large r u s t → JointlyEquivalent sem small r u s t := by
+  intro h p hp
+  exact h p (hsub hp)
+
+def coordinates : ReleaseSemantics Bool Unit Unit (Bool × Bool) Bool where
+  permitted _ _ _ _ := True
+  project p _ _ s := visible p s
+
+theorem every_coordinate_authorized (p : Bool) (s : Bool × Bool) :
+    AuthorizedRelease coordinates p () () s (visible p s) := ⟨True.intro, rfl⟩
+
+theorem each_policy_hides_a_distinct_pair :
+    JointlyEquivalent coordinates {false} () () (false, false) (false, true) ∧
+    JointlyEquivalent coordinates {true} () () (false, false) (true, false) := by
+  simp [JointlyEquivalent, coordinates, visible]
+
+theorem all_policies_determine_state (s t : Bool × Bool) :
+    JointlyEquivalent coordinates Set.univ () () s t ↔ s = t := by
+  constructor
+  · intro h
+    exact Prod.ext (h false (Set.mem_univ false)) (h true (Set.mem_univ true))
+  · intro h; subst t; intro p _; rfl
+
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.safe_output' does not depend on any axioms -/
+#guard_msgs in #print axioms safe_output
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.safe_step' does not depend on any axioms -/
+#guard_msgs in #print axioms safe_step
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.versioned_trace_eq' does not depend on any axioms -/
+#guard_msgs in #print axioms versioned_trace_eq
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.swapping_safe' depends on axioms: [propext] -/
+#guard_msgs in #print axioms swapping_safe
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.premise_inhabited' does not depend on any axioms -/
+#guard_msgs in #print axioms premise_inhabited
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.safe_adaptive_witness' depends on axioms: [propext] -/
+#guard_msgs in #print axioms safe_adaptive_witness
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.representation_changes' does not depend on any axioms -/
+#guard_msgs in #print axioms representation_changes
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.learn_changes_visible' does not depend on any axioms -/
+#guard_msgs in #print axioms learn_changes_visible
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.admitted_migration_can_leak' does not depend on any axioms -/
+#guard_msgs in #print axioms admitted_migration_can_leak
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.leaking_not_safe' does not depend on any axioms -/
+#guard_msgs in #print axioms leaking_not_safe
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.joint_union_iff' does not depend on any axioms -/
+#guard_msgs in #print axioms joint_union_iff
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.cumulative_disclosure_monotone' does not depend on any axioms -/
+#guard_msgs in #print axioms cumulative_disclosure_monotone
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.every_coordinate_authorized' does not depend on any axioms -/
+#guard_msgs in #print axioms every_coordinate_authorized
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.each_policy_hides_a_distinct_pair' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in #print axioms each_policy_hides_a_distinct_pair
+/-- info: 'Minidregg.Theory.PrivatePolicyEvolution.all_policies_determine_state' does not depend on any axioms -/
+#guard_msgs in #print axioms all_policies_determine_state
+
+end Minidregg.Theory.PrivatePolicyEvolution
