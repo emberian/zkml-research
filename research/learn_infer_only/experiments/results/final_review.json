@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "stdout": "?? research/\n?? vendor/\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "artifact_hashes": {
+    "STATUS.md": "2662d2e42e2596b23c2bd272c9774db8c4b7c03bcb5d1664c23089902e5a3ec8",
+    "SECURITY_GAME.md": "a5c1456bb57cc76acadb648f14a8710aff794e667826c89b0e978ba63d657939",
+    "CREDENTIALS.csv": "e59e0f0bd07b0657469b28cd61d0c42e418a00fd7532047cc29092aebb91579f",
+    "SOURCES.md": "ebde217490eff9afffa6f29287b519cf46c273aba2e00ee5a50e67081a66ff67",
+    "CANDIDATES.md": "ea9f2751860018efbb9720acddb40c6012e9c3231bc0dbe1d3093ac7f2b56fa7",
+    "COSTS.csv": "29fff84bb544b44ea43c1b5d54f1c832082db5a74ba896c01ccdb73d15e78d55",
+    "DECISION.md": "84a5f1850d131b3b60dbc52c67dc48963a5e256ee80cdda38ceb5201e8af94ae",
+    "NEXT.md": "174b55a7764c76b933cb6697ca8907705996634b8959c09597f5ca0c91c502c9",
+    "formal/README.md": "b07fbcaeef1dcb123e547e5e7fac95576529a15fbda717af4af6ea203c0b2d6a",
+    "formal/minidregg-resident-release.patch": "440c14ff480a113431b6bc4684feb70c136deffcdf72093ff71c712f9ab5b49d"
+  },
+  "verdicts_unchanged": true
+}

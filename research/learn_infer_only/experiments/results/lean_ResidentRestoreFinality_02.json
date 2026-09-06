@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/build/Assurance/ResidentRestoreFinality.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "7ce18cbe982d6ffaa536420e73a612b9a434c293f14239d2e4d3fa49c9faf70e",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean:80:53: error: unexpected identifier; expected '}'\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean:125:13: error(lean.unknownIdentifier): Unknown constant `Minidregg.Kernel.DurableCommitProtocol.Snapshot.install_consumes_nullifier`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean:120:53: error: unsolved goals\nNode : Type\ninst\u271d\u00b9 : DecidableEq Node\nq : QuorumSystem Node\ninst\u271d : DecidablePred q.isQuorum\nbook : VoteBook\na : Authority\nm : Manifest\nold p : Proposal\ncert : Cert Node\ntoken : Token\nho : token \u2208 old.intent.nullifiers\nhp : token \u2208 p.intent.nullifiers\nh : check q book (advance a old) m p cert = true\nfresh : Intent.nullifiersFreshCheck (advance a old).durable p.intent = true\nhf : (advance a old).durable.consumed token = false\n\u22a2 False\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean:176:18: error(lean.unknownIdentifier): Unknown constant `List.IsPrefix.refl`\n",
+  "stderr": ""
+}

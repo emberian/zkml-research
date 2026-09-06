@@ -1,0 +1,59 @@
+{
+  "label": "EXECUTED ideal-primitive capability model; no cryptography",
+  "source": "GKS23 2022/1599 \u00a76.2 pp.57\u201358 Figures 8\u20139; Korb Fig.3.2 (via landed audit)",
+  "histories": 64,
+  "recovered_values": 288,
+  "exposed": [
+    "FPFE.msk",
+    "stored FPFE.sk_H_i for every required prefix index"
+  ],
+  "not_used": [
+    "outer FE.msk",
+    "outer function key",
+    "honest inner master secret"
+  ],
+  "example": {
+    "length": 8,
+    "original": [
+      115,
+      145,
+      177,
+      211,
+      247,
+      29,
+      69,
+      111
+    ],
+    "recovered": [
+      115,
+      145,
+      177,
+      211,
+      247,
+      29,
+      69,
+      111
+    ],
+    "calls": {
+      "FPFE.Enc": 1,
+      "One-sFE.KeyGen": 1,
+      "FPFE.Dec": 8,
+      "One-sFE.Dec": 8
+    }
+  },
+  "negative_controls": {
+    "missing_writer": "missing or wrong credential kind",
+    "wrong_writer": "FPFE setup mismatch",
+    "beta_nonzero": "H's nonzero-beta branch returns bottom",
+    "invalid_encoder_state": "One-sFE.EncSetup returns bottom in this construction",
+    "missing_first_element": "wrong inner setup or missing/repeated/out-of-order prefix",
+    "repeat_first_element": "wrong inner setup or missing/repeated/out-of-order prefix",
+    "skip_second_element": "wrong inner setup or missing/repeated/out-of-order prefix",
+    "cross_inner_setup": "wrong inner setup or missing/repeated/out-of-order prefix"
+  },
+  "same_setup_same_index_substitution": {
+    "accepted": true,
+    "output": 199
+  },
+  "scope": "Single symbolic path only; failed controls do not prove secrecy."
+}

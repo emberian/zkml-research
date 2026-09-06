@@ -1,0 +1,150 @@
+[
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/PrivateTrace.lean",
+    "sha256": "ed563890a95461eb046091b12b53c32a80b78c89554258ef7b221ce3c1244d89",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory/PrivateTrace.olean",
+      "sha256": "0766c77c2aa2007c02ad2eb99b950d1a9822a43fcf57eb2a27be297e952d163e"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Assurance/ReleaseGateRouting.lean",
+    "sha256": "dbbd28b5368734fee8743a90261f75aa03ff656c3b5455b8b69a400cf10c4795",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Assurance/ReleaseGateRouting.olean",
+      "sha256": "6777ea8932314dd2dbdeb5ab8ae5f210481d493356970873f88ee499f4bf6a3e"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Kernel/FinalityGate.lean",
+    "sha256": "0698816bd1216da3442915e71edaad3d8083229be614db2b32e5a3c84429207d",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Kernel/FinalityGate.olean",
+      "sha256": "7583b782ecb24e4ee8fcf02faa6ee265ce362cd468e11f5369284e6fbc6d8cf4"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Kernel/FinalityLiveness.lean",
+    "sha256": "f8ac96473c6d32911b49281c40ce4487585fff818f59559b24f022d656ef2453",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Kernel/FinalityLiveness.olean",
+      "sha256": "a288471ed01263792a5a8bd6b06d316e66dde3b45be18391d5750f378c917b28"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Kernel/ReplicatedSettlementFinality.lean",
+    "sha256": "f09fc75d8444cda6e56449ab6b5067f526dbdc49dd9ce20a41ea94ee63ea239e",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Kernel/ReplicatedSettlementFinality.olean",
+      "sha256": "0d5a29732e93abbc466e4822d4184ad41bab0a05aad7cba0fd7ccde58fa7dcec"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Kernel/DurableCommitProtocol.lean",
+    "sha256": "c7e2c80cb235be701e3a69208956eb6599ef8b01a5881c67388e1cf5f70ee891",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Kernel/DurableCommitProtocol.olean",
+      "sha256": "85fc3d3d5f41cc3b41d3fc3a0220846c2389d88429c1d09182a05a46498dcf53"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Compiler/CommittedTerminalFiatShamir.lean",
+    "sha256": "9171de60416c10d504c44a6d664fcdbd8c28fd09134f7cc9f1f26dc71c59cde4",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CommittedTerminalFiatShamir.olean",
+      "sha256": "aaacaf641b290dee64dbcc0bf70efc8d1dce939871673b25a4d09cf791171f67"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Compiler/CommittedTerminalRealizer.lean",
+    "sha256": "ceb2364a7f8a862120d99f3d288dd3a53d11104798e711f0cf5875416beea823",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/CommittedTerminalRealizer.olean",
+      "sha256": "2f0710f3a6d8e36c395166eb7ccfbce8ecda55011d390e7e46e2a1eedc9f66b8"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Commitment.lean",
+    "sha256": "be5b6088d0a367be6effee618cb502d724bedcfe30cb00cbfb2d69de6c6a059a",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Selvage/Commitment.olean",
+      "sha256": "35a651a67a1c71f03e34a65ed172dc3ada8c61dd07f93109e823b4d7978d2470"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Compiler/Tower256ConcreteBackend.lean",
+    "sha256": "63d7c3150b5f1a7743814edc2037684708cdb430b24199aede2ecdfc87a223b4",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Compiler/Tower256ConcreteBackend.olean",
+      "sha256": "a57190e15f9ebc5ca41afb7dc5954e9d106c8fe1e8db39e5659c7ce8d9c4750f"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/lean-toolchain",
+    "sha256": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/lake-manifest.json",
+    "sha256": "2fd2df8e649524961d41f496e1fcb5d16797b75577d9677d82d1a441758bd469"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Assurance.lean",
+    "sha256": "2a2056d18af342d028b38afa2a4eaf4fc9300dff2bed4ec1d6ebf2a1e2817c05",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Assurance.olean",
+      "sha256": "5e5f4495549602a7dfbe39436ddfb195936f1054d5a40514ba30eb29e7eaec77"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory.lean",
+    "sha256": "8f8ffa996db7929d0146f597223ea14a97667d0741ae56e281585eb0c4321b11",
+    "imported_olean": {
+      "path": "/Users/ember/dev/minidregg/.lake/build/lib/lean/Theory.olean",
+      "sha256": "778f4047d94a33397187073fbde8934470c4c729dfd96250231b11bee8357c89"
+    }
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh",
+    "sha256": "66f66a89dad655e7f2837062d489ddb1b817e74a6903d24ecef80b85536b1ec1"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/README.md",
+    "sha256": "eef118b4963770cc58dc4c168e42abdfec085dec4941dab9942ada613fe81702"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/AGENTS.md",
+    "sha256": "005edbb43249d3e962d93ccfffd67c84449712691fb98c37628c0e4c30ade02f"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/docs/VERDICTS.md",
+    "sha256": "aaa35266b155ae2f8aba5b1f21a1692fdcbfedbbe8a9e0f35ae0c880a335f77c"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/swarm/astra-handoff/ASTRA_HANDOFF.md",
+    "sha256": "a5ed7f4e6aa8bcfade6f5951a66a5f4b510710203b9916dab305e14d65420554"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/swarm/astra-handoff/ASTRA-HANDOFF-COMPANION.md",
+    "sha256": "5e15072a044a628ca3cdcbb6503ad5a987370be77b9ddbf56fb5c88974432408"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/notes/pre-constrained-encryption-read.md",
+    "sha256": "9fc7ba55d67bc29524769420eadc12dc8e9c20f3ad8dd4bd0a54742b3ca2cbe3"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/notes/streaming-fe-credential-audit.md",
+    "sha256": "d8d5632f4aab944a98e4d1b02a793ff12703161b5f928fadae765f3032c60862"
+  },
+  {
+    "path": "/Users/ember/Downloads/ASTRA_HANDOFF.md",
+    "sha256": "8447e80b78096dc001eaaae20fd5d85cdae8e73d88ed87916b51efbb998339b9"
+  },
+  {
+    "path": "/Users/ember/Downloads/ARCHITECTURE.md",
+    "sha256": "fe15cf56b8a77c13ee351269c0aa3261e402a11e800bc81e64eab6b710d4d975"
+  },
+  {
+    "path": "/Users/ember/Downloads/COGNITIVE_ORGANS.md",
+    "sha256": "e13941e58c6d681a568230ebf36b53e69c83c5324986b84756932c280f9f653d"
+  }
+]
