@@ -100,12 +100,38 @@ the load-bearing property: no single party — including the host — can read t
 weights, and the audit layer proves the update was legitimate without anyone
 needing to.
 
+> ⚠ **2026-09-06, reclassified after `notes/pre-constrained-encryption-read.md`:** what
+> the threshold ceremony holds is **tier-C custody, not credential absence** — no single
+> party can read, and the FULL quorum is a read-all credential held in shares; the tree
+> already carries the witness read the other way (`collective_poly_decrypts` in
+> breadstuffs' `DarkBazaarCollectiveOpeningPoly.lean` *is* "the quorum reads"), and every
+> threshold decrypt is a read event with a budget (the IND-CPA-D hazard below is its
+> symptom). Credential absence WITH closure (a keyless party holds and advances the
+> encrypted state) is not available at standard assumptions: pre-constrained encryption is
+> one-hop "answer a permitted question" — sPCE fixes every function at setup so the
+> observation cannot enter and the learn chain dies at hop two; ITCS'22's delegating PCE
+> can write the loop but its games are silent on re-encrypting functions and the
+> constraint class it needs is general circuits, which the paper itself proves is
+> obfuscation (ITCS 4:11: `(Enc(PK,Γ), MSK[C])` is an obfuscation). So Route 1 with
+> closure is the iO route. The tree's real analogue of pre-constraining is the escrow
+> row's "threshold release as a distinct authorized effect": a typed release whose
+> statement is `released = f(state)` for `f` in a Lean-owned constraint set, checked by
+> the Shielded proof suite BEFORE partial decryptions are combined — policy-verified
+> (stronger than PCE's existential extractor) and still tier C, labeled so. The Prop to
+> carry instead of the slogan: `NoSurvivingReadAll custody coalition` with the pair
+> `below_t_blind` (coalition below t: witness) / `full_quorum_reads` (falsifier).
+
 ⚠ Two named hazards from our own record: **threshold decryption is an
 IND-CPA-D oracle** (so the number of decryptions is a budget, not free), and
 the smudging theorem is currently **scalar against a per-party polynomial
 transcript**.
 
 ## 7. What is genuinely open
+
+> **Item 5, added 2026-09-06 — state closure.** Who holds the next state and under what
+> credential. Upstream of item 1: re-encryption "under a threshold quorum between steps"
+> is a quorum *read* of the state per refresh, which the low-rank route was meant to
+> avoid and must now be priced as reads. Record: `notes/pre-constrained-encryption-read.md`.
 
 1. **Iterative depth** — the honest blocker (§4). Low-rank refresh is the most
    promising route and is unpriced.

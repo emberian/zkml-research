@@ -99,11 +99,26 @@ re-derive. Put this in `SECURITY_GAME.md`'s "who originates each observation" li
 
 ### §5 — the routes, and where the tree is strongest
 
-- **Route 1 (pre-constrained encryption): [LANE]** `notes/pre-constrained-encryption-read.md`
-  — ITCS'22 original + eprint 2024/1294 (rev. 2026-02-05, **[VERIFIED]** title/date at the
-  mirror's first page) read at the constructions: syntax, what is fixed before data, the
-  "existential constraint extractor" question, and the **closure** question (can an
-  authorized function output a usable protected next state, or only reveal `f(x)`).
+- **Route 1 (pre-constrained encryption): [NOTE, landed 09-06]**
+  `notes/pre-constrained-encryption-read.md` — **one-hop "privately answer a permitted
+  question"; neither paper has a configuration where an encrypted state is held by a
+  keyless party and advanced.** sPCE (2024/1294) fixes every function at setup (p. 15), so
+  `obs` cannot enter and the `learn` chain dies at hop two; the only continuation is a
+  plaintext-holder running `Enc`; in its LWE/FHE construction (p. 22) the authority's `sk`
+  is a full `FHE.sk`, safe only because it is never encrypted under `FHE.pk`. ITCS'22's
+  delegating PCE can express the loop syntactically, but its games condition on
+  `f(x₀) = f(x₁)` and are silent on re-encrypting functions; the needed constraint class is
+  general circuits, which the paper proves ⟹ iO (4:5, 4:11: `(Enc(PK,Γ), MSK[C])` *is* an
+  obfuscation). **Route 1 with closure collapses into the obfuscation route.** The
+  extractor warning is confirmed verbatim (ITCS 4:4; 1294 p. 6, p. 41) and sharpened:
+  1294's family contains near-identity `U[C]`, so a malicious `pk` for `f = id` satisfies
+  Def. 3.5 vacuously. Tiers: A and B covered (B unconditionally from LWE, Thm 3.18, with
+  the existential caveat); C not modeled (ITCS 4:6 positions PCE *against*
+  multi-authority); D zero mentions. ITCS'22's full version was not located; its proofs
+  are unchecked. **Bearing on the tree:** `docs/DARK-TRAINING.md` §6 reclassified — the
+  threshold ceremony is tier-C custody (the quorum reads), not credential absence; §7
+  gains item 5, *state closure*; the Prop to carry is `NoSurvivingReadAll`, with
+  `below_t_blind` / `full_quorum_reads` as its pair.
 - **Route 2 (streaming FE): [NOTE, landed 09-06]** `notes/streaming-fe-credential-audit.md`
   — **the handoff is correct, its page cite is exact, and it understates the finding.**
   Dissertation §3.2 (printed pp. 88–96, Fig. 3.2 = printed p. 94 = PDF p. 107) is GKS23
