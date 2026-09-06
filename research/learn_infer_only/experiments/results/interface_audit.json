@@ -1,0 +1,95 @@
+{
+  "scope": "Finite ideal-interface checks; no cryptography or neural model",
+  "state_space_size": 256,
+  "partitions": {
+    "infer_only": {
+      "allowed_offsets": [],
+      "equivalence_classes": 2,
+      "class_size_histogram": {
+        "128": 2
+      },
+      "strict_refinement_iterations": 0
+    },
+    "learn_flip_half": {
+      "allowed_offsets": [
+        128
+      ],
+      "equivalence_classes": 2,
+      "class_size_histogram": {
+        "128": 2
+      },
+      "strict_refinement_iterations": 0
+    },
+    "learn_increment_one": {
+      "allowed_offsets": [
+        1
+      ],
+      "equivalence_classes": 256,
+      "class_size_histogram": {
+        "1": 256
+      },
+      "strict_refinement_iterations": 127
+    }
+  },
+  "chosen_update_recovery": {
+    "tested_initial_states": 256,
+    "all_recovered": true,
+    "inference_query_count_histogram": {
+      "8": 256
+    },
+    "example_original_state": 173,
+    "example_trace": [
+      {
+        "learn_argument": 0,
+        "cumulative_offset": 0,
+        "infer_output": 1,
+        "remaining_original_states": 128
+      },
+      {
+        "learn_argument": 64,
+        "cumulative_offset": 64,
+        "infer_output": 1,
+        "remaining_original_states": 64
+      },
+      {
+        "learn_argument": 32,
+        "cumulative_offset": 96,
+        "infer_output": 0,
+        "remaining_original_states": 32
+      },
+      {
+        "learn_argument": 240,
+        "cumulative_offset": 80,
+        "infer_output": 1,
+        "remaining_original_states": 16
+      },
+      {
+        "learn_argument": 8,
+        "cumulative_offset": 88,
+        "infer_output": 0,
+        "remaining_original_states": 8
+      },
+      {
+        "learn_argument": 252,
+        "cumulative_offset": 84,
+        "infer_output": 0,
+        "remaining_original_states": 4
+      },
+      {
+        "learn_argument": 254,
+        "cumulative_offset": 82,
+        "infer_output": 1,
+        "remaining_original_states": 2
+      },
+      {
+        "learn_argument": 1,
+        "cumulative_offset": 83,
+        "infer_output": 0,
+        "remaining_original_states": 1
+      }
+    ]
+  },
+  "restricted_release_routing_checks": 2048,
+  "bounded_history_prefix_checks": 990,
+  "all_assertions_passed": true
+}

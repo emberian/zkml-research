@@ -1,0 +1,86 @@
+{
+  "label": "EXECUTED finite public model; no confidentiality claim",
+  "checks": {
+    "honest_first_release": {
+      "delivery": [
+        23,
+        3
+      ]
+    },
+    "closed_second_transition": {
+      "delivery": [
+        23,
+        7
+      ]
+    },
+    "restore_old_manifest": {
+      "finality_still_true": true,
+      "refusal": [
+        "current_prefix",
+        "current_head",
+        "unspent"
+      ]
+    },
+    "rollback_gate_too": {
+      "fresh_release_again": [
+        23,
+        3
+      ]
+    },
+    "copyable_local_quota": {
+      "quota": 1,
+      "releases": 4
+    },
+    "old_receipt_context_substitutions": {
+      "genesis": "refused by exact candidate vote identity",
+      "parent": "refused by exact candidate vote identity",
+      "program": "refused by exact candidate vote identity",
+      "version": "refused by exact candidate vote identity",
+      "command": "refused by exact candidate vote identity",
+      "authorization": "refused by exact candidate vote identity",
+      "recipient": "refused by exact candidate vote identity",
+      "randomness_rule": "refused by exact candidate vote identity",
+      "randomness_commitment": "refused by exact candidate vote identity",
+      "next": "refused by exact candidate vote identity",
+      "output": "refused by exact candidate vote identity"
+    },
+    "rehash_and_revote_bad_parent": [
+      "current_head",
+      "stage0_arithmetic_control"
+    ],
+    "delivery_substitution": [
+      "recipient_delivery"
+    ],
+    "thin_quorum": "refused",
+    "incompatible_fork_vote": "refused by prefix discipline",
+    "compromised_vote_discipline": "both conflicting candidates pass finality",
+    "silent_local_forks": {
+      "possible_states": [
+        3,
+        5
+      ],
+      "new_authorizations": 0
+    },
+    "non_atomic_check_then_install": "two releases from the same before-state",
+    "randomness_label_is_not_distribution": {
+      "one_fair_draw": "1/2",
+      "select_from_two_valid_draws": "3/4",
+      "denominator": "all four equally likely ordered pairs",
+      "scope": "selection-bias witness, not an attack on Stage-0 deterministic rule"
+    },
+    "integer_rescale_required": {
+      "Q": 17,
+      "t": 4,
+      "z": 3,
+      "residue": 3,
+      "y": 1,
+      "shifted_y": 5
+    }
+  },
+  "gate_fields": [
+    "genesis",
+    "head",
+    "log",
+    "consumed"
+  ]
+}

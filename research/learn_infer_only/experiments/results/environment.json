@@ -1,0 +1,99 @@
+{
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "sources": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1599.pdf",
+      "sha256": "46481fa2d839add77603839f85c6fc7551475e2c926719816903b4a537afe067",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1599.pdf",
+        "research/learn_infer_only/experiments/results/2022_1599.txt"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1294.pdf",
+      "sha256": "97b945e84c2daf3ca3a96411c9f4cc96e78a3b7dcab4bb56fae5baf934f7ae5b",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1294.pdf",
+        "research/learn_infer_only/experiments/results/2024_1294.txt"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1213.pdf",
+      "sha256": "2bc6e43d8d06cac140557f7c0e1e6e3916b9ab93374d8ba841a8a427a4a5a1da",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1213.pdf",
+        "research/learn_infer_only/experiments/results/2024_1213.txt"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "stdout": "c7b08e5a8ecb2544801e2bb079930b976dd55513\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "printenv",
+        "LEAN_PATH"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean",
+        "--version"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+      "stderr": ""
+    }
+  ]
+}

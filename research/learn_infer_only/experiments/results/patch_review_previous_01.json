@@ -1,0 +1,51 @@
+{
+  "patch_sha256": "39ea79d405f2acc6d2e9413b76bf5be9a8bcb20747f695be0369fde60bca39e9",
+  "original_umbrella_sha256": "2a2056d18af342d028b38afa2a4eaf4fc9300dff2bed4ec1d6ebf2a1e2817c05",
+  "staged_umbrella_sha256": "06831d470df5a33491004e499b29db3346c0cefeb75deb68e6b69e7fe104ec43",
+  "checks": [
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/build/Assurance.olean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/minidregg-resident-release.patch"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "error: dev/null: No such file or directory\nerror: dev/null: No such file or directory\n"
+    },
+    {
+      "check": "CREDENTIALS.csv rectangular schema",
+      "rows": 25,
+      "exit_code": 0
+    },
+    {
+      "check": "COSTS.csv rectangular schema",
+      "rows": 6,
+      "exit_code": 0
+    }
+  ]
+}
