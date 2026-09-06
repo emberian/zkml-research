@@ -1,4 +1,4 @@
-# Three decisive follow-ons
+# Decisive follow-ons — first three now in flight
 
 1. [OPEN: runtime integrity integration] Replace the staged restore adapter's
    empty-rootWrites witness with a real materialized cell/DataIntent carrying the
@@ -32,5 +32,5 @@
 then `formal/README.md`. Reproduction commands are in the latter. Keep the generated
 patch un-applied until the maintainer folds it; never edit companion trees from this
 research run. Inspect current dirty state and the companion before choosing work:
-another run may have landed an object since this tranche. No agents, processes or
-ongoing experiments are left assigned by this handback.
+another run may have landed an object since this tranche. The active swarm and output ownership are recorded in STATUS.md; the current
+goal runs through 2026-09-06 10am EDT. Inspect that table before starting a lane.
