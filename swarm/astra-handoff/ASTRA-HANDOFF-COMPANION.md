@@ -104,11 +104,28 @@ re-derive. Put this in `SECURITY_GAME.md`'s "who originates each observation" li
   mirror's first page) read at the constructions: syntax, what is fixed before data, the
   "existential constraint extractor" question, and the **closure** question (can an
   authorized function output a usable protected next state, or only reveal `f(x)`).
-- **Route 2 (streaming FE): [LANE]** `notes/streaming-fe-credential-audit.md` — the
-  writer-state credential claim reproduced or refuted from the algorithms (2022/1599,
-  2024/1213, 2024/355, 2025/330 all in the mirror; the Korb dissertation fetched once if
-  reachable); the function-key-vs-stream-length bound quoted; the malicious-encryptor
-  caveat applied to the host-as-input-issuer.
+- **Route 2 (streaming FE): [NOTE, landed 09-06]** `notes/streaming-fe-credential-audit.md`
+  — **the handoff is correct, its page cite is exact, and it understates the finding.**
+  Dissertation §3.2 (printed pp. 88–96, Fig. 3.2 = printed p. 94 = PDF p. 107) is GKS23
+  §6.2 verbatim. The writer state is `Enc.ST = (FPFE.msk, FE.ct)`: `FPFE.msk` is the master
+  secret of a secret-key function-private FE, and `Enc.ST` is **static** (the encryption
+  syntax returns no new state). Derived path needing only `FPFE.msk` plus the stored
+  ciphertexts — no outer `FE.msk`, no function key: encrypt an attacker-chosen inner
+  `(msk*, ⊥, k*)` under `FPFE.msk`, decrypt each stored `FPFE.sk_{H_i}` against it (the
+  paper's own correctness equation with the plaintext swapped) to get `x_i` under `msk*`,
+  then decrypt with a projection key; in BKS25's role-swapped scheme it is one line. The
+  paper's footnote says `Enc.st` "must be kept secret" only against *mix-and-match*; the
+  construction's state does strictly more (total recovery, past and future elements).
+  **Not a break of any theorem** (every game has the challenger hold `Enc.st`); structural:
+  **appending to a stream and reading all of it are the same credential.** For this
+  resident that bites directly: streams start at `st_1 = ⊥`, the outer scheme promises no
+  function hiding, so `W_0` must be `x_1` — and the host, who must append, reads it.
+  The 2024/1213 bound (Def. 3.18, Thm 5.3) caps *function-key* queries, not stream
+  length; one fixed program needs Q = 1, chosen by the writer at `EncSetup`; it never
+  touches the writer credential. 2025/330's malicious-encryptor gap applies only if the
+  transition is randomized (DP noise, dropout). Tiers: SFE as constructed addresses only
+  the reader side; A and B not addressed; no forward-secure or threshold sFE in the corpus
+  (0 hits; instruments in the note).
 - **Route 3 (proof-bound release) is where this tree is strongest, and the handoff
   should start there rather than at Route 1.** Three objects exist with theorems:
   1. **[LEAN] A proof that binds a specific authorized computation, with one visible
