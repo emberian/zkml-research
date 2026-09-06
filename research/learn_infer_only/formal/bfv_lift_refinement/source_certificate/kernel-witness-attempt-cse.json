@@ -1,0 +1,12 @@
+{
+  "command": [
+    "lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateKernelWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateKernelWitness.lean"
+  ],
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateKernelWitness.lean:7:97: error: Tactic `decide` failed for proposition\n  sourceCheck optimizedSourceDescriptor (sourceValues FheRnsScale.capturedResidues) = true\nbecause its `Decidable` instance\n  instDecidableEqBool (sourceCheck optimizedSourceDescriptor (sourceValues FheRnsScale.capturedResidues)) true\ndid not reduce to `isTrue` or `isFalse`.\n\nAfter unfolding the instances `decEq`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqNat`, `Bool.decEq`, `Nat.decEq`, `ZMod.decidableEq`, and `ZMod.decidableEq._aux_3`, reduction got stuck at the `Decidable` instance\n  match sourceCheck optimizedSourceDescriptor (sourceValues FheRnsScale.capturedResidues), true with\n  | false, false => isTrue \u22ef\n  | false, true => isFalse \u22ef\n  | true, false => isFalse \u22ef\n  | true, true => isTrue \u22ef\n'Minidregg.Compiler.FheSourceCertificate.actual_emitted_checker_witness' depends on axioms: [propext,\n sorryAx,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": "",
+  "elapsed_seconds": 2.8095502920041326
+}

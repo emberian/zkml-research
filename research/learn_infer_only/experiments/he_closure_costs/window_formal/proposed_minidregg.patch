@@ -1,0 +1,976 @@
+--- /dev/null
++++ b/Theory/IntegerWindowNoise.lean
+@@ -0,0 +1,397 @@
++/-
++Statement-first target: a bounded current list of floor-encoded rows has a
++history-independent signed readout margin. This is integer algebra under
++explicit source-phase equations, NOT a Rust/RNS or cryptographic theorem.
++
++ATLAS obligations: WindowCorrectness below is the keystone Prop. The concrete
++Assurance module supplies actual-parameter arithmetic, nonzero positive
++inhabitation, and a wrong-expiry / same-plaintext falsifier. A ciphertext
++queue theorem can supply the current list and its length, but its modular
++phase-to-integer-lift correspondence remains an explicit implementation floor.
++-/
++import Mathlib.Algebra.Order.BigOperators.Group.Finset
++import Mathlib.Algebra.BigOperators.Ring.Finset
++import Mathlib.Algebra.Order.Ring.Abs
++import Mathlib.Data.Int.ModEq
++import Mathlib.Tactic
++
++namespace Minidregg.Theory.IntegerWindowNoise
++set_option autoImplicit false
++open scoped BigOperators
++
++structure Row (r : Nat) where
++  message : Fin r → Int
++  error : Fin r → Int
++  phase : Fin r → Int
++
++def Fresh {r : Nat} (q t E : Int) (x : Row r) : Prop :=
++  ∀ j, x.phase j = q * x.message j / t + x.error j ∧ |x.error j| ≤ E
++
++def queryL1 {r : Nat} (query : Fin r → Int) : Int := ∑ j, |query j|
++def rowPhase {r : Nat} (query : Fin r → Int) (x : Row r) : Int :=
++  ∑ j, query j * x.phase j
++def rowScore {r : Nat} (query : Fin r → Int) (x : Row r) : Int :=
++  ∑ j, query j * x.message j
++def readoutPhase {r : Nat} (query : Fin r → Int) (xs : List (Row r)) : Int :=
++  (xs.map (rowPhase query)).sum
++def readoutScore {r : Nat} (query : Fin r → Int) (xs : List (Row r)) : Int :=
++  (xs.map (rowScore query)).sum
++
++/-- Exact integer round-half-up; strict margins exclude ties. -/
++def rounded (q t phase : Int) : Int := (2 * t * phase + q) / (2 * q)
++def centered (t value : Int) : Int :=
++  if 2 * (value % t) < t then value % t else value % t - t
++
++/-- The current window, not elapsed lifetime, bounds the release error.
++The arbitrary integer wrap permits a source/RNS readout lift modulo q. -/
++def WindowCorrectness (q t E L : Int) (W : Nat) : Prop :=
++  ∀ (r : Nat) (xs : List (Row r)) (query : Fin r → Int) (wrap : Int),
++    (∀ x ∈ xs, Fresh q t E x) → xs.length ≤ W → queryL1 query ≤ L →
++    rounded q t (readoutPhase query xs + q * wrap) % t = readoutScore query xs % t
++
++theorem floor_scaled_residual (q t m e : Int) :
++    t * (q * m / t + e) - q * m = t * e - (q * m % t) := by
++  have h := Int.mul_ediv_add_emod (q * m) t
++  nlinarith
++
++theorem fresh_residual_bound (q t E m e : Int) (ht : 0 < t)
++    (he : |e| ≤ E) :
++    |t * (q * m / t + e) - q * m| ≤ t * (E + 1) := by
++  rw [floor_scaled_residual]
++  have hmod0 : 0 ≤ q * m % t := Int.emod_nonneg _ (ne_of_gt ht)
++  have hmodlt : q * m % t < t := Int.emod_lt_of_pos _ ht
++  calc
++    |t * e - q * m % t| ≤ |t * e| + |q * m % t| := by
++      simpa only [sub_eq_add_neg, abs_neg] using abs_add_le (t * e) (-(q * m % t))
++    _ = t * |e| + q * m % t := by rw [abs_mul, abs_of_pos ht, abs_of_nonneg hmod0]
++    _ ≤ t * E + t := by
++      have := mul_le_mul_of_nonneg_left he ht.le
++      omega
++    _ = t * (E + 1) := by ring
++
++theorem row_scaled_residual {r : Nat} (q t : Int)
++    (query : Fin r → Int) (x : Row r) :
++    t * rowPhase query x - q * rowScore query x =
++      ∑ j, query j * (t * x.phase j - q * x.message j) := by
++  simp only [rowPhase, rowScore, Finset.mul_sum]
++  rw [← Finset.sum_sub_distrib]
++  apply Finset.sum_congr rfl
++  intro j _
++  ring
++
++theorem row_residual_bound {r : Nat} (q t E : Int) (ht : 0 < t)
++    (query : Fin r → Int) (x : Row r) (hx : Fresh q t E x) :
++    |t * rowPhase query x - q * rowScore query x| ≤ queryL1 query * (t * (E + 1)) := by
++  rw [row_scaled_residual]
++  calc
++    |∑ j, query j * (t * x.phase j - q * x.message j)| ≤
++        ∑ j, |query j * (t * x.phase j - q * x.message j)| :=
++      Finset.abs_sum_le_sum_abs _ _
++    _ = ∑ j, |query j| * |t * x.phase j - q * x.message j| := by simp only [abs_mul]
++    _ ≤ ∑ j, |query j| * (t * (E + 1)) := by
++      apply Finset.sum_le_sum
++      intro j _
++      apply mul_le_mul_of_nonneg_left _ (abs_nonneg _)
++      rw [(hx j).1]
++      exact fresh_residual_bound q t E (x.message j) (x.error j) ht (hx j).2
++    _ = queryL1 query * (t * (E + 1)) := by rw [queryL1, Finset.sum_mul]
++
++theorem list_residual_bound {r : Nat} (q t E : Int) (ht : 0 < t)
++    (query : Fin r → Int) (xs : List (Row r))
++    (hf : ∀ x ∈ xs, Fresh q t E x) :
++    |t * readoutPhase query xs - q * readoutScore query xs| ≤
++      (xs.length : Int) * (queryL1 query * (t * (E + 1))) := by
++  induction xs with
++  | nil => simp [readoutPhase, readoutScore]
++  | cons x xs ih =>
++    have hx := row_residual_bound q t E ht query x (hf x (by simp))
++    have hs := ih (by intro y hy; exact hf y (by simp [hy]))
++    have heq : t * readoutPhase query (x :: xs) - q * readoutScore query (x :: xs) =
++        (t * rowPhase query x - q * rowScore query x) +
++        (t * readoutPhase query xs - q * readoutScore query xs) := by
++      simp only [readoutPhase, readoutScore, List.map_cons, List.sum_cons]
++      ring
++    rw [heq]
++    have ha := abs_add_le (t * rowPhase query x - q * rowScore query x)
++      (t * readoutPhase query xs - q * readoutScore query xs)
++    simp only [List.length_cons, Nat.cast_add, Nat.cast_one]
++    nlinarith
++
++theorem rounded_exact_of_residual (q t p m : Int) (hq : 0 < q)
++    (hmargin : 2 * |t * p - q * m| < q) : rounded q t p = m := by
++  have hlow : m * (2 * q) ≤ 2 * t * p + q := by
++    have := neg_abs_le (t * p - q * m)
++    nlinarith
++  have hhigh : 2 * t * p + q < (m + 1) * (2 * q) := by
++    have := le_abs_self (t * p - q * m)
++    nlinarith
++  have h2q : 0 < 2 * q := by omega
++  unfold rounded
++  have hlo := (Int.le_ediv_iff_mul_le h2q).mpr hlow
++  have hhi := (Int.ediv_lt_iff_lt_mul h2q).mpr hhigh
++  omega
++
++theorem window_correctness (q t E L : Int) (W : Nat)
++    (hq : 0 < q) (ht : 0 < t) (hE : 0 ≤ E)
++    (hbudget : 2 * t * (W : Int) * L * (E + 1) < q) :
++    WindowCorrectness q t E L W := by
++  intro r xs query wrap hf hlen hquery
++  have hres := list_residual_bound q t E ht query xs hf
++  have hqn : 0 ≤ queryL1 query := Finset.sum_nonneg (by intro j _; exact abs_nonneg _)
++  have hte : 0 ≤ t * (E + 1) := mul_nonneg ht.le (by omega)
++  have hn : (xs.length : Int) ≤ W := by exact_mod_cast hlen
++  have hb1 : (xs.length : Int) * (queryL1 query * (t * (E + 1))) ≤
++      (W : Int) * (L * (t * (E + 1))) := by
++    apply mul_le_mul hn
++    · exact mul_le_mul_of_nonneg_right hquery hte
++    · exact mul_nonneg hqn hte
++    · exact_mod_cast Nat.zero_le W
++  have hb : 2 * |t * readoutPhase query xs - q * readoutScore query xs| < q := by
++    nlinarith
++  have heq : t * (readoutPhase query xs + q * wrap) -
++      q * (readoutScore query xs + t * wrap) =
++      t * readoutPhase query xs - q * readoutScore query xs := by ring
++  have hround := rounded_exact_of_residual q t
++    (readoutPhase query xs + q * wrap) (readoutScore query xs + t * wrap) hq (by rw [heq]; exact hb)
++  rw [hround]
++  simp [Int.add_emod]
++
++theorem centered_exact (t m : Int) (hm : 2 * |m| < t) :
++    centered t m = m := by
++  unfold centered
++  by_cases hnonneg : 0 ≤ m
++  · have hmt : m < t := by have := le_abs_self m; omega
++    rw [Int.emod_eq_of_lt hnonneg hmt]
++    rw [if_pos (by rwa [abs_of_nonneg hnonneg] at hm)]
++  · have hmneg : m < 0 := by omega
++    have hmlo : 0 ≤ m + t := by have := neg_abs_le m; omega
++    have hmhi : m + t < t := by omega
++    have hmod : m % t = m + t := by
++      have h := Int.emod_eq_of_lt hmlo hmhi
++      simpa [Int.add_emod] using h
++    rw [hmod, if_neg (by rw [abs_of_neg hmneg] at hm; omega)]
++    omega
++
++theorem window_signed_correctness (q t E L : Int) (W : Nat)
++    (hq : 0 < q) (ht : 0 < t) (hE : 0 ≤ E)
++    (hbudget : 2 * t * (W : Int) * L * (E + 1) < q)
++    {r : Nat} (xs : List (Row r)) (query : Fin r → Int) (wrap : Int)
++    (hf : ∀ x ∈ xs, Fresh q t E x) (hlen : xs.length ≤ W)
++    (hquery : queryL1 query ≤ L) (hscore : 2 * |readoutScore query xs| < t) :
++    centered t (rounded q t (readoutPhase query xs + q * wrap)) = readoutScore query xs := by
++  have h := window_correctness q t E L W hq ht hE hbudget r xs query wrap hf hlen hquery
++  unfold centered
++  rw [h]
++  exact centered_exact t (readoutScore query xs) hscore
++
++theorem signed_query_split {r : Nat} (query value : Fin r → Int) :
++    (∑ j, query j * value j) =
++      (∑ j, max (query j) 0 * value j) - (∑ j, max (-query j) 0 * value j) := by
++  rw [← Finset.sum_sub_distrib]
++  apply Finset.sum_congr rfl
++  intro j _
++  have hq : query j = max (query j) 0 - max (-query j) 0 := by omega
++  calc query j * value j = (max (query j) 0 - max (-query j) 0) * value j := congrArg (· * value j) hq
++       _ = _ := by ring
++
++theorem readout_positive_negative_split {r : Nat} (query : Fin r → Int) (xs : List (Row r)) :
++    readoutPhase query xs = readoutPhase (fun j => max (query j) 0) xs -
++      readoutPhase (fun j => max (-query j) 0) xs := by
++  induction xs with
++  | nil => simp [readoutPhase]
++  | cons x xs ih =>
++    have hr := signed_query_split query x.phase
++    change rowPhase query x = rowPhase (fun j => max (query j) 0) x -
++      rowPhase (fun j => max (-query j) 0) x at hr
++    simp only [readoutPhase, List.map_cons, List.sum_cons] at ih ⊢
++    linarith
++
++/-- Splitting a signed query does not double its total amplification budget. -/
++theorem split_queryL1 {r : Nat} (query : Fin r → Int) :
++    queryL1 (fun j => max (query j) 0) + queryL1 (fun j => max (-query j) 0) = queryL1 query := by
++  unfold queryL1
++  rw [← Finset.sum_add_distrib]
++  apply Finset.sum_congr rfl
++  intro j _
++  rw [abs_of_nonneg (le_max_right _ _), abs_of_nonneg (le_max_right _ _)]
++  change max (query j) 0 + max (-query j) 0 = |query j|
++  by_cases h : 0 ≤ query j
++  · rw [abs_of_nonneg h, max_eq_left h, max_eq_right (by omega)]
++    omega
++  · rw [abs_of_neg (by omega), max_eq_right (by omega), max_eq_left (by omega)]
++    omega
++
++theorem floor_encoding_shift (q t m k : Int) (ht : t ≠ 0) :
++    q * (m + t * k) / t = q * m / t + q * k := by
++  have h : q * (m + t * k) = q * m + (q * k) * t := by ring
++  rw [h, Int.add_mul_ediv_right _ _ ht]
++
++/-- Exact finite-sum correction: division does not commute with addition. -/
++theorem floor_carry_exact (q t : Int) (ms : List Int) (ht : 0 < t) :
++    (ms.map (fun m => q * m / t)).sum - q * ms.sum / t =
++      -((ms.map (fun m => q * m % t)).sum / t) := by
++  have hid : q * ms.sum =
++      (ms.map (fun m => q * m / t)).sum * t + (ms.map (fun m => q * m % t)).sum := by
++    induction ms with
++    | nil => simp
++    | cons m ms ih =>
++      have h := Int.mul_ediv_add_emod (q * m) t
++      simp only [List.map_cons, List.sum_cons]
++      nlinarith
++  rw [hid]
++  rw [mul_comm ((ms.map (fun m => q * m / t)).sum) t]
++  rw [Int.mul_add_ediv_left _ _ (ne_of_gt ht)]
++  ring
++
++theorem floor_carry_bounds (q t : Int) (ms : List Int) (ht : 0 < t) (hms : ms ≠ []) :
++    -((ms.length : Int) - 1) ≤ (ms.map (fun m => q * m / t)).sum - q * ms.sum / t ∧
++      (ms.map (fun m => q * m / t)).sum - q * ms.sum / t ≤ 0 := by
++  have hr : 0 ≤ (ms.map (fun m => q * m % t)).sum ∧
++      (ms.map (fun m => q * m % t)).sum ≤ (ms.length : Int) * (t - 1) := by
++    clear hms
++    induction ms with
++    | nil => simp
++    | cons m ms ih =>
++      have h0 := Int.emod_nonneg (q * m) (ne_of_gt ht)
++      have hlt := Int.emod_lt_of_pos (q * m) ht
++      simp only [List.map_cons, List.sum_cons, List.length_cons, Nat.cast_add, Nat.cast_one]
++      constructor <;> nlinarith [ih.1, ih.2]
++  have hn : (0 : Int) < ms.length := by cases ms <;> simp_all
++  have hd0 : 0 ≤ (ms.map (fun m => q * m % t)).sum / t := Int.ediv_nonneg hr.1 ht.le
++  have hdlt : (ms.map (fun m => q * m % t)).sum / t < (ms.length : Int) :=
++    (Int.ediv_lt_iff_lt_mul ht).mpr (by nlinarith [hr.2])
++  rw [floor_carry_exact q t ms ht]
++  omega
++
++theorem queryL1_le {r : Nat} (query : Fin r → Int) (B : Int)
++    (hquery : ∀ j, |query j| ≤ B) : queryL1 query ≤ (r : Int) * B := by
++  unfold queryL1
++  calc (∑ j, |query j|) ≤ ∑ _j : Fin r, B := Finset.sum_le_sum (by intro j _; exact hquery j)
++       _ = _ := by simp
++
++theorem row_score_bound {r : Nat} (query : Fin r → Int) (x : Row r) (B : Int)
++    (hm : ∀ j, |x.message j| ≤ B) : |rowScore query x| ≤ queryL1 query * B := by
++  unfold rowScore
++  calc |∑ j, query j * x.message j| ≤ ∑ j, |query j * x.message j| := Finset.abs_sum_le_sum_abs _ _
++       _ = ∑ j, |query j| * |x.message j| := by simp only [abs_mul]
++       _ ≤ ∑ j, |query j| * B := by
++         apply Finset.sum_le_sum
++         intro j _
++         exact mul_le_mul_of_nonneg_left (hm j) (abs_nonneg _)
++       _ = queryL1 query * B := by rw [queryL1, Finset.sum_mul]
++
++theorem readout_score_bound {r : Nat} (query : Fin r → Int) (xs : List (Row r)) (B : Int)
++    (hm : ∀ x ∈ xs, ∀ j, |x.message j| ≤ B) :
++    |readoutScore query xs| ≤ (xs.length : Int) * (queryL1 query * B) := by
++  induction xs with
++  | nil => simp [readoutScore]
++  | cons x xs ih =>
++    have hx := row_score_bound query x B (hm x (by simp))
++    have hs := ih (by intro y hy; exact hm y (by simp [hy]))
++    change |rowScore query x + readoutScore query xs| ≤ _
++    have ha := abs_add_le (rowScore query x) (readoutScore query xs)
++    simp only [List.length_cons, Nat.cast_add, Nat.cast_one]
++    nlinarith
++
++def signedProductSum {n : Nat} (a b : Fin n → Int) (negative : Fin n → Bool) : Int :=
++  ∑ j, if negative j then -(a j * b j) else a j * b j
++
++/-- Each negacyclic coefficient has n signed products. The caller must supply
++that coefficient expansion; no Rust polynomial representation is modeled. -/
++theorem signedProductSum_bound {n : Nat} (a b : Fin n → Int) (negative : Fin n → Bool)
++    (S : Int) (hS : 0 ≤ S) (ha : ∀ j, |a j| ≤ S) (hb : ∀ j, |b j| ≤ S) :
++    |signedProductSum a b negative| ≤ (n : Int) * S ^ 2 := by
++  unfold signedProductSum
++  calc |∑ j, if negative j then -(a j * b j) else a j * b j| ≤
++        ∑ j, |if negative j then -(a j * b j) else a j * b j| := Finset.abs_sum_le_sum_abs _ _
++       _ = ∑ j, |a j| * |b j| := by
++         apply Finset.sum_congr rfl
++         intro j _
++         cases negative j <;> simp [abs_mul]
++       _ ≤ ∑ _j : Fin n, S ^ 2 := by
++         apply Finset.sum_le_sum
++         intro j _
++         simpa [pow_two] using mul_le_mul (ha j) (hb j) (abs_nonneg (b j)) hS
++       _ = _ := by simp
++
++theorem public_key_noise_bound {n : Nat}
++    (a b c d : Fin n → Int) (neg₁ neg₂ : Fin n → Bool) (e S : Int)
++    (hS : 0 ≤ S) (ha : ∀ j, |a j| ≤ S) (hb : ∀ j, |b j| ≤ S)
++    (hc : ∀ j, |c j| ≤ S) (hd : ∀ j, |d j| ≤ S) (he : |e| ≤ S) :
++    |signedProductSum a b neg₁ + e + signedProductSum c d neg₂| ≤
++      2 * (n : Int) * S ^ 2 + S := by
++  have h₁ := signedProductSum_bound a b neg₁ S hS ha hb
++  have h₂ := signedProductSum_bound c d neg₂ S hS hc hd
++  have h₃ := abs_add_le (signedProductSum a b neg₁) e
++  have h₄ := abs_add_le (signedProductSum a b neg₁ + e) (signedProductSum c d neg₂)
++  nlinarith
++
++/- Axiom closure pins: mathematical Lean foundations only; no added axioms. -/
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.floor_scaled_residual' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.floor_scaled_residual
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.fresh_residual_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.fresh_residual_bound
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.row_scaled_residual' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.row_scaled_residual
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.row_residual_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.row_residual_bound
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.list_residual_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.list_residual_bound
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.rounded_exact_of_residual' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.rounded_exact_of_residual
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.window_correctness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.window_correctness
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.centered_exact' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.centered_exact
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.window_signed_correctness' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.window_signed_correctness
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.signed_query_split' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.signed_query_split
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.readout_positive_negative_split' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.readout_positive_negative_split
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.split_queryL1' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.split_queryL1
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.floor_encoding_shift' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.floor_encoding_shift
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.floor_carry_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.floor_carry_exact
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.floor_carry_bounds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.floor_carry_bounds
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.queryL1_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.queryL1_le
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.row_score_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.row_score_bound
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.readout_score_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.readout_score_bound
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.signedProductSum_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.signedProductSum_bound
++/-- info: 'Minidregg.Theory.IntegerWindowNoise.public_key_noise_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.IntegerWindowNoise.public_key_noise_bound
++
++end Minidregg.Theory.IntegerWindowNoise
+--- /dev/null
++++ b/Theory/CiphertextWindowNoise.lean
+@@ -0,0 +1,117 @@
++/-
++A modular phase bridge from the public exact-ciphertext queue to the integer
++noise ledger. The additive phase has codomain ZMod q, never the integers.
++Its existence and its relation to actual ciphertext/RNS/readout operations
++are explicit source-equation premises, not established by this module.
++-/
++import Theory.CiphertextWindow
++import Theory.IntegerWindowNoise
++import Mathlib.Data.ZMod.Basic
++
++namespace Minidregg.Theory.CiphertextWindowNoise
++set_option autoImplicit false
++open Minidregg.Theory.IntegerWindowNoise
++open Minidregg.Theory.CiphertextWindow
++open Minidregg.Theory.IndexedProgram
++
++variable {Ct : Type} [AddCommGroup Ct]
++
++/-- A fixed public query determines this modular phase interpretation. -/
++def PhasePremises (q : Nat) (r : Nat) (phase : Ct →+ ZMod q)
++    (interpret : Entry Ct → Row r) (query : Fin r → Int)
++    (s : State Ct) (outputLift : Int) : Prop :=
++  (∀ e ∈ s.queue, phase e.ciphertext = (rowPhase query (interpret e) : ZMod q)) ∧
++  (outputLift : ZMod q) = phase s.accumulator
++
++/-- Mapping the exact queue sum gives the sum of its current fresh phases.
++It contains no term indexed by the elapsed history. -/
++theorem queue_phase_sum (q r : Nat) (phase : Ct →+ ZMod q)
++    (interpret : Entry Ct → Row r) (query : Fin r → Int)
++    (queue : List (Entry Ct))
++    (h : ∀ e ∈ queue, phase e.ciphertext = (rowPhase query (interpret e) : ZMod q)) :
++    phase (queueSum queue) = (readoutPhase query (queue.map interpret) : ZMod q) := by
++  induction queue with
++  | nil => simp [queueSum, readoutPhase]
++  | cons e rest ih =>
++    have he := h e (by simp)
++    have hr := ih (by intro x hx; exact h x (by simp [hx]))
++    simp only [queueSum, List.map_cons, List.sum_cons, map_add] at *
++    simp only [readoutPhase, List.map_cons, List.sum_cons, Int.cast_add]
++    rw [he, hr]
++    rfl
++
++/-- An implementation-provided integer lift differs from the sum by Qk. -/
++theorem queue_integer_lift (q r : Nat) (phase : Ct →+ ZMod q)
++    (interpret : Entry Ct → Row r) (query : Fin r → Int)
++    (s : State Ct) (outputLift : Int)
++    (hsum : s.accumulator = queueSum s.queue)
++    (hp : PhasePremises q r phase interpret query s outputLift) :
++    ∃ wrap : Int, outputLift = readoutPhase query (s.queue.map interpret) + (q : Int) * wrap := by
++  have he : (outputLift : ZMod q) = (readoutPhase query (s.queue.map interpret) : ZMod q) := by
++    rw [hp.2, hsum]
++    exact queue_phase_sum q r phase interpret query s.queue hp.1
++  have hd := (ZMod.intCast_eq_intCast_iff_dvd_sub
++    (readoutPhase query (s.queue.map interpret)) outputLift q).mp he.symm
++  obtain ⟨wrap, hw⟩ := hd
++  exact ⟨wrap, by linarith⟩
++
++/-- All-history correctness is conditional only on current admitted rows,
++the finite window bound and the modular implementation equations. -/
++theorem reachable_decode (q r W : Nat) (t E L : Int)
++    (hq : 0 < (q : Int)) (ht : 0 < t) (hE : 0 ≤ E)
++    (margin : 2 * t * (W : Int) * L * (E + 1) < (q : Int))
++    (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (phase : Ct →+ ZMod q) (interpret : Entry Ct → Row r)
++    (query : Fin r → Int) (s : State Ct) (outputLift : Int)
++    (reached : Reachable codec admit W s)
++    (hp : PhasePremises q r phase interpret query s outputLift)
++    (hf : ∀ e ∈ s.queue, Fresh (q : Int) t E (interpret e))
++    (hL : queryL1 query ≤ L) :
++    rounded (q : Int) t outputLift % t = readoutScore query (s.queue.map interpret) % t := by
++  obtain ⟨hsum, hlen⟩ := reachable_queue_sum codec admit W s reached
++  obtain ⟨wrap, hw⟩ := queue_integer_lift q r phase interpret query s outputLift hsum hp
++  rw [hw]
++  apply window_correctness (q : Int) t E L W hq ht hE margin
++    r (s.queue.map interpret) query wrap
++  · intro x hx
++    obtain ⟨e, he, rfl⟩ := List.mem_map.mp hx
++    exact hf e he
++  · simpa only [List.length_map] using hlen
++  · exact hL
++
++/-- Signed decoding adds the actual output's strict nonwrap bound. -/
++theorem reachable_signed_decode (q r W : Nat) (t E L : Int)
++    (hq : 0 < (q : Int)) (ht : 0 < t) (hE : 0 ≤ E)
++    (margin : 2 * t * (W : Int) * L * (E + 1) < (q : Int))
++    (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (phase : Ct →+ ZMod q) (interpret : Entry Ct → Row r)
++    (query : Fin r → Int) (s : State Ct) (outputLift : Int)
++    (reached : Reachable codec admit W s)
++    (hp : PhasePremises q r phase interpret query s outputLift)
++    (hf : ∀ e ∈ s.queue, Fresh (q : Int) t E (interpret e))
++    (hL : queryL1 query ≤ L)
++    (hm : 2 * |readoutScore query (s.queue.map interpret)| < t) :
++    centered t (rounded (q : Int) t outputLift) = readoutScore query (s.queue.map interpret) := by
++  have h := reachable_decode q r W t E L hq ht hE margin codec admit phase
++    interpret query s outputLift reached hp hf hL
++  unfold centered
++  rw [h]
++  exact centered_exact t (readoutScore query (s.queue.map interpret)) hm
++
++/- Axiom closure pins: mathematical Lean foundations only; no added axioms. -/
++/-- info: 'Minidregg.Theory.CiphertextWindowNoise.queue_phase_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.CiphertextWindowNoise.queue_phase_sum
++/-- info: 'Minidregg.Theory.CiphertextWindowNoise.queue_integer_lift' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.CiphertextWindowNoise.queue_integer_lift
++/-- info: 'Minidregg.Theory.CiphertextWindowNoise.reachable_decode' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.CiphertextWindowNoise.reachable_decode
++/-- info: 'Minidregg.Theory.CiphertextWindowNoise.reachable_signed_decode' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Theory.CiphertextWindowNoise.reachable_signed_decode
++
++end Minidregg.Theory.CiphertextWindowNoise
+--- /dev/null
++++ b/Assurance/ResidentBfvWindowNoise.lean
+@@ -0,0 +1,266 @@
++/-
++Actual Q83/window arithmetic instantiation of Theory.IntegerWindowNoise.
++This is a source-equation theorem, NOT an implementation or security theorem.
++The caller still owes fresh-sampler/coefficient equations, the modular RNS
++phase/readout bridge, queue admission/currentness and a protected release.
++
++Statement-first: ActualPremises and SignedWindowClaim precede proof work.
++Positive premise inhabitant: 128 nonzero 577-coordinate rows, nonzero error
++and a negative one-coordinate query. Teeth: same-plaintext replacement
++leaves exact expiry debt and eventually misdecodes at these actual moduli.
++-/
++import Theory.IntegerWindowNoise
++
++namespace Minidregg.Assurance.ResidentBfvWindowNoise
++set_option autoImplicit false
++open Minidregg.Theory.IntegerWindowNoise
++open scoped BigOperators
++
++def q83 : Int := 9671406214650060397780993
++def t32 : Int := 4294828033
++def ringDegree : Nat := 4096
++def width : Nat := 577
++def window : Nat := 128
++def support : Int := 20
++def coordinateBound : Int := 127
++def freshBound : Int := 2 * (ringDegree : Int) * support ^ 2 + support
++def queryBudget : Int := (width : Int) * coordinateBound
++def scoreBudget : Int := (window : Int) * queryBudget * coordinateBound
++
++def ActualPremises (xs : List (Row width)) (query : Fin width → Int) : Prop :=
++  (∀ x ∈ xs, Fresh q83 t32 freshBound x) ∧ xs.length ≤ window ∧
++  (∀ j, |query j| ≤ coordinateBound) ∧
++  (∀ x ∈ xs, ∀ j, |x.message j| ≤ coordinateBound)
++
++def SignedWindowClaim : Prop :=
++  ∀ (xs : List (Row width)) (query : Fin width → Int) (wrap : Int),
++    ActualPremises xs query →
++    centered t32 (rounded q83 t32 (readoutPhase query xs + q83 * wrap)) = readoutScore query xs
++
++theorem actual_modulus_product : (2199023190017 : Int) * 4398046486529 = q83 := by decide
++theorem actual_fresh_bound : freshBound = 3276820 := by decide
++theorem actual_query_budget : queryBudget = 73279 := by decide
++theorem actual_score_budget : scoreBudget = 1191223424 := by decide
++theorem actual_margin_lhs :
++    2 * t32 * (window : Int) * queryBudget * (freshBound + 1) = 264008552994527828978432 := by decide
++theorem actual_margin : 2 * t32 * (window : Int) * queryBudget * (freshBound + 1) < q83 := by decide
++theorem actual_score_nonwrap : 2 * scoreBudget < t32 := by decide
++theorem actual_polynomial_nonwrap : 2 * (width - 1) < ringDegree := by decide
++
++/-- The sampler's support supplies this deterministic coefficient bound,
++conditional on the two signed-convolution source expansions. -/
++theorem actual_public_key_noise_bound
++    (a b c d : Fin ringDegree → Int) (neg₁ neg₂ : Fin ringDegree → Bool) (e : Int)
++    (ha : ∀ j, |a j| ≤ support) (hb : ∀ j, |b j| ≤ support)
++    (hc : ∀ j, |c j| ≤ support) (hd : ∀ j, |d j| ≤ support) (he : |e| ≤ support) :
++    |signedProductSum a b neg₁ + e + signedProductSum c d neg₂| ≤ freshBound := by
++  exact public_key_noise_bound a b c d neg₁ neg₂ e support (by decide) ha hb hc hd he
++
++theorem actual_window_correctness : WindowCorrectness q83 t32 freshBound queryBudget window := by
++  exact window_correctness q83 t32 freshBound queryBudget window
++    (by decide) (by decide) (by decide) actual_margin
++
++theorem actual_signed_window : SignedWindowClaim := by
++  intro xs query wrap h
++  rcases h with ⟨hf, hlen, hquery, hm⟩
++  have hL : queryL1 query ≤ queryBudget := queryL1_le query coordinateBound hquery
++  have hscore := readout_score_bound query xs coordinateBound hm
++  have hn : (xs.length : Int) ≤ window := by exact_mod_cast hlen
++  have h0 : 0 ≤ queryL1 query := Finset.sum_nonneg (by intro j _; exact abs_nonneg _)
++  have hM : |readoutScore query xs| ≤ scoreBudget := by
++    calc
++      |readoutScore query xs| ≤ (xs.length : Int) * (queryL1 query * coordinateBound) := by
++        simpa only [mul_assoc] using hscore
++      _ ≤ (window : Int) * (queryBudget * coordinateBound) :=
++        mul_le_mul hn (mul_le_mul_of_nonneg_right hL (by decide))
++          (mul_nonneg h0 (by decide)) (by decide)
++      _ = scoreBudget := by simp only [scoreBudget, mul_assoc]
++  apply window_signed_correctness q83 t32 freshBound queryBudget window
++    (by decide) (by decide) (by decide) actual_margin xs query wrap hf hlen hL
++  have := actual_score_nonwrap
++  omega
++
++def firstCoordinate : Fin width := ⟨0, by decide⟩
++
++def witnessQuery (j : Fin width) : Int := if j = firstCoordinate then -1 else 0
++def witnessRow : Row width where
++  message := fun j => if j = firstCoordinate then 1 else 0
++  error := fun j => if j = firstCoordinate then 1 else 0
++  phase := fun j => q83 * (if j = firstCoordinate then 1 else 0) / t32 + (if j = firstCoordinate then 1 else 0)
++def witnessWindow : List (Row width) := List.replicate window witnessRow
++
++theorem witness_fresh : Fresh q83 t32 freshBound witnessRow := by
++  intro j
++  constructor
++  · rfl
++  · by_cases hj : j = firstCoordinate <;> simp [witnessRow, hj, freshBound, ringDegree, support]
++
++theorem witness_premises : ActualPremises witnessWindow witnessQuery := by
++  constructor
++  · intro x hx
++    have h : x = witnessRow := by simpa [witnessWindow, window] using hx
++    subst x
++    exact witness_fresh
++  constructor
++  · simp [witnessWindow]
++  constructor
++  · intro j
++    by_cases hj : j = firstCoordinate <;> simp [witnessQuery, hj, coordinateBound]
++  · intro x hx j
++    have h : x = witnessRow := by simpa [witnessWindow, window] using hx
++    subst x
++    by_cases hj : j = firstCoordinate <;> simp [witnessRow, hj, coordinateBound]
++
++theorem witness_row_score : rowScore witnessQuery witnessRow = -1 := by
++  simp [rowScore, witnessQuery, witnessRow]
++
++theorem witness_score : readoutScore witnessQuery witnessWindow = -128 := by
++  simp [readoutScore, witnessWindow, witness_row_score, window]
++
++theorem witness_nonzero_error : witnessRow.error firstCoordinate = 1 := by decide
++
++theorem premise_inhabitation :
++    ∃ xs query, ActualPremises xs query ∧ readoutScore query xs = -128 :=
++  ⟨witnessWindow, witnessQuery, witness_premises, witness_score⟩
++
++theorem honest_signed_readout (wrap : Int) :
++    centered t32 (rounded q83 t32 (readoutPhase witnessQuery witnessWindow + q83 * wrap)) = -128 := by
++  rw [actual_signed_window witnessWindow witnessQuery wrap witness_premises, witness_score]
++
++/-- Replacing each expired zero phase by another valid zero phase 1 leaves
++one unit of debt per expiry, despite both decrypting to the same plaintext.
++This abstract scalar falsifier is distinct from the executed BFV fixtures. -/
++def wrongExpiryDebt : Nat → Int
++  | 0 => 0
++  | n + 1 => wrongExpiryDebt n - 1
++
++theorem wrong_expiry_debt (n : Nat) : wrongExpiryDebt n = -(n : Int) := by
++  induction n with
++  | zero => rfl
++  | succ n ih => simp [wrongExpiryDebt, ih]; omega
++
++theorem replacement_same_plaintext : rounded q83 t32 0 = 0 ∧ rounded q83 t32 1 = 0 := by decide
++
++def failureStep : Nat := (q83 / (2 * t32) + 1).toNat
++
++theorem wrong_expiry_actual_misses :
++    centered t32 (rounded q83 t32 (wrongExpiryDebt failureStep)) = -1 := by
++  rw [wrong_expiry_debt]
++  decide
++
++theorem wrong_expiry_not_exact_queue : wrongExpiryDebt failureStep ≠ 0 := by
++  rw [wrong_expiry_debt]
++  decide
++
++/-- Removing the noise-budget premise admits a valid floor-encoded row
++whose error changes the output. This tiny arithmetic control is not BFV. -/
++def excessiveNoise : Row 1 := ⟨fun _ => 0, fun _ => 3, fun _ => 3⟩
++theorem omitted_margin_fails :
++    Fresh 17 3 3 excessiveNoise ∧
++    centered 3 (rounded 17 3 (readoutPhase (fun _ => 1) [excessiveNoise])) ≠
++      readoutScore (fun _ => 1) [excessiveNoise] := by
++  unfold Fresh
++  decide
++
++/-- A valid modular decoding statement does not imply an unbounded signed
++integer output: the strict nonwrap bound is a separate real premise. -/
++def wrappedMessage : Row 1 := ⟨fun _ => 2, fun _ => 0, fun _ => 11⟩
++theorem omitted_signed_range_fails :
++    Fresh 17 3 0 wrappedMessage ∧
++    2 * (3 : Int) * 1 * 1 * (0 + 1) < 17 ∧
++    centered 3 (rounded 17 3 (readoutPhase (fun _ => 1) [wrappedMessage])) ≠
++      readoutScore (fun _ => 1) [wrappedMessage] := by
++  unfold Fresh
++  decide
++
++/- Axiom closure pins: mathematical Lean foundations only; no added axioms. -/
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_modulus_product' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_modulus_product
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_fresh_bound' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_fresh_bound
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_query_budget' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_query_budget
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_score_budget' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_score_budget
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_margin_lhs' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_margin_lhs
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_margin' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_margin
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_score_nonwrap' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_score_nonwrap
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_polynomial_nonwrap' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_polynomial_nonwrap
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_public_key_noise_bound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_public_key_noise_bound
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_window_correctness' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_window_correctness
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.actual_signed_window' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.actual_signed_window
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.witness_fresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.witness_fresh
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.witness_premises' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.witness_premises
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.witness_row_score' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.witness_row_score
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.witness_score' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.witness_score
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.witness_nonzero_error' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.witness_nonzero_error
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.premise_inhabitation' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.premise_inhabitation
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.honest_signed_readout' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.honest_signed_readout
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.wrong_expiry_debt' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.wrong_expiry_debt
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.replacement_same_plaintext' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.replacement_same_plaintext
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.wrong_expiry_actual_misses' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.wrong_expiry_actual_misses
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.wrong_expiry_not_exact_queue' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.wrong_expiry_not_exact_queue
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.omitted_margin_fails' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.omitted_margin_fails
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowNoise.omitted_signed_range_fails' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowNoise.omitted_signed_range_fails
++
++end Minidregg.Assurance.ResidentBfvWindowNoise
+--- /dev/null
++++ b/Assurance/ResidentBfvWindowPhase.lean
+@@ -0,0 +1,166 @@
++/-
++Closed premise inhabitant for the modular queue/noise composition at Q83.
++The ciphertext is one logical ZMod Q coefficient, not a BFV ciphertext.
++The codec and phase interpretation are transparent; no secrecy is claimed.
++It demonstrates a nonzero query, message and error in a reachable public
++queue, and checks that a different same-plaintext phase cannot expire it.
++-/
++import Theory.CiphertextWindowNoise
++import Assurance.ResidentBfvWindowNoise
++import Assurance.CiphertextWindowCell
++
++namespace Minidregg.Assurance.ResidentBfvWindowPhase
++set_option autoImplicit false
++open Minidregg.Theory.IntegerWindowNoise
++open Minidregg.Theory.CiphertextWindow
++open Minidregg.Theory.CiphertextWindowNoise
++open Minidregg.Assurance.ResidentBfvWindowNoise
++open Minidregg.Assurance.CiphertextWindowCell
++
++abbrev qNat : Nat := 9671406214650060397780993
++abbrev Ct := ZMod qNat
++def codec := (coeffStream qNat).toLawful
++def admit (_ : Nat) (_ : List UInt8) : Bool := true
++def phase : Ct →+ ZMod qNat := AddMonoidHom.id _
++def interpret (_ : Entry Ct) : Row width := witnessRow
++def integerPhase : Int := rowPhase witnessQuery witnessRow
++def ciphertext : Ct := (integerPhase : ZMod qNat)
++def command : Command Ct := ⟨⟨0, ciphertext⟩, none⟩
++def state : State Ct := advance window initial command
++
++def Subject : Prop :=
++  Reachable codec admit window state ∧
++  PhasePremises qNat width phase interpret witnessQuery state integerPhase ∧
++  ActualPremises (state.queue.map interpret) witnessQuery ∧
++  centered t32 (rounded q83 t32 integerPhase) = -1
++
++theorem checked : check codec admit window initial command = true := by
++  simp [check, initial, command, window, admit]
++
++theorem reached : Reachable codec admit window state := .next .start command checked
++
++theorem phase_premises : PhasePremises qNat width phase interpret witnessQuery state integerPhase := by
++  constructor
++  · intro e he
++    have heq : e = command.fresh := by simpa [state, advance, initial, window] using he
++    subst e
++    rfl
++  · simp [state, advance, initial, window, phase, command, ciphertext]
++
++theorem queue_rows : state.queue.map interpret = [witnessRow] := by rfl
++
++theorem fresh_rows : ∀ e ∈ state.queue, Fresh (qNat : Int) t32 freshBound (interpret e) := by
++  intro e _
++  exact witness_fresh
++
++theorem actual_premises : ActualPremises (state.queue.map interpret) witnessQuery := by
++  rw [queue_rows]
++  refine ⟨?_, by decide, witness_premises.2.2.1, ?_⟩
++  · intro x hx
++    simp only [List.mem_singleton] at hx
++    subst x
++    exact witness_fresh
++  · intro x hx j
++    simp only [List.mem_singleton] at hx
++    subst x
++    exact witness_premises.2.2.2 witnessRow (by simp [witnessWindow, window]) j
++
++theorem queue_score : readoutScore witnessQuery (state.queue.map interpret) = -1 := by
++  rw [queue_rows]
++  simpa [readoutScore] using witness_row_score
++
++theorem decoded : centered t32 (rounded q83 t32 integerPhase) = -1 := by
++  have h := reachable_signed_decode qNat width window t32 freshBound queryBudget
++    (by decide) (by decide) (by decide) actual_margin codec admit phase interpret
++    witnessQuery state integerPhase reached phase_premises fresh_rows
++    (queryL1_le witnessQuery coordinateBound witness_premises.2.2.1)
++    (by rw [queue_score]; decide)
++  simpa [queue_score] using h
++
++theorem subject : Subject := ⟨reached, phase_premises, actual_premises, decoded⟩
++
++theorem nonzero_message_error_query :
++    witnessRow.message firstCoordinate = 1 ∧ witnessRow.error firstCoordinate = 1 ∧
++    witnessQuery firstCoordinate = -1 := by decide
++
++/-- The negative query turns fresh error 1 into phase -(floor(Q/t)+1).
++A replacement error 0 yields a distinct phase but the same signed output. -/
++def replacement : Ct := ((integerPhase + 1 : Int) : ZMod qNat)
++
++theorem row_phase_exact : integerPhase = -(q83 / t32 + 1) := by
++  simp [integerPhase, rowPhase, witnessQuery, witnessRow]
++
++theorem same_plaintext_distinct_phase :
++    centered t32 (rounded q83 t32 (integerPhase + 1)) = -1 ∧ replacement ≠ ciphertext := by
++  rw [row_phase_exact]
++  constructor
++  · decide
++  · change (((integerPhase + 1 : Int) : ZMod qNat) ≠ (integerPhase : ZMod qNat))
++    intro he
++    have hd := (ZMod.intCast_eq_intCast_iff_dvd_sub (integerPhase + 1) integerPhase qNat).mp he
++    norm_num at hd
++
++theorem different_expiry_bytes_refused :
++    sameSerialized codec command.fresh ⟨0, replacement⟩ = false := by
++  apply Bool.eq_false_iff.mpr
++  intro h
++  have he := sameSerialized_eq codec command.fresh ⟨0, replacement⟩ h
++  have hc := congrArg Entry.ciphertext he
++  exact same_plaintext_distinct_phase.2 hc
++
++theorem nonzero_ciphertext : ciphertext ≠ 0 := by
++  unfold ciphertext
++  rw [row_phase_exact]
++  decide
++
++/- Axiom closure pins. -/
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.checked' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.checked
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.reached' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.reached
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.phase_premises' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.phase_premises
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.queue_rows' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.queue_rows
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.fresh_rows' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.fresh_rows
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.actual_premises' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.actual_premises
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.queue_score' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.queue_score
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.decoded' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.decoded
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.subject' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.subject
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.nonzero_message_error_query' does not depend on any axioms -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.nonzero_message_error_query
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.row_phase_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.row_phase_exact
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.same_plaintext_distinct_phase' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.same_plaintext_distinct_phase
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.different_expiry_bytes_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.different_expiry_bytes_refused
++/-- info: 'Minidregg.Assurance.ResidentBfvWindowPhase.nonzero_ciphertext' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Assurance.ResidentBfvWindowPhase.nonzero_ciphertext
++
++end Minidregg.Assurance.ResidentBfvWindowPhase
+--- a/Theory.lean
++++ b/Theory.lean
+@@ -75,3 +75,6 @@
+ import Theory.LaceMerge  -- the replica keyset merge over CausalVersionDag's AddressedEvent: ids_merge and the CRDT laws; the ancestor's anonymously-carried CrossCanonical gap DERIVED from the typed realizer slot BindingPremise (crossCanonical_of_binding, sameView_of_binding, merge_converges — replication converges on CONTENT); premise inhabited (injectiveScheme_binding, ideal digest) and refuted (lengthScheme_not_binding, crossCanonical_is_the_gap, merge_drops_at_collision) over one computable lawful codec. Residuals [LACE-frontier] [LACE-equivocation] [LACE-order] [LACE-catchup]
+ import Theory.RevocationConsensus  -- the negative lifecycle is consensus-bound and the positive one is not: revocation_needs_consensus (cross-vat sound + gated ⇒ Consensus) with its satisfiable and teeth poles, LocalCollect separated from Consensus on ONE decision, and dead_undecidable ported (deadness across the halting family is not computably decidable; resolved operationally by leases). Residuals [LIVENESS-lease] [LIVENESS-crossvat-cycle]
+ import Theory.PrivateTrace  -- the learn/infer-only interface as a state-machine fact, candidate-independent: a deterministic Machine S C O (step, out), an ADAPTIVE policy π : List O → C, trace M π s n. trace_eq_of_preserved (NO axioms): a relation preserved by EVERY allowed command and respected by out gives equal finite traces under every adaptive policy — the multi-step lift of Kernel/PrivateTurn.lean's one-step post_public_agrees (its hblind IS the preservation premise); randomized state needs a coupling version, not done. The byte toy as theorems: with output = high bit and update +128 only, the honest invariant is EQUAL HIGH BIT (highR; lowR fails hout — lowR_traces_differ), flip_trace_eq_of_highR, and the visible state genuinely changes (flip_trace_alternates). Falsifier for preservation: add the update +1 (twoMachine) — equal next answers (highR_two_out) yet not_highR_two_step (127 ↦ 128, 0 ↦ 1) and highR_two_traces_differ: certify the COMBINED learn-and-infer interface, not the two verbs independently. Recovery, sharp both ways: with arbitrary chosen offsets a binary-search policy recovers the byte in 8 observations (search_recovers, decide +kernel over all 256; exists_policy_recovers over all pairs), 7 are insufficient for that policy (search_seven_insufficient) and for EVERY policy (no_policy_recovers_seven, pigeonhole over List.Vector Bool 7); {+1,+128} alone cannot recover in 8 and is used only for the falsifier.
++
++import Theory.IntegerWindowNoise
++import Theory.CiphertextWindowNoise
+--- a/Assurance.lean
++++ b/Assurance.lean
+@@ -126,3 +126,6 @@
+ import Assurance.SpartanR1CS  -- SPARTAN, composed out of engines we already had. The suspicion this file tests and confirms: Spartan is not three things to build but three things to COMPOSE. (1) The ZEROCHECK is Selvage.eqMle_fold (identity) plus Selvage.mle_zero_uniform_bound (multilinear Schwartz-Zippel) -- both LANDED, so AirSumcheckQuadratic's docblock residual (ii), still reading "not yet vocabulary", is STALE and not a gap. (2) The OUTER sumcheck is the degree-3 rung at head eqHead tau and body A-hat*B-hat - C-hat: literally the COMPOSITION of cubicForm_fraction_layer's vocabulary and cubicForm_hadamard, so it costs no realizer. spartan_outer_sound: an UNSATISFIED R1CS survives with probability at most s/|F| + s*3/|F| over the joint draw of the zerocheck point and the s challenges -- two events, two causes, added, and the flattering half never quoted alone. (3) The INNER sumcheck is not the hard part it is usually called: its three claims are literally three Selvage.LinearConstraint values ON THE WITNESS WORD (innerClaim, innerClaim_satisfied_iff), so batch_survives_prob_le retires a wrong triple at 2/|F| with nothing new proved, and the batched summand wt_gamma * z is a prodDiff with C = 0, i.e. the landed degree-2 engine with the FACTORED terminal wt-tilde(r_y) * z-tilde(r_y). mle_matVec is the identity that makes phase 2 exist, obtained as mle2_contraction at nu = 0 (matVec_is_contraction_at_nu_zero exhibits the instance, so there is ONE object and not a twin). THE HAND-OFF IS A THEOREM, not prose: spartanTerminal_eq_honest says the verifier's own terminal expression eq(tau,r_x)*(vA*vB - vC) equals the honest chain's final value exactly when the three v's are the three true row openings -- so phase 2's obligation is exactly three values, no more and no fewer, and the eq factor is NOT one of them. TWO NAMED OBLIGATIONS, neither discharged: [SPARTAN-pcs] SpartanOpeningProtocol over the landed Selvage.MleEvalClaim (the opening PROTOCOL is BaseFold's braided reduction, or Ligerito in the BinarySpartan shape; binding itself is proved here as spartanOpeningsBound), and [SPARTAN-sparse] SpartanSparseEvalOracle -- which is a COST obligation and NOT a soundness one: everything here is sound against a DENSE commitment to the matrices, and Spartan's SPARK layer (sparse multilinear commitment by offline memory checking) is what buys SUBLINEARITY. That layer does not exist in this tree at all -- zero timestamp vectors, zero multiset check -- and sparseEvalOracle_refutable proves the Prop is refutable rather than free. NO CHARACTERISTIC HYPOTHESIS anywhere, and nothing downstream of Proximity's FoldingData (whose two_ne is uninhabitable in char 2): what char-2 costs is the USEFULNESS of a k/|F| bound, not its proof, which is why ring-switching is load-bearing rather than an optimization. ZMod 7 teeth on the SQUARING gate w*w = v -- deliberately not a C = 0 instance the zero witness would satisfy for free: goodZ_sat and badZ_unsat are two live witnesses on one instance, badZ_survives_at_one exhibits a NONEMPTY s/|F| event while badZ_caught_at_three separates elsewhere, the inner claim predicate fires BOTH ways, and terminal_fires computes the hand-off to a specific nonzero element. AND THEN THE COMPOSITION (spartan_sound): the two phases over ONE joint draw ((tau,r_x),(gamma,r_y)), bounded by s/|F| + s*3/|F| + 2/|F| + t*2/|F|, with ADAPTIVE provers (outer sees tau, inner sees (tau,r_x,gamma), the claimed values are functions of (tau,r_x)) -- and, the point of it, against the DEPLOYED verifier. SpartanOuterRealAccepts contains NO honest side: Selvage's SumcheckAccepts renders the terminal oracle check as 'the folded claim equals the HONEST side's final value', which a real verifier cannot evaluate, and left unstated every bound here would have been about an idealized verifier -- the exact shape of a vacuity that survives a green build and passes its axiom pins. outerReal_iff_sumcheckAccepts discharges it: the deployed and idealized predicates coincide EXACTLY when the three claims are true. The case split IS the content -- either the prover told the truth about the three row openings and phase 1 must carry the lie and cannot, or it lied and phase 2 must carry it and cannot. WHAT THE COMPOSITION DID NOT DO, said next to the theorem and not in a footnote: it moved the idealization from phase 1 to phase 2, it did not remove it from the stack; phase 2's terminal is still a comparison against an honest chain, which is [SPARTAN-pcs]. Two elaboration findings paid for in build failures: the product splits must be done ONCE at opaque types (uniformProb_mid_le/_last_le -- inlining them at the concrete event types is a whnf HEARTBEAT TIMEOUT, because spartanBatch unfolds through batchConstraint into three rowPartials into mle's Finset.sum), and naming the events (spartanBatchAt, SpartanInnerAccepts, SpartanInnerFalse) is what made the proof elaborate at all. Final tooth, which is the ring-switching argument in one line: composed_bound_is_vacuous_at_f7 proves 1 < 1/7 + 3/7 + 2/7 + 2/7 = 8/7, so the composed bound at toy parameters is a TRUE statement that constrains nothing -- every term is k/|F|, the proofs are characteristic-free but the USEFULNESS is not, and that is a parameter fact rather than a proof obstruction
+ import Assurance.TwistMemoryFingerprintJoin  -- ⭐ the OFFLINE MEMORY CHECK, both poles priced: Compiler.TwistMultisetInvariant (Nebula Lemma 2 over the sparse typed carriers -- TwistContinuity IFF the IS+WS = RS+FS multiset invariant under the positional stamp discipline, BOTH directions, free absorbed by Option-valued cells with no case split) joined to Selvage.MultisetFingerprint (Corollary 1): a NON-continuous committed bus passes the fingerprinted check on at most (|dom|+|rows|)*(k+1)/|F| of challenge pairs for ANY prover stamps (nonContinuous_fingerprint_accept_le -- the adversarial direction of the bridge's named residual, discharged to the named floor), and every accepted execution's exact bus is accepted at EVERY challenge (exactBusClaim_fingerprint_accepted). Residual [TWIST-FP-BIND] names what is NOT discharged: commitment binding over the committed row/stamp columns, the roots-before-gamma schedule (AcceptedLogupRun), range checks realizing Set.InjOn vec, row-shape checks realizing DisciplineRowValid, and the pre/post audit against the exact state roots. NOTE: this is also the timestamp-vector + multiset-check engine SpartanR1CS's [SPARTAN-sparse] entry records as absent from the tree -- the SPARK sparse-commitment layer now has its combinatorial core, not yet its sparse-matrix instantiation
+ import Assurance.ReleaseGateRouting -- the release-gate routing lemma and its binding control, the handoff's §6B as theorems, joined to the tree at both ends. Routing: an unbound gate that reveals the designated bit of ANY submitted predicate determines the private state (determines_iff_separates; routing_of_projections / routing_of_accept_all; hostReconstruct_exact is the "put secret bit 37 in the output slot" attack, by rfl), and a gate accepting at most one predicate reveals at most one bit (single_predicate_not_determining, pigeonhole; both poles pinned on one carrier). Binding: BindingGate R stateOf outOf gate — acceptance implies the released output stands in the authorized relation to the state — gives routing_refused (an output that is not the authorized function of the public half is refused whatever the private half or proof string) and binding_release_public_only, the gate-level twin of privateTurn_public_indistinguishable; TwoBit instance decided. The tree at both ends: Kernel/PrivateEscrowSettlement's Settlement is a BindingGate BY TYPE (settlement_is_binding_gate, settlement_release_public_only, acceptable_pins_named_relation); and at Stage 0 the relation is y = rt ∧ descriptorHolds evmAddDescriptor (traceOf y) (Iff.rfl), the descriptor FORCES Z = (X + Y) mod 2^256 (stage0_released_output_forced via evmAddDescriptor_means_semantics + fragment_run_eq_iff), the ideal gate refuses every routed Z (stage0_forged_z_refused at Z = 4) while the honest candidate is accepted at the ideal AND the deployed gate (fsProve_complete), and stage0Receipt_is_bound_evidence = fsCheck_ok_fiatShamir ∧ stage0Receipt_price. What the receipt binds: the descriptor and the FULL word, public prefix included, up to the FS price under the ROM. What it does not: hide — the whole word IS the FS statement (stage0_statement_carries_word, rfl); Stage 0 has no private half. Residuals: [RELEASE-hiding], [RELEASE-continuity] (a bound gate does not refuse a replayed stale-but-valid state; the kernel's nullifier/freshness objects are named).
++
++import Assurance.ResidentBfvWindowNoise
++import Assurance.ResidentBfvWindowPhase

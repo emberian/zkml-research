@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificate.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean:44:12: warning: `Int.ediv_add_emod` has been deprecated: Use `Int.mul_ediv_add_emod` instead\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean:47:2: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  f - g \u2265 1\n  e \u2265 0\n  b - c - e \u2264 0\n  a \u2265 1\n  a - e \u2265 1\n  a + b - c - e \u2265 1\nwhere\n a := d\n b := d * q\n c := d * (x / d)\n e := x % d\n f := x / d\n g := q\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean:65:13: warning: `Int.ediv_add_emod` has been deprecated: Use `Int.mul_ediv_add_emod` instead\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean:66:2: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  g - h - i \u2264 0\n  g - h \u2265 1\n  d + g - h - i \u2265 1\n  -85070591730234615865843651857942052863 \u2264 170141183460469231731687303715884105728*b - f \u2264 85070591730234615865843651857942052864\n  -42535295865117307932921825928971026431 \u2264 85070591730234615865843651857942052864*a - e \u2264 42535295865117307932921825928971026432\nwhere\n a := deployedV r\n b := deployedW r\n d := deployedQ\n e := \u2211 i, r i * deployedThetaG i\n f := \u2211 i, r i * deployedThetaF i\n g := deployedQ * c.outputQuotient\n h := deployedQ * (deployedOutput r / deployedQ)\n i := deployedOutput r % deployedQ\n",
+    "stderr": "",
+    "elapsed_seconds": 4.030293333998998
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "source": "Root and sibling frozen-packaging messages plus BFV validation-summary; verified before combined run",
+  "hashes": {
+    "formal/recovery_policy/Theory/PrivateDistributionBudget.lean": "2b17dd27ac821a50f7364a6ff6d116d93189c587f6ee765bf19f64300b927d52",
+    "formal/recovery_policy/minidregg-private-distribution-budget.patch": "e0ff46cd158debc50d901a4059266eef1afc311f968462ad345b5a87eca2a188",
+    "formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch": "389015b446a8a09b4327de4dcc1008ef0d0a8a8a95342dc2a9b8b4b65f2d375f",
+    "formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+    "formal/integer_certificate_emission/optimization/Compiler/IntegerCertificateSimplification.lean": "0cf4b3cbc725e186264c13eac1b681b66f65bcc8a1d5544108b0da84c8b7c8ef",
+    "formal/bfv_lift_refinement/source_certificate/minidregg-fhe-source-certificate.patch": "55ffecdf2db1d330b0cc76126781dbc39c4ea581fe4edc4fbb7da7830e771d2f",
+    "formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+    "formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+    "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887",
+    "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+    "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81",
+    "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean": "8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b",
+    "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean": "ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc",
+    "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7"
+  }
+}

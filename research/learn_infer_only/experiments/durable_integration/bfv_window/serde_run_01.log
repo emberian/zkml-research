@@ -1,0 +1,4 @@
+EMPTY_INITIAL_ZERO serialize_panics=true polynomial_count=0
+NONEMPTY_GROUP_ZERO serialize_ok=true polynomial_count=2 serialized_bytes=85022 decrypts_zero=true
+SEEDED_ALIAS exact_polynomials_equal=true serialized_equal=false seeded_bytes=42545 expanded_bytes=85022 same_plaintext=true
+PASS serializer domain/normalization controls; no attack on PK window and no no-reader claim

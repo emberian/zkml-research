@@ -1,0 +1,195 @@
+--- a/Theory.lean
++++ b/Theory.lean
+@@ -75,3 +75,5 @@
+ import Theory.LaceMerge  -- the replica keyset merge over CausalVersionDag's AddressedEvent: ids_merge and the CRDT laws; the ancestor's anonymously-carried CrossCanonical gap DERIVED from the typed realizer slot BindingPremise (crossCanonical_of_binding, sameView_of_binding, merge_converges — replication converges on CONTENT); premise inhabited (injectiveScheme_binding, ideal digest) and refuted (lengthScheme_not_binding, crossCanonical_is_the_gap, merge_drops_at_collision) over one computable lawful codec. Residuals [LACE-frontier] [LACE-equivocation] [LACE-order] [LACE-catchup]
+ import Theory.RevocationConsensus  -- the negative lifecycle is consensus-bound and the positive one is not: revocation_needs_consensus (cross-vat sound + gated ⇒ Consensus) with its satisfiable and teeth poles, LocalCollect separated from Consensus on ONE decision, and dead_undecidable ported (deadness across the halting family is not computably decidable; resolved operationally by leases). Residuals [LIVENESS-lease] [LIVENESS-crossvat-cycle]
+ import Theory.PrivateTrace  -- the learn/infer-only interface as a state-machine fact, candidate-independent: a deterministic Machine S C O (step, out), an ADAPTIVE policy π : List O → C, trace M π s n. trace_eq_of_preserved (NO axioms): a relation preserved by EVERY allowed command and respected by out gives equal finite traces under every adaptive policy — the multi-step lift of Kernel/PrivateTurn.lean's one-step post_public_agrees (its hblind IS the preservation premise); randomized state needs a coupling version, not done. The byte toy as theorems: with output = high bit and update +128 only, the honest invariant is EQUAL HIGH BIT (highR; lowR fails hout — lowR_traces_differ), flip_trace_eq_of_highR, and the visible state genuinely changes (flip_trace_alternates). Falsifier for preservation: add the update +1 (twoMachine) — equal next answers (highR_two_out) yet not_highR_two_step (127 ↦ 128, 0 ↦ 1) and highR_two_traces_differ: certify the COMBINED learn-and-infer interface, not the two verbs independently. Recovery, sharp both ways: with arbitrary chosen offsets a binary-search policy recovers the byte in 8 observations (search_recovers, decide +kernel over all 256; exists_policy_recovers over all pairs), 7 are insufficient for that policy (search_seven_insufficient) and for EVERY policy (no_policy_recovers_seven, pigeonhole over List.Vector Bool 7); {+1,+128} alone cannot recover in 8 and is used only for the falsifier.
++
++import Theory.PrivateDistributionBudget
+diff --git a/Theory/PrivateDistributionBudget.lean b/Theory/PrivateDistributionBudget.lean
+new file mode 100644
+--- /dev/null
++++ b/Theory/PrivateDistributionBudget.lean
+@@ -0,0 +1,182 @@
++/-
++Distributional nonvacuity with an observation budget.
++
++Statement first: oneRead_samples fixes the complete two-sample transcript multiset
++for every policy consisting of public coordinate flips/swaps, one coordinate read,
++and arbitrary postprocessing. The two worlds have disjoint parity predicates.
++No pair of different point states is equivalent for all coordinate queries; this
++does not make distributional privacy vacuous. A second coordinate observation
++recovers the parity, supplying the budget falsifier.
++
++Each seed is one equally likely Boolean. Multiset equality is exact probability
++equality after dividing event counts by two. This is an ideal-interface theorem,
++not encryption, and the transcript exposes no state-dependent side channel beyond
++the single bit. Public randomness can select a policy before that read.
++-/
++import Theory.PrivatePolicyEvolution
++
++namespace Minidregg.Theory.PrivateDistributionBudget
++
++set_option autoImplicit false
++open PrivatePolicyEvolution
++
++abbrev State := Bool × Bool
++
++def world (secret seed : Bool) : State := (seed, Bool.xor seed secret)
++def parity (s : State) : Bool := Bool.xor s.1 s.2
++def complement (s : State) : State := (!s.1, !s.2)
++
++inductive Action where
++  | flipFirst
++  | flipSecond
++  | swap
++  deriving DecidableEq
++
++def advance (s : State) : Action → State
++  | .flipFirst => (!s.1, s.2)
++  | .flipSecond => (s.1, !s.2)
++  | .swap => s.swap
++
++def runActions : List Action → State → State
++  | [], s => s
++  | a :: rest, s => runActions rest (advance s a)
++
++structure OneReadPolicy (Out : Type*) where
++  before : List Action
++  coordinate : Bool
++  afterward : Bool → Out
++
++def transcript {Out : Type*} (policy : OneReadPolicy Out) (s : State) : Out :=
++  policy.afterward (visible policy.coordinate (runActions policy.before s))
++
++def samples {Out : Type*} (policy : OneReadPolicy Out) (secret : Bool) : Multiset Out :=
++  {transcript policy (world secret false), transcript policy (world secret true)}
++
++theorem world_parity (secret seed : Bool) : parity (world secret seed) = secret := by
++  cases secret <;> cases seed <;> rfl
++
++theorem worlds_disjoint (seed₀ seed₁ : Bool) : world false seed₀ ≠ world true seed₁ := by
++  intro h
++  have hp := congrArg parity h
++  simp only [world_parity] at hp
++  cases hp
++
++theorem world_complement (secret : Bool) :
++    world secret true = complement (world secret false) := by
++  cases secret <;> rfl
++
++theorem advance_complement (s : State) (a : Action) :
++    advance (complement s) a = complement (advance s a) := by
++  cases s with
++  | mk x y => cases x <;> cases y <;> cases a <;> rfl
++
++theorem runActions_complement (actions : List Action) (s : State) :
++    runActions actions (complement s) = complement (runActions actions s) := by
++  induction actions generalizing s with
++  | nil => rfl
++  | cons a rest ih => simpa only [runActions, advance_complement] using ih (advance s a)
++
++theorem visible_complement (coordinate : Bool) (s : State) :
++    visible coordinate (complement s) = !(visible coordinate s) := by
++  cases coordinate <;> rfl
++
++/-- Any public flips/swaps still leave either coordinate uniformly distributed. -/
++theorem oneRead_samples {Out : Type*} (policy : OneReadPolicy Out) (secret : Bool) :
++    samples policy secret = {policy.afterward false, policy.afterward true} := by
++  unfold samples transcript
++  rw [world_complement, runActions_complement, visible_complement]
++  cases visible policy.coordinate (runActions policy.before (world secret false)) with
++  | false => rfl
++  | true => exact Multiset.cons_swap _ _ _
++
++/-- Exact equality of every complete one-read transcript distribution. -/
++theorem oneRead_worlds_equal {Out : Type*} (policy : OneReadPolicy Out) :
++    samples policy false = samples policy true := by
++  rw [oneRead_samples, oneRead_samples]
++
++def eventCount {Out : Type*} (test : Out → Bool) (outcomes : Multiset Out) : Nat :=
++  (outcomes.map test).count true
++
++theorem oneRead_event_count {Out : Type*} (policy : OneReadPolicy Out) (test : Out → Bool) :
++    eventCount test (samples policy false) = eventCount test (samples policy true) := by
++  rw [oneRead_worlds_equal]
++
++/-- Conditioning on independent public coins does not change the equality. -/
++theorem public_policy_family_equal {Public Out : Type*}
++    (policies : Public → OneReadPolicy Out) (coins : Public) :
++    samples (policies coins) false = samples (policies coins) true :=
++  oneRead_worlds_equal (policies coins)
++
++def activeWitness : OneReadPolicy Bool where
++  before := [.flipFirst, .swap, .flipSecond]
++  coordinate := true
++  afterward := id
++
++theorem active_witness_uniform :
++    samples activeWitness false = {false, true} ∧
++    samples activeWitness true = {false, true} := by
++  constructor <;> exact oneRead_samples activeWitness _
++
++/-- There is no distinct point-state pair hidden from every coordinate policy. -/
++theorem coordinates_separate_points (s t : State)
++    (h : ∀ coordinate, visible coordinate s = visible coordinate t) : s = t := by
++  exact Prod.ext (h false) (h true)
++
++/-- The second observation makes the protected predicate public. -/
++theorem two_reads_recover (secret seed : Bool) :
++    Bool.xor (visible false (world secret seed))
++      (visible true (world secret seed)) = secret :=
++  world_parity secret seed
++
++def doubledSamples (secret : Bool) : Multiset Bool :=
++  {parity (world secret false), parity (world secret true)}
++
++theorem second_read_distinguishes : doubledSamples false ≠ doubledSamples true := by
++  decide +kernel
++
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.world_parity' does not depend on any axioms -/
++#guard_msgs in
++#print axioms world_parity
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.worlds_disjoint' does not depend on any axioms -/
++#guard_msgs in
++#print axioms worlds_disjoint
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.world_complement' does not depend on any axioms -/
++#guard_msgs in
++#print axioms world_complement
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.advance_complement' does not depend on any axioms -/
++#guard_msgs in
++#print axioms advance_complement
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.runActions_complement' does not depend on any axioms -/
++#guard_msgs in
++#print axioms runActions_complement
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.visible_complement' does not depend on any axioms -/
++#guard_msgs in
++#print axioms visible_complement
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.oneRead_samples' depends on axioms: [Quot.sound] -/
++#guard_msgs in
++#print axioms oneRead_samples
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.oneRead_worlds_equal' depends on axioms: [Quot.sound] -/
++#guard_msgs in
++#print axioms oneRead_worlds_equal
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.oneRead_event_count' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms oneRead_event_count
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.public_policy_family_equal' depends on axioms: [Quot.sound] -/
++#guard_msgs in
++#print axioms public_policy_family_equal
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.active_witness_uniform' depends on axioms: [Quot.sound] -/
++#guard_msgs in
++#print axioms active_witness_uniform
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.coordinates_separate_points' does not depend on any axioms -/
++#guard_msgs in
++#print axioms coordinates_separate_points
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.two_reads_recover' does not depend on any axioms -/
++#guard_msgs in
++#print axioms two_reads_recover
++/-- info: 'Minidregg.Theory.PrivateDistributionBudget.second_read_distinguishes' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms second_read_distinguishes
++
++end Minidregg.Theory.PrivateDistributionBudget

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/build/Assurance/ResidentEmaAdaptive.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Assurance/ResidentEmaAdaptive.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/build:/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_002/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256_before": "9a19f41ff7b091f58d33b06c843d1a8f47e8c2271867f195c99ca985c213b3d1",
+  "source_sha256_after": "9a19f41ff7b091f58d33b06c843d1a8f47e8c2271867f195c99ca985c213b3d1",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Assurance/ResidentEmaAdaptive.lean",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Assurance/ResidentEmaAdaptive.lean:42:6: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached\n\nNote: Use `set_option maxHeartbeats <num>` to set the limit.\n\nHint: Additional diagnostic information may be available using the `set_option diagnostics true` command.\n",
+  "stderr": "",
+  "elapsed_seconds": 6.677035666987649,
+  "dependency_report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/results/run_002/report.json",
+  "dependency_report_sha256": "88343077a1c5e9c47793b451fbdf610a4adfcc6be0183519917ddc3a77bbac66"
+}

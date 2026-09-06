@@ -10,7 +10,8 @@ for preferring the learned neural readout over retrieval on this task.
 [EXECUTED] A second two-skill text/paraphrase task failed near chance with the
 frozen-model features. An exact additive sliding-window control succeeded on both
 skills only when given the generator's structured attributes; that is a useful
-small arithmetic target, not evidence of neural semantic transfer.
+small arithmetic target. A later preregistered pooling study improves simple-cue
+transfer (below); XOR-like transfer remains near chance.
 
 [EXECUTED] A separate bounded-integer readout retained essentially the same utility
 on **32 fresh histories**. Its transition agrees with an independent Python-bigint
@@ -28,16 +29,12 @@ origin/exposure model. `docs/DARK-TRAINING.md` §§3–7 and
 through which its private information propagates. Current `CANDIDATES.md` supplies
 the scope corrections to Route 1 and the explicit remaining release gap.
 
-[SOURCE: model card and implementation read] Model/tokenizer revision is
-`HuggingFaceTB/SmolLM2-135M@93efa2f097d58c2a74874c7e644dbc9b0cee75a2`.
-The [pinned primary model card](https://huggingface.co/HuggingFaceTB/SmolLM2-135M/raw/93efa2f097d58c2a74874c7e644dbc9b0cee75a2/README.md)
-identifies Apache 2.0 at metadata lines 1–5 and License lines 107–109.
-The cached weights' SHA-256 is
-`80521b40281d6ce74e35c9282c22539e75aa0ac8578892b2a59955ef78d55da1`.
-The model's `config.json` and Transformers 4.57.3 `modeling_llama.py`
-(classes `LlamaRMSNorm`, `LlamaMLP`, `LlamaAttention`) were read; source hash and
-all model/tokenizer file hashes are in `model_manifest.json` and `audit.json` below.
-`trust_remote_code=False`, `local_files_only=True`, no model-repository code.
+[SOURCE: model card/implementation read] Model/tokenizer is
+`HuggingFaceTB/SmolLM2-135M@93efa2f097d58c2a74874c7e644dbc9b0cee75a2`;
+its [pinned card](https://huggingface.co/HuggingFaceTB/SmolLM2-135M/raw/93efa2f097d58c2a74874c7e644dbc9b0cee75a2/README.md) identifies Apache 2.0 (metadata/License).
+Weights SHA-256: `80521b40281d6ce74e35c9282c22539e75aa0ac8578892b2a59955ef78d55da1`.
+`config.json` and Transformers 4.57.3 `modeling_llama.py` RMSNorm/MLP/attention were read.
+Hashes: `model_manifest.json`/`audit.json`; local files only, remote code disabled.
 
 [EXECUTED] Isolated runtime: Python 3.14.7, torch 2.10.0, transformers 4.57.3,
 NumPy 2.4.2, CPU float32, eager attention, two torch threads, evaluation mode,
@@ -336,15 +333,38 @@ does not isolate a single cause or justify changing model settings on test outco
 `text_transfer_audit.json` recomputes 416 saved method/history accuracy rows and
 checks disjoint surface forms, balanced rules and exact event-multiset reversal.
 
+## Preregistered representation study on fresh text
+
+[EXECUTED] `representation_PROTOCOL.md` fixed final-last-token and masked means after
+10/20/30 blocks before execution, using NEW entities/templates/cues and history seeds
+61000…/62000…/63000…. All settings were selected/persisted before final evaluation.
+One 384-prompt actual-model pass collected all features; no downloads or training.
+Selection chose mean-after10 for routed LMS and additive windows. On 32 test histories,
+LMS attained **64.53 ± 4.52%**, against its fresh last-token baseline 53.74%; paired
+improvement **10.79 ± 4.18 points**. Routed window attained **63.16 ± 4.19%**;
+shared window **63.23 ± 3.79%**. Selected routed kNN attained 60.52%; the routed-LMS
+advantage over it was **4.00 ± 4.10 points**, so this comparison remains uncertain.
+
+[EXECUTED] Routed LMS retained skill1 at 72.31% and adapted changed skill0 at 56.74%;
+routed window 69.38%/56.93%. A posthoc diagnostic attributes gains to linear cue rules;
+XOR/XNOR strata remain near 50%. Routed retention follows separate memories, not a
+learned protection mechanism. Selection also chose a shared-kNN representation that
+performed worse than its last-token baseline; every prespecified outcome is retained.
+`representation_audit.json` recomputes 960 accuracy rows and 30 selection decisions.
+
+[DERIVED] All model features still have 576 coordinates (577 with bias). Mean pooling
+at public length n adds 576(n-1) sums and 576 public scalings. At n=27, the 10-block prefix
+counts 955,514,880 public-weight products plus 8,398,080 private attention products when
+source tokens are private. Actual extraction ran all 30 blocks; this is no measured
+prefix speedup. Public skill/length and entitled-issuer conditions remain explicit.
+`representation_costs.csv`/`representation_results.csv` retain costs and full results.
+
 ## Evidence, searches, and resume
 
-[EXECUTED] All paths below are under `experiments/adaptation_utility/`:
-`model_manifest.json` pins actual weights, tokenizer, model shape, runtime and hashes;
-`selection.json` retains every hyperparameter candidate; `results.json`,
-`histories.json` and `decisions.json` retain v1 evidence; `fixed_point_results.json`
-retains every follow-on scale; `audit.json` confirms splits and recomputed scores;
-`costs.csv` keeps the scalar roles separate. Generated `.npz` feature/state caches
-are local, ignored and reproducible from pinned inputs; their hashes are retained.
+[EXECUTED] Evidence is under `experiments/adaptation_utility/`: manifests pin models,
+runtime and hashes; selection/results/history/decision files retain all outcomes;
+audit and cost files keep verification/roles separate, with task prefixes as named above.
+Generated `.npz` caches are local, ignored and reproducible; hashes are retained.
 No companion tree or shared verdict/ledger was edited by this lane.
 
 [EXECUTED] Commands run from repository root (stdout/stderr kept in same-name logs):
@@ -361,28 +381,20 @@ uv pip install --python "$A/.venv/bin/python" -r "$A/requirements-lock.txt"
 "$A/.venv/bin/python" "$A/text_transfer_controls.py"
 "$A/.venv/bin/python" "$A/text_window_controls.py"
 "$A/.venv/bin/python" "$A/text_transfer_audit.py"
+"$A/.venv/bin/python" "$A/representation_extract.py"
+"$A/.venv/bin/python" "$A/representation_controls.py"
+"$A/.venv/bin/python" "$A/representation_audit.py"
 ```
 
-[DERIVED correction] The first install used four explicit pins, then `uv pip freeze`
-created the complete lock. The lock-based command above is the replay command,
-not a claim that it was the original installer invocation. Logs name the executed
-scripts; rerunning feature extraction updates timing/hash manifests.
+[DERIVED correction] Initial install used four pins, then `uv pip freeze` made the replay lock; logs retain script outputs.
 
-[EXECUTED] Scry queries: **0**. Kagi queries: **0**. One browser primary-source model
-card read plus one direct fetch archived that same pinned card. Local corpus searched:
-Hugging Face model cache and uv package cache using `ls`; repository notes/docs using
-`rg`. No literature-absence claim is made. No real private logs or state were read.
+[EXECUTED] Scry/Kagi: **0/0**; one primary model-card read/fetch; local caches searched
+with `ls`, notes/docs with `rg`. No literature-absence claim or private logs/state read.
 
-[DERIVED decision] Keep the 6/65/577-state exact readout contracts as small useful
-control targets and keep retrieval as the strongest measured baseline here. Do not
-promote the neural readout as a utility improvement or the smaller state as a private
-compute result. No proposed change to `docs/VERDICTS.md` is needed; these are new
-bounded evidence for the handoff's utility question.
+[DERIVED decision] Keep the exact readout/window contracts and all retrieval controls.
+Pooling supplied a narrow positive for simple cues; neither small state nor that utility establishes protected computation. No `VERDICTS.md` change is proposed.
 
-[OPEN next] The text failure calls for a separately selected representation/control
-study before larger neural training: it does not yet show useful private semantic
-adaptation. For cryptographic work, the eight-coordinate structured window is the
-simpler new target: authenticated issuer features, a bound ciphertext queue and an
-actual restricted sign-release gate. The exact six-state LMS remains a comparison
-with private floor/clamp costs. Retaining a full reader key remains a test harness
-or declared custody relaxation, not tier-A/B credential absence.
+[OPEN next] Nonlinear cue transfer remains unresolved. The 577-coordinate mean10
+window is a useful new arithmetic/utility target alongside the eight-coordinate
+structured control. Neither has authenticated protected feature extraction or an
+actual restricted release gate here; a retained full reader key is not tier-A/B absence.

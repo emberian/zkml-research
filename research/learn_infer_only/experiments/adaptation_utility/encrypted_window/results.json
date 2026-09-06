@@ -1,0 +1,305 @@
+{
+  "actual_encrypted_readouts": 80,
+  "checks": {
+    "all_primary_pass": true,
+    "frozen_inputs_unchanged": true,
+    "independent_python_integer_replay": true,
+    "original_train_and_predict_compatible": {
+      "checkpoint_routes": 12,
+      "learn_events": 384,
+      "model_executed": false,
+      "original_predict_signs_equal": true,
+      "original_train_snapshots_equal": true,
+      "queries": 96
+    }
+  },
+  "ciphertext_ciphertext_products": 0,
+  "claim_label": "EXECUTED",
+  "commands": {
+    "build_01": {
+      "command": "CARGO_TARGET_DIR=research/learn_infer_only/experiments/adaptation_utility/encrypted_window/target cargo build --offline --locked --release --manifest-path research/learn_infer_only/experiments/adaptation_utility/encrypted_window/probe/Cargo.toml",
+      "exit_code": 101,
+      "log": "build_01.log",
+      "reason": "Rust cast comparison needed parentheses; fixed before first execution"
+    },
+    "build_02": {
+      "command": "CARGO_TARGET_DIR=research/learn_infer_only/experiments/adaptation_utility/encrypted_window/target cargo build --offline --locked --release --manifest-path research/learn_infer_only/experiments/adaptation_utility/encrypted_window/probe/Cargo.toml",
+      "exit_code": 0,
+      "log": "build_02.log"
+    },
+    "comparator_falsifier": {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/target/release/resident-bfv-window-83-probe",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/comparator_falsifier.txt"
+      ],
+      "exit_code": 101,
+      "stderr": "comparator_falsifier.stderr",
+      "stdout": "comparator_falsifier.jsonl"
+    },
+    "fixture": {
+      "argv": [
+        "research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/build_fixture.py"
+      ],
+      "exit_code": 0,
+      "log": "build_fixture.log"
+    },
+    "run_01": {
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/target/release/resident-bfv-window-83-probe",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/fixture.txt"
+      ],
+      "exit_code": 0,
+      "stderr": "run_01.stderr",
+      "stdout": "run_01.jsonl"
+    }
+  },
+  "comparator_falsifier": {
+    "detected": true,
+    "exit_code": 101,
+    "scope": "expected score changed by +1; exercises comparator, not a malicious-input rejection mechanism",
+    "sha256": "526a661a0a415b5253bdc5794c26b16748e549fc0ba6d275d7ba09e755f6bc9c"
+  },
+  "environment": {
+    "architecture": "arm64",
+    "breadstuffs_head": "3e51def6a5a95424e54fbe7432539b06088de5c3",
+    "cargo": "cargo 1.98.0-nightly (a595d0da2 2026-06-20)",
+    "cpu": "Apple M2 Max",
+    "rustc": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7"
+  },
+  "exact_nonempty_ciphertext_queue_checks": 10,
+  "exact_primary_comparisons": 96,
+  "full_polynomial_coefficients_checked_per_nonempty_checkpoint": 4096,
+  "history_summaries": [
+    {
+      "checkpoint_routes": 6,
+      "ciphertext_bytes": 85022,
+      "elapsed_ns": 271733333,
+      "encrypted_queries": 40,
+      "history": 63000,
+      "input_bytes": 16324224,
+      "kind": "summary",
+      "learn_adds": 192,
+      "learn_expiry_subs": 128,
+      "output_bytes": 3400880,
+      "pass": true,
+      "peak_persistent_ciphertexts": 66,
+      "peak_persistent_serialized_bytes": 5611452,
+      "peak_update_live_ciphertexts": 67,
+      "query_ct_pt_products": 80,
+      "query_ct_subtractions": 40,
+      "structural_queries": 8
+    },
+    {
+      "checkpoint_routes": 6,
+      "ciphertext_bytes": 85022,
+      "elapsed_ns": 267279625,
+      "encrypted_queries": 40,
+      "history": 63001,
+      "input_bytes": 16324224,
+      "kind": "summary",
+      "learn_adds": 192,
+      "learn_expiry_subs": 128,
+      "output_bytes": 3400880,
+      "pass": true,
+      "peak_persistent_ciphertexts": 66,
+      "peak_persistent_serialized_bytes": 5611452,
+      "peak_update_live_ciphertexts": 67,
+      "query_ct_pt_products": 80,
+      "query_ct_subtractions": 40,
+      "structural_queries": 8
+    }
+  ],
+  "host_expiry_subtractions": 256,
+  "host_learn_additions": 384,
+  "host_live_named_ciphertexts_during_update_peak": 67,
+  "host_persistent_ciphertexts_peak": 66,
+  "host_persistent_raw_RNS_bytes": 8650752,
+  "host_persistent_serialized_bytes_peak": 5611452,
+  "keyswitch_special_primes": 0,
+  "learn_encryptions": 384,
+  "library_source_files_sha256": {
+    "Cargo.lock": "3e2c5be43abcc710eba3052703087223c786ff8e668a927ac46d3ea149efd480",
+    "Cargo.toml": "c0219e8207ba4c8a79b37e3524ff765bc4c7b0a5518128585347ec93fb651001",
+    "benches/bfv.rs": "838108bc8947dc97c47fee5bdbf4bf3e773affbc86fe1c521b9dd17cfa3d7702",
+    "benches/bfv_optimized_ops.rs": "f8490b4846a2dc184d999b97de24574bcab7f41d1b59d75bd50ed00352b8601d",
+    "benches/bfv_rgsw.rs": "300e148ae3317a1ab1b13dd18b35977089bf5a0df900fbecf0506a88ecb30f00",
+    "examples/bfv_basic.rs": "a7b5ba1a3639b974b9fc0c330241138ea5863f8e95d13fe8c5ddea29d265f445",
+    "examples/bfv_ops.rs": "4bd274f6d931a2d954cdf7adc443527a9a5c274912d105911c21590f35ba844f",
+    "examples/mulpir.rs": "82115eace20e7267d9f042ff71a9297a82af9009dcfbdcb7dac99448bb18332f",
+    "examples/pir.rs": "390da45edd5cd4ff2b5ec69cad0d7dccab01850bf5bae4616a4938ca3c8fdf6f",
+    "examples/rgsw.rs": "b7b15dbd3cc7089445c21c7229a60190c9781e928bd1f90ff7f9bc8d43e02ff5",
+    "examples/sealpir.rs": "90fbda1adca5fad1ad3d997aa1e691c01ec0b153b3e83be0b83991b4eb76fcb0",
+    "examples/util.rs": "51931e676c0a208862271a1747f66bcec3bee9bc23ca191ffbffdc091fd4fa3f",
+    "examples/voting.rs": "75fb584f7315f2c47e837327928ef115b9d2f0578fa14b042645ecbe4dd53c56",
+    "src/bfv/ciphertext.rs": "236b1b3f42d96c1ec1f0a66e4abe215b29ba9c8e6096fd9bf963b81e5fba8d85",
+    "src/bfv/context/chain.rs": "85908695bfce0245d2f17beb0048ef567bf1b89c9b313178526074d6836a1f27",
+    "src/bfv/context/cipher_plain_context.rs": "30ed9c76229cb1d0adf941ef9d5ed5e0dc73beff4ab50ea764574515c876e255",
+    "src/bfv/context/mod.rs": "219c6e41ef3ebdac22b8af5fcb3786bb60d43eb5982764abc70a3c89beb3b3af",
+    "src/bfv/encoding.rs": "568ba87082a5d4df89feb9c1ca46a7401d3861704d6a72e52702b386347dd657",
+    "src/bfv/keys/evaluation_key.rs": "f0801332ab2dbed5a18c1a2a4ca99e1ab60cc512f7f125fde748abb87f93c0db",
+    "src/bfv/keys/galois_key.rs": "3d799609c1880c427a7cc8debea45466b8280daf57c9711e0c75138e02fa5b13",
+    "src/bfv/keys/key_switching_key.rs": "d7f84e35e8618515664ec7521c4f5cd422a9f9709ed1ebdd115fc15f4a05aad1",
+    "src/bfv/keys/mod.rs": "7b28bc7c9d390ecab24d8dbf2e1b27376a389f6261c8b69f57027c6101f0fe3a",
+    "src/bfv/keys/public_key.rs": "c84a8da2647b7f20800317ead510584b116c0d5d99d3163f80c8e520d4ead3c3",
+    "src/bfv/keys/relinearization_key.rs": "ad2c7ca6bfbc983a43531ffbae3f8408d8750c3574ee3f79dbf0c37cc49cdd99",
+    "src/bfv/keys/secret_key.rs": "337e85e2dc4a7540039b800517ec32389dc3152516c9fdad18cc58dc55acec70",
+    "src/bfv/mod.rs": "78a8dd7fb810376a68c4fbf85eb9a2507f4cd65ce1fc06b163ddc0def23ed885",
+    "src/bfv/ops/dot_product.rs": "cb1b20d1150a6b7a1c2430d31651eeb162e1fe710fc62e2349ec069b511c1b54",
+    "src/bfv/ops/mod.rs": "99d4777b6ed571ddd497572b196aa748b7875374d81395b35e868080065e73ad",
+    "src/bfv/ops/mul.rs": "930cbd009048f11ebb10b66b1f1d9bf5bb033ccb96154e1d95ac3d779f553cfc",
+    "src/bfv/parameters.rs": "7f6b1d364cbc8547b3f381551ec14f1ec0272c07b3c8a4ee03c4df1fc9aece30",
+    "src/bfv/plaintext.rs": "abc6d4930295aed0fe91d58be85c79c46b4261d90fb0a02897ed002935de50b8",
+    "src/bfv/plaintext_vec.rs": "50bf227ec96093b88e34055c0115483052daa5f0ebc17a24e32483a3ea8005c8",
+    "src/bfv/rgsw_ciphertext.rs": "737c410e2e1e28eed1d1fa425f2b97f84d1b5e789181de6f264c510545bc9230",
+    "src/bfv/traits.rs": "c0fde0253d0b4530779acad1fd80f477b4e1a4e7352704b28757f3968aa1627e",
+    "src/errors.rs": "baf5243965e9511ed83aa7426d9b4b379222f4861e9ffdf7d335e51fab189b80",
+    "src/lib.rs": "3f5d4855555f46092085fe6d3c9115f0a57795f5b8b07d445a4ede70d9d44faa",
+    "src/mbfv/aggregate.rs": "f46e9d49b7b06f794a7b5ba269c080f63f5aca05e6f36e14ecac84ee754f760f",
+    "src/mbfv/crp.rs": "970e959f074400971c2287794e83be0472cee58c8d0f1f74f2795a54bea06fed",
+    "src/mbfv/mod.rs": "14a2d1d8e68c3893c906870f9b482acdb3b7e4253e6cec1a23633c3306d36bf6",
+    "src/mbfv/public_key_gen.rs": "5764092c68ffe91dc90597e0c1184467358ce4e3ffcf621efcc44b5bdb0df548",
+    "src/mbfv/public_key_switch.rs": "b7a1620c66987fae8a7b4845e277bbe77018c48be2ac2a07051f23d7b4b75f97",
+    "src/mbfv/relin_key_gen.rs": "b4de6533647e2c36fb0c5df79d739e350992a46ea2688bd5c01e564106ed2a21",
+    "src/mbfv/round.rs": "669be8070a608a12c4974c3a222d46c5bec1f6e336d43a6029f674841571fbe8",
+    "src/mbfv/secret_key_switch.rs": "c6ec3f9d6c9987fef3d8fbb82c6b7f2bd37a532675c2b73bd5f1d726add95632",
+    "src/mbfv/share_codec.rs": "e1f22a6e38e1c4bb571371bc47f7b45a8334b54436238d423f3134cd77d25938",
+    "src/proto/bfv.rs": "5ce044c5ce0e206aecbcfdd3649aed9abb503e9e0700dbe6f45a9aac78e11d9d",
+    "src/proto/mod.rs": "5a269559c603532b3d58cf547665645fb0d12d25dc5abbd6ed03d1171c32679d",
+    "tests/unified_context_integration.rs": "596eff45f8a3e17c962a3978a27b4acae8ee1fd94f83240ed7394c77a9ee604e"
+  },
+  "library_source_manifest_sha256": "280f14edc7a9988c08fe0345b07002e3eb2a67c74233b387f4e0caad975de43c",
+  "memory_scope": "serialized objects/raw RNS payload only; excludes allocator, parameters, NTT tables, keys, oracle, temporary plaintext and model caches",
+  "public_empty_route_zeros": 16,
+  "public_key_serialized_bytes": 42547,
+  "query_ciphertext_plaintext_products": 160,
+  "query_ciphertext_subtractions": 80,
+  "relinearizations": 0,
+  "residuals": [
+    "public deterministic key/encryption coins and full secret key retained for test",
+    "whole polynomial decryption, no restricted sign release",
+    "issuer and cached features are plaintext",
+    "no input authenticity, descriptor receipt or continuity integration",
+    "two histories are correctness fixtures, not a new utility estimate",
+    "no PQ security bits claim",
+    "no complete Rust noise-proof refinement"
+  ],
+  "rotations": 0,
+  "scope": "actual BFV arithmetic integration, full-key plaintext test reader",
+  "serialized_input_bytes_total": 32648448,
+  "serialized_output_bytes_total": 6801760,
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/model_manifest.json": "c157ce309791546a02e2e543e08c6b207d3b23adef45de885809a01e89bffdd4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_controls.py": "64a081735a4f229b716c8ec70c8d3beeb16a87e8d380fba4c44338d60f4e639d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_features.npz": "754497f6cf74a50e4b19444469f17837d21a5341711e8a8fb9e267242f7b92ca",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_histories.json": "ebc8db520600209dc3d4fd277a011e6ac3aa035a1db1417b7877728e8bfbe346",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_model_manifest.json": "6b41f835943c2cdbc240fab105bc38bbe0295ae5cd11caa961e9e73b3a499d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_records.json": "423a0dd83e43d1786b1c649ab6a54aab349de913c531447f2261ef7e5dc9156e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_selection.json": "0485b302a1f0dcb939689571de575e73cfca1324c8b44348fad16f0e3819e800",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/requirements-lock.txt": "fe68f9bd8a5e24b74b7728eb27312a0de9ed055d8fb4ab945d222dbf4f21f9d6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/text_transfer_data.py": "a55d84a475c672252213e94d4842d97620cb14bca0b016da7f1445cb88f1e609",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/Cargo.lock": "f9d395a9b54a74a1f11d35dddf8a8753870d860bf20068d8e9b79d2c2e6ea805",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/Cargo.toml": "f597c944ce3d433c74c504e2cbef5103a5f9c4fa2f6fef6a6bec091fb97442a8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/src/main.rs": "5ad614cf33ceca02e61ad7282d4e263bb063eb44ca96a2136e8f41e9f9a1c29e"
+  },
+  "structural_empty_queue_checks": 2,
+  "timing_ns": {
+    "answer_serialize": {
+      "count": 80,
+      "max_ns": 342041,
+      "median_ns": 317687.0,
+      "min_ns": 296959,
+      "p95_nearest_rank_ns": 337542,
+      "sum_ns": 25526290
+    },
+    "host_expiry_only_when_evicted": {
+      "count": 256,
+      "max_ns": 14542,
+      "median_ns": 7208.0,
+      "min_ns": 6375,
+      "p95_nearest_rank_ns": 8125,
+      "sum_ns": 1868219
+    },
+    "host_learn_add": {
+      "count": 384,
+      "max_ns": 14792,
+      "median_ns": 6625.0,
+      "min_ns": 3708,
+      "p95_nearest_rank_ns": 7375,
+      "sum_ns": 2553623
+    },
+    "host_learn_add_and_expiry": {
+      "count": 384,
+      "max_ns": 21959,
+      "median_ns": 13458.0,
+      "min_ns": 3708,
+      "p95_nearest_rank_ns": 14876,
+      "sum_ns": 4421842
+    },
+    "host_query_two_products_and_sub": {
+      "count": 80,
+      "max_ns": 64208,
+      "median_ns": 59125.0,
+      "min_ns": 53792,
+      "p95_nearest_rank_ns": 62500,
+      "sum_ns": 4707869
+    },
+    "input_serialize": {
+      "count": 384,
+      "max_ns": 387292,
+      "median_ns": 322333.0,
+      "min_ns": 295667,
+      "p95_nearest_rank_ns": 344000,
+      "sum_ns": 123880709
+    },
+    "issuer_encode": {
+      "count": 384,
+      "max_ns": 107500,
+      "median_ns": 74041.5,
+      "min_ns": 65500,
+      "p95_nearest_rank_ns": 80750,
+      "sum_ns": 28556634
+    },
+    "issuer_encode_and_encrypt": {
+      "count": 384,
+      "max_ns": 657499,
+      "median_ns": 561458.0,
+      "min_ns": 509792,
+      "p95_nearest_rank_ns": 596250,
+      "sum_ns": 215327462
+    },
+    "issuer_encrypt": {
+      "count": 384,
+      "max_ns": 574792,
+      "median_ns": 486458.5,
+      "min_ns": 442750,
+      "p95_nearest_rank_ns": 517334,
+      "sum_ns": 186770828
+    },
+    "public_query_encode": {
+      "count": 80,
+      "max_ns": 180584,
+      "median_ns": 149708.5,
+      "min_ns": 137542,
+      "p95_nearest_rank_ns": 160584,
+      "sum_ns": 11922247
+    },
+    "public_query_encode_and_host": {
+      "count": 80,
+      "max_ns": 239709,
+      "median_ns": 208917.0,
+      "min_ns": 191584,
+      "p95_nearest_rank_ns": 223084,
+      "sum_ns": 16630116
+    },
+    "whole_polynomial_reader": {
+      "count": 80,
+      "max_ns": 388958,
+      "median_ns": 332542.0,
+      "min_ns": 305208,
+      "p95_nearest_rank_ns": 352458,
+      "sum_ns": 26376338
+    }
+  },
+  "timing_scope": "one fixed run, per-event samples on shared Apple M2 Max; no benchmark confidence claim"
+}

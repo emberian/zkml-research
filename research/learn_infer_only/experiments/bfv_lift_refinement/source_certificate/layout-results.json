@@ -1,0 +1,27 @@
+{
+  "label": "EXECUTED integer balance specification and DERIVED conservative compiler layout bill",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/check_layout.py"
+  ],
+  "source_sha256": "afdabd36acc46a19787fcd417ca4f613ee3df4c28ae4654d9cd46b8bdf9ffb04",
+  "layout_sha256": "974982f6ee0a97ddb572d645fc9d0d04329ccc61cd8b30cececbd14af584225c",
+  "canonical_cases": 1003,
+  "wrong_outputs_refused": 1003,
+  "captured_source_output": 172481,
+  "wrong_nearest172480_refused": true,
+  "groups": 21,
+  "scalar_digits": 462,
+  "scalar_bit_wires": 2772,
+  "balance_rows": 12,
+  "weighted_accumulators": 24,
+  "columns": 57,
+  "carry_bits": 15,
+  "variables": 30294,
+  "unoptimized_zero_assertions_formula": 36498,
+  "left_column_no_wrap_bound": 1866508,
+  "right_column_no_wrap_bound": 2097151,
+  "naive_full_tensor_variable_repetitions": 372252672,
+  "elapsed_seconds": 0.06677595799556002,
+  "scope": "No committed-ciphertext provenance, integer convolution/NTT, Shoup, proof protocol, relin/noise, secrecy or latency result. Uniform132-bit groups are a conservative first emitted layout, not a lower bound."
+}

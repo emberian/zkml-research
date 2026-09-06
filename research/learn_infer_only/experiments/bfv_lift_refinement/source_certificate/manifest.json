@@ -1,0 +1,106 @@
+{
+  "label": "EXECUTED final source certificate artifact pins and DERIVED naive repetition cost",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/finalize.py"
+  ],
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "fixtures": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/optimized-descriptor.json.gz",
+      "sha256": "7a59e1304b8d65a46e0c64496cf9ce637d3fb103eca980901a9e07ad0587f36d",
+      "uncompressed_sha256": "e440eb248c5fa754debf1a6d4defe1bdeb64c2c22cc66ebae0ba3ac486cc7566",
+      "compressed_bytes": 951148,
+      "uncompressed_bytes": 9909904
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/retained-inputs.json.gz",
+      "sha256": "3ac1778d7f795cc8bb31b31d3734a97165cc3a37df41546751f3fe01a0b914d8",
+      "uncompressed_sha256": "80d0461e999974c8d24262e5e5a03759c93f00e2d242d1e16f96f63dc679a078",
+      "compressed_bytes": 17056,
+      "uncompressed_bytes": 1276854
+    }
+  ],
+  "sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/check_layout.py",
+      "sha256": "afdabd36acc46a19787fcd417ca4f613ee3df4c28ae4654d9cd46b8bdf9ffb04"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/finalize.py",
+      "sha256": "34afa59a15bbd85371e890fe03e9b5c7b419d499dda7f4284f9c19ebb8de6a56"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/generate_layout.py",
+      "sha256": "5619d99bae746883a8a10f895ae0f10d9a00e1dbe5be5abded0e8f190ace18d8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/replay_descriptor.py",
+      "sha256": "3e7d7b06077cf5138abb8d304bdca4980ffd749b209ea44454fc68873c49b444"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean",
+      "sha256": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateAxiomReport.lean",
+      "sha256": "c9de2b88d86fe892475a46ac61b3690b55d4524cdf6cbb80aaf06ff652ebddb2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateChecks.lean",
+      "sha256": "a22bcf191dba5308023f12ff883d2bc0d3e93a441859a9b6df80ec7736f7ec57"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean",
+      "sha256": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean",
+      "sha256": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean",
+      "sha256": "8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateRetain.lean",
+      "sha256": "a7a0d2acedfd52edc0cc143eecbc2543976f6029b5eee63b54f105a0617a32dc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean",
+      "sha256": "ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean",
+      "sha256": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/build.py",
+      "sha256": "b2e0994e9a129084d57e0e0f2e54fff631a4b3bd94f2f1d9e34cfee6106a8d6e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/kernel_witness_attempt.py",
+      "sha256": "40997efa7e89fd1b98374fdd5ec1a8acfb8039e0d855b1b7971a84d1c4412eb8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/pin_axioms.py",
+      "sha256": "ffee5932e3a25f8f0d99a0ca6a6d8ce98c6542d338a265b3844126b18525843c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/validate.py",
+      "sha256": "a11ba3f7fb95d98c44eed265b920fd2d66015ac8a74fd129191f80b6a8628366"
+    }
+  ],
+  "formal_patch_sha256": "55ffecdf2db1d330b0cc76126781dbc39c4ea581fe4edc4fbb7da7830e771d2f",
+  "formal_total_exact_axiom_pins": 23,
+  "naive_full_tensor": {
+    "coefficients": 12288,
+    "optimized_gates": 1630310400,
+    "variables": 372252672,
+    "zero_checks": 448487424,
+    "label": "Uniform independent coefficient repetition only; excludes convolution, provenance and proof overhead; not a lower bound or benchmark; no contribution to the separate sliding-window Learn bill"
+  },
+  "metered_search_queries": 0,
+  "pdf_downloads": 0
+}

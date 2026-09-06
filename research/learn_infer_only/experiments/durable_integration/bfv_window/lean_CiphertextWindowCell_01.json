@@ -1,0 +1,17 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean",
+  "source_sha256": "c9e68b3acd5b05c774ee2dfa8a099d8c7a48c79f95e4c829b5639f835af89b63",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build/Assurance/CiphertextWindowCell.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean:5:0: error: object file '/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build/Assurance/ResidentDurableIntegration.olean' of module Assurance.ResidentDurableIntegration does not exist\n",
+  "stderr": "",
+  "elapsed_seconds": 1.5817620754241943
+}

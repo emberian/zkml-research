@@ -1,0 +1,142 @@
+{
+  "not_encryption": true,
+  "fixed_root_honest_traces": [
+    [
+      "ACK",
+      0,
+      0
+    ],
+    [
+      "ACK",
+      0,
+      0
+    ]
+  ],
+  "chosen_state_recoveries": 256,
+  "probes_per_recovery": 8,
+  "transition_key_evaluations_per_recovery": 16,
+  "terminal_evaluations_per_recovery": 8,
+  "example_secret": 173,
+  "example_recovery_trace": [
+    {
+      "interval_before": [
+        0,
+        255
+      ],
+      "offset": 0,
+      "answer": 1
+    },
+    {
+      "interval_before": [
+        128,
+        255
+      ],
+      "offset": 192,
+      "answer": 0
+    },
+    {
+      "interval_before": [
+        128,
+        191
+      ],
+      "offset": 224,
+      "answer": 1
+    },
+    {
+      "interval_before": [
+        160,
+        191
+      ],
+      "offset": 208,
+      "answer": 0
+    },
+    {
+      "interval_before": [
+        160,
+        175
+      ],
+      "offset": 216,
+      "answer": 1
+    },
+    {
+      "interval_before": [
+        168,
+        175
+      ],
+      "offset": 212,
+      "answer": 1
+    },
+    {
+      "interval_before": [
+        172,
+        175
+      ],
+      "offset": 210,
+      "answer": 0
+    },
+    {
+      "interval_before": [
+        172,
+        173
+      ],
+      "offset": 211,
+      "answer": 1
+    }
+  ],
+  "attack_blocked_when_state_issuance_removed": true,
+  "diagonal_only_falsifier_matrices": [
+    [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ]
+  ],
+  "all_public_slot_semantic_positive_checks": 100,
+  "semantic_positive_continuation_checks": 800,
+  "full_visible_relation_closure_checks": 1024,
+  "persisting_private_observation_states": [
+    [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        3
+      ]
+    ]
+  ],
+  "same_parameter_epsilon_failures": 4096,
+  "necessary_output_coin_length_condition": "lambda_next >= 4*s_current + lambda_current; not sufficient",
+  "provenance": {
+    "command": "python3 research/learn_infer_only/experiments/private_ingress/ingress_audit.py",
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "source_sha256": "1c662eaa64b61cfb640267b3a44681a0391012a60152f4647b0add267e9de2e3"
+  }
+}

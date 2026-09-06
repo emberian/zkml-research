@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/build/Theory/CiphertextWindowNoise.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/CiphertextWindowNoise.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "436154a38ede1efb6028036dbed23358d38479c21a291cc6e262b537ac0a4fd7",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Theory.CiphertextWindowNoise.queue_phase_sum' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Theory.CiphertextWindowNoise.queue_integer_lift' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Theory.CiphertextWindowNoise.reachable_decode' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Theory.CiphertextWindowNoise.reachable_signed_decode' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": "",
+  "elapsed_seconds": 2.759443499991903,
+  "olean_sha256": "3cf848e777d62dcc21fe34a3c13e6e78a2e47f54401e9359c512e9716eba1353"
+}

@@ -1,0 +1,5 @@
+# Regenerate full texts from the pinned read-only local PDFs.
+/sources/*.txt
+/sources/*.png
+__pycache__/
+*.py[cod]

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateKernelWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateKernelWitness.lean"
+  ],
+  "exit_code": -15,
+  "stdout": "",
+  "stderr": "",
+  "elapsed_seconds": 38.67212412500521,
+  "termination_reason": "Manually terminated after observed RSS12,405,216KiB at ps elapsed32s; final wall time38.7s. No full emitted-kernel-witness theorem is included.",
+  "observed_rss_kib": 12405216
+}

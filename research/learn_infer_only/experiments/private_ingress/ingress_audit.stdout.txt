@@ -1,0 +1,71 @@
+{
+  "not_encryption": true,
+  "fixed_root_honest_traces": [
+    [
+      "ACK",
+      0,
+      0
+    ],
+    [
+      "ACK",
+      0,
+      0
+    ]
+  ],
+  "chosen_state_recoveries": 256,
+  "probes_per_recovery": 8,
+  "transition_key_evaluations_per_recovery": 16,
+  "terminal_evaluations_per_recovery": 8,
+  "example_secret": 173,
+  "attack_blocked_when_state_issuance_removed": true,
+  "diagonal_only_falsifier_matrices": [
+    [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ]
+  ],
+  "all_public_slot_semantic_positive_checks": 100,
+  "semantic_positive_continuation_checks": 800,
+  "full_visible_relation_closure_checks": 1024,
+  "persisting_private_observation_states": [
+    [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        3
+      ]
+    ]
+  ],
+  "same_parameter_epsilon_failures": 4096,
+  "necessary_output_coin_length_condition": "lambda_next >= 4*s_current + lambda_current; not sufficient"
+}
+PASS: finite semantic/capability witnesses only; no encryption or cryptographic security proof

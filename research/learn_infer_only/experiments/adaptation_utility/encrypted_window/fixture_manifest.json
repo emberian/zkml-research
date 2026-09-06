@@ -1,0 +1,609 @@
+{
+  "bounds": {
+    "actual_checkpoint_max_abs_state": 369,
+    "actual_max_abs_contribution": 42,
+    "actual_max_abs_query": 59,
+    "actual_max_abs_score": 45158,
+    "declared_max_abs_score": 297805856,
+    "declared_max_abs_state": 4064,
+    "plaintext_modulus": 4294828033,
+    "signed_half_modulus_floor": 2147414016
+  },
+  "capacity_per_route": 32,
+  "capacity_total": 64,
+  "checks": {
+    "checkpoint_routes": 12,
+    "learn_events": 384,
+    "model_executed": false,
+    "original_predict_signs_equal": true,
+    "original_train_snapshots_equal": true,
+    "queries": 96
+  },
+  "dimension": 577,
+  "fixture_sha256": "41978a10b974a3e8b7f30d5f9c66f7d396fdf7df83b723b3f14dc00359cdb4c0",
+  "generator_sha256": "48a84f6eb516987fc121ce32d85a5eb4c0923d713da1e546786102a1252dde53",
+  "histories": [
+    {
+      "checkpoints": [
+        {
+          "phase": 1,
+          "predictions": [
+            -1,
+            1,
+            1,
+            1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "queue_counts": [
+            32,
+            0
+          ],
+          "scores": [
+            -7697,
+            2991,
+            2839,
+            11115,
+            -8616,
+            1460,
+            1989,
+            9542,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "steps": 64,
+          "targets": [
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            -1,
+            1,
+            1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "phase": 2,
+          "predictions": [
+            -1,
+            1,
+            1,
+            1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            1,
+            -1,
+            -1,
+            -1
+          ],
+          "queue_counts": [
+            32,
+            32
+          ],
+          "scores": [
+            -7697,
+            2991,
+            2839,
+            11115,
+            -8616,
+            1460,
+            1989,
+            9542,
+            4512,
+            -5019,
+            -37150,
+            -41102,
+            3050,
+            -7154,
+            -40275,
+            -45158
+          ],
+          "steps": 128,
+          "targets": [
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            -1,
+            1,
+            1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "phase": 3,
+          "predictions": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            1,
+            -1,
+            -1,
+            -1
+          ],
+          "queue_counts": [
+            32,
+            32
+          ],
+          "scores": [
+            2154,
+            2925,
+            3047,
+            3426,
+            3130,
+            3824,
+            3663,
+            4276,
+            4512,
+            -5019,
+            -37150,
+            -41102,
+            3050,
+            -7154,
+            -40275,
+            -45158
+          ],
+          "steps": 192,
+          "targets": [
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            -1,
+            1,
+            1,
+            -1,
+            -1,
+            1,
+            1,
+            -1,
+            -1
+          ]
+        }
+      ],
+      "rules": [
+        [
+          1,
+          -1,
+          -1,
+          1
+        ],
+        [
+          1,
+          -1,
+          1,
+          -1
+        ]
+      ],
+      "seed": 63000,
+      "test_coin_byte": 201
+    },
+    {
+      "checkpoints": [
+        {
+          "phase": 1,
+          "predictions": [
+            1,
+            -1,
+            -1,
+            -1,
+            1,
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "queue_counts": [
+            32,
+            0
+          ],
+          "scores": [
+            3280,
+            -2027,
+            -34,
+            -4800,
+            1582,
+            -3551,
+            -1548,
+            -6006,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "steps": 64,
+          "targets": [
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            -1,
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            -1,
+            1,
+            1
+          ]
+        },
+        {
+          "phase": 2,
+          "predictions": [
+            1,
+            -1,
+            -1,
+            -1,
+            1,
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            -1,
+            1,
+            1,
+            1,
+            -1,
+            1
+          ],
+          "queue_counts": [
+            32,
+            32
+          ],
+          "scores": [
+            3280,
+            -2027,
+            -34,
+            -4800,
+            1582,
+            -3551,
+            -1548,
+            -6006,
+            9937,
+            27728,
+            -3576,
+            9093,
+            7082,
+            25073,
+            -6352,
+            6723
+          ],
+          "steps": 128,
+          "targets": [
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            -1,
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            -1,
+            1,
+            1
+          ]
+        },
+        {
+          "phase": 3,
+          "predictions": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            1,
+            1,
+            1,
+            -1,
+            1
+          ],
+          "queue_counts": [
+            32,
+            32
+          ],
+          "scores": [
+            10710,
+            13414,
+            4529,
+            7122,
+            9843,
+            12869,
+            4167,
+            7217,
+            9937,
+            27728,
+            -3576,
+            9093,
+            7082,
+            25073,
+            -6352,
+            6723
+          ],
+          "steps": 192,
+          "targets": [
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            -1,
+            1,
+            1
+          ]
+        }
+      ],
+      "rules": [
+        [
+          -1,
+          1,
+          1,
+          -1
+        ],
+        [
+          1,
+          -1,
+          -1,
+          1
+        ]
+      ],
+      "seed": 63001,
+      "test_coin_byte": 202
+    }
+  ],
+  "method": "model_window_routed",
+  "preregistration_sha256": "1d6c88d6e42adba24240fd6450fffed93f1b739fea89ef14cd920fcfc85b35e7",
+  "query_ids": [
+    256,
+    257,
+    272,
+    273,
+    288,
+    289,
+    304,
+    305,
+    320,
+    321,
+    336,
+    337,
+    352,
+    353,
+    368,
+    369
+  ],
+  "query_metadata": [
+    {
+      "a": 0,
+      "b": 0,
+      "entity": "Rudbeckia",
+      "id": 256,
+      "skill": 0,
+      "template": 0
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "entity": "Rudbeckia",
+      "id": 257,
+      "skill": 0,
+      "template": 1
+    },
+    {
+      "a": 0,
+      "b": 1,
+      "entity": "Rudbeckia",
+      "id": 272,
+      "skill": 0,
+      "template": 0
+    },
+    {
+      "a": 0,
+      "b": 1,
+      "entity": "Rudbeckia",
+      "id": 273,
+      "skill": 0,
+      "template": 1
+    },
+    {
+      "a": 1,
+      "b": 0,
+      "entity": "Rudbeckia",
+      "id": 288,
+      "skill": 0,
+      "template": 0
+    },
+    {
+      "a": 1,
+      "b": 0,
+      "entity": "Rudbeckia",
+      "id": 289,
+      "skill": 0,
+      "template": 1
+    },
+    {
+      "a": 1,
+      "b": 1,
+      "entity": "Rudbeckia",
+      "id": 304,
+      "skill": 0,
+      "template": 0
+    },
+    {
+      "a": 1,
+      "b": 1,
+      "entity": "Rudbeckia",
+      "id": 305,
+      "skill": 0,
+      "template": 1
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "entity": "Rosa",
+      "id": 320,
+      "skill": 1,
+      "template": 0
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "entity": "Rosa",
+      "id": 321,
+      "skill": 1,
+      "template": 1
+    },
+    {
+      "a": 0,
+      "b": 1,
+      "entity": "Rosa",
+      "id": 336,
+      "skill": 1,
+      "template": 0
+    },
+    {
+      "a": 0,
+      "b": 1,
+      "entity": "Rosa",
+      "id": 337,
+      "skill": 1,
+      "template": 1
+    },
+    {
+      "a": 1,
+      "b": 0,
+      "entity": "Rosa",
+      "id": 352,
+      "skill": 1,
+      "template": 0
+    },
+    {
+      "a": 1,
+      "b": 0,
+      "entity": "Rosa",
+      "id": 353,
+      "skill": 1,
+      "template": 1
+    },
+    {
+      "a": 1,
+      "b": 1,
+      "entity": "Rosa",
+      "id": 368,
+      "skill": 1,
+      "template": 0
+    },
+    {
+      "a": 1,
+      "b": 1,
+      "entity": "Rosa",
+      "id": 369,
+      "skill": 1,
+      "template": 1
+    }
+  ],
+  "representation": "mean_10",
+  "scope": "plaintext issuer and exact integer oracle; actual encrypted outcomes are separate",
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/model_manifest.json": "c157ce309791546a02e2e543e08c6b207d3b23adef45de885809a01e89bffdd4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_controls.py": "64a081735a4f229b716c8ec70c8d3beeb16a87e8d380fba4c44338d60f4e639d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_features.npz": "754497f6cf74a50e4b19444469f17837d21a5341711e8a8fb9e267242f7b92ca",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_histories.json": "ebc8db520600209dc3d4fd277a011e6ac3aa035a1db1417b7877728e8bfbe346",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_model_manifest.json": "6b41f835943c2cdbc240fab105bc38bbe0295ae5cd11caa961e9e73b3a499d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_records.json": "423a0dd83e43d1786b1c649ab6a54aab349de913c531447f2261ef7e5dc9156e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_selection.json": "0485b302a1f0dcb939689571de575e73cfca1324c8b44348fad16f0e3819e800",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/requirements-lock.txt": "fe68f9bd8a5e24b74b7728eb27312a0de9ed055d8fb4ab945d222dbf4f21f9d6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/text_transfer_data.py": "a55d84a475c672252213e94d4842d97620cb14bca0b016da7f1445cb88f1e609",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/Cargo.lock": "f9d395a9b54a74a1f11d35dddf8a8753870d860bf20068d8e9b79d2c2e6ea805",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/Cargo.toml": "f597c944ce3d433c74c504e2cbef5103a5f9c4fa2f6fef6a6bec091fb97442a8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_83_probe/src/main.rs": "5ad614cf33ceca02e61ad7282d4e263bb063eb44ca96a2136e8f41e9f9a1c29e"
+  },
+  "teacher_only_scales": {
+    "0": 15.260128598538747,
+    "1": 17.117065197009033
+  }
+}

@@ -1,4 +1,24 @@
-# Formal handback: receipt context and restored manifests
+# Formal handback
+
+[EXECUTED current combined proposal] The latest passed set is **39 modules / 499
+exact theorem pins**, with all four umbrellas, actual patch application/content
+comparison and both import-boundary instruments. The combined patch is
+[minidregg-combined-resident-499.patch](integration/minidregg-combined-resident-499.patch),
+SHA256 `8f825765a1dd9dbdbf63e3f0013c8a3428f4a94ab93fd310b20efb83ec5efbcc`.
+See [run_009/report.json](../experiments/integration/results/run_009/report.json)
+and [integration index](integration/README.md) for selected sources and exact
+commands. Companion files, HEAD and dirty status stayed unchanged. Existing
+dependency oleans were reused; no clean whole-tree build is claimed.
+
+[DERIVED application scope] Apply one compatible combined proposal, not every
+historical patch in sequence. The 499-pin set includes context/restore, policy
+and distribution, durable Bool/EMA/window, conditional HE noise, generic
+contextual receipts, live BFV source/target certificates and compiler
+simplification. It remains a proposal for maintainer application. Its proof
+assumptions do not establish private release, a lawful Rust codec, arbitrary
+mixed-journal scheduling, quantum security or a complete resident.
+
+## Historical first-tranche description
 
 [DERIVED artifact boundary] These two source files are a proposed minidregg patch,
 kept here for review. `minidregg-resident-release.patch` adds the modules and imports
@@ -121,7 +141,8 @@ composition, BFV integer/live-source refinement and integer certificate emission
 It combines independently rooted umbrella additions without rewriting those lane
 patches. Apply this combined patch OR its compatible constituent changes, not both.
 
-[OPEN] Compiler optimization/source-certificate extensions have separate checks in
-progress. EMA is in the 265-pin successor, not the 217-pin baseline. The historical
+[EXECUTED historical scope] Compiler optimization/source-certificate extensions
+subsequently entered the 371/499-pin passes above. EMA is in the 265-pin successor,
+not the 217-pin baseline. The historical
 first-tranche description below retains its own scope; current lane notes and
 STATUS.md name the successive stronger witnesses and remaining gaps.

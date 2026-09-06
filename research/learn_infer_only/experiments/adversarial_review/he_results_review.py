@@ -49,6 +49,14 @@ def main():
     summary_path=EST/'summary.json'
     summary=json.loads(summary_path.read_text())
     inputs={str(manifest_path):digest(manifest_path),str(summary_path):digest(summary_path),str(Path(__file__)):digest(Path(__file__))}
+    provenance_path=EST/'environment-final-provenance.json'
+    inputs[str(provenance_path)]=digest(provenance_path)
+    source_matches={}
+    for item in json.loads(provenance_path.read_text())['source_files']:
+        path=EST/'runtime/pinned-estimator/estimator'/item['name']
+        inputs[str(path)]=digest(path)
+        source_matches[item['name']]=inputs[str(path)]==item['sha256']
+    assert all(source_matches.values())
     rows=[]
     files=[]
     for spec in summary['input_results']:
@@ -106,6 +114,7 @@ def main():
         'command':[sys.executable,str(Path(__file__).resolve())],'started_utc':started,
         'inputs':inputs,'inputs_unchanged':all(digest(Path(p))==h for p,h in inputs.items()),
         'artifact_manifest_files_verified':len(file_matches),'result_files':files,
+        'pinned_estimator_sources_verified':source_matches,
         'primary_completed_lattice_rows':len(primary),'selected':selected,
         'exact_fresh_process_rechecks':len(matches),'recovered_fresh_process_failures':recovered,
         'unresolved_fresh_process_failures':unresolved,'finite_sample_reuse':reused,

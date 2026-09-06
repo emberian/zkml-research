@@ -105,6 +105,44 @@ and full-word receipts do not instantiate its real cryptographic side. A residen
 whose allowed interface identifies its state has no such hidden-state pair at that
 budget; the game must report that failure rather than silently choose identical states.
 
+[EXECUTED distributional clarification] Failure to find a distinct *point-state*
+pair is not by itself absence of a distributional witness. The proposed
+`Theory/PrivateDistributionBudget.lean`, documented in RECOVERY_POLICY.md, gives
+disjoint even/odd parity distributions on two-bit state. Every distinct point
+pair is separable by some coordinate query, yet every one-read policy (public
+flips/swaps first, arbitrary postprocessing afterward) has identical transcript
+distribution in the two worlds. Two coordinate reads disclose the parity.
+The seed is fair and unobserved; no encryption or side-channel realization is
+claimed. Challenges and observation budgets must therefore be specified together.
+
+[SOURCE/DERIVED bounded real-world candidate] The independent-key ladder in
+[FINITE_LADDER.md](experiments/private_construction/FINITE_LADDER.md) specializes
+the real experiment to H=2 deterministic transitions, a fixed finite public command
+set and a terminal read. The initial pair and Step are chosen before every setup;
+the finite relation requires equal current answers and recursively equal permitted
+future behavior. All three public keys, all seven issued function keys and every
+derived ciphertext are available to the adversary. Copying, repeated evaluation
+and known-state public encryptions are allowed. Raw setup/PKE/PRF originals,
+unobfuscated programs and initialization plaintext/coins are erased honestly.
+
+[DERIVED conditional theorem] Assuming the cited classical randomized-FE IND_pre
+primitive, the complete exposed package plus the honest encrypted initial state
+is computationally indistinguishable between any such related selective pair.
+Each compatibility hybrid retains one common future package, including every
+future function key. Current setup randomness is independent of that package and
+the preselected functions, as used by 2013/729 Appendix C footnote 8. This is an
+IND-style result, not a simulation or practical implementation claim. The source's
+pre-challenge decryption-oracle access is stronger than this deployed interface;
+no such oracle is required by the construction.
+
+[EXECUTED nonvacuity] The byte witness has 14 classes at H2, including distinct
+states 0 and 1. Independent exhaustive adaptive-policy review agrees with the
+recursive relation and complete fork observations. That pair separates at H7,
+so the same admissibility witness cannot simply be reused at a longer lifetime.
+The cryptographic reduction is source-conditional; this finite audit implements
+no encryption. Growing horizon, private fresh-input composition, recipient-bound
+release, continuation finality and QPT security are separate obligations.
+
 ## Integrity and continuity games
 
 [DERIVED specification] A release statement names genesis, parent-state commitment,
@@ -144,7 +182,7 @@ uses these actual objects, with residuals documented in `formal/README.md`.
 | [DERIVED] Context policy | Trusted genesis/current policy selects intended values; boundary checks enforce their meaning | Public addition and canonical signed-byte EMA witnesses; explicit policy selection |
 | [EXECUTED] Continuity | Authenticated votes, cross-time prefix discipline, non-rollbackable authority, atomic install | Actual materialized DataIntent/full preflight and journal-derived packet; physical refinement remains open |
 | [OPEN] RELEASE-hiding | Hide witness/trace and unauthorized predicates after allowed role exposures | None; Stage 0 exposes the complete word |
-| [OPEN] NoSurvivingReadAll | No exposed coalition can derive unrestricted decryption beyond ideal interface | Restricted DDH/LWE fixed-projection positives; no realization of the full resident target |
+| [OPEN] NoSurvivingReadAll | No exposed coalition can derive unrestricted decryption beyond ideal interface | Restricted DDH/LWE positives and classical source-conditional H2 independent-key ladder; no realization of the full resident target |
 | [OPEN] Private input ingress | Encrypted authenticated observations with no writer-side read-all secret and only authorized release | Public encryption works in restricted witnesses, but projection credentials bypass the learn-only gate; authentication uninstantiated |
 | [OPEN] Development entropy | Fresh unknown state coins, bound to a preauthorized transition, resistant to host selection | None; Stage-0 rule explicitly deterministic |
 | [OPEN] PQ composition | Encryption, proof/QROM, authentication, key exchange and release dependencies | No combined claim; current inherited proof uses classical ROM |

@@ -1,0 +1,18 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean",
+  "source_sha256": "c6c70c35a2ae6f9d736066f6f1b39c0cd0c8549fb274061b1b2e4eabd91c716a",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build/Theory/CiphertextWindow.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 0,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean:305:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Theory.CiphertextWindow.admitted_continuation`:\n  [AddCommGroup Ct]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [AddCommGroup Ct] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`\n",
+  "stderr": "",
+  "elapsed_seconds": 3.6335220336914062,
+  "olean_sha256": "903c58eecb9b1690b87c50ab7e8fa6041a6d3afc21578fbe202900a2dc4f3ed6"
+}

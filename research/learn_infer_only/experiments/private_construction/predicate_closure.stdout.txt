@@ -1,0 +1,127 @@
+{
+  "ordinary_full_attribute_hiding_translation_counterexample": {
+    "states": [
+      1,
+      2
+    ],
+    "initial_predicates": [
+      1,
+      1
+    ],
+    "update": -2,
+    "post_predicates": [
+      0,
+      1
+    ]
+  },
+  "sign_interface": {
+    "initial_domain": [
+      -128,
+      127
+    ],
+    "state_witness_range": [
+      -255,
+      255
+    ],
+    "states_recovered": 256,
+    "inference_calls_per_state": 8,
+    "learn_calls_per_state": 8,
+    "forks_needed": false,
+    "sample_trace_for_37": [
+      {
+        "learn": 0,
+        "threshold": 0,
+        "infer": 1
+      },
+      {
+        "learn": -64,
+        "threshold": 64,
+        "infer": 0
+      },
+      {
+        "learn": 32,
+        "threshold": 32,
+        "infer": 1
+      },
+      {
+        "learn": -16,
+        "threshold": 48,
+        "infer": 0
+      },
+      {
+        "learn": 8,
+        "threshold": 40,
+        "infer": 0
+      },
+      {
+        "learn": 4,
+        "threshold": 36,
+        "infer": 1
+      },
+      {
+        "learn": -2,
+        "threshold": 38,
+        "infer": 0
+      },
+      {
+        "learn": 1,
+        "threshold": 37,
+        "infer": 1
+      }
+    ]
+  },
+  "parity_congruence_positive_checks": 2048,
+  "ksw_aggregation": {
+    "classification": "EXECUTED toy exponent/group identities, not pairing encryption",
+    "q": 101,
+    "scores": [
+      1,
+      -1
+    ],
+    "clear_sum_zero": true,
+    "effective_masks": [
+      26,
+      38
+    ],
+    "aggregate_phase": 89,
+    "aggregate_zero_test": false,
+    "uniform_mask_pairs": 10201,
+    "zero_pairs": 101,
+    "alignment_helper_bounded_projection_decodes": 41
+  },
+  "gsw_outer_repair": {
+    "classification": "EXECUTED deliberately insecure GSW/outer-encoding equation witness",
+    "q": 257,
+    "n": 2,
+    "gadget_bits": 9,
+    "m": 27,
+    "outer_encoding_stale_after_inner_bit_change": true,
+    "helper_repairs_outer_encoding": true,
+    "helper_exposes_entire_inner_secret": true,
+    "original_attribute_bits": [
+      1,
+      0,
+      1,
+      1,
+      0,
+      0
+    ],
+    "recovered_attribute_bits": [
+      1,
+      0,
+      1,
+      1,
+      0,
+      0
+    ],
+    "decryption_centered_phases": [
+      127,
+      3,
+      -128,
+      -125,
+      3,
+      6
+    ],
+    "scope": "refutes publishing exact Gbar^T*s; no general PE update impossibility"
+  }
+}

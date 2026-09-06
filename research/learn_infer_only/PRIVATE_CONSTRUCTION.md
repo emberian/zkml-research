@@ -387,3 +387,20 @@ bounded-integer schemes. No resident construction verdict changes.
 available. No package installation. Source hashes, commands and results are in
 `experiments/private_construction/sources_manifest.json` and adjacent logs. Scry
 counts: one schema call, three SQL queries; Kagi zero. No ePrint PDF download.
+
+[SOURCE / DERIVED / EXECUTED follow-up] `experiments/private_construction/PREDICATE_CLOSURE.md`
+audits a narrower one-key full-hiding PE candidate (2025/361) and its missing public
+update. Publishing its natural outer-encoding repair helper reveals the entire
+inner secret; a finite equation witness recovers all six encoded bits. Independently,
+sign plus public translations recovers all256 bounded scores in eight observations,
+without forks. KSW aggregation and targeted HABE do not supply exact sign-only
+state addition. This follow-up uses four additional Scry SQL queries (seven total).
+
+[SOURCE / DERIVED / EXECUTED follow-up] `experiments/private_construction/RFE_RECURRENCE.md`
+finds same-scheme encrypted-output closure syntactically possible in2025/330's
+compact iO-based randomized FE. Its theorem does not cover the proposed private
+transition: a public first-component encryption comparison has gap at least
+2^(-lambda), above its required epsilon2^(-2s-lambda), for distinct next states.
+This is a compatibility-premise failure, not a security break. Exact fraction,
+size and continuing-interface controls are preserved. One additional Scry query
+brings this lane to eight SQL plus one schema; the static predicate positive stays.

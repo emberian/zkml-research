@@ -1,15 +1,23 @@
 # Combined proposed Lean integration
 
-[EXECUTED] Run the finished-proposal integration with:
+[EXECUTED] Reproduce the current finished-proposal batch with:
 
 ```sh
-python3 research/learn_infer_only/experiments/integration/check_all_formal.py --checks
+python3 research/learn_infer_only/experiments/integration/check_all_formal.py \
+  --manifest research/learn_infer_only/experiments/integration/modules_finished_batch.json
 ```
 
 The command's actual results are in `results/latest.json`, which points to a
 numbered run's `report.json`. Each subprocess has a separate JSON log containing
 the exact command, working directory, exit code, stdout/stderr, elapsed time, and
 the Lean search path when applicable. Failed runs are retained.
+
+[EXECUTED] `results/run_006/report.json` is the final passed batch: 27 modules,
+371 pins, and four umbrellas. The manifest adds the generic EMA adapter, the
+root distributional budget, the finished simplifier, and the exact BFV source
+certificate library. The two integer executable checks retain their first-pass
+evidence. `REPORT.md` summarizes every passed run and the two corrected
+census-only failures.
 
 [EXECUTED] The preserved baseline is `results/run_001/report.json`: twelve modules,
 217 pins, four umbrellas, and both integer executable checks passed. The combined
@@ -24,12 +32,17 @@ python3 research/learn_infer_only/experiments/integration/check_all_formal.py \
 
 This second pass rebuilds the selected proof modules together in a fresh overlay;
 the unchanged integer executable checks retain their first-pass evidence.
+`modules_with_generic_ema.json` preserves the separate 307-pin integration set.
+The default without `--manifest` intentionally remains the explicit 217-pin
+baseline in `modules.json`; add `--checks` to rerun its two executable checks.
 
 [DERIVED: tooling scope] `modules.json` is the explicit inclusion boundary. Its
 nine finished lane patches identify twelve proposed modules with 217 expected
 theorem pins. The tool discovers each new source destination from the selected
 patch, checks it against the current proposed source byte for byte, and sorts the
-modules and four umbrella modules by imports. Extend the manifest with another
+modules and four umbrella modules by imports. It preserves the imports actually
+added by each patch, including inline comments, and checks direct/transitive
+rooting of every selected module. Extend the manifest with another
 finished patch and its expected pin count; no scanner silently promotes in-flight
 files. EMA, the new Garner-certificate work, optimizer work, and separate review
 witnesses are excluded from the initial manifest. The finished large-integer QR
@@ -44,7 +57,7 @@ to the intended contents. Independent lane patches are never rewritten. The
 boundary script runs over that complete applied source copy and over the original
 companion, read-only.
 
-[DERIVED: build scope] All twelve proposed modules and the Theory, Compiler,
+[DERIVED: build scope] All selected proposed modules and the Theory, Compiler,
 Selvage, and Assurance umbrellas elaborate sequentially into one fresh overlay.
 Existing dependency artifacts are linked read-only. Namespace directories are
 fully populated because Lean does not fall back per module from a partial first
@@ -56,7 +69,8 @@ uncompiled source changes behind a cached dependency.
 
 [DERIVED: census scope] `axiom_census.json` records each theorem, its source line,
 the exact expected axiom message, and the guarded name. The lexical scan masks
-comments and strings, matches every theorem/lemma to one axiom pin, and rejects
+comments and strings, resolves namespace/section scopes, matches every fully
+qualified theorem/lemma to one axiom pin, and rejects
 unguarded prints, custom axiom sets, and the listed forbidden constructs. Lean
 then elaborates each actual source with its `#guard_msgs` checks. The accepted
 axiom vocabulary is `propext`, `Classical.choice`, and `Quot.sound`, with an empty
@@ -75,3 +89,5 @@ copied companion Lean sources. Companion HEAD and `git status --short` are recor
 before and after. Cached dependency artifact paths, sizes, and mtimes are recorded
 separately; dependency oleans are reused, not rebuilt. No Scry/Kagi queries are
 needed for this local integration check.
+
+The frozen window/noise/target-projection batch is `modules_window_batch.json`: 39 modules, 499 exact pins, four umbrellas. Run 009 passed; see REPORT.md. Earlier manifests and combined patch snapshots remain retained.

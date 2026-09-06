@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Theory/CiphertextWindow.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window",
+  "started_utc": "2026-09-06T09:44:06.126008+00:00",
+  "elapsed_seconds": 3.120557792004547,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean": "ad2e496b8f8d1fbf7125cf6be9306a97c9933a66c7882066d087a2b04c8605ee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

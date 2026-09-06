@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/BFVSourceRangeWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/BFVSourceRangeWitness.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review",
+  "started_utc": "2026-09-06T09:15:08.606638+00:00",
+  "elapsed_seconds": 3.094981124988408,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/BFVSourceRangeWitness.lean": "1099e7a7e0fdf412d3e9b0444c5882195c23f73630796d448a3341cbb3fd2993",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/FheSourceCertificateWitness.olean": "e54227c07f5db117c5b2755afcd282ddb97536cddab3d9e8627982663bb49622"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

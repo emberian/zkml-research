@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "expected_theorem_pins": 371,
+  "scope": "Finished baseline+EMA+generic contextual EMA+distribution budget+AirSimplify+BFV source certificate; cached read-only dependency oleans; not a clean full build.",
+  "lanes": [
+    {
+      "name": "resident",
+      "root": "formal",
+      "patch": "formal/minidregg-resident-release.patch",
+      "expected_pins": 31
+    },
+    {
+      "name": "policy",
+      "root": "formal/recovery_policy",
+      "patch": "formal/recovery_policy/minidregg-private-policy-evolution.patch",
+      "expected_pins": 15
+    },
+    {
+      "name": "durable",
+      "root": "formal/durable_integration",
+      "patch": "formal/durable_integration/minidregg-durable-integration.patch",
+      "expected_pins": 45
+    },
+    {
+      "name": "randomness",
+      "root": "formal/randomness_composition",
+      "patch": "formal/randomness_composition/minidregg-randomness-selection.patch",
+      "expected_pins": 13
+    },
+    {
+      "name": "adaptive",
+      "root": "formal/randomness_composition",
+      "patch": "formal/randomness_composition/minidregg-adaptive-context.patch",
+      "expected_pins": 13
+    },
+    {
+      "name": "schedule",
+      "root": "formal/randomness_composition",
+      "patch": "formal/randomness_composition/minidregg-multi-receipt-schedule.patch",
+      "expected_pins": 20
+    },
+    {
+      "name": "bfv_lift",
+      "root": "formal/bfv_lift_refinement",
+      "patch": "formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch",
+      "expected_pins": 27
+    },
+    {
+      "name": "bfv_engine",
+      "root": "formal/bfv_lift_refinement/engine_refinement",
+      "patch": "formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch",
+      "expected_pins": 33
+    },
+    {
+      "name": "integer",
+      "root": "formal/integer_certificate_emission",
+      "patch": "formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch",
+      "expected_pins": 20
+    },
+    {
+      "name": "ema",
+      "root": "formal/durable_integration",
+      "patch": "formal/durable_integration/minidregg-ema-semantic-bridge.patch",
+      "expected_pins": 48
+    },
+    {
+      "name": "generic_contextual_ema",
+      "root": "formal/randomness_composition/generic",
+      "patch": "formal/randomness_composition/generic/minidregg-contextual-gate-ema.patch",
+      "expected_pins": 42
+    },
+    {
+      "name": "distribution_budget",
+      "root": "formal/recovery_policy",
+      "patch": "formal/recovery_policy/minidregg-private-distribution-budget.patch",
+      "expected_pins": 14
+    },
+    {
+      "name": "air_simplification",
+      "root": "formal/integer_certificate_emission/optimization",
+      "patch": "formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch",
+      "expected_pins": 27
+    },
+    {
+      "name": "bfv_source_certificate",
+      "root": "formal/bfv_lift_refinement/source_certificate",
+      "patch": "formal/bfv_lift_refinement/source_certificate/minidregg-fhe-source-certificate.patch",
+      "expected_pins": 23
+    }
+  ],
+  "checks": [
+    "formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean",
+    "formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean"
+  ],
+  "excluded": [
+    {
+      "glob": "experiments/adversarial_review/**/*.lean",
+      "reason": "Independent review witnesses and snapshots are not proposed umbrella modules."
+    },
+    {
+      "glob": "formal/**/build/**",
+      "reason": "Generated overlays are not source-discovery inputs."
+    },
+    {
+      "glob": "formal/bfv_lift_refinement/source_certificate/*/*.lean",
+      "reason": "Only six library modules carried by the selected patch are included; executable IO runner is not an umbrella import."
+    }
+  ]
+}

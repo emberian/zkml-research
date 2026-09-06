@@ -1,0 +1,273 @@
+[
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+    "stderr": "",
+    "elapsed_seconds": 0.017941749989404343
+  },
+  {
+    "command": [
+      "lean",
+      "--version"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+    "stderr": "",
+    "elapsed_seconds": 0.033518832991831005
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/BFVScaleLiftRefinement.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 3.258304124989081
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheRnsScaleDecomposition.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 3.548327625001548
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/IntegerCertificateEmission.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 4.0663901250081835
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/AirSimplify.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 3.45741962500324
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheSourceCertificate.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 3.385529958992265
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheSourceCertificateLayout.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 6.5833678750059335
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheSourceCertificateEmit.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 3.1200414580089273
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheSourceCertificateOptimized.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 2.7451284999988275
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheSourceCertificateVerifier.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 2.8696757500001695
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheSourceCertificateWitness.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 2.9257144579896703
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheTargetProjection.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 2.7337302090018056
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheTargetProjectionLayout.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 7.801043584011495
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheTargetProjectionEmit.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionEmit.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 2.9938859999965644
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheTargetProjectionVerifier.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionVerifier.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 2.715613791006035
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler/FheTargetProjectionWitness.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 2.7306864999991376
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_/Compiler.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.validation-pxq2hi7_",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 2.7899260419944767
+  },
+  {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": "",
+    "elapsed_seconds": 0.07944199998746626
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/minidregg-fhe-target-projection.patch"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 0.01793612500478048
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/minidregg-fhe-source-certificate.patch",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/minidregg-fhe-target-projection.patch"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 0.016863083990756422
+  }
+]

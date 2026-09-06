@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/FheSourceCertificateWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+  "started_utc": "2026-09-06T09:13:37.220517+00:00",
+  "elapsed_seconds": 2.996077042000252,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/FheSourceCertificateLayout.olean": "97b7f84fa370f38c26e85e4fb4dfc630f493c9817c5de38c95c462bf865c0dc2"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

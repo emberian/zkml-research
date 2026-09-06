@@ -1,0 +1,18 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean",
+  "source_sha256": "c4ce2b74a569571edda5bc76ed56ec2e65c0efdfe43d59f802a4f933e7cfc53c",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build/Theory/CiphertextWindow.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsed_seconds": 3.158479928970337,
+  "olean_sha256": "3e87a5d5b45693f0aa2a4b7e38db030fb6da5dc4c8f23adc38504074ee91d8e5"
+}

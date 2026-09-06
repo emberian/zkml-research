@@ -1,0 +1,65 @@
+{
+  "label": "EXECUTED independent integer arithmetic and final saved-serde provenance review",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/window_semantic_review.py"
+  ],
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/window_semantic_review.py": "cffcadffa4e2733284a58e918e91732238cc9e5278b825dd5524c9acdbc891d1",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/window_formal/validation.json": "10273a2bf1039644ee2811fee4045027a40e6d69dbaa1bac70ec1ef040088729",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_check_02.json": "5e94b7be58530b4fcfcc4f534d1b33badf817e545f62a5e88c5737738d138977",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/src/main.rs": "435b6e955d88a013ca64569123c9194e8e95c395000776b63fe3bdcecd380bc5",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/Cargo.toml": "482f2d51659abdd4f25cdb99a945086deef7646c0f5da9f2908d521e70bc60b0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/Cargo.lock": "1d28b7a9c31d2f8f343b9ba1eb98b199de9154fb4752a3f57a0b1d89b2eeb826",
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ciphertext.rs": "236b1b3f42d96c1ec1f0a66e4abe215b29ba9c8e6096fd9bf963b81e5fba8d85",
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mod.rs": "99d4777b6ed571ddd497572b196aa748b7875374d81395b35e868080065e73ad",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/IntegerWindowNoise.lean": "b3d49c23cf627f4598d5c81ed36ba93541f8e0463fe54da8629f2ee7d924bd98",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/CiphertextWindowNoise.lean": "20bcc3b442c5e86f6d6abe4aad439228d5c6e965aa15f49140faa3769e2e8702",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Assurance/ResidentBfvWindowNoise.lean": "cc98b5498fb737b7cd5bf5ccd3b8bda079e9c7707aa7f1c83e0401da35b8ecb6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Assurance/ResidentBfvWindowPhase.lean": "74b61e28fe43883aa3e96717f5fa881f2a16bb1b70eb6e42dc269a167d540fac",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean": "ad2e496b8f8d1fbf7125cf6be9306a97c9933a66c7882066d087a2b04c8605ee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean": "7b215707ee631a3d04854f6dd2fd044511dbcfd6d59b21c602380ff1d4c8a77d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowWitness.lean": "8503df829d5f5bcd9aa13bb5febd578b533dd3f8e8a075a687fa4fd30ffe9d92",
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/plaintext.rs": "abc6d4930295aed0fe91d58be85c79c46b4261d90fb0a02897ed002935de50b8",
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/parameters.rs": "7f6b1d364cbc8547b3f381551ec14f1ec0272c07b3c8a4ee03c4df1fc9aece30"
+  },
+  "inputs_unchanged": true,
+  "serde_saved_run_matches_current_sources": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/src/main.rs": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/Cargo.toml": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/Cargo.lock": true,
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ciphertext.rs": true,
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mod.rs": true
+  },
+  "refreshed_HE_modules_match": {
+    "Theory/IntegerWindowNoise": true,
+    "Theory/CiphertextWindowNoise": true,
+    "Assurance/ResidentBfvWindowNoise": true,
+    "Assurance/ResidentBfvWindowPhase": true
+  },
+  "refreshed_HE_dependencies_match": {
+    "/Users/ember/dev/minidregg/Theory.lean": true,
+    "/Users/ember/dev/minidregg/Assurance.lean": true,
+    "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean": true,
+    "/Users/ember/dev/minidregg/Theory/IndexedProgram.lean": true,
+    "/Users/ember/dev/minidregg/CLAUDE.md": true,
+    "/Users/ember/dev/minidregg/ATLAS.md": true,
+    "/Users/ember/dev/minidregg/lean-toolchain": true
+  },
+  "serialization_comparisons_check_lengths": true,
+  "source_floor_encoding_congruences": 260,
+  "Q": 9671406214650060397780993,
+  "E": 3276820,
+  "L": 73279,
+  "score_bound": 1191223424,
+  "margin_lhs": 264008552994527828978432,
+  "signed_integer_cases": 108,
+  "wraps_per_case": 3,
+  "wrong_expiry_failure_step": 1125936375139850,
+  "wrong_expiry_output": -1,
+  "zero_error_floor_carry_counterexample": -1,
+  "scope": "Source arithmetic and retained normalized serializer fixtures; no Rust group/NTT/phase/scaler theorem, no HE rerun."
+}

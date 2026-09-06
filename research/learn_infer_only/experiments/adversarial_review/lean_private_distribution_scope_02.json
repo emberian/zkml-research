@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/PrivateDistributionScopeWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/PrivateDistributionScopeWitness.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review",
+  "started_utc": "2026-09-06T09:19:58.052946+00:00",
+  "elapsed_seconds": 3.1148203749908134,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/PrivateDistributionScopeWitness.lean": "0ff9078bf9a8ca3cd82b5c29dd67a5023171f8da2647a39a8cd59877e7348f3e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/Theory/PrivatePolicyEvolution.lean": "b1b36ecd921a4b2dacc122fb70e25804fc30893d07de42644bcb6ccb1f3f209a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Theory/PrivatePolicyEvolution.olean": "c33bfa41d74073677e86dad8c5e28decd80accb22db98a4eb8bfeb63cb8fcd23",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/Theory/PrivateDistributionBudget.lean": "2b17dd27ac821a50f7364a6ff6d116d93189c587f6ee765bf19f64300b927d52",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Theory/PrivateDistributionBudget.olean": "aa40566a9dc41b920e12404079a17334a537280f0a4dbfa0a5250bfbd466424b"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

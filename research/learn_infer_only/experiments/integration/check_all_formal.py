@@ -91,9 +91,47 @@ def imports(source: str) -> list[str]:
     return re.findall(r'^\s*import\s+([A-Za-z_][\w.]*)', stripped_lean(source), re.M)
 
 
+def qualified_declarations(clean: str) -> list[dict]:
+    """Resolve the simple namespace/section commands used by these sources.
+
+    Reject unsupported declaration layouts instead of silently losing a pin.
+    The kernel still checks the real Lean names in every exact message guard.
+    """
+    prefix = ''
+    stack = []
+    result = []
+    pattern = r"^[ \t]*(?:(?:private|protected|noncomputable)[ \t]+)?(namespace|section|end|theorem|lemma)\b(?:[ \t]+([\w.'?!]+))?"
+    for event in re.finditer(pattern, clean, re.M):
+        kind, name = event.groups()
+        if kind in ('namespace', 'section'):
+            stack.append((kind, name, prefix))
+            if kind == 'namespace':
+                if not name:
+                    raise ValueError('Unnamed namespace is unsupported by census')
+                prefix = name[7:] if name.startswith('_root_.') else '.'.join(x for x in (prefix, name) if x)
+        elif kind == 'end':
+            if not stack:
+                raise ValueError('Unmatched end in namespace census')
+            opened_kind, opened_name, old_prefix = stack.pop()
+            if name and name != opened_name:
+                raise ValueError(f'Unexpected named end: {name}, open {opened_kind} {opened_name}')
+            prefix = old_prefix
+        else:
+            if not name:
+                raise ValueError('Unnamed theorem is unsupported by census')
+            full = name[7:] if name.startswith('_root_.') else '.'.join(x for x in (prefix, name) if x)
+            result.append(dict(name=name, qualified_name=full, line=clean.count('\n', 0, event.start()) + 1))
+    if stack:
+        raise ValueError(f'Unclosed source namespace/section in census: {stack}')
+    return result
+
+
 def census(source: str) -> dict:
     clean = stripped_lean(source)
-    declarations = re.findall(r'\b(?:theorem|lemma)\s+([\w.\']+)', clean)
+    declarations = re.findall(r'\b(?:theorem|lemma)\s+([\w.\'?!]+)', clean)
+    qualified = qualified_declarations(clean)
+    if [r['name'] for r in qualified] != declarations:
+        raise ValueError('Unsupported theorem declaration layout in qualified census')
     # Match each actual documentation block independently, then require a guard
     # immediately after it. This avoids crossing unrelated documentation blocks.
     pins = []
@@ -101,7 +139,7 @@ def census(source: str) -> dict:
         msg = re.fullmatch(r"\s*info:\s*'([^']+)'\s+(depends on axioms:\s*\[([\s\S]*?)\]|does not depend on any axioms)\s*", comment.group()[3:-2])
         if not msg:
             continue
-        guard = re.match(r'\s*#guard_msgs(?:\s*\([^)]*\))?\s+in\s+#print\s+axioms\s+([\w.\']+)', source[comment.end():])
+        guard = re.match(r'\s*#guard_msgs(?:\s*\([^)]*\))?\s+in\s+#print\s+axioms\s+([\w.\'?!]+)', source[comment.end():])
         if not guard:
             raise ValueError('Axiom output comment without adjacent exact guard')
         axioms = [] if msg.group(3) is None else re.findall(r'[\w.]+', msg.group(3))
@@ -110,9 +148,19 @@ def census(source: str) -> dict:
         pins.append(dict(theorem=msg.group(1), requested_name=guard.group(1),
                          axioms=axioms, line=source.count('\n', 0, comment.start()) + 1,
                          expected_message=' '.join(comment.group()[3:-2].split())))
-    raw_prints = re.findall(r'#print\s+axioms\s+([\w.\']+)', clean)
+    raw_prints = re.findall(r'#print\s+axioms\s+([\w.\'?!]+)', clean)
     forbidden = [dict(token=m.group(), line=clean.count('\n', 0, m.start()) + 1)
-                 for m in re.finditer(r'\b(?:sorry|admit|axiom|native_decide|unsafe|implemented_by|extern|run_tac)\b|#(?:eval|run)\b', clean)]
+                 for m in re.finditer(r'\b(?:sorry|axiom|native_decide|unsafe|implemented_by|extern|run_tac)\b|#(?:eval|run)\b', clean)]
+    # `admit` is also a lawful term identifier (the admission predicate in the
+    # window modules). Record these tokens, require its explicit typed binder,
+    # and reject obvious tactic uses. Kernel axiom guards plus the compilation
+    # diagnostic check below remain authoritative for any proof placeholder.
+    admit_tokens = [dict(token=m.group(), line=clean.count('\n', 0, m.start()) + 1)
+                    for m in re.finditer(r'\badmit\b', clean)]
+    if admit_tokens and not re.search(r'[({]\s*admit\s*:|\bdef\s+admit\b', clean):
+        forbidden.extend(admit_tokens)
+    forbidden.extend(dict(token=m.group(), line=clean.count('\n', 0, m.start()) + 1)
+                     for m in re.finditer(r'\bby\s+admit\b|(?:^|[;|])\s*admit\s*(?=$|[;|])', clean, re.M))
     names = [p['theorem'] for p in pins]
     if len(names) != len(set(names)):
         raise ValueError('Duplicate theorem axiom pin')
@@ -120,14 +168,15 @@ def census(source: str) -> dict:
         raise ValueError(f'Unguarded axiom print: {len(raw_prints)} prints, {len(pins)} guards')
     if len(declarations) != len(pins):
         raise ValueError(f'Theorem/pin count differs: {len(declarations)} vs {len(pins)}')
-    unmatched = [name for name in declarations
-                 if sum(p['theorem'] == name or p['theorem'].endswith('.' + name) for p in pins) != 1]
-    if unmatched:
-        raise ValueError(f'Theorem-to-pin matching ambiguous or absent: {unmatched}')
+    declared_names = Counter(r['qualified_name'] for r in qualified)
+    printed_names = Counter(p['theorem'] for p in pins)
+    if declared_names != printed_names:
+        raise ValueError(f'Qualified theorem/pin mismatch: missing {declared_names-printed_names}; extra {printed_names-declared_names}')
     if forbidden:
         raise ValueError(f'Forbidden constructs in proposed proof source: {forbidden}')
-    return dict(theorems=declarations, theorem_count=len(declarations), pin_count=len(pins),
-                pins=pins, forbidden_constructs=forbidden,
+    return dict(theorems=declarations, qualified_declarations=qualified,
+                theorem_count=len(declarations), pin_count=len(pins),
+                pins=pins, forbidden_constructs=forbidden, admit_identifier_tokens=admit_tokens,
                 lexical_scope='Comments and strings masked; Lean elaboration checks exact guard messages.')
 
 
@@ -144,6 +193,26 @@ def topo(nodes: dict[str, list[str]]) -> list[str]:
         for deps in pending.values():
             deps.difference_update(ready)
     return order
+
+
+def umbrella_imports(patch_text: str) -> dict[str, list[str]]:
+    """Preserve the imports actually rooted by each patch, including comments.
+
+    A library patch may intentionally root only its verifier/witness modules;
+    their imports root the remaining library modules transitively. Do not add
+    redundant direct umbrella imports to every discovered source file.
+    """
+    found = {u: [] for u in UMBRELLAS}
+    for block in re.split(r'(?=^--- )', patch_text, flags=re.M):
+        target = re.search(r'^\+\+\+ b/(Theory|Compiler|Selvage|Assurance)\.lean$', block, re.M)
+        if not target:
+            continue
+        for line in block.splitlines(keepends=True):
+            if line.startswith('-import '):
+                raise ValueError('Removing umbrella imports needs an explicit integration policy')
+            if line.startswith('+import '):
+                found[target.group(1)].append(line[1:])
+    return found
 
 
 class Run:
@@ -187,6 +256,8 @@ class Run:
         print(f'{label}: exit {p.returncode} ({record["elapsed_seconds"]:.2f}s)', flush=True)
         if p.returncode:
             print(p.stdout + p.stderr, flush=True)
+        if source and re.search(r'uses [‘\"\']?sorry|sorryAx', p.stdout + p.stderr):
+            raise RuntimeError(f'{label} contains a kernel proof-placeholder diagnostic; see {filename}')
         if require and p.returncode:
             raise RuntimeError(f'{label} failed; see {filename}')
         return record
@@ -239,11 +310,17 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
     env_record = RESIDENT / 'experiments/results/environment.json'
     modules = {}
     patch_records = []
+    proposed_imports = {u: [] for u in UMBRELLAS}
     inputs = [Path(__file__).resolve(), manifest_path, env_record]
+    run.inputs = run.snapshot(inputs)
     for lane in manifest['lanes']:
         patch_path = RESIDENT / lane['patch']
         inputs.append(patch_path)
+        run.inputs[str(patch_path)] = sha(patch_path)
         patch_text = patch_path.read_text()
+        rooted = umbrella_imports(patch_text)
+        for umbrella, lines in rooted.items():
+            proposed_imports[umbrella].extend(lines)
         destinations = re.findall(r'^\+\+\+ b/(.+\.lean)$', patch_text, re.M)
         lane_pins = 0
         for dest in destinations:
@@ -256,6 +333,7 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
                 raise ValueError(f'Duplicate proposed module {module}')
             source = RESIDENT / lane['root'] / dest
             inputs.append(source)
+            run.inputs[str(source)] = sha(source)
             text = source.read_text()
             inventory = census(text)
             lane_pins += inventory['pin_count']
@@ -275,6 +353,7 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
         inputs.append(RESIDENT / rel)
     run.inputs = run.snapshot(inputs)
     run.report['lane_patches'] = patch_records
+    run.report['proposed_umbrella_import_lines'] = proposed_imports
     run.report['module_count'] = len(modules)
     run.report['theorem_pins'] = sum(m['census']['pin_count'] for m in modules.values())
     if run.report['theorem_pins'] != manifest['expected_theorem_pins']:
@@ -301,11 +380,33 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
     for umbrella in UMBRELLAS:
         original = (source_root / (umbrella + '.lean')).read_text()
         existing = set(imports(original))
-        additions = [name for name in module_order if name.startswith(umbrella + '.') and name not in existing]
-        staged = original.rstrip('\n') + '\n\n' + ''.join('import ' + name + '\n' for name in additions)
+        additions = []
+        for line in proposed_imports[umbrella]:
+            names = imports(line)
+            if len(names) != 1:
+                raise ValueError(f'Expected one named umbrella import: {line}')
+            if names[0] not in existing:
+                additions.append(line if line.endswith('\n') else line + '\n')
+                existing.add(names[0])
+        staged = original.rstrip('\n') + '\n\n' + ''.join(additions)
         staged_umbrellas[umbrella] = staged
         combined += ''.join(difflib.unified_diff(original.splitlines(True), staged.splitlines(True),
                                                 fromfile='a/' + umbrella + '.lean', tofile='b/' + umbrella + '.lean'))
+    # Every proposed module must be rooted directly or transitively by one of
+    # the four staged umbrellas. Check the selected-source dependency graph.
+    reachable = set()
+    pending = [name for text in staged_umbrellas.values() for name in imports(text)]
+    while pending:
+        name = pending.pop()
+        if name in reachable:
+            continue
+        reachable.add(name)
+        if name in modules:
+            pending.extend(modules[name]['imports'])
+    unrooted = sorted(set(modules) - reachable)
+    if unrooted:
+        raise ValueError(f'Selected modules are not rooted by the proposed umbrella additions: {unrooted}')
+    run.report['all_selected_modules_rooted'] = True
     for name in module_order:
         m = modules[name]
         if (source_root / m['dest']).exists():

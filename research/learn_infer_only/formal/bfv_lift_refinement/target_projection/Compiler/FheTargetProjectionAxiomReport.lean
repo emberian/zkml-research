@@ -1,0 +1,27 @@
+import Compiler.FheTargetProjection
+import Compiler.FheTargetProjectionLayout
+import Compiler.FheTargetProjectionEmit
+import Compiler.FheTargetProjectionVerifier
+import Compiler.FheTargetProjectionWitness
+#print axioms Minidregg.Compiler.FheTargetProjection.target_factors
+#print axioms Minidregg.Compiler.FheTargetProjection.target_reduce
+#print axioms Minidregg.Compiler.FheTargetProjection.projectionSound
+#print axioms Minidregg.Compiler.FheTargetProjection.projection_honest
+#print axioms Minidregg.Compiler.FheTargetProjection.projection_source
+#print axioms Minidregg.Compiler.FheTargetProjection.captured_projection
+#print axioms Minidregg.Compiler.FheTargetProjection.captured_wrong_limb
+#print axioms Minidregg.Compiler.FheTargetProjection.matrix_capacities
+#print axioms Minidregg.Compiler.FheTargetProjection.balanced_projection
+#print axioms Minidregg.Compiler.FheTargetProjection.balanced_limbs
+#print axioms Minidregg.Compiler.FheTargetProjection.sourceDescriptor_wellFormed
+#print axioms Minidregg.Compiler.FheTargetProjection.source_column_budgets
+#print axioms Minidregg.Compiler.FheTargetProjection.digit_coefficient_capacity
+#print axioms Minidregg.Compiler.FheTargetProjection.digit_linearization
+#print axioms Minidregg.Compiler.FheTargetProjection.sourceDescriptor_balanced
+#print axioms Minidregg.Compiler.FheTargetProjection.targetDescriptor_sound
+#print axioms Minidregg.Compiler.FheTargetProjection.optimizedTargetDescriptor_balanced
+#print axioms Minidregg.Compiler.FheTargetProjection.pinnedTargetCheck_sound
+#print axioms Minidregg.Compiler.FheTargetProjection.pinned_wrong_target_refused
+#print axioms Minidregg.Compiler.FheTargetProjection.coherent_boundary_falsifier
+#print axioms Minidregg.Compiler.FheTargetProjection.captured_matrix_inhabited
+#print axioms Minidregg.Compiler.FheTargetProjection.maximum_matrix_inhabited

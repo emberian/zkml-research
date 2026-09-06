@@ -1,0 +1,4630 @@
+{
+  "all_selection_candidates": {
+    "last_30/attribute_lms_8": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      }
+    ],
+    "last_30/attribute_window_shared": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.75,
+          "mean": 0.75,
+          "min": 0.75,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.75,
+          "mean": 0.75,
+          "min": 0.75,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.75,
+          "mean": 0.75,
+          "min": 0.75,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      }
+    ],
+    "last_30/lexical_knn_routed": [
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      }
+    ],
+    "last_30/lexical_lms_routed": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03125,
+          "max": 0.625,
+          "mean": 0.5078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0153125
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03125,
+          "max": 0.625,
+          "mean": 0.5078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0153125
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03125,
+          "max": 0.625,
+          "mean": 0.5078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0153125
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03125,
+          "max": 0.625,
+          "mean": 0.5078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0153125
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03125,
+          "max": 0.625,
+          "mean": 0.5078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0153125
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03125,
+          "max": 0.625,
+          "mean": 0.5078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0153125
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03125,
+          "max": 0.625,
+          "mean": 0.5078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0153125
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03125,
+          "max": 0.625,
+          "mean": 0.5078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0153125
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      }
+    ],
+    "last_30/lexical_window_routed": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      }
+    ],
+    "last_30/model_knn_routed": [
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.038220082935327776,
+          "max": 0.625,
+          "mean": 0.529296875,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01872784063831061
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03422894516120761,
+          "max": 0.609375,
+          "mean": 0.52685546875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01677218312899173
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03511282039725661,
+          "max": 0.5546875,
+          "mean": 0.517578125,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01720528199465574
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05279221365187886,
+          "max": 0.640625,
+          "mean": 0.53076171875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02586818468942064
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03314563036811941,
+          "max": 0.609375,
+          "mean": 0.5234375,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01624135888037851
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.027690325935073878,
+          "max": 0.5703125,
+          "mean": 0.53271484375,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0135682597081862
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03705450988036353,
+          "max": 0.625,
+          "mean": 0.51318359375,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01815670984137813
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.052288819903005636,
+          "max": 0.6328125,
+          "mean": 0.51220703125,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.025621521752472762
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.021389468406764072,
+          "max": 0.5390625,
+          "mean": 0.51416015625,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.010480839519314396
+        }
+      }
+    ],
+    "last_30/model_knn_shared": [
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04391419615965842,
+          "max": 0.5625,
+          "mean": 0.49658203125,
+          "min": 0.4140625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.021517956118232626
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.053290852476595756,
+          "max": 0.5859375,
+          "mean": 0.48876953125,
+          "min": 0.4140625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02611251771353192
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.028982690314921164,
+          "max": 0.5546875,
+          "mean": 0.49853515625,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01420151825431137
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0516428312060247,
+          "max": 0.578125,
+          "mean": 0.49462890625,
+          "min": 0.4140625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0253049872909521
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0588017142740116,
+          "max": 0.5703125,
+          "mean": 0.5009765625,
+          "min": 0.3984375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.028812839994265683
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.013746078394362456,
+          "max": 0.546875,
+          "mean": 0.51416015625,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.006735578413237604
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03910154298825687,
+          "max": 0.5546875,
+          "mean": 0.4833984375,
+          "min": 0.4140625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.019159756064245866
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04769252376333912,
+          "max": 0.5703125,
+          "mean": 0.490234375,
+          "min": 0.4140625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02336933664403617
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.022682052476733487,
+          "max": 0.5703125,
+          "mean": 0.52197265625,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.011114205713599409
+        }
+      }
+    ],
+    "last_30/model_lms_routed": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.001953125,
+          "max": 0.5078125,
+          "mean": 0.50048828125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.00095703125
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.014254690725592458,
+          "max": 0.5234375,
+          "mean": 0.50341796875,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.006984798455540305
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.014405538214520137,
+          "max": 0.5234375,
+          "mean": 0.501953125,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.007058713725114867
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.016503617323654383,
+          "max": 0.515625,
+          "mean": 0.49267578125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.008086772488590648
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.008317041365974642,
+          "max": 0.515625,
+          "mean": 0.501953125,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.004075350269327574
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.011219848919019587,
+          "max": 0.5234375,
+          "mean": 0.50048828125,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.005497725970319597
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.01662643663513898,
+          "max": 0.5234375,
+          "mean": 0.49658203125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.008146953951218101
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.016105881350068987,
+          "max": 0.5234375,
+          "mean": 0.4951171875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.007891881861533803
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.018754068568996567,
+          "max": 0.53125,
+          "mean": 0.49853515625,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.009189493598808317
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.015851226868263752,
+          "max": 0.5234375,
+          "mean": 0.4990234375,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.007767101165449239
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.021999043761770455,
+          "max": 0.515625,
+          "mean": 0.49169921875,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.010779531443267524
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.012259652208183761,
+          "max": 0.5234375,
+          "mean": 0.50048828125,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.006007229582010043
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.02124631363552177,
+          "max": 0.53125,
+          "mean": 0.49951171875,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.010410693681405667
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.022188967087646658,
+          "max": 0.5234375,
+          "mean": 0.498046875,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.010872593872946862
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.021323975099931534,
+          "max": 0.5234375,
+          "mean": 0.4970703125,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.010448747798966452
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.023862253564621506,
+          "max": 0.546875,
+          "mean": 0.50439453125,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.011692504246664537
+        }
+      }
+    ],
+    "last_30/model_lms_shared": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.014120251783047873,
+          "max": 0.5234375,
+          "mean": 0.498046875,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.006918923373693458
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.014745770381388183,
+          "max": 0.53125,
+          "mean": 0.50244140625,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.007225427486880209
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.033874192794810624,
+          "max": 0.6171875,
+          "mean": 0.5078125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.016598354469457205
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.026836818808308856,
+          "max": 0.5234375,
+          "mean": 0.490234375,
+          "min": 0.40625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.013150041216071339
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.022993847894939745,
+          "max": 0.5625,
+          "mean": 0.49560546875,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.011266985468520474
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.014120251783047873,
+          "max": 0.5234375,
+          "mean": 0.498046875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.006918923373693458
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03719493973199401,
+          "max": 0.6171875,
+          "mean": 0.5078125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.018225520468677064
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.020472129173993277,
+          "max": 0.53125,
+          "mean": 0.490234375,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.010031343295256706
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.019943564581818535,
+          "max": 0.515625,
+          "mean": 0.4892578125,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.009772346645091082
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03275975423283626,
+          "max": 0.578125,
+          "mean": 0.5048828125,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.016052279574089768
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04361201734201968,
+          "max": 0.6328125,
+          "mean": 0.51806640625,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.021369888497589643
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.018425744398548053,
+          "max": 0.5234375,
+          "mean": 0.49462890625,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.009028614755288546
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.051339083527034576,
+          "max": 0.6171875,
+          "mean": 0.5146484375,
+          "min": 0.4296875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.025156150928246943
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.059135946259225095,
+          "max": 0.65625,
+          "mean": 0.51806640625,
+          "min": 0.4375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.028976613667020295
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03702704683424841,
+          "max": 0.625,
+          "mean": 0.51513671875,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01814325294878172
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03585460888805824,
+          "max": 0.59375,
+          "mean": 0.51220703125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01756875835514854
+        }
+      }
+    ],
+    "last_30/model_window_routed": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03402027557781719,
+          "max": 0.609375,
+          "mean": 0.51708984375,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.016669935033130422
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.031233719717571797,
+          "max": 0.6171875,
+          "mean": 0.5126953125,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01530452266161018
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.01675594577306814,
+          "max": 0.546875,
+          "mean": 0.501953125,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.008210413428803388
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.009021097956087902,
+          "max": 0.5234375,
+          "mean": 0.50390625,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.004420337998483072
+        }
+      }
+    ],
+    "last_30/model_window_shared": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.013829081299324744,
+          "max": 0.546875,
+          "mean": 0.501953125,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.006776249836669124
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.017323092051627697,
+          "max": 0.5078125,
+          "mean": 0.4912109375,
+          "min": 0.4375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.00848831510529757
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.02468469788949894,
+          "max": 0.5234375,
+          "mean": 0.4970703125,
+          "min": 0.4140625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01209550196585448
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.016869392876319673,
+          "max": 0.515625,
+          "mean": 0.49658203125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.00826600250939664
+        }
+      }
+    ],
+    "last_30/no_memory": [
+      {
+        "configuration": {},
+        "selection_final_accuracy": {
+          "history_sd": 0.0,
+          "max": 0.5,
+          "mean": 0.5,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0
+        }
+      }
+    ],
+    "mean_10/model_knn_routed": [
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0674398724289212,
+          "max": 0.6953125,
+          "mean": 0.5302734375,
+          "min": 0.4140625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03304553749017139
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07831844540064593,
+          "max": 0.6328125,
+          "mean": 0.51806640625,
+          "min": 0.359375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03837603824631651
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.033874192794810624,
+          "max": 0.6015625,
+          "mean": 0.53515625,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.016598354469457205
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07182261451471372,
+          "max": 0.7578125,
+          "mean": 0.5556640625,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03519308111220972
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04132755887293409,
+          "max": 0.609375,
+          "mean": 0.5322265625,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.020250503847737706
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.035516098169234,
+          "max": 0.6015625,
+          "mean": 0.546875,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01740288810292466
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03729053914729356,
+          "max": 0.609375,
+          "mean": 0.5224609375,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01827236418217384
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.042020188096702896,
+          "max": 0.609375,
+          "mean": 0.55126953125,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.020589892167384417
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03910154298825687,
+          "max": 0.6015625,
+          "mean": 0.5166015625,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.019159756064245866
+        }
+      }
+    ],
+    "mean_10/model_knn_shared": [
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.09154858931588825,
+          "max": 0.6328125,
+          "mean": 0.4970703125,
+          "min": 0.2734375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04485880876478524
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05078125,
+          "max": 0.5703125,
+          "mean": 0.5166015625,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0248828125
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.030118682072189432,
+          "max": 0.6015625,
+          "mean": 0.53173828125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.014758154215372821
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06218794165986381,
+          "max": 0.6484375,
+          "mean": 0.52490234375,
+          "min": 0.4375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.030472091413333267
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0534076427310112,
+          "max": 0.6015625,
+          "mean": 0.525390625,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02616974493819549
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.040087464392653864,
+          "max": 0.5859375,
+          "mean": 0.50048828125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.019642857552400392
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05479667302262938,
+          "max": 0.609375,
+          "mean": 0.52783203125,
+          "min": 0.4296875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.026850369781088398
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04853558197960501,
+          "max": 0.578125,
+          "mean": 0.51513671875,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.023782435170006454
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04687228724789263,
+          "max": 0.578125,
+          "mean": 0.49560546875,
+          "min": 0.421875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.022967420751467387
+        }
+      }
+    ],
+    "mean_10/model_lms_routed": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07770067056164423,
+          "max": 0.734375,
+          "mean": 0.5966796875,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03807332857520567
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07984913906715353,
+          "max": 0.7265625,
+          "mean": 0.58642578125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03912607814290523
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07237815000611228,
+          "max": 0.71875,
+          "mean": 0.59619140625,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.035465293502995016
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08587681332616676,
+          "max": 0.734375,
+          "mean": 0.59521484375,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04207963852982171
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07174290113964092,
+          "max": 0.6796875,
+          "mean": 0.57763671875,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03515402155842405
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06608954810815872,
+          "max": 0.71875,
+          "mean": 0.58349609375,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03238387857299777
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06845789032241523,
+          "max": 0.7265625,
+          "mean": 0.5849609375,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03354436625798346
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07954439765261075,
+          "max": 0.734375,
+          "mean": 0.587890625,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03897675484977926
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.060074603006863826,
+          "max": 0.6640625,
+          "mean": 0.56298828125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.029436555473363275
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.061381180606781195,
+          "max": 0.6796875,
+          "mean": 0.56591796875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.030076778497322786
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07125382619477942,
+          "max": 0.71875,
+          "mean": 0.5654296875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.034914374835441915
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08348628947676953,
+          "max": 0.7421875,
+          "mean": 0.57763671875,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04090828184361707
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.054424123972575726,
+          "max": 0.6796875,
+          "mean": 0.56689453125,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.026667820746562106
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05457344878096819,
+          "max": 0.6875,
+          "mean": 0.56689453125,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.026740989902674414
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06341894420221736,
+          "max": 0.6953125,
+          "mean": 0.56396484375,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.031075282659086507
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07723286190270494,
+          "max": 0.75,
+          "mean": 0.57373046875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03784410233232542
+        }
+      }
+    ],
+    "mean_10/model_lms_shared": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07081525983423788,
+          "max": 0.671875,
+          "mean": 0.56103515625,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03469947731877656
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06904050542959515,
+          "max": 0.6875,
+          "mean": 0.56494140625,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03382984766050162
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06901103085418513,
+          "max": 0.71875,
+          "mean": 0.55322265625,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03381540511855071
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06744741392991531,
+          "max": 0.6171875,
+          "mean": 0.5234375,
+          "min": 0.421875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0330492328256585
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.048117220691591626,
+          "max": 0.640625,
+          "mean": 0.548828125,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.023577438138879896
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05479667302262938,
+          "max": 0.65625,
+          "mean": 0.55029296875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.026850369781088398
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06893175548368473,
+          "max": 0.6953125,
+          "mean": 0.5439453125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03377656018700552
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05304211901851168,
+          "max": 0.59375,
+          "mean": 0.52587890625,
+          "min": 0.4296875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02599063831907072
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05138612115411734,
+          "max": 0.6484375,
+          "mean": 0.53955078125,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.025179199365517494
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.057330124402991664,
+          "max": 0.671875,
+          "mean": 0.5380859375,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.028091760957465916
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.055892600113036726,
+          "max": 0.6796875,
+          "mean": 0.5322265625,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.027387374055387995
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04819907296583229,
+          "max": 0.59375,
+          "mean": 0.52392578125,
+          "min": 0.4296875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02361754575325782
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0727304168946299,
+          "max": 0.7421875,
+          "mean": 0.546875,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03563790427836865
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0696730179271957,
+          "max": 0.6875,
+          "mean": 0.533203125,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03413977878432589
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04427466282456781,
+          "max": 0.6171875,
+          "mean": 0.5263671875,
+          "min": 0.4375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.021694584784038226
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04012867892662096,
+          "max": 0.578125,
+          "mean": 0.5244140625,
+          "min": 0.4375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.019663052674044272
+        }
+      }
+    ],
+    "mean_10/model_window_routed": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08245796751224226,
+          "max": 0.7109375,
+          "mean": 0.529296875,
+          "min": 0.421875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.040404404080998706
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07051295211530734,
+          "max": 0.6875,
+          "mean": 0.57470703125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0345513465365006
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06822717872422006,
+          "max": 0.6796875,
+          "mean": 0.58984375,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03343131757486783
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08208703460352311,
+          "max": 0.7265625,
+          "mean": 0.58203125,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.040222646955726325
+        }
+      }
+    ],
+    "mean_10/model_window_shared": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07837849498786323,
+          "max": 0.6328125,
+          "mean": 0.5107421875,
+          "min": 0.3671875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.038405462544052985
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07307750583267028,
+          "max": 0.6953125,
+          "mean": 0.53759765625,
+          "min": 0.40625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03580797785800844
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04379822026415334,
+          "max": 0.578125,
+          "mean": 0.51025390625,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.021461127929435133
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0646737071396274,
+          "max": 0.671875,
+          "mean": 0.56689453125,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03169011649841743
+        }
+      }
+    ],
+    "mean_20/model_knn_routed": [
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03993491918336998,
+          "max": 0.5625,
+          "mean": 0.51123046875,
+          "min": 0.40625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01956811039985129
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03557333607610247,
+          "max": 0.59375,
+          "mean": 0.537109375,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01743093467729021
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05086131508716456,
+          "max": 0.6640625,
+          "mean": 0.5751953125,
+          "min": 0.5078125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.024922044392710632
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.045885276260190025,
+          "max": 0.5625,
+          "mean": 0.49755859375,
+          "min": 0.3671875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02248378536749311
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07659803331471567,
+          "max": 0.6015625,
+          "mean": 0.50341796875,
+          "min": 0.328125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03753303632421068
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07026727422829178,
+          "max": 0.6015625,
+          "mean": 0.51806640625,
+          "min": 0.4296875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03443096437186297
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0684337393135308,
+          "max": 0.6328125,
+          "mean": 0.49169921875,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.033532532263630094
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06021202771249279,
+          "max": 0.6171875,
+          "mean": 0.521484375,
+          "min": 0.3671875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.029503893579121466
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10326965667093259,
+          "max": 0.6171875,
+          "mean": 0.48486328125,
+          "min": 0.375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05060213176875697
+        }
+      }
+    ],
+    "mean_20/model_knn_shared": [
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05014627042462879,
+          "max": 0.609375,
+          "mean": 0.515625,
+          "min": 0.4375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.024571672508068108
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.059273401974584056,
+          "max": 0.671875,
+          "mean": 0.54150390625,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.029043966967546186
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06501882427240303,
+          "max": 0.6640625,
+          "mean": 0.55517578125,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.031859223893477485
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07790986002466248,
+          "max": 0.609375,
+          "mean": 0.4990234375,
+          "min": 0.3203125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03817583141208462
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06816005166686104,
+          "max": 0.6015625,
+          "mean": 0.5009765625,
+          "min": 0.3984375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03339842531676191
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05925838328526465,
+          "max": 0.59375,
+          "mean": 0.501953125,
+          "min": 0.4296875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.029036607809779676
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07622694323531543,
+          "max": 0.6328125,
+          "mean": 0.515625,
+          "min": 0.3671875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.037351202185304556
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.11688763718444521,
+          "max": 0.640625,
+          "mean": 0.4736328125,
+          "min": 0.328125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.057274942220378156
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07031069152766853,
+          "max": 0.5859375,
+          "mean": 0.48388671875,
+          "min": 0.3515625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03445223884855758
+        }
+      }
+    ],
+    "mean_20/model_lms_routed": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.11176244774772294,
+          "max": 0.6875,
+          "mean": 0.5048828125,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05476359939638424
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.11261929438932745,
+          "max": 0.6875,
+          "mean": 0.533203125,
+          "min": 0.328125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05518345425077045
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10658528402261867,
+          "max": 0.6875,
+          "mean": 0.53466796875,
+          "min": 0.3515625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05222678917108315
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10242894632975563,
+          "max": 0.6875,
+          "mean": 0.51708984375,
+          "min": 0.3203125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05019018370158026
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10566508538861023,
+          "max": 0.6875,
+          "mean": 0.52685546875,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05177589184041902
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10987608432343228,
+          "max": 0.6875,
+          "mean": 0.541015625,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05383928131848181
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.1060074974623454,
+          "max": 0.7109375,
+          "mean": 0.5322265625,
+          "min": 0.359375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05194367375654925
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.09379339273548715,
+          "max": 0.6875,
+          "mean": 0.50390625,
+          "min": 0.328125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0459587624403887
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10589588469427078,
+          "max": 0.6875,
+          "mean": 0.48876953125,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05188898350019268
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0894863816454772,
+          "max": 0.6796875,
+          "mean": 0.48828125,
+          "min": 0.328125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04384832700628383
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.09386792713243766,
+          "max": 0.6953125,
+          "mean": 0.51025390625,
+          "min": 0.375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.045995284294894453
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08603214485247167,
+          "max": 0.6875,
+          "mean": 0.490234375,
+          "min": 0.3359375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04215575097771112
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.09663528810041391,
+          "max": 0.640625,
+          "mean": 0.466796875,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.047351291169202815
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.09247725473449765,
+          "max": 0.671875,
+          "mean": 0.4755859375,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04531385481990385
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08309546536323321,
+          "max": 0.671875,
+          "mean": 0.47705078125,
+          "min": 0.328125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04071677802798428
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08957727692705705,
+          "max": 0.6796875,
+          "mean": 0.47265625,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04389286569425795
+        }
+      }
+    ],
+    "mean_20/model_lms_shared": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.12597277731716483,
+          "max": 0.75,
+          "mean": 0.50390625,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.06172666088541077
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.11435709495267718,
+          "max": 0.765625,
+          "mean": 0.53564453125,
+          "min": 0.3046875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05603497652681182
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.09494544889026518,
+          "max": 0.6875,
+          "mean": 0.53369140625,
+          "min": 0.328125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04652326995622994
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.1202623931779616,
+          "max": 0.6875,
+          "mean": 0.50634765625,
+          "min": 0.2578125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05892857265720118
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10566508538861023,
+          "max": 0.6875,
+          "mean": 0.55126953125,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05177589184041902
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10905715535793892,
+          "max": 0.6953125,
+          "mean": 0.54736328125,
+          "min": 0.3203125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05343800612539007
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.11688763718444521,
+          "max": 0.6953125,
+          "mean": 0.5400390625,
+          "min": 0.2890625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.057274942220378156
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.1136432345075982,
+          "max": 0.6875,
+          "mean": 0.49658203125,
+          "min": 0.25,
+          "n_histories": 16,
+          "normal_95_half_width": 0.055685184908723116
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10707092292404737,
+          "max": 0.6875,
+          "mean": 0.51318359375,
+          "min": 0.28125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.052464752232783206
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.09665107689034044,
+          "max": 0.6875,
+          "mean": 0.5107421875,
+          "min": 0.2734375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04735902767626682
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10828018841170327,
+          "max": 0.6953125,
+          "mean": 0.50537109375,
+          "min": 0.265625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0530572923217346
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0994458420677169,
+          "max": 0.6875,
+          "mean": 0.47802734375,
+          "min": 0.2578125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04872846261318128
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08839841736172256,
+          "max": 0.59375,
+          "mean": 0.46728515625,
+          "min": 0.3203125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04331522450724405
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08896193152363918,
+          "max": 0.6875,
+          "mean": 0.486328125,
+          "min": 0.328125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0435913464465832
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08670203245392016,
+          "max": 0.7109375,
+          "mean": 0.48681640625,
+          "min": 0.34375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04248399590242088
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.09824173448785548,
+          "max": 0.6875,
+          "mean": 0.46435546875,
+          "min": 0.2734375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04813844989904918
+        }
+      }
+    ],
+    "mean_20/model_window_routed": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.11209304105748771,
+          "max": 0.6875,
+          "mean": 0.51123046875,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05492559011816898
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10727973550671452,
+          "max": 0.6875,
+          "mean": 0.53271484375,
+          "min": 0.3125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.05256707039829012
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.10665207127215404,
+          "max": 0.6875,
+          "mean": 0.51025390625,
+          "min": 0.3203125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.052259514923355475
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05788415815207092,
+          "max": 0.59375,
+          "mean": 0.52880859375,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02836323749451475
+        }
+      }
+    ],
+    "mean_20/model_window_shared": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.12357484283056547,
+          "max": 0.6875,
+          "mean": 0.52392578125,
+          "min": 0.2421875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.06055167298697708
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.12149630668897923,
+          "max": 0.6875,
+          "mean": 0.4990234375,
+          "min": 0.2578125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.059533190277599825
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06154668459604973,
+          "max": 0.6015625,
+          "mean": 0.52294921875,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.030157875452064366
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.11095858807784627,
+          "max": 0.765625,
+          "mean": 0.5185546875,
+          "min": 0.375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.054369708158144674
+        }
+      }
+    ],
+    "mean_30/model_knn_routed": [
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.074690115016982,
+          "max": 0.703125,
+          "mean": 0.552734375,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03659815635832118
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07691114284178312,
+          "max": 0.7109375,
+          "mean": 0.5673828125,
+          "min": 0.453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03768645999247373
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08186366810893585,
+          "max": 0.6484375,
+          "mean": 0.560546875,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04011319737337857
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03619697990394594,
+          "max": 0.6171875,
+          "mean": 0.515625,
+          "min": 0.4453125,
+          "n_histories": 16,
+          "normal_95_half_width": 0.017736520152933512
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07905050757203165,
+          "max": 0.6875,
+          "mean": 0.5712890625,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03873474871029551
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08636258503397175,
+          "max": 0.671875,
+          "mean": 0.576171875,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04231766666664616
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.02591113117465156,
+          "max": 0.5625,
+          "mean": 0.513671875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.012696454275579265
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0467418899981479,
+          "max": 0.65625,
+          "mean": 0.52392578125,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02290352609909247
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.08870427776172447,
+          "max": 0.6875,
+          "mean": 0.5849609375,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04346509610324499
+        }
+      }
+    ],
+    "mean_30/model_knn_shared": [
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.037413093741808276,
+          "max": 0.5625,
+          "mean": 0.50390625,
+          "min": 0.3984375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.018332415933486054
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.024451793760355462,
+          "max": 0.5390625,
+          "mean": 0.50048828125,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.011981378942574176
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 1
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06144950501563594,
+          "max": 0.6484375,
+          "mean": 0.55859375,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.030110257457661608
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.027690325935073878,
+          "max": 0.5390625,
+          "mean": 0.49853515625,
+          "min": 0.421875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0135682597081862
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04122898375612113,
+          "max": 0.578125,
+          "mean": 0.5126953125,
+          "min": 0.4375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.020202202040499353
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 3
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06352512165064438,
+          "max": 0.6328125,
+          "mean": 0.5537109375,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.031127309608815743
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.027044493383974366,
+          "max": 0.5625,
+          "mean": 0.5009765625,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.01325180175814744
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.01515403495411783,
+          "max": 0.546875,
+          "mean": 0.51708984375,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.007425477127517737
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128,
+          "k": 7
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07170921777611648,
+          "max": 0.6640625,
+          "mean": 0.5654296875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03513751671029708
+        }
+      }
+    ],
+    "mean_30/model_lms_routed": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07433516089868464,
+          "max": 0.6640625,
+          "mean": 0.57421875,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03642422884035547
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0761668668225397,
+          "max": 0.6796875,
+          "mean": 0.5830078125,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03732176474304445
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06915827811361866,
+          "max": 0.6875,
+          "mean": 0.58349609375,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03388755627567314
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0666890424688844,
+          "max": 0.6875,
+          "mean": 0.576171875,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.032677630809753354
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07910839412371694,
+          "max": 0.671875,
+          "mean": 0.57421875,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.0387631131206213
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07520418981689533,
+          "max": 0.6875,
+          "mean": 0.58154296875,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.036850053010278716
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07123240828150719,
+          "max": 0.6875,
+          "mean": 0.580078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03490388005793852
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06780841961610175,
+          "max": 0.6875,
+          "mean": 0.578125,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.033226125611889853
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0816381329364468,
+          "max": 0.7265625,
+          "mean": 0.58251953125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04000268513885893
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0832437669713675,
+          "max": 0.7265625,
+          "mean": 0.587890625,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.04078944581597007
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0771026861967208,
+          "max": 0.734375,
+          "mean": 0.583984375,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03778031623639319
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07227970020585972,
+          "max": 0.6953125,
+          "mean": 0.57373046875,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03541705310087126
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.0530541040422809,
+          "max": 0.640625,
+          "mean": 0.5517578125,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02599651098071764
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05651701670367371,
+          "max": 0.6875,
+          "mean": 0.560546875,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.027693338184800118
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07354926944441591,
+          "max": 0.7265625,
+          "mean": 0.57568359375,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.036039142027763794
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06227171851718349,
+          "max": 0.6875,
+          "mean": 0.564453125,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03051314207341991
+        }
+      }
+    ],
+    "mean_30/model_lms_shared": [
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07114667215220494,
+          "max": 0.65625,
+          "mean": 0.5703125,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03486186935458042
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05086131508716456,
+          "max": 0.65625,
+          "mean": 0.5556640625,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.024922044392710632
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.02709616332725524,
+          "max": 0.5859375,
+          "mean": 0.52197265625,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.013277120030355067
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.02006433946331048,
+          "max": 0.5390625,
+          "mean": 0.50732421875,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.009831526337022136
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06533098509843772,
+          "max": 0.6640625,
+          "mean": 0.57080078125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.032012182698234484
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05525882739035721,
+          "max": 0.6640625,
+          "mean": 0.55615234375,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.02707682542127503
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.024290049617418787,
+          "max": 0.5703125,
+          "mean": 0.517578125,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.011902124312535206
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.023082158725567493,
+          "max": 0.5625,
+          "mean": 0.51611328125,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.011310257775528071
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06529399408875597,
+          "max": 0.671875,
+          "mean": 0.5595703125,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.031994057103490424
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.03916652814691817,
+          "max": 0.625,
+          "mean": 0.541015625,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.019191598791989905
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.015875274255340965,
+          "max": 0.5390625,
+          "mean": 0.51123046875,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.007778884385117073
+        }
+      },
+      {
+        "configuration": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.014959798558692783,
+          "max": 0.5390625,
+          "mean": 0.505859375,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.007330301293759464
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04537251323965085,
+          "max": 0.6484375,
+          "mean": 0.53564453125,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.022232531487428916
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.046763648123379895,
+          "max": 0.6328125,
+          "mean": 0.53369140625,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.022914187580456147
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.019452968121857393,
+          "max": 0.546875,
+          "mean": 0.509765625,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.009531954379710123
+        }
+      },
+      {
+        "configuration": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.01864526957364678,
+          "max": 0.5390625,
+          "mean": 0.50537109375,
+          "min": 0.46875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.00913618209108692
+        }
+      }
+    ],
+    "mean_30/model_window_routed": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.021702256927084027,
+          "max": 0.5546875,
+          "mean": 0.5146484375,
+          "min": 0.4609375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.010634105894271172
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.05125976469476328,
+          "max": 0.6640625,
+          "mean": 0.5419921875,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.025117284700434006
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06541851194982325,
+          "max": 0.6875,
+          "mean": 0.5654296875,
+          "min": 0.5,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03205507085541339
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.07760078030223423,
+          "max": 0.6796875,
+          "mean": 0.56689453125,
+          "min": 0.4765625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.03802438234809477
+        }
+      }
+    ],
+    "mean_30/model_window_shared": [
+      {
+        "configuration": {
+          "capacity": 16
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.018754068568996567,
+          "max": 0.5546875,
+          "mean": 0.50634765625,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.009189493598808317
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 32
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.023263241077215932,
+          "max": 0.578125,
+          "mean": 0.513671875,
+          "min": 0.484375,
+          "n_histories": 16,
+          "normal_95_half_width": 0.011398988127835807
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 64
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.04342501600430285,
+          "max": 0.5625,
+          "mean": 0.50244140625,
+          "min": 0.40625,
+          "n_histories": 16,
+          "normal_95_half_width": 0.021278257842108395
+        }
+      },
+      {
+        "configuration": {
+          "capacity": 128
+        },
+        "selection_final_accuracy": {
+          "history_sd": 0.06287121206594179,
+          "max": 0.65625,
+          "mean": 0.55224609375,
+          "min": 0.4921875,
+          "n_histories": 16,
+          "normal_95_half_width": 0.030806893912311475
+        }
+      }
+    ]
+  },
+  "choices": {
+    "last_30/attribute_lms_8": {
+      "configuration": {
+        "eta": 0.03,
+        "rho": 0.95
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n_histories": 16,
+        "normal_95_half_width": 0.0
+      }
+    },
+    "last_30/attribute_window_shared": {
+      "configuration": {
+        "capacity": 128
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n_histories": 16,
+        "normal_95_half_width": 0.0
+      }
+    },
+    "last_30/lexical_knn_routed": {
+      "configuration": {
+        "capacity": 128,
+        "k": 1
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.0,
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5,
+        "n_histories": 16,
+        "normal_95_half_width": 0.0
+      }
+    },
+    "last_30/lexical_lms_routed": {
+      "configuration": {
+        "eta": 0.03,
+        "rho": 0.95
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.03125,
+        "max": 0.625,
+        "mean": 0.5078125,
+        "min": 0.5,
+        "n_histories": 16,
+        "normal_95_half_width": 0.0153125
+      }
+    },
+    "last_30/lexical_window_routed": {
+      "configuration": {
+        "capacity": 128
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.0,
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5,
+        "n_histories": 16,
+        "normal_95_half_width": 0.0
+      }
+    },
+    "last_30/model_knn_routed": {
+      "configuration": {
+        "capacity": 128,
+        "k": 3
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.027690325935073878,
+        "max": 0.5703125,
+        "mean": 0.53271484375,
+        "min": 0.5,
+        "n_histories": 16,
+        "normal_95_half_width": 0.0135682597081862
+      }
+    },
+    "last_30/model_knn_shared": {
+      "configuration": {
+        "capacity": 128,
+        "k": 7
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.022682052476733487,
+        "max": 0.5703125,
+        "mean": 0.52197265625,
+        "min": 0.4921875,
+        "n_histories": 16,
+        "normal_95_half_width": 0.011114205713599409
+      }
+    },
+    "last_30/model_lms_routed": {
+      "configuration": {
+        "eta": 1.0,
+        "rho": 0.95
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.023862253564621506,
+        "max": 0.546875,
+        "mean": 0.50439453125,
+        "min": 0.46875,
+        "n_histories": 16,
+        "normal_95_half_width": 0.011692504246664537
+      }
+    },
+    "last_30/model_lms_shared": {
+      "configuration": {
+        "eta": 0.3,
+        "rho": 0.98
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.04361201734201968,
+        "max": 0.6328125,
+        "mean": 0.51806640625,
+        "min": 0.4765625,
+        "n_histories": 16,
+        "normal_95_half_width": 0.021369888497589643
+      }
+    },
+    "last_30/model_window_routed": {
+      "configuration": {
+        "capacity": 16
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.03402027557781719,
+        "max": 0.609375,
+        "mean": 0.51708984375,
+        "min": 0.4765625,
+        "n_histories": 16,
+        "normal_95_half_width": 0.016669935033130422
+      }
+    },
+    "last_30/model_window_shared": {
+      "configuration": {
+        "capacity": 16
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.013829081299324744,
+        "max": 0.546875,
+        "mean": 0.501953125,
+        "min": 0.484375,
+        "n_histories": 16,
+        "normal_95_half_width": 0.006776249836669124
+      }
+    },
+    "last_30/no_memory": {
+      "configuration": {},
+      "selection_final_accuracy": {
+        "history_sd": 0.0,
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5,
+        "n_histories": 16,
+        "normal_95_half_width": 0.0
+      }
+    },
+    "mean_10/model_knn_routed": {
+      "configuration": {
+        "capacity": 32,
+        "k": 3
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.07182261451471372,
+        "max": 0.7578125,
+        "mean": 0.5556640625,
+        "min": 0.453125,
+        "n_histories": 16,
+        "normal_95_half_width": 0.03519308111220972
+      }
+    },
+    "mean_10/model_knn_shared": {
+      "configuration": {
+        "capacity": 128,
+        "k": 1
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.030118682072189432,
+        "max": 0.6015625,
+        "mean": 0.53173828125,
+        "min": 0.5,
+        "n_histories": 16,
+        "normal_95_half_width": 0.014758154215372821
+      }
+    },
+    "mean_10/model_lms_routed": {
+      "configuration": {
+        "eta": 0.03,
+        "rho": 1.0
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.07770067056164423,
+        "max": 0.734375,
+        "mean": 0.5966796875,
+        "min": 0.484375,
+        "n_histories": 16,
+        "normal_95_half_width": 0.03807332857520567
+      }
+    },
+    "mean_10/model_lms_shared": {
+      "configuration": {
+        "eta": 0.03,
+        "rho": 0.995
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.06904050542959515,
+        "max": 0.6875,
+        "mean": 0.56494140625,
+        "min": 0.4765625,
+        "n_histories": 16,
+        "normal_95_half_width": 0.03382984766050162
+      }
+    },
+    "mean_10/model_window_routed": {
+      "configuration": {
+        "capacity": 64
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.06822717872422006,
+        "max": 0.6796875,
+        "mean": 0.58984375,
+        "min": 0.453125,
+        "n_histories": 16,
+        "normal_95_half_width": 0.03343131757486783
+      }
+    },
+    "mean_10/model_window_shared": {
+      "configuration": {
+        "capacity": 128
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.0646737071396274,
+        "max": 0.671875,
+        "mean": 0.56689453125,
+        "min": 0.4921875,
+        "n_histories": 16,
+        "normal_95_half_width": 0.03169011649841743
+      }
+    },
+    "mean_20/model_knn_routed": {
+      "configuration": {
+        "capacity": 128,
+        "k": 1
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.05086131508716456,
+        "max": 0.6640625,
+        "mean": 0.5751953125,
+        "min": 0.5078125,
+        "n_histories": 16,
+        "normal_95_half_width": 0.024922044392710632
+      }
+    },
+    "mean_20/model_knn_shared": {
+      "configuration": {
+        "capacity": 128,
+        "k": 1
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.06501882427240303,
+        "max": 0.6640625,
+        "mean": 0.55517578125,
+        "min": 0.4453125,
+        "n_histories": 16,
+        "normal_95_half_width": 0.031859223893477485
+      }
+    },
+    "mean_20/model_lms_routed": {
+      "configuration": {
+        "eta": 0.1,
+        "rho": 0.995
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.10987608432343228,
+        "max": 0.6875,
+        "mean": 0.541015625,
+        "min": 0.3125,
+        "n_histories": 16,
+        "normal_95_half_width": 0.05383928131848181
+      }
+    },
+    "mean_20/model_lms_shared": {
+      "configuration": {
+        "eta": 0.1,
+        "rho": 1.0
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.10566508538861023,
+        "max": 0.6875,
+        "mean": 0.55126953125,
+        "min": 0.3125,
+        "n_histories": 16,
+        "normal_95_half_width": 0.05177589184041902
+      }
+    },
+    "mean_20/model_window_routed": {
+      "configuration": {
+        "capacity": 32
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.10727973550671452,
+        "max": 0.6875,
+        "mean": 0.53271484375,
+        "min": 0.3125,
+        "n_histories": 16,
+        "normal_95_half_width": 0.05256707039829012
+      }
+    },
+    "mean_20/model_window_shared": {
+      "configuration": {
+        "capacity": 16
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.12357484283056547,
+        "max": 0.6875,
+        "mean": 0.52392578125,
+        "min": 0.2421875,
+        "n_histories": 16,
+        "normal_95_half_width": 0.06055167298697708
+      }
+    },
+    "mean_30/model_knn_routed": {
+      "configuration": {
+        "capacity": 128,
+        "k": 7
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.08870427776172447,
+        "max": 0.6875,
+        "mean": 0.5849609375,
+        "min": 0.4921875,
+        "n_histories": 16,
+        "normal_95_half_width": 0.04346509610324499
+      }
+    },
+    "mean_30/model_knn_shared": {
+      "configuration": {
+        "capacity": 128,
+        "k": 7
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.07170921777611648,
+        "max": 0.6640625,
+        "mean": 0.5654296875,
+        "min": 0.46875,
+        "n_histories": 16,
+        "normal_95_half_width": 0.03513751671029708
+      }
+    },
+    "mean_30/model_lms_routed": {
+      "configuration": {
+        "eta": 0.3,
+        "rho": 0.995
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.0832437669713675,
+        "max": 0.7265625,
+        "mean": 0.587890625,
+        "min": 0.4921875,
+        "n_histories": 16,
+        "normal_95_half_width": 0.04078944581597007
+      }
+    },
+    "mean_30/model_lms_shared": {
+      "configuration": {
+        "eta": 0.1,
+        "rho": 1.0
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.06533098509843772,
+        "max": 0.6640625,
+        "mean": 0.57080078125,
+        "min": 0.5,
+        "n_histories": 16,
+        "normal_95_half_width": 0.032012182698234484
+      }
+    },
+    "mean_30/model_window_routed": {
+      "configuration": {
+        "capacity": 128
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.07760078030223423,
+        "max": 0.6796875,
+        "mean": 0.56689453125,
+        "min": 0.4765625,
+        "n_histories": 16,
+        "normal_95_half_width": 0.03802438234809477
+      }
+    },
+    "mean_30/model_window_shared": {
+      "configuration": {
+        "capacity": 128
+      },
+      "selection_final_accuracy": {
+        "history_sd": 0.06287121206594179,
+        "max": 0.65625,
+        "mean": 0.55224609375,
+        "min": 0.4921875,
+        "n_histories": 16,
+        "normal_95_half_width": 0.030806893912311475
+      }
+    }
+  },
+  "chosen_representation_by_method": {
+    "model_knn_routed": "mean_30",
+    "model_knn_shared": "mean_30",
+    "model_lms_routed": "mean_10",
+    "model_lms_shared": "mean_30",
+    "model_window_routed": "mean_10",
+    "model_window_shared": "mean_10"
+  },
+  "development": {
+    "last_30/attribute_lms_8": {
+      "history_sd": 0.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n_histories": 8,
+      "normal_95_half_width": 0.0
+    },
+    "last_30/attribute_window_shared": {
+      "history_sd": 0.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n_histories": 8,
+      "normal_95_half_width": 0.0
+    },
+    "last_30/lexical_knn_routed": {
+      "history_sd": 0.0,
+      "max": 0.5,
+      "mean": 0.5,
+      "min": 0.5,
+      "n_histories": 8,
+      "normal_95_half_width": 0.0
+    },
+    "last_30/lexical_lms_routed": {
+      "history_sd": 0.0,
+      "max": 0.5,
+      "mean": 0.5,
+      "min": 0.5,
+      "n_histories": 8,
+      "normal_95_half_width": 0.0
+    },
+    "last_30/lexical_window_routed": {
+      "history_sd": 0.0,
+      "max": 0.5,
+      "mean": 0.5,
+      "min": 0.5,
+      "n_histories": 8,
+      "normal_95_half_width": 0.0
+    },
+    "last_30/model_knn_routed": {
+      "history_sd": 0.0186754470208499,
+      "max": 0.5703125,
+      "mean": 0.53515625,
+      "min": 0.515625,
+      "n_histories": 8,
+      "normal_95_half_width": 0.012941424525530407
+    },
+    "last_30/model_knn_shared": {
+      "history_sd": 0.0175936191634313,
+      "max": 0.5546875,
+      "mean": 0.525390625,
+      "min": 0.4921875,
+      "n_histories": 8,
+      "normal_95_half_width": 0.012191756067754349
+    },
+    "last_30/model_lms_routed": {
+      "history_sd": 0.025033982205533427,
+      "max": 0.5546875,
+      "mean": 0.5107421875,
+      "min": 0.484375,
+      "n_histories": 8,
+      "normal_95_half_width": 0.017347664606083328
+    },
+    "last_30/model_lms_shared": {
+      "history_sd": 0.02434980382731186,
+      "max": 0.5078125,
+      "mean": 0.48828125,
+      "min": 0.4375,
+      "n_histories": 8,
+      "normal_95_half_width": 0.016873553178717277
+    },
+    "last_30/model_window_routed": {
+      "history_sd": 0.03314563036811941,
+      "max": 0.5390625,
+      "mean": 0.50390625,
+      "min": 0.4296875,
+      "n_histories": 8,
+      "normal_95_half_width": 0.022968749999999996
+    },
+    "last_30/model_window_shared": {
+      "history_sd": 0.04174651714380965,
+      "max": 0.5078125,
+      "mean": 0.4716796875,
+      "min": 0.3984375,
+      "n_histories": 8,
+      "normal_95_half_width": 0.028928860456042097
+    },
+    "last_30/no_memory": {
+      "history_sd": 0.0,
+      "max": 0.5,
+      "mean": 0.5,
+      "min": 0.5,
+      "n_histories": 8,
+      "normal_95_half_width": 0.0
+    },
+    "mean_10/model_knn_routed": {
+      "history_sd": 0.05633673867912483,
+      "max": 0.640625,
+      "mean": 0.54296875,
+      "min": 0.4453125,
+      "n_histories": 8,
+      "normal_95_half_width": 0.039039368150944755
+    },
+    "mean_10/model_knn_shared": {
+      "history_sd": 0.03219484031247143,
+      "max": 0.59375,
+      "mean": 0.5224609375,
+      "min": 0.4921875,
+      "n_histories": 8,
+      "normal_95_half_width": 0.022309886106083244
+    },
+    "mean_10/model_lms_routed": {
+      "history_sd": 0.09062884844045442,
+      "max": 0.7421875,
+      "mean": 0.55859375,
+      "min": 0.4921875,
+      "n_histories": 8,
+      "normal_95_half_width": 0.06280258783730572
+    },
+    "mean_10/model_lms_shared": {
+      "history_sd": 0.04175956904881631,
+      "max": 0.609375,
+      "mean": 0.5234375,
+      "min": 0.4765625,
+      "n_histories": 8,
+      "normal_95_half_width": 0.028937904964768956
+    },
+    "mean_10/model_window_routed": {
+      "history_sd": 0.0855816496101822,
+      "max": 0.734375,
+      "mean": 0.5625,
+      "min": 0.4765625,
+      "n_histories": 8,
+      "normal_95_half_width": 0.05930505748880106
+    },
+    "mean_10/model_window_shared": {
+      "history_sd": 0.04677025126573324,
+      "max": 0.625,
+      "mean": 0.5302734375,
+      "min": 0.4921875,
+      "n_histories": 8,
+      "normal_95_half_width": 0.0324101305912427
+    },
+    "mean_20/model_knn_routed": {
+      "history_sd": 0.05508465481809405,
+      "max": 0.6640625,
+      "mean": 0.5625,
+      "min": 0.515625,
+      "n_histories": 8,
+      "normal_95_half_width": 0.038171718301970636
+    },
+    "mean_20/model_knn_shared": {
+      "history_sd": 0.05732442076427656,
+      "max": 0.6015625,
+      "mean": 0.5302734375,
+      "min": 0.4453125,
+      "n_histories": 8,
+      "normal_95_half_width": 0.03972379691701067
+    },
+    "mean_20/model_lms_routed": {
+      "history_sd": 0.11257670376197161,
+      "max": 0.6875,
+      "mean": 0.505859375,
+      "min": 0.3125,
+      "n_histories": 8,
+      "normal_95_half_width": 0.07801167562104484
+    },
+    "mean_20/model_lms_shared": {
+      "history_sd": 0.12016311458656045,
+      "max": 0.6875,
+      "mean": 0.4765625,
+      "min": 0.3125,
+      "n_histories": 8,
+      "normal_95_half_width": 0.08326879010919998
+    },
+    "mean_20/model_window_routed": {
+      "history_sd": 0.10300634915363141,
+      "max": 0.6875,
+      "mean": 0.5166015625,
+      "min": 0.3359375,
+      "n_histories": 8,
+      "normal_95_half_width": 0.0713797582319659
+    },
+    "mean_20/model_window_shared": {
+      "history_sd": 0.10447719247381135,
+      "max": 0.6875,
+      "mean": 0.4970703125,
+      "min": 0.3359375,
+      "n_histories": 8,
+      "normal_95_half_width": 0.07239900065201284
+    },
+    "mean_30/model_knn_routed": {
+      "history_sd": 0.07727636178651154,
+      "max": 0.6796875,
+      "mean": 0.5693359375,
+      "min": 0.4921875,
+      "n_histories": 8,
+      "normal_95_half_width": 0.05354978665577395
+    },
+    "mean_30/model_knn_shared": {
+      "history_sd": 0.06803574540974634,
+      "max": 0.640625,
+      "mean": 0.5322265625,
+      "min": 0.46875,
+      "n_histories": 8,
+      "normal_95_half_width": 0.04714636620346689
+    },
+    "mean_30/model_lms_routed": {
+      "history_sd": 0.07316122757597843,
+      "max": 0.6640625,
+      "mean": 0.5419921875,
+      "min": 0.5,
+      "n_histories": 8,
+      "normal_95_half_width": 0.05069814413612845
+    },
+    "mean_30/model_lms_shared": {
+      "history_sd": 0.0726229402331156,
+      "max": 0.6640625,
+      "mean": 0.5322265625,
+      "min": 0.484375,
+      "n_histories": 8,
+      "normal_95_half_width": 0.05032513003837055
+    },
+    "mean_30/model_window_routed": {
+      "history_sd": 0.08299550197579557,
+      "max": 0.6796875,
+      "mean": 0.53515625,
+      "min": 0.4765625,
+      "n_histories": 8,
+      "normal_95_half_width": 0.05751294860996522
+    },
+    "mean_30/model_window_shared": {
+      "history_sd": 0.019999956403412306,
+      "max": 0.5390625,
+      "mean": 0.5126953125,
+      "min": 0.4921875,
+      "n_histories": 8,
+      "normal_95_half_width": 0.01385926270036239
+    }
+  },
+  "protocol_sha256": "ab07a3f24c144ad60b5e1c7a09ebcf5688e5c1b1449aee346b9a43acd2ea46d1",
+  "script_sha256": "64a081735a4f229b716c8ec70c8d3beeb16a87e8d380fba4c44338d60f4e639d"
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_results_review.py"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "started_utc": "2026-09-06T08:58:39.477114+00:00",
+  "elapsed_seconds": 0.05921424999542069,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_results_review.py": "82ae85282a797e653b2026cc253bd2e1e752d82ad7f49fcc66e4e69d6004aa45",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/summary.json": "f3afdca8e73c438c6f74f674001991f1b77f176bc0b5ce48da497385cc935068"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "{\n  \"inputs_unchanged\": true,\n  \"artifact_manifest_files_verified\": 144,\n  \"primary_completed_lattice_rows\": 72,\n  \"exact_fresh_process_rechecks\": 16,\n  \"unresolved_fresh_process_failures\": [\n    [\n      \"83\",\n      \"infinity\",\n      \"MATZOV_quantum_depth_width\",\n      \"dual_hybrid\"\n    ]\n  ]\n}\n",
+  "stderr": ""
+}

@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/IntegerCertificateSimplification.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/IntegerCertificateSimplification.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization",
+  "started_utc": "2026-09-06T09:07:26.700651+00:00",
+  "elapsed_seconds": 3.1095333749981364,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/IntegerCertificateSimplification.lean": "0cf4b3cbc725e186264c13eac1b681b66f65bcc8a1d5544108b0da84c8b7c8ef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/IntegerCertificateEmission.olean": "1b3e312c1d7e910ff903112d81eea8b41bf0c5e5fcc00f5aca680e9ea303fbcb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmission.lean": "4330a8f99bf1b325b0c1cecb7f7dc6efe655c24021269cbafef2a854e8a7d579",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/LargeIntegerCertificateEmission.olean": "849ad3a654854d2f0875ab60dc7082fe8b850c90c2d709b74b11b855d7b4ab82",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/AirSimplify.olean": "11f9a012773e6130694a902a5c6f9e6964dd6c1d881c9429f5ea600d5fb61344"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

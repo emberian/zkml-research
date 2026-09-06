@@ -1,0 +1,68 @@
+{
+  "label": "EXECUTED independent replay of existing optimized descriptor and retained public synthetic fixtures",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/replay_descriptor.py"
+  ],
+  "source_sha256": "3e7d7b06077cf5138abb8d304bdca4980ffd749b209ea44454fc68873c49b444",
+  "descriptor_uncompressed_sha256": "e440eb248c5fa754debf1a6d4defe1bdeb64c2c22cc66ebae0ba3ac486cc7566",
+  "inputs_uncompressed_sha256": "80d0461e999974c8d24262e5e5a03759c93f00e2d242d1e16f96f63dc679a078",
+  "gates": 132675,
+  "zero_checks": 36498,
+  "cases": [
+    {
+      "label": "captured_source_plus_one",
+      "descriptor_accepts": true,
+      "pinned_source_claim_accepts": true,
+      "violated_integer_balance_rows": []
+    },
+    {
+      "label": "wrong_nearest_neighbor",
+      "descriptor_accepts": false,
+      "pinned_source_claim_accepts": false,
+      "violated_integer_balance_rows": [
+        10
+      ]
+    },
+    {
+      "label": "correction_range_attack",
+      "descriptor_accepts": false,
+      "pinned_source_claim_accepts": false,
+      "violated_integer_balance_rows": [
+        9
+      ]
+    },
+    {
+      "label": "Garner_range_attack",
+      "descriptor_accepts": false,
+      "pinned_source_claim_accepts": false,
+      "violated_integer_balance_rows": [
+        7,
+        10
+      ]
+    },
+    {
+      "label": "noncanonical_residue",
+      "descriptor_accepts": false,
+      "pinned_source_claim_accepts": false,
+      "violated_integer_balance_rows": [
+        0,
+        6,
+        8,
+        10
+      ]
+    },
+    {
+      "label": "out_of_range_digit",
+      "descriptor_accepts": false,
+      "pinned_source_claim_accepts": false,
+      "violated_integer_balance_rows": [
+        0,
+        6,
+        8,
+        10
+      ]
+    }
+  ],
+  "elapsed_seconds": 0.6566628750006203
+}

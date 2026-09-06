@@ -7,6 +7,16 @@ import json
 import os
 import subprocess
 import sys
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--review', action='store_true')
+parser.add_argument('--module', choices=['PrivatePolicyEvolution', 'PrivateDistributionBudget'],
+                    default='PrivatePolicyEvolution')
+options = parser.parse_args()
+module = options.module
+label = 'policy' if module == 'PrivatePolicyEvolution' else 'distribution'
+patch_stem = 'private-policy-evolution' if label == 'policy' else 'private-distribution-budget'
 
 ROOT = Path(__file__).resolve().parents[2]
 FORMAL = ROOT / 'formal/recovery_policy'
@@ -23,8 +33,8 @@ for artifact in (COMPANION / '.lake/build/lib/lean/Theory').iterdir():
     target = overlay / artifact.name
     if not target.exists() and not target.is_symlink():
         target.symlink_to(artifact)
-source = FORMAL / 'Theory/PrivatePolicyEvolution.lean'
-output = overlay / 'PrivatePolicyEvolution.olean'
+source = FORMAL / f'Theory/{module}.lean'
+output = overlay / f'{module}.olean'
 if output.is_symlink():
     raise RuntimeError('Refusing output through a companion symlink')
 env = dict(os.environ, LEAN_PATH=str(FORMAL / 'build') + ':' + paths)
@@ -33,27 +43,27 @@ p = subprocess.run(args, cwd=FORMAL, env=env, text=True, capture_output=True)
 record = {'command': args, 'cwd': str(FORMAL), 'lean_path': env['LEAN_PATH'],
           'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
           'exit_code': p.returncode, 'stdout': p.stdout, 'stderr': p.stderr}
-index = len(list(RESULTS.glob('lean_policy_*.json'))) + 1
-(RESULTS / f'lean_policy_{index:02d}.json').write_text(json.dumps(record, indent=2) + '\n')
+index = len(list(RESULTS.glob(f'lean_{label}_*.json'))) + 1
+(RESULTS / f'lean_{label}_{index:02d}.json').write_text(json.dumps(record, indent=2) + '\n')
 print(json.dumps(record, indent=2))
-if p.returncode or '--review' not in sys.argv:
+if p.returncode or not options.review:
     raise SystemExit(p.returncode)
 
 original = (COMPANION / 'Theory.lean').read_text()
-staged = original + '\nimport Theory.PrivatePolicyEvolution\n'
+staged = original + f'\nimport Theory.{module}\n'
 umbrella = FORMAL / 'build/Theory.lean'
 umbrella.write_text(staged)
-(overlay / 'PrivatePolicyEvolution.lean').write_text(source.read_text())
+(overlay / f'{module}.lean').write_text(source.read_text())
 script = FORMAL / 'build/scripts/check-import-boundary.sh'
 script.parent.mkdir(exist_ok=True)
 script.write_text((COMPANION / 'scripts/check-import-boundary.sh').read_text())
 patch = ''.join(difflib.unified_diff(original.splitlines(True), staged.splitlines(True),
     fromfile='a/Theory.lean', tofile='b/Theory.lean'))
-patch += ('diff --git a/Theory/PrivatePolicyEvolution.lean b/Theory/PrivatePolicyEvolution.lean\n'
+patch += (f'diff --git a/Theory/{module}.lean b/Theory/{module}.lean\n'
           'new file mode 100644\n')
 patch += ''.join(difflib.unified_diff([], source.read_text().splitlines(True),
-    fromfile='/dev/null', tofile='b/Theory/PrivatePolicyEvolution.lean'))
-patch_file = FORMAL / 'minidregg-private-policy-evolution.patch'
+    fromfile='/dev/null', tofile=f'b/Theory/{module}.lean'))
+patch_file = FORMAL / f'minidregg-{patch_stem}.patch'
 patch_file.write_text(patch)
 review = {'scope': 'isolated module/umbrella against existing oleans, not a full clean build',
           'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -75,7 +85,7 @@ for label, command, cwd in [
     if run.returncode:
         break
 review['all_passed'] = len(review['checks']) == 4 and all(x['exit_code'] == 0 for x in review['checks'])
-index = len(list(RESULTS.glob('review_policy_*.json'))) + 1
-(RESULTS / f'review_policy_{index:02d}.json').write_text(json.dumps(review, indent=2) + '\n')
+index = len(list(RESULTS.glob(f'review_{label}_*.json'))) + 1
+(RESULTS / f'review_{label}_{index:02d}.json').write_text(json.dumps(review, indent=2) + '\n')
 print(json.dumps(review, indent=2))
 raise SystemExit(0 if review['all_passed'] else 1)
