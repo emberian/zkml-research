@@ -1,0 +1,210 @@
+{
+  "classification": "Finite semantic and equation witnesses, no secure PE implementation",
+  "ordinary_full_attribute_hiding_translation_counterexample": {
+    "states": [
+      1,
+      2
+    ],
+    "initial_predicates": [
+      1,
+      1
+    ],
+    "update": -2,
+    "post_predicates": [
+      0,
+      1
+    ]
+  },
+  "sign_interface": {
+    "initial_domain": [
+      -128,
+      127
+    ],
+    "state_witness_range": [
+      -255,
+      255
+    ],
+    "states_recovered": 256,
+    "inference_calls_per_state": 8,
+    "learn_calls_per_state": 8,
+    "forks_needed": false,
+    "sample_trace_for_37": [
+      {
+        "learn": 0,
+        "threshold": 0,
+        "infer": 1
+      },
+      {
+        "learn": -64,
+        "threshold": 64,
+        "infer": 0
+      },
+      {
+        "learn": 32,
+        "threshold": 32,
+        "infer": 1
+      },
+      {
+        "learn": -16,
+        "threshold": 48,
+        "infer": 0
+      },
+      {
+        "learn": 8,
+        "threshold": 40,
+        "infer": 0
+      },
+      {
+        "learn": 4,
+        "threshold": 36,
+        "infer": 1
+      },
+      {
+        "learn": -2,
+        "threshold": 38,
+        "infer": 0
+      },
+      {
+        "learn": 1,
+        "threshold": 37,
+        "infer": 1
+      }
+    ]
+  },
+  "parity_congruence_positive_checks": 2048,
+  "ksw_aggregation": {
+    "classification": "EXECUTED toy exponent/group identities, not pairing encryption",
+    "q": 101,
+    "scores": [
+      1,
+      -1
+    ],
+    "clear_sum_zero": true,
+    "effective_masks": [
+      26,
+      38
+    ],
+    "aggregate_phase": 89,
+    "aggregate_zero_test": false,
+    "uniform_mask_pairs": 10201,
+    "zero_pairs": 101,
+    "alignment_helper_bounded_projection_decodes": 41
+  },
+  "gsw_outer_repair": {
+    "classification": "EXECUTED deliberately insecure GSW/outer-encoding equation witness",
+    "q": 257,
+    "n": 2,
+    "gadget_bits": 9,
+    "m": 27,
+    "outer_encoding_stale_after_inner_bit_change": true,
+    "helper_repairs_outer_encoding": true,
+    "helper_exposes_entire_inner_secret": true,
+    "original_attribute_bits": [
+      1,
+      0,
+      1,
+      1,
+      0,
+      0
+    ],
+    "recovered_attribute_bits": [
+      1,
+      0,
+      1,
+      1,
+      0,
+      0
+    ],
+    "decryption_centered_phases": [
+      127,
+      3,
+      -128,
+      -125,
+      3,
+      6
+    ],
+    "scope": "refutes publishing exact Gbar^T*s; no general PE update impossibility"
+  },
+  "source_records": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/404.pdf",
+      "sha256": "8b6c8c49f38b0e672afe6ef8d800372da655ce05011aa6c7d40ba3c766401fbd",
+      "title": "KSW predicate-only inner-product PE",
+      "access": "Def2.2 pp3-4; section4.2 full algorithms/correctness pp7-8 read; no full reduction audit",
+      "url": "https://eprint.iacr.org/2007/404"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/1302-1192.pdf",
+      "sha256": "b6f27f20a7e4b7f3d9737f2ac96cd1f0c6fafcc499dcdf7597c45ff559419202",
+      "title": "Homomorphic Encryption with Access Policies",
+      "access": "arXivv2 PDF pp5-8: HPE syntax/game, Eq3.3, aggregation; main XOR-IBE only overview read",
+      "url": "https://arxiv.org/abs/1302.1192v2"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/691.pdf",
+      "sha256": "840788ab63757cff9d75a21cb859add4ac56f394f489e688058f5f603aafb1fd",
+      "title": "Targeted Homomorphic Attribute Based Encryption",
+      "access": "Def2.1-2.3 pp7-8, single-target construction pp11-13, security statement p15 read; no full reduction audit",
+      "url": "https://eprint.iacr.org/2016/691"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/029.pdf",
+      "sha256": "ee25f27a75b0b9c407aad6f79e4422dfd965eb9fb037be1ba2d72eae4ec8f5b0",
+      "title": "Predicate Encryption for Circuits from LWE",
+      "access": "section1.3 p5 and section4.1 pp21-22 plus weak/full security discussion read; no full reduction audit",
+      "url": "https://eprint.iacr.org/2015/029"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/361.pdf",
+      "sha256": "083e4de6f2ba2ef817490c9ac6e102486924c23c4b844005a87bc2a89abc6889",
+      "title": "Predicate Encryption from Lattices: Enhanced Compactness and Refined Functionality",
+      "access": "Def2 pp13-14, Lemma2.8 pp10-11, Construction1/Theorem3.1 pp14-16 read; proof not fully audited; constant-payload0 avoids printed Dec-step3 ambiguity",
+      "url": "https://eprint.iacr.org/2025/361"
+    }
+  ],
+  "search_accounting": {
+    "new_scry_sql_queries": 4,
+    "new_schema_calls": 0,
+    "cumulative_scry_sql_queries": 7,
+    "cumulative_schema_calls": 1,
+    "new_web_search_queries": 15,
+    "cumulative_web_search_queries": 26,
+    "kagi_queries": 0,
+    "queries": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/scry_predicate_homomorphic.json",
+        "sha256": "82b458b274babd73f5fb19869b299715feb1db77a5154aaeef6945510a5f13d0",
+        "record_id": "7d0e2ebf-e6af-48cc-b7a3-f1a0fb51fd39",
+        "row_count": 3,
+        "spend_nanodollars": 0
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/scry_predicate_fhe.json",
+        "sha256": "bdfe4ddb51545bbd1e0ec4e4380c6878c521bc2056ad834e3c5a750c0b9a0062",
+        "record_id": "e7797cd5-5c75-4826-9cd4-69f48abdaa12",
+        "row_count": 1,
+        "spend_nanodollars": 0
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/scry_predicate_lattices.json",
+        "sha256": "3c8db3fb2d242e49169730230d65e9817024507af624f680c03dae091a39e9a5",
+        "record_id": "523592d7-3619-438d-8f72-ad192ed0569e",
+        "row_count": 3,
+        "spend_nanodollars": 0
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/scry_predicate_inner_lwe.json",
+        "sha256": "d673cb4bfae27714feca8e2d85156566516285d0b526bae5de223ce117a8cba6",
+        "record_id": "f1e8974f-2fdd-4fb3-bf59-feac3a42a347",
+        "row_count": 0,
+        "spend_nanodollars": 0
+      }
+    ],
+    "non_eprint_pdf_downloads": [
+      "https://arxiv.org/pdf/1302.1192v2"
+    ],
+    "eprint_pdf_downloads": 0
+  },
+  "script_sha256": "9bdefcd230b7fece1eb3ec69c3cb6e61bb5df77c00b92d8ee0837774b9f54b7e",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]"
+}

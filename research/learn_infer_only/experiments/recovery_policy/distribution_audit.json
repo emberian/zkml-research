@@ -1,0 +1,152 @@
+{
+  "label": "EXECUTED finite distributional nonvacuity control",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/recovery_policy/distribution_audit.py"
+  ],
+  "source_sha256": "31b4b57b7ac310d58bcddb2a8e807e86bf2813f6d63ec76835522dcb38b532e0",
+  "contract": "Public flips/swaps, one coordinate observation, arbitrary Boolean postprocessing; fair seed; no other leakage",
+  "checked_public_update_lengths": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "policies": 2912,
+  "sampled_transcripts": 11648,
+  "equal_event_count_checks": 11648,
+  "per_length": [
+    {
+      "public_updates": 0,
+      "policies": 8
+    },
+    {
+      "public_updates": 1,
+      "policies": 24
+    },
+    {
+      "public_updates": 2,
+      "policies": 72
+    },
+    {
+      "public_updates": 3,
+      "policies": 216
+    },
+    {
+      "public_updates": 4,
+      "policies": 648
+    },
+    {
+      "public_updates": 5,
+      "policies": 1944
+    }
+  ],
+  "disjoint_supports": [
+    [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ]
+  ],
+  "every_distinct_point_pair_separable": [
+    {
+      "left": [
+        0,
+        0
+      ],
+      "right": [
+        0,
+        1
+      ],
+      "coordinate": 1
+    },
+    {
+      "left": [
+        0,
+        0
+      ],
+      "right": [
+        1,
+        0
+      ],
+      "coordinate": 0
+    },
+    {
+      "left": [
+        0,
+        0
+      ],
+      "right": [
+        1,
+        1
+      ],
+      "coordinate": 0
+    },
+    {
+      "left": [
+        0,
+        1
+      ],
+      "right": [
+        1,
+        0
+      ],
+      "coordinate": 0
+    },
+    {
+      "left": [
+        0,
+        1
+      ],
+      "right": [
+        1,
+        1
+      ],
+      "coordinate": 0
+    },
+    {
+      "left": [
+        1,
+        0
+      ],
+      "right": [
+        1,
+        1
+      ],
+      "coordinate": 1
+    }
+  ],
+  "two_read_secret_outputs": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      1
+    ]
+  ],
+  "not_claimed": [
+    "encryption implementation",
+    "arbitrary hidden side channels",
+    "one-read privacy with two reads",
+    "statistical equality merely from point-pair tests"
+  ]
+}

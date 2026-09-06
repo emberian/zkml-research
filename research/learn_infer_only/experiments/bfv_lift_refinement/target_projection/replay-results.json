@@ -1,0 +1,65 @@
+{
+  "label": "EXECUTED independent replay of existing target/source descriptors and concrete boundary pins",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/target_projection/replay_projection.py"
+  ],
+  "source_sha256": "4a6985f5df7b75ed69cafda5ccecfd20ab9dd16b3eacd9b617774f1ef3524f13",
+  "projection_descriptor_uncompressed_sha256": "76513c43f78c3cbffe367ea303f9707e66cb2cb5c37d6ba6e698708c7a2cfba6",
+  "projection_inputs_uncompressed_sha256": "3ab1ecd0d97465e547fb6c8eca59c25a9e27909cf27fe04f1e79b276fc6514f3",
+  "frozen_source_descriptor_uncompressed_sha256": "e440eb248c5fa754debf1a6d4defe1bdeb64c2c22cc66ebae0ba3ac486cc7566",
+  "frozen_source_inputs_uncompressed_sha256": "80d0461e999974c8d24262e5e5a03759c93f00e2d242d1e16f96f63dc679a078",
+  "cases": [
+    {
+      "label": "captured_projection",
+      "projection_accepts": true,
+      "unchanged_source_accepts": true,
+      "composite_captured_claim_accepts": true,
+      "violated_projection_rows": []
+    },
+    {
+      "label": "coherent_wrong_limb",
+      "projection_accepts": false,
+      "unchanged_source_accepts": true,
+      "composite_captured_claim_accepts": false,
+      "violated_projection_rows": [
+        0
+      ]
+    },
+    {
+      "label": "disconnected_valid_projection",
+      "projection_accepts": true,
+      "unchanged_source_accepts": true,
+      "composite_captured_claim_accepts": false,
+      "violated_projection_rows": []
+    },
+    {
+      "label": "maximum_projection",
+      "projection_accepts": true,
+      "unchanged_source_accepts": true,
+      "composite_captured_claim_accepts": false,
+      "violated_projection_rows": []
+    },
+    {
+      "label": "coherent_noncanonical_limb",
+      "projection_accepts": false,
+      "unchanged_source_accepts": true,
+      "composite_captured_claim_accepts": false,
+      "violated_projection_rows": [
+        1
+      ]
+    },
+    {
+      "label": "out_of_range_digit",
+      "projection_accepts": false,
+      "unchanged_source_accepts": true,
+      "composite_captured_claim_accepts": false,
+      "violated_projection_rows": [
+        0,
+        2,
+        4
+      ]
+    }
+  ],
+  "elapsed_seconds": 0.29779024999879766
+}

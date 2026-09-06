@@ -1,0 +1,802 @@
+--- /dev/null
++++ b/Compiler/ContextualGate.lean
+@@ -0,0 +1,495 @@
++/-
++Statement-first: one descriptor, arbitrary root-carried public contexts, and one
++global state-restoration ROM. A false accepted full-word receipt after t queries
++has price (t+(m+1))*gatePrice d m for delta in (0,1/n), where n is
++the public word width used by the existing gateReduction. The local realizer
++is the existing gateRbr at the context already carried by the queried root.
++
++The query-complete multi-output theorem below uses that SAME generic reduction.
++No descriptor-specific reduction is copied for EMA. Fixed-context query and
++verification transport is explicit. Full words are public; no hiding, QROM,
++runtime publication schedule, or concrete hash realization is claimed.
++
++ATLAS: the adapter supplies an actual changed-state EMA receipt satisfying all
++premises, a complete nine-query sampled transcript, and failed-premise siblings.
++The generic empty-log theorem makes query completeness load-bearing.
++-/
++import Compiler.CommittedTerminalFiatShamir
++import Mathlib.Logic.Equiv.Fin.Basic
++
++namespace Minidregg.Compiler.ContextualGate
++
++open Minidregg.Selvage
++open Minidregg.Compiler.CommittedTerminalFiatShamir
++open Minidregg.Compiler.CommittedTerminalRealizer
++open scoped BigOperators
++
++set_option autoImplicit false
++set_option maxRecDepth 10000
++
++variable {C : Type} [DecidableEq C]
++
++def commit (c : C) {n : Nat} (w : Fin n → BabyBear) : C × (Fin n → BabyBear) := (c,w)
++
++noncomputable def contextReduction (base : C) (d : ConstraintDescriptor BabyBear)
++    (m : Nat) {n : Nat} (hn : 0 < n) : Reduction :=
++  { gateReduction (commit base) d (bitCorner m) hn with
++    R := fun _ rt w _ => commit rt.1 w = rt ∧ descriptorHolds d (traceOf w)
++    verify := fun _ rt w πs ρs => gateVerify (commit rt.1) d (bitCorner m) rt w πs ρs }
++
++variable {base : C} {d : ConstraintDescriptor BabyBear} {m n : Nat} {hn : 0 < n}
++local notation "R" => contextReduction base d m hn
++
++private noncomputable def encFor
++    (fit : d.gates.length + d.zeros.length ≤ 2^m) (wv : Nat → BabyBear) :=
++  residualEmbedding d wv fit
++
++private noncomputable def localRbr
++    (fit : d.gates.length + d.zeros.length ≤ 2^m) (c : C) :
++    RbrKnowledgeSoundness (gateReduction (commit c) d (bitCorner m) hn) :=
++  gateRbr (commit c) d (bitCorner m) (encFor fit) (fun _ _ => rfl) hn
++
++private def localStmt (st : Stmt R) :
++    Stmt (gateReduction (commit st.x.1) d (bitCorner m) hn) :=
++  ⟨st.idx, st.x, st.y⟩
++
++private noncomputable def contextKState
++    (fit : d.gates.length + d.zeros.length ≤ 2^m) : KStateFn R where
++  state := fun δ st tr w => (localRbr fit st.x.1).kstate.state δ (localStmt st) tr w
++  empty_iff := by
++    intro δ hδ st w
++    exact (localRbr fit st.x.1).kstate.empty_iff δ hδ (localStmt st) w
++  prover_monotone := by
++    intro δ hδ st rs w hlen h π
++    exact (localRbr fit st.x.1).kstate.prover_monotone δ hδ (localStmt st) rs w hlen h π
++  full_iff := by
++    intro δ hδ st πs ρs w
++    exact (localRbr fit st.x.1).kstate.full_iff δ hδ (localStmt st) πs ρs w
++
++noncomputable def contextRbr (fit : d.gates.length + d.zeros.length ≤ 2^m) :
++    RbrKnowledgeSoundness R where
++  kstate := contextKState fit
++  extract := fun _ _ w => w
++  err := fun i _ _ => gateErr d i
++  extractTime := fun _ => 0
++  extract_sound := by
++    intro δ hδ st i rs hlen π
++    exact (localRbr fit st.x.1).extract_sound δ hδ (localStmt st) i rs hlen π
++
++theorem context_receipt_sound (fit : d.gates.length + d.zeros.length ≤ 2^m) :
++    FsStraightlineKnowledgeSoundness R Set.univ
++      (fun _s t _δ => ((t : ℝ) + ((m+1 : Nat) : ℝ)) * gatePrice d m) :=
++  fsKeystone_proved.sound R (contextRbr fit) Set.univ
++    (fun _ => gatePrice d m) (fun _ _ => gatePrice_nonneg d)
++    (fun i _ _ _ _ => gateErr_le_gatePrice d i)
++
++def toFixed (c : C) (q : SrMove R 0) :
++    SrMove (gateReduction (commit c) d (bitCorner m) hn) 0 :=
++  ⟨⟨q.stmt.idx, q.stmt.x, q.stmt.y⟩, q.pfx⟩
++
++def fromFixed (c : C) (q : SrMove (gateReduction (commit c) d (bitCorner m) hn) 0) :
++    SrMove R 0 := ⟨⟨q.stmt.idx, q.stmt.x, q.stmt.y⟩, q.pfx⟩
++
++theorem fixed_query_roundtrip (c : C)
++    (q : SrMove (gateReduction (commit c) d (bitCorner m) hn) 0) :
++    toFixed c (fromFixed (base:=base) c q) = q := by cases q; rfl
++
++theorem context_query_roundtrip (c : C) (q : SrMove R 0) :
++    fromFixed c (toFixed c q) = q := by cases q; rfl
++
++def queryBytes (rootBytes : C × (Fin n → BabyBear) → List UInt8)
++    (q : SrMove R 0) : List UInt8 :=
++  encodeMove (commit base) d (bitCorner m) hn rootBytes (toFixed base q)
++
++theorem query_bytes_match_fixed_encoder
++    (rootBytes : C × (Fin n → BabyBear) → List UInt8)
++    (c : C) (q : SrMove R 0) :
++    queryBytes rootBytes q =
++      encodeMove (commit c) d (bitCorner m) hn rootBytes (toFixed c q) := rfl
++
++theorem query_bytes_injective
++    (rootBytes : C × (Fin n → BabyBear) → List UInt8)
++    (hroot : Function.Injective rootBytes) : Function.Injective (queryBytes (base:=base) (d:=d) (m:=m) (hn:=hn) rootBytes) := by
++  intro a b h
++  have he := encodeMove_injective (commit base) d (bitCorner m) hn rootBytes hroot h
++  have hr := congrArg (fromFixed (base:=base) base) he
++  simpa only [context_query_roundtrip] using hr
++
++def output (rc : FsReceipt (C × (Fin n → BabyBear)) n m) : SrOutput R 0 :=
++  ⟨⟨(), rc.root, rc.word⟩, rc.messages, fun _ => fun z => Fin.elim0 z, ()⟩
++
++theorem fixed_acceptance_transport (c : C) (O : SrMove R 0 → Ext6L)
++    (rc : FsReceipt (C × (Fin n → BabyBear)) n m)
++    (hc : rc.root.1 = c)
++    (hf : fiatShamir (gateReduction (commit c) d (bitCorner m) hn) 0
++      (fun q => O (fromFixed c q)) (rc.output (commit c) d (bitCorner m) hn) =
++      some ((), fun _ => ())) :
++    fiatShamir R 0 O (output rc) = some ((), fun _ => ()) := by
++  unfold fiatShamir at hf ⊢
++  change gateVerify (commit rc.root.1) d (bitCorner m) rc.root rc.word
++    rc.messages (fun i => O ((output rc).query i)) = _
++  rw [hc]
++  exact hf
++
++theorem sound_reading (fit : d.gates.length + d.zeros.length ≤ 2^m)
++    (s t : Nat) {δ : ℝ} (hδ : δ ∈ Set.Ioo (0 : ℝ) (1 / (n : ℝ)))
++    (P : SrProver R s) :
++    uniformProb ((Fin t → (R).Chal) × (Fin (R).k → (R).Chal))
++      (fun coins =>
++        let o := P.out ((srTrace P coins.1).map Prod.snd)
++        ¬ (R).R o.stmt.idx o.stmt.x o.stmt.y () ∧
++          fiatShamir R s (fsOracle o (srFinalChal P coins.1 coins.2)) o ≠ none) ≤
++      ((t : ℝ) + ((m+1 : Nat) : ℝ)) * gatePrice d m := by
++  obtain ⟨E, hE⟩ := context_receipt_sound (base:=base) (hn:=hn) fit
++  refine le_trans (le_of_eq (uniformProb_congr fun coins => ?_)) (hE s t δ hδ P)
++  dsimp only
++  constructor
++  · rintro ⟨hfalse, hacc⟩
++    obtain ⟨v, hv⟩ := Option.ne_none_iff_exists'.mp hacc
++    refine ⟨Set.mem_univ _, ?_, v.1, v.2, hv, ?_⟩
++    · intro hrel
++      exact hfalse ((relaxedMem_iff hn (R).R hδ _ _ _).mp hrel)
++    · exact ⟨v.2, trivial, by rw [fracHamming_self]; exact le_of_lt hδ.1⟩
++  · rintro ⟨-, hrel, x', y', hv, -⟩
++    refine ⟨?_, ?_⟩
++    · intro hR
++      exact hrel ((relaxedMem_iff hn (R).R hδ _ _ _).mpr hR)
++    · rw [hv]
++      exact Option.some_ne_none _
++
++/-! Query-complete collection over the same generic reduction. All prover and
++verifier oracle queries are included in t; final-log completeness does not
++assert before-publication runtime ordering. The selector is query-bounded,
++with no computation-time or private-witness extraction claim. -/
++
++abbrev Moves := List (R).Chal → SrMove R 0
++abbrev Outputs (M : Nat) := Fin M → List (R).Chal → SrOutput R 0
++
++def withOutput (P : SrProver R 0) (f : List (R).Chal → SrOutput R 0) : SrProver R 0 :=
++  { P with out := f }
++
++theorem output_change_preserves_log {t : Nat} (P : SrProver R 0)
++    (f : List (R).Chal → SrOutput R 0) (coins : Fin t → (R).Chal) :
++    srTrace (withOutput P f) coins = srTrace P coins := rfl
++
++/-- The application has already performed every verification query in the
++same transcript, including the final-prefix checks of every published output. -/
++def AllOutputQueriesLogged {M : Nat} (t : Nat) (P : SrProver R 0)
++    (outputs : Outputs (base:=base) (d:=d) (m:=m) (hn:=hn) M) : Prop :=
++  ∀ (coins : Fin t → (R).Chal) (j : Fin M) (i : Fin (R).k),
++    ∃ e ∈ srTrace P coins, e.1 = (outputs j ((srTrace P coins).map Prod.snd)).query i
++
++noncomputable def loggedOracle {t : Nat} (P : SrProver R 0)
++    (coins : Fin t → (R).Chal) (q : SrMove R 0) : (R).Chal := by
++  classical
++  exact ((srTrace P coins).find? (fun e => decide (e.1 = q))).map Prod.snd |>.getD ext6Zero
++
++theorem final_challenge_is_logged {M t : Nat} (P : SrProver R 0) (outputs : Outputs (base:=base) (d:=d) (m:=m) (hn:=hn) M)
++    (closed : AllOutputQueriesLogged t P outputs) (coins : Fin t → (R).Chal)
++    (fallback : Fin (R).k → (R).Chal) (j : Fin M) (i : Fin (R).k) :
++    srFinalChal (withOutput P (outputs j)) coins fallback i =
++      loggedOracle P coins ((outputs j ((srTrace P coins).map Prod.snd)).query i) := by
++  classical
++  obtain ⟨e, he, hq⟩ := closed coins j i
++  have hn : (srTrace P coins).find?
++      (fun e => decide (e.1 = (outputs j ((srTrace P coins).map Prod.snd)).query i)) ≠ none := by
++    intro hnone
++    have hx := (List.find?_eq_none.mp hnone) e he
++    exact hx (by simpa using hq)
++  obtain ⟨entry, hentry⟩ := Option.ne_none_iff_exists'.mp hn
++  unfold srFinalChal
++  rw [output_change_preserves_log]
++  dsimp only [withOutput]
++  rw [hentry]
++  simp only [loggedOracle, hentry, Option.map_some, Option.getD_some]
++
++def BadLoggedOutput {t : Nat} (P : SrProver R 0) (f : List (R).Chal → SrOutput R 0)
++    (coins : Fin t → (R).Chal) : Prop :=
++  let o := f ((srTrace P coins).map Prod.snd)
++  ¬ (R).R o.stmt.idx o.stmt.x o.stmt.y () ∧
++    fiatShamir R 0 (loggedOracle P coins) o ≠ none
++
++/-- Extra final coins are unused in this query-complete experiment. Keeping
++them in the sample type permits direct comparison to the existing ROM game. -/
++theorem one_logged_output_bound (fit : d.gates.length + d.zeros.length ≤ 2^m)
++    {δ : ℝ} (hδ : δ ∈ Set.Ioo (0 : ℝ) (1 / (n : ℝ))) {M t : Nat} (P : SrProver R 0) (outputs : Outputs (base:=base) (d:=d) (m:=m) (hn:=hn) M)
++    (closed : AllOutputQueriesLogged t P outputs) (j : Fin M) :
++    uniformProb ((Fin t → (R).Chal) × (Fin (R).k → (R).Chal))
++      (fun coins => BadLoggedOutput P (outputs j) coins.1) ≤
++      ((t : ℝ) + ((m+1 : Nat) : ℝ)) * gatePrice d m := by
++  have hb := sound_reading fit 0 t hδ (withOutput P (outputs j))
++  refine le_trans (le_of_eq (uniformProb_congr fun coins => ?_)) hb
++  let o := outputs j ((srTrace P coins.1).map Prod.snd)
++  have hc : srFinalChal (withOutput P (outputs j)) coins.1 coins.2 =
++      fun i => loggedOracle P coins.1 (o.query i) :=
++    funext (fun i => final_challenge_is_logged P outputs closed coins.1 coins.2 j i)
++  have hv : fiatShamir R 0
++      (fsOracle o (srFinalChal (withOutput P (outputs j)) coins.1 coins.2)) o =
++      fiatShamir R 0 (loggedOracle P coins.1) o := by
++    rw [fiatShamir_fsOracle]
++    unfold fiatShamir
++    rw [hc]
++  change (¬ (R).R o.stmt.idx o.stmt.x o.stmt.y () ∧
++    fiatShamir R 0 (loggedOracle P coins.1) o ≠ none) ↔
++    (¬ (R).R o.stmt.idx o.stmt.x o.stmt.y () ∧
++      fiatShamir R 0
++        (fsOracle o (srFinalChal (withOutput P (outputs j)) coins.1 coins.2)) o ≠ none)
++  rw [hv]
++
++def rebuildLog (P : SrProver R 0) (responses : List (R).Chal) : List (SrMove R 0 × (R).Chal) :=
++  responses.foldl (fun log ρ => log ++ [(P.move (log.map Prod.snd), ρ)]) []
++
++theorem rebuild_append (P : SrProver R 0) (responses : List (R).Chal) (ρ : (R).Chal) :
++    rebuildLog P (responses ++ [ρ]) =
++      rebuildLog P responses ++ [(P.move ((rebuildLog P responses).map Prod.snd), ρ)] := by
++  simp only [rebuildLog, List.foldl_append, List.foldl_cons, List.foldl_nil]
++
++theorem rebuild_actual_log {t : Nat} (P : SrProver R 0) (coins : Fin t → (R).Chal) :
++    rebuildLog P ((srTrace P coins).map Prod.snd) = srTrace P coins := by
++  have hi : ∀ (cs : List (R).Chal) (log : List (SrMove R 0 × (R).Chal)),
++      rebuildLog P (log.map Prod.snd) = log →
++      rebuildLog P ((runFrom P log cs).map Prod.snd) = runFrom P log cs := by
++    intro cs
++    induction cs with
++    | nil => intro log h; exact h
++    | cons ρ cs ih =>
++      intro log h
++      rw [runFrom_cons]
++      apply ih
++      simp only [stepOnce, List.map_append, List.map_cons, List.map_nil, rebuild_append, h]
++  rw [srTrace_eq_runFrom]
++  exact hi (List.ofFn coins) [] rfl
++
++noncomputable def responseOracle (P : SrProver R 0)
++    (responses : List (R).Chal) (q : SrMove R 0) : (R).Chal := by
++  classical
++  exact ((rebuildLog P responses).find? (fun e => decide (e.1 = q))).map Prod.snd |>.getD ext6Zero
++
++theorem response_oracle_matches {t : Nat} (P : SrProver R 0) (coins : Fin t → (R).Chal) :
++    responseOracle P ((srTrace P coins).map Prod.snd) = loggedOracle P coins := by
++  funext q
++  simp only [responseOracle, rebuild_actual_log, loggedOracle]
++
++def ResponseBad (P : SrProver R 0) (f : List (R).Chal → SrOutput R 0)
++    (responses : List (R).Chal) : Prop :=
++  let o := f responses
++  ¬ (R).R o.stmt.idx o.stmt.x o.stmt.y () ∧
++    fiatShamir R 0 (responseOracle P responses) o ≠ none
++
++theorem response_bad_matches {t : Nat} (P : SrProver R 0)
++    (f : List (R).Chal → SrOutput R 0) (coins : Fin t → (R).Chal) :
++    ResponseBad P f ((srTrace P coins).map Prod.snd) ↔ BadLoggedOutput P f coins := by
++  simp only [ResponseBad, BadLoggedOutput, response_oracle_matches]
++
++noncomputable def selectedIndex {M : Nat} (hM : 0 < M) (P : SrProver R 0)
++    (outputs : Outputs (base:=base) (d:=d) (m:=m) (hn:=hn) M) (responses : List (R).Chal) : Fin M := by
++  classical
++  exact if h : ∃ j, ResponseBad P (outputs j) responses then Classical.choose h else ⟨0, hM⟩
++
++theorem selected_index_bad {M : Nat} (hM : 0 < M) (P : SrProver R 0)
++    (outputs : Outputs (base:=base) (d:=d) (m:=m) (hn:=hn) M) (responses : List (R).Chal)
++    (h : ∃ j, ResponseBad P (outputs j) responses) :
++    ResponseBad P (outputs (selectedIndex hM P outputs responses)) responses := by
++  classical
++  simpa only [selectedIndex, dif_pos h] using Classical.choose_spec h
++
++noncomputable def selectedOutput {M : Nat} (hM : 0 < M) (P : SrProver R 0)
++    (outputs : Outputs (base:=base) (d:=d) (m:=m) (hn:=hn) M) (responses : List (R).Chal) : SrOutput R 0 :=
++  outputs (selectedIndex hM P outputs responses) responses
++
++theorem selection_queries_still_logged {M t : Nat} (hM : 0 < M) (P : SrProver R 0)
++    (outputs : Outputs (base:=base) (d:=d) (m:=m) (hn:=hn) M) (closed : AllOutputQueriesLogged t P outputs) :
++    AllOutputQueriesLogged t P (fun _j : Fin 1 => selectedOutput hM P outputs) := by
++  intro coins _j i
++  exact closed coins (selectedIndex hM P outputs ((srTrace P coins).map Prod.snd)) i
++
++theorem any_bad_selects_bad {M t : Nat} (hM : 0 < M) (P : SrProver R 0)
++    (outputs : Outputs (base:=base) (d:=d) (m:=m) (hn:=hn) M) (coins : Fin t → (R).Chal)
++    (bad : ∃ j, BadLoggedOutput P (outputs j) coins) :
++    BadLoggedOutput P (selectedOutput hM P outputs) coins := by
++  obtain ⟨j, hj⟩ := bad
++  have hresponse : ∃ j, ResponseBad P (outputs j) ((srTrace P coins).map Prod.snd) :=
++    ⟨j, (response_bad_matches P (outputs j) coins).mpr hj⟩
++  have hs := selected_index_bad hM P outputs ((srTrace P coins).map Prod.snd) hresponse
++  change ResponseBad P (selectedOutput hM P outputs) ((srTrace P coins).map Prod.snd) at hs
++  exact (response_bad_matches P (selectedOutput hM P outputs) coins).mp hs
++
++theorem all_logged_outputs_bound (fit : d.gates.length + d.zeros.length ≤ 2^m)
++    {δ : ℝ} (hδ : δ ∈ Set.Ioo (0 : ℝ) (1 / (n : ℝ))) {M t : Nat} (hM : 0 < M) (P : SrProver R 0)
++    (outputs : Outputs (base:=base) (d:=d) (m:=m) (hn:=hn) M) (closed : AllOutputQueriesLogged t P outputs) :
++    uniformProb ((Fin t → (R).Chal) × (Fin (R).k → (R).Chal))
++      (fun coins => ∃ j : Fin M, BadLoggedOutput P (outputs j) coins.1) ≤
++      ((t : ℝ) + ((m+1 : Nat) : ℝ)) * gatePrice d m := by
++  refine le_trans (uniformProb_mono (fun coins h => any_bad_selects_bad hM P outputs coins.1 h))
++    (one_logged_output_bound fit hδ P (fun _j : Fin 1 => selectedOutput hM P outputs)
++      (selection_queries_still_logged hM P outputs closed) 0)
++
++theorem trace_entry_query {t : Nat} (P : SrProver R 0) (coins : Fin t → (R).Chal)
++    (j : Fin t) :
++    ((srTrace P coins)[j.val]'(by rw [srTrace_length]; exact j.isLt)).1 =
++      P.move (((srTrace P coins).take j.val).map Prod.snd) := by
++  have hidx : (List.finRange t).take (j.val + 1) = (List.finRange t).take j.val ++ [j] := by
++    rw [List.take_succ_eq_append_getElem (by simp)]
++    simp
++  have hf := srTrace_take P coins (Nat.succ_le_of_lt j.isLt)
++  rw [hidx, List.foldl_append, List.foldl_cons, List.foldl_nil,
++    ← srTrace_take P coins (Nat.le_of_lt j.isLt)] at hf
++  rw [List.take_succ_eq_append_getElem (by rw [srTrace_length]; exact j.isLt), stepFn_eq] at hf
++  have he := List.singleton_inj.mp (List.append_cancel_left hf)
++  exact congrArg Prod.fst he
++
++def plannedVerifier {t : Nat} (ht : 0 < t) (queries : Fin t → SrMove R 0)
++    (out : SrOutput R 0) : SrProver R 0 where
++  move := fun responses => queries ⟨responses.length % t, Nat.mod_lt _ ht⟩
++  out := fun _ => out
++
++theorem planned_entry_query {t : Nat} (ht : 0 < t) (queries : Fin t → SrMove R 0)
++    (out : SrOutput R 0) (coins : Fin t → (R).Chal) (j : Fin t) :
++    ((srTrace (plannedVerifier ht queries out) coins)[j.val]'
++      (by rw [srTrace_length]; exact j.isLt)).1 = queries j := by
++  rw [trace_entry_query]
++  simp only [plannedVerifier, List.length_map, List.length_take, srTrace_length,
++    Nat.min_eq_left (Nat.le_of_lt j.isLt), Nat.mod_eq_of_lt j.isLt]
++
++noncomputable def verificationQueries {M : Nat} (outputs : Fin M → SrOutput R 0) :
++    Fin (M * (R).k) → SrMove R 0 := fun z =>
++  let ji : Fin M × Fin (R).k := finProdFinEquiv.symm z
++  (outputs ji.1).query ji.2
++
++noncomputable def completeVerifier {M : Nat} (hM : 0 < M) (outputs : Fin M → SrOutput R 0) :
++    SrProver R 0 :=
++  plannedVerifier (Nat.mul_pos hM (R).k_pos) (verificationQueries outputs) (outputs ⟨0, hM⟩)
++
++theorem planned_verifier_logs_all {M : Nat} (hM : 0 < M)
++    (outputs : Fin M → SrOutput R 0) :
++    AllOutputQueriesLogged (M * (R).k) (completeVerifier hM outputs) (fun j _ => outputs j) := by
++  intro coins j i
++  let z : Fin (M * (R).k) := finProdFinEquiv (j, i)
++  let entry := (srTrace (completeVerifier hM outputs) coins)[z.val]'
++    (by rw [srTrace_length]; exact z.isLt)
++  refine ⟨entry, List.getElem_mem _, ?_⟩
++  have he := planned_entry_query (Nat.mul_pos hM (R).k_pos)
++    (verificationQueries outputs) (outputs ⟨0, hM⟩) coins z
++  simpa only [verificationQueries, z, Equiv.symm_apply_apply] using he
++
++theorem empty_log_not_complete (P : SrProver R 0) (out : SrOutput R 0) :
++    ¬ AllOutputQueriesLogged 0 P (fun _j : Fin 1 => fun _ => out) := by
++  intro h
++  obtain ⟨e, he, _⟩ := h (fun z => Fin.elim0 z) 0 ⟨0, (R).k_pos⟩
++  simp [srTrace] at he
++
++theorem zero_sampled_trace_values {t : Nat} (P : SrProver R 0) :
++    ∀ e ∈ srTrace P (fun _ : Fin t => ext6Zero), e.2 = ext6Zero := by
++  classical
++  have hi : ∀ (cs : List (R).Chal) (log : List (SrMove R 0 × (R).Chal)),
++      (∀ ρ ∈ cs, ρ = ext6Zero) → (∀ e ∈ log, e.2 = ext6Zero) →
++      ∀ e ∈ runFrom P log cs, e.2 = ext6Zero := by
++    intro cs
++    induction cs with
++    | nil => intro log _ hlog; exact hlog
++    | cons ρ cs ih =>
++      intro log hcs hlog
++      rw [runFrom_cons]
++      apply ih
++      · intro x hx
++        exact hcs x (List.mem_cons_of_mem _ hx)
++      · intro e he
++        simp only [stepOnce, List.mem_append, List.mem_singleton] at he
++        rcases he with he | rfl
++        · exact hlog e he
++        · dsimp only
++          cases hf : log.find? (fun e => decide (e.1 = P.move (log.map Prod.snd))) with
++          | none => exact hcs ρ List.mem_cons_self
++          | some entry => exact hlog entry (List.mem_of_find?_eq_some hf)
++  rw [srTrace_eq_runFrom]
++  apply hi
++  · intro x hx
++    obtain ⟨i, hi⟩ := List.mem_ofFn.mp hx
++    exact hi.symm
++  · intro e he
++    simp at he
++
++theorem zero_sampled_oracle {t : Nat} (P : SrProver R 0) :
++    loggedOracle P (fun _ : Fin t => ext6Zero) = fun _ => ext6Zero := by
++  classical
++  funext q
++  unfold loggedOracle
++  cases hf : (srTrace P (fun _ : Fin t => ext6Zero)).find? (fun e => decide (e.1 = q)) with
++  | none => rfl
++  | some entry =>
++    simp only [Option.map_some, Option.getD_some]
++    exact zero_sampled_trace_values P entry (List.mem_of_find?_eq_some hf)
++
++end Minidregg.Compiler.ContextualGate
++
++/-- info: 'Minidregg.Compiler.ContextualGate.context_receipt_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.context_receipt_sound
++
++/-- info: 'Minidregg.Compiler.ContextualGate.fixed_query_roundtrip' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.fixed_query_roundtrip
++
++/-- info: 'Minidregg.Compiler.ContextualGate.context_query_roundtrip' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.context_query_roundtrip
++
++/-- info: 'Minidregg.Compiler.ContextualGate.query_bytes_match_fixed_encoder' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.query_bytes_match_fixed_encoder
++
++/-- info: 'Minidregg.Compiler.ContextualGate.query_bytes_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.query_bytes_injective
++
++/-- info: 'Minidregg.Compiler.ContextualGate.fixed_acceptance_transport' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.fixed_acceptance_transport
++
++/-- info: 'Minidregg.Compiler.ContextualGate.sound_reading' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.sound_reading
++
++/-- info: 'Minidregg.Compiler.ContextualGate.output_change_preserves_log' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.output_change_preserves_log
++
++/-- info: 'Minidregg.Compiler.ContextualGate.final_challenge_is_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.final_challenge_is_logged
++
++/-- info: 'Minidregg.Compiler.ContextualGate.one_logged_output_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.one_logged_output_bound
++
++/-- info: 'Minidregg.Compiler.ContextualGate.rebuild_append' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.rebuild_append
++
++/-- info: 'Minidregg.Compiler.ContextualGate.rebuild_actual_log' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.rebuild_actual_log
++
++/-- info: 'Minidregg.Compiler.ContextualGate.response_oracle_matches' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.response_oracle_matches
++
++/-- info: 'Minidregg.Compiler.ContextualGate.response_bad_matches' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.response_bad_matches
++
++/-- info: 'Minidregg.Compiler.ContextualGate.selected_index_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.selected_index_bad
++
++/-- info: 'Minidregg.Compiler.ContextualGate.selection_queries_still_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.selection_queries_still_logged
++
++/-- info: 'Minidregg.Compiler.ContextualGate.any_bad_selects_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.any_bad_selects_bad
++
++/-- info: 'Minidregg.Compiler.ContextualGate.all_logged_outputs_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.all_logged_outputs_bound
++
++/-- info: 'Minidregg.Compiler.ContextualGate.trace_entry_query' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.trace_entry_query
++
++/-- info: 'Minidregg.Compiler.ContextualGate.planned_entry_query' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.planned_entry_query
++
++/-- info: 'Minidregg.Compiler.ContextualGate.planned_verifier_logs_all' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.planned_verifier_logs_all
++
++/-- info: 'Minidregg.Compiler.ContextualGate.empty_log_not_complete' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.empty_log_not_complete
++
++/-- info: 'Minidregg.Compiler.ContextualGate.zero_sampled_trace_values' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.zero_sampled_trace_values
++
++/-- info: 'Minidregg.Compiler.ContextualGate.zero_sampled_oracle' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.ContextualGate.zero_sampled_oracle
+--- /dev/null
++++ b/Assurance/ResidentEmaAdaptive.lean
+@@ -0,0 +1,285 @@
++/-
++Statement-first: instantiate the reusable ContextualGate reduction and complete
++shared-query-log selector at the ACTUAL EMA descriptor: 153 wires, eight
++sumcheck coordinates, nine verifier queries, price 161/p^6, and delta<1/153.
++Bad accepted logical Steps of opened plans are mapped to the same global false
++descriptor event. All contexts and receipts share ONE queried oracle log.
++
++ATLAS: same-receipt public EMA witness 128→143 with command248 is accepted by
++the old wrapper, its exact descriptor, and the generic adaptive verifier. An
++explicit nine-query schedule is inhabited even under its own sampled log.
++The forged 128→144 plan still materializes and links but fails the descriptor;
++an empty query log fails completeness. No hidden-state, QROM, concrete-hash,
++or runtime before-publication theorem is asserted.
++-/
++import Compiler.ContextualGate
++import Assurance.ResidentEmaWitness
++import Assurance.ResidentAdaptiveContext
++
++namespace Minidregg.Assurance.ResidentEmaAdaptive
++
++open Minidregg.Selvage
++open Minidregg.Compiler
++open Minidregg.Compiler.CommittedTerminalFiatShamir
++open Minidregg.Compiler.CommittedTerminalRealizer
++open Minidregg.Compiler.ResidentEmaCertificate
++open Minidregg.Assurance.ResidentReleaseContext
++  (Context honestContext contextWords rootCodec word_values_injective contextWords_injective)
++open Minidregg.Assurance.ResidentEmaCell
++open Minidregg.Assurance.ResidentEmaRelease
++open Minidregg.Theory.TypedAuthorization (Digest)
++
++set_option autoImplicit false
++set_option maxRecDepth 10000
++set_option maxHeartbeats 2000000
++
++private def baseContext : Context := honestContext 0 0
++noncomputable abbrev R := ContextualGate.contextReduction baseContext descriptor 8 descriptor_nonempty
++
++/-- The previous Stage0 reduction is literally an instance of the reusable
++construction, so this factorization introduces no parallel Stage0 protocol. -/
++theorem stage0_reduction_is_existing :
++    ContextualGate.contextReduction (honestContext 0 0) EvmAddAir.evmAddDescriptor 13
++      (by norm_num : 0 < 4131) = ResidentAdaptiveContext.adaptiveReduction := rfl
++
++def receiptOutput (rc : Receipt) : SrOutput R 0 := ContextualGate.output rc
++
++def wrapperCheck {hash : List UInt8 → Digest} (p : OpenedPlan hash)
++    (O : SrMove R 0 → Ext6L) (rc : Receipt) : Bool :=
++  ResidentEmaRelease.check p (fun q => O (ContextualGate.fromFixed p.plan.context q)) rc
++
++theorem wrapper_acceptance_transport {hash : List UInt8 → Digest} (p : OpenedPlan hash)
++    (O : SrMove R 0 → Ext6L) (rc : Receipt) (h : wrapperCheck p O rc=true) :
++    fiatShamir R 0 O (receiptOutput rc)=some ((),fun _=>()) := by
++  have hc := (checked_context p (fun q => O (ContextualGate.fromFixed p.plan.context q)) rc h).1
++  have hf := checked_fiatShamir p (fun q => O (ContextualGate.fromFixed p.plan.context q)) rc h
++  exact ContextualGate.fixed_acceptance_transport p.plan.context O rc hc hf
++
++theorem bad_step_is_global_bad {hash : List UInt8 → Digest} (p : OpenedPlan hash)
++    (O : SrMove R 0 → Ext6L) (rc : Receipt) (h : wrapperCheck p O rc=true)
++    (bad : ¬LogicalStep p) : ¬ R.R () rc.root rc.word () := by
++  have hd := bad_step_implies_bad_descriptor p
++    (fun q => O (ContextualGate.fromFixed p.plan.context q)) rc h bad
++  exact fun hR => hd hR.2
++
++theorem descriptor_parameters : R.n=153 ∧ R.k=9 := by
++  exact ⟨descriptor_shape.2.2.1,rfl⟩
++
++theorem single_bad_receipt_bound (s t : Nat) {δ : ℝ}
++    (hδ : δ ∈ Set.Ioo (0 : ℝ) (1 / (153 : ℝ))) (P : SrProver R s) :
++    uniformProb ((Fin t → R.Chal) × (Fin R.k → R.Chal))
++      (fun coins =>
++        let o := P.out ((srTrace P coins.1).map Prod.snd)
++        ¬ R.R o.stmt.idx o.stmt.x o.stmt.y () ∧
++          fiatShamir R s (fsOracle o (srFinalChal P coins.1 coins.2)) o ≠ none) ≤
++      ((t : ℝ)+9) * (161 / ((2013265921 : ℝ)^6)) := by
++  have hδ' : δ ∈ Set.Ioo (0 : ℝ) (1 / (descriptor.nWires : ℝ)) := by
++    rw [descriptor_shape.2.2.1]; exact hδ
++  have hb := ContextualGate.sound_reading residuals_fit s t hδ' P
++  simpa only [gate_price_explicit, show ((8+1 : Nat) : ℝ) = 9 by norm_num] using hb
++
++theorem bad_wrapper_is_bad_logged {hash : List UInt8 → Digest} {t : Nat}
++    (P : SrProver R 0) (p : List R.Chal → OpenedPlan hash)
++    (rc : List R.Chal → Receipt) (coins : Fin t → R.Chal)
++    (h : wrapperCheck (p ((srTrace P coins).map Prod.snd)) (ContextualGate.loggedOracle P coins)
++      (rc ((srTrace P coins).map Prod.snd))=true)
++    (bad : ¬LogicalStep (p ((srTrace P coins).map Prod.snd))) :
++    ContextualGate.BadLoggedOutput P (fun responses => receiptOutput (rc responses)) coins := by
++  refine ⟨bad_step_is_global_bad _ _ _ h bad,?_⟩
++  rw [wrapper_acceptance_transport _ _ _ h]
++  exact Option.some_ne_none _
++
++/-- No extra M factor: every final verifier prefix has already been queried
++in the same total budget t. Selecting a bad public full word needs no new query.
++The common oracle may be queried adaptively across all the plans' contexts. -/
++theorem all_logged_bad_steps_bound {hash : List UInt8 → Digest} {M t : Nat}
++    {δ : ℝ} (hδ : δ ∈ Set.Ioo (0 : ℝ) (1 / (153 : ℝ))) (hM : 0<M)
++    (P : SrProver R 0) (plans : Fin M → List R.Chal → OpenedPlan hash)
++    (receipts : Fin M → List R.Chal → Receipt)
++    (closed : ContextualGate.AllOutputQueriesLogged t P
++      (fun j responses => receiptOutput (receipts j responses))) :
++    uniformProb ((Fin t → R.Chal) × (Fin R.k → R.Chal))
++      (fun coins => ∃ j : Fin M,
++        wrapperCheck (plans j ((srTrace P coins.1).map Prod.snd))
++          (ContextualGate.loggedOracle P coins.1) (receipts j ((srTrace P coins.1).map Prod.snd))=true ∧
++        ¬LogicalStep (plans j ((srTrace P coins.1).map Prod.snd))) ≤
++      ((t : ℝ)+9) * (161 / ((2013265921 : ℝ)^6)) := by
++  have hδ' : δ ∈ Set.Ioo (0 : ℝ) (1 / (descriptor.nWires : ℝ)) := by
++    rw [descriptor_shape.2.2.1]; exact hδ
++  have hb := ContextualGate.all_logged_outputs_bound residuals_fit hδ' hM P
++    (fun j responses => receiptOutput (receipts j responses)) closed
++  rw [gate_price_explicit] at hb
++  refine le_trans (uniformProb_mono ?_) hb
++  rintro coins ⟨j,hj,hbad⟩
++  exact ⟨j,bad_wrapper_is_bad_logged P (plans j) (receipts j) coins.1 hj hbad⟩
++
++/-- Proposed EMA query encoder: use the existing prefix-decodable root/word
++codec at the new descriptor width. No deployed EMA byte-oracle is assumed. -/
++def emaRootBytes (rt : Root) : List UInt8 :=
++  rootCodec.encode (contextWords rt.1, List.ofFn fun i => (rt.2 i).val)
++
++theorem ema_root_bytes_injective : Function.Injective emaRootBytes := by
++  intro a b h
++  have hw := streamEncode_injective rootCodec h
++  apply Prod.ext (contextWords_injective (congrArg Prod.fst hw))
++  exact word_values_injective (congrArg Prod.snd hw)
++
++def queryBytes (q : SrMove R 0) : List UInt8 := ContextualGate.queryBytes emaRootBytes q
++
++theorem query_bytes_injective : Function.Injective queryBytes :=
++  ContextualGate.query_bytes_injective emaRootBytes ema_root_bytes_injective
++
++theorem query_bytes_match_fixed_encoder (c : Context) (q : SrMove R 0) :
++    queryBytes q = encodeMove (scheme c).commit descriptor (bitCorner 8) descriptor_nonempty
++      emaRootBytes (ContextualGate.toFixed c q) := rfl
++
++/-- These existing full-word encodings are disjoint even for arbitrary queried
++contexts: the decoded public-word vector has length4131 versus153. This is an
++encoding theorem, not yet a mixed-program oracle-game reduction. -/
++theorem program_query_domains_disjoint
++    (a : SrMove ResidentAdaptiveContext.adaptiveReduction 0) (b : SrMove R 0) :
++    ResidentAdaptiveContext.queryBytes a ≠ queryBytes b := by
++  intro h
++  have hw := streamEncode_injective moveStream h
++  have hl := congrArg (fun w : List UInt8 × (List Nat × List (List Nat)) => w.2.1.length) hw
++  have lengths : (4131 : Nat)=descriptor.nWires := by
++    simpa only [moveWire,List.length_ofFn] using hl
++  rw [descriptor_shape.2.2.1] at lengths
++  norm_num at lengths
++
++def programQueryBytes : Sum (SrMove ResidentAdaptiveContext.adaptiveReduction 0)
++    (SrMove R 0) → List UInt8 := Sum.elim ResidentAdaptiveContext.queryBytes queryBytes
++
++theorem program_query_bytes_injective : Function.Injective programQueryBytes := by
++  intro a b h
++  cases a with
++  | inl a =>
++    cases b with
++    | inl b => exact congrArg Sum.inl (ResidentAdaptiveContext.query_bytes_injective h)
++    | inr b => exact False.elim (program_query_domains_disjoint a b h)
++  | inr a =>
++    cases b with
++    | inl b => exact False.elim (program_query_domains_disjoint b a h.symm)
++    | inr b => exact congrArg Sum.inr (query_bytes_injective h)
++
++theorem same_receipt_inhabited (O : SrMove R 0 → Ext6L) :
++    ∃ rc : Receipt,
++      wrapperCheck (ResidentEmaWitness.p ResidentEmaWitness.publicHash) O rc=true ∧
++      descriptorHolds descriptor (traceOf rc.word) ∧
++      LogicalStep (ResidentEmaWitness.p ResidentEmaWitness.publicHash) ∧
++      fiatShamir R 0 O (receiptOutput rc)=some ((),fun _=>()) := by
++  let p := ResidentEmaWitness.p ResidentEmaWitness.publicHash
++  obtain ⟨rc,hcheck,same⟩ := receipt_of_linked p (candidateWord 128 248 143 0)
++    (fun q => O (ContextualGate.fromFixed p.plan.context q))
++    (ResidentEmaWitness.witness_linked _) ResidentEmaWitness.witness_descriptor
++  have hd : descriptorHolds descriptor (traceOf rc.word) := by
++    rw [same]; exact ResidentEmaWitness.witness_descriptor
++  exact ⟨rc,hcheck,hd,checked_logical_step p _ rc hcheck hd,
++    wrapper_acceptance_transport p O rc hcheck⟩
++
++/-- The same receipt also inhabits the actual finality/opening/recipient gate,
++not only the arithmetic wrapper. These facts are all for one oracle and one rc. -/
++theorem same_authorized_receipt_inhabited (O : SrMove R 0 → Ext6L) :
++    ∃ rc : Receipt,
++      authorized ResidentEmaWitness.q (ResidentEmaWitness.book ResidentEmaWitness.publicHash)
++        ResidentEmaWitness.selected (ResidentEmaWitness.before ResidentEmaWitness.publicHash)
++        (ResidentEmaWitness.p ResidentEmaWitness.publicHash) ResidentEmaWitness.cert
++        (fun q => O (ContextualGate.fromFixed
++          (ResidentEmaWitness.p ResidentEmaWitness.publicHash).plan.context q)) rc=true ∧
++      wrapperCheck (ResidentEmaWitness.p ResidentEmaWitness.publicHash) O rc=true ∧
++      descriptorHolds descriptor (traceOf rc.word) ∧
++      LogicalStep (ResidentEmaWitness.p ResidentEmaWitness.publicHash) ∧
++      fiatShamir R 0 O (receiptOutput rc)=some ((),fun _=>()) := by
++  obtain ⟨rc,ha,hd,hs⟩ := ResidentEmaWitness.public_subject
++    (fun q => O (ContextualGate.fromFixed
++      (ResidentEmaWitness.p ResidentEmaWitness.publicHash).plan.context q))
++  have hc : wrapperCheck (ResidentEmaWitness.p ResidentEmaWitness.publicHash) O rc=true := by
++    have parts := ha
++    simp only [authorized,Bool.and_eq_true] at parts
++    exact parts.1.2
++  exact ⟨rc,ha,hc,hd,hs,wrapper_acceptance_transport _ O rc hc⟩
++
++theorem exact_radius_inhabited :
++    (1 / (306 : ℝ)) ∈ Set.Ioo (0 : ℝ) (1 / (153 : ℝ)) := by norm_num
++
++theorem nine_query_same_receipt_premise_inhabited :
++    ∃ rc : Receipt,
++      let out := receiptOutput rc
++      let P := ContextualGate.completeVerifier (M:=1) (by decide) (fun _=>out)
++      ContextualGate.AllOutputQueriesLogged 9 P (fun _j : Fin 1 => fun _=>out) ∧
++      wrapperCheck (ResidentEmaWitness.p ResidentEmaWitness.publicHash)
++        (ContextualGate.loggedOracle P (fun _ : Fin 9 => ext6Zero)) rc=true ∧
++      descriptorHolds descriptor (traceOf rc.word) ∧
++      fiatShamir R 0 (ContextualGate.loggedOracle P (fun _ : Fin 9 => ext6Zero)) out=
++        some ((),fun _=>()) := by
++  obtain ⟨rc,hcheck,hd,_,hfs⟩ := same_receipt_inhabited (fun _=>ext6Zero)
++  refine ⟨rc,ContextualGate.planned_verifier_logs_all (by decide) (fun _ : Fin 1=>receiptOutput rc),?_,hd,?_⟩
++  · rw [ContextualGate.zero_sampled_oracle]; exact hcheck
++  · rw [ContextualGate.zero_sampled_oracle]; exact hfs
++
++theorem empty_query_log_fails (P : SrProver R 0) (rc : Receipt) :
++    ¬ContextualGate.AllOutputQueriesLogged 0 P (fun _j : Fin 1=>fun _=>receiptOutput rc) :=
++  ContextualGate.empty_log_not_complete P (receiptOutput rc)
++
++theorem materialized_linked_wrong_step_fails_descriptor :
++    ResidentEmaRelease.Linked ResidentEmaWitness.forged (candidateWord 128 248 144 0) ∧
++      ¬descriptorHolds descriptor (traceOf (candidateWord 128 248 144 0)) :=
++  ⟨ResidentEmaWitness.forged_linked,
++    ResidentEmaWitness.constant_wrong_post_descriptor_refused _ ResidentEmaWitness.forged_linked⟩
++
++end Minidregg.Assurance.ResidentEmaAdaptive
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.stage0_reduction_is_existing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.stage0_reduction_is_existing
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.wrapper_acceptance_transport' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.wrapper_acceptance_transport
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.bad_step_is_global_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.bad_step_is_global_bad
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.descriptor_parameters' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.descriptor_parameters
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.single_bad_receipt_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.single_bad_receipt_bound
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.bad_wrapper_is_bad_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.bad_wrapper_is_bad_logged
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.all_logged_bad_steps_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.all_logged_bad_steps_bound
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.ema_root_bytes_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.ema_root_bytes_injective
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.query_bytes_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.query_bytes_injective
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.query_bytes_match_fixed_encoder' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.query_bytes_match_fixed_encoder
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.program_query_domains_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.program_query_domains_disjoint
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.program_query_bytes_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.program_query_bytes_injective
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.same_receipt_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.same_receipt_inhabited
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.same_authorized_receipt_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.same_authorized_receipt_inhabited
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.exact_radius_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.exact_radius_inhabited
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.nine_query_same_receipt_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.nine_query_same_receipt_premise_inhabited
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.empty_query_log_fails' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.empty_query_log_fails
++
++/-- info: 'Minidregg.Assurance.ResidentEmaAdaptive.materialized_linked_wrong_step_fails_descriptor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentEmaAdaptive.materialized_linked_wrong_step_fails_descriptor
++
+--- a/Compiler.lean
++++ b/Compiler.lean
+@@ -104,3 +104,5 @@
+ import Compiler.CommittedTerminalController  -- [CT-controller-lanes] the computable controller: check : … → Except Failure (Receipt Root m) with check_accepts by reflection, gateProof_sound_lane, an honest lane prover via residualSum_sparse (readPoly1_laneRound = mleHonest), receipt_complete / receipt_refuses_tamper / receipt_refuses_false_claim — the demo (m = 5) kernel-decided, and STAGE 0 (4,148 residuals, 13 rounds) as a compiled exhibit: the honest (1,2) proof ACCEPTED END TO END with terminal 0, a forged word refused at the root, at a round check, and at the terminal. The existing noncomputable controller is untouched; its obstruction is exhibited (AdjoinRoot.instField on every Receipt field, toExt6 in digestToExt6, the Finsupp aggregate). Remaining, sized: [CT-factored-prover] ~300, [CT-fiat-shamir-lanes] ~200 (the hash is a def), [CT-joint-price] ~60, [CT-sampled], [CT-merkle-profile].
+ import Compiler.CommittedTerminalFiatShamir  -- [CT-fiat-shamir-lanes] + [CT-joint-price]: the Stage-0 receipt made NON-INTERACTIVE under the tree's own keystone, not an invented oracle model. The controller's protocol is a Reduction (k = m+1: the γ round + m sumcheck rounds; verify IS check) with a PROVED RbrKnowledgeSoundness instance (round 0 priced by gammaZero_prob_le, rounds 1..m by one root, card_agreeFinset_lt); gateProof_fs_sound := fsKeystone_proved.sound at this instance, read out as (t + (m+1)) · (0 + (N−1)/|F| + m·(1/|F|)) in gateProof_fs_sound_reading. The deployed oracle is cSHAKE256 over a lawful-codec encoding of the transcript prefix (encodeMove_injective); fsCheck reflects into fiatShamir (fsCheck_ok_fiatShamir); the causal prover fsProve is complete. Demo kernel-decided (accepted; γ+1 refused as challengeMismatch though check accepts it — the fiatShamir_teeth shape); Stage 0 compiled: honest FS receipt accepted, altered challenge refused, a forged word's own FS run refused. THE PRICE, one expression, every term visible: stage0Receipt_price = (t + 14)·(0 + 4147/p⁶ + 13·(1/p⁶)) with S : BindingCommitment named (only S.commit consumed at full word), stage0Price_value = 4160/2013265921⁶ < 2^−173 by norm_num — FULL-WORD label: [CT-sampled] and [CT-merkle-profile] are not in it; "the deployed cSHAKE realizes the oracle" is [FS-ROM].
+ import Compiler.CommittedTerminalFactoredProver  -- [CT-factored-prover]: the honest prover for the seven factored openings — dense bit-corner tables + pairwise fold, check7 / check7_accepts, gateProof7_sound, sumcheck7_prob_le, and the bridge gammaBatched_eq_sum_table; Stage 0 compiled, demo decided (check7_complete_demo). Named, not closed: [CT-factored-prover-honest] (FactoredProverHonest : the fold messages read to factoredRounds), with its consumer factoredProver_complete_of_honest PROVED.
++
++import Compiler.ContextualGate
+--- a/Assurance.lean
++++ b/Assurance.lean
+@@ -126,3 +126,5 @@
+ import Assurance.SpartanR1CS  -- SPARTAN, composed out of engines we already had. The suspicion this file tests and confirms: Spartan is not three things to build but three things to COMPOSE. (1) The ZEROCHECK is Selvage.eqMle_fold (identity) plus Selvage.mle_zero_uniform_bound (multilinear Schwartz-Zippel) -- both LANDED, so AirSumcheckQuadratic's docblock residual (ii), still reading "not yet vocabulary", is STALE and not a gap. (2) The OUTER sumcheck is the degree-3 rung at head eqHead tau and body A-hat*B-hat - C-hat: literally the COMPOSITION of cubicForm_fraction_layer's vocabulary and cubicForm_hadamard, so it costs no realizer. spartan_outer_sound: an UNSATISFIED R1CS survives with probability at most s/|F| + s*3/|F| over the joint draw of the zerocheck point and the s challenges -- two events, two causes, added, and the flattering half never quoted alone. (3) The INNER sumcheck is not the hard part it is usually called: its three claims are literally three Selvage.LinearConstraint values ON THE WITNESS WORD (innerClaim, innerClaim_satisfied_iff), so batch_survives_prob_le retires a wrong triple at 2/|F| with nothing new proved, and the batched summand wt_gamma * z is a prodDiff with C = 0, i.e. the landed degree-2 engine with the FACTORED terminal wt-tilde(r_y) * z-tilde(r_y). mle_matVec is the identity that makes phase 2 exist, obtained as mle2_contraction at nu = 0 (matVec_is_contraction_at_nu_zero exhibits the instance, so there is ONE object and not a twin). THE HAND-OFF IS A THEOREM, not prose: spartanTerminal_eq_honest says the verifier's own terminal expression eq(tau,r_x)*(vA*vB - vC) equals the honest chain's final value exactly when the three v's are the three true row openings -- so phase 2's obligation is exactly three values, no more and no fewer, and the eq factor is NOT one of them. TWO NAMED OBLIGATIONS, neither discharged: [SPARTAN-pcs] SpartanOpeningProtocol over the landed Selvage.MleEvalClaim (the opening PROTOCOL is BaseFold's braided reduction, or Ligerito in the BinarySpartan shape; binding itself is proved here as spartanOpeningsBound), and [SPARTAN-sparse] SpartanSparseEvalOracle -- which is a COST obligation and NOT a soundness one: everything here is sound against a DENSE commitment to the matrices, and Spartan's SPARK layer (sparse multilinear commitment by offline memory checking) is what buys SUBLINEARITY. That layer does not exist in this tree at all -- zero timestamp vectors, zero multiset check -- and sparseEvalOracle_refutable proves the Prop is refutable rather than free. NO CHARACTERISTIC HYPOTHESIS anywhere, and nothing downstream of Proximity's FoldingData (whose two_ne is uninhabitable in char 2): what char-2 costs is the USEFULNESS of a k/|F| bound, not its proof, which is why ring-switching is load-bearing rather than an optimization. ZMod 7 teeth on the SQUARING gate w*w = v -- deliberately not a C = 0 instance the zero witness would satisfy for free: goodZ_sat and badZ_unsat are two live witnesses on one instance, badZ_survives_at_one exhibits a NONEMPTY s/|F| event while badZ_caught_at_three separates elsewhere, the inner claim predicate fires BOTH ways, and terminal_fires computes the hand-off to a specific nonzero element. AND THEN THE COMPOSITION (spartan_sound): the two phases over ONE joint draw ((tau,r_x),(gamma,r_y)), bounded by s/|F| + s*3/|F| + 2/|F| + t*2/|F|, with ADAPTIVE provers (outer sees tau, inner sees (tau,r_x,gamma), the claimed values are functions of (tau,r_x)) -- and, the point of it, against the DEPLOYED verifier. SpartanOuterRealAccepts contains NO honest side: Selvage's SumcheckAccepts renders the terminal oracle check as 'the folded claim equals the HONEST side's final value', which a real verifier cannot evaluate, and left unstated every bound here would have been about an idealized verifier -- the exact shape of a vacuity that survives a green build and passes its axiom pins. outerReal_iff_sumcheckAccepts discharges it: the deployed and idealized predicates coincide EXACTLY when the three claims are true. The case split IS the content -- either the prover told the truth about the three row openings and phase 1 must carry the lie and cannot, or it lied and phase 2 must carry it and cannot. WHAT THE COMPOSITION DID NOT DO, said next to the theorem and not in a footnote: it moved the idealization from phase 1 to phase 2, it did not remove it from the stack; phase 2's terminal is still a comparison against an honest chain, which is [SPARTAN-pcs]. Two elaboration findings paid for in build failures: the product splits must be done ONCE at opaque types (uniformProb_mid_le/_last_le -- inlining them at the concrete event types is a whnf HEARTBEAT TIMEOUT, because spartanBatch unfolds through batchConstraint into three rowPartials into mle's Finset.sum), and naming the events (spartanBatchAt, SpartanInnerAccepts, SpartanInnerFalse) is what made the proof elaborate at all. Final tooth, which is the ring-switching argument in one line: composed_bound_is_vacuous_at_f7 proves 1 < 1/7 + 3/7 + 2/7 + 2/7 = 8/7, so the composed bound at toy parameters is a TRUE statement that constrains nothing -- every term is k/|F|, the proofs are characteristic-free but the USEFULNESS is not, and that is a parameter fact rather than a proof obstruction
+ import Assurance.TwistMemoryFingerprintJoin  -- ⭐ the OFFLINE MEMORY CHECK, both poles priced: Compiler.TwistMultisetInvariant (Nebula Lemma 2 over the sparse typed carriers -- TwistContinuity IFF the IS+WS = RS+FS multiset invariant under the positional stamp discipline, BOTH directions, free absorbed by Option-valued cells with no case split) joined to Selvage.MultisetFingerprint (Corollary 1): a NON-continuous committed bus passes the fingerprinted check on at most (|dom|+|rows|)*(k+1)/|F| of challenge pairs for ANY prover stamps (nonContinuous_fingerprint_accept_le -- the adversarial direction of the bridge's named residual, discharged to the named floor), and every accepted execution's exact bus is accepted at EVERY challenge (exactBusClaim_fingerprint_accepted). Residual [TWIST-FP-BIND] names what is NOT discharged: commitment binding over the committed row/stamp columns, the roots-before-gamma schedule (AcceptedLogupRun), range checks realizing Set.InjOn vec, row-shape checks realizing DisciplineRowValid, and the pre/post audit against the exact state roots. NOTE: this is also the timestamp-vector + multiset-check engine SpartanR1CS's [SPARTAN-sparse] entry records as absent from the tree -- the SPARK sparse-commitment layer now has its combinatorial core, not yet its sparse-matrix instantiation
+ import Assurance.ReleaseGateRouting -- the release-gate routing lemma and its binding control, the handoff's §6B as theorems, joined to the tree at both ends. Routing: an unbound gate that reveals the designated bit of ANY submitted predicate determines the private state (determines_iff_separates; routing_of_projections / routing_of_accept_all; hostReconstruct_exact is the "put secret bit 37 in the output slot" attack, by rfl), and a gate accepting at most one predicate reveals at most one bit (single_predicate_not_determining, pigeonhole; both poles pinned on one carrier). Binding: BindingGate R stateOf outOf gate — acceptance implies the released output stands in the authorized relation to the state — gives routing_refused (an output that is not the authorized function of the public half is refused whatever the private half or proof string) and binding_release_public_only, the gate-level twin of privateTurn_public_indistinguishable; TwoBit instance decided. The tree at both ends: Kernel/PrivateEscrowSettlement's Settlement is a BindingGate BY TYPE (settlement_is_binding_gate, settlement_release_public_only, acceptable_pins_named_relation); and at Stage 0 the relation is y = rt ∧ descriptorHolds evmAddDescriptor (traceOf y) (Iff.rfl), the descriptor FORCES Z = (X + Y) mod 2^256 (stage0_released_output_forced via evmAddDescriptor_means_semantics + fragment_run_eq_iff), the ideal gate refuses every routed Z (stage0_forged_z_refused at Z = 4) while the honest candidate is accepted at the ideal AND the deployed gate (fsProve_complete), and stage0Receipt_is_bound_evidence = fsCheck_ok_fiatShamir ∧ stage0Receipt_price. What the receipt binds: the descriptor and the FULL word, public prefix included, up to the FS price under the ROM. What it does not: hide — the whole word IS the FS statement (stage0_statement_carries_word, rfl); Stage 0 has no private half. Residuals: [RELEASE-hiding], [RELEASE-continuity] (a bound gate does not refuse a replayed stale-but-valid state; the kernel's nullifier/freshness objects are named).
++
++import Assurance.ResidentEmaAdaptive

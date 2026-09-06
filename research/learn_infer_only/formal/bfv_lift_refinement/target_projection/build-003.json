@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionLayout.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean:78:4: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  e \u2265 0\n  0 \u2264 d \u2264 137438822400\n  c \u2265 0\n  137438822401*c - d \u2265 -137438822400\n  b \u2265 0\n  68719591424 \u2264 68719230977*b - 137438822401*c + d \u2264 137438822400\n  a \u2265 0\n  68719419392 \u2264 68719403009*a - 137438822401*c + d \u2264 137438822400\n  68719403009*a - 137438822401*c + d - e \u2265 68719419393\nwhere\n a := \u2191(x 2)\n b := \u2191(x (Fin.succ 2).succ.succ)\n c := \u2191(x (Fin.succ 2).succ.succ.succ.succ.succ)\n d := \u2191(x (Fin.succ 2).succ.succ.succ.succ.succ.succ)\n e := \u2191(x 3)\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean:80:4: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  f \u2265 0\n  e \u2265 0\n  0 \u2264 d \u2264 137438822400\n  c \u2265 0\n  137438822401*c - d \u2265 -137438822400\n  137438822401*c - d - 68719230977*e - f \u2264 -137438822401\n  b \u2265 0\n  68719591424 \u2264 68719230977*b - 137438822401*c + d \u2264 137438822400\n  a \u2265 0\n  68719419392 \u2264 68719403009*a - 137438822401*c + d \u2264 137438822400\nwhere\n a := \u2191(x 2)\n b := \u2191(x (Fin.succ 2).succ.succ)\n c := \u2191(x (Fin.succ 2).succ.succ.succ.succ.succ)\n d := \u2191(x (Fin.succ 2).succ.succ.succ.succ.succ.succ)\n e := \u2191(x 5)\n f := \u2191(x 4)\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean:82:4: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  f \u2265 0\n  e \u2265 0\n  0 \u2264 d \u2264 137438822400\n  c \u2265 0\n  137438822401*c - d \u2265 -137438822400\n  137438822401*c - d - 137438822401*e - f \u2264 -137438822401\n  b \u2265 0\n  68719591424 \u2264 68719230977*b - 137438822401*c + d \u2264 137438822400\n  a \u2265 0\n  68719419392 \u2264 68719403009*a - 137438822401*c + d \u2264 137438822400\nwhere\n a := \u2191(x 2)\n b := \u2191(x (Fin.succ 2).succ.succ)\n c := \u2191(x (Fin.succ 2).succ.succ.succ.succ.succ)\n d := \u2191(x (Fin.succ 2).succ.succ.succ.succ.succ.succ)\n e := \u2191(x 8)\n f := \u2191(x 7)\n",
+    "stderr": "",
+    "elapsed_seconds": 7.601462749997154
+  }
+]

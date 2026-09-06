@@ -1,0 +1,44 @@
+{
+  "label": "EXECUTED independent source-literal, balance and emitted-JSON arithmetic review",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/bfv_certificate_review.py"
+  ],
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/bfv_certificate_review.py": "2d5167e4f95852fc963f91a3d8b69b335a55cf2dd268191b4ab6d4008affde52",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/bfv_scalar_review.py": "048ff8c6627ffcc4ca5a2931b63a71a88f05f9d6df3fc54fe7cf84a0289e4865",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/layout.json": "974982f6ee0a97ddb572d645fc9d0d04329ccc61cd8b30cececbd14af584225c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/optimized-descriptor.json": "e440eb248c5fa754debf1a6d4defe1bdeb64c2c22cc66ebae0ba3ac486cc7566",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/source_certificate/check-results.json": "30d923fa0d2450ec9a24f3fdcc8c4c88318ce2d798538fc8fc417a124d23fe83",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateAxiomReport.lean": "c9de2b88d86fe892475a46ac61b3690b55d4524cdf6cbb80aaf06ff652ebddb2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateChecks.lean": "a22bcf191dba5308023f12ff883d2bc0d3e93a441859a9b6df80ec7736f7ec57",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean": "8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateRetain.lean": "a7a0d2acedfd52edc0cc143eecbc2543976f6029b5eee63b54f105a0617a32dc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean": "ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7"
+  },
+  "inputs_unchanged": true,
+  "lean_matrix_matches_json": true,
+  "optimized_gates": 132675,
+  "zeros": 36498,
+  "captured_output": 172481,
+  "captured_accepted": true,
+  "wrong_nearest_refused": true,
+  "correction_shift_refused": true,
+  "correction_shift_only_failed_balance": [
+    9
+  ],
+  "noncanonical_input_refused": true,
+  "digit64_refused": true,
+  "additional_canonical_outputs": [
+    0,
+    0,
+    567631284191785235681168865941870
+  ],
+  "external_public_count": 0,
+  "scope": "Canonical integer output modQ; target-limb array/provenance are not inputs to this descriptor. JSON evaluation is independent executed evidence, not a new kernel theorem."
+}

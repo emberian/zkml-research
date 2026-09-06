@@ -617,3 +617,604 @@ to the Lean vector, and NTT/convolution to the scalar input still requires the
 named implementation refinement. The reviewed module does not conceal those
 premises. A public full-word certificate also does not provide private release
 or remove a retained master-read credential.
+
+## 9. Reprioritized review: the EMA logical-state and durable bridge
+
+[EXECUTED] Independently compiled all four final EMA modules into the review
+overlay, using the already checked `ResidentDurableIntegration` dependency:
+
+| Module under `formal/durable_integration/` | SHA256 | Review record |
+|---|---|---|
+| `Compiler/ResidentEmaCertificate.lean` | `f6b9c07240bc4f5341a8412b7bc00a5c8c6e19e17743d86c3cecc8b3ea72588d` | `lean_ema_certificate_01.json` |
+| `Assurance/ResidentEmaCell.lean` | `68cdb084b839364328bc0717c5b6fa763a8342efbfc4244c02181603af4a9437` | `lean_ema_cell_01.json` |
+| `Assurance/ResidentEmaRelease.lean` | `470a6b5daf54cbd373799fa0b075137d06f5a115395d07ecbabfac130efbc8ee` | `lean_ema_release_01.json` |
+| `Assurance/ResidentEmaWitness.lean` | `e412cad31eba9eac302a597239fcaee14987b79db6b134c0de884e2ca74f3eeb` | `lean_ema_witness_01.json` |
+
+[EXECUTED] All 48 exact axiom pins pass; all four records report exit 0 and
+unchanged sources. Reproduce with
+`python3 research/learn_infer_only/experiments/adversarial_review/run_review.py ema_certificate ema_cell ema_release ema_witness`.
+This review does not claim to have independently rerun the author's entire
+umbrella/import-boundary patch validation.
+
+[SOURCE: descriptor semantics read] `ResidentEmaCertificate.system` at `:32`
+uses existing range gadgets for three biased bytes and a three-bit remainder,
+plus the relation `7*C+U=8*N+r`. The range proofs bound both integer sides below
+BabyBear before lifting the field equation. Since the bias is 128 on all three
+bytes, this is exactly `N-128=floor((7*(C-128)+(U-128))/8)`, including negative
+values and −128. `descriptor_semantic` at `:79` proves that implication for all
+satisfying descriptor words. No truncation-toward-zero rule or unproved no-wrap
+assumption replaces the declared floor operation.
+
+[SOURCE: canonical state boundary read] The lawful cell codec maps absence to
+`[]` and a present byte b to `[b]`. `canonical_opens` and `signed_opening` use its
+decode/encode law to recover the actual logical state from exact bytes, without
+hash injectivity. Although the auxiliary `signedValue` defaults absence to the
+same integer as byte zero, `OpenedPlan` requires singleton pre/post openings and
+therefore excludes absence from this semantic bridge. `biased_representation_exact`
+explicitly connects the public biased-byte convention to two's-complement values;
+it does not prove encrypted-wire implementation refinement.
+
+[SOURCE: same-receipt and durable composition read] `ResidentEmaRelease.Linked`
+at `:40` binds the three descriptor scalar values to that OpenedPlan's exact
+pre-byte, public command and post-byte, alongside program/version, deterministic
+randomness fields and acknowledgement zero. `check` enters the actual new FS
+checker. `checked_logical_step` at `:77` uses a satisfying descriptor on **the same
+accepted receipt word** to prove `LogicalStep`. `ema_durable_binding` at `:178`
+then derives actual current canonical bytes, the executor's exact installed bytes,
+next-root equality, consumed token and the repaired journal-derived packet from
+one authorized Plan. Freshness, full preflight and descriptor satisfaction remain
+explicit. Journal-first retry recovers the old exact packet; it is not fresh
+authorization under a newly chosen policy.
+
+[SOURCE: positive and negative poles read] The witness obtains a real FS receipt
+whose retained word is the descriptor-satisfying word used by its positive proof.
+It demonstrates a changed logical state under both the public root and a constant
+root. The constant-root wrong post 144 still materializes and passes exact openings
+and full preflight; its boundary-linked candidate exists, but every word linked
+to that post fails the EMA descriptor. Thus this new opening-aware descriptor
+closes the old constant-root **logical-Step** counterexample for its stated public
+cell. It does not claim that root labels themselves bind the logical value.
+
+[EXECUTED independent census and inhabitation] The review-owned
+`EmaDescriptorReview.lean` reads the emitted descriptor itself: 4 public variables,
+31 variables, 153 wires, 61 addition gates, 61 multiplication gates and 32 zero
+checks. It also constructs and checks **all 65,536** biased-byte input pairs with
+the actual `fillAux`/`descriptorHoldsCheck` path; all accept their floor-EMA output.
+The wrong post 144 for inputs 128/248 is refused. These are compiled finite checks,
+not additional kernel theorems. `lean_ema_census_01.json` retains exit 0, counts,
+command and unchanged hashes. Reproduce with runner target `ema_census`.
+
+[DERIVED independently recomputed price] The emitted descriptor has
+`122+32=154` residuals. The inherited full-word gate price is the gamma term
+`(154-1)/p^6` plus eight sumcheck terms `1/p^6`, hence **161/p^6** with
+p=2013265921. The new FS instance has nine total rounds, so its fixed-context
+price is `(t+9)·161/p^6`. A direct exact false-word/event reading needs the usual
+relaxation threshold `δ<1/153`. The previous adaptive theorem for a 4,131-word
+Stage-0 descriptor does not automatically provide adaptive-context or lifetime
+composition for this 153-word EMA descriptor. The lane's note now states that
+boundary explicitly.
+
+[EXECUTED bad-oracle control] `EmaZeroOracleReview.lean` runs the actual new
+`fsProve` and `check` on the wrong biased post 144 under a deliberately constant-zero
+oracle. The receipt checker returns true while `descriptorHoldsCheck` on its same
+word returns false. Record: `lean_ema_zero_oracle_01.json`; runner target
+`ema_zero_oracle`. This is a concrete bad-oracle sample within the arithmetic
+model, not a concrete hash attack or a contradiction of probabilistic ROM
+soundness. It blocks the unearned deterministic implication from receipt acceptance
+alone to logical Step and confirms why the keystone retains its descriptor premise.
+
+[DERIVED scope] The scalar openings and entire receipt word are public. A packet's
+output field of zero does not make this realization learn-with-only-acknowledgement
+private. Genesis/authentication identities remain independently selected numeric
+parameters; runtime persistence and publication ordering still need refinement.
+Within those stated limits, I found no new substitution seam in the reviewed
+descriptor→logical state→installed bytes/packet chain.
+
+## 10. Final HE estimator framing and saved-result audit
+
+[SOURCE: source/configuration read] The estimator snapshot is pinned at
+`53da5982597709ba0fdf94ea37a84d822310fd84`. The executed wrapper supplies exact
+Q83/Q109, n=4096, `Xs=Xe=ND.CenteredBinomial(20)`, and available sample counts
+4096 or infinity. Independent source reads of `fhe-util`'s popcount sampler and
+the secret/public-key constructors support eta 20 at variance 10. One public key
+supplies one structured RLWE sample; its 4,096 coefficient equations have a
+negacyclic matrix, so the generic-LWE calculation is a heuristic proxy, not a
+reduction establishing ring-LWE hardness. Publicly manufactured ciphertexts do
+not automatically add independent raw public-key samples with that same error
+distribution. The retained test reader's full secret key is outside this attack
+instance and still directly reads the state.
+
+[EXECUTED source-model qualification] `he_source_review.py` independently checks
+the pinned source alias and MATZOV call structure using Python's AST parser.
+`LWE.dual_hybrid` aliases `lwe_dual.matzov`; its cost function defaults lattice m
+to n, and its optimizer never supplies another m. Available `params.m` affects a
+beta cap there. Consequently equal 4096/infinity outputs in that path do not
+demonstrate optimization over sample count. This correction was incorporated into
+the final lane note. The same review computes the exact ideal-bit CBD20 variance
+as 10. As a small demonstration of the helper's approximation, its one-dimensional
+99%-support formula returns 41 while the exact PMF needs only 17 most likely
+values. This is not a corrected attack estimate. The estimator already flags
+Gaussian-like behavior and an imprecise binomial support helper; several attack
+subroutines use moments/Gaussian-shaped formulas rather than the exact PMF.
+
+[EXECUTED final aggregation review] `he_results_review.py` independently parses
+the saved result files and validates the final summary against their raw tuples,
+cost fields, distinct attack coverage and selected source files. It verifies all
+**144** artifact-manifest entries and eight pinned estimator source hashes.
+All **72** primary lattice calls completed; all **16** displayed minimum candidates
+match their saved fresh-process rechecks exactly. Outputs and input hashes are
+in `he_results_review.json` and `he_results_parse_03.json`. No lattice-estimator
+attack or encrypted benchmark was rerun by this review. `_01.json` preserves a
+review-parser failure on a Sage symbolic arithmetic string; `_02.json` fixes
+that using restricted scalar AST interpretation, and `_03.json` adds current
+pinned-source verification. None is an estimator-code change.
+
+[EXECUTED reviewed values] At m=4096, the completed named lattice suite's minimum
+log2 estimated work is as follows. These are separate model outputs, not proved
+security bits or interchangeable hardware costs.
+
+| Model | Q83 | Q109 | Attaining attack |
+|---|---:|---:|---|
+| MATZOV classical | 172.579637 | 127.556093 | BDD |
+| ADPS16 classical core-SVP | 145.708 | 98.112 | uSVP |
+| ADPS16 quantum core-SVP | 132.235 | 89.040 | uSVP |
+| MATZOV quantum depth×width, original partial coverage | 164.224491 | 123.749318 | BDD |
+
+[SOURCE/EXECUTED limits retained] GSA and reduction-cost models remain named
+assumptions. Quantum reduction-cost substitution does not optimize every guessing,
+FFT, memory or other attack step into a quantum algorithm. Four original optional
+quantum depth×width dual-hybrid runs failed; three recover in fresh processes and
+the Q83/infinite-sample case still fails. Their costs/failures remain separate from
+original coverage, and the successful retries do not lower the displayed minima.
+Nonlattice BKW/Arora results include timeouts and infinite output, neither of which
+proves attack impossibility or all-attacks coverage.
+
+[DERIVED monotonicity correction] The literal optimizer's Q109 BDD return is
+slightly larger with infinite samples than with 4096, even in the saved fresh
+recheck. An adversary with more samples can reuse the finite-sample attack. The
+review record therefore also computes the minimum with that reusable finite-sample
+cost, rather than treating the small increase as stronger security. The final
+lane note correctly labels it numerical search behavior.
+
+[DERIVED final interpretation] Q83 exceeds 128 under the named ADPS16 quantum
+core-SVP proxy while Q109 does not. This is useful distribution-matched research
+evidence; it is not a whole-route PQ theorem, a production recommendation, a
+ring-specific attack audit, or protection from the surviving reader/release key.
+The latest requested review tranche, including the reprioritized EMA bridge, is
+complete at the recorded hashes. No companion, shared ledger or verdict was edited.
+
+## 11. Generic Air simplification and the 15,208-gate reference
+
+[EXECUTED independent compilation] The stable generic module
+`formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean`,
+SHA256 `a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79`,
+and its application `IntegerCertificateSimplification.lean`, SHA256
+`0cf4b3cbc725e186264c13eac1b681b66f65bcc8a1d5544108b0da84c8b7c8ef`,
+independently compile with their 19+8 exact axiom pins. Records are
+`lean_air_simplify_01.json` and `lean_integer_simplification_01.json` under this
+review's experiment directory. I also rebuilt their two preserved integer-certificate
+dependencies into the review-only overlay; `lean_integer_certificate_01.json` and
+`lean_large_integer_certificate_01.json` retain those source/dependency hashes.
+The proposed optimization patch is
+`389015b446a8a09b4327de4dcc1008ef0d0a8a8a95342dc2a9b8b4b65f2d375f`.
+
+[SOURCE/DERIVED: proof statement audit] `AirSimplify.simplify_eval_hom:104` and
+`simplify_preserves:110` use the existing Air signature and `fold_unique` initiality.
+The quantifiers range over every source term and every assignment of the *same*
+input type and indices. The smart constructors use only valid field identities.
+`simplifySystem_accepts_iff:132` preserves the conjunction of assertions in both
+directions: it drops a syntactically constant zero, but retains a nonzero constant
+contradiction. There is no proposed field-to-integer inference here; the earlier
+range/carry proofs remain responsible for that lift.
+
+[SOURCE/DERIVED: emitter/CSE boundary] The actual existing `Emit.emit:187` retains
+`nPublic`, `nVars` and the input map `ix`, placing generated gates only above the
+original-variable region. Existing `EmitShare.cse_emit_accepts_iff:588` transports
+satisfying vectors through its auxiliary substitution while proving original
+variable indices fixed, using emitted SSA and the `ix i<nVars` premise. The new
+`cse_emitSimplified_accepts_iff:191` composes exactly that theorem. The application
+recovers its original source relation for the same decoded public/input values,
+rather than asserting that all old auxiliary values remain meaningful after CSE.
+No semantic or public-variable substitution defect was found in this composition.
+
+[EXECUTED independent census and controls] `SimplificationReview.lean` reconstructs
+the actual large descriptors through their Lean definitions and confirms
+52,378 original gates, 17,344 after source simplification and **15,208** after
+simplification+CSE: 7,717 adds, 7,491 multiplies, 4,555 zero checks, 3,773 original
+variables and a 21,117-wire header. It reruns all 64 small signed inputs and their
+wrong quotients through four pipelines: **256** honest/forged pairs. The contradictory
+constant remains refused; a deliberately unsafe drop-all-constants control accepts.
+Two additional pinned lemmas retain the exact input headers and show that an erased
+`0*x` dependency already imposed no condition in the original source. The successful
+record is `lean_simplification_review_02.json`; `_01.json` preserves reviewer fixture
+syntax and incorrectly predicted axiom-pin failures. They were not source-pass failures.
+
+[DERIVED scope] The large example retains `nPublic=0`, Q
+649033470896967801447398927572993 and **t=1048576**, the earlier signed rounding
+reference. It is not the deployed scaler's t=1032193 exact-source certificate.
+`nPublic=0` does not authenticate an external coefficient/output claim; such pins
+must enter the consuming statement or verifier. CSE preserves its wire header and
+can leave unused auxiliary slots, so the gate decrease does not imply an equally
+small dense vector or that every CSE hole is constrained. The count is an emitted
+arithmetic cost, with no HE runtime, cryptographic price, convolution, source-binding
+or confidentiality theorem implied. The current optimization note states these limits.
+
+## 12. Exact-source emitted BFV certificate
+
+[EXECUTED independent compilation] The following six frozen modules under
+`formal/bfv_lift_refinement/source_certificate/Compiler/` pass all **23** exact
+axiom pins in the review-only overlay. The corresponding command/output records
+are `lean_bfv_cert_{semantic,layout,emit,optimized,verifier,witness}_01.json`, with
+source and direct dependency hashes unchanged during each compilation.
+
+| Module stem | SHA256 |
+|---|---|
+| FheSourceCertificate | `12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887` |
+| FheSourceCertificateLayout | `580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e` |
+| FheSourceCertificateEmit | `c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81` |
+| FheSourceCertificateOptimized | `8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b` |
+| FheSourceCertificateVerifier | `ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc` |
+| FheSourceCertificateWitness | `8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7` |
+
+[SOURCE/DERIVED: internal premises] The semantic relation in
+`FheSourceCertificate.accepts:29` fixes two exact signed integer quotient/remainder
+equations, then one quotient equation for canonical output modulo Q. Its
+`forced_roundings:47` derives the exact source V and W from remainder bounds and
+the previously checked canonical-domain source theorem. In the emitted path,
+`FheSourceCertificateEmit.sourceDescriptor_balanced:79` supplies those premises:
+all 462 scalar digits have six-bit range gadgets, every weighted accumulator has
+range-checked result/carry limbs, and the two column bounds 1,866,508 and 2,097,151
+are strictly below BabyBear. Each left/right row shares its result indices, so
+integer equality follows from the two checked accumulators.
+
+[SOURCE/DERIVED: matrix audit] The twelve balances contain six input-residue
+complement equations `r_i+s_i=base_i-1`, the Garner quotient equation and a
+remainder complement, the signed correction quotient equation and a remainder
+complement, and the final whole-Q output equation plus output complement.
+`balanced_source_accepts:108` obtains canonicality and the strict remainder/output
+ranges from these natural-valued complements. They are not hypotheses supplied
+by the host to `sourceDescriptor_sound:106`. Offsets for the signed correction and
+output quotient are carried explicitly into the generated positive/negative linear
+forms and canceled in the integer proof. The simplification+CSE theorem retains
+these same decoded original variables. No alternate `{nearest, nearest+1}` choice
+appears in the emitted soundness statement.
+
+[EXECUTED independent descriptor evaluation] `bfv_certificate_review.py` parses
+the actual Lean matrix literals and checks them against the retained layout JSON.
+It independently creates variable arrays from the literal source shifts/sign branch,
+evaluates the emitted JSON gates over BabyBear, and checks every zero assertion.
+Record `bfv_certificate_review_02.json` uses the final six source hashes;
+`_01.json` preserves the earlier pre-pin run. The optimized descriptor's uncompressed
+SHA256 is `e440eb248c5fa754debf1a6d4defe1bdeb64c2c22cc66ebae0ba3ac486cc7566`.
+Its **132,675** gates and **36,498** zero assertions are independently recounted.
+The captured output 172481 passes, 172480 fails, and the noncanonical residue and
+radix-digit-64 attacks fail. Three additional canonical vectors pass. This is
+independent execution evidence against the real emitted artifact, not a replacement
+checker theorem or a rerun of an encrypted benchmark.
+
+[DERIVED + EXECUTED falsifier] A coherent alternate correction changes encoded W
+down by one, increases its remainder by 2^128, and changes the output to 172480
+while adjusting the output complement. **Every one of the other eleven matrix
+balances holds**; only row 9, the correction-remainder complement, fails. The actual
+emitted descriptor refuses it. `BFVSourceRangeWitness.lean` independently proves
+that exact matrix tooth in the kernel, with one standard-three-axiom pin in
+`lean_bfv_cert_range_tooth_03.json`. Its `_01`/`_02` records retain reviewer fixture
+errors around unfolding the overloaded `Balanced` name. This falsifies dropping
+the range row, rather than claiming a flaw in the accepted certificate. The
+independent noncanonical-input fixture similarly recomputes the other groups so
+that only its canonicality row fails at the integer-matrix level.
+
+[SOURCE/DERIVED: external statement boundary] The descriptor still has `nPublic=0`.
+`pinnedSourceCheck:13` explicitly compares its decoded six residues and group-18
+canonical output to the caller's claimed integers before running the full-assignment
+descriptor check. Its soundness/refusal theorems bind those exact pins. This is
+useful local verification, not a succinct proof protocol: authenticating the pins
+and binding the input residue vector to a committed ciphertext computation remain
+separate obligations.
+
+[OPEN: precise output and completeness boundaries] This tranche constrains **one
+canonical integer output modulo Q**, not the concrete array of output residues
+modulo each target q_i returned by Rust. A constrained projection/array wrapper,
+NTT/convolution/Shoup lowering and provenance remain open; the source lane confirmed
+this scope after review. Universal `honest_accepts` proves semantic certificate
+existence for every canonical input. It does not establish that every such witness
+fits and inhabits the finite emitted layout. The captured matrix/capacity witness
+is kernel-proved and the full emitted array is executed; universal emitted completeness
+is still separate. No duplicate large kernel reduction was attempted by this reviewer.
+The source lane's abandoned resource-heavy raw-checker reduction is not an axiom or
+a theorem in these six modules. Within this scope, the exact-source certificate
+closes the earlier nearest-neighbor verifier freedom rather than hiding it.
+
+## 13. Reusable contextual gate and actual EMA adaptive instance
+
+[EXECUTED independent compilation] The generic
+`formal/randomness_composition/generic/Compiler/ContextualGate.lean`, SHA256
+`d17239cd62b3f09ab6f4a3a0adfa117876a088e60061f2fcaeb1a81a5750fc00`,
+passes its 24 exact pins. The actual adapter
+`Assurance/ResidentEmaAdaptive.lean`, SHA256
+`99dc9d24683880bb4a434c5e204185512e9212f7334910def85f4355d22b7ac9`,
+passes its 18 pins against this review's already independently compiled EMA and
+Stage-0 dependencies. Records are `lean_contextual_gate_01.json` and
+`lean_ema_adaptive_01.json`; source/direct dependency hashes are retained and unchanged.
+
+[SOURCE/DERIVED: generic statement] `ContextualGate.contextReduction:34` keeps
+one descriptor d, public-word width n, and m sumcheck coordinates, while selecting
+the local commitment context from the queried root. `contextKState:56` and
+`contextRbr:69` delegate the actual existing gate RBR state/proof obligations at
+that root context, which stays fixed within each statement. The whole-statement
+context remains adversarially selectable. `sound_reading:134` uses the inherited
+`relaxedMem_iff` at δ<1/n to turn the approximate relation into the exact descriptor
+event. No descriptor-specific or fake local reduction is substituted for EMA.
+The adapter's `stage0_reduction_is_existing:41` proves the old reduction definitionally
+equal to the corresponding generic instance.
+
+[SOURCE/DERIVED: shared-log bound] `all_logged_outputs_bound:317` uses the same
+reviewed selector construction: rebuild the deterministic prover's actual query
+log from its responses, choose a bad public full-word output, and preserve every
+oracle query by changing only `SrProver.out`. `AllOutputQueriesLogged:177` requires
+each candidate's entire verifier-prefix query list to occur in the *final* shared
+log, for every sampled coin sequence. The selected query is then covered by the
+same premise. No new oracle query is needed to select public full-word badness;
+there is no computation-time efficiency claim. This earns the single
+`(t+m+1)·gatePrice` expression without another output-count factor in this game.
+All correlated prior prover/verifier service transcripts must be generated inside
+that charged log; deterministic strategy parameters are fixed independently of
+the oracle coins. Final-log completeness remains distinct from runtime publication
+ordering or a physical finality gate.
+
+[SOURCE/DERIVED: actual logical-step adapter] The EMA adapter's
+`wrapper_acceptance_transport:51` first obtains the wrapper's checked context and
+actual fixed-context FS acceptance for the same receipt, then transports it into
+the generic reduction. `bad_step_is_global_bad:58` uses the prior same-receipt
+descriptor-to-LogicalStep theorem. `all_logged_bad_steps_bound:95` consequently
+bounds bad accepted *logical Steps of opened plans*, rather than an unrelated
+algebraic predicate. The earlier independently recomputed descriptor census gives
+154 residuals, 8 coordinates, 153 word entries, 9 queries and
+**(t+9)·161/2013265921^6**, with δ<1/153. This supplies the adaptive EMA theorem
+that §9 correctly left open at the earlier source hash. It does not by itself
+prove execution/persistence/currentness across a physical history.
+
+[SOURCE/DERIVED: premises and oracle transport] The same authorized, changed-state
+128→143 receipt is inhabited under one oracle; the separate nine-query witness
+uses a planned verifier and an actual all-zero sampled transcript, whose cached
+and fresh query values are proved zero. The wrong 128→144 sibling links and
+materializes but fails the descriptor, while an empty query log fails completeness.
+These are genuine premises at the actual EMA interface. The previously executed
+zero-oracle false-word control also shows why an unqueried `loggedOracle` default
+cannot be interpreted as a free random-oracle answer: dropping completeness would
+let an empty log supply constant-zero challenges. The current bound retains the
+necessary premise.
+
+[OPEN: mixed-program and concrete-oracle scope] The new encoder is injective for
+its fixed type and agrees with the fixed-context byte encoder. The Stage-0/EMA
+cross-program encoding theorem relies specifically on public word lengths 4131
+versus 153. It does not provide separate namespaces for two arbitrary descriptors
+of equal width; arbitrary queried contexts may themselves carry either numeric
+program value. Such extensions need another domain/descriptor binding argument.
+Even for the two proved-disjoint encodings, a mixed-program query-transcript
+projection/coupling theorem is still absent. The inherited distribution is uniform
+Ext6 classical ROM, not QROM or the concrete byte-hash sampler discussed in §5.
+The generic note explicitly retains these limits. No contradiction was found in
+the currently stated generic or EMA theorems.
+
+## 14. Fair hidden seed, disjoint mixtures and one observation
+
+[EXECUTED independent compilation] The root's
+`formal/recovery_policy/Theory/PrivateDistributionBudget.lean`, SHA256
+`2b17dd27ac821a50f7364a6ff6d116d93189c587f6ee765bf19f64300b927d52`,
+passes all 14 exact pins in `lean_private_distribution_01.json`. Its preserved
+policy-evolution dependency was independently rebuilt in
+`lean_private_policy_01.json`; no shared source was edited.
+
+[SOURCE/DERIVED: nonvacuity] A secret bit is encoded as the parity of
+`(seed, seed xor secret)`, with an equally likely unknown Boolean seed. The two
+worlds have disjoint parity predicates. Public coordinate flips/swaps commute
+with pairwise complement, so each permitted coordinate read still has exactly
+one zero and one one across the two seed samples. `oneRead_samples:84` proves
+equality of the full two-sample multiset after arbitrary postprocessing; event
+probabilities follow by dividing the counts by two. Both worlds use the same
+policy. This is a valid distributional privacy example even though the set of
+all coordinate queries separates every distinct pair of point states. It does
+not require a universally indistinguishable point-state pair.
+
+[SOURCE/DERIVED: precise observation game] Policies are fixed public lists of
+flips/swaps before one coordinate read, then arbitrary postprocessing of that bit.
+They have no earlier state-dependent output or side channel. The pointwise
+`public_policy_family_equal:105` permits an independently selected public policy;
+it is not a joint conditioning theorem when public coins correlate with the hidden
+seed. The two-read falsifier recovers parity, so one observation is a total budget
+over the same private world, not a separate quota for every copy or restored fork.
+Enforcing that budget against an operator who can copy state remains an external
+continuity/integrity problem; this is an ideal-interface theorem, not encryption.
+
+[DERIVED + EXECUTED scope teeth] The review-owned
+`PrivateDistributionScopeWitness.lean` adds three small kernel-checked facts:
+revealing the seed plus one second-coordinate read recovers the secret; even a
+fair seed gives different joint transcript distributions when it is public; and
+a hidden seed biased 3:1 gives event counts 1 versus 3 under a second-coordinate
+read, hence distinguishing probability difference 1/2. Successful pins are in
+`lean_private_distribution_scope_02.json`; `_01.json` preserves an overestimated
+reviewer axiom annotation, corrected to the actual smaller axiom set. These teeth
+make fairness and unavailable correlated side information load-bearing; they do
+not refute the scoped fair-seed theorem. No additional probabilistic library or
+encryption construction is claimed by the example.
+
+## 15. Exact ciphertext expiry, installed history and conditional phase decoding
+
+[EXECUTED independent compilation] All 44 durable-window and 62 HE-window pins
+pass together in the review-owned overlay. The source versions are:
+
+| Module | SHA256 | Pins | Independent record |
+|---|---|---:|---|
+| `Theory/CiphertextWindow` | `ad2e496b8f8d1fbf7125cf6be9306a97c9933a66c7882066d087a2b04c8605ee` | 17 | `lean_ciphertext_window_01.json` |
+| `Assurance/CiphertextWindowCell` | `7b215707ee631a3d04854f6dd2fd044511dbcfd6d59b21c602380ff1d4c8a77d` | 7 | `lean_ciphertext_window_cell_01.json` |
+| `Assurance/CiphertextWindowWitness` | `8503df829d5f5bcd9aa13bb5febd578b533dd3f8e8a075a687fa4fd30ffe9d92` | 20 | `lean_ciphertext_window_witness_01.json` |
+| `Theory/IntegerWindowNoise` | `b3d49c23cf627f4598d5c81ed36ba93541f8e0463fe54da8629f2ee7d924bd98` | 20 | `lean_integer_window_noise_01.json` |
+| `Theory/CiphertextWindowNoise` | `20bcc3b442c5e86f6d6abe4aad439228d5c6e965aa15f49140faa3769e2e8702` | 4 | `lean_ciphertext_window_noise_01.json` |
+| `Assurance/ResidentBfvWindowNoise` | `cc98b5498fb737b7cd5bf5ccd3b8bda079e9c7707aa7f1c83e0401da35b8ecb6` | 24 | `lean_resident_window_noise_01.json` |
+| `Assurance/ResidentBfvWindowPhase` | `74b61e28fe43883aa3e96717f5fa881f2a16bb1b70eb6e42dc269a167d540fac` | 14 | `lean_resident_window_phase_01.json` |
+
+[EXECUTED provenance repair] The first HE validation packet still named older
+durable dependency hashes. The HE owner refreshed all four unchanged modules
+against the final durable hashes above. The review-owned
+`window_semantic_review.py` checks the refreshed module/dependency hashes and
+retains its successful output in `window_semantic_review.json`. This is a resolved
+packaging mismatch; the earlier green packet did not establish the final
+dependency combination. Neither companion tree was edited by this review.
+
+[SOURCE/DERIVED: exact expiry and current sum] In `CiphertextWindow`, the checker
+at :66 requires a positive capacity, the next admission ID, admitted canonical
+fresh bytes and, when full, the exact current head's ID and encoded ciphertext.
+The codec's left-inverse law makes equal canonical encodings imply equal
+ciphertexts. `advance:77` actually subtracts the *proposed* expiry, so the check
+does necessary work: `replacement_debt:229` exposes the old-minus-proposed group
+element if it is bypassed. `reachable_queue_sum:294` proves that the accumulator
+equals the sum of the current queue and the queue has at most W entries. IDs and
+the admission predicate supply the stated provenance; they do not prove an
+encryption/noise contract for a malicious issuer. `all_finite_horizons:339`
+constructs every finite logical continuation for a positive W and an everywhere
+admitted stream. It is not a funding, machine-counter or runtime liveness theorem.
+
+[SOURCE/DERIVED: same actual durable carrier] `CiphertextWindowCell` serializes
+the entire logical queue, accumulator and counter. `canonical_state_opens:83`
+uses exact bytes, so it remains valid with a constant digest. The actual
+`WindowPlan` holds exact pre/post openings of one validated plan.
+`ExecutedHistory:169` begins with the actual empty journal and encoded initial
+state; each edge opens the current DataSnapshot, passes the window checker and
+full intent preflight, has a fresh transaction ID, and uses the existing
+`DataSnapshot.install`. `executed_history_invariant:188` connects that same
+snapshot's bytes to the logical state and equates its counter with the actual
+journal length. This closes the detached logical-history seam for this carrier.
+The three-step witness uses three real installs, expires the first ciphertext,
+and proves replay does not subtract it again. It also explicitly refutes a
+detached two-admission logical state paired with an empty durable journal.
+
+[DERIVED + EXECUTED history scope tooth] This history consists exclusively of
+window admissions. In the review-owned `WindowJournalFrameWitness.lean`, an
+ordinary valid transaction makes a nonempty no-op write to another cell after
+the three-step witness. The existing executor accepts it, the window bytes stay
+unchanged, and the journal length becomes four. It cannot satisfy the same
+`ExecutedHistory`, whose logical counter is three. The exact pin passes in
+`lean_window_journal_frame_02.json`; `_01.json` preserves a reviewer fixture with
+an empty write list that correctly failed preflight before the fixture was fixed.
+Mixed workloads need a frame-closed history or a projection counting window
+admissions, or an explicitly exclusive scheduler. This limits the carrier's
+scope; it is not a counterexample to the proved invariant. A branch history also
+does not establish unique global continuation, currentness or physical storage
+refinement.
+
+[SOURCE/DERIVED: phase and decoding premises] `IntegerWindowNoise.Fresh:27`
+means the exact integer equation phase = floor(q·message/t) + error and a
+coordinate error bound. It does not mean cryptographic independence or honest
+random sampling. Its residual includes the necessary floor carry, giving
+`|t·phase-q·message| ≤ t(E+1)`. Signed query L1 and at most W current rows produce
+the strict margin `2tWL(E+1)<q`. `window_correctness:134` then proves modular
+rounding for every integer lift differing by q times any integer;
+`window_signed_correctness:175` additionally needs `2|score|<t` for the signed
+answer. The positive/negative query split preserves total L1, with no extra
+factor of two. The support lemma's `2NS²+S` bound is conditional on the two
+specified signed product expansions and each factor's support bound.
+
+[SOURCE/DERIVED: the modular bridge is substantive and conditional]
+`CiphertextWindowNoise.PhasePremises:20` uses a query-specific additive map
+`Ct →+ ZMod q`, equalities between every current entry's modular phase and its
+interpreted integer row, and the output lift's modular equality to the
+accumulator phase. `queue_integer_lift:44` derives the integer wrap from these
+equalities and the actual queue sum. `reachable_signed_decode:83` retains the
+per-entry Fresh, margin, query and signed-range premises. The review-owned
+`CiphertextWindowReview.installed_signed_readout` composes this theorem with
+`ExecutedHistory` on the same installed state and returns both its exact bytes
+and its signed result; no independent substitute queue is introduced.
+
+[DERIVED + EXECUTED missing-issuer-contract tooth] The same reviewer module
+constructs an admitted one-entry state over ZMod 17 with an exact modular phase
+map, query L1 one and an advertised E=0 margin 6<17. Its row instead has error
+three. It satisfies Reachable and PhasePremises but fails Fresh and decodes one
+instead of the claimed zero score. This proves that the public admission check
+does not itself establish the Fresh premise. Together with the codec tooth in
+§16, all three reviewer pins pass in `lean_ciphertext_window_review_02.json`.
+No contradiction was found in the conditional phase/decoding statements.
+
+[EXECUTED constants and nonzero controls] Independent integer checks in
+`window_semantic_review.json` recompute
+Q = 9671406214650060397780993, E = 3276820, L = 73279,
+the score bound 1191223424 and margin left side 264008552994527828978432.
+They test 108 signed cases, including dense extremal W=128 rows, at three
+integer wraps each. The frozen Lean modules inhabit the actual arithmetic
+parameters with 128 nonzero rows and score −128. The phase module separately
+inhabits its whole one-admission subject with a nonzero transparent ZMod Q
+ciphertext and result −1. Neither witness is an encrypted Rust BFV execution.
+The source falsifiers for missing margin, signed wrap and wrong-expiry debt are
+nonvacuous. The scalar wrong-expiry example reaches an incorrect output at
+1125936375139850 substitutions; this is an exact arithmetic witness, not an
+executed attack history of that length.
+
+[SOURCE/DERIVED + EXECUTED source-equation boundary] Local `fhe-dregg`
+`bfv/plaintext.rs:51` multiplies by q_mod_t and the stored inverse of −t;
+`bfv/parameters.rs:418` constructs those constants. Independent calculation
+checks 260 signed/representative cases of the resulting congruence with
+floor(Qm/t) modulo Q. The public-key source at `bfv/keys/public_key.rs:64`
+also has the algebraic two-product-plus-one-error shape used by the support
+bound. This is source inspection and arithmetic checking. The seven frozen
+modules do not prove the Rust/RNS/NTT operations, readout map or source sampler
+refine these hypotheses. The HE owner's subsequent source-equation tranche is
+separate work and is not included in the 106-pin claim here.
+
+## 16. Canonical bytes, public normalization and retained history cost
+
+[SOURCE/DERIVED + EXECUTED codec scope] The logical coefficient/vector codec is
+a canonical encoder for ZMod values and fixed vectors; it is not the Rust
+protobuf format. A lawful left inverse makes its encoder injective but does not
+force its decoder to reject every noncanonical byte string. The review-owned
+`coefficient_decoder_accepts_alias` proves that the natural-number encoding of
+18 decodes as 1 in ZMod 17 while differing from the canonical encoding of 1.
+This does not defeat the window's exact comparison of *canonical encodings* or
+its exact installed-byte opening. It prevents promoting the codec law to a
+general rejection theorem about unnormalized external input.
+
+[SOURCE + EXECUTED retained serializer evidence] I read the actual ciphertext
+serde and add/sub implementations and checked the final recorded probe against
+all five current source hashes. `serde_check_02.json` executes source
+`435b6e955d88a013ca64569123c9194e8e95c395000776b63fe3bdcecd380bc5`.
+Its polynomial comparisons now assert equal component counts before using
+`zip().all()`, closing the prefix-only comparison ambiguity identified during
+review. The old source hash
+`8dba04b655824e51c64d734fdf80b065980b7f97732c06c98fcff079919580b3`
+and saved earlier run remain available. The reviewer did not rerun encryption.
+
+[EXECUTED: fixture scope] The retained probe shows that the empty initial zero
+has zero polynomial components and panics on serialization; a compatible
+nonempty group zero serializes and decrypts to zero. A seeded ciphertext and its
+expanded form have equal polynomial arrays and plaintext but unequal serialized
+bytes (42545 versus 85022). Adding a compatible nonempty exact zero normalizes
+these tested aliases, serializes the empty zero, preserves the tested expanded
+public-key ciphertext bytes, and agrees after deserialize/serialize. That zero
+is constructed publicly as a public ciphertext minus itself. The test retains
+a secret key only to check plaintexts; the normalization operation does not use
+it. This is evidence for the specified cases, not a master-key absence claim.
+
+[SOURCE/DERIVED: runtime domain still required] The actual add/sub code checks
+parameter Arc identity and, for nonempty operands, compatible level and
+component count. Empty branches and seed-clearing behavior matter to the
+normalizer. A general law relating this operation and protobuf decoding to the
+logical codec still needs a lawful runtime domain and a proof of the underlying
+ring/group and representation refinements. Equal polynomial values alone did
+not make raw serialization canonical in the executed seeded/expanded fixture.
+These limits are explicitly retained by the durable lane's final README.
+
+[DERIVED: active-window size versus retained durable payload] A bounded current
+queue does not bound the whole composed durable carrier by O(W). The existing
+`Kernel/DurableDataIntent.ReplayEnvelope:89` deliberately keeps the exact writes,
+and `DataIntent.erase:118` journals their complete canonical post bytes.
+`ResidentDurableIntegration.Plan.intent:111` writes the full materialized post;
+`CiphertextWindowCell.stateStream:40` encodes the current queue, accumulator and
+counter. `Kernel/DurableCommitProtocol.Snapshot.install:151` retains each intent
+in the journal, and this history has no compaction operation. For T admissions
+after a fixed-width ciphertext window fills, the accumulated serialized replay
+payload can therefore scale as T·W·ciphertext_size, plus IDs, counters and other
+transaction metadata. This is a semantic retained-payload accounting, not an
+assertion that a runtime cannot share or compress storage. Current noise still
+depends on W because the accumulator cancels exact expired ciphertexts. The
+Rust current-queue benchmark does not exercise this complete durable journal;
+its memory figure should not be used for the composed carrier without a
+separate persistence measurement or compaction refinement.

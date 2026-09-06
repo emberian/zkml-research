@@ -1,0 +1,41 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateWitness.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 3.31367337499978
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateChecks.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateChecks.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 0,
+    "stdout": "source certificate: constructing descriptors\nsource certificate: checking captured positive witness\nsource certificate: checking raw and CSE controls\nsource certificate: checking forged alternatives\n{\"wrong_neighbor_refused\": true,\n \"wrong_neighbor\": 172480,\n \"weighted_accumulators\": 24,\n \"variables\": 30294,\n \"scalar_digits\": 462,\n \"rows\": 12,\n \"raw_gates\": 1406124,\n \"out_of_range_digit_refused\": true,\n \"optimized_zero_checks\": 36498,\n \"optimized_wires\": 183105,\n \"optimized_mul_gates\": 64034,\n \"optimized_gates\": 132675,\n \"optimized_add_gates\": 68641,\n \"noncanonical_residue_refused\": true,\n \"label\":\n \"EXECUTED exact pinned source certificate through existing emitted checker\",\n \"groups\": 21,\n \"field\": 2013265921,\n \"existing_CSE_gates\": 251119,\n \"correction_remainder_range_attack_refused\": true,\n \"columns\": 57,\n \"carry_bits\": 15,\n \"captured_plus_one_accepted_all_three_descriptors\": true,\n \"captured_output\": 172481,\n \"additional_rows\":\n [{\"wrong_output_refused\": true,\n   \"canonical_output\": \"0\",\n   \"accepted\": true,\n   \"Y\": \"0\"},\n  {\"wrong_output_refused\": true,\n   \"canonical_output\": \"0\",\n   \"accepted\": true,\n   \"Y\": \"0\"},\n  {\"wrong_output_refused\": true,\n   \"canonical_output\": \"191459847049060613643929562980355\",\n   \"accepted\": true,\n   \"Y\": \"47012274352392253779304050097672001990143186481383782660831058\"},\n  {\"wrong_output_refused\": true,\n   \"canonical_output\": \"423551074324697889598892777295208\",\n   \"accepted\": true,\n   \"Y\": \"-39776413339044699684697107879854122936144098712931636486058319\"}],\n \"Garner_remainder_range_attack_refused\": true}\n",
+    "stderr": "",
+    "elapsed_seconds": 51.3664741669927
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateRetain.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateRetain.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate",
+    "exit_code": 0,
+    "stdout": "retained six emitted-checker fixtures; exact external source/output pins pass\n",
+    "stderr": "",
+    "elapsed_seconds": 21.851156415999867
+  }
+]

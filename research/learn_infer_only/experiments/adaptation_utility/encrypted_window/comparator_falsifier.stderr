@@ -1,0 +1,6 @@
+
+thread 'main' (5539112) panicked at src/main.rs:142:17:
+assertion `left == right` failed: declared query 256 phase 1 history 63000
+  left: -7697
+ right: -7696
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

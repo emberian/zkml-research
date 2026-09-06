@@ -1,0 +1,13 @@
+{
+  "label": "combined_patch_apply",
+  "command": [
+    "git",
+    "apply",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integration/minidregg-combined-resident.patch"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_010/source",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integration/minidregg-combined-resident.patch:2553: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integration/minidregg-combined-resident.patch:3815: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integration/minidregg-combined-resident.patch:8952: new blank line at EOF.\n+\nwarning: 3 lines add whitespace errors.\n",
+  "elapsed_seconds": 0.025987916000303812
+}

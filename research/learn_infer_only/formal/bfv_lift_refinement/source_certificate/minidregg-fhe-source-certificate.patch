@@ -1,0 +1,716 @@
+--- a/Compiler.lean
++++ b/Compiler.lean
+@@ -15,6 +15,8 @@
+ import Compiler.BfvSignedAccumulatorAir  -- exact radix-64 weighted positive/negative accumulators over that same witness and accepted quotient call imply numerator = q * centered quotient
+ import Compiler.BfvReceiptClause  -- one committed BFV batch plus checked returned buffers yields all 384 exact integer equations; the native producer remains semantically opaque
+ import Compiler.BfvProofController  -- deterministic BFV statement/receipt framing over opaque bytes; proof-codec/suite/controller pins stay zero and the succinct suite is deliberately uninstantiated
++import Compiler.FheSourceCertificateVerifier  -- exact pinned RNS source certificate; protocol/limb refinement remains open
++import Compiler.FheSourceCertificateWitness
+ import Compiler.BfvCompressedEquation  -- audited FHEgg 12,435-coordinate/384-row schema and the first exact q0 shifted-quotient AIR join; the full signed accumulator and Lean-owned transcript control stay explicit
+ import Compiler.WideDigestAir  -- [AIR-wide-digest] WDG1/domain/9-limb encoding pinned through emit; canonicality and 248-bit capacity proved; sponge schedule, concrete permutation, native-output checks, and [COMMIT-CR] remain explicit
+ import Compiler.WideDigestByteDecodeAir  -- raw four-byte little-endian limbs are range-checked and proved < BabyBear before field recomposition; raw p is universally rejected
+--- /dev/null
++++ b/Compiler/FheSourceCertificate.lean
+@@ -0,0 +1,148 @@
++/-
++Statement first: a certificate must FORCE the pinned engine's selected Garner
++index and directed fixed correction, including the observed nearest+1 case.
++Two exact integer quotient/remainder relations fix those roundings; the final
++integer quotient relation fixes the canonical output modulo Q. There is no
++allowed {nearest,nearest+1} choice. The compiler lowering reuses the existing
++weighted-column and range gadgets; no replacement AIR is defined here.
++
++This is a source scalar certificate. Committed-residue provenance and the Rust
++NTT/modular implementation refinement remain separate obligations.
++-/
++import Compiler.FheRnsScaleDecomposition
++import Compiler.IntegerCertificateEmission
++
++namespace Minidregg.Compiler.FheSourceCertificate
++open Minidregg.Compiler
++open Minidregg.Compiler.FheRnsScale
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 10000
++
++structure Certificate where
++  v : ℤ
++  w : ℤ
++  garnerRemainder : ℤ
++  correctionRemainder : ℤ
++  outputQuotient : ℤ
++
++def accepts (r : Fin 6 → ℤ) (output : ℤ) (c : Certificate) : Prop :=
++  (∀ i, 0 ≤ r i ∧ r i < deployedBase i) ∧
++  0 ≤ c.garnerRemainder ∧ c.garnerRemainder < 2*(2^126) ∧
++  0 ≤ c.correctionRemainder ∧ c.correctionRemainder < 2*(2^127) ∧
++  0 ≤ output ∧ output < deployedQ ∧
++  2*(∑ i, r i*deployedThetaG i)+(2^126) = 2*(2^126)*c.v+c.garnerRemainder ∧
++  2*(∑ i, r i*deployedThetaF i)+(2^127) = 2*(2^127)*c.w+c.correctionRemainder ∧
++  integerPart r deployedOmega c.v deployedGamma+c.w = deployedQ*c.outputQuotient+output
++
++def SourceCertificateSound : Prop := ∀ r output c, accepts r output c →
++  output = deployedOutput r % deployedQ
++
++/-- Exact Euclidean QR, including signed quotients, forces its quotient. -/
++theorem qr_forced (x d q rem : ℤ) (hd : 0 < d)
++    (h0 : 0 ≤ rem) (h1 : rem < d) (he : x=d*q+rem) : q=x/d := by
++  have h := BFVScaleLift.quotient_forced d 1 0 x q rem hd ⟨h0,h1,by simpa using he⟩
++  simpa [BFVScaleLift.scale] using h
++
++theorem forced_roundings (r : Fin 6 → ℤ) (output : ℤ) (c : Certificate)
++    (h : accepts r output c) : c.v=deployedV r ∧ c.w=deployedW r := by
++  rcases h with ⟨hr,hg0,hg1,hf0,hf1,ho0,ho1,hg,hf,hy⟩
++  have hv := qr_forced _ _ _ _ (by positivity) hg0 hg1 hg
++  have hw := qr_forced _ _ _ _ (by positivity) hf0 hf1 hf
++  rw [deployedV_correct r hr, deployedW_correct r hr]
++  exact ⟨hv,hw⟩
++
++/-- Main source refinement: output is unique even on exact rounding boundaries. -/
++theorem sourceCertificateSound : SourceCertificateSound := by
++  intro r output c h
++  have forced := forced_roundings r output c h
++  rcases h with ⟨hr,hg0,hg1,hf0,hf1,ho0,ho1,hg,hf,hy⟩
++  rw [forced.1,forced.2] at hy
++  change deployedOutput r = deployedQ*c.outputQuotient+output at hy
++  have hq := qr_forced _ _ _ _ (by decide : 0 < deployedQ) ho0 ho1 hy
++  rw [hq] at hy
++  have he := Int.mul_ediv_add_emod (deployedOutput r) deployedQ
++  omega
++
++def honestCertificate (r : Fin 6 → ℤ) : Certificate where
++  v := deployedV r
++  w := deployedW r
++  garnerRemainder := (2*(∑ i, r i*deployedThetaG i)+(2^126)) % (2*(2^126))
++  correctionRemainder := (2*(∑ i, r i*deployedThetaF i)+(2^127)) % (2*(2^127))
++  outputQuotient := deployedOutput r / deployedQ
++
++/-- Every canonical input has an exact semantic certificate; no promise that either
++rounded neighbor may be selected enters the relation. -/
++theorem honest_accepts (r : Fin 6 → ℤ) (hr : ∀ i, 0 ≤ r i ∧ r i < deployedBase i) :
++    accepts r (deployedOutput r % deployedQ) (honestCertificate r) := by
++  refine ⟨hr,Int.emod_nonneg _ (by norm_num),Int.emod_lt_of_pos _ (by positivity),
++    Int.emod_nonneg _ (by norm_num),Int.emod_lt_of_pos _ (by positivity),
++    Int.emod_nonneg _ (by decide),Int.emod_lt_of_pos _ (by decide),?_,?_,?_⟩
++  · dsimp [honestCertificate]
++    rw [deployedV_correct r hr]
++    exact (Int.mul_ediv_add_emod _ _).symm
++  · dsimp [honestCertificate]
++    rw [deployedW_correct r hr]
++    exact (Int.mul_ediv_add_emod _ _).symm
++  · change deployedOutput r = deployedQ*(deployedOutput r/deployedQ)+deployedOutput r%deployedQ
++    exact (Int.mul_ediv_add_emod _ _).symm
++
++/-- The actual +1 source output inhabits the accepting relation. -/
++theorem actual_plus_one_inhabited : accepts capturedResidues 172481 (honestCertificate capturedResidues) := by
++  have h := honest_accepts capturedResidues deployed_witness_inhabited.1
++  rw [deployed_witness_inhabited.2.2.1] at h
++  norm_num [deployedQ] at h
++  exact h
++
++/-- The tempting exact-nearest neighbor is refused for EVERY auxiliary certificate. -/
++theorem wrong_neighbor_refused (c : Certificate) : ¬ accepts capturedResidues 172480 c := by
++  intro h
++  have hs := sourceCertificateSound capturedResidues 172480 c h
++  rw [deployed_witness_inhabited.2.2.1] at hs
++  norm_num [deployedQ] at hs
++
++/-- Both neighbors pass the loose envelope, so it is not a replacement for this certificate. -/
++theorem loose_envelope_falsifier :
++    (172480 : ℤ) ≤ 172480 ∧ 172480 ≤ 172480+1 ∧
++    (∀ c, ¬ accepts capturedResidues 172480 c) :=
++  ⟨by omega,by omega,wrong_neighbor_refused⟩
++
++end Minidregg.Compiler.FheSourceCertificate
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.qr_forced' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.qr_forced
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.forced_roundings' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.forced_roundings
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.sourceCertificateSound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.sourceCertificateSound
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.honest_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.honest_accepts
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.actual_plus_one_inhabited' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.actual_plus_one_inhabited
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.wrong_neighbor_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.wrong_neighbor_refused
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.loose_envelope_falsifier' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.loose_envelope_falsifier
+--- /dev/null
++++ b/Compiler/FheSourceCertificateLayout.lean
+@@ -0,0 +1,207 @@
++/- Generated pinned linear balance matrix. Every row becomes TWO EXISTING weighted
++accumulators with shared result limbs. Uniform 22-digit groups are a conservative
++baseline, not an optimized layout or a mandatory lower bound. -/
++import Compiler.FheSourceCertificate
++
++namespace Minidregg.Compiler.FheSourceCertificate
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxHeartbeats 5000000
++set_option maxRecDepth 20000
++
++def wOffset : ℕ := 36893488147419103232
++def uOffset : ℕ := 1329227995784915872903807060280344576
++def leftConstant (row : Fin 12) : ℕ := match row.val with
++  | 0 => 0
++  | 1 => 0
++  | 2 => 0
++  | 3 => 0
++  | 4 => 0
++  | 5 => 0
++  | 6 => 85070591730234615865843651857942052864
++  | 7 => 0
++  | 8 => 12554203470773361527841720029875802063936398192643953131520
++  | 9 => 0
++  | 10 => 862713459717704035650365311846944737656111791604218977383885431635968
++  | 11 => 0
++  | _ => 0
++def rightConstant (row : Fin 12) : ℕ := match row.val with
++  | 0 => 68719403008
++  | 1 => 68719230976
++  | 2 => 137438822400
++  | 3 => 4611686018427322368
++  | 4 => 4611686018427289600
++  | 5 => 4611686018427215872
++  | 6 => 0
++  | 7 => 170141183460469231731687303715884105727
++  | 8 => 0
++  | 9 => 340282366920938463463374607431768211455
++  | 10 => 36893488147419103232
++  | 11 => 649033470896967801447398927572992
++  | _ => 0
++def leftMatrix (row : Fin 12) (col : Fin 21) : ℕ := match row.val,col.val with
++  | 0,0 => 1
++  | 0,6 => 1
++  | 1,1 => 1
++  | 1,7 => 1
++  | 2,2 => 1
++  | 2,8 => 1
++  | 3,3 => 1
++  | 3,9 => 1
++  | 4,4 => 1
++  | 4,10 => 1
++  | 5,5 => 1
++  | 5,11 => 1
++  | 6,0 => 131065419633086522241372289381823572106
++  | 6,1 => 4485488741573124986325697124100386762
++  | 6,2 => 169336339963779992772213565866202100270
++  | 6,3 => 43688450512502976537252365005556546662
++  | 6,4 => 111342366693413055201354910647205661904
++  | 6,5 => 50505484837052023456543083122764049482
++  | 7,13 => 1
++  | 7,14 => 1
++  | 8,0 => 80472655973117157476048213043941515826
++  | 8,1 => 53347334390297183354149788280129557170
++  | 9,16 => 1
++  | 9,17 => 1
++  | 10,0 => 77986382591119874064921855321526527381868595827415916824020267
++  | 10,1 => 2668949918962272755740805946941502886286373228576567292954653
++  | 10,2 => 100758297894020147554024975409120330178423098053670234523689029
++  | 10,3 => 25995447357658063166494866421566043447166475144685359547976399
++  | 10,4 => 66250796219640414915292195382615713228017713407091191535059741
++  | 10,5 => 30051710622670116563016618864449112911308518409102424717649034
++  | 10,15 => 1
++  | 11,18 => 1
++  | 11,19 => 1
++  | _,_ => 0
++def rightMatrix (row : Fin 12) (col : Fin 21) : ℕ := match row.val,col.val with
++  | 6,12 => 170141183460469231731687303715884105728
++  | 6,13 => 1
++  | 8,2 => 133819990363414340830198000782901637350
++  | 8,15 => 340282366920938463463374607431768211456
++  | 8,16 => 1
++  | 10,12 => 101237194868023629673163772448739743344356924690180564813783041
++  | 10,18 => 1
++  | 10,20 => 649033470896967801447398927572993
++  | _,_ => 0
++
++def dot (a : Fin 21 → ℕ) (x : Fin 21 → ℕ) : ℕ := ∑ i, a i*x i
++
++def Balanced (x : Fin 21 → ℕ) : Prop := ∀ j,
++  leftConstant j+dot (leftMatrix j) x = rightConstant j+dot (rightMatrix j) x
++
++def readResidues (x : Fin 21 → ℕ) (i : Fin 6) : ℤ := match i.val with
++  | 0 => x 0 | 1 => x 1 | 2 => x 2 | 3 => x 3 | 4 => x 4 | _ => x 5
++def readCertificate (x : Fin 21 → ℕ) : Certificate where
++  v := x 12
++  w := (x 15 : ℤ)-wOffset
++  garnerRemainder := x 13
++  correctionRemainder := x 16
++  outputQuotient := (x 20 : ℤ)-uOffset
++
++/-- Finite coefficient/capacity facts, proved about the generated pinned matrix. -/
++theorem matrix_capacities :
++    (∀ row col, leftMatrix row col < 2^210 ∧ rightMatrix row col < 2^210) ∧
++    (∀ row, leftConstant row < 64^57 ∧ rightConstant row < 64^57) := by decide
++
++/-- The generated nonnegative balances imply the exact signed source certificate. -/
++theorem balanced_source_accepts (x : Fin 21 → ℕ) (h : Balanced x) :
++    accepts (readResidues x) (x 18) (readCertificate x) := by
++  have rows (i : Fin 12) := h i
++  have h0 := rows 0
++  simp only [dot,Fin.sum_univ_succ] at h0
++  change 0+(1*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(1*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 68719403008+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h0
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h0
++  have h1 := rows 1
++  simp only [dot,Fin.sum_univ_succ] at h1
++  change 0+(0*x 0+(1*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(1*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 68719230976+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h1
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h1
++  have h2 := rows 2
++  simp only [dot,Fin.sum_univ_succ] at h2
++  change 0+(0*x 0+(0*x 1+(1*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(1*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 137438822400+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h2
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h2
++  have h3 := rows 3
++  simp only [dot,Fin.sum_univ_succ] at h3
++  change 0+(0*x 0+(0*x 1+(0*x 2+(1*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(1*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 4611686018427322368+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h3
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h3
++  have h4 := rows 4
++  simp only [dot,Fin.sum_univ_succ] at h4
++  change 0+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(1*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(1*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 4611686018427289600+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h4
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h4
++  have h5 := rows 5
++  simp only [dot,Fin.sum_univ_succ] at h5
++  change 0+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(1*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(1*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 4611686018427215872+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h5
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h5
++  have h6 := rows 6
++  simp only [dot,Fin.sum_univ_succ] at h6
++  change 85070591730234615865843651857942052864+(131065419633086522241372289381823572106*x 0+(4485488741573124986325697124100386762*x 1+(169336339963779992772213565866202100270*x 2+(43688450512502976537252365005556546662*x 3+(111342366693413055201354910647205661904*x 4+(50505484837052023456543083122764049482*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 0+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(170141183460469231731687303715884105728*x 12+(1*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h6
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h6
++  have h7 := rows 7
++  simp only [dot,Fin.sum_univ_succ] at h7
++  change 0+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(1*x 13+(1*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 170141183460469231731687303715884105727+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h7
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h7
++  have h8 := rows 8
++  simp only [dot,Fin.sum_univ_succ] at h8
++  change 12554203470773361527841720029875802063936398192643953131520+(80472655973117157476048213043941515826*x 0+(53347334390297183354149788280129557170*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 0+(0*x 0+(0*x 1+(133819990363414340830198000782901637350*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(340282366920938463463374607431768211456*x 15+(1*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h8
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h8
++  have h9 := rows 9
++  simp only [dot,Fin.sum_univ_succ] at h9
++  change 0+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(1*x 16+(1*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 340282366920938463463374607431768211455+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h9
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h9
++  have h10 := rows 10
++  simp only [dot,Fin.sum_univ_succ] at h10
++  change 862713459717704035650365311846944737656111791604218977383885431635968+(77986382591119874064921855321526527381868595827415916824020267*x 0+(2668949918962272755740805946941502886286373228576567292954653*x 1+(100758297894020147554024975409120330178423098053670234523689029*x 2+(25995447357658063166494866421566043447166475144685359547976399*x 3+(66250796219640414915292195382615713228017713407091191535059741*x 4+(30051710622670116563016618864449112911308518409102424717649034*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(1*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) = 36893488147419103232+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(101237194868023629673163772448739743344356924690180564813783041*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(1*x 18+(0*x 19+(649033470896967801447398927572993*x 20+0))))))))))))))))))))) at h10
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h10
++  have h11 := rows 11
++  simp only [dot,Fin.sum_univ_succ] at h11
++  change 0+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(1*x 18+(1*x 19+(0*x 20+0))))))))))))))))))))) = 649033470896967801447398927572992+(0*x 0+(0*x 1+(0*x 2+(0*x 3+(0*x 4+(0*x 5+(0*x 6+(0*x 7+(0*x 8+(0*x 9+(0*x 10+(0*x 11+(0*x 12+(0*x 13+(0*x 14+(0*x 15+(0*x 16+(0*x 17+(0*x 18+(0*x 19+(0*x 20+0))))))))))))))))))))) at h11
++  norm_num only [zero_mul,one_mul,zero_add,add_zero] at h11
++  have hr : ∀ i : Fin 6, 0 ≤ readResidues x i ∧ readResidues x i < FheRnsScale.deployedBase i := by
++    intro i
++    fin_cases i <;> norm_num [readResidues,FheRnsScale.deployedBase,Fin.succ] <;> omega
++  refine ⟨hr,Int.natCast_nonneg (x 13),?_,Int.natCast_nonneg (x 16),?_,Int.natCast_nonneg (x 18),?_,?_,?_,?_⟩
++  · dsimp [readCertificate]
++    exact_mod_cast (show x 13 < 2*(2^126) by omega)
++  · dsimp [readCertificate]
++    exact_mod_cast (show x 16 < 2*(2^127) by omega)
++  · norm_num [FheRnsScale.deployedQ]
++    omega
++  · have hi := congrArg (fun n : ℕ => (n : ℤ)) h6
++    norm_num [Nat.cast_add,Nat.cast_mul] at hi
++    norm_num [readResidues,readCertificate,FheRnsScale.deployedThetaG,Fin.sum_univ_succ,Fin.succ]
++    linear_combination hi
++  · have hi := congrArg (fun n : ℕ => (n : ℤ)) h8
++    norm_num [Nat.cast_add,Nat.cast_mul] at hi
++    norm_num [readResidues,readCertificate,FheRnsScale.deployedThetaF,Fin.sum_univ_succ,Fin.succ,wOffset]
++    linear_combination hi
++  · have hi := congrArg (fun n : ℕ => (n : ℤ)) h10
++    norm_num [Nat.cast_add,Nat.cast_mul] at hi
++    norm_num [readResidues,readCertificate,FheRnsScale.integerPart,
++      FheRnsScale.deployedOmega,FheRnsScale.deployedGamma,FheRnsScale.deployedQ,
++      Fin.sum_univ_succ,Fin.succ,wOffset,uOffset]
++    linear_combination hi
++
++/-- Matrix acceptance fixes one output, even where the source is nearest+1. -/
++theorem balanced_output_forced (x : Fin 21 → ℕ) (h : Balanced x) :
++    (x 18 : ℤ) = FheRnsScale.deployedOutput (readResidues x) % FheRnsScale.deployedQ :=
++  sourceCertificateSound _ _ _ (balanced_source_accepts x h)
++
++end Minidregg.Compiler.FheSourceCertificate
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.matrix_capacities' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.matrix_capacities
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.balanced_source_accepts' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.balanced_source_accepts
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.balanced_output_forced' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.balanced_output_forced
+--- /dev/null
++++ b/Compiler/FheSourceCertificateEmit.lean
+@@ -0,0 +1,185 @@
++/- Existing-compiler lowering of the pinned scalar source certificate.
++The layout is intentionally conservative:21 groups of22 radix64 digits, twelve
++shared-result balances,57 columns and15-bit carries. The actual descriptor is
++built by existing weightedSumGadget, limbRangeSystem and emit. -/
++import Compiler.FheSourceCertificateLayout
++
++namespace Minidregg.Compiler.FheSourceCertificate
++open Minidregg.Compiler
++open Minidregg.Compiler.BfvSignedAccumulatorAir
++open Minidregg.Compiler.IntegerCertificateEmission
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Theory
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 3000000
++
++def scalarWire (i : Fin 462) : Fin 30294 := ⟨i.val,by omega⟩
++def scalarBits (i : Fin 462) (j : Fin 6) : Fin 30294 := ⟨462+6*i.val+j.val,by omega⟩
++def groupDigit : Fin 21 × Fin 22 ≃ Fin 462 := finProdFinEquiv
++
++def digitCoefficient (matrix : Fin 21 → ℕ) (i : Fin 462) : ℕ :=
++  matrix (groupDigit.symm i).1 * 64^(groupDigit.symm i).2.val
++
++def decoded (v : ℕ → BabyBear) (g : Fin 21) : ℕ :=
++  ∑ d : Fin 22, 64^d.val * (v (scalarWire (groupDigit (g,d))).val).val
++
++def resultStart (row : Fin 12) : ℕ := 3234+2255*row.val
++
++def rowWires (row : Fin 12) (right : Bool) : WeightedSumWires (Fin 30294) 57 6 15 where
++  result := fun i => ⟨resultStart row+i.val,by dsimp [resultStart]; omega⟩
++  resultBit := fun i j => ⟨resultStart row+57+6*i.val+j.val,by dsimp [resultStart]; omega⟩
++  carry := fun i => ⟨resultStart row+399+(if right then 928 else 0)+i.val,by
++    dsimp [resultStart]; split_ifs <;> omega⟩
++  carryBit := fun i j => ⟨resultStart row+399+(if right then 928 else 0)+58+15*i.val+j.val,by
++    dsimp [resultStart]; split_ifs <;> omega⟩
++
++def rowSystem (row : Fin 12) : ConstraintSystem BabyBear (Fin 30294) :=
++  weightedSumGadget (leftConstant row) (digitCoefficient (leftMatrix row)) scalarWire (rowWires row false) ++
++  weightedSumGadget (rightConstant row) (digitCoefficient (rightMatrix row)) scalarWire (rowWires row true)
++
++def sourceSystem : ConstraintSystem BabyBear (Fin 30294) :=
++  AirBignum.limbRangeSystem scalarWire scalarBits ++
++  (List.finRange 12).flatMap rowSystem
++
++def sourceDescriptor : ConstraintDescriptor BabyBear := emit Fin.val 0 30294 sourceSystem
++
++def EmittedSourceSound (d : ConstraintDescriptor BabyBear) : Prop :=
++  ∀ v : ℕ → BabyBear, descriptorHolds d v →
++    (decoded v 18 : ℤ) = FheRnsScale.deployedOutput (readResidues (decoded v)) % FheRnsScale.deployedQ
++
++/-- The emitted wire layout is a well-formed instance of the existing compiler. -/
++theorem sourceDescriptor_wellFormed : sourceDescriptor.WellFormed :=
++  emit_wellFormed Fin.val 0 30294 (by omega) (fun i => i.isLt) sourceSystem
++
++/-- Range-derived column budgets are strictly below the deployed proof field. -/
++theorem source_column_budgets :
++    63+462*63*63+(2^15-1) < babyBearP ∧
++    63+64*(2^15-1) < babyBearP := by norm_num [babyBearP]
++
++theorem digit_coefficient_capacity (matrix : Fin 21 → ℕ)
++    (h : ∀ i, matrix i < 2^210) (i : Fin 462) : digitCoefficient matrix i < 64^57 := by
++  have hp : 64^(groupDigit.symm i).2.val ≤ 64^21 :=
++    Nat.pow_le_pow_right (by omega) (by have hh := (groupDigit.symm i).2.isLt; omega)
++  have hh := Nat.mul_le_mul (h (groupDigit.symm i).1).le hp
++  exact lt_of_le_of_lt hh (by decide)
++
++/-- Reindexing the exact radix expansion preserves every pinned linear form. -/
++theorem digit_linearization (matrix : Fin 21 → ℕ) (v : ℕ → BabyBear) :
++    (∑ i : Fin 462, digitCoefficient matrix i * (v (scalarWire i).val).val) =
++      dot matrix (decoded v) := by
++  rw [← groupDigit.sum_comp]
++  simp only [digitCoefficient,Equiv.symm_apply_apply]
++  rw [Fintype.sum_prod_type]
++  simp [dot,decoded,Finset.mul_sum,mul_assoc]
++
++/-- Existing emitted constraints force every exact nonnegative balance. -/
++theorem sourceDescriptor_balanced (v : ℕ → BabyBear)
++    (hd : descriptorHolds sourceDescriptor v) : Balanced (decoded v) := by
++  let asg : Fin 30294 → BabyBear := fun i => v i.val
++  have hs := (emit_accepts_iff_fin 30294 0 asg sourceSystem).mp ⟨v,fun _ => rfl,hd⟩
++  obtain ⟨hr,hh⟩ := (systemAccepts_append asg _ _).mp hs
++  intro row
++  have hrow : systemAccepts asg (rowSystem row) := by
++    intro t ht
++    exact hh t (List.mem_flatMap.mpr ⟨row,by simp,ht⟩)
++  obtain ⟨hl,hrr⟩ := (systemAccepts_append asg _ _).mp hrow
++  have run (c : ℕ) (matrix : Fin 21 → ℕ) (w : WeightedSumWires (Fin 30294) 57 6 15)
++      (hc : c < 64^57) (hm : ∀ i, matrix i < 2^210)
++      (ha : systemAccepts asg (weightedSumGadget c (digitCoefficient matrix) scalarWire w)) :
++      Bignum.denoteNat 64 (AirBignum.limbVals asg w.result) = c+dot matrix (decoded v) := by
++    have h := ranged_weighted_sound
++      (by norm_num [babyBearP]) (by norm_num [babyBearP]) (by norm_num [babyBearP])
++      hc (digitCoefficient matrix) (digit_coefficient_capacity matrix hm)
++      source_column_budgets.1 source_column_budgets.2 asg scalarWire scalarBits w hr ha
++    simpa only [asg,digit_linearization] using h
++  have hleft := run _ _ _ (matrix_capacities.2 row).1
++    (fun i => (matrix_capacities.1 row i).1) hl
++  have hright := run _ _ _ (matrix_capacities.2 row).2
++    (fun i => (matrix_capacities.1 row i).2) hrr
++  exact hleft.symm.trans hright
++
++/-- Main emitted-descriptor refinement. Every canonicality, remainder and quotient
++premise is supplied by this descriptor's constraints, not by a caller assertion. -/
++theorem sourceDescriptor_sound : EmittedSourceSound sourceDescriptor := by
++  intro v hd
++  exact balanced_output_forced (decoded v) (sourceDescriptor_balanced v hd)
++
++/-- The same-row exact-nearest alternative is refused for EVERY wire assignment,
++including all carries, bits and emitted auxiliary wires. -/
++theorem sourceDescriptor_wrong_neighbor (v : ℕ → BabyBear)
++    (hr : readResidues (decoded v) = FheRnsScale.capturedResidues)
++    (hy : decoded v 18 = 172480) : ¬ descriptorHolds sourceDescriptor v := by
++  intro h
++  have hc := balanced_source_accepts (decoded v) (sourceDescriptor_balanced v h)
++  rw [hr,hy] at hc
++  exact wrong_neighbor_refused _ hc
++
++instance : Hashable BabyBear := ⟨fun x => hash x.val⟩
++def sharedSourceDescriptor : ConstraintDescriptor BabyBear := cse sourceDescriptor
++
++/-- Existing compiler CSE preserves the source certificate's exact meaning. -/
++theorem sharedSourceDescriptor_sound : EmittedSourceSound sharedSourceDescriptor := by
++  intro v hd
++  let asg : Fin 30294 → BabyBear := fun i => v i.val
++  have hs := (cse_emit_accepts_iff_fin 30294 0 asg sourceSystem).mp ⟨v,fun _ => rfl,hd⟩
++  obtain ⟨v',hp,hd'⟩ := (emit_accepts_iff_fin 30294 0 asg sourceSystem).mpr hs
++  have hc := sourceDescriptor_sound v' hd'
++  have he : decoded v'=decoded v := by
++    funext g
++    apply Finset.sum_congr rfl
++    intro d _
++    rw [hp (scalarWire (groupDigit (g,d)))]
++  simpa only [he] using hc
++
++end Minidregg.Compiler.FheSourceCertificate
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wellFormed' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wellFormed
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.source_column_budgets' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.source_column_budgets
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.digit_coefficient_capacity' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.digit_coefficient_capacity
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.digit_linearization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.digit_linearization
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_balanced' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_balanced
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_sound
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wrong_neighbor' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wrong_neighbor
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.sharedSourceDescriptor_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.sharedSourceDescriptor_sound
+--- /dev/null
++++ b/Compiler/FheSourceCertificateOptimized.lean
+@@ -0,0 +1,52 @@
++import Compiler.FheSourceCertificateEmit
++import Compiler.AirSimplify
++
++namespace Minidregg.Compiler.FheSourceCertificate
++open Minidregg.Compiler
++open Minidregg.Compiler.AirSimplify
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.NativeKernelPlan
++set_option autoImplicit false
++
++/-- Generic source simplification and existing CSE, with the pinned source equations intact. -/
++def optimizedSourceDescriptor : ConstraintDescriptor BabyBear :=
++  cse (emitSimplified Fin.val 0 30294 sourceSystem)
++
++/-- Neither compiler optimization gives the prover a rounding choice. -/
++theorem optimizedSourceDescriptor_sound : EmittedSourceSound optimizedSourceDescriptor := by
++  intro v hd
++  let asg : Fin 30294 → BabyBear := fun i => v i.val
++  have hs := (cse_emitSimplified_accepts_iff Fin.val Fin.val_injective 0 30294
++    (fun i : Fin 30294 => i.isLt) asg sourceSystem).mp ⟨v,fun _ => rfl,hd⟩
++  obtain ⟨v',hp,hd'⟩ := (emit_accepts_iff_fin 30294 0 asg sourceSystem).mpr hs
++  have hc := sourceDescriptor_sound v' hd'
++  have he : decoded v'=decoded v := by
++    funext g
++    apply Finset.sum_congr rfl
++    intro d _
++    rw [hp (scalarWire (groupDigit (g,d)))]
++  simpa only [he] using hc
++
++theorem optimizedSourceDescriptor_wrong_neighbor (v : ℕ → BabyBear)
++    (hr : readResidues (decoded v)=FheRnsScale.capturedResidues)
++    (hy : decoded v 18=172480) : ¬ descriptorHolds optimizedSourceDescriptor v := by
++  intro h
++  have hc := optimizedSourceDescriptor_sound v h
++  rw [hr,hy,FheRnsScale.deployed_witness_inhabited.2.2.1] at hc
++  norm_num [FheRnsScale.deployedQ] at hc
++
++end Minidregg.Compiler.FheSourceCertificate
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.optimizedSourceDescriptor_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.optimizedSourceDescriptor_sound
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.optimizedSourceDescriptor_wrong_neighbor' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.optimizedSourceDescriptor_wrong_neighbor
+--- /dev/null
++++ b/Compiler/FheSourceCertificateVerifier.lean
+@@ -0,0 +1,53 @@
++/- Explicit statement pins for the local full-assignment checker. This is not a
++succinct proof verifier: a proof protocol must authenticate these same pins and
++bind the source residue vector to the committed ciphertext computation. -/
++import Compiler.FheSourceCertificateOptimized
++
++namespace Minidregg.Compiler.FheSourceCertificate
++open Minidregg.Compiler
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.NativeKernelPlan
++set_option autoImplicit false
++
++/-- The named claim includes the precise external residue and output values. -/
++def pinnedSourceCheck (r : Fin 6 → ℤ) (output : ℤ) (v : ℕ → BabyBear) : Bool :=
++  decide (readResidues (decoded v)=r) &&
++  decide ((decoded v 18 : ℤ)=output) &&
++  descriptorHoldsCheck optimizedSourceDescriptor v
++
++/-- A passing real descriptor check plus explicit claim pins forces the source output. -/
++theorem pinnedSourceCheck_sound (r : Fin 6 → ℤ) (output : ℤ) (v : ℕ → BabyBear)
++    (h : pinnedSourceCheck r output v=true) : output=FheRnsScale.deployedOutput r % FheRnsScale.deployedQ := by
++  have hh := h
++  simp only [pinnedSourceCheck,Bool.and_eq_true,decide_eq_true_eq] at hh
++  obtain ⟨⟨hr,ho⟩,hc⟩ := hh
++  have hd := (descriptorHoldsCheck_eq_true_iff _ _).mp hc
++  have hs := optimizedSourceDescriptor_sound v hd
++  rw [hr,ho] at hs
++  exact hs
++
++/-- Every assignment fails for the wrong exact-nearest claim on the captured source row. -/
++theorem pinned_wrong_neighbor_refused (v : ℕ → BabyBear) :
++    pinnedSourceCheck FheRnsScale.capturedResidues 172480 v=false := by
++  cases hh : pinnedSourceCheck FheRnsScale.capturedResidues 172480 v with
++  | false => rfl
++  | true =>
++    have h := pinnedSourceCheck_sound _ _ _ hh
++    rw [FheRnsScale.deployed_witness_inhabited.2.2.1] at h
++    norm_num [FheRnsScale.deployedQ] at h
++
++end Minidregg.Compiler.FheSourceCertificate
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.pinnedSourceCheck_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.pinnedSourceCheck_sound
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.pinned_wrong_neighbor_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.pinned_wrong_neighbor_refused
+--- /dev/null
++++ b/Compiler/FheSourceCertificateWitness.lean
+@@ -0,0 +1,42 @@
++/- A side-effect-free, kernel-checked actual source matrix witness. The larger
++full emitted-assignment checker replay is recorded execution evidence separately. -/
++import Compiler.FheSourceCertificateLayout
++namespace Minidregg.Compiler.FheSourceCertificate
++open Minidregg.Compiler.FheRnsScale
++set_option autoImplicit false
++set_option maxRecDepth 100000
++set_option maxHeartbeats 10000000
++
++def sourceValues (r : Fin 6 → ℤ) : Fin 21 → ℕ := fun j =>
++  let cv := honestCertificate r
++  let y := deployedOutput r % deployedQ
++  match j.val with
++  | 0 => (r 0).toNat | 1 => (r 1).toNat | 2 => (r 2).toNat
++  | 3 => (r 3).toNat | 4 => (r 4).toNat | 5 => (r 5).toNat
++  | 6 => (deployedBase 0-1-r 0).toNat | 7 => (deployedBase 1-1-r 1).toNat
++  | 8 => (deployedBase 2-1-r 2).toNat | 9 => (deployedBase 3-1-r 3).toNat
++  | 10 => (deployedBase 4-1-r 4).toNat | 11 => (deployedBase 5-1-r 5).toNat
++  | 12 => cv.v.toNat | 13 => cv.garnerRemainder.toNat
++  | 14 => (2*(2^126)-1-cv.garnerRemainder).toNat
++  | 15 => (cv.w+wOffset).toNat | 16 => cv.correctionRemainder.toNat
++  | 17 => (2*(2^127)-1-cv.correctionRemainder).toNat
++  | 18 => y.toNat | 19 => (deployedQ-1-y).toNat
++  | _ => (cv.outputQuotient+uOffset).toNat
++
++/-- Kernel-checked nonzero matrix witness and capacity inhabitation; emitted checker
++acceptance of this same witness is executed below and recorded separately. -/
++theorem captured_balance_inhabited : Balanced (sourceValues capturedResidues) ∧
++    (∀ j, sourceValues capturedResidues j < 64^22) ∧
++    sourceValues capturedResidues 18=172481 := by
++  unfold Balanced
++  decide
++
++end Minidregg.Compiler.FheSourceCertificate
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheSourceCertificate.captured_balance_inhabited' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheSourceCertificate.captured_balance_inhabited

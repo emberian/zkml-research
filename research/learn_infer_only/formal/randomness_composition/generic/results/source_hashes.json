@@ -1,0 +1,5 @@
+{
+  "Compiler/ContextualGate.lean": "d17239cd62b3f09ab6f4a3a0adfa117876a088e60061f2fcaeb1a81a5750fc00",
+  "Assurance/ResidentEmaAdaptive.lean": "99dc9d24683880bb4a434c5e204185512e9212f7334910def85f4355d22b7ac9",
+  "minidregg-contextual-gate-ema.patch": "4ea469e2e5122189d7f2a1028547cde536d9bccb5d7bf91d05966ed2b95a3d78"
+}

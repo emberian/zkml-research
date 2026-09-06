@@ -1,0 +1,35 @@
+import Compiler.FheSourceCertificate
+import Compiler.FheSourceCertificateLayout
+import Compiler.FheSourceCertificateEmit
+import Compiler.FheSourceCertificateOptimized
+import Compiler.FheSourceCertificateVerifier
+import Compiler.FheSourceCertificateWitness
+
+#print axioms Minidregg.Compiler.FheSourceCertificate.qr_forced
+#print axioms Minidregg.Compiler.FheSourceCertificate.forced_roundings
+#print axioms Minidregg.Compiler.FheSourceCertificate.sourceCertificateSound
+#print axioms Minidregg.Compiler.FheSourceCertificate.honest_accepts
+#print axioms Minidregg.Compiler.FheSourceCertificate.actual_plus_one_inhabited
+#print axioms Minidregg.Compiler.FheSourceCertificate.wrong_neighbor_refused
+#print axioms Minidregg.Compiler.FheSourceCertificate.loose_envelope_falsifier
+
+#print axioms Minidregg.Compiler.FheSourceCertificate.matrix_capacities
+#print axioms Minidregg.Compiler.FheSourceCertificate.balanced_source_accepts
+#print axioms Minidregg.Compiler.FheSourceCertificate.balanced_output_forced
+
+#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wellFormed
+#print axioms Minidregg.Compiler.FheSourceCertificate.source_column_budgets
+#print axioms Minidregg.Compiler.FheSourceCertificate.digit_coefficient_capacity
+#print axioms Minidregg.Compiler.FheSourceCertificate.digit_linearization
+#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_balanced
+#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_sound
+#print axioms Minidregg.Compiler.FheSourceCertificate.sourceDescriptor_wrong_neighbor
+#print axioms Minidregg.Compiler.FheSourceCertificate.sharedSourceDescriptor_sound
+
+#print axioms Minidregg.Compiler.FheSourceCertificate.optimizedSourceDescriptor_sound
+#print axioms Minidregg.Compiler.FheSourceCertificate.optimizedSourceDescriptor_wrong_neighbor
+
+#print axioms Minidregg.Compiler.FheSourceCertificate.pinnedSourceCheck_sound
+#print axioms Minidregg.Compiler.FheSourceCertificate.pinned_wrong_neighbor_refused
+
+#print axioms Minidregg.Compiler.FheSourceCertificate.captured_balance_inhabited

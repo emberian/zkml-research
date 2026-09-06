@@ -1,0 +1,543 @@
+--- a/Compiler.lean
++++ b/Compiler.lean
+@@ -15,6 +15,8 @@
+ import Compiler.BfvSignedAccumulatorAir  -- exact radix-64 weighted positive/negative accumulators over that same witness and accepted quotient call imply numerator = q * centered quotient
+ import Compiler.BfvReceiptClause  -- one committed BFV batch plus checked returned buffers yields all 384 exact integer equations; the native producer remains semantically opaque
+ import Compiler.BfvProofController  -- deterministic BFV statement/receipt framing over opaque bytes; proof-codec/suite/controller pins stay zero and the succinct suite is deliberately uninstantiated
++import Compiler.FheTargetProjectionVerifier  -- canonical target limbs for the pinned source scalar; provenance remains open
++import Compiler.FheTargetProjectionWitness
+ import Compiler.BfvCompressedEquation  -- audited FHEgg 12,435-coordinate/384-row schema and the first exact q0 shifted-quotient AIR join; the full signed accumulator and Lean-owned transcript control stay explicit
+ import Compiler.WideDigestAir  -- [AIR-wide-digest] WDG1/domain/9-limb encoding pinned through emit; canonicality and 248-bit capacity proved; sponge schedule, concrete permutation, native-output checks, and [COMMIT-CR] remain explicit
+ import Compiler.WideDigestByteDecodeAir  -- raw four-byte little-endian limbs are range-checked and proved < BabyBear before field recomposition; raw p is universally rejected
+--- /dev/null
++++ b/Compiler/FheTargetProjection.lean
+@@ -0,0 +1,109 @@
++/- Statement first: canonical target limbs must be the residues of the already
++forced source integer. Exact per-prime QR and complement rows enforce this.
++The frozen source certificate is composed at a full-assignment checker boundary;
++this does not authenticate ciphertext provenance or replace a proof protocol. -/
++import Compiler.FheSourceCertificateVerifier
++import Compiler.FheSourceCertificateWitness
++
++namespace Minidregg.Compiler.FheTargetProjection
++open Minidregg.Compiler.FheRnsScale
++open scoped BigOperators
++set_option autoImplicit false
++
++def targetPrime : Fin 3 → ℕ := ![68719403009,68719230977,137438822401]
++
++def Projection (y : ℕ) (limbs quotients slacks : Fin 3 → ℕ) : Prop :=
++  ∀ i, y=targetPrime i*quotients i+limbs i ∧ limbs i+slacks i=targetPrime i-1
++
++def ProjectionSound : Prop := ∀ y limbs quotients slacks,
++  Projection y limbs quotients slacks → ∀ i, limbs i=y%targetPrime i
++
++/-- Exact pinned target factorization; no primality premise is needed to project. -/
++theorem target_factors :
++    (targetPrime 0 : ℤ)*targetPrime 1*targetPrime 2=deployedQ ∧
++    (∀ i, 0<targetPrime i ∧ (targetPrime i : ℤ) ∣ deployedQ) ∧
++    Nat.Coprime (targetPrime 0) (targetPrime 1) ∧
++    Nat.Coprime (targetPrime 0) (targetPrime 2) ∧
++    Nat.Coprime (targetPrime 1) (targetPrime 2) := by decide
++
++/-- Reduction modulo Q preserves each target residue, including negative integers. -/
++theorem target_reduce (z : ℤ) (i : Fin 3) :
++    z%deployedQ%(targetPrime i : ℤ)=z%(targetPrime i : ℤ) :=
++  Int.emod_emod_of_dvd z (target_factors.2.1 i).2
++
++/-- Both QR equality and canonicality come from the projection relation. -/
++theorem projectionSound : ProjectionSound := by
++  intro y limbs quotients slacks h i
++  obtain ⟨he,hr⟩ := h i
++  have hp := (target_factors.2.1 i).1
++  have hl : limbs i<targetPrime i := by omega
++  simp [he,Nat.add_mod,Nat.mul_mod_right,Nat.mod_eq_of_lt hl]
++
++/-- Honest quotient/remainder and complement values inhabit the relation for every y. -/
++theorem projection_honest (y : ℕ) : Projection y
++    (fun i => y%targetPrime i) (fun i => y/targetPrime i)
++    (fun i => targetPrime i-1-y%targetPrime i) := by
++  intro i
++  dsimp only
++  have hp := (target_factors.2.1 i).1
++  have hr := Nat.mod_lt y hp
++  exact ⟨(Nat.div_add_mod y (targetPrime i)).symm,by omega⟩
++
++/-- Composition uses a proved divisor relation, not a CRT convention assumption. -/
++theorem projection_source (r : Fin 6 → ℤ) (y : ℕ) (limbs quotients slacks : Fin 3 → ℕ)
++    (hy : (y : ℤ)=deployedOutput r%deployedQ)
++    (h : Projection y limbs quotients slacks) :
++    ∀ i, (limbs i : ℤ)=deployedOutput r%(targetPrime i : ℤ) := by
++  intro i
++  have hh := congrArg (fun x : ℕ => (x : ℤ)) (projectionSound y limbs quotients slacks h i)
++  dsimp only at hh
++  rw [Int.natCast_mod,hy,target_reduce] at hh
++  exact hh
++
++/-- The captured actual coefficient is a nonzero inhabited target projection. -/
++theorem captured_projection :
++    deployedOutput capturedResidues=172481 ∧
++    Projection 172481 (fun _ => 172481) (fun _ => 0)
++      (fun i => targetPrime i-1-172481) := by
++  refine ⟨deployed_witness_inhabited.2.2.1,?_⟩
++  intro i
++  fin_cases i <;> norm_num [targetPrime]
++
++/-- Changing one canonical limb cannot preserve an accepting projection. -/
++theorem captured_wrong_limb (quotients slacks : Fin 3 → ℕ) :
++    ¬ Projection 172481 ![172480,172481,172481] quotients slacks := by
++  intro h
++  have hh := projectionSound _ _ _ _ h 0
++  norm_num [targetPrime] at hh
++
++end Minidregg.Compiler.FheTargetProjection
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.target_factors' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.target_factors
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.target_reduce' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.target_reduce
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.projectionSound' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.projectionSound
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.projection_honest' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.projection_honest
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.projection_source' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.projection_source
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.captured_projection' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.captured_projection
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.captured_wrong_limb' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.captured_wrong_limb
+--- /dev/null
++++ b/Compiler/FheTargetProjectionLayout.lean
+@@ -0,0 +1,108 @@
++/- Generated nonnegative target projection matrix: Y=qi*quotienti+limbi,
++limbi+slacki=qi-1. The source certificate supplies the shared Y through explicit
++boundary equality checks. Every group has nineteen radix64 digits. -/
++import Compiler.FheTargetProjection
++namespace Minidregg.Compiler.FheTargetProjection
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxHeartbeats 3000000
++set_option maxRecDepth 10000
++
++def leftConstant (row : Fin 6) : ℕ := match row.val with
++  | 0 => 0
++  | 1 => 0
++  | 2 => 0
++  | 3 => 0
++  | 4 => 0
++  | 5 => 0
++  | _ => 0
++def leftMatrix (row : Fin 6) (col : Fin 10) : ℕ := match row.val,col.val with
++  | 0,0 => 1
++  | 1,1 => 1
++  | 1,3 => 1
++  | 2,0 => 1
++  | 3,4 => 1
++  | 3,6 => 1
++  | 4,0 => 1
++  | 5,7 => 1
++  | 5,9 => 1
++  | _,_ => 0
++
++def rightConstant (row : Fin 6) : ℕ := match row.val with
++  | 0 => 0
++  | 1 => 68719403008
++  | 2 => 0
++  | 3 => 68719230976
++  | 4 => 0
++  | 5 => 137438822400
++  | _ => 0
++def rightMatrix (row : Fin 6) (col : Fin 10) : ℕ := match row.val,col.val with
++  | 0,1 => 1
++  | 0,2 => 68719403009
++  | 2,4 => 1
++  | 2,5 => 68719230977
++  | 4,7 => 1
++  | 4,8 => 137438822401
++  | _,_ => 0
++
++def dot (a : Fin 10 → ℕ) (x : Fin 10 → ℕ) : ℕ := ∑ i,a i*x i
++def Balanced (x : Fin 10 → ℕ) : Prop := ∀ j,
++  leftConstant j+dot (leftMatrix j) x=rightConstant j+dot (rightMatrix j) x
++def readLimbs (x : Fin 10 → ℕ) : Fin 3 → ℕ := ![x 1,x 4,x 7]
++def readQuotients (x : Fin 10 → ℕ) : Fin 3 → ℕ := ![x 2,x 5,x 8]
++def readSlacks (x : Fin 10 → ℕ) : Fin 3 → ℕ := ![x 3,x 6,x 9]
++
++/-- Fixed constants and digit coefficients fit the actual accumulator width. -/
++theorem matrix_capacities :
++    (∀ row col,leftMatrix row col<2^38 ∧ rightMatrix row col<2^38) ∧
++    (∀ row,leftConstant row<64^26 ∧ rightConstant row<64^26) := by decide
++
++/-- The six internally constrained rows supply QR and canonicality. -/
++theorem balanced_projection (x : Fin 10 → ℕ) (h : Balanced x) :
++    Projection (x 0) (readLimbs x) (readQuotients x) (readSlacks x) := by
++  have h0 := h 0
++  norm_num [dot,Fin.sum_univ_succ,leftConstant,rightConstant,leftMatrix,rightMatrix] at h0
++  change x 0=x 1+68719403009*x 2 at h0
++  have h1 := h 1
++  norm_num [dot,Fin.sum_univ_succ,leftConstant,rightConstant,leftMatrix,rightMatrix] at h1
++  change x 1+x 3=68719403008 at h1
++  have h2 := h 2
++  norm_num [dot,Fin.sum_univ_succ,leftConstant,rightConstant,leftMatrix,rightMatrix] at h2
++  change x 0=x 4+68719230977*x 5 at h2
++  have h3 := h 3
++  norm_num [dot,Fin.sum_univ_succ,leftConstant,rightConstant,leftMatrix,rightMatrix] at h3
++  change x 4+x 6=68719230976 at h3
++  have h4 := h 4
++  norm_num [dot,Fin.sum_univ_succ,leftConstant,rightConstant,leftMatrix,rightMatrix] at h4
++  change x 0=x 7+137438822401*x 8 at h4
++  have h5 := h 5
++  norm_num [dot,Fin.sum_univ_succ,leftConstant,rightConstant,leftMatrix,rightMatrix] at h5
++  change x 7+x 9=137438822400 at h5
++  intro i
++  fin_cases i
++  · change x 0=68719403009*x 2+x 1 ∧ x 1+x 3=68719403008
++    omega
++  · change x 0=68719230977*x 5+x 4 ∧ x 4+x 6=68719230976
++    omega
++  · change x 0=137438822401*x 8+x 7 ∧ x 7+x 9=137438822400
++    omega
++
++/-- Matrix soundness forces the actual canonical target residues. -/
++theorem balanced_limbs (x : Fin 10 → ℕ) (h : Balanced x) :
++    ∀ i, readLimbs x i=x 0%targetPrime i :=
++  projectionSound _ _ _ _ (balanced_projection x h)
++end Minidregg.Compiler.FheTargetProjection
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.matrix_capacities' depends on axioms: [propext] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.matrix_capacities
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.balanced_projection' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.balanced_projection
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.balanced_limbs' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.balanced_limbs
+--- /dev/null
++++ b/Compiler/FheTargetProjectionEmit.lean
+@@ -0,0 +1,145 @@
++/- Existing-compiler lowering of the pinned scalar source certificate.
++The layout is intentionally conservative:10 groups of19 radix64 digits, six
++shared-result balances,26 columns and14-bit carries. The actual descriptor is
++built by existing weightedSumGadget, limbRangeSystem and emit. -/
++import Compiler.FheTargetProjectionLayout
++
++namespace Minidregg.Compiler.FheTargetProjection
++open Minidregg.Compiler
++open Minidregg.Compiler.BfvSignedAccumulatorAir
++open Minidregg.Compiler.IntegerCertificateEmission
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Theory
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 3000000
++
++def scalarWire (i : Fin 190) : Fin 7282 := ⟨i.val,by omega⟩
++def scalarBits (i : Fin 190) (j : Fin 6) : Fin 7282 := ⟨190+6*i.val+j.val,by omega⟩
++def groupDigit : Fin 10 × Fin 19 ≃ Fin 190 := finProdFinEquiv
++
++def digitCoefficient (matrix : Fin 10 → ℕ) (i : Fin 190) : ℕ :=
++  matrix (groupDigit.symm i).1 * 64^(groupDigit.symm i).2.val
++
++def decoded (v : ℕ → BabyBear) (g : Fin 10) : ℕ :=
++  ∑ d : Fin 19, 64^d.val * (v (scalarWire (groupDigit (g,d))).val).val
++
++def resultStart (row : Fin 6) : ℕ := 1330+992*row.val
++
++def rowWires (row : Fin 6) (right : Bool) : WeightedSumWires (Fin 7282) 26 6 14 where
++  result := fun i => ⟨resultStart row+i.val,by dsimp [resultStart]; omega⟩
++  resultBit := fun i j => ⟨resultStart row+26+6*i.val+j.val,by dsimp [resultStart]; omega⟩
++  carry := fun i => ⟨resultStart row+182+(if right then 405 else 0)+i.val,by
++    dsimp [resultStart]; split_ifs <;> omega⟩
++  carryBit := fun i j => ⟨resultStart row+182+(if right then 405 else 0)+27+14*i.val+j.val,by
++    dsimp [resultStart]; split_ifs <;> omega⟩
++
++def rowSystem (row : Fin 6) : ConstraintSystem BabyBear (Fin 7282) :=
++  weightedSumGadget (leftConstant row) (digitCoefficient (leftMatrix row)) scalarWire (rowWires row false) ++
++  weightedSumGadget (rightConstant row) (digitCoefficient (rightMatrix row)) scalarWire (rowWires row true)
++
++def sourceSystem : ConstraintSystem BabyBear (Fin 7282) :=
++  AirBignum.limbRangeSystem scalarWire scalarBits ++
++  (List.finRange 6).flatMap rowSystem
++
++def sourceDescriptor : ConstraintDescriptor BabyBear := emit Fin.val 0 7282 sourceSystem
++
++def EmittedTargetSound (d : ConstraintDescriptor BabyBear) : Prop :=
++  ∀ v : ℕ → BabyBear,descriptorHolds d v →
++    ∀ i,readLimbs (decoded v) i=decoded v 0%targetPrime i
++
++/-- The emitted wire layout is a well-formed instance of the existing compiler. -/
++theorem sourceDescriptor_wellFormed : sourceDescriptor.WellFormed :=
++  emit_wellFormed Fin.val 0 7282 (by omega) (fun i => i.isLt) sourceSystem
++
++/-- Range-derived column budgets are strictly below the deployed proof field. -/
++theorem source_column_budgets :
++    63+190*63*63+(2^14-1) < babyBearP ∧
++    63+64*(2^14-1) < babyBearP := by norm_num [babyBearP]
++
++theorem digit_coefficient_capacity (matrix : Fin 10 → ℕ)
++    (h : ∀ i, matrix i < 2^38) (i : Fin 190) : digitCoefficient matrix i < 64^26 := by
++  have hp : 64^(groupDigit.symm i).2.val ≤ 64^18 :=
++    Nat.pow_le_pow_right (by omega) (by have hh := (groupDigit.symm i).2.isLt; omega)
++  have hh := Nat.mul_le_mul (h (groupDigit.symm i).1).le hp
++  exact lt_of_le_of_lt hh (by decide)
++
++/-- Reindexing the exact radix expansion preserves every pinned linear form. -/
++theorem digit_linearization (matrix : Fin 10 → ℕ) (v : ℕ → BabyBear) :
++    (∑ i : Fin 190, digitCoefficient matrix i * (v (scalarWire i).val).val) =
++      dot matrix (decoded v) := by
++  rw [← groupDigit.sum_comp]
++  simp only [digitCoefficient,Equiv.symm_apply_apply]
++  rw [Fintype.sum_prod_type]
++  simp [dot,decoded,Finset.mul_sum,mul_assoc]
++
++/-- Existing emitted constraints force every exact nonnegative balance. -/
++theorem sourceDescriptor_balanced (v : ℕ → BabyBear)
++    (hd : descriptorHolds sourceDescriptor v) : Balanced (decoded v) := by
++  let asg : Fin 7282 → BabyBear := fun i => v i.val
++  have hs := (emit_accepts_iff_fin 7282 0 asg sourceSystem).mp ⟨v,fun _ => rfl,hd⟩
++  obtain ⟨hr,hh⟩ := (systemAccepts_append asg _ _).mp hs
++  intro row
++  have hrow : systemAccepts asg (rowSystem row) := by
++    intro t ht
++    exact hh t (List.mem_flatMap.mpr ⟨row,by simp,ht⟩)
++  obtain ⟨hl,hrr⟩ := (systemAccepts_append asg _ _).mp hrow
++  have run (c : ℕ) (matrix : Fin 10 → ℕ) (w : WeightedSumWires (Fin 7282) 26 6 14)
++      (hc : c < 64^26) (hm : ∀ i, matrix i < 2^38)
++      (ha : systemAccepts asg (weightedSumGadget c (digitCoefficient matrix) scalarWire w)) :
++      Bignum.denoteNat 64 (AirBignum.limbVals asg w.result) = c+dot matrix (decoded v) := by
++    have h := ranged_weighted_sound
++      (by norm_num [babyBearP]) (by norm_num [babyBearP]) (by norm_num [babyBearP])
++      hc (digitCoefficient matrix) (digit_coefficient_capacity matrix hm)
++      source_column_budgets.1 source_column_budgets.2 asg scalarWire scalarBits w hr ha
++    simpa only [asg,digit_linearization] using h
++  have hleft := run _ _ _ (matrix_capacities.2 row).1
++    (fun i => (matrix_capacities.1 row i).1) hl
++  have hright := run _ _ _ (matrix_capacities.2 row).2
++    (fun i => (matrix_capacities.1 row i).2) hrr
++  exact hleft.symm.trans hright
++
++/-- Every target is fixed by the descriptor's own QR and range constraints. -/
++theorem targetDescriptor_sound : EmittedTargetSound sourceDescriptor := by
++  intro v hd
++  exact balanced_limbs (decoded v) (sourceDescriptor_balanced v hd)
++
++end Minidregg.Compiler.FheTargetProjection
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.sourceDescriptor_wellFormed' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.sourceDescriptor_wellFormed
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.source_column_budgets' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.source_column_budgets
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.digit_coefficient_capacity' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.digit_coefficient_capacity
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.digit_linearization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.digit_linearization
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.sourceDescriptor_balanced' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.sourceDescriptor_balanced
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.targetDescriptor_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.targetDescriptor_sound
+--- /dev/null
++++ b/Compiler/FheTargetProjectionVerifier.lean
+@@ -0,0 +1,102 @@
++/- A composition of two existing emitted checks with an explicit shared integer
++claim. Both arrays are full assignments; proof-protocol authentication remains
++separate. No change to the frozen source descriptor is needed. -/
++import Compiler.FheTargetProjectionEmit
++import Compiler.AirSimplify
++
++namespace Minidregg.Compiler.FheTargetProjection
++open Minidregg.Compiler
++open Minidregg.Compiler.AirSimplify
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.NativeKernelPlan
++set_option autoImplicit false
++
++def optimizedTargetDescriptor : ConstraintDescriptor BabyBear :=
++  cse (emitSimplified Fin.val 0 7282 sourceSystem)
++
++/-- Generic simplification and CSE preserve the full target balance relation. -/
++theorem optimizedTargetDescriptor_balanced (v : ℕ → BabyBear)
++    (hd : descriptorHolds optimizedTargetDescriptor v) : Balanced (decoded v) := by
++  let asg : Fin 7282 → BabyBear := fun i => v i.val
++  have hs := (cse_emitSimplified_accepts_iff Fin.val Fin.val_injective 0 7282
++    (fun i : Fin 7282 => i.isLt) asg sourceSystem).mp ⟨v,fun _ => rfl,hd⟩
++  obtain ⟨v',hp,hd'⟩ := (emit_accepts_iff_fin 7282 0 asg sourceSystem).mpr hs
++  have hc := sourceDescriptor_balanced v' hd'
++  have he : decoded v'=decoded v := by
++    funext g
++    apply Finset.sum_congr rfl
++    intro d _
++    rw [hp (scalarWire (groupDigit (g,d)))]
++  simpa only [he] using hc
++
++def pinnedTargetCheck (r : Fin 6 → ℤ) (y : ℕ) (limbs : Fin 3 → ℕ)
++    (sourceAssignment targetAssignment : ℕ → BabyBear) : Bool :=
++  FheSourceCertificate.pinnedSourceCheck r y sourceAssignment &&
++  decide (decoded targetAssignment 0=y) &&
++  decide (readLimbs (decoded targetAssignment)=limbs) &&
++  descriptorHoldsCheck optimizedTargetDescriptor targetAssignment
++
++/-- A passing extended boundary pins every canonical target limb to the exact
++source result reduced modulo that target prime, including negative representatives. -/
++theorem pinnedTargetCheck_sound (r : Fin 6 → ℤ) (y : ℕ) (limbs : Fin 3 → ℕ)
++    (sv tv : ℕ → BabyBear) (h : pinnedTargetCheck r y limbs sv tv=true) :
++    ∀ i, limbs i<targetPrime i ∧
++      (limbs i : ℤ)=FheRnsScale.deployedOutput r%(targetPrime i : ℤ) := by
++  simp only [pinnedTargetCheck,Bool.and_eq_true,decide_eq_true_eq] at h
++  obtain ⟨⟨⟨hs,hy⟩,hl⟩,hd⟩ := h
++  have hsource := FheSourceCertificate.pinnedSourceCheck_sound r y sv hs
++  have hb := optimizedTargetDescriptor_balanced tv
++    ((descriptorHoldsCheck_eq_true_iff _ _).mp hd)
++  have hp := balanced_projection (decoded tv) hb
++  rw [hy,hl] at hp
++  intro i
++  have he := projectionSound _ _ _ _ hp i
++  refine ⟨?_,projection_source r y _ _ _ hsource hp i⟩
++  rw [he]
++  exact Nat.mod_lt _ (target_factors.2.1 i).1
++
++/-- No choice of internal source or target assignments admits a changed first limb. -/
++theorem pinned_wrong_target_refused (sv tv : ℕ → BabyBear) :
++    pinnedTargetCheck FheRnsScale.capturedResidues 172481 ![172480,172481,172481] sv tv=false := by
++  cases hh : pinnedTargetCheck FheRnsScale.capturedResidues 172481 ![172480,172481,172481] sv tv with
++  | false => rfl
++  | true =>
++    have h := (pinnedTargetCheck_sound _ _ _ _ _ hh 0).2
++    rw [FheRnsScale.deployed_witness_inhabited.2.2.1] at h
++    norm_num [targetPrime] at h
++
++/-- The first certificate remains inhabited when an external target claim is
++changed; the new projection boundary is the constraint that refuses it. -/
++theorem coherent_boundary_falsifier :
++    FheSourceCertificate.accepts FheRnsScale.capturedResidues 172481
++      (FheSourceCertificate.honestCertificate FheRnsScale.capturedResidues) ∧
++    (∀ quotients slacks,¬ Projection 172481 ![172480,172481,172481] quotients slacks) :=
++  ⟨FheSourceCertificate.actual_plus_one_inhabited,captured_wrong_limb⟩
++
++end Minidregg.Compiler.FheTargetProjection
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.optimizedTargetDescriptor_balanced' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.optimizedTargetDescriptor_balanced
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.pinnedTargetCheck_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.pinnedTargetCheck_sound
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.pinned_wrong_target_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.pinned_wrong_target_refused
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.coherent_boundary_falsifier' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.coherent_boundary_falsifier
+--- /dev/null
++++ b/Compiler/FheTargetProjectionWitness.lean
+@@ -0,0 +1,53 @@
++/- Side-effect-free matrix witnesses. Full emitted assignment acceptance is
++executed by the separate runner, not claimed by these kernel proofs. -/
++import Compiler.FheTargetProjectionVerifier
++
++namespace Minidregg.Compiler.FheTargetProjection
++open Minidregg.Compiler.FheRnsScale
++set_option autoImplicit false
++set_option maxRecDepth 10000
++set_option maxHeartbeats 2000000
++
++def targetValues (y : ℕ) : Fin 10 → ℕ := fun j => match j.val with
++  | 0 => y
++  | 1 => y%68719403009
++  | 2 => y/68719403009
++  | 3 => 68719403008-y%68719403009
++  | 4 => y%68719230977
++  | 5 => y/68719230977
++  | 6 => 68719230976-y%68719230977
++  | 7 => y%137438822401
++  | 8 => y/137438822401
++  | _ => 137438822400-y%137438822401
++
++/-- Nonzero matrix witness with all nineteen-digit group capacities inhabited. -/
++theorem captured_matrix_inhabited :
++    Balanced (targetValues 172481) ∧
++    (∀ i,targetValues 172481 i<64^19) ∧
++    (∀ i,readLimbs (targetValues 172481) i=172481) := by
++  unfold Balanced
++  decide +kernel
++
++/-- The largest canonical source output also inhabits the finite matrix layout. -/
++theorem maximum_matrix_inhabited :
++    Balanced (targetValues (deployedQ.toNat-1)) ∧
++    (∀ i,targetValues (deployedQ.toNat-1) i<64^19) ∧
++    (∀ i,readLimbs (targetValues (deployedQ.toNat-1)) i=targetPrime i-1) := by
++  unfold Balanced
++  decide +kernel
++
++end Minidregg.Compiler.FheTargetProjection
++
++-- AXIOM PINS: actual checked print output.
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.captured_matrix_inhabited' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.captured_matrix_inhabited
++
++/-- info: 'Minidregg.Compiler.FheTargetProjection.maximum_matrix_inhabited' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.FheTargetProjection.maximum_matrix_inhabited

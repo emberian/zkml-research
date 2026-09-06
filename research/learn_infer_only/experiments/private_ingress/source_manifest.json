@@ -1,0 +1,53 @@
+{
+  "date_utc": "2026-09-06",
+  "lane": "private_ingress",
+  "search_accounting": {
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "web_search_queries": 2,
+    "pdf_downloads": 0
+  },
+  "web_queries": [
+    "multi input functional encryption randomized functionalities 2014 2015 Goyal Jain Koppula Sahai",
+    "\"Multi-Input Functional Encryption\" \"eprint.iacr.org\" Goldwasser Gordon 2014"
+  ],
+  "sources": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+      "sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+      "url": "https://eprint.iacr.org/2025/330",
+      "location": "Def4.2\u20134.6 pp21\u201327; Construction2 pp48\u201349; Thm6.1 pp50\u201351, proof hybrid structure pp51\u201354; Thm6.9 pp67\u201370",
+      "access": "construction and complete games read; theorem statements and selected reduction steps read; full confidentiality reduction NOT independently re-proved",
+      "instrument": "pdftotext -layout and rg/sed",
+      "extraction_command": "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf research/learn_infer_only/experiments/private_ingress/sources/2025-330.txt"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/727.pdf",
+      "sha256": "dae5804925e44859f31572d49bb8ae1d1511645fc98027c3f46290057cf448e9",
+      "url": "https://eprint.iacr.org/2013/727",
+      "location": "Def2\u20134 pp10\u201312 (PDF11\u201313); \u00a77 Def26\u201327 and randomized extension pp25\u201327 (PDF26\u201328)",
+      "access": "deterministic mixed-input game and randomized algorithms/definition/brief proof paragraph read; not the merged nine-author proceedings text",
+      "instrument": "pdftotext -layout and rg/sed",
+      "extraction_command": "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/727.pdf research/learn_infer_only/experiments/private_ingress/sources/2013-727.txt"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf",
+      "sha256": "58bb2eb72bc8e5c3eaf3193fefd6c72754ff428265231fb459b0de6c8db32e30",
+      "url": "https://eprint.iacr.org/2013/729",
+      "location": "Def2.4 and Remark2.5 p8; Def2.6 pp8\u20139 (PDF folios equal)",
+      "access": "single-input pre/post public-key games reread for exact boundary; existing FINITE_LADDER audit retained",
+      "instrument": "pdftotext -layout and rg/sed",
+      "extraction_command": "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf research/learn_infer_only/experiments/private_ingress/sources/2013-729.txt"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/774.pdf",
+      "sha256": "f338c2947a0a0feffead915930ebeb1bd5fd5a4a58b267522964f7cf3e21e1c2",
+      "url": "https://eprint.iacr.org/2013/774",
+      "location": "full extracted text targeted rg for randomized, probabilistic, Theorem, Corollary, simulat; \u00a72.1 pp5\u20136 (PDF7\u20138) syntax/game only",
+      "access": "targeted scan only; deterministic primitive alternative not audited as randomized MIFE",
+      "instrument": "pdftotext -layout and rg/sed",
+      "extraction_command": "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/774.pdf research/learn_infer_only/experiments/private_ingress/sources/2013-774.txt"
+    }
+  ]
+}

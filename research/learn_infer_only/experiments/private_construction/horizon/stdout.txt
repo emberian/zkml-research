@@ -1,0 +1,325 @@
+{
+  "classification": "exact proof/resource and ideal-interface controls, no cryptographic implementation",
+  "uniform_corollary_premises": [
+    "uniform PPT host",
+    "uniform PPT pre-setup initial-pair and Step-description sampler",
+    "setup-independent initial pair and Step",
+    "uniform polynomial primitive/circuit/resource bounds"
+  ],
+  "uniform_hybrid": {
+    "branches": 3,
+    "horizon": 2,
+    "local_SIM_pair_nodes": 13,
+    "one_SIM_sides": 26,
+    "one_SIM_ranked_choices_unique": true,
+    "ideal_uniform_finite_choice_gap": "1/52",
+    "strict_PPT_selector_bits": 5,
+    "strict_PPT_selector_domain_M": 32,
+    "strict_PPT_dummy_ranks": 6,
+    "dummy_experiment": "valid zero message, no key queries, constant output",
+    "strict_PPT_synthetic_one_SIM_gap": "1/64",
+    "computational_hybrid_edges": 272,
+    "edge_types": {
+      "iO": 126,
+      "punctured_PRF": 42,
+      "commitment": 26,
+      "NIWI_WI": 26,
+      "PKE": 52
+    },
+    "all_ranked_edges_unique": true,
+    "maximum_wrapper_depth": 2,
+    "right_edges_have_known_reversed_orientation": true,
+    "synthetic_root_gap": "1/2",
+    "synthetic_uniform_edge_gap": "1/544",
+    "no_actual_primitive_advantages_measured": true
+  },
+  "horizon_accounting": {
+    "branching_log_horizon": [
+      {
+        "lambda": 16,
+        "H_floor_log3_lambda": 2,
+        "FE_public_key_objects": 3,
+        "FE_function_key_objects": 7,
+        "proof_nodes": 13,
+        "computational_edges": 272
+      },
+      {
+        "lambda": 32,
+        "H_floor_log3_lambda": 3,
+        "FE_public_key_objects": 4,
+        "FE_function_key_objects": 10,
+        "proof_nodes": 40,
+        "computational_edges": 848
+      },
+      {
+        "lambda": 64,
+        "H_floor_log3_lambda": 3,
+        "FE_public_key_objects": 4,
+        "FE_function_key_objects": 10,
+        "proof_nodes": 40,
+        "computational_edges": 848
+      },
+      {
+        "lambda": 128,
+        "H_floor_log3_lambda": 4,
+        "FE_public_key_objects": 5,
+        "FE_function_key_objects": 13,
+        "proof_nodes": 121,
+        "computational_edges": 2576
+      },
+      {
+        "lambda": 256,
+        "H_floor_log3_lambda": 5,
+        "FE_public_key_objects": 6,
+        "FE_function_key_objects": 16,
+        "proof_nodes": 364,
+        "computational_edges": 7760
+      },
+      {
+        "lambda": 512,
+        "H_floor_log3_lambda": 5,
+        "FE_public_key_objects": 6,
+        "FE_function_key_objects": 16,
+        "proof_nodes": 364,
+        "computational_edges": 7760
+      },
+      {
+        "lambda": 1024,
+        "H_floor_log3_lambda": 6,
+        "FE_public_key_objects": 7,
+        "FE_function_key_objects": 19,
+        "proof_nodes": 1093,
+        "computational_edges": 23312
+      },
+      {
+        "lambda": 4096,
+        "H_floor_log3_lambda": 7,
+        "FE_public_key_objects": 8,
+        "FE_function_key_objects": 22,
+        "proof_nodes": 3280,
+        "computational_edges": 69968
+      }
+    ],
+    "one_command_polynomial_horizon_shape": [
+      {
+        "H": 2,
+        "proof_nodes": 3,
+        "computational_edges": 48
+      },
+      {
+        "H": 8,
+        "proof_nodes": 9,
+        "computational_edges": 144
+      },
+      {
+        "H": 32,
+        "proof_nodes": 33,
+        "computational_edges": 528
+      },
+      {
+        "H": 128,
+        "proof_nodes": 129,
+        "computational_edges": 2064
+      },
+      {
+        "H": 512,
+        "proof_nodes": 513,
+        "computational_edges": 8208
+      }
+    ]
+  },
+  "uniformity_controls": {
+    "fixed_family_eventually_zero_checks": 32,
+    "fixed_horizon_negligibility_does_not_prove_diagonal": [
+      {
+        "lambda": 16,
+        "H_ceil_log2_lambda": 4,
+        "diagonal_value": 1
+      },
+      {
+        "lambda": 32,
+        "H_ceil_log2_lambda": 5,
+        "diagonal_value": 1
+      },
+      {
+        "lambda": 64,
+        "H_ceil_log2_lambda": 6,
+        "diagonal_value": 1
+      },
+      {
+        "lambda": 128,
+        "H_ceil_log2_lambda": 7,
+        "diagonal_value": 1
+      },
+      {
+        "lambda": 256,
+        "H_ceil_log2_lambda": 8,
+        "diagonal_value": 1
+      },
+      {
+        "lambda": 512,
+        "H_ceil_log2_lambda": 9,
+        "diagonal_value": 1
+      },
+      {
+        "lambda": 1024,
+        "H_ceil_log2_lambda": 10,
+        "diagonal_value": 1
+      }
+    ],
+    "negligible_error_times_superpolynomial_branch_count": [
+      {
+        "lambda": 64,
+        "H_sqrt_lambda": 8,
+        "illustrative_base_error": "1/256",
+        "tree_weighted_bound": "511/256"
+      },
+      {
+        "lambda": 256,
+        "H_sqrt_lambda": 16,
+        "illustrative_base_error": "1/65536",
+        "tree_weighted_bound": "131071/65536"
+      },
+      {
+        "lambda": 1024,
+        "H_sqrt_lambda": 32,
+        "illustrative_base_error": "1/4294967296",
+        "tree_weighted_bound": "8589934591/4294967296"
+      },
+      {
+        "lambda": 4096,
+        "H_sqrt_lambda": 64,
+        "illustrative_base_error": "1/18446744073709551616",
+        "tree_weighted_bound": "36893488147419103231/18446744073709551616"
+      },
+      {
+        "lambda": 16384,
+        "H_sqrt_lambda": 128,
+        "illustrative_base_error": "1/340282366920938463463374607431768211456",
+        "tree_weighted_bound": "680564733841876926926749214863536422911/340282366920938463463374607431768211456"
+      }
+    ]
+  },
+  "nonvacuity": [
+    {
+      "state_bits": 8,
+      "horizon": 1,
+      "private_challenge_pair": [
+        0,
+        1
+      ],
+      "complete_paths_checked": 3,
+      "all_outward_traces_equal": true,
+      "raw_final_states_remain_distinct": true,
+      "noncommuting_two_step_terminal_bits": [
+        1,
+        0
+      ],
+      "two_step_order_witness_within_horizon": false,
+      "immediate_infer_is_nonconstant": true
+    },
+    {
+      "state_bits": 16,
+      "horizon": 2,
+      "private_challenge_pair": [
+        0,
+        1
+      ],
+      "complete_paths_checked": 9,
+      "all_outward_traces_equal": true,
+      "raw_final_states_remain_distinct": true,
+      "noncommuting_two_step_terminal_bits": [
+        1,
+        0
+      ],
+      "two_step_order_witness_within_horizon": true,
+      "immediate_infer_is_nonconstant": true
+    },
+    {
+      "state_bits": 32,
+      "horizon": 3,
+      "private_challenge_pair": [
+        0,
+        1
+      ],
+      "complete_paths_checked": 27,
+      "all_outward_traces_equal": true,
+      "raw_final_states_remain_distinct": true,
+      "noncommuting_two_step_terminal_bits": [
+        1,
+        0
+      ],
+      "two_step_order_witness_within_horizon": true,
+      "immediate_infer_is_nonconstant": true
+    },
+    {
+      "state_bits": 64,
+      "horizon": 3,
+      "private_challenge_pair": [
+        0,
+        1
+      ],
+      "complete_paths_checked": 27,
+      "all_outward_traces_equal": true,
+      "raw_final_states_remain_distinct": true,
+      "noncommuting_two_step_terminal_bits": [
+        1,
+        0
+      ],
+      "two_step_order_witness_within_horizon": true,
+      "immediate_infer_is_nonconstant": true
+    },
+    {
+      "state_bits": 128,
+      "horizon": 4,
+      "private_challenge_pair": [
+        0,
+        1
+      ],
+      "complete_paths_checked": 81,
+      "all_outward_traces_equal": true,
+      "raw_final_states_remain_distinct": true,
+      "noncommuting_two_step_terminal_bits": [
+        1,
+        0
+      ],
+      "two_step_order_witness_within_horizon": true,
+      "immediate_infer_is_nonconstant": true
+    },
+    {
+      "state_bits": 256,
+      "horizon": 5,
+      "private_challenge_pair": [
+        0,
+        1
+      ],
+      "complete_paths_checked": 243,
+      "all_outward_traces_equal": true,
+      "raw_final_states_remain_distinct": true,
+      "noncommuting_two_step_terminal_bits": [
+        1,
+        0
+      ],
+      "two_step_order_witness_within_horizon": true,
+      "immediate_infer_is_nonconstant": true
+    }
+  ],
+  "source": {
+    "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf",
+    "sha256": "58bb2eb72bc8e5c3eaf3193fefd6c72754ff428265231fb459b0de6c8db32e30",
+    "url": "https://eprint.iacr.org/2013/729",
+    "access": "Def2.3-2.4 pp6-8; Def3.1-3.4 pp10-12; simulator/11hybrids pp14-17; AppendixA pp19-24; AppendixC p25 footnote8 read. No exact concrete security parameters supplied by source."
+  },
+  "search_accounting": {
+    "new_SQL": 0,
+    "new_schema": 0,
+    "new_web": 0,
+    "cumulative_SQL": 8,
+    "cumulative_schema": 1,
+    "cumulative_web": 28,
+    "Kagi": 0,
+    "eprint_pdf_downloads": 0
+  },
+  "script_sha256": "7fc7e24fc84152feb199cea4c83758557ff889f5b513fb902fa63e038950e6e9",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]"
+}

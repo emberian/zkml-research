@@ -1,0 +1,751 @@
+{
+  "label": "EXECUTED",
+  "generated_utc": "2026-09-06T09:35:35.543052+00:00",
+  "scope": "Seven named local PDFs only; pdftotext -layout literal-token and locator census. No literature-absence or security conclusion follows from token counts.",
+  "script_sha256": "1f51bf1396e3d0a1d852425397726739e6b467c0292e82cc1d14b7650cd34bfc",
+  "sources": [
+    {
+      "id": "2025/2215",
+      "title": "Obfuscating Pseudorandom Functions is Post-Quantum Complete",
+      "url": "https://eprint.iacr.org/2025/2215",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf",
+      "pdf_sha256": "5ffbaabd34120b58c46b3c6763d6e665be7a535118566c709ad007ea0fa99866",
+      "pdf_bytes": 536474,
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2025-2215.txt",
+      "extract_sha256": "97c34540bef4e890cfec6797ce0aafb7e5098eddc268ce2e1b1522936781f0e4",
+      "pdf_page_count": 28,
+      "locator_matches": [
+        {
+          "locator": "Theorem 2.",
+          "pdf_pages_1_based": [
+            3
+          ]
+        },
+        {
+          "locator": "Definition 3 (Indistinguishability",
+          "pdf_pages_1_based": [
+            10
+          ]
+        },
+        {
+          "locator": "Lemma 1.",
+          "pdf_pages_1_based": [
+            11
+          ]
+        },
+        {
+          "locator": "Definition 6",
+          "pdf_pages_1_based": [
+            16,
+            17
+          ]
+        },
+        {
+          "locator": "Lemma 4 (Correctness)",
+          "pdf_pages_1_based": [
+            18
+          ]
+        },
+        {
+          "locator": "Theorem 5.",
+          "pdf_pages_1_based": [
+            18
+          ]
+        },
+        {
+          "locator": "Post-condition reduction.",
+          "pdf_pages_1_based": [
+            20
+          ]
+        },
+        {
+          "locator": "A.1       SMS",
+          "pdf_pages_1_based": [
+            25
+          ]
+        }
+      ],
+      "literal_token_census": {
+        "quantum": {
+          "occurrences_case_insensitive": 20,
+          "pdf_pages_1_based": [
+            1,
+            2,
+            3,
+            4,
+            24
+          ]
+        },
+        "QPT": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "auxiliary": {
+          "occurrences_case_insensitive": 17,
+          "pdf_pages_1_based": [
+            2,
+            3,
+            4,
+            6,
+            7,
+            8,
+            27,
+            28
+          ]
+        },
+        "sub-exponential": {
+          "occurrences_case_insensitive": 18,
+          "pdf_pages_1_based": [
+            1,
+            2,
+            3,
+            4,
+            11,
+            17
+          ]
+        },
+        "extractor": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        }
+      }
+    },
+    {
+      "id": "2013/729",
+      "title": "Functional Encryption for Randomized Functionalities",
+      "url": "https://eprint.iacr.org/2013/729",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf",
+      "pdf_sha256": "58bb2eb72bc8e5c3eaf3193fefd6c72754ff428265231fb459b0de6c8db32e30",
+      "pdf_bytes": 418060,
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2013-729.txt",
+      "extract_sha256": "8245de128df900e95815cf7f978dfdd3b08a0a19b18639675701c22a580326ec",
+      "pdf_page_count": 25,
+      "locator_matches": [
+        {
+          "locator": "Definition 2.4",
+          "pdf_pages_1_based": [
+            8,
+            9,
+            25
+          ]
+        },
+        {
+          "locator": "Lemma 2.9.",
+          "pdf_pages_1_based": [
+            9
+          ]
+        },
+        {
+          "locator": "Definition 3.1.",
+          "pdf_pages_1_based": [
+            10
+          ]
+        },
+        {
+          "locator": "Theorem 4.1.",
+          "pdf_pages_1_based": [
+            14
+          ]
+        },
+        {
+          "locator": "S3 simulates the decryption oracle",
+          "pdf_pages_1_based": [
+            15
+          ]
+        },
+        {
+          "locator": "Claim A.4.",
+          "pdf_pages_1_based": [
+            20
+          ]
+        },
+        {
+          "locator": "Lemma A.13.",
+          "pdf_pages_1_based": [
+            23
+          ]
+        },
+        {
+          "locator": "C      SIM security",
+          "pdf_pages_1_based": [
+            24
+          ]
+        }
+      ],
+      "literal_token_census": {
+        "quantum": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "QPT": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "auxiliary": {
+          "occurrences_case_insensitive": 1,
+          "pdf_pages_1_based": [
+            8
+          ]
+        },
+        "sub-exponential": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "extractor": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        }
+      }
+    },
+    {
+      "id": "2025/330",
+      "title": "(Multi-Input) FE for Randomized Functionalities, Revisited",
+      "url": "https://eprint.iacr.org/2025/330",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+      "pdf_sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+      "pdf_bytes": 786047,
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2025-330.txt",
+      "extract_sha256": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54",
+      "pdf_page_count": 78,
+      "locator_matches": [
+        {
+          "locator": "Definition 3.9",
+          "pdf_pages_1_based": [
+            18
+          ]
+        },
+        {
+          "locator": "Definition 4.3",
+          "pdf_pages_1_based": [
+            22
+          ]
+        },
+        {
+          "locator": "6.1    Parameters",
+          "pdf_pages_1_based": [
+            48
+          ]
+        },
+        {
+          "locator": "Theorem 6.1.",
+          "pdf_pages_1_based": [
+            50
+          ]
+        },
+        {
+          "locator": "Lemma 6.8.",
+          "pdf_pages_1_based": [
+            66
+          ]
+        }
+      ],
+      "literal_token_census": {
+        "quantum": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "QPT": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "auxiliary": {
+          "occurrences_case_insensitive": 1,
+          "pdf_pages_1_based": [
+            76
+          ]
+        },
+        "sub-exponential": {
+          "occurrences_case_insensitive": 15,
+          "pdf_pages_1_based": [
+            7,
+            13,
+            14,
+            65,
+            66,
+            67
+          ]
+        },
+        "extractor": {
+          "occurrences_case_insensitive": 1,
+          "pdf_pages_1_based": [
+            24
+          ]
+        }
+      }
+    },
+    {
+      "id": "2016/006",
+      "title": "Indistinguishability Obfuscation with Non-trivial Efficiency",
+      "url": "https://eprint.iacr.org/2016/006",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "pdf_sha256": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+      "pdf_bytes": 373210,
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2016-006.txt",
+      "extract_sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+      "pdf_page_count": 15,
+      "locator_matches": [
+        {
+          "locator": "Theorem 1.",
+          "pdf_pages_1_based": [
+            2
+          ]
+        },
+        {
+          "locator": "Theorem 6.",
+          "pdf_pages_1_based": [
+            9
+          ]
+        },
+        {
+          "locator": "Theorem 7.",
+          "pdf_pages_1_based": [
+            11
+          ]
+        }
+      ],
+      "literal_token_census": {
+        "quantum": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "QPT": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "auxiliary": {
+          "occurrences_case_insensitive": 1,
+          "pdf_pages_1_based": [
+            13
+          ]
+        },
+        "sub-exponential": {
+          "occurrences_case_insensitive": 18,
+          "pdf_pages_1_based": [
+            5,
+            6,
+            7,
+            9,
+            11
+          ]
+        },
+        "extractor": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        }
+      }
+    },
+    {
+      "id": "2013/650",
+      "title": "On Extractability (a.k.a. Differing-Inputs) Obfuscation",
+      "url": "https://eprint.iacr.org/2013/650",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/650.pdf",
+      "pdf_sha256": "99678ef11430c88727f77d0e6870baa150ea00f0c0166f50b68fd7f09f2858ce",
+      "pdf_bytes": 532389,
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2013-650.txt",
+      "extract_sha256": "f99ccf7726b95404ed1428e4b2ee1c3ccda7478d04bed8157ad96e2a6ea1428c",
+      "pdf_page_count": 46,
+      "locator_matches": [
+        {
+          "locator": "Definition 6.1",
+          "pdf_pages_1_based": [
+            32,
+            39
+          ]
+        },
+        {
+          "locator": "Theorem 6.2.",
+          "pdf_pages_1_based": [
+            33,
+            34,
+            39
+          ]
+        },
+        {
+          "locator": "Figure 2: Recursion algorithm",
+          "pdf_pages_1_based": [
+            35
+          ]
+        }
+      ],
+      "literal_token_census": {
+        "quantum": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "QPT": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "auxiliary": {
+          "occurrences_case_insensitive": 41,
+          "pdf_pages_1_based": [
+            6,
+            12,
+            13,
+            19,
+            20,
+            21,
+            22,
+            24,
+            25,
+            28,
+            29,
+            31,
+            32,
+            34,
+            35,
+            38,
+            40,
+            42,
+            43,
+            44,
+            45,
+            46
+          ]
+        },
+        "sub-exponential": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "extractor": {
+          "occurrences_case_insensitive": 48,
+          "pdf_pages_1_based": [
+            12,
+            13,
+            18,
+            19,
+            20,
+            21,
+            22,
+            24,
+            25,
+            27,
+            29,
+            30,
+            31,
+            33,
+            34,
+            35,
+            38,
+            40,
+            42,
+            44,
+            45
+          ]
+        }
+      }
+    },
+    {
+      "id": "2015/1113",
+      "title": "Multi-Input Functional Encryption with Unbounded-Message Security",
+      "url": "https://eprint.iacr.org/2015/1113",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/1113.pdf",
+      "pdf_sha256": "1e61b51bc070832b95cb5622276f8b36f87dddd2ecdb683585973a5e126deae0",
+      "pdf_bytes": 1114603,
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2015-1113.txt",
+      "extract_sha256": "6d8a0ef630eb9bc5455e22e18c42aa8cfad620e57506968c195e081991570d38",
+      "pdf_page_count": 23,
+      "locator_matches": [
+        {
+          "locator": "2.4    (d,",
+          "pdf_pages_1_based": [
+            8
+          ]
+        },
+        {
+          "locator": "Definition 3.",
+          "pdf_pages_1_based": [
+            8
+          ]
+        },
+        {
+          "locator": "Theorem 1.",
+          "pdf_pages_1_based": [
+            8
+          ]
+        },
+        {
+          "locator": "Figure 8: Extractor",
+          "pdf_pages_1_based": [
+            22
+          ]
+        },
+        {
+          "locator": "We finally run the extractor",
+          "pdf_pages_1_based": [
+            18
+          ]
+        }
+      ],
+      "literal_token_census": {
+        "quantum": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "QPT": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "auxiliary": {
+          "occurrences_case_insensitive": 5,
+          "pdf_pages_1_based": [
+            6,
+            8,
+            20,
+            21
+          ]
+        },
+        "sub-exponential": {
+          "occurrences_case_insensitive": 38,
+          "pdf_pages_1_based": [
+            1,
+            4,
+            5,
+            6,
+            7,
+            8,
+            10,
+            11,
+            12,
+            16,
+            21,
+            22
+          ]
+        },
+        "extractor": {
+          "occurrences_case_insensitive": 17,
+          "pdf_pages_1_based": [
+            5,
+            8,
+            11,
+            18,
+            21,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "id": "2025/096",
+      "title": "Simultaneous-Message and Succinct Secure Computation",
+      "url": "https://eprint.iacr.org/2025/096",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/096.pdf",
+      "pdf_sha256": "be3cbf9d2b66c2954fb8e566a57849b68a073f0d2e21bb9fa09c496500c7e168",
+      "pdf_bytes": 751322,
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2025-096.txt",
+      "extract_sha256": "5dc9530163a6bb69096a8258fe5262b97da8894da069b97a261af17d04792fa5",
+      "pdf_page_count": 53,
+      "locator_matches": [
+        {
+          "locator": "Definition 4 (Simultaneous-Message",
+          "pdf_pages_1_based": [
+            13
+          ]
+        },
+        {
+          "locator": "Security for Bob.",
+          "pdf_pages_1_based": [
+            21,
+            27
+          ]
+        },
+        {
+          "locator": "superpolynomial modulus-to-noise ratio",
+          "pdf_pages_1_based": [
+            5,
+            15,
+            18,
+            20,
+            21,
+            37
+          ]
+        }
+      ],
+      "literal_token_census": {
+        "quantum": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "QPT": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        },
+        "auxiliary": {
+          "occurrences_case_insensitive": 5,
+          "pdf_pages_1_based": [
+            16,
+            18,
+            48
+          ]
+        },
+        "sub-exponential": {
+          "occurrences_case_insensitive": 20,
+          "pdf_pages_1_based": [
+            1,
+            5,
+            11,
+            25,
+            27,
+            28,
+            44,
+            53
+          ]
+        },
+        "extractor": {
+          "occurrences_case_insensitive": 0,
+          "pdf_pages_1_based": []
+        }
+      }
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2025-2215.txt"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdfinfo",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf"
+      ],
+      "returncode": 0,
+      "stdout": "Title:           Obfuscating Pseudorandom Functions is Post-Quantum Complete\nSubject:         \nKeywords:        \nAuthor:          Pedro Branco, Bocconi University ; Abhishek Jain, NTT and JHU ; Akshayaram Srinivasan , University of Toronto \nCreator:         LaTeX with hyperref\nProducer:        pdfTeX-1.40.26\nCreationDate:    Mon Dec  8 12:04:41 2025 EST\nModDate:         Mon Dec  8 12:04:41 2025 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           28\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       536474 bytes\nOptimized:       yes\nPDF version:     1.5\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2013-729.txt"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdfinfo",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf"
+      ],
+      "returncode": 0,
+      "stdout": "Title:           \nSubject:         \nKeywords:        \nAuthor:          \nCreator:         LaTeX with hyperref package\nProducer:        pdfTeX-1.40.13\nCreationDate:    Wed Oct 29 18:10:53 2014 EDT\nModDate:         Wed Oct 29 18:10:53 2014 EDT\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           25\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       418060 bytes\nOptimized:       no\nPDF version:     1.5\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2025-330.txt"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdfinfo",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf"
+      ],
+      "returncode": 0,
+      "stdout": "Title:           \nSubject:         \nKeywords:        \nAuthor:          \nCreator:         LaTeX with hyperref\nProducer:        pdfTeX-1.40.25\nCreationDate:    Sat Dec  6 10:47:26 2025 EST\nModDate:         Sat Dec  6 10:47:26 2025 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           78\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       786047 bytes\nOptimized:       yes\nPDF version:     1.5\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2016-006.txt"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdfinfo",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf"
+      ],
+      "returncode": 0,
+      "stdout": "Creator:         TeX\nProducer:        pdfTeX-1.40.16\nCreationDate:    Mon Jan  4 13:25:15 2016 EST\nModDate:         Mon Jan  4 13:25:15 2016 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           15\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       373210 bytes\nOptimized:       no\nPDF version:     1.5\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/650.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2013-650.txt"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdfinfo",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/650.pdf"
+      ],
+      "returncode": 0,
+      "stdout": "Creator:         TeX\nProducer:        pdfTeX-1.40.14\nCreationDate:    Wed Apr 16 13:19:35 2014 EDT\nModDate:         Wed Apr 16 13:19:35 2014 EDT\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           46\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       532389 bytes\nOptimized:       no\nPDF version:     1.5\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/1113.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2015-1113.txt"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdfinfo",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/1113.pdf"
+      ],
+      "returncode": 0,
+      "stdout": "Creator:         LaTeX with hyperref package\nProducer:        Mac OS X 10.8.4 Quartz PDFContext\nCreationDate:    Mon Nov 16 10:48:11 2015 EST\nModDate:         Mon Nov 16 10:48:11 2015 EST\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           23\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       1114603 bytes\nOptimized:       no\nPDF version:     1.3\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/096.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/extracts/2025-096.txt"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "pdfinfo",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/096.pdf"
+      ],
+      "returncode": 0,
+      "stdout": "Title:           SMS\nSubject:         \nKeywords:        \nAuthor:          \nCreator:         LaTeX with hyperref\nProducer:        pdfTeX-1.40.26\nCreationDate:    Mon Feb 24 18:40:43 2025 EST\nModDate:         Mon Feb 24 18:40:43 2025 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           53\nEncrypted:       no\nPage size:       595.276 x 841.89 pts (A4)\nPage rot:        0\nFile size:       751322 bytes\nOptimized:       yes\nPDF version:     1.5\n",
+      "stderr": ""
+    }
+  ],
+  "query_accounting": {
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "web_search_queries": 4,
+    "web_open_urls": 3,
+    "pdf_downloads": 0
+  }
+}

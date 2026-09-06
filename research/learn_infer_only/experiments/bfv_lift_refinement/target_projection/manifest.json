@@ -1,0 +1,107 @@
+{
+  "label": "EXECUTED artifact pins and DERIVED two-descriptor arithmetic cost sums",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/target_projection/finalize.py"
+  ],
+  "formal_patch_sha256": "61f35e724f5de29d7338a381232b31e60c36cf39845665f8ac4073f150e0ea97",
+  "exact_axiom_pins": 22,
+  "fixtures": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/target_projection/optimized-descriptor.json.gz",
+      "sha256": "21a6feb077dace53fa468a58f8d747516437030d51d4b593efd1f6de293c5676",
+      "uncompressed_sha256": "76513c43f78c3cbffe367ea303f9707e66cb2cb5c37d6ba6e698708c7a2cfba6",
+      "compressed_bytes": 201626,
+      "uncompressed_bytes": 2085375
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/target_projection/retained-inputs.json.gz",
+      "sha256": "179d8aed1de26a87bcf7748e65069c295ad0beed3d38bb641b5e9ea345d56edf",
+      "uncompressed_sha256": "3ab1ecd0d97465e547fb6c8eca59c25a9e27909cf27fe04f1e79b276fc6514f3",
+      "compressed_bytes": 2469,
+      "uncompressed_bytes": 306803
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/target_projection/captured-source-variables.json.gz",
+      "sha256": "f4d39dcce8a44ee165b3d19c4227dc143a0c6e5f1351fdafc1928d8992410e4b",
+      "uncompressed_sha256": "6291504aabb467094570b063b1f26fe8572e8ad4cbf7c25cdb2e999943277fda",
+      "compressed_bytes": 2415,
+      "uncompressed_bytes": 91501
+    }
+  ],
+  "sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/target_projection/finalize.py",
+      "sha256": "f3d66ebe5746d2b650216a12b16ca4f3bffb27cd16461849465ed81ab65af896"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/target_projection/generate.py",
+      "sha256": "3a7b14465b3cdcf18e94025bb028f33ba9450eb78312fee80fbe338f671b6f4a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/target_projection/prepare_fixtures.py",
+      "sha256": "22022ba690a2080001fc388594388018b3d08873d299d9e592eb9be84204385d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/target_projection/replay_projection.py",
+      "sha256": "4a6985f5df7b75ed69cafda5ccecfd20ab9dd16b3eacd9b617774f1ef3524f13"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean",
+      "sha256": "4f6f6f1d5bc89d416a9275f732fb623736232c6ef4bfe3abfccdf64bacb0f1d0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionAxiomReport.lean",
+      "sha256": "c1583bfb9c695576ab8d3f7d6d2016a041a7756176f08442e16dbbb0aff3a57f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionChecks.lean",
+      "sha256": "81cc2227f011b42d89fb5b32515d575857de277cec61c41a26d26199b29550a5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionEmit.lean",
+      "sha256": "23653006b13b339c5d3a1e58255e273c8d607e17a108ec4c1c4b38614a585363"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean",
+      "sha256": "8194cb7e55cce3ae1e3266a35267e00f26f588b3cd0246a608dedc1fee8fd439"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionVerifier.lean",
+      "sha256": "41d8e514bc3a93463a7b6cbae4bc44b0de24298c8e4c2b3c4deedf1ce09a2e2b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean",
+      "sha256": "dd0c8ee14a1dbc779f7d4c16ec6b9c314444304c9652a13134b966fd8386a79c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/REPORT.md",
+      "sha256": "d3c549197699dab1e8a06becd94428f69d11a46c42429fc4140448fbaf8b5dd8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/build.py",
+      "sha256": "ad6dbaddd63676c771d0ea6c0f62a7ff348f4e0ecec5650f6dd4d32ae7ff5c57"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/pin_axioms.py",
+      "sha256": "c846acf3caaacdd95ebbb03ba5196ab6bbbf63275702db4bef457bef069b1ea3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/validate.py",
+      "sha256": "ec7e7be97ce48db386b7a57a963a19ef4b070f04bfdb7639a84322f44a634998"
+    }
+  ],
+  "combined_source_and_target": {
+    "gates": 161027,
+    "variables": 37576,
+    "zero_checks": 45208
+  },
+  "naive_full_tensor_repetition": {
+    "gates": 1978699776,
+    "variables": 461733888,
+    "zero_checks": 555515904
+  },
+  "cost_scope": "Two separate descriptor arithmetic counts; excludes external equality checks, source provenance/convolution/NTT, commitment/proof overhead. Repetition is neither lower bound nor latency. No charge to the separate sliding-window Learn bill.",
+  "metered_search_queries": 0,
+  "pdf_downloads": 0
+}

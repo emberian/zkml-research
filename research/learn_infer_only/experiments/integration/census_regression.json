@@ -1,0 +1,51 @@
+{
+  "checker_sha256": "27ba33f594b35df63a69e6bcc843dba63b73347de3409f63a8d25bc6d194419e",
+  "cases": [
+    {
+      "case": "lawful_typed_predicate",
+      "expected_acceptance": true,
+      "actual_acceptance": true,
+      "detail": {
+        "pins": 1,
+        "admit_identifiers": 2
+      }
+    },
+    {
+      "case": "lawful_named_definition",
+      "expected_acceptance": true,
+      "actual_acceptance": true,
+      "detail": {
+        "pins": 1,
+        "admit_identifiers": 1
+      }
+    },
+    {
+      "case": "admit_tactic",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "detail": "Forbidden constructs in proposed proof source: [{'token': 'admit', 'line': 1}, {'token': 'by admit', 'line': 1}]"
+    },
+    {
+      "case": "hidden_admit_tactic",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "detail": "Forbidden constructs in proposed proof source: [{'token': 'by admit', 'line': 2}]"
+    },
+    {
+      "case": "sorry_tactic",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "detail": "Forbidden constructs in proposed proof source: [{'token': 'sorry', 'line': 1}]"
+    },
+    {
+      "case": "comment_mask",
+      "expected_acceptance": true,
+      "actual_acceptance": true,
+      "detail": {
+        "pins": 1,
+        "admit_identifiers": 0
+      }
+    }
+  ],
+  "scope": "Lexical regression only; actual Lean elaboration and exact axiom guards remain required."
+}

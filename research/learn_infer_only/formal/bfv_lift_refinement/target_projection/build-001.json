@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjection.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean:35:45: error: unsolved goals\ny : \u2115\nlimbs quotients slacks : Fin 3 \u2192 \u2115\nh : Projection y limbs quotients slacks\ni : Fin 3\nhe : y = targetPrime i * quotients i + limbs i\nhr : limbs i + slacks i = targetPrime i - 1\nhp : 0 < targetPrime i\nhl : limbs i < targetPrime i\n\u22a2 limbs i = limbs i % targetPrime i\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean:49:53: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  d \u2265 0\n  c \u2265 0\n  b \u2265 0\n  b - c - d \u2265 1\n  a \u2265 0\n  a - b \u2264 0\nwhere\n a := \u2191y % \u2191(targetPrime i)\n b := \u2191(targetPrime i - 1)\n c := \u2191((fun i => y % targetPrime i) i)\n d := \u2191((fun i => targetPrime i - 1 - y % targetPrime i) i)\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean:58:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern\n  \u2191(?m % ?n)\nin the target expression\n  (fun x => \u2191x) (limbs i) = (fun x => \u2191x) (y % targetPrime i)\n\nr : Fin 6 \u2192 \u2124\ny : \u2115\nlimbs quotients slacks : Fin 3 \u2192 \u2115\nhy : \u2191y = deployedOutput r % deployedQ\nh : Projection y limbs quotients slacks\ni : Fin 3\nhh : (fun x => \u2191x) (limbs i) = (fun x => \u2191x) (y % targetPrime i)\n\u22a2 \u2191(limbs i) = deployedOutput r % \u2191(targetPrime i)\n",
+    "stderr": "",
+    "elapsed_seconds": 3.3349925830116263
+  }
+]

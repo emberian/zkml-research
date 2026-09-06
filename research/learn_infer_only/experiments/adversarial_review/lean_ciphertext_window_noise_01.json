@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Theory/CiphertextWindowNoise.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/CiphertextWindowNoise.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs",
+  "started_utc": "2026-09-06T09:44:21.035508+00:00",
+  "elapsed_seconds": 3.164742542008753,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/CiphertextWindowNoise.lean": "20bcc3b442c5e86f6d6abe4aad439228d5c6e965aa15f49140faa3769e2e8702",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean": "ad2e496b8f8d1fbf7125cf6be9306a97c9933a66c7882066d087a2b04c8605ee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Theory/CiphertextWindow.olean": "37d7489fc9b1f23ddd477c97046dd34452e43d12bedee6a9b540db87c88dd27a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/IntegerWindowNoise.lean": "b3d49c23cf627f4598d5c81ed36ba93541f8e0463fe54da8629f2ee7d924bd98",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Theory/IntegerWindowNoise.olean": "d47f0cc045f4b127339927f11b21e7dcb96be27ec0db2e1670ae27d8c59ca390"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

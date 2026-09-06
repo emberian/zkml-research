@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/build/Theory/IntegerWindowNoise.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/IntegerWindowNoise.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "899c1de2fe94be01b2217c93da82a668ea4fc65f2408566e69e0f76c60add396",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/IntegerWindowNoise.lean:242:33: error: Invalid projection: Projections cannot be used on functions, and\n  ih\nhas function type\n  ms \u2260 [] \u2192 0 \u2264 (List.map (fun m => q * m % t) ms).sum \u2227 (List.map (fun m => q * m % t) ms).sum \u2264 \u2191ms.length * (t - 1)\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/IntegerWindowNoise.lean:242:33: error: Invalid projection: Projections cannot be used on functions, and\n  ih\nhas function type\n  ms \u2260 [] \u2192 0 \u2264 (List.map (fun m => q * m % t) ms).sum \u2227 (List.map (fun m => q * m % t) ms).sum \u2264 \u2191ms.length * (t - 1)\n",
+  "stderr": "",
+  "elapsed_seconds": 3.356595916004153
+}

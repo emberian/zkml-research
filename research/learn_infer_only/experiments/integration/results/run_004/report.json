@@ -1,0 +1,163 @@
+{
+  "label": "EXECUTED integration of selected proposed Lean modules",
+  "status": "failed",
+  "started_utc": "2026-09-06T09:20:16.816949+00:00",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "research/learn_infer_only/experiments/integration/check_all_formal.py",
+    "--manifest",
+    "research/learn_infer_only/experiments/integration/modules_finished_batch.json"
+  ],
+  "commands": [
+    {
+      "label": "companion_head_before",
+      "log": "001_companion_head_before.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_status_before",
+      "log": "002_companion_status_before.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_version",
+      "log": "003_lean_version.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_source_list",
+      "log": "004_companion_source_list.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_head_after",
+      "log": "005_companion_head_after.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_status_after",
+      "log": "006_companion_status_after.json",
+      "exit_code": 0
+    }
+  ],
+  "no_clean_full_build_claim": true,
+  "metered_search_queries": 0,
+  "manifest": {
+    "schema": 1,
+    "expected_theorem_pins": 371,
+    "scope": "Finished baseline+EMA+generic contextual EMA+distribution budget+AirSimplify+BFV source certificate; cached read-only dependency oleans; not a clean full build.",
+    "lanes": [
+      {
+        "name": "resident",
+        "root": "formal",
+        "patch": "formal/minidregg-resident-release.patch",
+        "expected_pins": 31
+      },
+      {
+        "name": "policy",
+        "root": "formal/recovery_policy",
+        "patch": "formal/recovery_policy/minidregg-private-policy-evolution.patch",
+        "expected_pins": 15
+      },
+      {
+        "name": "durable",
+        "root": "formal/durable_integration",
+        "patch": "formal/durable_integration/minidregg-durable-integration.patch",
+        "expected_pins": 45
+      },
+      {
+        "name": "randomness",
+        "root": "formal/randomness_composition",
+        "patch": "formal/randomness_composition/minidregg-randomness-selection.patch",
+        "expected_pins": 13
+      },
+      {
+        "name": "adaptive",
+        "root": "formal/randomness_composition",
+        "patch": "formal/randomness_composition/minidregg-adaptive-context.patch",
+        "expected_pins": 13
+      },
+      {
+        "name": "schedule",
+        "root": "formal/randomness_composition",
+        "patch": "formal/randomness_composition/minidregg-multi-receipt-schedule.patch",
+        "expected_pins": 20
+      },
+      {
+        "name": "bfv_lift",
+        "root": "formal/bfv_lift_refinement",
+        "patch": "formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch",
+        "expected_pins": 27
+      },
+      {
+        "name": "bfv_engine",
+        "root": "formal/bfv_lift_refinement/engine_refinement",
+        "patch": "formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch",
+        "expected_pins": 33
+      },
+      {
+        "name": "integer",
+        "root": "formal/integer_certificate_emission",
+        "patch": "formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch",
+        "expected_pins": 20
+      },
+      {
+        "name": "ema",
+        "root": "formal/durable_integration",
+        "patch": "formal/durable_integration/minidregg-ema-semantic-bridge.patch",
+        "expected_pins": 48
+      },
+      {
+        "name": "generic_contextual_ema",
+        "root": "formal/randomness_composition/generic",
+        "patch": "formal/randomness_composition/generic/minidregg-contextual-gate-ema.patch",
+        "expected_pins": 42
+      },
+      {
+        "name": "distribution_budget",
+        "root": "formal/recovery_policy",
+        "patch": "formal/recovery_policy/minidregg-private-distribution-budget.patch",
+        "expected_pins": 14
+      },
+      {
+        "name": "air_simplification",
+        "root": "formal/integer_certificate_emission/optimization",
+        "patch": "formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch",
+        "expected_pins": 27
+      },
+      {
+        "name": "bfv_source_certificate",
+        "root": "formal/bfv_lift_refinement/source_certificate",
+        "patch": "formal/bfv_lift_refinement/source_certificate/minidregg-fhe-source-certificate.patch",
+        "expected_pins": 23
+      }
+    ],
+    "checks": [
+      "formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean",
+      "formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean"
+    ],
+    "excluded": [
+      {
+        "glob": "experiments/adversarial_review/**/*.lean",
+        "reason": "Independent review witnesses and snapshots are not proposed umbrella modules."
+      },
+      {
+        "glob": "formal/**/build/**",
+        "reason": "Generated overlays are not source-discovery inputs."
+      },
+      {
+        "glob": "formal/bfv_lift_refinement/source_certificate/*/*.lean",
+        "reason": "Only six library modules carried by the selected patch are included; executable IO runner is not an umbrella import."
+      }
+    ]
+  },
+  "companion_head_before": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+  "companion_status_before": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+  "error": "Theorem-to-pin matching ambiguous or absent: ['constant']",
+  "traceback": "Traceback (most recent call last):\n  File \"/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py\", line 454, in main\n    integrate(run, args.manifest.resolve(), args.checks)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py\", line 284, in integrate\n    inventory = census(text)\n  File \"/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py\", line 126, in census\n    raise ValueError(f'Theorem-to-pin matching ambiguous or absent: {unmatched}')\nValueError: Theorem-to-pin matching ambiguous or absent: ['constant']\n",
+  "changed_companion_sources": [],
+  "companion_head_after": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+  "companion_status_after": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+  "elapsed_seconds": 0.31179112500103656,
+  "finished_utc": "2026-09-06T09:20:17.128957+00:00"
+}

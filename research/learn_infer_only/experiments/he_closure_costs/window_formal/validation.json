@@ -1,0 +1,165 @@
+{
+  "modules": [
+    {
+      "module": "Theory/IntegerWindowNoise",
+      "source_sha256": "b3d49c23cf627f4598d5c81ed36ba93541f8e0463fe54da8629f2ee7d924bd98",
+      "successful_check": "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_10.json",
+      "theorem_count": 20,
+      "pins": [
+        "Minidregg.Theory.IntegerWindowNoise.floor_scaled_residual",
+        "Minidregg.Theory.IntegerWindowNoise.fresh_residual_bound",
+        "Minidregg.Theory.IntegerWindowNoise.row_scaled_residual",
+        "Minidregg.Theory.IntegerWindowNoise.row_residual_bound",
+        "Minidregg.Theory.IntegerWindowNoise.list_residual_bound",
+        "Minidregg.Theory.IntegerWindowNoise.rounded_exact_of_residual",
+        "Minidregg.Theory.IntegerWindowNoise.window_correctness",
+        "Minidregg.Theory.IntegerWindowNoise.centered_exact",
+        "Minidregg.Theory.IntegerWindowNoise.window_signed_correctness",
+        "Minidregg.Theory.IntegerWindowNoise.signed_query_split",
+        "Minidregg.Theory.IntegerWindowNoise.readout_positive_negative_split",
+        "Minidregg.Theory.IntegerWindowNoise.split_queryL1",
+        "Minidregg.Theory.IntegerWindowNoise.floor_encoding_shift",
+        "Minidregg.Theory.IntegerWindowNoise.floor_carry_exact",
+        "Minidregg.Theory.IntegerWindowNoise.floor_carry_bounds",
+        "Minidregg.Theory.IntegerWindowNoise.queryL1_le",
+        "Minidregg.Theory.IntegerWindowNoise.row_score_bound",
+        "Minidregg.Theory.IntegerWindowNoise.readout_score_bound",
+        "Minidregg.Theory.IntegerWindowNoise.signedProductSum_bound",
+        "Minidregg.Theory.IntegerWindowNoise.public_key_noise_bound"
+      ]
+    },
+    {
+      "module": "Theory/CiphertextWindowNoise",
+      "source_sha256": "20bcc3b442c5e86f6d6abe4aad439228d5c6e965aa15f49140faa3769e2e8702",
+      "successful_check": "experiments/he_closure_costs/window_formal/lean_CiphertextWindowNoise_07.json",
+      "theorem_count": 4,
+      "pins": [
+        "Minidregg.Theory.CiphertextWindowNoise.queue_phase_sum",
+        "Minidregg.Theory.CiphertextWindowNoise.queue_integer_lift",
+        "Minidregg.Theory.CiphertextWindowNoise.reachable_decode",
+        "Minidregg.Theory.CiphertextWindowNoise.reachable_signed_decode"
+      ]
+    },
+    {
+      "module": "Assurance/ResidentBfvWindowNoise",
+      "source_sha256": "cc98b5498fb737b7cd5bf5ccd3b8bda079e9c7707aa7f1c83e0401da35b8ecb6",
+      "successful_check": "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowNoise_08.json",
+      "theorem_count": 24,
+      "pins": [
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_modulus_product",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_fresh_bound",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_query_budget",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_score_budget",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_margin_lhs",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_margin",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_score_nonwrap",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_polynomial_nonwrap",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_public_key_noise_bound",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_window_correctness",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.actual_signed_window",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.witness_fresh",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.witness_premises",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.witness_row_score",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.witness_score",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.witness_nonzero_error",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.premise_inhabitation",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.honest_signed_readout",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.wrong_expiry_debt",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.replacement_same_plaintext",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.wrong_expiry_actual_misses",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.wrong_expiry_not_exact_queue",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.omitted_margin_fails",
+        "Minidregg.Assurance.ResidentBfvWindowNoise.omitted_signed_range_fails"
+      ]
+    },
+    {
+      "module": "Assurance/ResidentBfvWindowPhase",
+      "source_sha256": "74b61e28fe43883aa3e96717f5fa881f2a16bb1b70eb6e42dc269a167d540fac",
+      "successful_check": "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowPhase_05.json",
+      "theorem_count": 14,
+      "pins": [
+        "Minidregg.Assurance.ResidentBfvWindowPhase.checked",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.reached",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.phase_premises",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.queue_rows",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.fresh_rows",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.actual_premises",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.queue_score",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.decoded",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.subject",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.nonzero_message_error_query",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.row_phase_exact",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.same_plaintext_distinct_phase",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.different_expiry_bytes_refused",
+        "Minidregg.Assurance.ResidentBfvWindowPhase.nonzero_ciphertext"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "/Users/ember/dev/minidregg/Theory.lean",
+      "sha256": "8f8ffa996db7929d0146f597223ea14a97667d0741ae56e281585eb0c4321b11"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Assurance.lean",
+      "sha256": "2a2056d18af342d028b38afa2a4eaf4fc9300dff2bed4ec1d6ebf2a1e2817c05"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh",
+      "sha256": "66f66a89dad655e7f2837062d489ddb1b817e74a6903d24ecef80b85536b1ec1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean",
+      "sha256": "ad2e496b8f8d1fbf7125cf6be9306a97c9933a66c7882066d087a2b04c8605ee"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean",
+      "sha256": "7b215707ee631a3d04854f6dd2fd044511dbcfd6d59b21c602380ff1d4c8a77d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean",
+      "sha256": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Theory/IndexedProgram.lean",
+      "sha256": "a578ee063520787481e9acc09718d5ebe9fb9675e72a2992260e7631aa826156"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/CLAUDE.md",
+      "sha256": "18ebc13de065377cfd216282759f01fd889b823a07c1f923c6a93204b371d570"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/ATLAS.md",
+      "sha256": "d43c10614bde325a28ff73ca5127d0d5ffbda19eeb48d4238c1126caf1d873ad"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/lean-toolchain",
+      "sha256": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325"
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/build/package_overlay/scripts/check-import-boundary.sh"
+      ],
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/window_formal/proposed_minidregg.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/build/patch_baseline",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "scope": "proposed algebraic modules, not Rust refinement or companion umbrella build",
+  "patch_sha256": "25a1c9de9bad4ede5226b83597d5194b4345681442bd417b03f3f568a88facef"
+}

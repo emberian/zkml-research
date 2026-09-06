@@ -10,10 +10,9 @@ sliding window has a history-independent noise bound when expiry subtracts
 the **same ciphertext** that entered. The queue, fresh ingress and bounded
 readout supply this property; rank does not. See §8.
 
-[EXECUTED] Artifacts include exact arithmetic models and a genuine vendored-BFV
-probe: finite packed additive Learn/Infer, plus noise/rounding falsifiers. The
-test harness retains the full decryption key. Neither is a no-master-read or
-Dark resident. No CPU/GPU timing is claimed; §6 labels heuristic attack costs.
+[EXECUTED] Exact arithmetic models and genuine BFV probes cover finite packed
+Learn/Infer and noise/rounding falsifiers. Full test keys remain: no Dark
+resident. No CPU/GPU timing is claimed; §6 labels heuristic attack costs.
 
 ## 1. Landed foundation and correction
 
@@ -287,8 +286,7 @@ constructed. [OPEN] Source implementation/estimator profile unaudited here.
 ## 8. Positive closure: exact ciphertext sliding windows
 
 [DERIVED] Let A be the sum of the current queue of at most W ciphertexts.
-Append fresh c, then expire the identical oldest object o: A←A+c−o. The
-ciphertext group identity A=Σqueue holds for every number of turnovers.
+Append fresh c, expire identical oldest o: A←A+c−o; A=Σqueue at every turn.
 Reencryption of o's plaintext is insufficient. A host may archive old
 ciphertexts; expiry is an arithmetic operation, not cryptographic erasure.
 
@@ -376,23 +374,26 @@ Scalar-only recipient release, hidden proofs, input range/provenance, queue
 identity/currentness and full PQ assurance remain open. An issuer
 knowing a label and public fixed features can encrypt their product; a
 private state-dependent learning error cannot be moved to that issuer
-without changing the trust split. The utility lane's structured 8D window
-control and failed semantic-feature transfer remain separate utility claims.
+without changing the trust split. Utility results are separately recorded in `ADAPTATION_UTILITY.md`; its
+new selected representation histories match this 577-coordinate/W128 bill.
+
+[EXECUTED Lean / conditional algebra] `formal/he_closure_costs/README.md`
+records exact-floor, signed-readout and modular queue-composition theorems,
+actual Q83 nonzero witnesses and expiry/margin/range falsifiers. The proposed
+patch retains explicit Rust/RNS/scaler and restricted-release obligations.
 
 ## 9. Resume, execution and search accounting
 
 [EXECUTED] Python results/run log, lowrank CSV, BFV build/run logs,Cargo.lock,
 source_manifest preserve commands,seeds,outputs,versions/hashes. Final BFV
-run includes codec sizes and the full packed loop; earlier debug/extended
-logs remain. No companion tree or shared truth file was written.
+run includes codec sizes and the full packed loop; debug logs remain.
 
 [EXECUTED] Scry: **2 SELECTs +1 schema call**; Kagi 0. LoRA query returns 4
 metadata rows. Exact conjunction homomorphic/continual/learning returns 0;
 this is not literature absence. Corpus: OpenAlex snapshot named in returned
 JSON. Both SELECTs report free_slack and spend_nanodollars=0. Web supplied
-primary source reads. CVPR polynomial-LoRA page/PDF returned 403; not audited.
-Direct arXiv snapshot failed RemoteDisconnected; web construction read worked.
-
+primary source reads; CVPR page/PDF returned 403 and direct arXiv failed;
+web construction read worked. No companion or shared truth file was written.
 [OPEN] Next: realize exactfloor+scalar release with complete credential/PQ
 profile; join issuer-side fixed features to utility/provenance controls;
 then audit one bootstrapped changed-learner implementation including weights,

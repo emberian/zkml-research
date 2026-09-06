@@ -1,0 +1,166 @@
+{
+  "experiments/he_closure_costs/window_formal/check_lean.py": {
+    "sha256": "3301e78499894f5b1dcbc15e06fd86fa13c4631e7969869c8e65071912fb4404",
+    "bytes": 2685
+  },
+  "experiments/he_closure_costs/window_formal/lean_CiphertextWindowNoise_01.json": {
+    "sha256": "0ace9aadbff03252b899b5bf1d4e5945e892c92bb28b42ab910db7276ccad77b",
+    "bytes": 2107
+  },
+  "experiments/he_closure_costs/window_formal/lean_CiphertextWindowNoise_02.json": {
+    "sha256": "bf7c00a965b882be247ef867cd1266c7c469f66a22094826c6f9e5be0c5857e8",
+    "bytes": 2813
+  },
+  "experiments/he_closure_costs/window_formal/lean_CiphertextWindowNoise_03.json": {
+    "sha256": "682ee4581c3723d8da0e50d673a06c438045bd7feab345f9d8b9d806334d7219",
+    "bytes": 1885
+  },
+  "experiments/he_closure_costs/window_formal/lean_CiphertextWindowNoise_04.json": {
+    "sha256": "2bb2abdb1351d499557f118730be85a4f94bb12c77eac4d1adb3ab166e4a36b5",
+    "bytes": 2368
+  },
+  "experiments/he_closure_costs/window_formal/lean_CiphertextWindowNoise_05.json": {
+    "sha256": "0adfdfc260f35d607a3f2787534bbdd33b1cbaabbe6bbdb1ff629b5b7fc6e84c",
+    "bytes": 2368
+  },
+  "experiments/he_closure_costs/window_formal/lean_CiphertextWindowNoise_06.json": {
+    "sha256": "36748019e955ea04a409e09fb50bc2bbf23c7876b61d34589104b920f8becd7c",
+    "bytes": 1884
+  },
+  "experiments/he_closure_costs/window_formal/lean_CiphertextWindowNoise_07.json": {
+    "sha256": "835626d29233650e3ee16895bdcf4e8555397a6f0f60b7779ae0223a0d967c53",
+    "bytes": 1883
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_01.json": {
+    "sha256": "bccc135a271ad489b83f736c8e6b5cdc9cc2eaa9919a53fc09bb5c016acf90f3",
+    "bytes": 4197
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_02.json": {
+    "sha256": "ce58977f20936f7d1866c34ee9d335a6add7637a2d89281a432c13ceae0f3321",
+    "bytes": 2719
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_03.json": {
+    "sha256": "2a339b686d5dafd4a5dcbe73ad4908853ace0d3324485f1eec5475533d3ec219",
+    "bytes": 2427
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_04.json": {
+    "sha256": "ddce491370859d363428cc7c34cf557d94ed5392f51e73b504330d3375820c56",
+    "bytes": 2428
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_05.json": {
+    "sha256": "5d13169b332f52b92e8b32a1903a818aa74cc20df8f5ea8592c0cdfe7c1b161b",
+    "bytes": 1777
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_06.json": {
+    "sha256": "63ca755769b2e2d810d21c51d3d41e5d0323d1cb77162f2e5db3db5523d61ad4",
+    "bytes": 4094
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_07.json": {
+    "sha256": "d65fa916f629c0585bcc93dc97a13a969b4b0fe3ba3d4b1d9556e51d55a2e4b3",
+    "bytes": 5413
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_08.json": {
+    "sha256": "a26cbf2d3759cfd87d2c75a668086cccb73bfe2787d87f8beee4341ffc0b5ff1",
+    "bytes": 4206
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_09.json": {
+    "sha256": "e0b21c1dca589feec5016c34d678f10309219465c31763b819d363193d9ee533",
+    "bytes": 1878
+  },
+  "experiments/he_closure_costs/window_formal/lean_IntegerWindowNoise_10.json": {
+    "sha256": "c592ce35f2ec6dfce022015e96f08d3803bd5c9619b61050d2b29a19d5b1ae31",
+    "bytes": 1878
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowNoise_01.json": {
+    "sha256": "3f04eab69f2384580e7965dd12158b8c60bce5ecf105418d5d1590b00bba09f7",
+    "bytes": 9854
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowNoise_02.json": {
+    "sha256": "ec12c6bac6a83e5bc510761731f5112cb32d640165c3012cfee0027d70f4d621",
+    "bytes": 1791
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowNoise_03.json": {
+    "sha256": "fbf422a780192fd4c91f892417004a90d0fcc057a30676a68ac58d945979be64",
+    "bytes": 4346
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowNoise_04.json": {
+    "sha256": "89a07090b97c8486be11b320bf9bd11265146adf412c53de8dec48239cbbc5e2",
+    "bytes": 4346
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowNoise_05.json": {
+    "sha256": "620c22fe07ff6f978e7f61ce2ebdb475b38a43c0870d5464b27b3ddad4dcd0ce",
+    "bytes": 5509
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowNoise_06.json": {
+    "sha256": "abc2b38118ca67fede4b10b000c66b34ff6b693b550c6a4c168c44d39a484562",
+    "bytes": 4612
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowNoise_07.json": {
+    "sha256": "26a5500f28451cb2d1ec50dcdcc737ec75f34f0e4959fa9e32476ada1e9ce290",
+    "bytes": 1893
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowNoise_08.json": {
+    "sha256": "9655c0caf69ee4a266a2986d6d6cd89145831a5729bcf562785043fd3a3b2717",
+    "bytes": 1893
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowPhase_01.json": {
+    "sha256": "6fd8833fb36e0ca38225cc95243c2b677941b250245baab67a70cf76f9f92087",
+    "bytes": 2182
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowPhase_02.json": {
+    "sha256": "844088806c5cbbd99e3ccad3fa57de4fe080b7364c580ab585b514c55d2d2bae",
+    "bytes": 1892
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowPhase_03.json": {
+    "sha256": "acffbedeff6f6b25c55827c62ba962363f04619f7ff11f7d6b30779d5983b999",
+    "bytes": 3567
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowPhase_04.json": {
+    "sha256": "67ceb7d8f6b4a9031cdd6814cbc1152e9e7ce0e50627d4fb99590b2493085726",
+    "bytes": 1893
+  },
+  "experiments/he_closure_costs/window_formal/lean_ResidentBfvWindowPhase_05.json": {
+    "sha256": "af2aa53e07241112eb39644eef71859d4837bb9e5523b2964da9dffce7262ce9",
+    "bytes": 1892
+  },
+  "experiments/he_closure_costs/window_formal/package.py": {
+    "sha256": "02ec941acfc3d7fbcba7e0b1ab08947357d6268405696de1d17f8503e1a20444",
+    "bytes": 5272
+  },
+  "experiments/he_closure_costs/window_formal/pin_axioms.py": {
+    "sha256": "f7b91b38a7729f32969a0abe24e085120051f509a4b23e44abb1d17f826da5e8",
+    "bytes": 1212
+  },
+  "experiments/he_closure_costs/window_formal/proposed_minidregg.patch": {
+    "sha256": "25a1c9de9bad4ede5226b83597d5194b4345681442bd417b03f3f568a88facef",
+    "bytes": 59212
+  },
+  "experiments/he_closure_costs/window_formal/validation.json": {
+    "sha256": "10273a2bf1039644ee2811fee4045027a40e6d69dbaa1bac70ec1ef040088729",
+    "bytes": 8543
+  },
+  "formal/he_closure_costs/.gitignore": {
+    "sha256": "020c2606e8ed484089c2083e0be438b9d0736bee1558a6b76af0d58bd23f69cf",
+    "bytes": 8
+  },
+  "formal/he_closure_costs/Assurance/ResidentBfvWindowNoise.lean": {
+    "sha256": "cc98b5498fb737b7cd5bf5ccd3b8bda079e9c7707aa7f1c83e0401da35b8ecb6",
+    "bytes": 13404
+  },
+  "formal/he_closure_costs/Assurance/ResidentBfvWindowPhase.lean": {
+    "sha256": "74b61e28fe43883aa3e96717f5fa881f2a16bb1b70eb6e42dc269a167d540fac",
+    "bytes": 7826
+  },
+  "formal/he_closure_costs/README.md": {
+    "sha256": "b0b5e2c36631a7926539ddc45fdadb951c3b717184fb7b56183a792759410277",
+    "bytes": 10224
+  },
+  "formal/he_closure_costs/Theory/CiphertextWindowNoise.lean": {
+    "sha256": "20bcc3b442c5e86f6d6abe4aad439228d5c6e965aa15f49140faa3769e2e8702",
+    "bytes": 5881
+  },
+  "formal/he_closure_costs/Theory/IntegerWindowNoise.lean": {
+    "sha256": "b3d49c23cf627f4598d5c81ed36ba93541f8e0463fe54da8629f2ee7d924bd98",
+    "bytes": 19389
+  }
+}

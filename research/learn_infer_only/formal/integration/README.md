@@ -8,6 +8,13 @@ and 265 pins. The baseline is preserved separately in
 `minidregg-combined-resident-217.patch`; the passed EMA extension is preserved as
 `minidregg-combined-resident-265.patch`. Both runs passed; their summary is
 `../../experiments/integration/REPORT.md`.
+
+[EXECUTED] The current combined proposal is the passed 371-pin, 27-module batch,
+also preserved as `minidregg-combined-resident-371.patch`. It adds the generic
+contextual EMA proof, distributional budget, simplifier and exact BFV source
+certificate modules. The intermediate 307-pin pass is preserved separately.
+All passed sets, hashes, exact commands, and the two corrected census-only
+failures are summarized in the same report.
 It is generated against the **current companion file bytes**, including any
 pre-existing dirty changes, rather than assuming that HEAD describes those bytes.
 It leaves the independently reviewed lane patches unchanged.

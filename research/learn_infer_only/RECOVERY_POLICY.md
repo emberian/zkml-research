@@ -83,3 +83,49 @@ queried function-key set. Its displayed games do not remove old keys on revocati
 Exact local source hash/access record is in `RANDOMNESS_COMPOSITION.md`; this
 supports cumulative-key accounting for that stated game, not a universal theorem
 about every migration construction.
+# Distributional nonvacuity needs its own observation budget
+
+[EXECUTED] A follow-on module,
+`formal/recovery_policy/Theory/PrivateDistributionBudget.lean`, distinguishes
+point-state separation from distributional disclosure. It reuses the existing
+coordinate reader. The protected bit b selects a uniformly sampled state
+`(seed, seed XOR b)` with an unobserved fair seed. The b=0 and b=1 supports are
+disjoint and their parities differ. Every distinct pair of point states can be
+separated by some coordinate query; nevertheless, one coordinate observation
+has exactly the same distribution in both worlds.
+
+[EXECUTED theorem] `oneRead_samples` fixes the entire transcript multiset for
+every finite public sequence of coordinate flips/swaps, one coordinate read,
+and arbitrary postprocessing into any output type. It uses only `Quot.sound`.
+`oneRead_worlds_equal` and `oneRead_event_count` give exact distribution/event
+equality after dividing the two equal-count samples by two. An independent public
+coin can select the policy before the read. `active_witness_uniform` inhabits a
+nonempty update sequence; `worlds_disjoint` pins the protected-predicate difference.
+`two_reads_recover` and `second_read_distinguishes` supply the budget falsifier.
+
+[DERIVED scope] This is a finite ideal-interface statement, not encryption or a
+claim about all adaptive learners. The only state-dependent view is that one bit;
+public preprocessing and arbitrary continuation/output chosen from it are included
+as postprocessing, but a second read or a hidden-state side channel is excluded.
+The fair seed must be unknown to the observer. Retained initializer coins would
+change this view. A relation between point states is a sufficient nonvacuity
+instrument, not a necessary one for distribution-valued challenges.
+
+[EXECUTED] `experiments/recovery_policy/distribution_audit.py` checks 2,912 Boolean
+policies with zero through five public updates: 11,648 transcripts and 11,648 equal
+event-count checks. It retains all six distinct point-pair coordinate separators
+and the two-read parity outputs. The Lean theorem covers arbitrary finite update
+lists and arbitrary postprocessing types; the finite script is an independent
+control, not its universal proof. Command/result are in `distribution_audit.json`.
+
+[EXECUTED verification] Fourteen exact axiom pins pass in
+`experiments/recovery_policy/lean_distribution_03.json`; the staged Theory umbrella,
+both import boundaries and patch applicability pass in `review_distribution_01.json`.
+Source SHA256 `2b17dd27ac821a50f7364a6ff6d116d93189c587f6ee765bf19f64300b927d52`;
+patch SHA256 `e0ff46cd158debc50d901a4059266eef1afc311f968462ad345b5a87eca2a188`.
+The original policy source and its 15-pin patch remain unchanged. The common lane
+harness now accepts `--module PrivateDistributionBudget --review`, retaining its
+old default; on a fresh checkout run the default first to build the local dependency.
+Eight pins have no axioms, four use only `Quot.sound`, one also uses `propext`, and
+the concrete two-read multiset inequality uses the standard triple. Existing
+dependency oleans were reused; a combined source integration is separately queued.

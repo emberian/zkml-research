@@ -4,11 +4,20 @@
     "/opt/homebrew/opt/python@3.14/bin/python3.14",
     "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_results_review.py"
   ],
-  "started_utc": "2026-09-06T08:58:17.274143+00:00",
+  "started_utc": "2026-09-06T08:58:39.513395+00:00",
   "inputs": {
     "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/artifact_manifest.json": "2f751b326410d4816f23c305c8d51cbcbf9950b5756c084049683d38141c98f0",
     "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/summary.json": "f3afdca8e73c438c6f74f674001991f1b77f176bc0b5ce48da497385cc935068",
-    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_results_review.py": "0d3c8c0b18d94d3e4d62e18cbf744efacdb813d917e9eadd6324eef2ea1b1c11",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_results_review.py": "82ae85282a797e653b2026cc253bd2e1e752d82ad7f49fcc66e4e69d6004aa45",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/environment-final-provenance.json": "5be43b1cf138f35786e569b05724801863b7f60a7074f5c76cfc1c7ab5e4353c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/nd.py": "d87fca7bb191a0fb29b24507897e00c8beba784da552b6b90a982c718fc1c459",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/lwe.py": "9ff2ac14f6480863d741eac1c2a9c935adf87a8954d2344024a22b581133e230",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/lwe_parameters.py": "72bde0ae3bdd89a4de02b249a1da144256b8d84d009b28b59bde6364b0bc8ecc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/lwe_primal.py": "f46e682a3eb0b7e3b175c326f96244caee5df6f07df78974cdb834e1d6f006d1",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/lwe_dual.py": "8f6a077589393f907fbcc87b9ef812beafc73bf5cc78abc4f857924b80a21a8b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/lwe_bkw.py": "6caf4a9a1301a173a3c28863c39535d13c4927d7e870f37d68ad4b09e894a9f2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/reduction.py": "b1354702c88a8309f78d373ae7f4b0b4347799abfd1a13c07e0fa75bf87bd59a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/conf.py": "b8270fcc702ef72e00308fc691112f374da4d0d0395665b7c244c9b99b77f7dd",
     "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/first_pass_ready.jsonl": "7f7b18290bafe253108f938f30be1376fb4899c6e5591e0e0d127b3336704805",
     "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/additional_attacks.jsonl": "e89fd672e6fdfd1cf6792a7c7ac21640d56380797e9347f7b4ba41c377e5d1c0",
     "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/quantum_depth_width.jsonl": "b10a6b0f8ec1a0f343d5307acf465e3104391944fc926ee7e5624c875f5b28d5",
@@ -78,6 +87,16 @@
       }
     }
   ],
+  "pinned_estimator_sources_verified": {
+    "nd.py": true,
+    "lwe.py": true,
+    "lwe_parameters.py": true,
+    "lwe_primal.py": true,
+    "lwe_dual.py": true,
+    "lwe_bkw.py": true,
+    "reduction.py": true,
+    "conf.py": true
+  },
   "primary_completed_lattice_rows": 72,
   "selected": [
     {

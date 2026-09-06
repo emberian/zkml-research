@@ -1,0 +1,36 @@
+{
+  "artifacts": {
+    ".gitignore": "337613937fda3acd2ba7834aa3e1b1eacfe04c9cafb336dfd6dfb7b6827d8f3e",
+    "PREREGISTRATION.md": "1d6c88d6e42adba24240fd6450fffed93f1b739fea89ef14cd920fcfc85b35e7",
+    "README.md": "d45c9d2af8b98059bbbec6abba456e0894b6188756beac6c98fd463b1e63609b",
+    "audit.log": "10eeb83e27ec23fe8313302d54b26c4903c51e827c9fc396794c8cdf36e754c2",
+    "audit.py": "e8a45a27ede2e48b8575a3475549efc7a094e3968d6dea34f5bc19709af8e863",
+    "build_01.log": "ca3f5233b200af1cfb9f6d475d93a147e39b29839258e1a63378371f2e2b8786",
+    "build_02.log": "6ff1c8cc607ac6af50472665d7ef8fe260d80a5079e242673900eb648134ef7a",
+    "build_fixture.log": "51d30e2b4873a54db2ba186aad6885668241f292d40a85e27ef451d5997dac61",
+    "build_fixture.py": "48a84f6eb516987fc121ce32d85a5eb4c0923d713da1e546786102a1252dde53",
+    "comparator_falsifier.jsonl": "63db6490d64dc55a67fa3d132bed448b5ae7101affb1bf768a7bcec4df930f57",
+    "comparator_falsifier.stderr": "157fe21c8ac2076a4938662f9578b1be20bcc45ee0a93909173c76910d027a5d",
+    "comparator_falsifier.txt": "526a661a0a415b5253bdc5794c26b16748e549fc0ba6d275d7ba09e755f6bc9c",
+    "fixture.txt": "41978a10b974a3e8b7f30d5f9c66f7d396fdf7df83b723b3f14dc00359cdb4c0",
+    "fixture_manifest.json": "2b19c9dc1ef78af7b12051a7e7df1d6f09b4021b472b509941b7603d3989e5a9",
+    "probe/Cargo.lock": "f9d395a9b54a74a1f11d35dddf8a8753870d860bf20068d8e9b79d2c2e6ea805",
+    "probe/Cargo.toml": "f597c944ce3d433c74c504e2cbef5103a5f9c4fa2f6fef6a6bec091fb97442a8",
+    "probe/src/main.rs": "911fb36831d9d04b983ecd782c9f69b9b97ec0596147079177a681b9c09c5112",
+    "results.json": "ee7f465648dfe494622f1908d51ce4e5989796f342275dd304e167bba20c448a",
+    "run_01.jsonl": "c4a8f0d19044dc73c7b777590c44c4a1993fed5343b0e1965a9615eef600b6db",
+    "run_01.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "frozen_compiler_tranches": {
+    "artifact_hashes.json": {
+      "existing_artifacts_checked": 15,
+      "manifest_sha256": "2ac2a262fd224c4699a7f3c4b35382756d9ff90802641b706bf814f9f5a0ef75",
+      "unchanged": true
+    },
+    "optimization/artifact_hashes.json": {
+      "existing_artifacts_checked": 12,
+      "manifest_sha256": "e8142b3fdac27e2530da045024315937a9db6e673884de3f140933afe37848b8",
+      "unchanged": true
+    }
+  }
+}

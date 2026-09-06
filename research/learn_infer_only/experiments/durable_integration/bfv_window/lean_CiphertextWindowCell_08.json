@@ -1,0 +1,18 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean",
+  "source_sha256": "133815cca284fe6d1dbe2ab78976593a52c113537efbc50af3b89a59d3da67d5",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build/Assurance/CiphertextWindowCell.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Assurance.CiphertextWindowCell.state_ext' depends on axioms: [propext, Quot.sound]\n'Minidregg.Assurance.CiphertextWindowCell.canonical_state_opens' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.CiphertextWindowCell.writePatch_accepted' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.CiphertextWindowCell.patch_post' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.CiphertextWindowCell.materialized_window_binding' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.CiphertextWindowCell.executed_history_invariant' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.CiphertextWindowCell.executed_is_durable_reachable' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": "",
+  "elapsed_seconds": 3.2567710876464844,
+  "olean_sha256": "f26b5cd6fe12299b72b376a525a191e3bc62cc381b935272cf8e9f2e57751114"
+}

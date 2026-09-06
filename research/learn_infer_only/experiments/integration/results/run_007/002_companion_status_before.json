@@ -1,0 +1,13 @@
+{
+  "label": "companion_status_before",
+  "command": [
+    "git",
+    "status",
+    "--short"
+  ],
+  "cwd": "/Users/ember/dev/minidregg",
+  "exit_code": 0,
+  "stdout": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+  "stderr": "",
+  "elapsed_seconds": 0.0319636670028558
+}

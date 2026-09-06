@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionWitness.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean:27:60: error: failed to synthesize\n  Decidable\n    (Balanced (targetValues 172481) \u2227\n      (\u2200 (i : Fin 10), targetValues 172481 i < 64 ^ 19) \u2227 readLimbs (targetValues 172481) = fun x => 172481)\n\nHint: Additional diagnostic information may be available using the `set_option diagnostics true` command.\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean:33:79: error: failed to synthesize\n  Decidable\n    (Balanced (targetValues (deployedQ.toNat - 1)) \u2227\n      (\u2200 (i : Fin 10), targetValues (deployedQ.toNat - 1) i < 64 ^ 19) \u2227\n        \u2200 (i : Fin 3), readLimbs (targetValues (deployedQ.toNat - 1)) i = targetPrime i - 1)\n\nHint: Additional diagnostic information may be available using the `set_option diagnostics true` command.\n",
+    "stderr": "",
+    "elapsed_seconds": 2.846162333007669
+  }
+]

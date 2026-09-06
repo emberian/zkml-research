@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/CiphertextWindowCell.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window",
+  "started_utc": "2026-09-06T09:44:09.265902+00:00",
+  "elapsed_seconds": 3.3632582910067867,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean": "7b215707ee631a3d04854f6dd2fd044511dbcfd6d59b21c602380ff1d4c8a77d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean": "ad2e496b8f8d1fbf7125cf6be9306a97c9933a66c7882066d087a2b04c8605ee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Theory/CiphertextWindow.olean": "37d7489fc9b1f23ddd477c97046dd34452e43d12bedee6a9b540db87c88dd27a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/ResidentDurableIntegration.olean": "b7069e7c5f3af16399d3006f68af534a09d1ad078120fcc3fbede531c5fbd957"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/build/Theory/CiphertextWindowNoise.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/CiphertextWindowNoise.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "ddb4eee72f15c2840f215517579d44f2b36f9f2f0972831f327509c590ff425e",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/CiphertextWindowNoise.lean:35:19: error: unsolved goals\ncase cons\nCt : Type\ninst\u271d : AddCommGroup Ct\nq r : \u2115\nphase : Ct \u2192+ ZMod q\ninterpret : Entry Ct \u2192 Row r\nquery : Fin r \u2192 \u2124\ne : Entry Ct\nrest : List (Entry Ct)\nih :\n  (\u2200 e \u2208 rest, phase e.ciphertext = \u2191(rowPhase query (interpret e))) \u2192\n    phase (List.map Entry.ciphertext rest).sum = \u2191(readoutPhase query (List.map interpret rest))\nh : \u2200 e_1 \u2208 e :: rest, phase e_1.ciphertext = \u2191(rowPhase query (interpret e_1))\nhe : phase e.ciphertext = \u2191(rowPhase query (interpret e))\nhr : phase (List.map Entry.ciphertext rest).sum = \u2191(readoutPhase query (List.map interpret rest))\n\u22a2 \u2191(rowPhase query (interpret e)) + \u2191(readoutPhase query (List.map interpret rest)) =\n    \u2191(rowPhase query (interpret e)) + \u2191(List.map (rowPhase query) (List.map interpret rest)).sum\n",
+  "stderr": "",
+  "elapsed_seconds": 3.331828415990458
+}

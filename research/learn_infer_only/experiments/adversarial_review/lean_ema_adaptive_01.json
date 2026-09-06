@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/ResidentEmaAdaptive.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Assurance/ResidentEmaAdaptive.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic",
+  "started_utc": "2026-09-06T09:18:12.341730+00:00",
+  "elapsed_seconds": 3.270225833010045,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Assurance/ResidentEmaAdaptive.lean": "99dc9d24683880bb4a434c5e204185512e9212f7334910def85f4355d22b7ac9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Compiler/ContextualGate.lean": "d17239cd62b3f09ab6f4a3a0adfa117876a088e60061f2fcaeb1a81a5750fc00",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/ContextualGate.olean": "a2c854ef42c5f17b12578ef281a17322ea9c1b1f5a7656f2ca8e524e7019f7af",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaWitness.lean": "e412cad31eba9eac302a597239fcaee14987b79db6b134c0de884e2ca74f3eeb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/ResidentEmaWitness.olean": "69ea5dfc3ebfeff2f74f787e6539313cbda92e97391893b44e0110df6baec8e2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean": "9eb3318ca21240162355a7e166e258b085aaa038b66f466c2b8f90df777fd90e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/ResidentAdaptiveContext.olean": "01d0a4b089622a2676d6342c33813fe3350f0568d2147d40328e66c436018789"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

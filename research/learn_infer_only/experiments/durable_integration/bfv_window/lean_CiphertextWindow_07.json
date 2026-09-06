@@ -1,0 +1,17 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean",
+  "source_sha256": "4c1c2925301e864a5840e9d7f93a524bd0d3728eda81ddbf4a02dde1efbd7721",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build/Theory/CiphertextWindow.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean:311:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern\n  decide (0 < W \u2227 s.queue.length \u2264 W \u2227 s.nextId = s.nextId)\nin the target expression\n  (decide (0 < W \u2227 s.queue.length \u2264 W \u2227 True) &&\n      if s.queue.length < W then (if s.queue.length < W then none else s.queue.head?).isNone\n      else\n        match s.queue, if s.queue.length < W then none else s.queue.head? with\n        | old :: tail, some proposed => sameSerialized codec old proposed\n        | x, x_1 => false) =\n    true\n\nCt : Type\ninst\u271d : AddCommGroup Ct\ncodec : LawfulCodec Ct\nadmit : \u2115 \u2192 List UInt8 \u2192 Bool\nW : \u2115\ns : State Ct\nciphertext : Ct\nhw : 0 < W\nhb : s.queue.length \u2264 W\nha : admit s.nextId (codec.encode ciphertext) = true\n\u22a2 (decide (0 < W \u2227 s.queue.length \u2264 W \u2227 True) &&\n      if s.queue.length < W then (if s.queue.length < W then none else s.queue.head?).isNone\n      else\n        match s.queue, if s.queue.length < W then none else s.queue.head? with\n        | old :: tail, some proposed => sameSerialized codec old proposed\n        | x, x_1 => false) =\n    true\n",
+  "stderr": "",
+  "elapsed_seconds": 3.4005868434906006
+}

@@ -1,0 +1,57 @@
+{
+  "scope": "isolated module/umbrella against existing oleans, not a full clean build",
+  "source_sha256": "2b17dd27ac821a50f7364a6ff6d116d93189c587f6ee765bf19f64300b927d52",
+  "patch_sha256": "e0ff46cd158debc50d901a4059266eef1afc311f968462ad345b5a87eca2a188",
+  "base_umbrella_sha256": "8f8ffa996db7929d0146f597223ea14a97667d0741ae56e281585eb0c4321b11",
+  "checks": [
+    {
+      "label": "umbrella",
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build/Theory.olean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build/Theory.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "boundary_staged",
+      "command": [
+        "bash",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/build",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "label": "boundary_existing",
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "label": "patch",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/minidregg-private-distribution-budget.patch"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_passed": true
+}

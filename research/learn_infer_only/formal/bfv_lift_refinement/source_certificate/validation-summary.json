@@ -1,0 +1,34 @@
+{
+  "label": "EXECUTED fresh isolated dependency chain plus side-effect-free Compiler umbrella; no full Minidregg build",
+  "exact_axiom_pins": {
+    "FheSourceCertificate": 7,
+    "FheSourceCertificateLayout": 3,
+    "FheSourceCertificateEmit": 8,
+    "FheSourceCertificateOptimized": 2,
+    "FheSourceCertificateVerifier": 2,
+    "FheSourceCertificateWitness": 1
+  },
+  "total_pins": 23,
+  "sources_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean": "8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean": "ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7"
+  },
+  "patch_sha256": "55ffecdf2db1d330b0cc76126781dbc39c4ea581fe4edc4fbb7da7830e771d2f",
+  "all_commands_passed": true,
+  "not_claimed": [
+    "universal emitted-layout completeness",
+    "whole concrete checker kernel witness",
+    "committed-source/proof-protocol binding",
+    "constrained target-limb-array projection",
+    "Rust Shoup/NTT refinement",
+    "private release or master-read absence"
+  ]
+}

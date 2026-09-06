@@ -1,0 +1,318 @@
+{
+  "classification": "exact symbolic/finite controls, no FE/PKE implementation",
+  "compatibility": {
+    "finite_disjoint_support_tables": [
+      {
+        "lambda": 1,
+        "s": 2,
+        "coin_pairs_per_message": 4,
+        "statistical_distance": 1,
+        "first_component_event_left": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "first_component_event_right": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "theorem_epsilon": {
+          "numerator": 1,
+          "denominator": 32
+        },
+        "gap_over_epsilon": 16,
+        "same_next_state_distance": 0,
+        "within_message_collision_event": {
+          "numerator": 1,
+          "denominator": 1
+        }
+      },
+      {
+        "lambda": 2,
+        "s": 3,
+        "coin_pairs_per_message": 16,
+        "statistical_distance": 1,
+        "first_component_event_left": {
+          "numerator": 1,
+          "denominator": 4
+        },
+        "first_component_event_right": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "theorem_epsilon": {
+          "numerator": 1,
+          "denominator": 256
+        },
+        "gap_over_epsilon": 64,
+        "same_next_state_distance": 0,
+        "within_message_collision_event": {
+          "numerator": 1,
+          "denominator": 1
+        }
+      },
+      {
+        "lambda": 3,
+        "s": 4,
+        "coin_pairs_per_message": 64,
+        "statistical_distance": 1,
+        "first_component_event_left": {
+          "numerator": 1,
+          "denominator": 8
+        },
+        "first_component_event_right": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "theorem_epsilon": {
+          "numerator": 1,
+          "denominator": 2048
+        },
+        "gap_over_epsilon": 256,
+        "same_next_state_distance": 0,
+        "within_message_collision_event": {
+          "numerator": 1,
+          "denominator": 1
+        }
+      },
+      {
+        "lambda": 4,
+        "s": 5,
+        "coin_pairs_per_message": 256,
+        "statistical_distance": 1,
+        "first_component_event_left": {
+          "numerator": 1,
+          "denominator": 16
+        },
+        "first_component_event_right": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "theorem_epsilon": {
+          "numerator": 1,
+          "denominator": 16384
+        },
+        "gap_over_epsilon": 1024,
+        "same_next_state_distance": 0,
+        "within_message_collision_event": {
+          "numerator": 1,
+          "denominator": 1
+        }
+      },
+      {
+        "lambda": 5,
+        "s": 6,
+        "coin_pairs_per_message": 1024,
+        "statistical_distance": 1,
+        "first_component_event_left": {
+          "numerator": 1,
+          "denominator": 32
+        },
+        "first_component_event_right": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "theorem_epsilon": {
+          "numerator": 1,
+          "denominator": 131072
+        },
+        "gap_over_epsilon": 4096,
+        "same_next_state_distance": 0,
+        "within_message_collision_event": {
+          "numerator": 1,
+          "denominator": 1
+        }
+      },
+      {
+        "lambda": 6,
+        "s": 7,
+        "coin_pairs_per_message": 4096,
+        "statistical_distance": 1,
+        "first_component_event_left": {
+          "numerator": 1,
+          "denominator": 64
+        },
+        "first_component_event_right": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "theorem_epsilon": {
+          "numerator": 1,
+          "denominator": 1048576
+        },
+        "gap_over_epsilon": 16384,
+        "same_next_state_distance": 0,
+        "within_message_collision_event": {
+          "numerator": 1,
+          "denominator": 1
+        }
+      }
+    ],
+    "general_exponent_inequalities_checked": 65536,
+    "symbolic_claim": "2^(-lambda) > 2^(-2*s-lambda) for every s>0",
+    "ordinary_security_attack_claimed": false
+  },
+  "sizes": {
+    "classification": "illustrative exact size/type controls only",
+    "per_output_copy_model": {
+      "base_bits": 8,
+      "answer_bits": 1,
+      "terminal_bits": 8,
+      "backward_widths": [
+        8,
+        72,
+        584,
+        4680,
+        37448,
+        299592,
+        2396744
+      ],
+      "same_format_inequalities_rejected": 15360,
+      "necessary_condition": "L >= b*(L+a), impossible for b>1 and L>0"
+    },
+    "compact_model": {
+      "ciphertext_widths": [
+        48,
+        48,
+        48,
+        48,
+        48,
+        48,
+        48
+      ],
+      "dependency_dag": [
+        "parameters -> public Enc code",
+        "(public Enc code, Step) -> F_cmd",
+        "(F_cmd, erased raw master) -> issued key"
+      ],
+      "function_to_encryptor_back_edge": false
+    }
+  },
+  "continuing_interface": {
+    "classification": "executed ideal interface, no encrypted state implementation",
+    "states": [
+      [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          3,
+          0
+        ]
+      ]
+    ],
+    "outward_traces": [
+      [
+        "ACK",
+        "ACK",
+        0,
+        "ACK",
+        1
+      ],
+      [
+        "ACK",
+        "ACK",
+        0,
+        "ACK",
+        1
+      ]
+    ],
+    "distinct_next_states_with_equal_all_future_outward_behavior": true,
+    "closed_relation_checks": 8,
+    "different_visible_states_have_different_permitted_answers": true,
+    "restored_answer": 0,
+    "current_answer": 1,
+    "privacy_kind": "behavioral quotient; hidden coordinate has no future authorized influence"
+  },
+  "sources": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+      "title": "Reusable Garbled Circuits and Succinct Functional Encryption",
+      "access": "Remark3.6 p22, Remark3.7 and section3.1 opening p23 read; product-per-output scope, not a field-wide bound",
+      "url": "https://eprint.iacr.org/2012/733"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/451.pdf",
+      "sha256": "e7226c5e1806ea916f2c08350745510da93dada3a80ac7d4e2637dce8df218ec",
+      "title": "Candidate Indistinguishability Obfuscation and Functional Encryption for all circuits",
+      "access": "section6 definitions/game pp22-23 and section6.1 algorithms pp23-24 read; no full reduction or candidate obfuscation audit",
+      "url": "https://eprint.iacr.org/2013/451"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf",
+      "sha256": "58bb2eb72bc8e5c3eaf3193fefd6c72754ff428265231fb459b0de6c8db32e30",
+      "title": "Functional Encryption for Randomized Functionalities",
+      "access": "Def2.1-2.6 pp5-9, Remark2.8 p9, construction pp12-14 and Theorem4.1 p14 read; no full reduction audit",
+      "url": "https://eprint.iacr.org/2013/729"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+      "sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+      "title": "(Multi-Input) FE for Randomized Functionalities, Revisited",
+      "access": "Def3.8 p18 perfect PKE correctness, Def4.1-4.4 pp21-23, Def5.1 p28 footnote, section6.1/Construction2 pp48-49, Theorem6.1 p50; no full reduction or QPT audit",
+      "url": "https://eprint.iacr.org/2025/330"
+    }
+  ],
+  "search_accounting": {
+    "new_scry_sql_queries": 1,
+    "new_schema_calls": 0,
+    "cumulative_scry_sql_queries": 8,
+    "cumulative_schema_calls": 1,
+    "new_web_search_queries": 2,
+    "cumulative_web_search_queries": 28,
+    "kagi_queries": 0,
+    "eprint_pdf_downloads": 0,
+    "query": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/scry_rfe_recurrence.json",
+      "sha256": "5fe8be2af91642928d54ac15bac568ff7eb78b2d8dcf75a9413bafeffdb0d7fc",
+      "record_id": "68f83ee9-7ce2-413b-8aca-166014b42702",
+      "rows": 0,
+      "spend_nanodollars": 0
+    }
+  },
+  "script_sha256": "eedf88d1e104dca373513e3abd39d710d2f42b457b3f994277adaa19b7a6d280",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]"
+}

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/InspectWindow.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/InspectWindow.lean:26:36: error: Tactic `rfl` failed: The left-hand side\n  compact x \u27e80, hi\u27e9 j\nis not definitionally equal to the right-hand side\n  x \u27e80, hi\u27e9 j\n\ncase h.h.inl\nx : Ct\nj : Fin 1\nhi : 0 < 2\n\u22a2 compact x \u27e80, hi\u27e9 j = x \u27e80, hi\u27e9 j\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/InspectWindow.lean:26:36: error: Tactic `rfl` failed: The left-hand side\n  compact x \u27e81, hi\u27e9 j\nis not definitionally equal to the right-hand side\n  x \u27e81, hi\u27e9 j\n\ncase h.h.inr\nx : Ct\nj : Fin 1\nhi : 1 < 2\n\u22a2 compact x \u27e81, hi\u27e9 j = x \u27e81, hi\u27e9 j\nExcept.ok (0, 0, 0, 0, 0, true, true)\nExcept.ok (1, 0, 0, 1, 1, true, true)\nExcept.ok (2, 0, 0, 2, 2, true, true)\nExcept.ok (3, 0, 0, 3, 3, true, true)\n",
+  "stderr": "",
+  "elapsed_seconds": 3.313765048980713,
+  "source_sha256": "f4f5b8f0cb5dd5ab87e3cf1c3acf6a372c5af5c07b5f072c4d8f562d76130769",
+  "inputs_unchanged": true
+}

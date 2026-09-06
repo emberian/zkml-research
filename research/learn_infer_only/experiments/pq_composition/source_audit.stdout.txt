@@ -1,0 +1,16 @@
+{
+  "label": "EXECUTED",
+  "sources": 7,
+  "source_manifest": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/source_manifest.json",
+  "local_pdf_pages": 268,
+  "all_pdf_commands_returned_zero": true,
+  "scope": "Seven named local PDFs only; pdftotext -layout literal-token and locator census. No literature-absence or security conclusion follows from token counts.",
+  "query_accounting": {
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "web_search_queries": 4,
+    "web_open_urls": 3,
+    "pdf_downloads": 0
+  }
+}

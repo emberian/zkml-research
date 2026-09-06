@@ -137,7 +137,7 @@ hiding, implementation leakage and a post-quantum composition remain open.
 
 [SOURCE/EXECUTED] PRIVATE_CONSTRUCTION.md records three distinct positives.
 The AES-GCM response tree realizes a bounded behavioral quotient with exponential
-preprocessing; the byte example's quotient becomes singleton at horizon8.
+preprocessing; the byte example's quotient becomes singleton at horizon 8.
 DDH IPFE supports compact public additive continuation with one retained projection
 key after honest master erasure. ALS modular LWE supports public additions modulo p
 at q=p^k with constant noise; its executed small parameters are insecure equation
@@ -162,18 +162,18 @@ the same family, rather than assuming cryptographic feasibility implies utility.
 ## Additional closure lead: updatable encrypted RAM
 
 [SOURCE: construction/game/proof outline read] Arriaga–Iovino–Tang,
-ePrint2016/1179, §3 pp.9–15 and Figure9 p.17, really updates encrypted RAM.
+ePrint 2016/1179, §3 pp.9–15 and Figure 9 p.17, really updates encrypted RAM.
 Each preissued token contains an obfuscated transition circuit with a decryption
 key; it validates encrypted Merkle paths and reencrypts changed nodes using a
-puncturable PRF. Theorem1 requires iO **and** distributional-indistinguishability
+puncturable PRF. Theorem 1 requires iO **and** distributional-indistinguishability
 security for its specified sampler class, plus CCA encryption, NIZK and hashing.
 This is a stronger, specifically stated obfuscation assumption, not an LWE-only
 construction or a measured implementation.
 
 [SOURCE: game/syntax read] Tokens carry sequential ids and TokenGen requires the
-master secret. Figure8 chooses both memories and the complete program sequence
+master secret. Figure 8 chooses both memories and the complete program sequence
 before setup, and requires equal outputs and access patterns. It does not list
-mpk among A1's inputs. Section4 leaves adaptive token acquisition and relaxing
+mpk among A1's inputs. Section 4 leaves adaptive token acquisition and relaxing
 access-pattern equality to future work.
 
 [DERIVED deployment consequence] Honest setup could preissue a bounded sequence,
@@ -186,8 +186,8 @@ The token id lives inside copyable ciphertext, so it supplies local sequencing,
 not an independent no-rollback authority. A token that internally performs a
 bounded computation is distinct from indefinitely issuing new resident commands.
 
-[SOURCE: contrasting syntax read] Cini et al., ePrint2022/1284 and published
-Journal of Cryptology37:8, §3 Definition5 and §5.2, use ciphertext *updates* to
+[SOURCE: contrasting syntax read] Cini et al., ePrint 2022/1284 and published
+Journal of Cryptology 37:8, §3 Definition 5 and §5.2, use ciphertext *updates* to
 change an access tag once. Update tokens are generated from the master key;
 they do not implement a general learned-state update. Its lattice construction
 is useful for a separately scoped migration audit, with ROM and token/query
@@ -197,3 +197,35 @@ above merely because the titles share “updatable”.
 [OPEN] Neither additional source supplies a proved, efficient PQ resident meeting
 the full handoff. These are two algorithm-level distinctions to carry into the
 candidate/credential review, not a field-wide impossibility claim.
+
+## Reverse-setup randomized-FE ladder
+
+[SOURCE/DERIVED] The new fixed H2 candidate uses 2013/729 Definition 2.4,
+Lemma 2.9, Theorem 4.1 and Appendix C. It generates independent instances from
+the terminal read backwards, so each transition function can embed the next
+public key before its own setup. The compatibility proof retains the complete
+future public/function-key package and handles joint next-ciphertext outputs.
+The current setup and master remain independent of the pre-setup auxiliary view.
+Details and exact access scope are in
+[FINITE_LADDER.md](experiments/private_construction/FINITE_LADDER.md).
+
+[DERIVED] This offers a bounded protected-state-to-protected-state path after
+honest erasure, with public commands and full forks. It exposes three public
+keys and seven function keys for H2/B3. It does not issue an unrestricted raw
+master to the host. The obfuscated function keys contain sensitive constants;
+the assumed FE security theorem supplies the restricted-capability claim.
+Object counts do not price obfuscation or establish practical performance.
+
+[EXECUTED] Finite behavior is nonvacuous: 14 classes of byte states at H2,
+meaningful update-order effects, and an independent adaptive/fork-policy audit.
+No encryption implementation is supplied. Growing horizon, private fresh-input
+composition and QPT lifting are active separate audits. A terminal-to-root key
+cycle does not inherit the reverse setup argument.
+
+[SOURCE/DERIVED scoped alternatives] The related static predicate and same-key
+recurrence audits are in
+[PREDICATE_CLOSURE.md](experiments/private_construction/PREDICATE_CLOSURE.md) and
+[RFE_RECURRENCE.md](experiments/private_construction/RFE_RECURRENCE.md).
+Their conclusions concern inspected syntax and theorem applicability, not a
+field-wide impossibility result. The separate [PQ audit](PQ_COMPOSITION.md)
+retains the conditional average-case-iO assumption and correctness/game gaps.

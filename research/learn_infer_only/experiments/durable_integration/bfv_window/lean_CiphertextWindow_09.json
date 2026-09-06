@@ -1,0 +1,18 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean",
+  "source_sha256": "542e377148e1e4d22d370832f0592f16bed680bb7f2bdbbb088d9b9ee9fa647c",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build/Theory/CiphertextWindow.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Theory.CiphertextWindow.sameSerialized_eq' depends on axioms: [propext]\n'Minidregg.Theory.CiphertextWindow.checked_cases' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.checked_sum_bound' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.checked_provenance' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.checked_next_id' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.different_serialized_expiry_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Theory.CiphertextWindow.stale_expiry_id_refused' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.stale_fresh_id_refused' depends on axioms: [propext]\n'Minidregg.Theory.CiphertextWindow.replacement_debt' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.bypassed_wrong_ciphertext_breaks_sum' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.step_eq_some_iff' depends on axioms: [propext]\n'Minidregg.Theory.CiphertextWindow.reachable_after_step' depends on axioms: [propext]\n'Minidregg.Theory.CiphertextWindow.window_invariant' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.reachable_queue_sum' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.admitted_continuation' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.run_reachable' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.CiphertextWindow.all_finite_horizons' depends on axioms: [propext, Quot.sound]\n",
+  "stderr": "",
+  "elapsed_seconds": 3.7627620697021484,
+  "olean_sha256": "37d7489fc9b1f23ddd477c97046dd34452e43d12bedee6a9b540db87c88dd27a"
+}

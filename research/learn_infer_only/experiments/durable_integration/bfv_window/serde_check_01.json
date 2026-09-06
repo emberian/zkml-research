@@ -1,0 +1,25 @@
+{
+  "command": [
+    "cargo",
+    "run",
+    "--offline",
+    "--release",
+    "--manifest-path",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/Cargo.toml"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "cargo_target_dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/target",
+  "exit_code": 0,
+  "stdout": "EMPTY_INITIAL_ZERO serialize_panics=true polynomial_count=0\nNONEMPTY_GROUP_ZERO serialize_ok=true polynomial_count=2 serialized_bytes=85022 decrypts_zero=true\nSEEDED_ALIAS exact_polynomials_equal=true serialized_equal=false seeded_bytes=42545 expanded_bytes=85022 same_plaintext=true\nPUBLIC_ZERO_NORMALIZATION empty_serializes=true seeded_alias_equal=true PK_bytes_preserved=true restored_polynomials_equal=true zero_from_public_ciphertext_self_subtraction=true\nPASS serializer domain/normalization controls; no attack on PK window and no no-reader claim\n",
+  "stderr": "   Compiling resident-bfv-canonical-window-probe v0.1.0 (/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe)\n    Finished `release` profile [optimized] target(s) in 0.82s\n     Running `research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/target/release/resident-bfv-canonical-window-probe`\n\nthread 'main' (5499642) panicked at /Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ciphertext.rs:171:26:\nindex out of bounds: the len is 0 but the index is 0\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+  "elapsed_seconds": 0.8753259181976318,
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/src/main.rs": "8dba04b655824e51c64d734fdf80b065980b7f97732c06c98fcff079919580b3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/Cargo.toml": "482f2d51659abdd4f25cdb99a945086deef7646c0f5da9f2908d521e70bc60b0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/bfv_window/serde_probe/Cargo.lock": "1d28b7a9c31d2f8f343b9ba1eb98b199de9154fb4752a3f57a0b1d89b2eeb826",
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ciphertext.rs": "236b1b3f42d96c1ec1f0a66e4abe215b29ba9c8e6096fd9bf963b81e5fba8d85",
+    "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mod.rs": "99d4777b6ed571ddd497572b196aa748b7875374d81395b35e868080065e73ad"
+  },
+  "inputs_unchanged": true,
+  "scope": "Actual serialization/canonicalization fixture; full key retained by test reader; no library correctness proof"
+}

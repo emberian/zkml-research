@@ -1,0 +1,926 @@
+--- /dev/null
++++ b/Theory/CiphertextWindow.lean
+@@ -0,0 +1,384 @@
++/-
++[DERIVED target] Public ciphertext-window transition, independent of any
++candidate encryption scheme. Ciphertexts form an additive commutative group;
++canonical serialization is a lawful codec. Neither plaintexts nor secret keys
++occur here. Root digests are deliberately absent from this algebra layer.
++
++Statement-first: from the empty state, every checked transition preserves the
++exact current queue sum, length bound and admission/current-id provenance.
++External expiry proposals must name the current oldest entry and its exact
++canonical ciphertext bytes. The codec round-trip law turns that byte equality
++into the group equality actually needed by subtraction.
++-/
++import Theory.IndexedProgram
++import Mathlib.Algebra.BigOperators.Group.List.Basic
++import Mathlib.Tactic
++
++namespace Minidregg.Theory.CiphertextWindow
++open Minidregg.Theory.IndexedProgram
++set_option autoImplicit false
++
++structure Entry (Ct : Type) where
++  admissionId : Nat
++  ciphertext : Ct
++  deriving DecidableEq
++structure State (Ct : Type) where
++  queue : List (Entry Ct)
++  accumulator : Ct
++  nextId : Nat
++  deriving DecidableEq
++structure Command (Ct : Type) where
++  fresh : Entry Ct
++  expiry : Option (Entry Ct)
++  deriving DecidableEq
++
++variable {Ct : Type} [AddCommGroup Ct]
++
++def queueSum (q : List (Entry Ct)) : Ct := (q.map Entry.ciphertext).sum
++
++def SumBound (W : Nat) (s : State Ct) : Prop :=
++  s.accumulator=queueSum s.queue ∧ s.queue.length≤W
++
++def Admitted (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool) (e : Entry Ct) : Prop :=
++  admit e.admissionId (codec.encode e.ciphertext)=true
++
++def Provenance (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool) (s : State Ct) : Prop :=
++  (∀ e∈s.queue,Admitted codec admit e ∧ e.admissionId<s.nextId) ∧
++  (s.queue.map Entry.admissionId).Nodup
++
++def initial : State Ct := ⟨[],0,0⟩
++
++/-- This compares canonical ciphertext bytes, never equal plaintexts or roots. -/
++def sameSerialized (codec : LawfulCodec Ct) (old proposed : Entry Ct) : Bool :=
++  decide (proposed.admissionId=old.admissionId ∧
++    codec.encode proposed.ciphertext=codec.encode old.ciphertext)
++
++omit [AddCommGroup Ct] in
++theorem sameSerialized_eq (codec : LawfulCodec Ct) (old proposed : Entry Ct)
++    (h : sameSerialized codec old proposed=true) : proposed=old := by
++  simp only [sameSerialized,decide_eq_true_eq] at h
++  have hc := congrArg codec.decode h.2
++  rw [codec.decode_encode,codec.decode_encode] at hc
++  cases old; cases proposed
++  simp only [Entry.mk.injEq]
++  exact ⟨h.1,Option.some.inj hc⟩
++
++def check (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (cmd : Command Ct) : Bool :=
++  decide (0<W ∧ s.queue.length≤W ∧ cmd.fresh.admissionId=s.nextId) &&
++  admit cmd.fresh.admissionId (codec.encode cmd.fresh.ciphertext) &&
++  (if s.queue.length<W then cmd.expiry.isNone else
++    match s.queue,cmd.expiry with
++    | old::_,some proposed => sameSerialized codec old proposed
++    | _,_ => false)
++
++/-- The candidate expiry is what is subtracted; its equality to the stored
++head is a checked semantic obligation, not an implicit trusted assertion. -/
++def advance (W : Nat) (s : State Ct) (cmd : Command Ct) : State Ct :=
++  if s.queue.length<W then
++    ⟨s.queue++[cmd.fresh],s.accumulator+cmd.fresh.ciphertext,s.nextId+1⟩
++  else match s.queue,cmd.expiry with
++    | _::rest,some proposed =>
++      ⟨rest++[cmd.fresh],s.accumulator+cmd.fresh.ciphertext-proposed.ciphertext,s.nextId+1⟩
++    | _,_ => s
++
++def step (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (cmd : Command Ct) : Option (State Ct) :=
++  if check codec admit W s cmd then some (advance W s cmd) else none
++
++omit [AddCommGroup Ct] in
++/-- A checked step has exactly one of the two intended queue layouts. -/
++theorem checked_cases (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (cmd : Command Ct)
++    (h : check codec admit W s cmd=true) :
++    0<W ∧ cmd.fresh.admissionId=s.nextId ∧ Admitted codec admit cmd.fresh ∧
++    ((s.queue.length<W ∧ cmd.expiry=none) ∨
++      ∃ old rest,s.queue=old::rest ∧ s.queue.length=W ∧ cmd.expiry=some old) := by
++  simp only [check,Bool.and_eq_true,decide_eq_true_eq] at h
++  obtain ⟨⟨⟨hw,hbound,hid⟩,ha⟩,hl⟩ := h
++  refine ⟨hw,hid,ha,?_⟩
++  by_cases hlen : s.queue.length<W
++  · left
++    refine ⟨hlen,?_⟩
++    simpa only [if_pos hlen,Option.isNone_iff_eq_none] using hl
++  · right
++    simp only [if_neg hlen] at hl
++    cases hq : s.queue with
++    | nil => simp only [hq] at hl; contradiction
++    | cons old rest =>
++      cases he : cmd.expiry with
++      | none => simp only [hq,he] at hl; contradiction
++      | some proposed =>
++        rw [hq,he] at hl
++        have same := sameSerialized_eq codec old proposed hl
++        exact ⟨old,rest,rfl,by have hlenq := congrArg List.length hq;omega,congrArg some same⟩
++
++theorem checked_sum_bound (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (cmd : Command Ct)
++    (h : check codec admit W s cmd=true) (before : SumBound W s) :
++    SumBound W (advance W s cmd) := by
++  obtain ⟨_,_,_,cases⟩ := checked_cases codec admit W s cmd h
++  rcases cases with ⟨hlen,he⟩ | ⟨old,rest,hq,hlen,he⟩
++  · simp only [advance,if_pos hlen,SumBound]
++    constructor
++    · simp [queueSum,before.1]
++    · simp only [List.length_append,List.length_singleton];omega
++  · have notlt : ¬s.queue.length<W := by omega
++    unfold advance
++    rw [if_neg notlt]
++    simp only [hq,he,SumBound]
++    constructor
++    · have hb := before.1
++      rw [hq] at hb
++      simp only [queueSum,List.map_cons,List.sum_cons] at hb
++      simp only [queueSum,List.map_append,List.map_singleton,List.sum_append,List.sum_singleton]
++      rw [hb]
++      abel
++    · have size := congrArg List.length hq
++      simp only [List.length_cons] at size
++      simp only [List.length_append,List.length_singleton]
++      omega
++
++theorem checked_provenance (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (cmd : Command Ct)
++    (h : check codec admit W s cmd=true) (before : Provenance codec admit s) :
++    Provenance codec admit (advance W s cmd) := by
++  obtain ⟨_,hid,ha,cases⟩ := checked_cases codec admit W s cmd h
++  have fresh : cmd.fresh.admissionId∉s.queue.map Entry.admissionId := by
++    intro hm
++    obtain ⟨e,he,heq⟩ := List.mem_map.mp hm
++    have hl := (before.1 e he).2
++    omega
++  rcases cases with ⟨hlen,he⟩ | ⟨old,rest,hq,hlen,he⟩
++  · simp only [advance,if_pos hlen,Provenance]
++    constructor
++    · intro e hm
++      simp only [List.mem_append,List.mem_singleton] at hm
++      rcases hm with hm|rfl
++      · exact ⟨(before.1 e hm).1,by have := (before.1 e hm).2;omega⟩
++      · exact ⟨ha,by omega⟩
++    · simp only [List.map_append,List.map_singleton]
++      exact List.nodup_append.mpr ⟨before.2,by simp,by simpa using fresh⟩
++  · have notlt : ¬s.queue.length<W := by omega
++    unfold advance
++    rw [if_neg notlt]
++    simp only [hq,he,Provenance]
++    have hr : (rest.map Entry.admissionId).Nodup := by
++      have hn : (old.admissionId::rest.map Entry.admissionId).Nodup := by
++        simpa only [hq,List.map_cons] using before.2
++      exact (List.nodup_cons.mp hn).2
++    constructor
++    · intro e hm
++      simp only [List.mem_append,List.mem_singleton] at hm
++      rcases hm with hm|rfl
++      · have hb := before.1 e (by simp [hq,hm])
++        exact ⟨hb.1,by omega⟩
++      · exact ⟨ha,by omega⟩
++    · simp only [List.map_append,List.map_singleton]
++      apply List.nodup_append.mpr
++      refine ⟨hr,by simp,?_⟩
++      have hf : cmd.fresh.admissionId∉rest.map Entry.admissionId := by
++        intro hm;apply fresh;simp [hq,hm]
++      simpa using hf
++
++
++
++theorem checked_next_id (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (cmd : Command Ct) (h : check codec admit W s cmd=true) :
++    (advance W s cmd).nextId=s.nextId+1 := by
++  obtain ⟨_,_,_,cases⟩ := checked_cases codec admit W s cmd h
++  rcases cases with ⟨hlen,_⟩ | ⟨old,rest,hq,hlen,he⟩
++  · simp only [advance,if_pos hlen]
++  · have notlt : ¬s.queue.length<W := by omega
++    unfold advance
++    rw [if_neg notlt]
++    simp only [hq,he]
++
++omit [AddCommGroup Ct] in
++/-- A proposal naming a different current ciphertext cannot pass, even if
++its plaintext (under some separate interpretation) might be the same. -/
++theorem different_serialized_expiry_refused (codec : LawfulCodec Ct)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) (s : State Ct) (cmd : Command Ct)
++    (old proposed : Entry Ct) (rest : List (Entry Ct))
++    (hq : s.queue=old::rest) (full : s.queue.length=W) (he : cmd.expiry=some proposed)
++    (different : codec.encode proposed.ciphertext≠codec.encode old.ciphertext) :
++    check codec admit W s cmd=false := by
++  have notlt : ¬s.queue.length<W := by omega
++  unfold check
++  rw [if_neg notlt,hq,he]
++  simp [sameSerialized,different]
++
++omit [AddCommGroup Ct] in
++theorem stale_expiry_id_refused (codec : LawfulCodec Ct)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) (s : State Ct) (cmd : Command Ct)
++    (old proposed : Entry Ct) (rest : List (Entry Ct))
++    (hq : s.queue=old::rest) (full : s.queue.length=W) (he : cmd.expiry=some proposed)
++    (stale : proposed.admissionId≠old.admissionId) : check codec admit W s cmd=false := by
++  have notlt : ¬s.queue.length<W := by omega
++  unfold check
++  rw [if_neg notlt,hq,he]
++  simp [sameSerialized,stale]
++
++omit [AddCommGroup Ct] in
++theorem stale_fresh_id_refused (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (cmd : Command Ct) (stale : cmd.fresh.admissionId≠s.nextId) :
++    check codec admit W s cmd=false := by simp [check,stale]
++
++/-- The algebraic debt from bypassing exact expiry is explicit. No map from
++the finite ciphertext group into the integers is assumed. -/
++theorem replacement_debt (W : Nat) (s : State Ct) (cmd : Command Ct)
++    (old proposed : Entry Ct) (rest : List (Entry Ct))
++    (hq : s.queue=old::rest) (full : s.queue.length=W) (he : cmd.expiry=some proposed)
++    (sum : s.accumulator=queueSum s.queue) :
++    (advance W s cmd).accumulator=queueSum (advance W s cmd).queue+
++      (old.ciphertext-proposed.ciphertext) := by
++  have notlt : ¬s.queue.length<W := by omega
++  unfold advance
++  rw [if_neg notlt]
++  simp only [hq,he]
++  rw [hq] at sum
++  simp only [queueSum,List.map_cons,List.sum_cons] at sum
++  simp only [queueSum,List.map_append,List.map_singleton,List.sum_append,List.sum_singleton]
++  rw [sum]
++  abel
++
++theorem bypassed_wrong_ciphertext_breaks_sum (W : Nat) (s : State Ct) (cmd : Command Ct)
++    (old proposed : Entry Ct) (rest : List (Entry Ct))
++    (hq : s.queue=old::rest) (full : s.queue.length=W) (he : cmd.expiry=some proposed)
++    (sum : s.accumulator=queueSum s.queue) (different : old.ciphertext≠proposed.ciphertext) :
++    (advance W s cmd).accumulator≠queueSum (advance W s cmd).queue := by
++  rw [replacement_debt W s cmd old proposed rest hq full he sum]
++  intro heq
++  apply different
++  apply sub_eq_zero.mp
++  exact add_left_cancel (heq.trans (add_zero _).symm)
++
++theorem step_eq_some_iff (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (cmd : Command Ct) (after : State Ct) :
++    step codec admit W s cmd=some after ↔
++      check codec admit W s cmd=true ∧ advance W s cmd=after := by
++  unfold step
++  cases h : check codec admit W s cmd <;> simp
++
++/-- Reachability is generated by actual checked steps, not arbitrary mutable
++log/head/state fields. No finite upper bound on the number of steps occurs. -/
++inductive Reachable (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool) (W : Nat) : State Ct → Prop
++  | start : Reachable codec admit W initial
++  | next {before : State Ct} (past : Reachable codec admit W before)
++      (cmd : Command Ct) (checked : check codec admit W before cmd=true) :
++      Reachable codec admit W (advance W before cmd)
++
++
++/-- The executable Option-returning transition, not only its relation,
++generates the same reachable-state carrier. -/
++theorem reachable_after_step (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (before after : State Ct) (cmd : Command Ct)
++    (past : Reachable codec admit W before) (h : step codec admit W before cmd=some after) :
++    Reachable codec admit W after := by
++  obtain ⟨checked,same⟩ := (step_eq_some_iff codec admit W before cmd after).mp h
++  rw [←same]
++  exact .next past cmd checked
++
++def WindowInvariant (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool) (W : Nat) : Prop :=
++  ∀ s,Reachable codec admit W s → SumBound W s ∧ Provenance codec admit s
++
++theorem window_invariant (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool) (W : Nat) :
++    WindowInvariant codec admit W := by
++  intro s reached
++  induction reached with
++  | start => simp [initial,SumBound,queueSum,Provenance]
++  | next past cmd checked ih =>
++    exact ⟨checked_sum_bound codec admit W _ cmd checked ih.1,
++      checked_provenance codec admit W _ cmd checked ih.2⟩
++
++theorem reachable_queue_sum (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (reached : Reachable codec admit W s) :
++    s.accumulator=(s.queue.map Entry.ciphertext).sum ∧ s.queue.length≤W :=
++  (window_invariant codec admit W s reached).1
++
++
++/-- The actual oldest entry is the canonical expiry proposal. Supplying a new
++admitted ciphertext therefore leaves a usable next transition at every horizon. -/
++def continuation (W : Nat) (s : State Ct) (ciphertext : Ct) : Command Ct :=
++  ⟨⟨s.nextId,ciphertext⟩,if s.queue.length<W then none else s.queue.head?⟩
++
++omit [AddCommGroup Ct] in
++theorem admitted_continuation (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (s : State Ct) (ciphertext : Ct) (hw : 0<W) (hb : s.queue.length≤W)
++    (ha : admit s.nextId (codec.encode ciphertext)=true) :
++    check codec admit W s (continuation W s ciphertext)=true := by
++  unfold check continuation
++  simp only [ha,Bool.and_true]
++  rw [decide_eq_true (show 0<W ∧ s.queue.length≤W ∧ True from ⟨hw,hb,True.intro⟩)]
++  simp only [Bool.true_and]
++  by_cases hlen : s.queue.length<W
++  · simp [hlen]
++  · rw [if_neg hlen,if_neg hlen]
++    cases hq : s.queue with
++    | nil => simp only [hq,List.length_nil] at hlen;omega
++    | cons old rest => simp [sameSerialized]
++
++/-- A supplied admitted input stream yields checked transitions for any
++finite horizon. Inputs are indexed by the current monotone admission counter. -/
++def run (W : Nat) (input : Nat → Ct) : Nat → State Ct
++  | 0 => initial
++  | n+1 =>
++    let s:=run W input n
++    advance W s (continuation W s (input s.nextId))
++
++theorem run_reachable (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (input : Nat → Ct) (hw : 0<W)
++    (admitted : ∀ id,admit id (codec.encode (input id))=true) (n : Nat) :
++    Reachable codec admit W (run W input n) := by
++  induction n with
++  | zero => exact .start
++  | succ n ih =>
++    have hb := (window_invariant codec admit W _ ih).1.2
++    exact .next ih _ (admitted_continuation codec admit W _ _ hw hb (admitted _))
++
++theorem all_finite_horizons (codec : LawfulCodec Ct) (admit : Nat → List UInt8 → Bool)
++    (W : Nat) (input : Nat → Ct) (hw : 0<W)
++    (admitted : ∀ id,admit id (codec.encode (input id))=true) (n : Nat) :
++    (run W input n).accumulator=((run W input n).queue.map Entry.ciphertext).sum ∧
++    (run W input n).queue.length≤W ∧ Provenance codec admit (run W input n) := by
++  have h := window_invariant codec admit W _ (run_reachable codec admit W input hw admitted n)
++  exact ⟨h.1.1,h.1.2,h.2⟩
++
++/-- info: 'Minidregg.Theory.CiphertextWindow.sameSerialized_eq' depends on axioms: [propext] -/
++#guard_msgs in #print axioms sameSerialized_eq
++/-- info: 'Minidregg.Theory.CiphertextWindow.checked_cases' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms checked_cases
++/-- info: 'Minidregg.Theory.CiphertextWindow.checked_sum_bound' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms checked_sum_bound
++/-- info: 'Minidregg.Theory.CiphertextWindow.checked_provenance' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms checked_provenance
++/-- info: 'Minidregg.Theory.CiphertextWindow.checked_next_id' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms checked_next_id
++/-- info: 'Minidregg.Theory.CiphertextWindow.different_serialized_expiry_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms different_serialized_expiry_refused
++/-- info: 'Minidregg.Theory.CiphertextWindow.stale_expiry_id_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms stale_expiry_id_refused
++/-- info: 'Minidregg.Theory.CiphertextWindow.stale_fresh_id_refused' depends on axioms: [propext] -/
++#guard_msgs in #print axioms stale_fresh_id_refused
++/-- info: 'Minidregg.Theory.CiphertextWindow.replacement_debt' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms replacement_debt
++/-- info: 'Minidregg.Theory.CiphertextWindow.bypassed_wrong_ciphertext_breaks_sum' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms bypassed_wrong_ciphertext_breaks_sum
++/-- info: 'Minidregg.Theory.CiphertextWindow.step_eq_some_iff' depends on axioms: [propext] -/
++#guard_msgs in #print axioms step_eq_some_iff
++/-- info: 'Minidregg.Theory.CiphertextWindow.reachable_after_step' depends on axioms: [propext] -/
++#guard_msgs in #print axioms reachable_after_step
++/-- info: 'Minidregg.Theory.CiphertextWindow.window_invariant' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms window_invariant
++/-- info: 'Minidregg.Theory.CiphertextWindow.reachable_queue_sum' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms reachable_queue_sum
++/-- info: 'Minidregg.Theory.CiphertextWindow.admitted_continuation' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms admitted_continuation
++/-- info: 'Minidregg.Theory.CiphertextWindow.run_reachable' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms run_reachable
++/-- info: 'Minidregg.Theory.CiphertextWindow.all_finite_horizons' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms all_finite_horizons
++
++end Minidregg.Theory.CiphertextWindow
+--- /dev/null
++++ b/Assurance/CiphertextWindowCell.lean
+@@ -0,0 +1,248 @@
++/- [DERIVED target] A canonical PUBLIC ciphertext queue/accumulator cell.
++The codec is built from the repository streaming-codec product/list nucleus.
++Ciphertext arrays remain logical group objects; digest roots are arbitrary.
++No plaintext, decryption credential, new FS protocol or Rust serde refinement. -/
++import Theory.CiphertextWindow
++import Assurance.ResidentDurableIntegration
++
++namespace Minidregg.Assurance.CiphertextWindowCell
++open Minidregg.Theory
++open Minidregg.Theory.IndexedProgram
++open Minidregg.Theory.CellState
++open Minidregg.Theory.CiphertextWindow
++open Minidregg.Theory.TypedAuthorization (Digest)
++open Minidregg.Compiler.Tower256ConcreteBackend (StreamCodec)
++open Minidregg.Assurance.ResidentDurableIntegration (Selection Plan)
++open Minidregg.Kernel.DurableCommitProtocol (Snapshot)
++open Minidregg.Kernel.DurableDataIntent
++set_option autoImplicit false
++
++variable {Ct : Type}
++
++/-- Canonical logical modular coefficients; arbitrary positive modulus,
++not a claim that the implementation is one flat coefficient-domain array. -/
++def coeffStream (q : Nat) [NeZero q] : StreamCodec (ZMod q) :=
++  StreamCodec.xmap StreamCodec.nat ZMod.val (fun n=>(n : ZMod q))
++    (by intro value;exact ZMod.natCast_zmod_val value)
++
++def vectorStream {A : Type} [Inhabited A] (n : Nat) (c : StreamCodec A) : StreamCodec (Fin n → A) :=
++  StreamCodec.xmap (StreamCodec.list c) List.ofFn (fun ls i=>ls.getD i.val default)
++    (by intro value;funext i;simp [i.isLt])
++
++def ciphertextStream (q n : Nat) [NeZero q] : StreamCodec (Fin 2 → Fin n → ZMod q) :=
++  vectorStream 2 (vectorStream n (coeffStream q))
++
++
++def entryStream (ct : StreamCodec Ct) : StreamCodec (Entry Ct) :=
++  StreamCodec.xmap (StreamCodec.product StreamCodec.nat ct)
++    (fun e=>(e.admissionId,e.ciphertext)) (fun e=>⟨e.1,e.2⟩) (by intro e;cases e;rfl)
++
++def stateStream (ct : StreamCodec Ct) : StreamCodec (State Ct) :=
++  StreamCodec.xmap (StreamCodec.product (StreamCodec.list (entryStream ct))
++    (StreamCodec.product ct StreamCodec.nat))
++    (fun s=>(s.queue,s.accumulator,s.nextId)) (fun s=>⟨s.1,s.2.1,s.2.2⟩)
++    (by intro s;cases s;rfl)
++
++/-- The one resource is total. Trivial authority/evidence carry no custody or
++input-validity claim; admission is the separate checked byte predicate. -/
++def schema (Ct : Type) : Schema.{0,0,0,0} where
++  Field:=Empty
++  FieldType:=fun f=>f.elim
++  Resource:=Unit
++  ResourceType:=fun _=>State Ct
++  Authority:=fun _ _=>Unit
++  Evidence:=fun _ _ _=>Unit
++instance : DecidableEq (schema Ct).Field := fun f=>f.elim
++instance : DecidableEq (schema Ct).Resource := inferInstanceAs (DecidableEq Unit)
++
++def stateOf (s : State Ct) : LogicalState (schema Ct) where
++  fields:=0
++  resources:=fun _=>⟨s,(),()⟩
++def stateValue (s : LogicalState (schema Ct)) : State Ct := (s.resources ()).value
++
++theorem state_ext (s : LogicalState (schema Ct)) : s=stateOf (stateValue s) := by
++  cases s with
++  | mk fields resources =>
++    have hf : fields=(0 : FieldStore (schema Ct)) := by
++      apply DFinsupp.ext;intro f;exact f.elim
++    have hr : resources=fun _=>⟨(resources ()).value,(),()⟩ := by
++      funext r;cases r
++      cases resources () with
++      | mk value authority evidence => cases authority;cases evidence;rfl
++    rw [hf,hr];rfl
++
++def logicalStream (ct : StreamCodec Ct) : StreamCodec (LogicalState (schema Ct)) :=
++  StreamCodec.xmap (stateStream ct) stateValue stateOf (fun s=>(state_ext s).symm)
++
++def materializer (ct : StreamCodec Ct) (hash : List UInt8 → Digest) : Materializer (schema Ct) Digest :=
++  ⟨(logicalStream ct).toLawful,hash⟩
++
++def cell (ct : StreamCodec Ct) (hash : List UInt8 → Digest) (s : State Ct) :=
++  materialize (materializer ct hash) (stateOf s)
++
++theorem canonical_state_opens (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (s : Materialized (materializer ct hash)) (logical : State Ct)
++    (h : s.bytes=(stateStream ct).encode logical) : stateValue s.logical=logical := by
++  have hd := congrArg (stateStream ct).toLawful.decode h
++  change (stateStream ct).toLawful.decode ((stateStream ct).toLawful.encode (stateValue s.logical))=
++    (stateStream ct).toLawful.decode ((stateStream ct).toLawful.encode logical) at hd
++  rw [(stateStream ct).toLawful.decode_encode,(stateStream ct).toLawful.decode_encode] at hd
++  exact Option.some.inj hd
++
++def writePatch (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (pre : Materialized (materializer ct hash)) (post : State Ct) : Patch (schema Ct) Digest where
++  expectedPreRoot:=pre.root
++  fieldFootprint:=∅
++  resourceFootprint:={()}
++  fieldWrites:=[]
++  resourceWrites:=[⟨(),⟨post,(),()⟩⟩]
++
++theorem writePatch_accepted (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (pre : Materialized (materializer ct hash)) (post : State Ct) :
++    ∃ v : ValidatedPatch (materializer ct hash) pre (writePatch ct hash pre post),
++      validate (materializer ct hash) pre (writePatch ct hash pre post)=.accepted v := by
++  unfold validate
++  rw [dif_pos (show (writePatch ct hash pre post).expectedPreRoot=pre.root from rfl)]
++  rw [dif_pos (show (writePatch ct hash pre post).fieldFootprint=(writePatch ct hash pre post).namedFields from rfl)]
++  rw [dif_pos (show (writePatch ct hash pre post).resourceFootprint=(writePatch ct hash pre post).namedResources from rfl)]
++  exact ⟨_,rfl⟩
++
++theorem patch_post (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (pre : Materialized (materializer ct hash)) (post : State Ct)
++    (v : ValidatedPatch (materializer ct hash) pre (writePatch ct hash pre post)) :
++    stateValue v.apply.logical=post ∧ v.apply.bytes=(stateStream ct).encode post := by
++  constructor <;> rfl
++
++variable [AddCommGroup Ct]
++
++/-- An existing materialized plan whose canonical resource bytes exactly open
++the source and the proposed checked window transition. -/
++structure WindowPlan (ct : StreamCodec Ct) (hash : List UInt8 → Digest) (W : Nat) where
++  plan : Plan (materializer ct hash)
++  beforeState : State Ct
++  command : Command Ct
++  preOpening : plan.pre.bytes=(stateStream ct).encode beforeState
++  postOpening : plan.post.bytes=(stateStream ct).encode (advance W beforeState command)
++
++/-- No Stage0/EMA arithmetic receipt is reused. This is the exact typed bridge
++from the public window relation into the existing full DataIntent installation. -/
++def MaterializedWindowBinding (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) : Prop :=
++  ∀ selected before (p : WindowPlan ct hash W),
++    p.plan.opens selected before=true →
++    Reachable ct.toLawful admit W p.beforeState →
++    check ct.toLawful admit W p.beforeState p.command=true →
++    p.plan.intent.preflight before=.ok () →
++    Snapshot.lookupRecorded p.plan.transactionId before.model.journal=none →
++    ∃ after,
++      execute .complete before p.plan.intent=.accepted after ∧
++      before.canonicalBytes p.plan.stateId=(stateStream ct).encode p.beforeState ∧
++      after.canonicalBytes p.plan.stateId=(stateStream ct).encode (advance W p.beforeState p.command) ∧
++      stateValue p.plan.pre.logical=p.beforeState ∧
++      stateValue p.plan.post.logical=advance W p.beforeState p.command ∧
++      SumBound W (stateValue p.plan.post.logical) ∧
++      Provenance ct.toLawful admit (stateValue p.plan.post.logical) ∧
++      p.plan.context.next=(after.model.roots p.plan.stateId).value
++
++theorem materialized_window_binding (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) :
++    MaterializedWindowBinding ct hash admit W := by
++  intro selected before p opened reached checked ready fresh
++  have hop := (p.plan.opens_iff selected before).mp opened
++  have hp := canonical_state_opens ct hash p.plan.pre p.beforeState p.preOpening
++  have hn := canonical_state_opens ct hash p.plan.post (advance W p.beforeState p.command) p.postOpening
++  have reachedPost : Reachable ct.toLawful admit W (advance W p.beforeState p.command) :=
++    .next reached p.command checked
++  have invariant := window_invariant ct.toLawful admit W _ reachedPost
++  refine ⟨DataSnapshot.install before p.plan.intent,
++    execute_complete_ready before p.plan.intent fresh ready,hop.2.2.2.2.1.trans p.preOpening,
++    (p.plan.installed_exact before).1.trans p.postOpening,hp,hn,?_,?_,?_⟩
++  · rw [hn];exact invariant.1
++  · rw [hn];exact invariant.2
++  · exact hop.2.2.2.2.2.2.2.1.trans (congrArg Digest.value (p.plan.installed_exact before).2.symm)
++
++
++/-- Refinement of the existing data-execution history by an exact logical
++window state. Initial storage really contains the empty queue and empty
++journal; every edge is the same existing install justified by full preflight.
++No independent mutable head, queue history or counter can be supplied. -/
++inductive ExecutedHistory (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) (selected : Selection)
++    (initialData : DataSnapshot hash) : DataSnapshot hash → State Ct → Prop
++  | start (empty : initialData.model.journal=[])
++      (opened : initialData.canonicalBytes selected.stateId=(stateStream ct).encode initial) :
++      ExecutedHistory ct hash admit W selected initialData initialData initial
++  | next {before : DataSnapshot hash} {logical : State Ct}
++      (past : ExecutedHistory ct hash admit W selected initialData before logical)
++      (p : WindowPlan ct hash W) (current : p.beforeState=logical)
++      (opened : p.plan.opens selected before=true)
++      (checked : check ct.toLawful admit W p.beforeState p.command=true)
++      (ready : p.plan.intent.preflight before=.ok ())
++      (fresh : Snapshot.lookupRecorded p.plan.transactionId before.model.journal=none) :
++      ExecutedHistory ct hash admit W selected initialData
++        (DataSnapshot.install before p.plan.intent) (advance W p.beforeState p.command)
++
++/-- Arbitrarily many accepted window transitions are tied to the actual
++materialized data/journal carrier. Counter equality rules out a detached
++logical history with a forged smaller durable journal. -/
++theorem executed_history_invariant (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) (selected : Selection)
++    (initialData data : DataSnapshot hash) (logical : State Ct)
++    (h : ExecutedHistory ct hash admit W selected initialData data logical) :
++    data.canonicalBytes selected.stateId=(stateStream ct).encode logical ∧
++    logical.nextId=data.model.journal.length ∧ Reachable ct.toLawful admit W logical ∧
++    SumBound W logical ∧ Provenance ct.toLawful admit logical := by
++  induction h with
++  | start empty opened =>
++    refine ⟨opened,?_,.start,?_,?_⟩
++    · simp [initial,empty]
++    · simp [initial,SumBound,queueSum]
++    · simp [initial,Provenance]
++  | @next before logical past p current opened checked ready fresh ih =>
++    have hop := (p.plan.opens_iff selected before).mp opened
++    have reached : Reachable ct.toLawful admit W (advance W p.beforeState p.command) :=
++      .next (by simpa only [current] using ih.2.2.1) p.command checked
++    have inv := window_invariant ct.toLawful admit W _ reached
++    refine ⟨?_,?_,reached,inv.1,inv.2⟩
++    · rw [←hop.2.1]
++      exact (p.plan.installed_exact before).1.trans p.postOpening
++    · rw [checked_next_id ct.toLawful admit W p.beforeState p.command checked,current,ih.2.1]
++      rfl
++
++/-- Forgetting the logical refinement gives the already-existing durable
++reachability relation, retaining its genesis/frame/atomicity obligations. -/
++theorem executed_is_durable_reachable (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) (selected : Selection)
++    (initialData data : DataSnapshot hash) (logical : State Ct)
++    (h : ExecutedHistory ct hash admit W selected initialData data logical) :
++    Minidregg.Assurance.ResidentDurableIntegration.DurableReachable (M:=materializer ct hash) selected initialData data := by
++  induction h with
++  | start _ _ => exact .start
++  | next _ p _ opened _ ready fresh ih => exact .commit ih p.plan opened ready fresh
++
++/-- info: 'Minidregg.Assurance.CiphertextWindowCell.state_ext' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms state_ext
++/-- info: 'Minidregg.Assurance.CiphertextWindowCell.canonical_state_opens' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms canonical_state_opens
++/-- info: 'Minidregg.Assurance.CiphertextWindowCell.writePatch_accepted' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms writePatch_accepted
++/-- info: 'Minidregg.Assurance.CiphertextWindowCell.patch_post' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms patch_post
++/-- info: 'Minidregg.Assurance.CiphertextWindowCell.materialized_window_binding' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms materialized_window_binding
++/-- info: 'Minidregg.Assurance.CiphertextWindowCell.executed_history_invariant' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms executed_history_invariant
++/-- info: 'Minidregg.Assurance.CiphertextWindowCell.executed_is_durable_reachable' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms executed_is_durable_reachable
++
++end Minidregg.Assurance.CiphertextWindowCell
+--- /dev/null
++++ b/Assurance/CiphertextWindowWitness.lean
+@@ -0,0 +1,268 @@
++/- [DERIVED target] Public nonzero ciphertext-vector subjects and exact-expiry
++teeth. The canonical codec uses existing streaming products/lists; it is NOT
++fhe-dregg protobuf/RNS/NTT serialization. Two group objects with the same toy
++linear plaintext image still differ as ciphertexts and must not substitute. -/
++import Assurance.CiphertextWindowCell
++
++namespace Minidregg.Assurance.CiphertextWindowWitness
++open Minidregg.Theory
++open Minidregg.Theory.IndexedProgram
++open Minidregg.Theory.CellState
++open Minidregg.Theory.CiphertextWindow
++open Minidregg.Theory.TypedAuthorization (Digest)
++open Minidregg.Compiler.Tower256ConcreteBackend (StreamCodec)
++open Minidregg.Assurance.CiphertextWindowCell
++open Minidregg.Assurance.ResidentDurableIntegration (Selection)
++open Minidregg.Kernel.DurableDataIntent
++set_option autoImplicit false
++set_option maxRecDepth 10000
++set_option maxHeartbeats 2000000
++
++
++abbrev Ct := Fin 2 → Fin 1 → ZMod 17
++def ct : StreamCodec Ct := ciphertextStream 17 1
++def a : Ct := fun i _=>(![3,5] : Fin 2 → ZMod 17) i
++def b : Ct := fun i _=>(![7,1] : Fin 2 → ZMod 17) i
++def c : Ct := fun i _=>(![2,6] : Fin 2 → ZMod 17) i
++def rerandomizedA : Ct := fun i _=>(![4,4] : Fin 2 → ZMod 17) i
++
++def admit (id : Nat) (bytes : List UInt8) : Bool :=
++  decide (bytes=ct.encode (if id=0 then a else if id=1 then b else c))
++
++def cmd0 : Command Ct := ⟨⟨0,a⟩,none⟩
++def s1 : State Ct := advance 2 initial cmd0
++def cmd1 : Command Ct := ⟨⟨1,b⟩,none⟩
++def s2 : State Ct := advance 2 s1 cmd1
++def cmd2 : Command Ct := ⟨⟨2,c⟩,some ⟨0,a⟩⟩
++def s3 : State Ct := advance 2 s2 cmd2
++
++theorem checked0 : check ct.toLawful admit 2 initial cmd0=true := by decide +kernel
++theorem checked1 : check ct.toLawful admit 2 s1 cmd1=true := by decide +kernel
++theorem checked2 : check ct.toLawful admit 2 s2 cmd2=true := by decide +kernel
++
++theorem reached3 : Reachable ct.toLawful admit 2 s3 :=
++  .next (.next (.next .start cmd0 checked0) cmd1 checked1) cmd2 checked2
++
++theorem honest_nonzero_add_and_expiry :
++    s1.accumulator≠0 ∧ s2.accumulator=a+b ∧ s3.accumulator=b+c ∧
++    s3.queue.map Entry.admissionId=[1,2] ∧ s3.nextId=3 ∧
++    SumBound 2 s3 ∧ Provenance ct.toLawful admit s3 := by
++  have inv := window_invariant ct.toLawful admit 2 s3 reached3
++  refine ⟨by decide,by decide,by decide,rfl,rfl,inv.1,inv.2⟩
++
++def wrongExpiry : Command Ct := ⟨cmd2.fresh,some ⟨0,rerandomizedA⟩⟩
++def staleExpiry : Command Ct := ⟨cmd2.fresh,some ⟨1,a⟩⟩
++def staleFresh : Command Ct := ⟨⟨1,c⟩,cmd2.expiry⟩
++def deniedFresh : Command Ct := ⟨⟨2,a⟩,cmd2.expiry⟩
++
++/-- This toy image only illustrates why plaintext equality is insufficient.
++It is not BFV decryption or an assumed integer additive phase map. -/
++def toyPlain (x : Ct) : ZMod 17 := x 0 0+x 1 0
++
++theorem same_plaintext_different_ciphertext :
++    toyPlain a=toyPlain rerandomizedA ∧ a≠rerandomizedA ∧
++    ct.encode a≠ct.encode rerandomizedA := by decide +kernel
++
++theorem wrong_serialized_expiry_refused :
++    check ct.toLawful admit 2 s2 wrongExpiry=false ∧
++    step ct.toLawful admit 2 s2 wrongExpiry=none := by decide +kernel
++
++theorem stale_id_and_denied_input_refused :
++    check ct.toLawful admit 2 s2 staleExpiry=false ∧
++    check ct.toLawful admit 2 s2 staleFresh=false ∧
++    check ct.toLawful admit 2 s2 deniedFresh=false := by decide +kernel
++
++/-- Deliberately bypass the byte check: a same-plaintext replacement leaves
++nonzero group debt even when this toy plaintext image initially agrees. -/
++theorem bypassed_byte_check_breaks_sum :
++    (advance 2 s2 wrongExpiry).accumulator≠queueSum (advance 2 s2 wrongExpiry).queue ∧
++    (advance 2 s2 wrongExpiry).accumulator=queueSum (advance 2 s2 wrongExpiry).queue+(a-rerandomizedA) ∧
++    toyPlain (advance 2 s2 wrongExpiry).accumulator=toyPlain s3.accumulator := by decide +kernel
++
++/-- A nontrivial state-codec round trip includes the whole queue, accumulator
++and next admission counter. It carries ciphertexts only, no plaintext reference. -/
++theorem canonical_roundtrip : (stateStream ct).toLawful.decode ((stateStream ct).encode s3)=some s3 :=
++  (stateStream ct).toLawful.decode_encode s3
++
++def hash (_ : List UInt8) : Digest := ⟨0⟩
++def pre := cell ct hash s2
++def post := cell ct hash s3
++
++def wp : WindowPlan ct hash 2 where
++  plan:={
++    transactionId:=⟨301⟩,genesisId:=⟨7⟩,stateId:=⟨22⟩,distinct:=by decide
++    genesis:=cell ct hash initial,pre:=pre,patch:=writePatch ct hash pre s3
++    validated:=(writePatch_accepted ct hash pre s3).choose
++    context:=⟨7,0,2,1,2,19,23,0,0,0,0⟩,prior:=[],epoch:=0 }
++  beforeState:=s2
++  command:=cmd2
++  preOpening:=rfl
++  postOpening:=rfl
++
++def selected : Selection := ⟨⟨7⟩,⟨22⟩,(cell ct hash initial).bytes,19,23⟩
++def beforeBytes (id : CellId) : List UInt8 :=
++  if id=wp.plan.genesisId then (cell ct hash initial).bytes else pre.bytes
++
++def before : DataSnapshot hash where
++  model:=⟨fun id=>hash (beforeBytes id),fun _=>false,fun _=>10,[],[]⟩
++  canonicalBytes:=beforeBytes
++  coherent:=fun _=>rfl
++
++theorem durable_ready : wp.plan.intent.preflight before=.ok () := by decide +kernel
++theorem durable_opened : wp.plan.opens selected before=true := by decide +kernel
++
++theorem actual_materialized_subject :
++    execute .complete before wp.plan.intent=.accepted (DataSnapshot.install before wp.plan.intent) ∧
++    (DataSnapshot.install before wp.plan.intent).canonicalBytes wp.plan.stateId=(stateStream ct).encode s3 ∧
++    stateValue wp.plan.post.logical=s3 ∧ SumBound 2 s3 ∧
++    wp.plan.pre.root=wp.plan.post.root ∧ wp.plan.pre.bytes≠wp.plan.post.bytes := by
++  have inv := (window_invariant ct.toLawful admit 2 s3 reached3).1
++  refine ⟨execute_complete_ready before wp.plan.intent rfl durable_ready,
++    (wp.plan.installed_exact before).1.trans wp.postOpening,rfl,inv,rfl,?_⟩
++  decide +kernel
++
++
++/-- An isolated materialized install is weaker than a coherent history: the
++fixture above contains a two-entry logical queue but an empty durable journal. -/
++theorem detached_history_is_not_reachable :
++    ¬ExecutedHistory ct hash admit 2 selected before before s2 := by
++  intro h
++  have count := (executed_history_invariant ct hash admit 2 selected before before s2 h).2.1
++  change 2=0 at count
++  contradiction
++
++/-- Actual three-step materialized history, starting from canonical empty
++queue and empty journal, with a new existing DataIntent at every admission. -/
++def planFor (tx : Nat) (data : DataSnapshot hash) (s : State Ct) (cmd : Command Ct) : WindowPlan ct hash 2 where
++  plan:={
++    transactionId:=⟨tx⟩,genesisId:=⟨7⟩,stateId:=⟨22⟩,distinct:=by decide
++    genesis:=cell ct hash initial,pre:=cell ct hash s
++    patch:=writePatch ct hash (cell ct hash s) (advance 2 s cmd)
++    validated:=(writePatch_accepted ct hash (cell ct hash s) (advance 2 s cmd)).choose
++    context:=⟨7,0,2,1,cmd.fresh.admissionId,19,23,0,0,0,0⟩
++    prior:=data.model.journal.reverse.map Prod.snd,epoch:=0 }
++  beforeState:=s
++  command:=cmd
++  preOpening:=rfl
++  postOpening:=rfl
++
++def data0 : DataSnapshot hash where
++  model:=⟨fun _=>⟨0⟩,fun _=>false,fun _=>10,[],[]⟩
++  canonicalBytes:=fun _=>(cell ct hash initial).bytes
++  coherent:=fun _=>rfl
++
++def p0 := planFor 401 data0 initial cmd0
++def data1 := DataSnapshot.install data0 p0.plan.intent
++def p1 := planFor 402 data1 s1 cmd1
++def data2 := DataSnapshot.install data1 p1.plan.intent
++def p2 := planFor 403 data2 s2 cmd2
++def data3 := DataSnapshot.install data2 p2.plan.intent
++
++theorem data_steps_ready :
++    p0.plan.intent.preflight data0=.ok () ∧ p1.plan.intent.preflight data1=.ok () ∧
++    p2.plan.intent.preflight data2=.ok () := by decide +kernel
++
++theorem data_steps_opened :
++    p0.plan.opens selected data0=true ∧ p1.plan.opens selected data1=true ∧
++    p2.plan.opens selected data2=true := by decide +kernel
++
++theorem executed3 : ExecutedHistory ct hash admit 2 selected data0 data3 s3 := by
++  have h0 : ExecutedHistory ct hash admit 2 selected data0 data1 s1 :=
++    .next (.start rfl rfl) p0 rfl data_steps_opened.1 checked0 data_steps_ready.1 rfl
++  have h1 : ExecutedHistory ct hash admit 2 selected data0 data2 s2 :=
++    .next h0 p1 rfl data_steps_opened.2.1 checked1 data_steps_ready.2.1 (by decide)
++  exact .next h1 p2 rfl data_steps_opened.2.2 checked2 data_steps_ready.2.2 (by decide)
++
++/-- The full history keystone has a changed-state/expiry subject and the
++exact serialized queue, accumulator and counter at the installed state cell. -/
++theorem executed_history_subject :
++    data3.canonicalBytes selected.stateId=(stateStream ct).encode s3 ∧
++    s3.nextId=data3.model.journal.length ∧ SumBound 2 s3 ∧
++    Provenance ct.toLawful admit s3 ∧ data3.model.journal.length=3 ∧
++    s3.queue.map Entry.admissionId=[1,2] := by
++  have inv := executed_history_invariant ct hash admit 2 selected data0 data3 s3 executed3
++  exact ⟨inv.1,inv.2.1,inv.2.2.2.1,inv.2.2.2.2,rfl,rfl⟩
++
++theorem exact_durable_retry : execute .complete data3 p2.plan.intent=.replayed p2.plan.intent.erase :=
++  p2.plan.exact_retry .complete data2
++
++
++/-- The constructive continuation premise is inhabited for arbitrarily many
++nonzero public-vector admissions, not only the three-step display above. -/
++theorem unbounded_public_fixture (n : Nat) :
++    SumBound 2 (run 2 (fun id=>if id=0 then a else if id=1 then b else c) n) ∧
++    Provenance ct.toLawful admit (run 2 (fun id=>if id=0 then a else if id=1 then b else c) n) := by
++  have admitted : ∀ id,admit id (ct.encode (if id=0 then a else if id=1 then b else c))=true := by
++    intro id;unfold admit;exact decide_eq_true rfl
++  have h := all_finite_horizons ct.toLawful admit 2
++    (fun id=>if id=0 then a else if id=1 then b else c) (by decide) admitted n
++  exact ⟨⟨h.1,h.2.1⟩,h.2.2⟩
++
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.checked0' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms checked0
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.checked1' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms checked1
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.checked2' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms checked2
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.reached3' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms reached3
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.honest_nonzero_add_and_expiry' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms honest_nonzero_add_and_expiry
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.same_plaintext_different_ciphertext' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms same_plaintext_different_ciphertext
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.wrong_serialized_expiry_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms wrong_serialized_expiry_refused
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.stale_id_and_denied_input_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms stale_id_and_denied_input_refused
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.bypassed_byte_check_breaks_sum' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms bypassed_byte_check_breaks_sum
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.canonical_roundtrip' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms canonical_roundtrip
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.durable_ready' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms durable_ready
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.durable_opened' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms durable_opened
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.actual_materialized_subject' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms actual_materialized_subject
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.detached_history_is_not_reachable' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms detached_history_is_not_reachable
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.data_steps_ready' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms data_steps_ready
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.data_steps_opened' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms data_steps_opened
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.executed3' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms executed3
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.executed_history_subject' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms executed_history_subject
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.exact_durable_retry' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms exact_durable_retry
++/-- info: 'Minidregg.Assurance.CiphertextWindowWitness.unbounded_public_fixture' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms unbounded_public_fixture
++
++end Minidregg.Assurance.CiphertextWindowWitness
+--- a/Theory.lean
++++ b/Theory.lean
+@@ -75,3 +75,5 @@
+ import Theory.LaceMerge  -- the replica keyset merge over CausalVersionDag's AddressedEvent: ids_merge and the CRDT laws; the ancestor's anonymously-carried CrossCanonical gap DERIVED from the typed realizer slot BindingPremise (crossCanonical_of_binding, sameView_of_binding, merge_converges — replication converges on CONTENT); premise inhabited (injectiveScheme_binding, ideal digest) and refuted (lengthScheme_not_binding, crossCanonical_is_the_gap, merge_drops_at_collision) over one computable lawful codec. Residuals [LACE-frontier] [LACE-equivocation] [LACE-order] [LACE-catchup]
+ import Theory.RevocationConsensus  -- the negative lifecycle is consensus-bound and the positive one is not: revocation_needs_consensus (cross-vat sound + gated ⇒ Consensus) with its satisfiable and teeth poles, LocalCollect separated from Consensus on ONE decision, and dead_undecidable ported (deadness across the halting family is not computably decidable; resolved operationally by leases). Residuals [LIVENESS-lease] [LIVENESS-crossvat-cycle]
+ import Theory.PrivateTrace  -- the learn/infer-only interface as a state-machine fact, candidate-independent: a deterministic Machine S C O (step, out), an ADAPTIVE policy π : List O → C, trace M π s n. trace_eq_of_preserved (NO axioms): a relation preserved by EVERY allowed command and respected by out gives equal finite traces under every adaptive policy — the multi-step lift of Kernel/PrivateTurn.lean's one-step post_public_agrees (its hblind IS the preservation premise); randomized state needs a coupling version, not done. The byte toy as theorems: with output = high bit and update +128 only, the honest invariant is EQUAL HIGH BIT (highR; lowR fails hout — lowR_traces_differ), flip_trace_eq_of_highR, and the visible state genuinely changes (flip_trace_alternates). Falsifier for preservation: add the update +1 (twoMachine) — equal next answers (highR_two_out) yet not_highR_two_step (127 ↦ 128, 0 ↦ 1) and highR_two_traces_differ: certify the COMBINED learn-and-infer interface, not the two verbs independently. Recovery, sharp both ways: with arbitrary chosen offsets a binary-search policy recovers the byte in 8 observations (search_recovers, decide +kernel over all 256; exists_policy_recovers over all pairs), 7 are insufficient for that policy (search_seven_insufficient) and for EVERY policy (no_policy_recovers_seven, pigeonhole over List.Vector Bool 7); {+1,+128} alone cannot recover in 8 and is used only for the falsifier.
++
++import Theory.CiphertextWindow
+--- a/Assurance.lean
++++ b/Assurance.lean
+@@ -126,3 +126,6 @@
+ import Assurance.SpartanR1CS  -- SPARTAN, composed out of engines we already had. The suspicion this file tests and confirms: Spartan is not three things to build but three things to COMPOSE. (1) The ZEROCHECK is Selvage.eqMle_fold (identity) plus Selvage.mle_zero_uniform_bound (multilinear Schwartz-Zippel) -- both LANDED, so AirSumcheckQuadratic's docblock residual (ii), still reading "not yet vocabulary", is STALE and not a gap. (2) The OUTER sumcheck is the degree-3 rung at head eqHead tau and body A-hat*B-hat - C-hat: literally the COMPOSITION of cubicForm_fraction_layer's vocabulary and cubicForm_hadamard, so it costs no realizer. spartan_outer_sound: an UNSATISFIED R1CS survives with probability at most s/|F| + s*3/|F| over the joint draw of the zerocheck point and the s challenges -- two events, two causes, added, and the flattering half never quoted alone. (3) The INNER sumcheck is not the hard part it is usually called: its three claims are literally three Selvage.LinearConstraint values ON THE WITNESS WORD (innerClaim, innerClaim_satisfied_iff), so batch_survives_prob_le retires a wrong triple at 2/|F| with nothing new proved, and the batched summand wt_gamma * z is a prodDiff with C = 0, i.e. the landed degree-2 engine with the FACTORED terminal wt-tilde(r_y) * z-tilde(r_y). mle_matVec is the identity that makes phase 2 exist, obtained as mle2_contraction at nu = 0 (matVec_is_contraction_at_nu_zero exhibits the instance, so there is ONE object and not a twin). THE HAND-OFF IS A THEOREM, not prose: spartanTerminal_eq_honest says the verifier's own terminal expression eq(tau,r_x)*(vA*vB - vC) equals the honest chain's final value exactly when the three v's are the three true row openings -- so phase 2's obligation is exactly three values, no more and no fewer, and the eq factor is NOT one of them. TWO NAMED OBLIGATIONS, neither discharged: [SPARTAN-pcs] SpartanOpeningProtocol over the landed Selvage.MleEvalClaim (the opening PROTOCOL is BaseFold's braided reduction, or Ligerito in the BinarySpartan shape; binding itself is proved here as spartanOpeningsBound), and [SPARTAN-sparse] SpartanSparseEvalOracle -- which is a COST obligation and NOT a soundness one: everything here is sound against a DENSE commitment to the matrices, and Spartan's SPARK layer (sparse multilinear commitment by offline memory checking) is what buys SUBLINEARITY. That layer does not exist in this tree at all -- zero timestamp vectors, zero multiset check -- and sparseEvalOracle_refutable proves the Prop is refutable rather than free. NO CHARACTERISTIC HYPOTHESIS anywhere, and nothing downstream of Proximity's FoldingData (whose two_ne is uninhabitable in char 2): what char-2 costs is the USEFULNESS of a k/|F| bound, not its proof, which is why ring-switching is load-bearing rather than an optimization. ZMod 7 teeth on the SQUARING gate w*w = v -- deliberately not a C = 0 instance the zero witness would satisfy for free: goodZ_sat and badZ_unsat are two live witnesses on one instance, badZ_survives_at_one exhibits a NONEMPTY s/|F| event while badZ_caught_at_three separates elsewhere, the inner claim predicate fires BOTH ways, and terminal_fires computes the hand-off to a specific nonzero element. AND THEN THE COMPOSITION (spartan_sound): the two phases over ONE joint draw ((tau,r_x),(gamma,r_y)), bounded by s/|F| + s*3/|F| + 2/|F| + t*2/|F|, with ADAPTIVE provers (outer sees tau, inner sees (tau,r_x,gamma), the claimed values are functions of (tau,r_x)) -- and, the point of it, against the DEPLOYED verifier. SpartanOuterRealAccepts contains NO honest side: Selvage's SumcheckAccepts renders the terminal oracle check as 'the folded claim equals the HONEST side's final value', which a real verifier cannot evaluate, and left unstated every bound here would have been about an idealized verifier -- the exact shape of a vacuity that survives a green build and passes its axiom pins. outerReal_iff_sumcheckAccepts discharges it: the deployed and idealized predicates coincide EXACTLY when the three claims are true. The case split IS the content -- either the prover told the truth about the three row openings and phase 1 must carry the lie and cannot, or it lied and phase 2 must carry it and cannot. WHAT THE COMPOSITION DID NOT DO, said next to the theorem and not in a footnote: it moved the idealization from phase 1 to phase 2, it did not remove it from the stack; phase 2's terminal is still a comparison against an honest chain, which is [SPARTAN-pcs]. Two elaboration findings paid for in build failures: the product splits must be done ONCE at opaque types (uniformProb_mid_le/_last_le -- inlining them at the concrete event types is a whnf HEARTBEAT TIMEOUT, because spartanBatch unfolds through batchConstraint into three rowPartials into mle's Finset.sum), and naming the events (spartanBatchAt, SpartanInnerAccepts, SpartanInnerFalse) is what made the proof elaborate at all. Final tooth, which is the ring-switching argument in one line: composed_bound_is_vacuous_at_f7 proves 1 < 1/7 + 3/7 + 2/7 + 2/7 = 8/7, so the composed bound at toy parameters is a TRUE statement that constrains nothing -- every term is k/|F|, the proofs are characteristic-free but the USEFULNESS is not, and that is a parameter fact rather than a proof obstruction
+ import Assurance.TwistMemoryFingerprintJoin  -- ⭐ the OFFLINE MEMORY CHECK, both poles priced: Compiler.TwistMultisetInvariant (Nebula Lemma 2 over the sparse typed carriers -- TwistContinuity IFF the IS+WS = RS+FS multiset invariant under the positional stamp discipline, BOTH directions, free absorbed by Option-valued cells with no case split) joined to Selvage.MultisetFingerprint (Corollary 1): a NON-continuous committed bus passes the fingerprinted check on at most (|dom|+|rows|)*(k+1)/|F| of challenge pairs for ANY prover stamps (nonContinuous_fingerprint_accept_le -- the adversarial direction of the bridge's named residual, discharged to the named floor), and every accepted execution's exact bus is accepted at EVERY challenge (exactBusClaim_fingerprint_accepted). Residual [TWIST-FP-BIND] names what is NOT discharged: commitment binding over the committed row/stamp columns, the roots-before-gamma schedule (AcceptedLogupRun), range checks realizing Set.InjOn vec, row-shape checks realizing DisciplineRowValid, and the pre/post audit against the exact state roots. NOTE: this is also the timestamp-vector + multiset-check engine SpartanR1CS's [SPARTAN-sparse] entry records as absent from the tree -- the SPARK sparse-commitment layer now has its combinatorial core, not yet its sparse-matrix instantiation
+ import Assurance.ReleaseGateRouting -- the release-gate routing lemma and its binding control, the handoff's §6B as theorems, joined to the tree at both ends. Routing: an unbound gate that reveals the designated bit of ANY submitted predicate determines the private state (determines_iff_separates; routing_of_projections / routing_of_accept_all; hostReconstruct_exact is the "put secret bit 37 in the output slot" attack, by rfl), and a gate accepting at most one predicate reveals at most one bit (single_predicate_not_determining, pigeonhole; both poles pinned on one carrier). Binding: BindingGate R stateOf outOf gate — acceptance implies the released output stands in the authorized relation to the state — gives routing_refused (an output that is not the authorized function of the public half is refused whatever the private half or proof string) and binding_release_public_only, the gate-level twin of privateTurn_public_indistinguishable; TwoBit instance decided. The tree at both ends: Kernel/PrivateEscrowSettlement's Settlement is a BindingGate BY TYPE (settlement_is_binding_gate, settlement_release_public_only, acceptable_pins_named_relation); and at Stage 0 the relation is y = rt ∧ descriptorHolds evmAddDescriptor (traceOf y) (Iff.rfl), the descriptor FORCES Z = (X + Y) mod 2^256 (stage0_released_output_forced via evmAddDescriptor_means_semantics + fragment_run_eq_iff), the ideal gate refuses every routed Z (stage0_forged_z_refused at Z = 4) while the honest candidate is accepted at the ideal AND the deployed gate (fsProve_complete), and stage0Receipt_is_bound_evidence = fsCheck_ok_fiatShamir ∧ stage0Receipt_price. What the receipt binds: the descriptor and the FULL word, public prefix included, up to the FS price under the ROM. What it does not: hide — the whole word IS the FS statement (stage0_statement_carries_word, rfl); Stage 0 has no private half. Residuals: [RELEASE-hiding], [RELEASE-continuity] (a bound gate does not refuse a replayed stale-but-valid state; the kernel's nullifier/freshness objects are named).
++
++import Assurance.CiphertextWindowCell
++import Assurance.CiphertextWindowWitness
