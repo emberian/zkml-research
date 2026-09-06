@@ -119,6 +119,9 @@ derived path reproduced); not a theorem break, a structural mismatch with the ho
 `pre-constrained-encryption-read.md` — PCE is one-hop: sPCE fixes every function at setup, the learn
 chain dies at hop two; delegating PCE with closure needs general-circuit constraints = iO (the paper
 says so); the extractor warning confirmed and sharpened; DARK-TRAINING §6 reclassified to tier-C custody.
+`private-trace-lemma.md` — minidregg `Theory/PrivateTrace.lean`: trace privacy from a preserved relation
+(no axioms), the byte toy honest (equal HIGH bit), +1 as the preservation falsifier, recovery in 8 decided
+by kernel and 7 insufficient for every policy.
 
 **Sweeps and corpora** — `mirror-mine-2026-08.md`, `inspiration-sweep{,-cc,-pl}.md`,
 `inspiration-verdicts.md`, `vacuity-prior-art.md`. Each names its corpus AND its

@@ -78,15 +78,20 @@ re-derive. Put this in `SECURITY_GAME.md`'s "who originates each observation" li
 
 ### §3 — security relative to the interface
 
-- **[LANE] `Theory/PrivateTrace.lean`** — the multi-step, adaptive-policy version of
+- **[LEAN, landed 09-06] `Theory/PrivateTrace.lean`** (29 theorems, 20 pins;
+  `trace_eq_of_preserved` carries NO axioms) — the multi-step, adaptive-policy version of
   `post_public_agrees`: a deterministic `Machine (S C O)`, adaptive `π : List O → C`,
   `trace_eq_of_preserved` (a relation preserved by every allowed command and respected by
   the output gives equal finite traces under every adaptive policy), with the handoff's
   byte witness (high-bit output, update +128 only — the honest invariant is *equal high
   bit*, not equal low bits) and the falsifier (+1 breaks preservation; with chosen
-  offsets a policy recovers the byte in eight observations, kernel-decided where
-  feasible). Note: `notes/private-trace-lemma.md`. This is the handoff's §6A, done in
-  Lean, candidate-independent.
+  offsets a binary-search policy recovers the byte in eight observations —
+  `search_recovers`, `decide +kernel` over all 256 states — and **seven are insufficient
+  for EVERY policy**, `no_policy_recovers_seven`, by pigeonhole). One correction to the
+  handoff's §6: the recovery needs *arbitrary* offsets; `{+1, +128}` alone cannot recover
+  in eight and serves only as the preservation falsifier. Note:
+  `notes/private-trace-lemma.md`. This is the handoff's §6A, done in Lean,
+  candidate-independent — cite it in `formal/` rather than re-deriving.
 
 ### §4 — credentials as named hypotheses, mechanically
 
