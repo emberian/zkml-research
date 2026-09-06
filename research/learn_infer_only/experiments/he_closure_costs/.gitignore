@@ -1,0 +1,10 @@
+# Reconstructable runtimes and build products stay outside research commits.
+**/target/
+**/__pycache__/
+*.pyc
+/estimator/runtime/
+
+# Keep source citations and hashes; do not commit full paper reproductions.
+*.pdf
+/security_guidelines_2024_463.txt
+/private_lora_arxiv.html

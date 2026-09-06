@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build/Selvage/RandomnessSelection.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Selvage/RandomnessSelection.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Selvage/RandomnessSelection.lean:163:0: error: \u274c\ufe0f Docstring on `#guard_msgs` does not match generated message:\n\n- info: 'Minidregg.Selvage.RandomnessSelection.selection_transfer' depends on axioms: [propext, Classical.choice, Quot.sound]\n+\n",
+  "stderr": "",
+  "source_sha256": "74bc679439fc88a647f067e91246842c8619ca59df885d0b5e8e03646ff31af8"
+}

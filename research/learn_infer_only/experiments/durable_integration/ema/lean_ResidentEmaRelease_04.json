@@ -1,0 +1,17 @@
+{
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean",
+  "source_sha256": "5bcc841840516daff6f3b273c2a0c7905e5faec50b3a199b01bed17a4ea0eeca",
+  "inputs_unchanged": true,
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build/Assurance/ResidentEmaRelease.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean:73:36: error: Tactic `contradiction` failed\n\ncase error\nhash : List UInt8 \u2192 Digest\np : OpenedPlan hash\nO : SrMove (reduction p.plan.context) 0 \u2192 Ext6L\nrc : Receipt\ne : FsFailure\nhf : fsCheck (\u2191(scheme p.plan.context)).commit descriptor (bitCorner 10) descriptor_nonempty O rc = Except.error e\nh : (decide (rc.root.1 = p.plan.context) = true \u2227 decide (Linked p rc.word) = true) \u2227 false = true\n\u22a2 fiatShamir (reduction p.plan.context) 0 O\n      (FsReceipt.output (\u2191(scheme p.plan.context)).commit descriptor (bitCorner 10) descriptor_nonempty rc) =\n    some ((), fun x => ())\n",
+  "stderr": "",
+  "elapsed_seconds": 7.190329074859619
+}

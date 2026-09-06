@@ -1,0 +1,15 @@
+   Compiling resident-bfv-window-probe v0.1.0 (/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_probe)
+error: `<` is interpreted as a start of generic arguments for `u64`, not a comparison
+  --> src/main.rs:70:62
+   |
+70 |         assert!((width*window*input_bound*input_bound) as u64<t/2);
+   |                                                              ^-- interpreted as generic arguments
+   |                                                              |
+   |                                                              not interpreted as comparison
+   |
+help: try comparing the cast value
+   |
+70 |         assert!(((width*window*input_bound*input_bound) as u64)<t/2);
+   |                 +                                             +
+
+error: could not compile `resident-bfv-window-probe` (bin "resident-bfv-window-probe") due to 1 previous error

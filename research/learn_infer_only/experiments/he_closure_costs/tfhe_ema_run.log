@@ -1,0 +1,7 @@
+STATUS real_TFHE_Boolean_EMA no_no_master_read_claim no_latency_benchmark
+PARAMETERS source_name=PARAMETERS_ERROR_PROB_2_POW_MINUS_165 source_claim_not_reestimated=true BooleanParameters { lwe_dimension: LweDimension(837), glwe_dimension: GlweDimension(2), polynomial_size: PolynomialSize(1024), lwe_noise_distribution: Gaussian(Gaussian { std: 3.374714376692653e-6, mean: 0.0 }), glwe_noise_distribution: Gaussian(Gaussian { std: 9.313225746198247e-10, mean: 0.0 }), pbs_base_log: DecompositionBaseLog(10), pbs_level: DecompositionLevelCount(2), ks_base_log: DecompositionBaseLog(3), ks_level: DecompositionLevelCount(5), encryption_key_choice: Small }
+KEY_SERIALIZED_BYTES public_key=90316428 server_key=157865796 read_all_client_key_retained=true
+ENCRYPTED_ORDER_WITNESS history=[120, -120] expected=-2 observed=-2 state_bits=8 serialized_state_bytes=27112
+ENCRYPTED_ORDER_WITNESS history=[-120, 120] expected=1 observed=1 state_bits=8 serialized_state_bytes=27112
+GATE_API_CALLS Calls { and: 176, xor: 264, not: 44 } bootstrap_count_not_instrumented=true
+PASS public-key ingress, four encrypted stateful EMA updates, order-sensitive final outputs; test reader retains master key

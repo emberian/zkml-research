@@ -1,0 +1,5 @@
+{
+  "local_sources_hashed": 7,
+  "scry_sql_queries": 3,
+  "scry_spend_nanodollars": 0
+}

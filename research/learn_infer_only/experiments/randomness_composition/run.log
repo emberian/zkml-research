@@ -1,0 +1,37 @@
+{
+  "status": "all assertions passed",
+  "results": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/randomness_composition/results.json",
+  "unique_8_contexts_bias": {
+    "worlds": 256,
+    "counts": {
+      "0": 1,
+      "1": 255
+    },
+    "release_probability": "1",
+    "one_probability": "255/256",
+    "one_given_release": "255/256"
+  },
+  "rfe_four_encodings": {
+    "worlds": 16,
+    "counts": {
+      "0": 1,
+      "1": 15
+    },
+    "release_probability": "1",
+    "one_probability": "15/16",
+    "one_given_release": "15/16"
+  },
+  "three_queries_one_final_context": {
+    "preverification_queries": 3,
+    "verification_unqueried_address_budget": 1,
+    "finalized_context_count": 1,
+    "false_accept_probability": "175/256",
+    "all_opportunities_union_bound": "1",
+    "wrong_bound_counting_only_finalized_contexts": "1/4"
+  },
+  "fresh_after_selection": {
+    "all_selectors_checked": 256,
+    "worlds_per_selector": 16,
+    "bad_probability_every_selector": "1/4"
+  }
+}

@@ -1,0 +1,65 @@
+{
+    "actions": {
+        "FETCH": [
+            {
+                "build": "h4c1ea7d_0",
+                "build_number": 0,
+                "build_string": "h4c1ea7d_0",
+                "channel": "conda-forge",
+                "constrains": [
+                    "sagelib >=10.1"
+                ],
+                "depends": [
+                    "__osx >=11.0",
+                    "ecl >=24.5.10,<24.5.11.0a0",
+                    "gmp >=6.3.0,<7.0a0",
+                    "readline >=8.3,<9.0a0"
+                ],
+                "fn": "maxima-5.49.0-h4c1ea7d_0.conda",
+                "license": "GPL-2.0-or-later",
+                "md5": "95db87c93b5f11ebf1da26e1f444ef1a",
+                "name": "maxima",
+                "sha256": "90f2a709d37853e0fa056d2ca5036f9e51265083ba45c861587b19a7b20f5909",
+                "size": 31963559,
+                "subdir": "osx-arm64",
+                "timestamp": 1773138953,
+                "track_features": "",
+                "url": "https://conda.anaconda.org/conda-forge/osx-arm64/maxima-5.49.0-h4c1ea7d_0.conda",
+                "version": "5.49.0"
+            }
+        ],
+        "LINK": [
+            {
+                "build": "h4c1ea7d_0",
+                "build_number": 0,
+                "build_string": "h4c1ea7d_0",
+                "channel": "conda-forge",
+                "constrains": [
+                    "sagelib >=10.1"
+                ],
+                "depends": [
+                    "__osx >=11.0",
+                    "ecl >=24.5.10,<24.5.11.0a0",
+                    "gmp >=6.3.0,<7.0a0",
+                    "readline >=8.3,<9.0a0"
+                ],
+                "fn": "maxima-5.49.0-h4c1ea7d_0.conda",
+                "license": "GPL-2.0-or-later",
+                "md5": "95db87c93b5f11ebf1da26e1f444ef1a",
+                "name": "maxima",
+                "sha256": "90f2a709d37853e0fa056d2ca5036f9e51265083ba45c861587b19a7b20f5909",
+                "size": 31963559,
+                "subdir": "osx-arm64",
+                "timestamp": 1773138953,
+                "track_features": "",
+                "url": "https://conda.anaconda.org/conda-forge/osx-arm64/maxima-5.49.0-h4c1ea7d_0.conda",
+                "version": "5.49.0"
+            }
+        ],
+        "PREFIX": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage"
+    },
+    "dry_run": true,
+    "log_history": [],
+    "prefix": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage",
+    "success": true
+}

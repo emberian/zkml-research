@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build/Assurance/ResidentAdaptiveContext.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition",
+  "exit_code": 1,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean:185:2: error: No goals to be solved\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean:201:34: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  OfNat adaptiveReduction.A 0\nnumerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is\n  adaptiveReduction.A\ndue to the absence of the instance above\n\nHint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean:205:22: error: Application type mismatch: The argument\n  q.stmt.y i\nhas type\n  adaptiveReduction.A\nbut is expected to have type\n  ZMod (?m.13 i)\nin the application\n  ZMod.val (q.stmt.y i)\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean:212:38: error: Application type mismatch: The argument\n  rfl\nhas type\n  ?m.30 = ?m.30\nbut is expected to have type\n  dropRootBytes (queryAt c0) = dropRootBytes (queryAt c1)\nin the application\n  \u27e8?m.28, rfl\u27e9\n",
+  "stderr": "",
+  "source_sha256": "20972fec4504f10f0c2b6f990a79ba703a3e9a0da57b26ac49282a95d3cf0b36"
+}

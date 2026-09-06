@@ -1,0 +1,23 @@
+{
+  "label": "EXECUTED independent algebra and decode-boundary falsifier",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/ipfe_independent_review.py"
+  ],
+  "started_utc": "2026-09-06T07:48:05.613218+00:00",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/additive_ipfe.py",
+  "sha256": "ece7458bb414d8e2442ec66287354273640b2a6a689ddc01d4b6076633f2f2e7",
+  "source_unchanged": true,
+  "ciphertext_update_equals_summed_coins_encryption": true,
+  "projection_equals_direct_group_encoding": true,
+  "beyond_decode_interval": {
+    "inputs": [
+      65,
+      66
+    ],
+    "both_integer_decoders_refuse": true,
+    "projected_group_values_distinct": true,
+    "guess_comparison_recovers_each": true
+  },
+  "scope": "No counterexample to equal-projection pair. Decode failure alone is not a projection-hiding interface."
+}

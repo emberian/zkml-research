@@ -1,0 +1,18 @@
+{
+  "Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+  "Assurance/ResidentRestoreFinality.lean": "1ecebe305a618398fb4d00b904ab28f6e38aeae019bc1663fc2a55700504e286",
+  "Theory/PrivatePolicyEvolution.lean": "b1b36ecd921a4b2dacc122fb70e25804fc30893d07de42644bcb6ccb1f3f209a",
+  "Assurance/ResidentDurableIntegration.lean": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+  "Assurance/ResidentDurableCollision.lean": "b410206075a03338ef6d569c777c2d2a2420f3ddc8f3280cfcf6d062685a028c",
+  "Selvage/RandomnessSelection.lean": "670e93843760823413cc2e18bf9bafadba3247dd11f56feaff3d5ebca83dbb57",
+  "Assurance/ResidentAdaptiveContext.lean": "9eb3318ca21240162355a7e166e258b085aaa038b66f466c2b8f90df777fd90e",
+  "Assurance/ResidentMultiReceiptSchedule.lean": "0dcbf2e07534bf430d0f17b969f9174fdd2bda533f537bccddb9f7cb6265ab82",
+  "Compiler/BFVScaleLiftRefinement.lean": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+  "Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+  "Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+  "Compiler/LargeIntegerCertificateEmission.lean": "4330a8f99bf1b325b0c1cecb7f7dc6efe655c24021269cbafef2a854e8a7d579",
+  "Theory.lean": "baa3907acdd1124a9a57929eb253398a540ad44b4e30335cd5a799d049bec87e",
+  "Compiler.lean": "6ab7775769db6fe0a3771cc67eab800cb768dda87399c4955469509ba3ffef86",
+  "Selvage.lean": "8bc68f82068d9da9613849f316a3c2421cf845cae8aa0cae012f6b699d952afc",
+  "Assurance.lean": "af2a2ce3a297593d13e8e330a960729386e779f37780d85434209bf6cdd40fe9"
+}

@@ -1,0 +1,52 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit_code": 2,
+  "issues": {
+    "research/learn_infer_only/experiments/adaptation_utility/MODEL_CARD.md": {
+      "trailing whitespace.": 2
+    },
+    "research/learn_infer_only/experiments/adaptation_utility/costs.csv": {
+      "trailing whitespace.": 55
+    },
+    "research/learn_infer_only/experiments/adaptation_utility/text_window_costs.csv": {
+      "trailing whitespace.": 6
+    },
+    "research/learn_infer_only/experiments/he_closure_costs/cost_rows.csv": {
+      "trailing whitespace.": 5
+    },
+    "research/learn_infer_only/experiments/he_closure_costs/estimator/install.log": {
+      "trailing whitespace.": 155,
+      "new blank line at EOF.": 1
+    },
+    "research/learn_infer_only/experiments/he_closure_costs/estimator/install_maxima.log": {
+      "new blank line at EOF.": 1
+    },
+    "research/learn_infer_only/experiments/he_closure_costs/estimator/install_scipy.log": {
+      "new blank line at EOF.": 1
+    },
+    "research/learn_infer_only/experiments/he_closure_costs/estimator/summary.csv": {
+      "trailing whitespace.": 17
+    },
+    "research/learn_infer_only/experiments/he_closure_costs/lowrank_counts.csv": {
+      "trailing whitespace.": 7
+    },
+    "research/learn_infer_only/experiments/private_construction/build/IPFE-2023/rounding_extracted.c": {
+      "trailing whitespace.": 2
+    },
+    "research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean": {
+      "new blank line at EOF.": 1
+    },
+    "research/learn_infer_only/formal/randomness_composition/Selvage/RandomnessSelection.lean": {
+      "new blank line at EOF.": 1
+    },
+    "research/learn_infer_only/formal/randomness_composition/minidregg-multi-receipt-schedule.patch": {
+      "trailing whitespace.": 1
+    }
+  },
+  "scope": "Captured source/log/CSV/patch whitespace preserved; classify before checkpoint commit"
+}

@@ -1,0 +1,10 @@
+{
+  "source": "Sibling durable_integration stable-packaging message; verified before integration",
+  "hashes": {
+    "minidregg-ema-semantic-bridge.patch": "3f5d9c6895b5a423ce134e586c02141e448052ed559bca0a1aeec707dd99232a",
+    "Compiler/ResidentEmaCertificate.lean": "f6b9c07240bc4f5341a8412b7bc00a5c8c6e19e17743d86c3cecc8b3ea72588d",
+    "Assurance/ResidentEmaCell.lean": "68cdb084b839364328bc0717c5b6fa763a8342efbfc4244c02181603af4a9437",
+    "Assurance/ResidentEmaRelease.lean": "470a6b5daf54cbd373799fa0b075137d06f5a115395d07ecbabfac130efbc8ee",
+    "Assurance/ResidentEmaWitness.lean": "e412cad31eba9eac302a597239fcaee14987b79db6b134c0de884e2ca74f3eeb"
+  }
+}

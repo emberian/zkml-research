@@ -1,0 +1,38 @@
+[
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+    "stderr": "",
+    "elapsed_seconds": 0.034279209008673206
+  },
+  {
+    "command": [
+      "lean",
+      "--version"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+    "stderr": "",
+    "elapsed_seconds": 0.062493834004271775
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/.validation-ixu1d8pc/Compiler/BFVScaleLiftRefinement.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "input file '/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean' must be contained in root directory (/Users/ember/dev/minidregg/)\n",
+    "elapsed_seconds": 0.05263483300223015
+  }
+]

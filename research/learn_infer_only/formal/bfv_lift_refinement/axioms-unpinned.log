@@ -1,0 +1,23 @@
+'Minidregg.Compiler.BFVScaleLift.quotient_forced' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.quotient_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.bfvScaleLiftRefinement' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.honest_accepts' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.canonical_lift_unique' depends on axioms: [propext]
+'Minidregg.Compiler.BFVScaleLift.convolution_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.nearest_eq_doubled' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.nearest_shift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.residue_only_falsifier' does not depend on any axioms
+'Minidregg.Compiler.BFVScaleLift.no_residue_factor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.modular_equation_falsifier' does not depend on any axioms
+'Minidregg.Compiler.BFVScaleLift.remainder_range_falsifier' does not depend on any axioms
+'Minidregg.Compiler.BFVScaleLift.lift_binding_falsifier' does not depend on any axioms
+'Minidregg.Compiler.BFVScaleLift.rounding_rule_falsifier' does not depend on any axioms
+'Minidregg.Compiler.BFVScaleLift.ties_up_witness' does not depend on any axioms
+'Minidregg.Compiler.BFVScaleLift.negacyclic_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.forged_output_refused' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.quotient_range' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.residual_lift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.proof_field_wrap_falsifier' does not depend on any axioms
+'Minidregg.Compiler.BFVScaleLift.fast_floor_correction' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BFVScaleLift.fast_floor_is_not_plain_floor' does not depend on any axioms

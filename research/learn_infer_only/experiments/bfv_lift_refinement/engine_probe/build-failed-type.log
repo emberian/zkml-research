@@ -1,0 +1,9 @@
+   Compiling bfv-integer-refinement-oracle v0.1.0 (/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/bfv_lift_refinement/engine_probe)
+error[E0282]: type annotations needed
+  --> src/main.rs:53:43
+   |
+53 |     let qm=(q%t).to_u64().unwrap();let rm=(&r%t).to_u64().unwrap();
+   |                                           ^^^^^^ cannot infer type
+
+For more information about this error, try `rustc --explain E0282`.
+error: could not compile `bfv-integer-refinement-oracle` (bin "bfv-integer-refinement-oracle") due to 1 previous error

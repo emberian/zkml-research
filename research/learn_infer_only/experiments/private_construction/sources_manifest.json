@@ -1,0 +1,328 @@
+{
+  "recorded_utc": "2026-09-06T08:38:55.387720+00:00",
+  "sources": [
+    {
+      "id": "2012/733",
+      "title": "Reusable Garbled Circuits and Succinct Functional Encryption",
+      "version": "2013-03-24",
+      "access": "construction and game read: Def4.1 p30, section4.1 pp31-32; chaining discussion Remark3.7 p23; introduction p7; no full reduction audit",
+      "source_url": "https://eprint.iacr.org/2012/733",
+      "local_file": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+        "sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+        "bytes": 534014
+      },
+      "instrument": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+        "<lane scratch text>"
+      ],
+      "downloaded_pdf": false
+    },
+    {
+      "id": "2015/017",
+      "title": "Simple Functional Encryption Schemes for Inner Products",
+      "version": "2015-10-01",
+      "access": "Fig2/Def2.3 pp6-7, Construction3.1/Theorem3.2/proof sketch pp7-8 read; Construction6.5 and homomorphism pp22-23 read; generic/LWE security proofs not audited",
+      "source_url": "https://eprint.iacr.org/2015/017",
+      "local_file": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/017.pdf",
+        "sha256": "353f454857a5ef421ab7b17545b9657f5d192dc0a37f022cca7b71e916f84712",
+        "bytes": 429097
+      },
+      "instrument": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/017.pdf",
+        "<lane scratch text>"
+      ],
+      "downloaded_pdf": false
+    },
+    {
+      "id": "2024/1294",
+      "title": "Don't Trust Setup! New Directions in Pre-Constrained Cryptography",
+      "version": "local pinned file",
+      "access": "local syntax/game/construction source excerpts plus prior landed audit consumed; section3.1 pp15-16; no new full reduction audit",
+      "source_url": "https://eprint.iacr.org/2024/1294",
+      "local_file": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1294.pdf",
+        "sha256": "97b945e84c2daf3ca3a96411c9f4cc96e78a3b7dcab4bb56fae5baf934f7ae5b",
+        "bytes": 683824
+      },
+      "instrument": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1294.pdf",
+        "<lane scratch text>"
+      ],
+      "downloaded_pdf": false
+    },
+    {
+      "id": "2016/654",
+      "title": "Stronger Security for Reusable Garbled Circuits, General Definitions and Attacks",
+      "version": "local pinned file",
+      "access": "abstract and introductory contribution discussion inspected only; not used to justify a security or exposure conclusion",
+      "source_url": "https://eprint.iacr.org/2016/654",
+      "local_file": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/654.pdf",
+        "sha256": "699fae081d1fc510945a4956d28e1c71c5a908a66f0dc4c88183e7e807b4bbba",
+        "bytes": 765075
+      },
+      "instrument": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/654.pdf",
+        "<lane scratch text>"
+      ],
+      "downloaded_pdf": false
+    },
+    {
+      "id": "2015/608",
+      "title": "Fully Secure Functional Encryption for Inner Products, from Standard Assumptions",
+      "version": "2016-11-21",
+      "access": "section4.1 integer construction pp11-13 and section4.2 modular construction/issuance trap pp16-18 read; AppendixA Def8 adaptive IND-CPA pp30-31; Theorem3 p18 and reduction Theorem4 pp20-22 statements and supporting lemma statements inspected; no full QPT reduction audit",
+      "source_url": "https://eprint.iacr.org/2015/608",
+      "local_file": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf",
+        "sha256": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0",
+        "bytes": 649148
+      },
+      "instrument": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf",
+        "<lane scratch text>"
+      ],
+      "downloaded_pdf": false
+    },
+    {
+      "id": "2021/46",
+      "title": "Efficient Lattice-Based Inner-Product Functional Encryption",
+      "version": "local pinned file",
+      "access": "section2.3 IND game pp9-10; section4 selective RLWE construction/Theorem3 and hybrid proof pp16-20 inspected; section5 distinct adaptive construction/Theorem4 pp21-22; section7 implementation and selective-scheme cost Table1 pp24-27 read; source table medium PQ estimate119.2 conflicts with prose129; practical author code audited separately, not a full cryptographic reduction audit",
+      "source_url": "https://eprint.iacr.org/2021/46",
+      "local_file": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2021/46.pdf",
+        "sha256": "8b5a43ee653081a0d7cf94bc7584e80ed60a6a525c41d15fdc61734ea7c6c20f",
+        "bytes": 790009
+      },
+      "instrument": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2021/46.pdf",
+        "<lane scratch text>"
+      ],
+      "downloaded_pdf": false
+    },
+    {
+      "id": "2023/721",
+      "title": "A Fast RLWE-Based IPFE Library and its Application to Privacy-Preserving Biometric Authentication",
+      "version": "local pinned file",
+      "access": "abstract/intro and section3.4 selective construction pp4-5 read; parameter/performance/OpenMP-AVX2 implementation sections inspected; later biometric protocol proof not audited; no independent security estimate or timing reproduction",
+      "source_url": "https://eprint.iacr.org/2023/721",
+      "local_file": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/721.pdf",
+        "sha256": "68ad1d2d2c8d833306c4c6b5f40ad8b100992e01539917058e83fdd01b5b224f",
+        "bytes": 1046431
+      },
+      "instrument": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/721.pdf",
+        "<lane scratch text>"
+      ],
+      "downloaded_pdf": false
+    }
+  ],
+  "web_primary_reads": [
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc3526.html",
+      "access": "section3 2048-bit prime and generator2 read; parameter copied to additive_ipfe.py; no security-bit assertion"
+    },
+    {
+      "url": "https://cryptography.io/en/latest/hazmat/primitives/aead/",
+      "access": "AESGCM API/nonce/key/tag requirements; installed version separately pinned, latest page was 51.0.0-dev1"
+    },
+    {
+      "url": "https://doi.org/10.1145/2488608.2488678",
+      "access": "open returned Internal Error; no claim supported by that fetch"
+    },
+    {
+      "url": "https://github.com/fentec-project/IPFE-RLWE",
+      "access": "primary README, pinned shallow source clone283975175b2407ab5a77e718e254d4d01671ca3a; source audit and exact decoder function execution recorded in rlwe_source_results.json"
+    },
+    {
+      "url": "https://github.com/s-adhikary/IPFE",
+      "access": "primary README, pinned shallow source clone06801d086b1468cdf1a5db84ef9f43552035f3f1; source audit and exact serial decoder function execution recorded in rlwe_source_results.json"
+    }
+  ],
+  "search_accounting": {
+    "scry_schema_calls": 1,
+    "scry_sql_queries": 3,
+    "kagi_queries": 0,
+    "web_search_queries": 11,
+    "scry_records": [
+      {
+        "file": {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/scry_reusable_garbling.json",
+          "sha256": "2a1c8fc2b0210cf01aa5bf77a7530d176f3ce9eb61e39e4c5647f0a2fa223193",
+          "bytes": 3509
+        },
+        "record_id": "d7ccc427-bf92-4882-bc15-9bb7476e349b",
+        "billing_mode": "free_slack",
+        "spend_nanodollars": 0,
+        "row_count": 12,
+        "truncated": false
+      },
+      {
+        "file": {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/scry_ipfe.json",
+          "sha256": "75847780997ee007704ffb90f36171e5a0c336ac61986eb639c76f6d194f5fd3",
+          "bytes": 3171
+        },
+        "record_id": "126f8c4c-7a26-491e-a100-db6776cc900f",
+        "billing_mode": "free_slack",
+        "spend_nanodollars": 0,
+        "row_count": 10,
+        "truncated": false
+      },
+      {
+        "file": {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/scry_lattice_ipfe.json",
+          "sha256": "5642eeb50e55c91fc4337fa38c4cddaa8b8eefb3c298e74ab8a224fbae7ce0b4",
+          "bytes": 1299
+        },
+        "record_id": "7460147b-0141-46ef-a939-83405a987845",
+        "billing_mode": "free_slack",
+        "spend_nanodollars": 0,
+        "row_count": 1,
+        "truncated": false
+      }
+    ],
+    "scry_schema_file": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/sources/scry_schema_openalex.txt",
+      "sha256": "8f714e580c4c30174a4cfff675e8bd45c53bbc677d59c6f684440d9c219a2fa1",
+      "bytes": 13751
+    },
+    "scry_key_exposed": false,
+    "scry_retries": 0
+  },
+  "environment": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "cryptography_version": "50.0.1",
+    "cryptography_init": {
+      "path": "/opt/homebrew/lib/python3.14/site-packages/cryptography/__init__.py",
+      "sha256": "9ad86e52b4dde0544e0a9518ad322a863cfab3a4fd763019ad5ee7675a0c9b6a",
+      "bytes": 364
+    },
+    "cryptography_binary": {
+      "path": "/opt/homebrew/lib/python3.14/site-packages/cryptography/hazmat/bindings/_rust.abi3.so",
+      "sha256": "e71b6483a6266cf33a9dcfeac7b60bf1b937a4f183fb38e2091d40631a742166",
+      "bytes": 6034896
+    },
+    "pdftotext_version": "pdftotext version 26.08.0\nCopyright 2005-2026 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC"
+  },
+  "execution_commands_from_repo_root": [
+    "python3 research/learn_infer_only/experiments/private_construction/bounded_tree.py audit > research/learn_infer_only/experiments/private_construction/audit.stdout.txt",
+    "python3 research/learn_infer_only/experiments/private_construction/additive_ipfe.py > research/learn_infer_only/experiments/private_construction/ipfe.stdout.txt",
+    "python3 research/learn_infer_only/experiments/private_construction/lwe_additive.py > research/learn_infer_only/experiments/private_construction/lwe.stdout.txt",
+    "make -C research/learn_infer_only/experiments/private_construction/vendor/IPFE-RLWE/src > research/learn_infer_only/experiments/private_construction/rlwe_build.stdout.txt 2>&1 (exit2: AVX2/arm64)",
+    "python3 research/learn_infer_only/experiments/private_construction/rlwe_source_audit.py > research/learn_infer_only/experiments/private_construction/rlwe_source.stdout.txt",
+    "python3 research/learn_infer_only/experiments/private_construction/record_evidence.py"
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/bounded_tree.py",
+      "sha256": "b880ee75aa11fc5e8b79aa1aa70700d06dce68c9d55dc86f15f62236f3fe04e3",
+      "bytes": 14382
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/additive_ipfe.py",
+      "sha256": "bc16cd4a834784b71c8e25f75716c53dd4d0c144948a2f23f8ccb816febc36c5",
+      "bytes": 10583
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/lwe_additive.py",
+      "sha256": "363d32b49b779e2398f287ac01942e1e1c55ae7a4a21610f2c0cb6b1f53d0288",
+      "bytes": 12908
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/audit.stdout.txt",
+      "sha256": "cec33c448bff0046b4fb7d6928ae1796535b12dc5c93ba8ddb778c64b35c6994",
+      "bytes": 532
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/ipfe.stdout.txt",
+      "sha256": "7ef28f9f46609851566b2f2ab1bb602fdf83f644467d1a341d7c5954e2571783",
+      "bytes": 1257
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/lwe.stdout.txt",
+      "sha256": "857d4c880def2a07ee9bf95c2e795ff6e16935a3a16c7e92baf7298bec6ddf0e",
+      "bytes": 2239
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/results/results.json",
+      "sha256": "7c80f0d586bba546ec184c2f2d56dba561b9a873d5b829ee3129025d62b6b23a",
+      "bytes": 6284
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/results/ipfe_results.json",
+      "sha256": "d0a5fe50cf01778e8618ef5ab169465b40c5a731308bae9624819921c57187d7",
+      "bytes": 3112
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/results/lwe_results.json",
+      "sha256": "399a041ab2a80084b9a07bf1a3ac6a0c208a9a6c0eb432b692c8c9f5cb90132e",
+      "bytes": 3946
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/results/synthetic_deployment.json",
+      "sha256": "81dba12190620b32607bd97b0b3d2afbe2a639912455c6c9fb9bb5320ffed616",
+      "bytes": 25951
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/rlwe_source_audit.py",
+      "sha256": "9dc42c051d3d17d7b107cc571b60b202e8392b3bf6b015491e40f841e957ad79",
+      "bytes": 8893
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/RLWE_AUDIT.md",
+      "sha256": "d161400cf21ad806264d38a00b50397bee65cc3b1549a85a0683d33608ac2334",
+      "bytes": 10520
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/rlwe_source.stdout.txt",
+      "sha256": "1c4e0e87e020d090d053df92a4118a11a11a9f55b1de10c83211d274adf8e4fc",
+      "bytes": 8654
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/rlwe_build.stdout.txt",
+      "sha256": "7da82e1aa6b0df6a2ca579f49708fc020146afc72f17db6f5e7b6a3dab6f5344",
+      "bytes": 596
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/results/rlwe_source_results.json",
+      "sha256": "1c4e0e87e020d090d053df92a4118a11a11a9f55b1de10c83211d274adf8e4fc",
+      "bytes": 8654
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/EXTRACTED_CODE_LICENSES.md",
+      "sha256": "1ef4bbb743f417576008785785183eaad1ed818be040f6bf7fb5e296a337836f",
+      "bytes": 2485
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/.gitignore",
+      "sha256": "7723c738140981add6b18e941b74f4971a49990dc5094a0d73cd0ffb86e590dd",
+      "bytes": 376
+    }
+  ],
+  "limitations": [
+    "source PDFs remain in read-only mirror; scratch text copies need not be committed",
+    "cryptographic correctness tests are not security proof execution",
+    "honest initialization erasure is assumed, not verified"
+  ]
+}

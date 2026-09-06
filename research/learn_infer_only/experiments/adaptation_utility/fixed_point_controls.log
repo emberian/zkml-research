@@ -1,0 +1,10 @@
+{"name": "smol_lms_576", "bits": 8, "accuracy": 0.7889819587628866, "float_agreement": 0.9967783505154639}
+{"name": "smol_lms_576", "bits": 12, "accuracy": 0.7883376288659794, "float_agreement": 1.0}
+{"name": "smol_lms_576", "bits": 16, "accuracy": 0.7883376288659794, "float_agreement": 1.0}
+{"name": "smol_lms_64", "bits": 8, "accuracy": 0.78125, "float_agreement": 0.9971005154639175}
+{"name": "smol_lms_64", "bits": 12, "accuracy": 0.7815721649484535, "float_agreement": 0.9993556701030928}
+{"name": "smol_lms_64", "bits": 16, "accuracy": 0.7809278350515463, "float_agreement": 1.0}
+{"name": "quadratic_lms_6", "bits": 8, "accuracy": 0.8724226804123711, "float_agreement": 0.9987113402061856}
+{"name": "quadratic_lms_6", "bits": 12, "accuracy": 0.8727448453608246, "float_agreement": 0.9996778350515464}
+{"name": "quadratic_lms_6", "bits": 16, "accuracy": 0.8727448453608246, "float_agreement": 0.9996778350515464}
+{"complete": true, "runtime_seconds": 8.951046040994697, "exact_checks": 108}

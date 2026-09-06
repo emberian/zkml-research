@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build/Selvage/RandomnessSelection.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Selvage/RandomnessSelection.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition",
+  "exit_code": 0,
+  "stdout": "'Minidregg.Selvage.RandomnessSelection.selection_transfer' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.selection_transfer_uniform' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.fresh_after_selection' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.coinblind_release_balanced' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.conditional_balance' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.Witness.bool_single' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.Witness.fixed_diagonal_bound' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.Witness.adaptive_diagonal_is_one' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.Witness.pointwise_bound_not_adaptive' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.Witness.fresh_premise_inhabited' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.Witness.blind_delivery_inhabited' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.Witness.result_filter_not_blind' depends on axioms: [propext, Quot.sound]\n'Minidregg.Selvage.RandomnessSelection.Witness.result_filter_biased' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": "",
+  "source_sha256": "baee18a926c276b0282806a7789b00d3a1ba1ade500396e4c3bf2270afbeea39"
+}

@@ -1,80 +1,25 @@
 # Learn/infer-only resident — autonomous swarm active
 
-[EXECUTED, 2026-09-06] The remaining work from the companion was taken through an
-executable/formal tranche. All artifacts are local research; no companion source
-was edited and no private resident was created or modified.
+[EXECUTED, 2026-09-06 04:46 EDT checkpoint] Ember's explicit swarm goal runs through **10am EDT / 14:00 UTC today**. Parent owns shared ledgers and commits reviewed named files. Eight bounded lanes own their notes/experiments. Companion trees and docs/VERDICTS.md remain read-only.
 
-- [EXECUTED] §6C: ideal-primitive writer recovery ran on 64 synthetic histories /
-  288 values, with credential/setup/prefix controls and a same-index substitution
-  counterexample. `experiments/results/writer_recovery.json`.
-- [EXECUTED] §6D: restored-manifest/current-head model ran with authority rollback,
-  quorum compromise, local fork and atomicity falsifiers. Proposed Lean adapter
-  composes the real finality checker and durable consumption objects.
-- [EXECUTED] §6E, partial: two checked Lean modules extend the existing full-word
-  Stage-0 receipt with context and canonical transcript encoding, connect that
-  context to finality, and force public addition under the descriptor premise.
-  31 exact-output axiom pins; accepted nontrivial witness and refusal teeth.
-- [EXECUTED] The unchanged seed audit passes. Final module checks are
-  `lean_ResidentReleaseContext_12.json` and `lean_ResidentRestoreFinality_07.json`.
-  Staged Assurance umbrella, import-boundary script, `git apply --check`, and
-  both CSV schemas pass in `experiments/results/patch_review.json`.
+[DERIVED current decision] Restricted cryptographic continuations, actual encrypted numerical loops and stronger public integrity proofs now exist here. Their conjunction remains unconstructed: no artifact establishes useful private adaptation with authenticated fresh ingress, restricted recipient release, no surviving read-all authority and an audited PQ composition. This is the frontier of the recorded attempts, not a field-wide impossibility claim.
 
-[DERIVED decision] Route 3 remains the strongest integrity/continuity continuation.
-The resulting witness is public addition with deterministic randomness. It does
-not establish hidden state, private observation ingress, secret fresh development
-entropy, authenticated recipient encryption, full DataIntent/preflight integration,
-adaptive multi-context security or a post-quantum resident composition. No candidate
-audited in this tranche satisfies the combined A/B credential-exposure target.
+| Lane / entry point | Completed evidence | Active next tranche |
+|---|---|---|
+| [EXECUTED] [DURABLE_INTEGRATION.md](DURABLE_INTEGRATION.md) | 45 pins: materialized write, full preflight, journal-derived packet, retry/crash controls and constant-root falsifier | [OPEN] [EXECUTED] EMA48-pin semantic path; [OPEN] exact ciphertext-window queue/materialization |
+| [EXECUTED] [PRIVATE_CONSTRUCTION.md](PRIVATE_CONSTRUCTION.md) | Bounded AES-GCM tree; DDH fixed-projection continuation; modular-LWE public additions; practical RLWE source/decoder audit | [OPEN] Fresh private ingress and nonlinear restricted release |
+| [EXECUTED] [RANDOMNESS_COMPOSITION.md](RANDOMNESS_COMPOSITION.md) | 46 pins: selection, adaptive-context reduction, query-complete multi-output schedule | [OPEN] [EXECUTED] combined265-pin check; [OPEN] generic EMA adaptive receipt composition |
+| [EXECUTED] [HE_CLOSURE_COSTS.md](HE_CLOSURE_COSTS.md) | Actual TFHE EMA; BFV exact ciphertext expiry; Q83/W128/r577 loop for 1,024 steps | [OPEN] [EXECUTED] pinned estimator census; [OPEN] formal conditional window noise bound |
+| [EXECUTED] [BFV_LIFT_REFINEMENT.md](BFV_LIFT_REFINEMENT.md) | 27-pin integer reference plus 33-pin exact live-source scalar refinement; independent coefficient checks | [OPEN] Compiler certificate forcing deterministic Garner correction |
+| [EXECUTED] [INTEGER_CERTIFICATE_EMISSION.md](INTEGER_CERTIFICATE_EMISSION.md) | 20 pins; compiler-enforced small/full109-bit signed QR; measured CSE reduction | [OPEN] Generic zero/constant simplification and measured emission |
+| [EXECUTED] [ADAPTATION_UTILITY.md](ADAPTATION_UTILITY.md) | Real cached-model controls; fixed-point bounds; text failure and useful structured eight-state window | [OPEN] Further ideal-interface audit is unexecuted; automatic tool risk filter stopped its assigned turn |
+| [EXECUTED] [ADVERSARIAL_REVIEW.md](ADVERSARIAL_REVIEW.md) | Genuine-receipt packet-substitution finding/repair check; durable collision and ROM review | [OPEN] Final schedule hash, live BFV refinement and estimator review |
+| [EXECUTED] [RECOVERY_POLICY.md](RECOVERY_POLICY.md) | 15 pins; axiom-free adaptive policy migration, safe witness and joint-disclosure falsifier | Parent integrates decisions, credentials, costs and sources |
 
-[DERIVED review entry points] Read [DECISION.md](DECISION.md) for the outcome and
-scope corrections, [SECURITY_GAME.md](SECURITY_GAME.md) for the experiments,
-[CREDENTIALS.csv](CREDENTIALS.csv) for the union-of-role audit, and
-[formal/README.md](formal/README.md) for theorem boundaries/reproduction. The
-[minidregg patch](formal/minidregg-resident-release.patch) includes root imports
-and is ready for maintainer review; it has not been applied.
+[EXECUTED prior tranche] Commit 64c7d3f records writer recovery (64 histories / 288 values), restore/finality and context binding (31 pins). Commit 74d0ea8 records policy evolution and the goal. The old empty-rootWrites adapter remains historical evidence; the materialized journal path supersedes its intended runtime witness. Broken siblings and failed checks retain their exact scope.
 
-## Active goal: 2026-09-06 through 10am EDT (14:00 UTC)
+[EXECUTED verification boundary] Lane checks elaborate proposed modules and staged umbrellas against existing companion dependency oleans; import-boundary/applicability records are retained. These are not a clean whole-tree rebuild. Patches remain unapplied. Combined checks passed at 04:48/04:51 EDT: baseline12 modules/217 pins and EMA extension16 modules/265 pins, all four umbrellas and combined patch application; baseline also ran both integer executable checks. See experiments/integration/REPORT.md. These are cached-dependency checks.
 
-[EXECUTED] Ember explicitly authorized a goal and autonomous swarm at approximately
-03:29 EDT. The goal is active; work is bounded by the local 10am deadline. Parent
-coordinates/independently checks findings and owns shared ledgers. The first wave
-uses eight bounded agents plus parent, with no recursive delegation. Lane notes are
-written early and committed by parent after review. Companion trees stay read-only.
+[EXECUTED search accounting] Private lane: 3 Scry SQL + 1 schema; HE: 2 SQL + 1 schema; parent UFE search: 1 SQL using the prior schema. Other lanes: 0 Scry/Kagi. Total at checkpoint: 6 SQL + 2 schema, 0 Kagi; returned spend 0. Primary web reads/fetches are recorded separately in source notes. The existing helper used ~/.scry-key without printing it. Local mirror PDFs were read by absolute path; none were downloaded from eprint.
 
-| Lane | Owned output | First-wave question | Initial metered-search cap |
-|---|---|---|---|
-| [OPEN] durable_integration | DURABLE_INTEGRATION.md; experiments/formal durable_integration | Actual materialized cell/DataIntent/preflight and exact receipt-to-install binding | Local-first; request parent if needed |
-| [OPEN] restricted_private_step | PRIVATE_CONSTRUCTION.md; experiments/formal private_construction | Small closed tier-A fixed Step; restricted NISC/garbling/FE rather than a broad survey | 12 Scry/Kagi total |
-| [OPEN] entropy_composition | RANDOMNESS_COMPOSITION.md; experiments/formal randomness_composition | Hidden development coins, selective abort/grinding and adaptive context composition | 8 Scry/Kagi total |
-| [OPEN] he_closure_costs | HE_CLOSURE_COSTS.md; experiments/formal he_closure_costs | Iterative noise, low-rank closure and full private readout/optimizer cost | 12 Scry/Kagi total |
-| [OPEN] bfv_lift_refinement | BFV_LIFT_REFINEMENT.md; experiments/formal bfv_lift_refinement | Lifted integer convolution plus quotient/remainder, with honest reference semantics | 6 Scry/Kagi total |
-| [OPEN] adversarial_audit | ADVERSARIAL_REVIEW.md; experiments/adversarial_review | Independent counterexamples/assumption audit of current and arriving claims | 4 Scry/Kagi total |
-| [OPEN] adaptation_utility | ADAPTATION_UTILITY.md; experiments/formal adaptation_utility | Cached real small-model memory/update utility with disjoint controls and complete taint costs | 4 primary-source queries if needed |
-| [OPEN] integer_certificate_emission | INTEGER_CERTIFICATE_EMISSION.md; experiments/formal integer_certificate_emission | Existing compiler digit/carry vocabulary to enforce integer QR without proof-field wrap | Local-first |
-| [EXECUTED] parent recovery/policy | RECOVERY_POLICY.md; experiments/formal recovery_policy | Adaptive migration theorem, safe representation change and joint-key disclosure falsifier | 0 metered queries |
-
-[DERIVED work discipline] First substantive lane reports are due in roughly 30–45
-minutes, then parent reallocates based on evidence. Metered schema calls are recorded
-separately; no secret key is printed. Use the existing Scry helper with ~/.scry-key
-when useful. Do not repeat landed Route 1/2 or trace/routing work merely to populate
-notes. The initial grant is context, not an invented per-run token/spend budget.
-
-[OPEN] NEXT.md retains the decisive task ordering. Additional unowned prompt items
-will be triaged by parent: taint/access-pattern costs; recovery/policy governance; concrete PQ
-composition. No private resident logs or state may be sent to external search.
-
-[EXECUTED, 03:57 EDT checkpoint] Parent's policy evolution extension is checked:
-fifteen axiom pins, isolated Theory umbrella/import boundary/applicability pass.
-The general adaptive migration theorem uses no axioms and reuses PrivateTrace.
-The accumulated-policy counterexample is static same-state disclosure, not a
-claim that retired keys automatically work after cryptographic rekeying.
-
-[REPORTED by lanes; integration review ongoing] First-wave artifacts now include
-bounded encrypted response trees, compact DDH inner-product continuation, the
-materialized durable adapter, a BFV integer reference certificate, actual BFV
-noise/serialized-size probes, randomized selection controls, and real cached-model
-utility controls. Each has explicit limitations and saved evidence; parent is
-checking the artifacts before folding shared decision/credential/cost ledgers.
-Second tranches target an actual adaptive-context ROM reduction, LWE modular
-continuation, actual BFV engine semantics, compiler-native integer enforcement,
-and disjoint natural-language transfer/retention controls. Goal remains active.
+[DERIVED resume] Read DECISION.md, SECURITY_GAME.md and NEXT.md, then the relevant lane note and exact validation record. Inspect ownership and dirty state before launching work. Parent stops launching work at the requested deadline and hands back checked findings and residuals.

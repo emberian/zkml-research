@@ -1,0 +1,45 @@
+{
+  "label": "EXECUTED independent finite-path/metadata audit; no new cryptographic theorem",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/tree_independent_review.py"
+  ],
+  "started_utc": "2026-09-06T07:45:01.288465+00:00",
+  "reviewed_source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/bounded_tree.py",
+  "sha256": "4a51ac7e2eb408d0ea6bfba371516bc9ffa92a53e812424cab141e4594dd4cb2",
+  "source_unchanged": true,
+  "classes_by_horizon_0_to_8": [
+    1,
+    2,
+    6,
+    14,
+    30,
+    62,
+    122,
+    208,
+    256
+  ],
+  "horizon": 5,
+  "paths_per_class": 243,
+  "classes": 62,
+  "checked_trace_paths": 15066,
+  "zero_class": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "metadata_only_full_histories_recovered": 243,
+  "metadata_attack_ae_decryptions": 0,
+  "at_horizon_8_full_state_recovery": {
+    "states": 256,
+    "total_transition_queries": 9216,
+    "per_state_transition_queries": 36,
+    "per_state_infer_observations": 8,
+    "condition": "Root restores permitted; learn double k=0..7 then infer"
+  }
+}

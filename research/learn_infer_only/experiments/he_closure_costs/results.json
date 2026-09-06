@@ -1,0 +1,1287 @@
+{
+  "status": "EXECUTED exact scalar arithmetic models; NOT encrypted learner",
+  "command": "python3 research/learn_infer_only/experiments/he_closure_costs/ledger.py",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "script_sha256": "60d0cc7cb9282cf9a51646dc505c00960b9954a3e4f9a597a2ebb82a69d35b9f",
+  "noise": {
+    "model": "insecure exact scalar phase; q=t*Delta; test secret public",
+    "recurrence": "E_new = E_old + E_update",
+    "finite_positive_steps": 126,
+    "first_failure": {
+      "step": 127,
+      "rank": 1,
+      "phase_error": 128,
+      "expected": 134,
+      "observed": 135,
+      "correct": false
+    },
+    "fresh_factors_still_correct": 127,
+    "balanced_sum_equals_sequential": true,
+    "rerandomization_output": 8,
+    "rows": [
+      {
+        "step": 1,
+        "rank": 1,
+        "phase_error": 2,
+        "expected": 8,
+        "observed": 8,
+        "correct": true
+      },
+      {
+        "step": 2,
+        "rank": 1,
+        "phase_error": 3,
+        "expected": 9,
+        "observed": 9,
+        "correct": true
+      },
+      {
+        "step": 3,
+        "rank": 1,
+        "phase_error": 4,
+        "expected": 10,
+        "observed": 10,
+        "correct": true
+      },
+      {
+        "step": 4,
+        "rank": 1,
+        "phase_error": 5,
+        "expected": 11,
+        "observed": 11,
+        "correct": true
+      },
+      {
+        "step": 5,
+        "rank": 1,
+        "phase_error": 6,
+        "expected": 12,
+        "observed": 12,
+        "correct": true
+      },
+      {
+        "step": 6,
+        "rank": 1,
+        "phase_error": 7,
+        "expected": 13,
+        "observed": 13,
+        "correct": true
+      },
+      {
+        "step": 7,
+        "rank": 1,
+        "phase_error": 8,
+        "expected": 14,
+        "observed": 14,
+        "correct": true
+      },
+      {
+        "step": 8,
+        "rank": 1,
+        "phase_error": 9,
+        "expected": 15,
+        "observed": 15,
+        "correct": true
+      },
+      {
+        "step": 9,
+        "rank": 1,
+        "phase_error": 10,
+        "expected": 16,
+        "observed": 16,
+        "correct": true
+      },
+      {
+        "step": 10,
+        "rank": 1,
+        "phase_error": 11,
+        "expected": 17,
+        "observed": 17,
+        "correct": true
+      },
+      {
+        "step": 11,
+        "rank": 1,
+        "phase_error": 12,
+        "expected": 18,
+        "observed": 18,
+        "correct": true
+      },
+      {
+        "step": 12,
+        "rank": 1,
+        "phase_error": 13,
+        "expected": 19,
+        "observed": 19,
+        "correct": true
+      },
+      {
+        "step": 13,
+        "rank": 1,
+        "phase_error": 14,
+        "expected": 20,
+        "observed": 20,
+        "correct": true
+      },
+      {
+        "step": 14,
+        "rank": 1,
+        "phase_error": 15,
+        "expected": 21,
+        "observed": 21,
+        "correct": true
+      },
+      {
+        "step": 15,
+        "rank": 1,
+        "phase_error": 16,
+        "expected": 22,
+        "observed": 22,
+        "correct": true
+      },
+      {
+        "step": 16,
+        "rank": 1,
+        "phase_error": 17,
+        "expected": 23,
+        "observed": 23,
+        "correct": true
+      },
+      {
+        "step": 17,
+        "rank": 1,
+        "phase_error": 18,
+        "expected": 24,
+        "observed": 24,
+        "correct": true
+      },
+      {
+        "step": 18,
+        "rank": 1,
+        "phase_error": 19,
+        "expected": 25,
+        "observed": 25,
+        "correct": true
+      },
+      {
+        "step": 19,
+        "rank": 1,
+        "phase_error": 20,
+        "expected": 26,
+        "observed": 26,
+        "correct": true
+      },
+      {
+        "step": 20,
+        "rank": 1,
+        "phase_error": 21,
+        "expected": 27,
+        "observed": 27,
+        "correct": true
+      },
+      {
+        "step": 21,
+        "rank": 1,
+        "phase_error": 22,
+        "expected": 28,
+        "observed": 28,
+        "correct": true
+      },
+      {
+        "step": 22,
+        "rank": 1,
+        "phase_error": 23,
+        "expected": 29,
+        "observed": 29,
+        "correct": true
+      },
+      {
+        "step": 23,
+        "rank": 1,
+        "phase_error": 24,
+        "expected": 30,
+        "observed": 30,
+        "correct": true
+      },
+      {
+        "step": 24,
+        "rank": 1,
+        "phase_error": 25,
+        "expected": 31,
+        "observed": 31,
+        "correct": true
+      },
+      {
+        "step": 25,
+        "rank": 1,
+        "phase_error": 26,
+        "expected": 32,
+        "observed": 32,
+        "correct": true
+      },
+      {
+        "step": 26,
+        "rank": 1,
+        "phase_error": 27,
+        "expected": 33,
+        "observed": 33,
+        "correct": true
+      },
+      {
+        "step": 27,
+        "rank": 1,
+        "phase_error": 28,
+        "expected": 34,
+        "observed": 34,
+        "correct": true
+      },
+      {
+        "step": 28,
+        "rank": 1,
+        "phase_error": 29,
+        "expected": 35,
+        "observed": 35,
+        "correct": true
+      },
+      {
+        "step": 29,
+        "rank": 1,
+        "phase_error": 30,
+        "expected": 36,
+        "observed": 36,
+        "correct": true
+      },
+      {
+        "step": 30,
+        "rank": 1,
+        "phase_error": 31,
+        "expected": 37,
+        "observed": 37,
+        "correct": true
+      },
+      {
+        "step": 31,
+        "rank": 1,
+        "phase_error": 32,
+        "expected": 38,
+        "observed": 38,
+        "correct": true
+      },
+      {
+        "step": 32,
+        "rank": 1,
+        "phase_error": 33,
+        "expected": 39,
+        "observed": 39,
+        "correct": true
+      },
+      {
+        "step": 33,
+        "rank": 1,
+        "phase_error": 34,
+        "expected": 40,
+        "observed": 40,
+        "correct": true
+      },
+      {
+        "step": 34,
+        "rank": 1,
+        "phase_error": 35,
+        "expected": 41,
+        "observed": 41,
+        "correct": true
+      },
+      {
+        "step": 35,
+        "rank": 1,
+        "phase_error": 36,
+        "expected": 42,
+        "observed": 42,
+        "correct": true
+      },
+      {
+        "step": 36,
+        "rank": 1,
+        "phase_error": 37,
+        "expected": 43,
+        "observed": 43,
+        "correct": true
+      },
+      {
+        "step": 37,
+        "rank": 1,
+        "phase_error": 38,
+        "expected": 44,
+        "observed": 44,
+        "correct": true
+      },
+      {
+        "step": 38,
+        "rank": 1,
+        "phase_error": 39,
+        "expected": 45,
+        "observed": 45,
+        "correct": true
+      },
+      {
+        "step": 39,
+        "rank": 1,
+        "phase_error": 40,
+        "expected": 46,
+        "observed": 46,
+        "correct": true
+      },
+      {
+        "step": 40,
+        "rank": 1,
+        "phase_error": 41,
+        "expected": 47,
+        "observed": 47,
+        "correct": true
+      },
+      {
+        "step": 41,
+        "rank": 1,
+        "phase_error": 42,
+        "expected": 48,
+        "observed": 48,
+        "correct": true
+      },
+      {
+        "step": 42,
+        "rank": 1,
+        "phase_error": 43,
+        "expected": 49,
+        "observed": 49,
+        "correct": true
+      },
+      {
+        "step": 43,
+        "rank": 1,
+        "phase_error": 44,
+        "expected": 50,
+        "observed": 50,
+        "correct": true
+      },
+      {
+        "step": 44,
+        "rank": 1,
+        "phase_error": 45,
+        "expected": 51,
+        "observed": 51,
+        "correct": true
+      },
+      {
+        "step": 45,
+        "rank": 1,
+        "phase_error": 46,
+        "expected": 52,
+        "observed": 52,
+        "correct": true
+      },
+      {
+        "step": 46,
+        "rank": 1,
+        "phase_error": 47,
+        "expected": 53,
+        "observed": 53,
+        "correct": true
+      },
+      {
+        "step": 47,
+        "rank": 1,
+        "phase_error": 48,
+        "expected": 54,
+        "observed": 54,
+        "correct": true
+      },
+      {
+        "step": 48,
+        "rank": 1,
+        "phase_error": 49,
+        "expected": 55,
+        "observed": 55,
+        "correct": true
+      },
+      {
+        "step": 49,
+        "rank": 1,
+        "phase_error": 50,
+        "expected": 56,
+        "observed": 56,
+        "correct": true
+      },
+      {
+        "step": 50,
+        "rank": 1,
+        "phase_error": 51,
+        "expected": 57,
+        "observed": 57,
+        "correct": true
+      },
+      {
+        "step": 51,
+        "rank": 1,
+        "phase_error": 52,
+        "expected": 58,
+        "observed": 58,
+        "correct": true
+      },
+      {
+        "step": 52,
+        "rank": 1,
+        "phase_error": 53,
+        "expected": 59,
+        "observed": 59,
+        "correct": true
+      },
+      {
+        "step": 53,
+        "rank": 1,
+        "phase_error": 54,
+        "expected": 60,
+        "observed": 60,
+        "correct": true
+      },
+      {
+        "step": 54,
+        "rank": 1,
+        "phase_error": 55,
+        "expected": 61,
+        "observed": 61,
+        "correct": true
+      },
+      {
+        "step": 55,
+        "rank": 1,
+        "phase_error": 56,
+        "expected": 62,
+        "observed": 62,
+        "correct": true
+      },
+      {
+        "step": 56,
+        "rank": 1,
+        "phase_error": 57,
+        "expected": 63,
+        "observed": 63,
+        "correct": true
+      },
+      {
+        "step": 57,
+        "rank": 1,
+        "phase_error": 58,
+        "expected": 64,
+        "observed": 64,
+        "correct": true
+      },
+      {
+        "step": 58,
+        "rank": 1,
+        "phase_error": 59,
+        "expected": 65,
+        "observed": 65,
+        "correct": true
+      },
+      {
+        "step": 59,
+        "rank": 1,
+        "phase_error": 60,
+        "expected": 66,
+        "observed": 66,
+        "correct": true
+      },
+      {
+        "step": 60,
+        "rank": 1,
+        "phase_error": 61,
+        "expected": 67,
+        "observed": 67,
+        "correct": true
+      },
+      {
+        "step": 61,
+        "rank": 1,
+        "phase_error": 62,
+        "expected": 68,
+        "observed": 68,
+        "correct": true
+      },
+      {
+        "step": 62,
+        "rank": 1,
+        "phase_error": 63,
+        "expected": 69,
+        "observed": 69,
+        "correct": true
+      },
+      {
+        "step": 63,
+        "rank": 1,
+        "phase_error": 64,
+        "expected": 70,
+        "observed": 70,
+        "correct": true
+      },
+      {
+        "step": 64,
+        "rank": 1,
+        "phase_error": 65,
+        "expected": 71,
+        "observed": 71,
+        "correct": true
+      },
+      {
+        "step": 65,
+        "rank": 1,
+        "phase_error": 66,
+        "expected": 72,
+        "observed": 72,
+        "correct": true
+      },
+      {
+        "step": 66,
+        "rank": 1,
+        "phase_error": 67,
+        "expected": 73,
+        "observed": 73,
+        "correct": true
+      },
+      {
+        "step": 67,
+        "rank": 1,
+        "phase_error": 68,
+        "expected": 74,
+        "observed": 74,
+        "correct": true
+      },
+      {
+        "step": 68,
+        "rank": 1,
+        "phase_error": 69,
+        "expected": 75,
+        "observed": 75,
+        "correct": true
+      },
+      {
+        "step": 69,
+        "rank": 1,
+        "phase_error": 70,
+        "expected": 76,
+        "observed": 76,
+        "correct": true
+      },
+      {
+        "step": 70,
+        "rank": 1,
+        "phase_error": 71,
+        "expected": 77,
+        "observed": 77,
+        "correct": true
+      },
+      {
+        "step": 71,
+        "rank": 1,
+        "phase_error": 72,
+        "expected": 78,
+        "observed": 78,
+        "correct": true
+      },
+      {
+        "step": 72,
+        "rank": 1,
+        "phase_error": 73,
+        "expected": 79,
+        "observed": 79,
+        "correct": true
+      },
+      {
+        "step": 73,
+        "rank": 1,
+        "phase_error": 74,
+        "expected": 80,
+        "observed": 80,
+        "correct": true
+      },
+      {
+        "step": 74,
+        "rank": 1,
+        "phase_error": 75,
+        "expected": 81,
+        "observed": 81,
+        "correct": true
+      },
+      {
+        "step": 75,
+        "rank": 1,
+        "phase_error": 76,
+        "expected": 82,
+        "observed": 82,
+        "correct": true
+      },
+      {
+        "step": 76,
+        "rank": 1,
+        "phase_error": 77,
+        "expected": 83,
+        "observed": 83,
+        "correct": true
+      },
+      {
+        "step": 77,
+        "rank": 1,
+        "phase_error": 78,
+        "expected": 84,
+        "observed": 84,
+        "correct": true
+      },
+      {
+        "step": 78,
+        "rank": 1,
+        "phase_error": 79,
+        "expected": 85,
+        "observed": 85,
+        "correct": true
+      },
+      {
+        "step": 79,
+        "rank": 1,
+        "phase_error": 80,
+        "expected": 86,
+        "observed": 86,
+        "correct": true
+      },
+      {
+        "step": 80,
+        "rank": 1,
+        "phase_error": 81,
+        "expected": 87,
+        "observed": 87,
+        "correct": true
+      },
+      {
+        "step": 81,
+        "rank": 1,
+        "phase_error": 82,
+        "expected": 88,
+        "observed": 88,
+        "correct": true
+      },
+      {
+        "step": 82,
+        "rank": 1,
+        "phase_error": 83,
+        "expected": 89,
+        "observed": 89,
+        "correct": true
+      },
+      {
+        "step": 83,
+        "rank": 1,
+        "phase_error": 84,
+        "expected": 90,
+        "observed": 90,
+        "correct": true
+      },
+      {
+        "step": 84,
+        "rank": 1,
+        "phase_error": 85,
+        "expected": 91,
+        "observed": 91,
+        "correct": true
+      },
+      {
+        "step": 85,
+        "rank": 1,
+        "phase_error": 86,
+        "expected": 92,
+        "observed": 92,
+        "correct": true
+      },
+      {
+        "step": 86,
+        "rank": 1,
+        "phase_error": 87,
+        "expected": 93,
+        "observed": 93,
+        "correct": true
+      },
+      {
+        "step": 87,
+        "rank": 1,
+        "phase_error": 88,
+        "expected": 94,
+        "observed": 94,
+        "correct": true
+      },
+      {
+        "step": 88,
+        "rank": 1,
+        "phase_error": 89,
+        "expected": 95,
+        "observed": 95,
+        "correct": true
+      },
+      {
+        "step": 89,
+        "rank": 1,
+        "phase_error": 90,
+        "expected": 96,
+        "observed": 96,
+        "correct": true
+      },
+      {
+        "step": 90,
+        "rank": 1,
+        "phase_error": 91,
+        "expected": 97,
+        "observed": 97,
+        "correct": true
+      },
+      {
+        "step": 91,
+        "rank": 1,
+        "phase_error": 92,
+        "expected": 98,
+        "observed": 98,
+        "correct": true
+      },
+      {
+        "step": 92,
+        "rank": 1,
+        "phase_error": 93,
+        "expected": 99,
+        "observed": 99,
+        "correct": true
+      },
+      {
+        "step": 93,
+        "rank": 1,
+        "phase_error": 94,
+        "expected": 100,
+        "observed": 100,
+        "correct": true
+      },
+      {
+        "step": 94,
+        "rank": 1,
+        "phase_error": 95,
+        "expected": 101,
+        "observed": 101,
+        "correct": true
+      },
+      {
+        "step": 95,
+        "rank": 1,
+        "phase_error": 96,
+        "expected": 102,
+        "observed": 102,
+        "correct": true
+      },
+      {
+        "step": 96,
+        "rank": 1,
+        "phase_error": 97,
+        "expected": 103,
+        "observed": 103,
+        "correct": true
+      },
+      {
+        "step": 97,
+        "rank": 1,
+        "phase_error": 98,
+        "expected": 104,
+        "observed": 104,
+        "correct": true
+      },
+      {
+        "step": 98,
+        "rank": 1,
+        "phase_error": 99,
+        "expected": 105,
+        "observed": 105,
+        "correct": true
+      },
+      {
+        "step": 99,
+        "rank": 1,
+        "phase_error": 100,
+        "expected": 106,
+        "observed": 106,
+        "correct": true
+      },
+      {
+        "step": 100,
+        "rank": 1,
+        "phase_error": 101,
+        "expected": 107,
+        "observed": 107,
+        "correct": true
+      },
+      {
+        "step": 101,
+        "rank": 1,
+        "phase_error": 102,
+        "expected": 108,
+        "observed": 108,
+        "correct": true
+      },
+      {
+        "step": 102,
+        "rank": 1,
+        "phase_error": 103,
+        "expected": 109,
+        "observed": 109,
+        "correct": true
+      },
+      {
+        "step": 103,
+        "rank": 1,
+        "phase_error": 104,
+        "expected": 110,
+        "observed": 110,
+        "correct": true
+      },
+      {
+        "step": 104,
+        "rank": 1,
+        "phase_error": 105,
+        "expected": 111,
+        "observed": 111,
+        "correct": true
+      },
+      {
+        "step": 105,
+        "rank": 1,
+        "phase_error": 106,
+        "expected": 112,
+        "observed": 112,
+        "correct": true
+      },
+      {
+        "step": 106,
+        "rank": 1,
+        "phase_error": 107,
+        "expected": 113,
+        "observed": 113,
+        "correct": true
+      },
+      {
+        "step": 107,
+        "rank": 1,
+        "phase_error": 108,
+        "expected": 114,
+        "observed": 114,
+        "correct": true
+      },
+      {
+        "step": 108,
+        "rank": 1,
+        "phase_error": 109,
+        "expected": 115,
+        "observed": 115,
+        "correct": true
+      },
+      {
+        "step": 109,
+        "rank": 1,
+        "phase_error": 110,
+        "expected": 116,
+        "observed": 116,
+        "correct": true
+      },
+      {
+        "step": 110,
+        "rank": 1,
+        "phase_error": 111,
+        "expected": 117,
+        "observed": 117,
+        "correct": true
+      },
+      {
+        "step": 111,
+        "rank": 1,
+        "phase_error": 112,
+        "expected": 118,
+        "observed": 118,
+        "correct": true
+      },
+      {
+        "step": 112,
+        "rank": 1,
+        "phase_error": 113,
+        "expected": 119,
+        "observed": 119,
+        "correct": true
+      },
+      {
+        "step": 113,
+        "rank": 1,
+        "phase_error": 114,
+        "expected": 120,
+        "observed": 120,
+        "correct": true
+      },
+      {
+        "step": 114,
+        "rank": 1,
+        "phase_error": 115,
+        "expected": 121,
+        "observed": 121,
+        "correct": true
+      },
+      {
+        "step": 115,
+        "rank": 1,
+        "phase_error": 116,
+        "expected": 122,
+        "observed": 122,
+        "correct": true
+      },
+      {
+        "step": 116,
+        "rank": 1,
+        "phase_error": 117,
+        "expected": 123,
+        "observed": 123,
+        "correct": true
+      },
+      {
+        "step": 117,
+        "rank": 1,
+        "phase_error": 118,
+        "expected": 124,
+        "observed": 124,
+        "correct": true
+      },
+      {
+        "step": 118,
+        "rank": 1,
+        "phase_error": 119,
+        "expected": 125,
+        "observed": 125,
+        "correct": true
+      },
+      {
+        "step": 119,
+        "rank": 1,
+        "phase_error": 120,
+        "expected": 126,
+        "observed": 126,
+        "correct": true
+      },
+      {
+        "step": 120,
+        "rank": 1,
+        "phase_error": 121,
+        "expected": 127,
+        "observed": 127,
+        "correct": true
+      },
+      {
+        "step": 121,
+        "rank": 1,
+        "phase_error": 122,
+        "expected": 128,
+        "observed": 128,
+        "correct": true
+      },
+      {
+        "step": 122,
+        "rank": 1,
+        "phase_error": 123,
+        "expected": 129,
+        "observed": 129,
+        "correct": true
+      },
+      {
+        "step": 123,
+        "rank": 1,
+        "phase_error": 124,
+        "expected": 130,
+        "observed": 130,
+        "correct": true
+      },
+      {
+        "step": 124,
+        "rank": 1,
+        "phase_error": 125,
+        "expected": 131,
+        "observed": 131,
+        "correct": true
+      },
+      {
+        "step": 125,
+        "rank": 1,
+        "phase_error": 126,
+        "expected": 132,
+        "observed": 132,
+        "correct": true
+      },
+      {
+        "step": 126,
+        "rank": 1,
+        "phase_error": 127,
+        "expected": 133,
+        "observed": 133,
+        "correct": true
+      },
+      {
+        "step": 127,
+        "rank": 1,
+        "phase_error": 128,
+        "expected": 134,
+        "observed": 135,
+        "correct": false
+      }
+    ]
+  },
+  "lowrank_executed": [
+    {
+      "shape": [
+        4,
+        2,
+        3
+      ],
+      "private_x": false,
+      "counts": {
+        "public_mul": 16,
+        "public_add": 12,
+        "secret_public_mul": 24,
+        "private_add": 42,
+        "secret_secret_mul": 24
+      },
+      "output": [
+        2,
+        -2,
+        0,
+        2
+      ],
+      "formula_crosscheck": true
+    },
+    {
+      "shape": [
+        4,
+        2,
+        3
+      ],
+      "private_x": true,
+      "counts": {
+        "secret_public_mul": 16,
+        "private_add": 54,
+        "secret_secret_mul": 48
+      },
+      "output": [
+        2,
+        -2,
+        0,
+        2
+      ],
+      "formula_crosscheck": true
+    }
+  ],
+  "lowrank_frontier": [
+    {
+      "d": 4096,
+      "r": 16,
+      "steps": 1,
+      "private_x": false,
+      "public_mul": 16777216,
+      "secret_public_mul": 65536,
+      "secret_secret_mul": 65536,
+      "public_add": 16773120,
+      "private_add": 131056,
+      "private_state_scalars": 131072,
+      "base_public_scalars": 16777216,
+      "unpriced": "factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication"
+    },
+    {
+      "d": 4096,
+      "r": 16,
+      "steps": 1,
+      "private_x": true,
+      "public_mul": 0,
+      "secret_public_mul": 16777216,
+      "secret_secret_mul": 131072,
+      "public_add": 0,
+      "private_add": 16904176,
+      "private_state_scalars": 131072,
+      "base_public_scalars": 16777216,
+      "unpriced": "factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication"
+    },
+    {
+      "d": 4096,
+      "r": 16,
+      "steps": 128,
+      "private_x": false,
+      "public_mul": 16777216,
+      "secret_public_mul": 8388608,
+      "secret_secret_mul": 8388608,
+      "public_add": 16773120,
+      "private_add": 16775168,
+      "private_state_scalars": 16777216,
+      "base_public_scalars": 16777216,
+      "unpriced": "factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication"
+    },
+    {
+      "d": 4096,
+      "r": 16,
+      "steps": 128,
+      "private_x": true,
+      "public_mul": 0,
+      "secret_public_mul": 16777216,
+      "secret_secret_mul": 16777216,
+      "public_add": 0,
+      "private_add": 33548288,
+      "private_state_scalars": 16777216,
+      "base_public_scalars": 16777216,
+      "unpriced": "factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication"
+    },
+    {
+      "d": 4096,
+      "r": 16,
+      "steps": 129,
+      "private_x": false,
+      "public_mul": 16777216,
+      "secret_public_mul": 8454144,
+      "secret_secret_mul": 8454144,
+      "public_add": 16773120,
+      "private_add": 16906224,
+      "private_state_scalars": 16908288,
+      "base_public_scalars": 16777216,
+      "unpriced": "factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication"
+    },
+    {
+      "d": 4096,
+      "r": 16,
+      "steps": 129,
+      "private_x": true,
+      "public_mul": 0,
+      "secret_public_mul": 16777216,
+      "secret_secret_mul": 16908288,
+      "public_add": 0,
+      "private_add": 33679344,
+      "private_state_scalars": 16908288,
+      "base_public_scalars": 16777216,
+      "unpriced": "factor generation; packing/rotations; HE rescale/relinearize; proofs; release; ingress; refresh; authentication"
+    }
+  ],
+  "private_dataflow": {
+    "d": 32,
+    "r": 2,
+    "vocab": 64,
+    "adapter_counts": {
+      "secret_public_mul": 64,
+      "private_add": 126,
+      "secret_secret_mul": 64
+    },
+    "complete_counts": {
+      "secret_public_mul": 3136,
+      "private_add": 3102,
+      "secret_secret_mul": 64,
+      "private_nonlinear_activation": 32
+    },
+    "private_logits": 64,
+    "omitted_after_adapter_secret_public_mul": 3072,
+    "unpriced": "normalization, attention, private selection/sampling, HE lowering, exact activation, proofs, release"
+  },
+  "restricted_learner": {
+    "exhaustive_interval_pairs": 65025,
+    "invariant": "-127 <= w,u <= 127 implies -127 <= floor((7w+u)/8) <=127",
+    "max_abs_numerator": 1016,
+    "max_abs_public_score_r16": 2032,
+    "order_sensitive_outputs": [
+      -2,
+      1
+    ],
+    "persisted_coefficients": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+    ],
+    "extraction_queries": 16,
+    "extraction_exact": true,
+    "modular_division_counterexample": {
+      "t": 1032193,
+      "numerator": 1,
+      "inverse_result": 903169,
+      "integer_floor": 0
+    },
+    "rational_denominator_bits_at_20": 61,
+    "private_learn_scalar_ops": {
+      "secret_public_mul": 16,
+      "private_add": 16,
+      "secure_floor_div8": 16
+    },
+    "private_infer_public_features_scalar_ops": {
+      "secret_public_mul": 16,
+      "private_add": 15,
+      "recipient_bound_score_release": 1
+    },
+    "private_infer_private_features_scalar_ops": {
+      "secret_secret_mul": 16,
+      "private_add": 15,
+      "recipient_bound_score_release": 1
+    },
+    "assumptions": "authenticated ingress; fixed feature/update policy; secure floor; bound private release; external continuity; all unrealized here"
+  },
+  "parameters": {
+    "deployed_Q": "649033470896967801447398927572993",
+    "log2_Q": 108.99999191685718,
+    "Q_bit_length": 109,
+    "limbs": [
+      "0xffffee001",
+      "0xffffc4001",
+      "0x1ffffe0001"
+    ],
+    "t": 1032193,
+    "t_is_not_2pow20": true,
+    "ideal_scalar_rounding_margin_floor": 314395404201039825617592314,
+    "geometry": [
+      {
+        "name": "deployed",
+        "N": 4096,
+        "nominal_total_logq": 109,
+        "RNS_limbs": 3,
+        "ct_raw_u64_bytes": 196608,
+        "ideal_bitpacked_ct_bytes": 111616,
+        "radix2_NTT_butterflies_one_transform": 73728
+      },
+      {
+        "name": "apple4096_total",
+        "N": 4096,
+        "nominal_total_logq": 83,
+        "RNS_limbs": 3,
+        "ct_raw_u64_bytes": 196608,
+        "ideal_bitpacked_ct_bytes": 84992,
+        "radix2_NTT_butterflies_one_transform": 73728
+      },
+      {
+        "name": "apple8192_total",
+        "N": 8192,
+        "nominal_total_logq": 148,
+        "RNS_limbs": 3,
+        "ct_raw_u64_bytes": 393216,
+        "ideal_bitpacked_ct_bytes": 303104,
+        "radix2_NTT_butterflies_one_transform": 159744
+      }
+    ],
+    "security_bits": null,
+    "caveat": "Geometry only. Apple total includes reserved key-switch modulus; our ciphertext-level comparison is not a matching implementation benchmark."
+  }
+}

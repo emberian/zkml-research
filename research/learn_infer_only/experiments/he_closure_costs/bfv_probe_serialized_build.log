@@ -1,0 +1,3 @@
+   Compiling resident-he-closure-probe v0.1.0 (/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/bfv_probe)
+    Finished `release` profile [optimized] target(s) in 3.28s
+     Running `research/learn_infer_only/experiments/he_closure_costs/bfv_probe/target/release/resident-he-closure-probe`

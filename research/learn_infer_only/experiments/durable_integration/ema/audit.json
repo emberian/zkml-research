@@ -1,0 +1,42 @@
+{
+  "claim": "EXECUTED full signed-byte public bit-circuit/QR cross-check",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/ema_bits.py",
+  "source_sha256": "f13ebe9b9e1ab0227bb877a39106d9c59c20c00d8289a9c6c422710b39c1f230",
+  "pairs": 65536,
+  "changed_state_pairs": 63516,
+  "negative_nonzero_remainder_pairs": 28800,
+  "wrong_neighbor_posts_refused": 65536,
+  "histories": [
+    {
+      "inputs": [
+        120,
+        -120
+      ],
+      "states": [
+        0,
+        15,
+        -2
+      ]
+    },
+    {
+      "inputs": [
+        -120,
+        120
+      ],
+      "states": [
+        0,
+        -15,
+        1
+      ]
+    }
+  ],
+  "minimum_boundary": [
+    -128,
+    -97
+  ],
+  "seconds": 0.3594200611114502,
+  "limitations": [
+    "No ciphertext operation, FS receipt, or physical storage is checked here.",
+    "Extends earlier HE Python range [-127,127] to [-128,127]; TFHE encrypted execution remains the separately recorded4updates."
+  ]
+}

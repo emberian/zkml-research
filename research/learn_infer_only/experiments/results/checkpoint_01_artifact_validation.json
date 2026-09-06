@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "scope": "staged JSON parse and Python syntax only; execution/formal results separately recorded",
+  "checked": {
+    ".json": 373,
+    ".py": 57
+  },
+  "failures": []
+}

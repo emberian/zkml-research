@@ -1,0 +1,3 @@
+error    libmamba Could not set lock (Resource temporarily unavailable)
+warning  libmamba Cannot lock '/Users/ember/.cache/mamba/proc'
+    Waiting for other mamba process to finish

@@ -1,0 +1,10 @@
+/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean:208:36: error: Tactic `unfold` failed to unfold `canonical` in
+  0 < 31
+/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean:208:36: error: Tactic `unfold` failed to unfold `canonical` in
+  0 < 4
+/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean:208:36: error: Tactic `unfold` failed to unfold `canonical` in
+  4 < 31
+/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean:227:2: error: mod_cast has type
+  |e| < |p|
+but is expected to have type
+  e.natAbs < p.natAbs

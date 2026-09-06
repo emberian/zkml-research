@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/build/Assurance/ResidentAdaptiveContext.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "source_sha256": "ef6ddf1eba28fcc33e2c11485ae17a76d5c9c1605a2f2fd66a28057bcb5025ff"
+}

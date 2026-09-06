@@ -1,0 +1,124 @@
+{
+  "status": "EXECUTED exact scalar arithmetic models; NOT encrypted learner",
+  "command": "python3 research/learn_infer_only/experiments/he_closure_costs/ledger.py",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "script_sha256": "60d0cc7cb9282cf9a51646dc505c00960b9954a3e4f9a597a2ebb82a69d35b9f",
+  "private_dataflow": {
+    "d": 32,
+    "r": 2,
+    "vocab": 64,
+    "adapter_counts": {
+      "secret_public_mul": 64,
+      "private_add": 126,
+      "secret_secret_mul": 64
+    },
+    "complete_counts": {
+      "secret_public_mul": 3136,
+      "private_add": 3102,
+      "secret_secret_mul": 64,
+      "private_nonlinear_activation": 32
+    },
+    "private_logits": 64,
+    "omitted_after_adapter_secret_public_mul": 3072,
+    "unpriced": "normalization, attention, private selection/sampling, HE lowering, exact activation, proofs, release"
+  },
+  "restricted_learner": {
+    "exhaustive_interval_pairs": 65025,
+    "invariant": "-127 <= w,u <= 127 implies -127 <= floor((7w+u)/8) <=127",
+    "max_abs_numerator": 1016,
+    "max_abs_public_score_r16": 2032,
+    "order_sensitive_outputs": [
+      -2,
+      1
+    ],
+    "persisted_coefficients": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+    ],
+    "extraction_queries": 16,
+    "extraction_exact": true,
+    "modular_division_counterexample": {
+      "t": 1032193,
+      "numerator": 1,
+      "inverse_result": 903169,
+      "integer_floor": 0
+    },
+    "rational_denominator_bits_at_20": 61,
+    "private_learn_scalar_ops": {
+      "secret_public_mul": 16,
+      "private_add": 16,
+      "secure_floor_div8": 16
+    },
+    "private_infer_public_features_scalar_ops": {
+      "secret_public_mul": 16,
+      "private_add": 15,
+      "recipient_bound_score_release": 1
+    },
+    "private_infer_private_features_scalar_ops": {
+      "secret_secret_mul": 16,
+      "private_add": 15,
+      "recipient_bound_score_release": 1
+    },
+    "assumptions": "authenticated ingress; fixed feature/update policy; secure floor; bound private release; external continuity; all unrealized here"
+  },
+  "parameters": {
+    "deployed_Q": "649033470896967801447398927572993",
+    "log2_Q": 108.99999191685718,
+    "Q_bit_length": 109,
+    "limbs": [
+      "0xffffee001",
+      "0xffffc4001",
+      "0x1ffffe0001"
+    ],
+    "t": 1032193,
+    "t_is_not_2pow20": true,
+    "ideal_scalar_rounding_margin_floor": 314395404201039825617592314,
+    "geometry": [
+      {
+        "name": "deployed",
+        "N": 4096,
+        "nominal_total_logq": 109,
+        "RNS_limbs": 3,
+        "ct_raw_u64_bytes": 196608,
+        "ideal_bitpacked_ct_bytes": 111616,
+        "radix2_NTT_butterflies_one_transform": 73728
+      },
+      {
+        "name": "apple4096_total",
+        "N": 4096,
+        "nominal_total_logq": 83,
+        "RNS_limbs": 3,
+        "ct_raw_u64_bytes": 196608,
+        "ideal_bitpacked_ct_bytes": 84992,
+        "radix2_NTT_butterflies_one_transform": 73728
+      },
+      {
+        "name": "apple8192_total",
+        "N": 8192,
+        "nominal_total_logq": 148,
+        "RNS_limbs": 3,
+        "ct_raw_u64_bytes": 393216,
+        "ideal_bitpacked_ct_bytes": 303104,
+        "radix2_NTT_butterflies_one_transform": 159744
+      }
+    ],
+    "security_bits": null,
+    "caveat": "Geometry only. Apple total includes reserved key-switch modulus; our ciphertext-level comparison is not a matching implementation benchmark."
+  }
+}
+PASS: phase noise, rank-one failure, balanced sum, rerandomization, arithmetic counts, taint, interval closure, order, extraction, modular division

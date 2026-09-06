@@ -1,0 +1,12 @@
+# Re-fetch pinned upstream source using the recorded repository URLs and commits.
+/vendor/
+
+# Paper text is scratch extracted from the read-only local PDF mirror.
+# Keep the Scry schema text and query records.
+/sources/[0-9][0-9][0-9][0-9]-*.txt
+
+# Keep exact extracted C plus build/run logs; regenerate native executables.
+/build/*/rounding_extracted
+
+__pycache__/
+*.py[cod]

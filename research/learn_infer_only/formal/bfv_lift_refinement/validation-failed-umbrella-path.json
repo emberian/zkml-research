@@ -1,0 +1,51 @@
+[
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+    "stderr": "",
+    "elapsed_seconds": 0.05123566699330695
+  },
+  {
+    "command": [
+      "lean",
+      "--version"
+    ],
+    "cwd": "/Users/ember/dev/minidregg",
+    "exit_code": 0,
+    "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+    "stderr": "",
+    "elapsed_seconds": 0.07456379200448282
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/.validation-ab0apauk/Compiler/BFVScaleLiftRefinement.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "elapsed_seconds": 11.393581959011499
+  },
+  {
+    "command": [
+      "lean",
+      "-o",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/.validation-ab0apauk/Compiler.olean",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/.validation-ab0apauk/Compiler.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/.validation-ab0apauk",
+    "exit_code": 1,
+    "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/.validation-ab0apauk/Compiler.lean:4:0: error: object file '/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/.validation-ab0apauk/Compiler/Placeholder.olean' of module Compiler.Placeholder does not exist\n",
+    "stderr": "",
+    "elapsed_seconds": 1.2255063749908004
+  }
+]

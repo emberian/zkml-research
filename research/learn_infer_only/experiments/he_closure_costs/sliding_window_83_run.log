@@ -1,0 +1,8 @@
+MODULUS total_Q=9671406214650060397780993 bitlength=83 computation_primes=2 special_keyswitch_primes=0 rotations=0 relinearizations=0 conservative_min_Q_exclusive=264008552994527828978432
+STATUS real_BFV_window_arithmetic test_reader_retains_full_key=true no_PQ_bits_claim
+PARAMS N=4096 t=4294828033 Q_factors=[2199023190017, 4398046486529] width=577 window=128 steps=1024 input_bound=127
+WINDOW_POSITIVE seed=109 ct_add=1024 ct_sub=896 exact_queue_equalities=16 output_ct_pt_mul=2 output_ct_sub=1 expected_signed_score=3594582 observed_residue=3594582 max_observed_noise_bits=16
+WINDOW_BYTES seed=109 acc=85022 queue=10882816 input_total=87062528 answer=85022 public_key=42547 live_acc_plus_queue_raw_RNS_bytes=16908288
+WINDOW_POSITIVE seed=137 ct_add=1024 ct_sub=896 exact_queue_equalities=16 output_ct_pt_mul=2 output_ct_sub=1 expected_signed_score=1702855 observed_residue=1702855 max_observed_noise_bits=16
+WINDOW_BYTES seed=137 acc=85022 queue=10882816 input_total=87062528 answer=85022 public_key=42547 live_acc_plus_queue_raw_RNS_bytes=16908288
+PASS exact same-ciphertext window cancellation and signed public readout at Q83; expiry falsifiers belong to separate Q109 fixture

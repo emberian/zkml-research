@@ -1,0 +1,163 @@
+{
+  "classification": "EXECUTED equation/noise witness with deliberately insecure parameters; not a secure LWE instantiation",
+  "source": "ALS16 ePrint2015/608 section4.2 pp16-18, theorem3 and theorem4 pp20-22",
+  "seed": 2026090601,
+  "parameters": {
+    "p": 5,
+    "q": 15625,
+    "scale": 3125,
+    "dimension": 3,
+    "lwe_dimension": 2,
+    "lwe_samples": 6,
+    "secret_distribution": "uniform small entries -2..2 (NOT source tau)",
+    "error_distribution": "uniform bounded -1..1 / deterministic bounded witnesses (NOT source Gaussian)",
+    "security_bits": null
+  },
+  "fixed_projection": [
+    1,
+    1,
+    0
+  ],
+  "test_projection_key_l1_norm": 6,
+  "initial": [
+    1,
+    4,
+    3
+  ],
+  "alternative": [
+    2,
+    3,
+    1
+  ],
+  "two_public_updates": {
+    "states": [
+      [
+        1,
+        4,
+        3
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        3,
+        2,
+        4
+      ]
+    ],
+    "outputs": [
+      0,
+      4,
+      0
+    ],
+    "noise_values": [
+      3,
+      3,
+      3
+    ]
+  },
+  "public_update_iterations": 10000,
+  "exhaustive_public_edges": 15625,
+  "two_private_encoded_updates": {
+    "outputs": [
+      4,
+      0
+    ],
+    "noise_values": [
+      2,
+      -3
+    ]
+  },
+  "noise_contract": {
+    "per_ciphertext_bound": 8,
+    "equation": "epsilon_y=<y,e1>-<z_y,e0>",
+    "correctness_sufficient": "2*abs(epsilon_total)<q/p",
+    "safe_additions_starting_from_zero_noise": 195,
+    "first_worst_case_failure": {
+      "added_zero_ciphertexts": 196,
+      "noise_per_ciphertext": 8,
+      "total_error": 1568,
+      "scale": 3125,
+      "wrong_output": 1,
+      "classification": "bounded-noise worst-case correctness falsifier; not an attack probability"
+    },
+    "zero_ciphertext_addition_is_not_noise_reset": true
+  },
+  "falsifiers": {
+    "naive_floor_scaled_modular_port": {
+      "q": 101,
+      "p": 5,
+      "scale_floor": 20,
+      "public_plus_one_updates": 51,
+      "wraps": 10,
+      "phase": 10,
+      "expected_plain_mod_p": 1,
+      "decoded": 0,
+      "wrap_residual_per_cycle": -1,
+      "classification": "naive floor-scaled modular port; not the ALS modular construction"
+    },
+    "naive_mod_dependent_key_issuance": {
+      "p": 5,
+      "requested_vectors": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "dependent_scalar_mod_p": 3,
+      "naive_integer_determinant": -5,
+      "master_recovered": true,
+      "correct_lift_for_second": [
+        3,
+        6
+      ],
+      "correct_second_key_is_three_times_first": true,
+      "admissible_challenge_pair": [
+        [
+          0,
+          0
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "classification": "source-described attack on naive canonical independent issuance; correct stateful issuer prevents it"
+    },
+    "private_ingress_projection_leaks_before_gate": 4,
+    "unkeyed_substitution_releases_three": true,
+    "retained_master_reads_final_state": [
+      1,
+      2,
+      3
+    ],
+    "public_updates_create_no_new_unknown_state_input": true
+  },
+  "exact_counts": {
+    "public_key_residues": 18,
+    "ciphertext_residues": 9,
+    "fixed_function_key_integer_entries": 6,
+    "public_add_scalar_multiplies": 3,
+    "public_add_residue_additions": 3,
+    "private_ciphertext_add_residue_additions": 9,
+    "fresh_encode_scalar_multiplies": 21,
+    "projection_scalar_multiplies": 9
+  },
+  "residuals": [
+    "no source tau sampler/secure parameter instantiation",
+    "no audited quantum lifting",
+    "common-kernel privacy only",
+    "all input projections readable",
+    "no release binding",
+    "no continuity",
+    "noise horizon applies to fresh ciphertext additions, not public constant adds"
+  ],
+  "script_sha256": "363d32b49b779e2398f287ac01942e1e1c55ae7a4a21610f2c0cb6b1f53d0288",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]"
+}

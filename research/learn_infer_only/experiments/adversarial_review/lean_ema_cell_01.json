@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/ResidentEmaCell.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaCell.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration",
+  "started_utc": "2026-09-06T08:51:19.840964+00:00",
+  "elapsed_seconds": 5.149230540991994,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaCell.lean": "68cdb084b839364328bc0717c5b6fa763a8342efbfc4244c02181603af4a9437",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Compiler/ResidentEmaCertificate.lean": "f6b9c07240bc4f5341a8412b7bc00a5c8c6e19e17743d86c3cecc8b3ea72588d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/ResidentEmaCertificate.olean": "a5b51be686ac15f0722624a90f86b93f9d035885a06e762900814672ec382502",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/ResidentDurableIntegration.olean": "b7069e7c5f3af16399d3006f68af534a09d1ad078120fcc3fbede531c5fbd957"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

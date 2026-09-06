@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/writer_recovery.py"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "started_utc": "2026-09-06T07:36:27.996284+00:00",
+  "elapsed_seconds": 0.07488379199639894,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/writer_recovery.py": "027bcae55c1f1be277f9ebb43f2fd15617598a3c16318288c706e1c8f9a66d92"
+  },
+  "exit_code": 0,
+  "stdout": "{\n  \"label\": \"EXECUTED ideal-primitive capability model; no cryptography\",\n  \"source\": \"GKS23 2022/1599 \\u00a76.2 pp.57\\u201358 Figures 8\\u20139; Korb Fig.3.2 (via landed audit)\",\n  \"histories\": 64,\n  \"recovered_values\": 288,\n  \"exposed\": [\n    \"FPFE.msk\",\n    \"stored FPFE.sk_H_i for every required prefix index\"\n  ],\n  \"not_used\": [\n    \"outer FE.msk\",\n    \"outer function key\",\n    \"honest inner master secret\"\n  ],\n  \"example\": {\n    \"length\": 8,\n    \"original\": [\n      115,\n      145,\n      177,\n      211,\n      247,\n      29,\n      69,\n      111\n    ],\n    \"recovered\": [\n      115,\n      145,\n      177,\n      211,\n      247,\n      29,\n      69,\n      111\n    ],\n    \"calls\": {\n      \"FPFE.Enc\": 1,\n      \"One-sFE.KeyGen\": 1,\n      \"FPFE.Dec\": 8,\n      \"One-sFE.Dec\": 8\n    }\n  },\n  \"negative_controls\": {\n    \"missing_writer\": \"missing or wrong credential kind\",\n    \"wrong_writer\": \"FPFE setup mismatch\",\n    \"beta_nonzero\": \"H's nonzero-beta branch returns bottom\",\n    \"invalid_encoder_state\": \"One-sFE.EncSetup returns bottom in this construction\",\n    \"missing_first_element\": \"wrong inner setup or missing/repeated/out-of-order prefix\",\n    \"repeat_first_element\": \"wrong inner setup or missing/repeated/out-of-order prefix\",\n    \"skip_second_element\": \"wrong inner setup or missing/repeated/out-of-order prefix\",\n    \"cross_inner_setup\": \"wrong inner setup or missing/repeated/out-of-order prefix\"\n  },\n  \"same_setup_same_index_substitution\": {\n    \"accepted\": true,\n    \"output\": 199\n  },\n  \"scope\": \"Single symbolic path only; failed controls do not prove secrecy.\"\n}\n",
+  "stderr": ""
+}

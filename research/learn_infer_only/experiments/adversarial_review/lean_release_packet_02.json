@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/ReleasePacketSeamWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/ReleasePacketSeamWitness.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review",
+  "started_utc": "2026-09-06T08:06:55.214332+00:00",
+  "elapsed_seconds": 11.791607042003307,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/ReleasePacketSeamWitness.lean": "87ff2d4c10782fac25b911d8b9040b70a3ab430468993ec44e262d5f5850fbd9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/snapshots/b174ddb157caa8cc/Assurance/ResidentDurableIntegration.lean": "b174ddb157caa8ccc76443a2be7a9b49ceb899a8ceecd6b536bcfcb79997197e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/ResidentDurableIntegration.olean": "bd0223a00d97ed8b29c51fba1730ee6938488180f3241d7819802122369e42f6"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

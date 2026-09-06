@@ -1,0 +1,89 @@
+{
+  "module_sha256": {
+    "ResidentDurableIntegration": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+    "ResidentDurableCollision": "b410206075a03338ef6d569c777c2d2a2420f3ddc8f3280cfcf6d062685a028c"
+  },
+  "patch_sha256": "945d70ab4a7504f25bbc598f70951fae8f1a1a5318459a396bfe1fcbf8e57a5a",
+  "prerequisite": "formal/minidregg-resident-release.patch supplies ResidentReleaseContext",
+  "checks": [
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 12.286437273025513
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.2983522415161133
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/minidregg-durable-integration.patch"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 0.020155906677246094
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/inspect_sources.py"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only",
+      "exit_code": 0,
+      "stdout": "{\n  \"command\": [\n    \"/opt/homebrew/opt/python@3.14/bin/python3.14\",\n    \"/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/inspect_sources.py\"\n  ],\n  \"theorem_pattern\": \"^theorem \",\n  \"pin_pattern\": \"^#guard_msgs\",\n  \"forbidden_pattern\": \"\\\\b(sorry|admit)\\\\b|^axiom\\\\s\",\n  \"forbidden_positive_controls\": {\n    \"sorry\": true,\n    \"admit\": true,\n    \"axiom bogus : False\": true\n  },\n  \"files\": [\n    {\n      \"path\": \"/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableCollision.lean\",\n      \"sha256\": \"b410206075a03338ef6d569c777c2d2a2420f3ddc8f3280cfcf6d062685a028c\",\n      \"theorems\": 6,\n      \"pins\": 6,\n      \"forbidden_matches\": []\n    },\n    {\n      \"path\": \"/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean\",\n      \"sha256\": \"80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a\",\n      \"theorems\": 39,\n      \"pins\": 39,\n      \"forbidden_matches\": []\n    }\n  ]\n}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.035676002502441406
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+      "stderr": "",
+      "elapsed_seconds": 0.11760568618774414
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+      "stderr": "",
+      "elapsed_seconds": 0.07580709457397461
+    }
+  ],
+  "source_hashes": {
+    "Theory/CellState.lean": "5e6c082065443a49a682c7c560f27c1b8e60bb8b20e70d4ec3a86d207ca90719",
+    "Theory/CellStateWitness.lean": "aaa71980c542400a4d914f4c230e5ee5128e17fd214273c8af4b09269da01c52",
+    "Kernel/DurableDataIntent.lean": "d3d2f722115e3a4cb77de351b8d845074ab1bad604d0e4ed34221b1e43f867fd",
+    "Kernel/GuardedDurableCommit.lean": "a45944832e2ac472842d51586c5783f8b1bc045c0c0f0d2ab5eb5fc8f935a5d9",
+    "Kernel/DurableCommitProtocol.lean": "c7e2c80cb235be701e3a69208956eb6599ef8b01a5881c67388e1cf5f70ee891",
+    "Kernel/ReplicatedSettlementFinality.lean": "f09fc75d8444cda6e56449ab6b5067f526dbdc49dd9ce20a41ea94ee63ea239e",
+    "Kernel/FinalityGate.lean": "0698816bd1216da3442915e71edaad3d8083229be614db2b32e5a3c84429207d"
+  }
+}

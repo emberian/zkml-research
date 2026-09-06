@@ -1,0 +1,288 @@
+{
+  "classification": "executed bounded behavioral compilation; not raw-state encryption",
+  "environment": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "cryptography": "50.0.1"
+  },
+  "horizon": 5,
+  "alphabet": [
+    "learn_plus_one",
+    "learn_double",
+    "infer"
+  ],
+  "states_checked": 256,
+  "legal_edges_checked": 92928,
+  "equivalence_classes": 62,
+  "class_sizes": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    4,
+    4,
+    5,
+    5,
+    6,
+    6,
+    6,
+    6,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8
+  ],
+  "zero_equivalence_class": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "coupled_exact_artifact_equalities": 194,
+  "private_pair": [
+    0,
+    1
+  ],
+  "pair_distinguisher_outside_horizon": {
+    "horizon": 8,
+    "commands": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "two_update_positive": {
+    "initial": 63,
+    "commands": [
+      0,
+      1,
+      2
+    ],
+    "outputs": [
+      255,
+      255,
+      1
+    ]
+  },
+  "order_sensitivity": {
+    "commands": [
+      1,
+      0,
+      2
+    ],
+    "outputs": [
+      255,
+      255,
+      0
+    ]
+  },
+  "falsifiers": {
+    "merged_state_token_equality_distinguishes_private_pair": true,
+    "private_command_recovered_from_selected_token": [
+      0,
+      1,
+      2
+    ],
+    "private_command_recovered_from_node_index_alone": [
+      0,
+      1,
+      2
+    ],
+    "root_key_holder_forges_42": true,
+    "restore_selects_different_outward_answer": true
+  },
+  "controls": {
+    "unkeyed_ciphertext_mutation_refused": true,
+    "wrong_key_refused": true,
+    "unlisted_command_refused": true,
+    "horizon_exhaustion_refused": true,
+    "full_tree_decryption_matches_ideal": true
+  },
+  "subprocess_commands": [
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/bounded_tree.py",
+      "build",
+      "--initial",
+      "63",
+      "--horizon",
+      "5",
+      "--output",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/results/synthetic_deployment.json"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/bounded_tree.py",
+      "run",
+      "--artifact",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/results/synthetic_deployment.json",
+      "--commands",
+      "0,1,2"
+    ]
+  ],
+  "subprocess_stdout": "{\"outputs\": [255, 255, 1]}\n",
+  "serialized_artifact_bytes": 25951,
+  "serialized_artifact_sha256": "81dba12190620b32607bd97b0b3d2afbe2a639912455c6c9fb9bb5320ffed616",
+  "script_sha256": "b880ee75aa11fc5e8b79aa1aa70700d06dce68c9d55dc86f15f62236f3fe04e3",
+  "costs": [
+    {
+      "horizon": 2,
+      "branching": 3,
+      "internal_nodes": 4,
+      "edges": 12,
+      "aes_gcm_encryptions_setup": 12,
+      "ciphertext_record_bytes": 49,
+      "raw_ciphertext_bytes": 588,
+      "node_key_bytes_setup": 416,
+      "aead_decryptions_per_step": 1,
+      "note": "counts"
+    },
+    {
+      "horizon": 3,
+      "branching": 3,
+      "internal_nodes": 13,
+      "edges": 39,
+      "aes_gcm_encryptions_setup": 39,
+      "ciphertext_record_bytes": 49,
+      "raw_ciphertext_bytes": 1911,
+      "node_key_bytes_setup": 1280,
+      "aead_decryptions_per_step": 1,
+      "note": "counts"
+    },
+    {
+      "horizon": 4,
+      "branching": 3,
+      "internal_nodes": 40,
+      "edges": 120,
+      "aes_gcm_encryptions_setup": 120,
+      "ciphertext_record_bytes": 49,
+      "raw_ciphertext_bytes": 5880,
+      "node_key_bytes_setup": 3872,
+      "aead_decryptions_per_step": 1,
+      "note": "counts"
+    },
+    {
+      "horizon": 5,
+      "branching": 3,
+      "internal_nodes": 121,
+      "edges": 363,
+      "aes_gcm_encryptions_setup": 363,
+      "ciphertext_record_bytes": 49,
+      "raw_ciphertext_bytes": 17787,
+      "node_key_bytes_setup": 11648,
+      "aead_decryptions_per_step": 1,
+      "note": "counts"
+    },
+    {
+      "horizon": 8,
+      "branching": 3,
+      "internal_nodes": 3280,
+      "edges": 9840,
+      "aes_gcm_encryptions_setup": 9840,
+      "ciphertext_record_bytes": 49,
+      "raw_ciphertext_bytes": 482160,
+      "node_key_bytes_setup": 314912,
+      "aead_decryptions_per_step": 1,
+      "note": "counts"
+    },
+    {
+      "horizon": 10,
+      "branching": 3,
+      "internal_nodes": 29524,
+      "edges": 88572,
+      "aes_gcm_encryptions_setup": 88572,
+      "ciphertext_record_bytes": 49,
+      "raw_ciphertext_bytes": 4340028,
+      "node_key_bytes_setup": 2834336,
+      "aead_decryptions_per_step": 1,
+      "note": "counts only; large horizons not built"
+    },
+    {
+      "horizon": 20,
+      "branching": 3,
+      "internal_nodes": 1743392200,
+      "edges": 5230176600,
+      "aes_gcm_encryptions_setup": 5230176600,
+      "ciphertext_record_bytes": 49,
+      "raw_ciphertext_bytes": 256278653400,
+      "node_key_bytes_setup": 167365651232,
+      "aead_decryptions_per_step": 1,
+      "note": "counts only; large horizons not built"
+    },
+    {
+      "horizon": 40,
+      "branching": 3,
+      "internal_nodes": 6078832729528464400,
+      "edges": 18236498188585393200,
+      "aes_gcm_encryptions_setup": 18236498188585393200,
+      "ciphertext_record_bytes": 49,
+      "raw_ciphertext_bytes": 893588411240684266800,
+      "node_key_bytes_setup": 583567942034732582432,
+      "aead_decryptions_per_step": 1,
+      "note": "counts only; large horizons not built"
+    }
+  ],
+  "residuals": [
+    "honest setup erasure assumed, not verified",
+    "test coins public; synthetic initial values public",
+    "no compact indefinite continuation",
+    "no private future ingress",
+    "forkable ideal; no quota or single-history release",
+    "no PQ security theorem"
+  ]
+}

@@ -1,0 +1,9 @@
+{"selected": "frozen_lm_ab", "config": {}, "selection_accuracy": 0.5592783505154639}
+{"selected": "no_memory", "config": {}, "selection_accuracy": 0.5592783505154639}
+{"selected": "fading_mean", "config": {"rho": 0.95}, "selection_accuracy": 0.6030927835051546}
+{"selected": "knn_smol", "config": {"k": 1, "capacity": 64}, "selection_accuracy": 0.8530927835051547}
+{"selected": "knn_xy", "config": {"k": 1, "capacity": 64}, "selection_accuracy": 0.9201030927835052}
+{"selected": "smol_lms_576", "config": {"eta": 1.0, "rho": 0.995}, "selection_accuracy": 0.7809278350515464}
+{"selected": "smol_lms_64", "config": {"eta": 1.0, "rho": 0.995}, "selection_accuracy": 0.7706185567010309}
+{"selected": "quadratic_lms_6", "config": {"eta": 1.0, "rho": 1.0}, "selection_accuracy": 0.904639175257732}
+{"complete": true, "runtime_seconds": 4.427225666993763, "post_change": {"frozen_lm_ab": 0.5202963917525774, "no_memory": 0.5202963917525774, "fading_mean": 0.6288659793814433, "knn_smol": 0.8276417525773195, "knn_xy": 0.9172036082474226, "smol_lms_576": 0.7783505154639175, "smol_lms_64": 0.7554768041237113, "quadratic_lms_6": 0.8630798969072165}}

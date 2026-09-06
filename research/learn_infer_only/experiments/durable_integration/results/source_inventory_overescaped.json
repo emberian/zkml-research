@@ -1,0 +1,23 @@
+{
+  "command": "python3 inline source-inventory (regexes recorded below)",
+  "theorem_pattern": "^theorem ",
+  "pin_pattern": "^#guard_msgs",
+  "forbidden_pattern": "\\b(sorry|admit)\\b|^axiom\\s",
+  "files": [
+    {
+      "path": "research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableCollision.lean",
+      "sha256": "b410206075a03338ef6d569c777c2d2a2420f3ddc8f3280cfcf6d062685a028c",
+      "theorems": 6,
+      "pins": 6,
+      "forbidden_matches": []
+    },
+    {
+      "path": "research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean",
+      "sha256": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+      "theorems": 39,
+      "pins": 39,
+      "forbidden_matches": []
+    }
+  ],
+  "status": "superseded: overescaped forbidden-pattern; not an absence check"
+}

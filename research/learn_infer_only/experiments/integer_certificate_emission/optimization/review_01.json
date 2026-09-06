@@ -1,0 +1,55 @@
+{
+  "checks": [
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/build/Compiler.olean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "pins": {
+    "AirSimplify": 19,
+    "IntegerCertificateSimplification": 8
+  },
+  "patch_sha256": "389015b446a8a09b4327de4dcc1008ef0d0a8a8a95342dc2a9b8b4b65f2d375f",
+  "first_tranche_unchanged": true,
+  "first_tranche_manifest_sha256": "2ac2a262fd224c4699a7f3c4b35382756d9ff90802641b706bf814f9f5a0ef75",
+  "companion_sources": {
+    "Compiler/Air.lean": "8bde0e33ab2ed0cb739ddf2f06df299bdbada7ffac81057438f52a1528cfeecb",
+    "Compiler/Signature.lean": "c77dd3020ea142d5dec4ad19f74fbd05f0a761ad6012f209a8fdc118ed6e2424",
+    "Compiler/Emit.lean": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+    "Compiler/EmitShare.lean": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4",
+    "Compiler/DescriptorEval.lean": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6",
+    "Compiler/NativeKernelPlan.lean": "6dfbaa0427ac4f4b2e45ef8e0ad45f0a8c921632f7deaf00d7a0041bc09b0e15",
+    "Compiler.lean": "49406fd9d224390e37dee72163ea1635e4f74f7eaaed63e3239c1224d0eaa217"
+  },
+  "scope": "Isolated umbrella against existing dependency oleans, not a clean full lake build; application module depends on preserved first-tranche patch."
+}

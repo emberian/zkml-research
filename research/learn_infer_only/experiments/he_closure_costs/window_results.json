@@ -1,0 +1,232 @@
+{
+  "status": "EXECUTED exact algebra plus parsed saved genuine BFV run; not a confidentiality theorem",
+  "ciphertext_modulus": 649033470896967801447398927572993,
+  "ciphertext_modulus_log2": 108.99999191685718,
+  "equation_assumptions": [
+    "all fresh secret/error/u coefficients have absolute value at most 20",
+    "N=4096 negacyclic ring; exact ct group arithmetic; fixed level",
+    "fresh phase = floor(Q*m/t) + e mod Q; exact scale-and-round decryption",
+    "public fixed readout coefficients; old identical ciphertext expires",
+    "authorized inputs satisfy the stated message bounds"
+  ],
+  "not_established": [
+    "library correctness proof",
+    "post-quantum security bits",
+    "malicious input/queue proof",
+    "scalar-only release",
+    "key absence",
+    "cryptographic forgetting"
+  ],
+  "algebra_checks": {
+    "floor_carry_cases": 2401,
+    "floor_carry_extrema": [
+      -3,
+      0
+    ],
+    "signed_rounding_bound_cases": 2401,
+    "exact_group_queue_steps": 10000,
+    "replacement_debt_identity": "bad_acc = true_queue_sum - expiries*Z (mod Q)"
+  },
+  "uniform_horizon_bounds": [
+    {
+      "width": 16,
+      "window": 8,
+      "contribution_abs_bound": 1,
+      "query_abs_bound": 1,
+      "plaintext_modulus": 1032193,
+      "state_coefficient_abs_bound": 8,
+      "score_abs_bound": 128,
+      "query_l1_bound": 16,
+      "fresh_integer_noise_abs_bound": 3276820,
+      "readout_ideal_phase_error_abs_bound": 419433088,
+      "correctness_inequality": "865871794803968 < 649033470896967801447398927572993",
+      "minimum_ciphertext_modulus_exclusive": 865871794803968,
+      "minimum_integer_modulus_bit_length": 50,
+      "sampled_bit_counts_are_not_this_bound": true,
+      "nonwrap_product_degree": 30,
+      "live_acc_plus_queue_raw_RNS_bytes": 1769472,
+      "update_peak_ciphertext_raw_RNS_bytes": 1966080,
+      "signed_readout_peak_ciphertext_raw_RNS_bytes": 2162688,
+      "raw_buffer_scope": "ct RNS arrays only; excludes plaintext/key/codec/allocator/test-oracle buffers",
+      "security_estimate": null,
+      "parameter_frontier_scope": "sufficient-bound threshold in this algebra only, not a necessary condition; no prime selection or security certification"
+    },
+    {
+      "width": 577,
+      "window": 128,
+      "contribution_abs_bound": 127,
+      "query_abs_bound": 127,
+      "plaintext_modulus": 4294828033,
+      "state_coefficient_abs_bound": 16256,
+      "score_abs_bound": 1191223424,
+      "query_l1_bound": 73279,
+      "fresh_integer_noise_abs_bound": 3276820,
+      "readout_ideal_phase_error_abs_bound": 30735637255552,
+      "correctness_inequality": "264008552994527828978432 < 649033470896967801447398927572993",
+      "minimum_ciphertext_modulus_exclusive": 264008552994527828978432,
+      "minimum_integer_modulus_bit_length": 78,
+      "sampled_bit_counts_are_not_this_bound": true,
+      "nonwrap_product_degree": 1152,
+      "live_acc_plus_queue_raw_RNS_bytes": 25362432,
+      "update_peak_ciphertext_raw_RNS_bytes": 25559040,
+      "signed_readout_peak_ciphertext_raw_RNS_bytes": 25755648,
+      "raw_buffer_scope": "ct RNS arrays only; excludes plaintext/key/codec/allocator/test-oracle buffers",
+      "security_estimate": null,
+      "parameter_frontier_scope": "sufficient-bound threshold in this algebra only, not a necessary condition; no prime selection or security certification"
+    }
+  ],
+  "actual_BFV_cases": [
+    {
+      "N": 4096,
+      "t": 1032193,
+      "width": 16,
+      "window": 8,
+      "steps": 1024,
+      "input_bound": 1,
+      "seed": 23,
+      "ct_add": 1024,
+      "ct_sub": 1016,
+      "exact_queue_equalities": 16,
+      "output_ct_pt_mul": 1,
+      "output_ct_sub": 0,
+      "expected_signed_score": 6,
+      "observed_residue": 6,
+      "max_observed_noise_bits": 14,
+      "bytes": {
+        "acc": 111646,
+        "queue": 893168,
+        "input_total": 114325504,
+        "answer": 111646,
+        "public_key": 55859,
+        "live_acc_plus_queue_raw_RNS_bytes": 1769472
+      },
+      "rerandomized_expiry_falsifier": {
+        "zero_amplification_doublings": 72,
+        "replacements": 40,
+        "expected_coefficient0": 0,
+        "observed_coefficient0": 1
+      }
+    },
+    {
+      "N": 4096,
+      "t": 1032193,
+      "width": 16,
+      "window": 8,
+      "steps": 1024,
+      "input_bound": 1,
+      "seed": 71,
+      "ct_add": 1024,
+      "ct_sub": 1016,
+      "exact_queue_equalities": 16,
+      "output_ct_pt_mul": 1,
+      "output_ct_sub": 0,
+      "expected_signed_score": 6,
+      "observed_residue": 6,
+      "max_observed_noise_bits": 14,
+      "bytes": {
+        "acc": 111646,
+        "queue": 893168,
+        "input_total": 114325504,
+        "answer": 111646,
+        "public_key": 55859,
+        "live_acc_plus_queue_raw_RNS_bytes": 1769472
+      },
+      "rerandomized_expiry_falsifier": {
+        "zero_amplification_doublings": 72,
+        "replacements": 160,
+        "expected_coefficient0": 0,
+        "observed_coefficient0": 1032192
+      }
+    },
+    {
+      "N": 4096,
+      "t": 4294828033,
+      "width": 577,
+      "window": 128,
+      "steps": 1024,
+      "input_bound": 127,
+      "seed": 109,
+      "ct_add": 1024,
+      "ct_sub": 896,
+      "exact_queue_equalities": 16,
+      "output_ct_pt_mul": 2,
+      "output_ct_sub": 1,
+      "expected_signed_score": 3594582,
+      "observed_residue": 3594582,
+      "max_observed_noise_bits": 16,
+      "bytes": {
+        "acc": 111646,
+        "queue": 14290688,
+        "input_total": 114325504,
+        "answer": 111646,
+        "public_key": 55859,
+        "live_acc_plus_queue_raw_RNS_bytes": 25362432
+      }
+    }
+  ],
+  "actual_run_command": "CARGO_TARGET_DIR=research/learn_infer_only/experiments/he_closure_costs/bfv_probe/target cargo run --offline --release --manifest-path research/learn_infer_only/experiments/he_closure_costs/sliding_window_probe/Cargo.toml",
+  "log_scope_note": "The generic final PASS line is repeated after the wide run; only the 16-dimensional cases execute expiry falsifiers.",
+  "rng_scope": "secret/error/u fixture stream is ChaCha20 seeded by repeated byte; library public uniform a seed uses rand::rng internally, so ciphertext bytes are not cross-run deterministic",
+  "manifest": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_probe/src/main.rs",
+      "sha256": "7831e55c8e958002225d21f731ad6623783c5d5a58714fe1461c61d575bd517f",
+      "bytes": 8087
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_probe/Cargo.toml",
+      "sha256": "b74345ec12324bfeb183f32a7569bade4c4366e78d300d94099fa8485aa357ea",
+      "bytes": 251
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_probe/Cargo.lock",
+      "sha256": "205e311b4fce6232b819b7ca66ea3ec7ae5ac19307e2e4295d0ff6fd46c5f38c",
+      "bytes": 16733
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_wide_final_run.log",
+      "sha256": "281fdf682b1bd8fb3cd16f5e47624133172bf64719a4d02e3b65e63c361085d0",
+      "bytes": 2346
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/sliding_window_wide_final_build.log",
+      "sha256": "cc87171fe671dff36d8876d656bb51f19fdca56fe76b8dcd864909e6d9bbad6c",
+      "bytes": 338
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/window_ledger.py",
+      "sha256": "4f809f3b705105048e483dbf38f91fd9d508d408e32850a97883394a25cd92fe",
+      "bytes": 7811
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/public_key.rs",
+      "sha256": "c84a8da2647b7f20800317ead510584b116c0d5d99d3163f80c8e520d4ead3c3",
+      "bytes": 6777
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/secret_key.rs",
+      "sha256": "337e85e2dc4a7540039b800517ec32389dc3152516c9fdad18cc58dc55acec70",
+      "bytes": 10968
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/plaintext.rs",
+      "sha256": "abc6d4930295aed0fe91d58be85c79c46b4261d90fb0a02897ed002935de50b8",
+      "bytes": 13864
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/parameters.rs",
+      "sha256": "7f6b1d364cbc8547b3f381551ec14f1ec0272c07b3c8a4ee03c4df1fc9aece30",
+      "bytes": 24392
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mod.rs",
+      "sha256": "99d4777b6ed571ddd497572b196aa748b7875374d81395b35e868080065e73ad",
+      "bytes": 23425
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-util-0.1.1/src/lib.rs",
+      "sha256": "688eea292be729ee75b682678b6a9a4ddb9c18ff8e4b757eeabe1aff434cf173",
+      "bytes": 77093
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "path": "seal-v4.1.2-evaluator.cpp",
+    "url": "https://raw.githubusercontent.com/microsoft/SEAL/v4.1.2/native/src/seal/evaluator.cpp",
+    "sha256": "df89d4e9621fa748ed16f818d15524c0d95a2b0c7e82e56b13134e15f4878772",
+    "access": "full source, inspected relevant functions only"
+  },
+  {
+    "path": "seal-v4.1.2-rns.cpp",
+    "url": "https://raw.githubusercontent.com/microsoft/SEAL/v4.1.2/native/src/seal/util/rns.cpp",
+    "sha256": "a01c930b43bd9b6bacd673dd264cc8e1f1bdf6472c407c28200f1b59a04ea952",
+    "access": "full source, inspected relevant functions only"
+  },
+  {
+    "path": "SEAL-LICENSE",
+    "url": "https://raw.githubusercontent.com/microsoft/SEAL/v4.1.2/LICENSE",
+    "sha256": "27ebda9d51f0a56b7e281ccd8230a27236dcb51c05f64b07869ecf6e965d68b0",
+    "access": "license accompanying retained source files"
+  }
+]

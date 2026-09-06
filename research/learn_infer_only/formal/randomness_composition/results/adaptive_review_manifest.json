@@ -1,0 +1,8 @@
+{
+  "source_sha256": "9eb3318ca21240162355a7e166e258b085aaa038b66f466c2b8f90df777fd90e",
+  "patch_sha256": "369cba799fa20f5d9c56ab08135c2e8793d819479cbbd5d12e3c5f0eb4f823de",
+  "base_umbrella_sha256": "06831d470df5a33491004e499b29db3346c0cefeb75deb68e6b69e7fe104ec43",
+  "required_prior_patch": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/minidregg-resident-release.patch",
+  "scope": "one global context-bearing full-word ROM reduction; one final output; staged umbrella; no full clean build",
+  "companion_modified": false
+}

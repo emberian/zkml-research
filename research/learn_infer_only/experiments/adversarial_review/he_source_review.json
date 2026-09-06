@@ -1,0 +1,46 @@
+{
+  "label": "EXECUTED source/config and exact finite distribution audit; no attack rerun or security theorem",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_source_review.py"
+  ],
+  "started_utc": "2026-09-06T08:48:24.364471+00:00",
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/nd.py": "d87fca7bb191a0fb29b24507897e00c8beba784da552b6b90a982c718fc1c459",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/lwe.py": "9ff2ac14f6480863d741eac1c2a9c935adf87a8954d2344024a22b581133e230",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/lwe_dual.py": "8f6a077589393f907fbcc87b9ef812beafc73bf5cc78abc4f857924b80a21a8b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/reduction.py": "b1354702c88a8309f78d373ae7f4b0b4347799abfd1a13c07e0fa75bf87bd59a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/run_estimates.py": "161569fca49e50ac84aaa3eda4c1e1489450883de7d4d26b0c53bd76359f64cf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/environment-final-provenance.json": "5be43b1cf138f35786e569b05724801863b7f60a7074f5c76cfc1c7ab5e4353c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/he_source_review.py": "ebcd1bf74ffe2a5028b593525b555f7dfb2bc23e0006c5e91d8266819976340f"
+  },
+  "inputs_unchanged": true,
+  "pinned_source_hashes_match": {
+    "nd.py": true,
+    "lwe.py": true,
+    "lwe_parameters.py": true,
+    "lwe_primal.py": true,
+    "lwe_dual.py": true,
+    "lwe_bkw.py": true,
+    "reduction.py": true,
+    "conf.py": true
+  },
+  "dual_hybrid_alias": "lwe_dual.matzov",
+  "MATZOV_cost_definition_line": 567,
+  "MATZOV_call_definition_line": 628,
+  "cost_calls_without_m": [
+    663
+  ],
+  "sample_scope": "MATZOV dual_hybrid fixes lattice sample m to n; params.m affects beta cap, not m optimization",
+  "CBD20_exact": {
+    "variance": "10",
+    "bounds": [
+      -20,
+      20
+    ],
+    "entropy_bits_per_coefficient": 3.7079804000177026,
+    "one_dimensional_optimal_support_for_99_percent": 17,
+    "one_dimensional_support_size_helper_at_99_percent": 41,
+    "meaning": "finite PMF comparison, not a corrected attack estimate"
+  }
+}

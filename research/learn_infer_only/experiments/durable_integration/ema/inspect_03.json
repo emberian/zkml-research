@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/ema/InspectEma.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/ema",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 0,
+  "stdout": "(4, 31, 153, 122, 32)\ntrue\nfalse\ntrue\ntrue\n",
+  "stderr": "",
+  "elapsed_seconds": 3.798276901245117,
+  "source_sha256": "f8f5de362acd98bde6d35c254f61231ccb6415df8b34a5373565792eb51ccecc",
+  "module_sha256": {
+    "Compiler/ResidentEmaCertificate.lean": "f6b9c07240bc4f5341a8412b7bc00a5c8c6e19e17743d86c3cecc8b3ea72588d",
+    "Assurance/ResidentEmaCell.lean": "68cdb084b839364328bc0717c5b6fa763a8342efbfc4244c02181603af4a9437",
+    "Assurance/ResidentEmaRelease.lean": "470a6b5daf54cbd373799fa0b075137d06f5a115395d07ecbabfac130efbc8ee",
+    "Assurance/ResidentEmaWitness.lean": "e412cad31eba9eac302a597239fcaee14987b79db6b134c0de884e2ca74f3eeb"
+  }
+}

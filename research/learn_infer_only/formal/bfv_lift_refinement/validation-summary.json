@@ -1,0 +1,11 @@
+{
+  "label": "EXECUTED isolated source and Compiler umbrella validation; no full Minidregg build",
+  "source_sha256": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+  "patch_sha256": "929f79e168a1e236b04a2fa6edbf9448e22da5041124b7484e0fd9348072dc11",
+  "declarations": 27,
+  "axiom_pins": 27,
+  "all_commands_passed": true,
+  "source_imports": [
+    "import Mathlib.Tactic"
+  ]
+}

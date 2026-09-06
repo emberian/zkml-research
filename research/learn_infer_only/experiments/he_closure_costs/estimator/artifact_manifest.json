@@ -1,0 +1,726 @@
+{
+  "status": "Finalized estimator tranche 2026-09-06",
+  "estimator_commit": "53da5982597709ba0fdf94ea37a84d822310fd84",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/.gitignore",
+      "bytes": 10,
+      "sha256": "983b1cb766ef271e9da59ded7ec0e097a2d65342f90865b1bcd2114fa34c5394"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/AUDIT.md",
+      "bytes": 11803,
+      "sha256": "0f871482f56dbd5177042ebdf7dcf5034dd032cfb45c8b50f37307f0fc7b9458"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/additional_attacks.jsonl",
+      "bytes": 43284,
+      "sha256": "e89fd672e6fdfd1cf6792a7c7ac21640d56380797e9347f7b4ba41c377e5d1c0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/additional_attacks.log",
+      "bytes": 62860,
+      "sha256": "8ad3c8721b53446999221d6b1998b657a41185ef91d16ad63987b2c746c341c9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/additional_attacks.manifest.json",
+      "bytes": 957,
+      "sha256": "e43962348dccc448dca2591df2892c3b272f7f7090cd6a446f88db971698197e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/additional_attacks_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/bkw_with_maxima.jsonl",
+      "bytes": 14322,
+      "sha256": "351be8bb2b9c6fc9dc61a3c4da4bb1945ce1209af5b0c822ea625348dbeb673c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/bkw_with_maxima.log",
+      "bytes": 15924,
+      "sha256": "94613d6108f1ec704e838edd47d32551399a6266fc00da4c50c18728da95d84d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/bkw_with_maxima.manifest.json",
+      "bytes": 941,
+      "sha256": "8df17675469fa8f65b51fe2cfbb725cfca295955aa67ea515ec089d6b9963b3d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/bkw_with_maxima_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/check_control.py",
+      "bytes": 1660,
+      "sha256": "f09d464461130bd963f4495c9c20d57554bb32a966d40b3b2c558044f6348966"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/control.log",
+      "bytes": 349,
+      "sha256": "2ab1c82c84b048ec6eaa8c9bf60e287d38e1b267f6bfae7a1ba7b5487b98e9c3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/control_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/control_with_CBD.log",
+      "bytes": 634,
+      "sha256": "3f4313a2c17764f2d2a73d940a2a6471b7af435568c0eb8bc5c929694d8d348f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/control_with_CBD_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/environment-explicit.txt",
+      "bytes": 17889,
+      "sha256": "158295d7aaf33f63c880d3f6d2e0794318c1b69a582e98f0303fb5085df1b6f6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/environment-final-explicit.txt",
+      "bytes": 13073,
+      "sha256": "89c258dba9aedbd0e5b39baaa70ecaaee21d192e47d7a20d6674de01a5aba654"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/environment-final-provenance.json",
+      "bytes": 56049,
+      "sha256": "5be43b1cf138f35786e569b05724801863b7f60a7074f5c76cfc1c7ab5e4353c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/environment-provenance.json",
+      "bytes": 55388,
+      "sha256": "d46043e41f861786386c4bb13bdf6f742267c4c9f6f6a18f0bbe71aa33d9a2cf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/first_pass.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/first_pass_activated.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/first_pass_activated_stderr.log",
+      "bytes": 721,
+      "sha256": "c0edd271f5663bfeea2c7e6599552699450ae93404517c6a8ad3a6e1012402a6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/first_pass_ready.jsonl",
+      "bytes": 20855,
+      "sha256": "7f7b18290bafe253108f938f30be1376fb4899c6e5591e0e0d127b3336704805"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/first_pass_ready.log",
+      "bytes": 30631,
+      "sha256": "2293872cc081669c52b0cf2bad172696331f84f2821701f9708fa05807a764fb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/first_pass_ready.manifest.json",
+      "bytes": 876,
+      "sha256": "860c167f90276a131e28d32cf5c9df7dafb11c7cce59ea1c58072d270ea256db"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/first_pass_ready_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/first_pass_stderr.log",
+      "bytes": 3567,
+      "sha256": "f72c496b3e6ee5af77951b7fc795564bc99a5891f778a013c96d6c26658db1ea"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/import_activated.log",
+      "bytes": 35,
+      "sha256": "b7b8d746d32b32b9686cb8290e5cc6ee95fd5eb5aa99abce40a66e0ec0970d91"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/import_activated_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/import_probe.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/import_probe_stderr.log",
+      "bytes": 3366,
+      "sha256": "5ef3a5712003de993a799789753c3dbd63bbb106741e4600fc8ea325822b539c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/install.log",
+      "bytes": 26039,
+      "sha256": "10815b58f2c76abcd134cc75d2e05c2bb91dfa66413b59b8dd9ca317f7a998dd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/install_maxima.log",
+      "bytes": 1615,
+      "sha256": "8c7eec12feed81cf50abba0e588e7ec687001361490fb9f7b0db835163900908"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/install_maxima_stderr.log",
+      "bytes": 210,
+      "sha256": "7afe6dad40c7316ab63f879026f7f0b5006425057b24d7cb1a0ccfa596015156"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/install_scipy.log",
+      "bytes": 1662,
+      "sha256": "0d01a0668859a708a8c8a2807e48bf7de71917ff548d11df5a58e76294e4358a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/install_scipy_stderr.log",
+      "bytes": 210,
+      "sha256": "7afe6dad40c7316ab63f879026f7f0b5006425057b24d7cb1a0ccfa596015156"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/install_stderr.log",
+      "bytes": 210,
+      "sha256": "7afe6dad40c7316ab63f879026f7f0b5006425057b24d7cb1a0ccfa596015156"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_ADPS16_classical_usvp.jsonl",
+      "bytes": 756,
+      "sha256": "04763bf42104bd4fde21f616ca96216a5d7407cc6dbcdb5f6fffed2a8c09cdb3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_ADPS16_classical_usvp.log",
+      "bytes": 1160,
+      "sha256": "f6db253ce171158455c431d22ad67a40f3db7364ffe6f32c1b137dac32db44a4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_ADPS16_classical_usvp.manifest.json",
+      "bytes": 1052,
+      "sha256": "792b7ff42b8ca5475457aad51e079ce0ac8ec2bc44a11c36c90d07c800991604"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_ADPS16_classical_usvp_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_ADPS16_quantum_core_svp_usvp.jsonl",
+      "bytes": 760,
+      "sha256": "a083e395f544104c4313a0d98abbd08c4d899e32cef0b57033ae65b54d91ecd0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_ADPS16_quantum_core_svp_usvp.log",
+      "bytes": 1171,
+      "sha256": "27aa2843d63444183eaf4a3856bfc8dbae1014077a10c5496f8c47b9f14e34c3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_ADPS16_quantum_core_svp_usvp.manifest.json",
+      "bytes": 1066,
+      "sha256": "54d64b78cd9fafadb38a6c420abe551fa97f82f50f6fdb0a91580f55c5f7eca2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_ADPS16_quantum_core_svp_usvp_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_classical_bdd.jsonl",
+      "bytes": 835,
+      "sha256": "a935e4f31dd0e7384e58cab32a17c67b51acc182ec4b43a261a2c1b66766a139"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_classical_bdd.log",
+      "bytes": 1238,
+      "sha256": "3148014fd552bdee5009a173e626787ad18b8422a88be8d2cc9a947943467943"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_classical_bdd.manifest.json",
+      "bytes": 1050,
+      "sha256": "6068206d457d77968b21a56059b3da5d73e7ab521390f4bc6a3512e076538858"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_classical_bdd_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_quantum_depth_width_bdd.jsonl",
+      "bytes": 845,
+      "sha256": "070e63dafb2e5c1291e89365996a6484ea88d45f16af470c5e3ad1e6b57a54e1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_quantum_depth_width_bdd.log",
+      "bytes": 1258,
+      "sha256": "f1d79f50645b00a00c0f2998f0bb485a1933b621c42f1827fb18a002fd8622d5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_quantum_depth_width_bdd.manifest.json",
+      "bytes": 1070,
+      "sha256": "b9eeca84ebcf5b7b1c165f07415a75d0c048a73834b73a42e304409b68e11103"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_quantum_depth_width_bdd_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_quantum_depth_width_dual_hybrid.jsonl",
+      "bytes": 979,
+      "sha256": "8e24fb709cdeffc51228a2d1288fbd180a8b7ef3ee60d95f9d17178fd171f3af"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_quantum_depth_width_dual_hybrid.log",
+      "bytes": 1400,
+      "sha256": "d06c5447a1077a74e0f171c85aed9b97fb8b919aa90b63e39cfdfa3c6bc4fe64"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_quantum_depth_width_dual_hybrid.manifest.json",
+      "bytes": 1086,
+      "sha256": "e583098b177544b71bc2b824390d43ddd1852e9532fd442fe521f5807fdaf511"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_4096_MATZOV_quantum_depth_width_dual_hybrid_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_ADPS16_classical_usvp.jsonl",
+      "bytes": 769,
+      "sha256": "ee65962fd855e98dfc2b577c93e55ce9510ba0856f3bcf3bdf57b7d3f7ed17b3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_ADPS16_classical_usvp.log",
+      "bytes": 1186,
+      "sha256": "2dfd0698037aa7f1e1b18b976208c438fc19a08de7785f57826fcc530715eea3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_ADPS16_classical_usvp.manifest.json",
+      "bytes": 1060,
+      "sha256": "7f12713a3bb17a69d0d37e24f02dad4b74be625fbb9a10af0455714e2cd11f45"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_ADPS16_classical_usvp_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_ADPS16_quantum_core_svp_usvp.jsonl",
+      "bytes": 775,
+      "sha256": "07261d149756c055cefd2467b706298aa0cef0ad4a54affb346eaefd138e0a9d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_ADPS16_quantum_core_svp_usvp.log",
+      "bytes": 1199,
+      "sha256": "d5cad84590e0c246d8d3edd7e7ce651704ae53184b30146fcac3646be5ead6fd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_ADPS16_quantum_core_svp_usvp.manifest.json",
+      "bytes": 1074,
+      "sha256": "6f8eb2fbb02a0a2ec32d530a3bb3d24bdd24f161fd81b6a328ca476e2179d075"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_ADPS16_quantum_core_svp_usvp_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_classical_bdd.jsonl",
+      "bytes": 846,
+      "sha256": "c009b0c784c33ec886e079f4b72b5029289428365eb14fdf1447a21463bc54b2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_classical_bdd.log",
+      "bytes": 1262,
+      "sha256": "2f69a482fa1309bc71979fa1bb27e488e164a115177b98b0bddb5631eb9c3d0f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_classical_bdd.manifest.json",
+      "bytes": 1058,
+      "sha256": "04877958fc94a00913637cf695bf254de2fb2c2f9d86819ffe8bb960528742cc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_classical_bdd_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_quantum_depth_width_bdd.jsonl",
+      "bytes": 857,
+      "sha256": "6285d92464a942d88f0da2f6f36f744e74a926f211a38202a84e91346b05453d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_quantum_depth_width_bdd.log",
+      "bytes": 1283,
+      "sha256": "a2305555d24dc8bc991ddcf7521b5ca62cc9867542236b93dc4bf050cf1b4e04"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_quantum_depth_width_bdd.manifest.json",
+      "bytes": 1078,
+      "sha256": "3df2d0bf5f5ee35f1310ad1da095d76842d256008d029929a13cc5e5f3831c28"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_quantum_depth_width_bdd_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_quantum_depth_width_dual_hybrid.jsonl",
+      "bytes": 991,
+      "sha256": "dca876724bf5119f86f87733dd009fff771f1eefde1743f6840773bae46e16e7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_quantum_depth_width_dual_hybrid.log",
+      "bytes": 1425,
+      "sha256": "a52fc6bfd93bfffb9f1e3908b2705f75f49e33d2933b7843a55ee618860c443a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_quantum_depth_width_dual_hybrid.manifest.json",
+      "bytes": 1094,
+      "sha256": "2c25d302c2581ad09182fb770f8ae1578d9b886d6fea4bc606e28eca3d3f8205"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_109_infinity_MATZOV_quantum_depth_width_dual_hybrid_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_ADPS16_classical_usvp.jsonl",
+      "bytes": 742,
+      "sha256": "c2011e7a3fbafcb7d980c112d1e2e7a3aafc3f92cbccfda197e99619c284b39f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_ADPS16_classical_usvp.log",
+      "bytes": 1128,
+      "sha256": "01f3bdd2149c72f9d25d2554a1ab1941af5b816acaeea437026060719b87b181"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_ADPS16_classical_usvp.manifest.json",
+      "bytes": 1050,
+      "sha256": "9987b653eb42c26cb53fc858f02b4e05bc953f3aec92434dc2341e70d18f7d3f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_ADPS16_classical_usvp_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_ADPS16_quantum_core_svp_usvp.jsonl",
+      "bytes": 749,
+      "sha256": "06e47222fca1042f00c56208155a86634d64da4f488e0d5e97cad1dbdf5aec42"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_ADPS16_quantum_core_svp_usvp.log",
+      "bytes": 1142,
+      "sha256": "b439ba578682eb39454a409b7b9326dc532a09188249b845983715769a40f506"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_ADPS16_quantum_core_svp_usvp.manifest.json",
+      "bytes": 1064,
+      "sha256": "0e5d0246a19cbbf3a4528763387ff893955557d29d205b68865631742221cdef"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_ADPS16_quantum_core_svp_usvp_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_classical_bdd.jsonl",
+      "bytes": 814,
+      "sha256": "eed02f468d882a635a33a7484dcc60bd3c8e18d4ccf9f0c57f08a274b7767e82"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_classical_bdd.log",
+      "bytes": 1199,
+      "sha256": "0d54b792740d8d61effa1bdf4b5d0b96d3dea811ea3596f13d953b3d4841e698"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_classical_bdd.manifest.json",
+      "bytes": 1048,
+      "sha256": "8f725a87f76d329ce9f83aca435ab0a1319ff00241239c5a22f0e364f5c08b46"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_classical_bdd_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_quantum_depth_width_bdd.jsonl",
+      "bytes": 826,
+      "sha256": "12a92622126677efb3ff24daf2dd93b9db83dd91ca5671a8826e7ee61e7fd919"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_quantum_depth_width_bdd.log",
+      "bytes": 1221,
+      "sha256": "98e7dda734f4914b65ffe32c390ad7807523980389fff836d7443663a89625c5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_quantum_depth_width_bdd.manifest.json",
+      "bytes": 1068,
+      "sha256": "49e0741cb4474352ba2a84bbc8262b3ee0f94f80cbb7dceb0cb86796dd865af6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_quantum_depth_width_bdd_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_quantum_depth_width_dual_hybrid.jsonl",
+      "bytes": 990,
+      "sha256": "70d8f161e605b032af099434a4424d2103329fd8c948d7c5110cd8d7c336ef35"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_quantum_depth_width_dual_hybrid.log",
+      "bytes": 1393,
+      "sha256": "7b46e2c5ceba8f6bfa1a65c60efba2a47faf679a1d39b3e83414da744c8606dd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_quantum_depth_width_dual_hybrid.manifest.json",
+      "bytes": 1084,
+      "sha256": "f5a1c293ec8e09ce767cf00ffa4ab7cfd5d475d2e49aea854f3b17e0f30cfe6b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_4096_MATZOV_quantum_depth_width_dual_hybrid_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_ADPS16_classical_usvp.jsonl",
+      "bytes": 755,
+      "sha256": "89b38c728782b643f359bf4ce81fea37a6e4674cb17feaacf330803eee7b0e23"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_ADPS16_classical_usvp.log",
+      "bytes": 1154,
+      "sha256": "5247031203318bb007a2d2989ab3e2dc4e4307e301b62576190e0c978deafc01"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_ADPS16_classical_usvp.manifest.json",
+      "bytes": 1058,
+      "sha256": "6f0259b18a5f7c0b84208687d5411c2b8d7e1b27f5032827016fdb1c7d50f8d1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_ADPS16_classical_usvp_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_ADPS16_quantum_core_svp_usvp.jsonl",
+      "bytes": 762,
+      "sha256": "6ecf64f4b954aef809c6eac5fea8b28f8c97ec44a8668d96e45507b9b43183b5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_ADPS16_quantum_core_svp_usvp.log",
+      "bytes": 1168,
+      "sha256": "2ffb7a8d52856f499385a9f1c6b95f70a291ef67c0c0829cf7853a1b13185234"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_ADPS16_quantum_core_svp_usvp.manifest.json",
+      "bytes": 1072,
+      "sha256": "4b082095f3b6ed57169dfa40fc84d1c9e4b54560f4255f3be95f405ec226a517"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_ADPS16_quantum_core_svp_usvp_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_classical_bdd.jsonl",
+      "bytes": 829,
+      "sha256": "f793be0111a219194cb536859231c33b0c4e42d86b87a4df0ebf844f13fe4cd8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_classical_bdd.log",
+      "bytes": 1227,
+      "sha256": "590c37333bd8ccde46d002d6c259f264d2a2a2e6505344f4a83d49cf85503ee4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_classical_bdd.manifest.json",
+      "bytes": 1056,
+      "sha256": "f3292c111ef1f01fbb95f349c84e83d3cb946fa08b34fad7bf9dc15ba0a0ef63"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_classical_bdd_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_quantum_depth_width_bdd.jsonl",
+      "bytes": 838,
+      "sha256": "a86594f538a1ba40d543505f7b25d7c7793929f40aa4b782d2c2751edd1cd991"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_quantum_depth_width_bdd.log",
+      "bytes": 1246,
+      "sha256": "988223f36fd14ccdd410b470d4cafee39aaadd40c06b429e21b0416fee649cfe"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_quantum_depth_width_bdd.manifest.json",
+      "bytes": 1076,
+      "sha256": "762681d99f7dd2ed8c6355f33064f669f8419788efa158345048957e0aca94de"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_quantum_depth_width_bdd_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_quantum_depth_width_dual_hybrid.jsonl",
+      "bytes": 2927,
+      "sha256": "9a0de71b07cde3c526a2379ce98891e76c3e9d8f860dcedb2718bd1949cd5be4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_quantum_depth_width_dual_hybrid.log",
+      "bytes": 3343,
+      "sha256": "8b3d24d0974e5698959b59ffbcb30d1a17492b9211ea1f7019bb7f427b99dab8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_quantum_depth_width_dual_hybrid.manifest.json",
+      "bytes": 1092,
+      "sha256": "e5c8fae6e813dbb135440307fa261839cdb0eac8ccf903ce44950bd7dc68e916"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_83_infinity_MATZOV_quantum_depth_width_dual_hybrid_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_checks.log",
+      "bytes": 10274,
+      "sha256": "58d1b50a7dda728c69f0c4149c1d027d1cbb71f5e14ec5737611961202dffc01"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_checks_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/isolated_invocations.json",
+      "bytes": 12457,
+      "sha256": "0cd8513abe99ae70a77d979edfbf557e3d191f5f6fcbb9df46b07d7091fa2b61"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/nonlattice_attacks.jsonl",
+      "bytes": 23867,
+      "sha256": "a3efa02a43bfc54710baa4d796c5f0edbf46b8ac0bed8a2690ea63b1146394ce"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/nonlattice_attacks.log",
+      "bytes": 27091,
+      "sha256": "4a4f4a449c81452c58ac7cc7e558d60d081d4e4e121d38401ff516de2955b142"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/nonlattice_attacks.manifest.json",
+      "bytes": 960,
+      "sha256": "5307a193a0f09224f94f1869394f1310c7607242731aa90935cf5b469ade3b6b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/nonlattice_attacks_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/quantum_depth_width.jsonl",
+      "bytes": 22104,
+      "sha256": "b10a6b0f8ec1a0f343d5307acf465e3104391944fc926ee7e5624c875f5b28d5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/quantum_depth_width.log",
+      "bytes": 28712,
+      "sha256": "e299a2148c5d798f5818ebda6f3342e7fc636ec6f8a7cd15c435f75abdab9c32"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/quantum_depth_width.manifest.json",
+      "bytes": 998,
+      "sha256": "250e2ca304f464efbce7d7710e15f8c6e850bf0fbe9a27e538a0a710c2f06758"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/quantum_depth_width_stderr.log",
+      "bytes": 181,
+      "sha256": "97f792c46cea41e95503f36b444cc6a76a34f4289249aac125f0e1079d5c01d8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/quantum_dw_isolated_probe.jsonl",
+      "bytes": 990,
+      "sha256": "59f1fdeaf5fe0d8b318c37f5f9ba07fce63a702339780abb1435b439f85ac736"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/quantum_dw_isolated_probe.log",
+      "bytes": 1393,
+      "sha256": "3e603ba9af1e121e687c37167f013eb35b6d325460c890c6b5dd4f4c171e1ac8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/quantum_dw_isolated_probe.manifest.json",
+      "bytes": 1023,
+      "sha256": "9e016203a55771086455f9464af7cef31bab0a8873a4673174a8e35b4027f546"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/quantum_dw_isolated_probe_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/run_estimates.py",
+      "bytes": 6624,
+      "sha256": "161569fca49e50ac84aaa3eda4c1e1489450883de7d4d26b0c53bd76359f64cf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/solve.json",
+      "bytes": 836418,
+      "sha256": "9632a4216f4ea909846579d34025af531867c54e0f1e64c2b9a8e564e5f17f77"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/solve_maxima.json",
+      "bytes": 2570,
+      "sha256": "c37dc4bd419f1e17f8b5d61d723b8c81438d0aa2f93761e3edaf1a14515368d5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/solve_maxima_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/solve_sagelib.json",
+      "bytes": 320992,
+      "sha256": "3cdc7943ef8682aabf637ad3734819039a5bf17f0b6a013b23f45cf2c7156661"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/solve_sagelib_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/solve_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/summarize.py",
+      "bytes": 5046,
+      "sha256": "f36f8433678aa668d426ac5a55f6b9d04bcb506a0d9e9629dd70e5698a788e9d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/summary.csv",
+      "bytes": 1658,
+      "sha256": "6e5ca10cfafa23635061a57ab7ce21762c7046331eaaa1c9f5435729a3c178b8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/summary.json",
+      "bytes": 20119,
+      "sha256": "f3afdca8e73c438c6f74f674001991f1b77f176bc0b5ce48da497385cc935068"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/summary.log",
+      "bytes": 9309,
+      "sha256": "57d7a984e75a5bc74b8387aedbfa412ce1d5bc9913358d75ecaff376e6222eb9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/verify_isolated.py",
+      "bytes": 1633,
+      "sha256": "70c60c87a396caee3ee71c072be60ea5f7f56cd58279ae609424e72d31c07f73"
+    }
+  ]
+}

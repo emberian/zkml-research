@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "decision_history_rows_recomputed": 416,
+  "distinct_history_seeds": 56,
+  "disjoint_teacher_selection_test_names_templates_cues": true,
+  "same_event_multiset_for_skill0_reversal": true,
+  "balanced_rules_checked": true,
+  "max_padded_tokens": 25,
+  "max_length_scalar_linear_products": 2654208000,
+  "max_length_scalar_attention_products": 21600000,
+  "text_window_largest_universal_score_bound": 1191223424,
+  "hashes": {
+    "TEXT_TRANSFER_PROTOCOL.md": "f6c5df26117c13d0f41a804c37cd80c953274c34073913a352a922da03b5b23d",
+    "TEXT_WINDOW_PROTOCOL.md": "418c8917c543b8c5175f913a34b2d15036588db8231b0f833ea4151a24a08e46",
+    "text_transfer_data.py": "a55d84a475c672252213e94d4842d97620cb14bca0b016da7f1445cb88f1e609",
+    "extract_text_features.py": "5ce524fb7ca74a9007a9a45fbd5687d4cbe76ada872a2b4476cb3f5331aaa3c5",
+    "text_transfer_controls.py": "0ea5ac684322bbb6bc7e0182bba212a3fe210c837a7a98db5cfdecba58e5c780",
+    "text_window_controls.py": "66f1516431a0d0c6ee6a2c65420a603f5ce6faa83e15240765dc991bb7794275",
+    "text_transfer_results.json": "5b6fa56902ef64f8dd50925ecc107869da4bc41d115b1e9d77824b955c421603",
+    "text_window_results.json": "ec350cca7f17323d526532ce7706cbc71485b1281afd9d420c46e5c28484a96c",
+    "text_window_costs.csv": "40b78c79fd794e401f42d713c71d0fe6ab096a13ecac59b8ce676b1bc1df39d9",
+    "text_transfer_audit.py": "3536cbac96cc1fbd937a54b600e484be825f721e9adcfe0d9c44d943a9e0f198"
+  }
+}

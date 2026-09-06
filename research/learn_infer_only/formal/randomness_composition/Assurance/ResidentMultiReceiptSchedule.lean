@@ -1,0 +1,416 @@
+/-
+Statement-first: collected outputs use one existing SrProver query log; every
+final receipt prefix occurs in that final log. Runtime publication ordering is
+a separate refinement. Under this explicit query-completeness premise, any one
+of M false accepted outputs
+has probability at most (t+14) * the Stage-0 price. The selector reads the
+already queried log and selects a bad output without a new oracle call. All t
+prover AND verifier queries are charged; no per-output oracle is resampled.
+
+ATLAS: the planned-query witness below inhabits query completeness on the actual
+Stage-0 reduction; output substitution only changes SrProver.out, never its log.
+An empty query log fails completeness for the positive 14-round verifier.
+This is the query-bounded mathematical SrProver model, with no computation-time
+claim or private-witness extractor. Unqueried verifier challenges are excluded
+by the named completeness premise, not counted as free service history.
+-/
+import Assurance.ResidentAdaptiveContext
+import Mathlib.Logic.Equiv.Fin.Basic
+
+namespace Minidregg.Assurance.ResidentMultiReceiptSchedule
+
+open Minidregg.Selvage
+open Minidregg.Compiler
+open Minidregg.Compiler.CommittedTerminalFiatShamir
+open Minidregg.Compiler.CommittedTerminalRealizer
+open Minidregg.Compiler.EvmAddAir
+open Minidregg.Assurance.ResidentReleaseContext
+open Minidregg.Assurance.ResidentAdaptiveContext
+open scoped BigOperators
+
+set_option autoImplicit false
+set_option maxRecDepth 10000
+
+noncomputable abbrev R := adaptiveReduction
+abbrev Moves := List R.Chal → SrMove R 0
+abbrev Outputs (M : Nat) := Fin M → List R.Chal → SrOutput R 0
+
+def withOutput (P : SrProver R 0) (f : List R.Chal → SrOutput R 0) : SrProver R 0 :=
+  { P with out := f }
+
+theorem output_change_preserves_log {t : Nat} (P : SrProver R 0)
+    (f : List R.Chal → SrOutput R 0) (coins : Fin t → R.Chal) :
+    srTrace (withOutput P f) coins = srTrace P coins := rfl
+
+/-- The application has already performed every verification query in the
+same transcript, including the final-prefix checks of every published output. -/
+def AllOutputQueriesLogged {M : Nat} (t : Nat) (P : SrProver R 0)
+    (outputs : Outputs M) : Prop :=
+  ∀ (coins : Fin t → R.Chal) (j : Fin M) (i : Fin R.k),
+    ∃ e ∈ srTrace P coins, e.1 = (outputs j ((srTrace P coins).map Prod.snd)).query i
+
+noncomputable def loggedOracle {t : Nat} (P : SrProver R 0)
+    (coins : Fin t → R.Chal) (q : SrMove R 0) : R.Chal := by
+  classical
+  exact ((srTrace P coins).find? (fun e => decide (e.1 = q))).map Prod.snd |>.getD ext6Zero
+
+theorem final_challenge_is_logged {M t : Nat} (P : SrProver R 0) (outputs : Outputs M)
+    (closed : AllOutputQueriesLogged t P outputs) (coins : Fin t → R.Chal)
+    (fallback : Fin R.k → R.Chal) (j : Fin M) (i : Fin R.k) :
+    srFinalChal (withOutput P (outputs j)) coins fallback i =
+      loggedOracle P coins ((outputs j ((srTrace P coins).map Prod.snd)).query i) := by
+  classical
+  obtain ⟨e, he, hq⟩ := closed coins j i
+  have hn : (srTrace P coins).find?
+      (fun e => decide (e.1 = (outputs j ((srTrace P coins).map Prod.snd)).query i)) ≠ none := by
+    intro hnone
+    have hx := (List.find?_eq_none.mp hnone) e he
+    exact hx (by simpa using hq)
+  obtain ⟨entry, hentry⟩ := Option.ne_none_iff_exists'.mp hn
+  unfold srFinalChal
+  rw [output_change_preserves_log]
+  dsimp only [withOutput]
+  rw [hentry]
+  simp only [loggedOracle, hentry, Option.map_some, Option.getD_some]
+
+def BadLoggedOutput {t : Nat} (P : SrProver R 0) (f : List R.Chal → SrOutput R 0)
+    (coins : Fin t → R.Chal) : Prop :=
+  let o := f ((srTrace P coins).map Prod.snd)
+  ¬ R.R o.stmt.idx o.stmt.x o.stmt.y () ∧
+    fiatShamir R 0 (loggedOracle P coins) o ≠ none
+
+/-- Extra final coins are unused in this query-complete experiment. Keeping
+them in the sample type permits direct comparison to the existing ROM game. -/
+theorem one_logged_output_bound {M t : Nat} (P : SrProver R 0) (outputs : Outputs M)
+    (closed : AllOutputQueriesLogged t P outputs) (j : Fin M) :
+    uniformProb ((Fin t → R.Chal) × (Fin R.k → R.Chal))
+      (fun coins => BadLoggedOutput P (outputs j) coins.1) ≤
+      ((t : ℝ) + 14) * gatePrice evmAddDescriptor 13 := by
+  have hδ : (1 / (8262 : ℝ)) ∈ Set.Ioo (0 : ℝ) (1 / (4131 : ℝ)) := by norm_num
+  have hb := adaptive_sound_reading 0 t hδ (withOutput P (outputs j))
+  refine le_trans (le_of_eq (uniformProb_congr fun coins => ?_)) hb
+  let o := outputs j ((srTrace P coins.1).map Prod.snd)
+  have hc : srFinalChal (withOutput P (outputs j)) coins.1 coins.2 =
+      fun i => loggedOracle P coins.1 (o.query i) :=
+    funext (fun i => final_challenge_is_logged P outputs closed coins.1 coins.2 j i)
+  have hv : fiatShamir R 0
+      (fsOracle o (srFinalChal (withOutput P (outputs j)) coins.1 coins.2)) o =
+      fiatShamir R 0 (loggedOracle P coins.1) o := by
+    rw [fiatShamir_fsOracle]
+    unfold fiatShamir
+    rw [hc]
+  change (¬ R.R o.stmt.idx o.stmt.x o.stmt.y () ∧
+    fiatShamir R 0 (loggedOracle P coins.1) o ≠ none) ↔
+    (¬ R.R o.stmt.idx o.stmt.x o.stmt.y () ∧
+      fiatShamir R 0
+        (fsOracle o (srFinalChal (withOutput P (outputs j)) coins.1 coins.2)) o ≠ none)
+  rw [hv]
+
+theorem bad_wrapper_is_bad_logged {t : Nat} (P : SrProver R 0)
+    (expected : List R.Chal → Context)
+    (receipt : List R.Chal → FsReceipt Root 4131 13) (coins : Fin t → R.Chal)
+    (h : wrapperCheck (expected ((srTrace P coins).map Prod.snd)) (loggedOracle P coins)
+      (receipt ((srTrace P coins).map Prod.snd)) = true)
+    (bad : ¬ Forced (expected ((srTrace P coins).map Prod.snd))) :
+    BadLoggedOutput P (fun responses => output (receipt responses)) coins := by
+  refine ⟨wrong_arithmetic_is_global_bad _ _ _ h bad, ?_⟩
+  rw [wrapper_accepts_global_fiatshamir _ _ _ h]
+  exact Option.some_ne_none _
+
+/-! A stronger transfer selects a bad candidate after the WHOLE verifier log
+has been charged. Rebuilding that log from response history adds no queries.
+The inherited SrProver model counts queries, not computation time. Selection
+uses the public full word, not extraction of an encrypted/private witness. -/
+
+def rebuildLog (P : SrProver R 0) (responses : List R.Chal) : List (SrMove R 0 × R.Chal) :=
+  responses.foldl (fun log ρ => log ++ [(P.move (log.map Prod.snd), ρ)]) []
+
+theorem rebuild_append (P : SrProver R 0) (responses : List R.Chal) (ρ : R.Chal) :
+    rebuildLog P (responses ++ [ρ]) =
+      rebuildLog P responses ++ [(P.move ((rebuildLog P responses).map Prod.snd), ρ)] := by
+  simp only [rebuildLog, List.foldl_append, List.foldl_cons, List.foldl_nil]
+
+theorem rebuild_actual_log {t : Nat} (P : SrProver R 0) (coins : Fin t → R.Chal) :
+    rebuildLog P ((srTrace P coins).map Prod.snd) = srTrace P coins := by
+  have hi : ∀ (cs : List R.Chal) (log : List (SrMove R 0 × R.Chal)),
+      rebuildLog P (log.map Prod.snd) = log →
+      rebuildLog P ((runFrom P log cs).map Prod.snd) = runFrom P log cs := by
+    intro cs
+    induction cs with
+    | nil => intro log h; exact h
+    | cons ρ cs ih =>
+      intro log h
+      rw [runFrom_cons]
+      apply ih
+      simp only [stepOnce, List.map_append, List.map_cons, List.map_nil, rebuild_append, h]
+  rw [srTrace_eq_runFrom]
+  exact hi (List.ofFn coins) [] rfl
+
+noncomputable def responseOracle (P : SrProver R 0)
+    (responses : List R.Chal) (q : SrMove R 0) : R.Chal := by
+  classical
+  exact ((rebuildLog P responses).find? (fun e => decide (e.1 = q))).map Prod.snd |>.getD ext6Zero
+
+theorem response_oracle_matches {t : Nat} (P : SrProver R 0) (coins : Fin t → R.Chal) :
+    responseOracle P ((srTrace P coins).map Prod.snd) = loggedOracle P coins := by
+  funext q
+  simp only [responseOracle, rebuild_actual_log, loggedOracle]
+
+def ResponseBad (P : SrProver R 0) (f : List R.Chal → SrOutput R 0)
+    (responses : List R.Chal) : Prop :=
+  let o := f responses
+  ¬ R.R o.stmt.idx o.stmt.x o.stmt.y () ∧
+    fiatShamir R 0 (responseOracle P responses) o ≠ none
+
+theorem response_bad_matches {t : Nat} (P : SrProver R 0)
+    (f : List R.Chal → SrOutput R 0) (coins : Fin t → R.Chal) :
+    ResponseBad P f ((srTrace P coins).map Prod.snd) ↔ BadLoggedOutput P f coins := by
+  simp only [ResponseBad, BadLoggedOutput, response_oracle_matches]
+
+noncomputable def selectedIndex {M : Nat} (hM : 0 < M) (P : SrProver R 0)
+    (outputs : Outputs M) (responses : List R.Chal) : Fin M := by
+  classical
+  exact if h : ∃ j, ResponseBad P (outputs j) responses then Classical.choose h else ⟨0, hM⟩
+
+theorem selected_index_bad {M : Nat} (hM : 0 < M) (P : SrProver R 0)
+    (outputs : Outputs M) (responses : List R.Chal)
+    (h : ∃ j, ResponseBad P (outputs j) responses) :
+    ResponseBad P (outputs (selectedIndex hM P outputs responses)) responses := by
+  classical
+  simpa only [selectedIndex, dif_pos h] using Classical.choose_spec h
+
+noncomputable def selectedOutput {M : Nat} (hM : 0 < M) (P : SrProver R 0)
+    (outputs : Outputs M) (responses : List R.Chal) : SrOutput R 0 :=
+  outputs (selectedIndex hM P outputs responses) responses
+
+theorem selection_queries_still_logged {M t : Nat} (hM : 0 < M) (P : SrProver R 0)
+    (outputs : Outputs M) (closed : AllOutputQueriesLogged t P outputs) :
+    AllOutputQueriesLogged t P (fun _j : Fin 1 => selectedOutput hM P outputs) := by
+  intro coins _j i
+  exact closed coins (selectedIndex hM P outputs ((srTrace P coins).map Prod.snd)) i
+
+theorem any_bad_selects_bad {M t : Nat} (hM : 0 < M) (P : SrProver R 0)
+    (outputs : Outputs M) (coins : Fin t → R.Chal)
+    (bad : ∃ j, BadLoggedOutput P (outputs j) coins) :
+    BadLoggedOutput P (selectedOutput hM P outputs) coins := by
+  obtain ⟨j, hj⟩ := bad
+  have hresponse : ∃ j, ResponseBad P (outputs j) ((srTrace P coins).map Prod.snd) :=
+    ⟨j, (response_bad_matches P (outputs j) coins).mpr hj⟩
+  have hs := selected_index_bad hM P outputs ((srTrace P coins).map Prod.snd) hresponse
+  change ResponseBad P (selectedOutput hM P outputs) ((srTrace P coins).map Prod.snd) at hs
+  exact (response_bad_matches P (selectedOutput hM P outputs) coins).mp hs
+
+theorem all_logged_outputs_bound {M t : Nat} (hM : 0 < M) (P : SrProver R 0)
+    (outputs : Outputs M) (closed : AllOutputQueriesLogged t P outputs) :
+    uniformProb ((Fin t → R.Chal) × (Fin R.k → R.Chal))
+      (fun coins => ∃ j : Fin M, BadLoggedOutput P (outputs j) coins.1) ≤
+      ((t : ℝ) + 14) * gatePrice evmAddDescriptor 13 := by
+  refine le_trans (uniformProb_mono (fun coins h => any_bad_selects_bad hM P outputs coins.1 h))
+    (one_logged_output_bound P (fun _j : Fin 1 => selectedOutput hM P outputs)
+      (selection_queries_still_logged hM P outputs closed) 0)
+
+theorem all_logged_bad_arithmetic_bound {M t : Nat} (hM : 0 < M) (P : SrProver R 0)
+    (expected : Fin M → List R.Chal → Context)
+    (receipt : Fin M → List R.Chal → FsReceipt Root 4131 13)
+    (closed : AllOutputQueriesLogged t P (fun j responses => output (receipt j responses))) :
+    uniformProb ((Fin t → R.Chal) × (Fin R.k → R.Chal))
+      (fun coins => ∃ j : Fin M,
+        wrapperCheck (expected j ((srTrace P coins.1).map Prod.snd)) (loggedOracle P coins.1)
+          (receipt j ((srTrace P coins.1).map Prod.snd)) = true ∧
+        ¬ Forced (expected j ((srTrace P coins.1).map Prod.snd))) ≤
+      ((t : ℝ) + 14) * gatePrice evmAddDescriptor 13 := by
+  refine le_trans (uniformProb_mono ?_)
+    (all_logged_outputs_bound hM P (fun j responses => output (receipt j responses)) closed)
+  rintro coins ⟨j, hj, hbad⟩
+  exact ⟨j, bad_wrapper_is_bad_logged P (expected j) (receipt j) coins.1 hj hbad⟩
+
+/-! The query-completeness premise is realized by an explicit verification
+schedule, not postulated as a property of an otherwise unspecified engine. -/
+
+theorem trace_entry_query {t : Nat} (P : SrProver R 0) (coins : Fin t → R.Chal)
+    (j : Fin t) :
+    ((srTrace P coins)[j.val]'(by rw [srTrace_length]; exact j.isLt)).1 =
+      P.move (((srTrace P coins).take j.val).map Prod.snd) := by
+  have hidx : (List.finRange t).take (j.val + 1) = (List.finRange t).take j.val ++ [j] := by
+    rw [List.take_succ_eq_append_getElem (by simp)]
+    simp
+  have hf := srTrace_take P coins (Nat.succ_le_of_lt j.isLt)
+  rw [hidx, List.foldl_append, List.foldl_cons, List.foldl_nil,
+    ← srTrace_take P coins (Nat.le_of_lt j.isLt)] at hf
+  rw [List.take_succ_eq_append_getElem (by rw [srTrace_length]; exact j.isLt), stepFn_eq] at hf
+  have he := List.singleton_inj.mp (List.append_cancel_left hf)
+  exact congrArg Prod.fst he
+
+def plannedVerifier {t : Nat} (ht : 0 < t) (queries : Fin t → SrMove R 0)
+    (out : SrOutput R 0) : SrProver R 0 where
+  move := fun responses => queries ⟨responses.length % t, Nat.mod_lt _ ht⟩
+  out := fun _ => out
+
+theorem planned_entry_query {t : Nat} (ht : 0 < t) (queries : Fin t → SrMove R 0)
+    (out : SrOutput R 0) (coins : Fin t → R.Chal) (j : Fin t) :
+    ((srTrace (plannedVerifier ht queries out) coins)[j.val]'
+      (by rw [srTrace_length]; exact j.isLt)).1 = queries j := by
+  rw [trace_entry_query]
+  simp only [plannedVerifier, List.length_map, List.length_take, srTrace_length,
+    Nat.min_eq_left (Nat.le_of_lt j.isLt), Nat.mod_eq_of_lt j.isLt]
+
+noncomputable def verificationQueries {M : Nat} (outputs : Fin M → SrOutput R 0) :
+    Fin (M * R.k) → SrMove R 0 := fun z =>
+  let ji : Fin M × Fin R.k := finProdFinEquiv.symm z
+  (outputs ji.1).query ji.2
+
+noncomputable def completeVerifier {M : Nat} (hM : 0 < M) (outputs : Fin M → SrOutput R 0) :
+    SrProver R 0 :=
+  plannedVerifier (Nat.mul_pos hM R.k_pos) (verificationQueries outputs) (outputs ⟨0, hM⟩)
+
+theorem planned_verifier_logs_all {M : Nat} (hM : 0 < M)
+    (outputs : Fin M → SrOutput R 0) :
+    AllOutputQueriesLogged (M * R.k) (completeVerifier hM outputs) (fun j _ => outputs j) := by
+  intro coins j i
+  let z : Fin (M * R.k) := finProdFinEquiv (j, i)
+  let entry := (srTrace (completeVerifier hM outputs) coins)[z.val]'
+    (by rw [srTrace_length]; exact z.isLt)
+  refine ⟨entry, List.getElem_mem _, ?_⟩
+  have he := planned_entry_query (Nat.mul_pos hM R.k_pos)
+    (verificationQueries outputs) (outputs ⟨0, hM⟩) coins z
+  simpa only [verificationQueries, z, Equiv.symm_apply_apply] using he
+
+theorem empty_log_not_complete (P : SrProver R 0) (out : SrOutput R 0) :
+    ¬ AllOutputQueriesLogged 0 P (fun _j : Fin 1 => fun _ => out) := by
+  intro h
+  obtain ⟨e, he, _⟩ := h (fun z => Fin.elim0 z) 0 ⟨0, R.k_pos⟩
+  simp [srTrace] at he
+
+theorem zero_sampled_trace_values {t : Nat} (P : SrProver R 0) :
+    ∀ e ∈ srTrace P (fun _ : Fin t => ext6Zero), e.2 = ext6Zero := by
+  classical
+  have hi : ∀ (cs : List R.Chal) (log : List (SrMove R 0 × R.Chal)),
+      (∀ ρ ∈ cs, ρ = ext6Zero) → (∀ e ∈ log, e.2 = ext6Zero) →
+      ∀ e ∈ runFrom P log cs, e.2 = ext6Zero := by
+    intro cs
+    induction cs with
+    | nil => intro log _ hlog; exact hlog
+    | cons ρ cs ih =>
+      intro log hcs hlog
+      rw [runFrom_cons]
+      apply ih
+      · intro x hx
+        exact hcs x (List.mem_cons_of_mem _ hx)
+      · intro e he
+        simp only [stepOnce, List.mem_append, List.mem_singleton] at he
+        rcases he with he | rfl
+        · exact hlog e he
+        · dsimp only
+          cases hf : log.find? (fun e => decide (e.1 = P.move (log.map Prod.snd))) with
+          | none => exact hcs ρ List.mem_cons_self
+          | some entry => exact hlog entry (List.mem_of_find?_eq_some hf)
+  rw [srTrace_eq_runFrom]
+  apply hi
+  · intro x hx
+    obtain ⟨i, hi⟩ := List.mem_ofFn.mp hx
+    exact hi.symm
+  · intro e he
+    simp at he
+
+theorem zero_sampled_oracle {t : Nat} (P : SrProver R 0) :
+    loggedOracle P (fun _ : Fin t => ext6Zero) = fun _ => ext6Zero := by
+  classical
+  funext q
+  unfold loggedOracle
+  cases hf : (srTrace P (fun _ : Fin t => ext6Zero)).find? (fun e => decide (e.1 = q)) with
+  | none => rfl
+  | some entry =>
+    simp only [Option.map_some, Option.getD_some]
+    exact zero_sampled_trace_values P entry (List.mem_of_find?_eq_some hf)
+
+theorem two_real_receipts_premise_inhabited :
+    ∃ outputs : Fin 2 → SrOutput R 0,
+      (outputs 0).stmt.x.1.parent ≠ (outputs 1).stmt.x.1.parent ∧
+      (∀ j, fiatShamir R 0 (fun _ => ext6Zero) (outputs j) = some ((), fun _ => ())) ∧
+      AllOutputQueriesLogged (2 * R.k) (completeVerifier (by decide) outputs)
+        (fun j _ => outputs j) ∧
+      (∀ j, fiatShamir R 0
+        (loggedOracle (completeVerifier (by decide) outputs) (fun _ : Fin (2 * R.k) => ext6Zero))
+        (outputs j) = some ((), fun _ => ())) := by
+  obtain ⟨rc0, h0⟩ := honest_context_receipt 1 2 (by norm_num) (by norm_num) (fun _ => ext6Zero)
+  obtain ⟨rc1, h1⟩ := honest_context_receipt 2 3 (by norm_num) (by norm_num) (fun _ => ext6Zero)
+  have hc0 := context_binding (honestContext 1 2) (fun _ => ext6Zero) rc0 h0
+  have hc1 := context_binding (honestContext 2 3) (fun _ => ext6Zero) rc1 h1
+  let outputs : Fin 2 → SrOutput R 0 := fun j => if j = 0 then output rc0 else output rc1
+  have hacc : ∀ j, fiatShamir R 0 (fun _ => ext6Zero) (outputs j) = some ((), fun _ => ()) := by
+    intro j
+    by_cases hj : j = 0
+    · simp only [outputs, hj, ite_true]
+      exact wrapper_accepts_global_fiatshamir (honestContext 1 2) (fun _ => ext6Zero) rc0 h0
+    · simp only [outputs, hj, ite_false]
+      exact wrapper_accepts_global_fiatshamir (honestContext 2 3) (fun _ => ext6Zero) rc1 h1
+  refine ⟨outputs, ?_, hacc, planned_verifier_logs_all (by decide) outputs, ?_⟩
+  · change (if (0 : Fin 2) = 0 then output rc0 else output rc1).stmt.x.1.parent ≠
+      (if (1 : Fin 2) = 0 then output rc0 else output rc1).stmt.x.1.parent
+    simp only [ite_true, show (1 : Fin 2) ≠ 0 by decide, ite_false, output]
+    rw [hc0, hc1]
+    decide
+  · rw [zero_sampled_oracle]
+    exact hacc
+
+end Minidregg.Assurance.ResidentMultiReceiptSchedule
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.output_change_preserves_log' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.output_change_preserves_log
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.final_challenge_is_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.final_challenge_is_logged
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.one_logged_output_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.one_logged_output_bound
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.bad_wrapper_is_bad_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.bad_wrapper_is_bad_logged
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.rebuild_append' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.rebuild_append
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.rebuild_actual_log' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.rebuild_actual_log
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.response_oracle_matches' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.response_oracle_matches
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.response_bad_matches' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.response_bad_matches
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.selected_index_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.selected_index_bad
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.selection_queries_still_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.selection_queries_still_logged
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.any_bad_selects_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.any_bad_selects_bad
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.all_logged_outputs_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.all_logged_outputs_bound
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.all_logged_bad_arithmetic_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.all_logged_bad_arithmetic_bound
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.trace_entry_query' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.trace_entry_query
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.planned_entry_query' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.planned_entry_query
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.planned_verifier_logs_all' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.planned_verifier_logs_all
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.empty_log_not_complete' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.empty_log_not_complete
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.two_real_receipts_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.two_real_receipts_premise_inhabited
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.zero_sampled_trace_values' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.zero_sampled_trace_values
+
+/-- info: 'Minidregg.Assurance.ResidentMultiReceiptSchedule.zero_sampled_oracle' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Assurance.ResidentMultiReceiptSchedule.zero_sampled_oracle

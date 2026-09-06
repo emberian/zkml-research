@@ -1,0 +1,22 @@
+{
+  "states_checked": 256,
+  "legal_edges_checked": 92928,
+  "equivalence_classes": 62,
+  "coupled_exact_artifact_equalities": 194,
+  "serialized_artifact_bytes": 25951,
+  "falsifiers": {
+    "merged_state_token_equality_distinguishes_private_pair": true,
+    "private_command_recovered_from_selected_token": [
+      0,
+      1,
+      2
+    ],
+    "private_command_recovered_from_node_index_alone": [
+      0,
+      1,
+      2
+    ],
+    "root_key_holder_forges_42": true,
+    "restore_selects_different_outward_answer": true
+  }
+}

@@ -1,0 +1,43 @@
+Using Cached Shard Index for conda-forge/noarch                                                     ✔ Done
+Using Cached Shard Index for conda-forge/osx-arm64                                                  ✔ Done
+Fetching and Parsing Packages' Shards                                                           ⧖ Starting
+Fetching and Parsing Packages' Shards                                                     ✔ Done (0.1 sec)
+
+Pinned packages:
+
+  - python=3.12
+
+Resolving Environment                                                                           ⧖ Starting
+Resolving Environment                                                                     ✔ Done (0.1 sec)
+
+Transaction
+
+  Prefix: /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/sage
+
+  Updating specs:
+
+   - maxima
+
+
+  Package   Version  Build       Channel         Size
+───────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────
+
+  + maxima   5.49.0  h4c1ea7d_0  conda-forge     32MB
+
+  Summary:
+
+  Install: 1 packages
+
+  Total download: 32MB
+
+───────────────────────────────────────────────────────
+
+
+
+Transaction starting
+Linking maxima-5.49.0-h4c1ea7d_0
+
+Transaction finished
+

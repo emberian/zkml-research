@@ -1,0 +1,59 @@
+{
+  "breadstuffs_commit": "3e51def6a5a95424e54fbe7432539b06088de5c3",
+  "apple": {
+    "repository": "https://api.github.com/repos/apple/swift-homomorphic-encryption",
+    "commit": "44fa0ee913ebd76a8c045712a514e17f00b2f93b"
+  },
+  "sources": [
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/parameters.rs",
+      "sha256": "7f6b1d364cbc8547b3f381551ec14f1ec0272c07b3c8a4ee03c4df1fc9aece30",
+      "bytes": 24392,
+      "access": "implementation default parameters and prime selection"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mod.rs",
+      "sha256": "99d4777b6ed571ddd497572b196aa748b7875374d81395b35e868080065e73ad",
+      "bytes": 23425,
+      "access": "implementation ciphertext addition"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ciphertext.rs",
+      "sha256": "236b1b3f42d96c1ec1f0a66e4abe215b29ba9c8e6096fd9bf963b81e5fba8d85",
+      "bytes": 12262,
+      "access": "ciphertext codec"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/secret_key.rs",
+      "sha256": "337e85e2dc4a7540039b800517ec32389dc3152516c9fdad18cc58dc55acec70",
+      "bytes": 10968,
+      "access": "implementation secret sampling and noise meter"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-util-0.1.1/src/lib.rs",
+      "sha256": "688eea292be729ee75b682678b6a9a4ddb9c18ff8e4b757eeabe1aff434cf173",
+      "bytes": 77093,
+      "access": "implementation centered binomial sampler"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/463.pdf",
+      "sha256": "44419917b3a117dc995696799b97f3298ff5420c74ab7c7df37ace48e4af594a",
+      "bytes": 566900,
+      "access": "local paper section4.3 and table5.2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/apple_EncryptionParameters.swift",
+      "sha256": "5e2a2fe046290738e10816cd9c8b9f1ae1d9456392a5dc58252f0090fdbbe6d9",
+      "bytes": 22180,
+      "access": "implementation security level table and parameter examples"
+    },
+    {
+      "url": "https://arxiv.org/html/2505.07329v1",
+      "access": "web tool full construction \u00a74.1/\u00a75 and experimental methodology; local download failed RemoteDisconnected"
+    },
+    {
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/view/39670/43631",
+      "access": "web tool official paper \u00a7\u00a74\u20135 Tables1/4"
+    }
+  ]
+}

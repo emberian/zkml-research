@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Assurance/BFVEnvelopeSeamWitness.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/BFVEnvelopeSeamWitness.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review",
+  "started_utc": "2026-09-06T08:41:05.496193+00:00",
+  "elapsed_seconds": 6.023188624996692,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/BFVEnvelopeSeamWitness.lean": "e33fa4fb093c427919e44241e6b67f1859d3a345af968aae74aca0c185ecae9d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/BFVScaleLiftRefinement.olean": "36a4a6d53ac2ea66f344aabc40a0d4e52bf39ce61739f1a7650dc892f280854f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/build/Compiler/FheRnsScaleDecomposition.olean": "2a652d43869b47f94553e9a54f7a31331a23c2fd634e9e36f16aec690a6215c8"
+  },
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

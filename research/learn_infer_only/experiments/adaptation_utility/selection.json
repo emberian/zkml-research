@@ -1,0 +1,1195 @@
+{
+  "choices": {
+    "fading_mean": {
+      "rho": 0.95
+    },
+    "frozen_lm_ab": {},
+    "knn_smol": {
+      "capacity": 64,
+      "k": 1
+    },
+    "knn_xy": {
+      "capacity": 64,
+      "k": 1
+    },
+    "no_memory": {},
+    "quadratic_lms_6": {
+      "eta": 1.0,
+      "rho": 1.0
+    },
+    "smol_lms_576": {
+      "eta": 1.0,
+      "rho": 0.995
+    },
+    "smol_lms_64": {
+      "eta": 1.0,
+      "rho": 0.995
+    }
+  },
+  "development": {
+    "fading_mean": {
+      "history_sd": 0.10077474960100062,
+      "max": 0.7628865979381443,
+      "mean": 0.5863402061855669,
+      "min": 0.422680412371134,
+      "n_histories": 8,
+      "normal_95_half_width": 0.06983333863893898
+    },
+    "frozen_lm_ab": {
+      "history_sd": 0.1332537251780451,
+      "max": 0.6185567010309279,
+      "mean": 0.47164948453608246,
+      "min": 0.23711340206185566,
+      "n_histories": 8,
+      "normal_95_half_width": 0.09234012043792898
+    },
+    "knn_smol": {
+      "history_sd": 0.05453417537750879,
+      "max": 0.9587628865979382,
+      "mean": 0.8595360824742267,
+      "min": 0.7835051546391752,
+      "n_histories": 8,
+      "normal_95_half_width": 0.03779025551153585
+    },
+    "knn_xy": {
+      "history_sd": 0.03504179886989538,
+      "max": 0.979381443298969,
+      "mean": 0.9291237113402062,
+      "min": 0.8556701030927835,
+      "n_histories": 8,
+      "normal_95_half_width": 0.024282727733760556
+    },
+    "no_memory": {
+      "history_sd": 0.1332537251780451,
+      "max": 0.6185567010309279,
+      "mean": 0.47164948453608246,
+      "min": 0.23711340206185566,
+      "n_histories": 8,
+      "normal_95_half_width": 0.09234012043792898
+    },
+    "quadratic_lms_6": {
+      "history_sd": 0.061300899523615365,
+      "max": 0.9690721649484536,
+      "mean": 0.8685567010309279,
+      "min": 0.7731958762886598,
+      "n_histories": 8,
+      "normal_95_half_width": 0.04247935611106395
+    },
+    "smol_lms_576": {
+      "history_sd": 0.08094120130138345,
+      "max": 0.8762886597938144,
+      "mean": 0.7912371134020618,
+      "min": 0.6494845360824743,
+      "n_histories": 8,
+      "normal_95_half_width": 0.05608939087124176
+    },
+    "smol_lms_64": {
+      "history_sd": 0.07768690365185821,
+      "max": 0.8865979381443299,
+      "mean": 0.7809278350515464,
+      "min": 0.6494845360824743,
+      "n_histories": 8,
+      "normal_95_half_width": 0.053834277653982604
+    }
+  },
+  "tuning": {
+    "fading_mean": [
+      {
+        "config": {
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.13506447452989195,
+          "max": 0.7525773195876289,
+          "mean": 0.5592783505154639,
+          "min": 0.36082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09359490572073463
+        }
+      },
+      {
+        "config": {
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.10055793823335238,
+          "max": 0.7525773195876289,
+          "mean": 0.6030927835051546,
+          "min": 0.5051546391752577,
+          "n_histories": 8,
+          "normal_95_half_width": 0.06968309602640263
+        }
+      },
+      {
+        "config": {
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.10055793823335238,
+          "max": 0.7525773195876289,
+          "mean": 0.6030927835051546,
+          "min": 0.5051546391752577,
+          "n_histories": 8,
+          "normal_95_half_width": 0.06968309602640263
+        }
+      },
+      {
+        "config": {
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.10055793823335238,
+          "max": 0.7525773195876289,
+          "mean": 0.6030927835051546,
+          "min": 0.5051546391752577,
+          "n_histories": 8,
+          "normal_95_half_width": 0.06968309602640263
+        }
+      }
+    ],
+    "frozen_lm_ab": [
+      {
+        "config": {},
+        "post_change_accuracy": {
+          "history_sd": 0.13506447452989195,
+          "max": 0.7525773195876289,
+          "mean": 0.5592783505154639,
+          "min": 0.36082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09359490572073463
+        }
+      }
+    ],
+    "knn_smol": [
+      {
+        "config": {
+          "capacity": 32,
+          "k": 1
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1471363481954625,
+          "max": 0.9690721649484536,
+          "mean": 0.797680412371134,
+          "min": 0.5463917525773195,
+          "n_histories": 8,
+          "normal_95_half_width": 0.10196028737667584
+        }
+      },
+      {
+        "config": {
+          "capacity": 64,
+          "k": 1
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.0952463190250664,
+          "max": 0.9690721649484536,
+          "mean": 0.8530927835051547,
+          "min": 0.711340206185567,
+          "n_histories": 8,
+          "normal_95_half_width": 0.06600233170436809
+        }
+      },
+      {
+        "config": {
+          "capacity": 192,
+          "k": 1
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.08037648834980744,
+          "max": 0.24742268041237114,
+          "mean": 0.14690721649484537,
+          "min": 0.041237113402061855,
+          "n_histories": 8,
+          "normal_95_half_width": 0.05569806476090816
+        }
+      },
+      {
+        "config": {
+          "capacity": 32,
+          "k": 3
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.159139236044066,
+          "max": 0.9690721649484536,
+          "mean": 0.7731958762886598,
+          "min": 0.5773195876288659,
+          "n_histories": 8,
+          "normal_95_half_width": 0.11027786430041359
+        }
+      },
+      {
+        "config": {
+          "capacity": 64,
+          "k": 3
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.11013330216093556,
+          "max": 0.9690721649484536,
+          "mean": 0.8466494845360825,
+          "min": 0.711340206185567,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07631848469661529
+        }
+      },
+      {
+        "config": {
+          "capacity": 192,
+          "k": 3
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.13051958197999722,
+          "max": 0.4020618556701031,
+          "mean": 0.1958762886597938,
+          "min": 0.041237113402061855,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09044545586577574
+        }
+      },
+      {
+        "config": {
+          "capacity": 32,
+          "k": 7
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1709544899991848,
+          "max": 0.9587628865979382,
+          "mean": 0.7512886597938144,
+          "min": 0.5670103092783505,
+          "n_histories": 8,
+          "normal_95_half_width": 0.11846541756965716
+        }
+      },
+      {
+        "config": {
+          "capacity": 64,
+          "k": 7
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.11373628616381636,
+          "max": 0.9690721649484536,
+          "mean": 0.8402061855670102,
+          "min": 0.6701030927835051,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07881522522914007
+        }
+      },
+      {
+        "config": {
+          "capacity": 192,
+          "k": 7
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14303543222176915,
+          "max": 0.41237113402061853,
+          "mean": 0.22938144329896906,
+          "min": 0.041237113402061855,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09911849759248252
+        }
+      },
+      {
+        "config": {
+          "capacity": 32,
+          "k": 15
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.11245251137244515,
+          "max": 0.8247422680412371,
+          "mean": 0.6301546391752577,
+          "min": 0.5051546391752577,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07792561468585506
+        }
+      },
+      {
+        "config": {
+          "capacity": 64,
+          "k": 15
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14933845891929806,
+          "max": 0.9690721649484536,
+          "mean": 0.8054123711340206,
+          "min": 0.5979381443298969,
+          "n_histories": 8,
+          "normal_95_half_width": 0.10348627225390862
+        }
+      },
+      {
+        "config": {
+          "capacity": 192,
+          "k": 15
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14926854539438403,
+          "max": 0.4742268041237113,
+          "mean": 0.2706185567010309,
+          "min": 0.05154639175257732,
+          "n_histories": 8,
+          "normal_95_half_width": 0.10343782465289651
+        }
+      }
+    ],
+    "knn_xy": [
+      {
+        "config": {
+          "capacity": 32,
+          "k": 1
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.058561653216303834,
+          "max": 0.9690721649484536,
+          "mean": 0.8595360824742267,
+          "min": 0.7938144329896907,
+          "n_histories": 8,
+          "normal_95_half_width": 0.04058115526460856
+        }
+      },
+      {
+        "config": {
+          "capacity": 64,
+          "k": 1
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.03644880315394575,
+          "max": 0.9690721649484536,
+          "mean": 0.9201030927835052,
+          "min": 0.865979381443299,
+          "n_histories": 8,
+          "normal_95_half_width": 0.025257731958762884
+        }
+      },
+      {
+        "config": {
+          "capacity": 192,
+          "k": 1
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.03257167975640128,
+          "max": 0.10309278350515463,
+          "mean": 0.06572164948453608,
+          "min": 0.030927835051546393,
+          "n_histories": 8,
+          "normal_95_half_width": 0.02257102251778018
+        }
+      },
+      {
+        "config": {
+          "capacity": 32,
+          "k": 3
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.07309260694063356,
+          "max": 0.9587628865979382,
+          "mean": 0.8414948453608248,
+          "min": 0.7216494845360825,
+          "n_histories": 8,
+          "normal_95_half_width": 0.0506505924618784
+        }
+      },
+      {
+        "config": {
+          "capacity": 64,
+          "k": 3
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.037348909139663516,
+          "max": 0.9587628865979382,
+          "mean": 0.9110824742268042,
+          "min": 0.8556701030927835,
+          "n_histories": 8,
+          "normal_95_half_width": 0.025881473584124768
+        }
+      },
+      {
+        "config": {
+          "capacity": 192,
+          "k": 3
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.030897137440953237,
+          "max": 0.13402061855670103,
+          "mean": 0.09149484536082474,
+          "min": 0.05154639175257732,
+          "n_histories": 8,
+          "normal_95_half_width": 0.021410623895675787
+        }
+      },
+      {
+        "config": {
+          "capacity": 32,
+          "k": 7
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.09556460335082737,
+          "max": 0.9587628865979382,
+          "mean": 0.8170103092783505,
+          "min": 0.6391752577319587,
+          "n_histories": 8,
+          "normal_95_half_width": 0.06622289148935723
+        }
+      },
+      {
+        "config": {
+          "capacity": 64,
+          "k": 7
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.04641220298720743,
+          "max": 0.9484536082474226,
+          "mean": 0.9033505154639174,
+          "min": 0.8144329896907216,
+          "n_histories": 8,
+          "normal_95_half_width": 0.032162015792819694
+        }
+      },
+      {
+        "config": {
+          "capacity": 192,
+          "k": 7
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.056129128130072176,
+          "max": 0.18556701030927836,
+          "mean": 0.1211340206185567,
+          "min": 0.030927835051546393,
+          "n_histories": 8,
+          "normal_95_half_width": 0.03889550138040538
+        }
+      },
+      {
+        "config": {
+          "capacity": 32,
+          "k": 15
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14005205727440276,
+          "max": 0.9587628865979382,
+          "mean": 0.7461340206185567,
+          "min": 0.5876288659793815,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09705112422949978
+        }
+      },
+      {
+        "config": {
+          "capacity": 64,
+          "k": 15
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.07584504623485651,
+          "max": 0.979381443298969,
+          "mean": 0.8775773195876289,
+          "min": 0.7319587628865979,
+          "n_histories": 8,
+          "normal_95_half_width": 0.052557935581832776
+        }
+      },
+      {
+        "config": {
+          "capacity": 192,
+          "k": 15
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.08554660224717295,
+          "max": 0.30927835051546393,
+          "mean": 0.19072164948453607,
+          "min": 0.09278350515463918,
+          "n_histories": 8,
+          "normal_95_half_width": 0.059280770905315444
+        }
+      }
+    ],
+    "no_memory": [
+      {
+        "config": {},
+        "post_change_accuracy": {
+          "history_sd": 0.13506447452989195,
+          "max": 0.7525773195876289,
+          "mean": 0.5592783505154639,
+          "min": 0.36082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09359490572073463
+        }
+      }
+    ],
+    "quadratic_lms_6": [
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.07917508514340543,
+          "max": 0.7525773195876289,
+          "mean": 0.6301546391752577,
+          "min": 0.5360824742268041,
+          "n_histories": 8,
+          "normal_95_half_width": 0.054865534813805766
+        }
+      },
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.09211632156299983,
+          "max": 0.8969072164948454,
+          "mean": 0.7306701030927836,
+          "min": 0.6082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.06383335412245461
+        }
+      },
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.11320105361163853,
+          "max": 0.9381443298969072,
+          "mean": 0.7474226804123711,
+          "min": 0.6082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07844432799332648
+        }
+      },
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.12517543069735362,
+          "max": 0.8969072164948454,
+          "mean": 0.6958762886597938,
+          "min": 0.5257731958762887,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08674214796636456
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.10426433001724805,
+          "max": 0.9175257731958762,
+          "mean": 0.7113402061855669,
+          "min": 0.6082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07225149449524683
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.11238498245996148,
+          "max": 0.9381443298969072,
+          "mean": 0.7487113402061856,
+          "min": 0.6082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07787881953695056
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.12490222099214136,
+          "max": 0.9484536082474226,
+          "mean": 0.7654639175257733,
+          "min": 0.6082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08655282329982782
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.12631495623549327,
+          "max": 0.8865979381443299,
+          "mean": 0.7023195876288659,
+          "min": 0.5463917525773195,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08753179887701128
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.11352751127843347,
+          "max": 0.9381443298969072,
+          "mean": 0.8054123711340206,
+          "min": 0.6082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.0786705516146883
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.10930300941668183,
+          "max": 0.9381443298969072,
+          "mean": 0.8157216494845361,
+          "min": 0.6082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07574312117938012
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.11299128977723186,
+          "max": 0.9278350515463918,
+          "mean": 0.8131443298969072,
+          "min": 0.6082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07829896907216496
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.12222195000090076,
+          "max": 0.8865979381443299,
+          "mean": 0.7487113402061856,
+          "min": 0.5979381443298969,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08469549026237047
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.05928635407325579,
+          "max": 0.979381443298969,
+          "mean": 0.904639175257732,
+          "min": 0.7731958762886598,
+          "n_histories": 8,
+          "normal_95_half_width": 0.041083347337085345
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.06658412109253203,
+          "max": 0.9690721649484536,
+          "mean": 0.8865979381443299,
+          "min": 0.7422680412371134,
+          "n_histories": 8,
+          "normal_95_half_width": 0.046140441872998116
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.10397268097038462,
+          "max": 0.9690721649484536,
+          "mean": 0.8505154639175257,
+          "min": 0.6185567010309279,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07204939201685837
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1000185974841869,
+          "max": 0.9587628865979382,
+          "mean": 0.8131443298969072,
+          "min": 0.6082474226804123,
+          "n_histories": 8,
+          "normal_95_half_width": 0.06930935195531958
+        }
+      }
+    ],
+    "smol_lms_576": [
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.12932172723726676,
+          "max": 0.8041237113402062,
+          "mean": 0.652061855670103,
+          "min": 0.422680412371134,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08961538487854379
+        }
+      },
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.13687900058799277,
+          "max": 0.9072164948453608,
+          "mean": 0.7474226804123711,
+          "min": 0.5670103092783505,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09485230812745096
+        }
+      },
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.159894737477077,
+          "max": 0.9278350515463918,
+          "mean": 0.7358247422680413,
+          "min": 0.5257731958762887,
+          "n_histories": 8,
+          "normal_95_half_width": 0.11080140008316225
+        }
+      },
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1411319927432251,
+          "max": 0.9175257731958762,
+          "mean": 0.7384020618556701,
+          "min": 0.5567010309278351,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09779948132888298
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1421035953823734,
+          "max": 0.9072164948453608,
+          "mean": 0.7268041237113403,
+          "min": 0.5360824742268041,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09847276760734829
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1546882592695244,
+          "max": 0.9278350515463918,
+          "mean": 0.7422680412371134,
+          "min": 0.5257731958762887,
+          "n_histories": 8,
+          "normal_95_half_width": 0.10719349475743505
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.15384553338448312,
+          "max": 0.9278350515463918,
+          "mean": 0.7435567010309279,
+          "min": 0.5154639175257731,
+          "n_histories": 8,
+          "normal_95_half_width": 0.1066095155132008
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.13659446462363298,
+          "max": 0.9175257731958762,
+          "mean": 0.7332474226804124,
+          "min": 0.5567010309278351,
+          "n_histories": 8,
+          "normal_95_half_width": 0.0946551347637585
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.15080544825790798,
+          "max": 0.9175257731958762,
+          "mean": 0.7487113402061856,
+          "min": 0.5051546391752577,
+          "n_histories": 8,
+          "normal_95_half_width": 0.10450284400098286
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14691044618313778,
+          "max": 0.9278350515463918,
+          "mean": 0.7603092783505154,
+          "min": 0.5154639175257731,
+          "n_histories": 8,
+          "normal_95_half_width": 0.1018037452687733
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.13847119135370686,
+          "max": 0.9278350515463918,
+          "mean": 0.7641752577319587,
+          "min": 0.5360824742268041,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09595564003708242
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.13039592531369448,
+          "max": 0.9278350515463918,
+          "mean": 0.7461340206185567,
+          "min": 0.5670103092783505,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09035976616783979
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.15310356844533451,
+          "max": 0.9587628865979382,
+          "mean": 0.779639175257732,
+          "min": 0.5670103092783505,
+          "n_histories": 8,
+          "normal_95_half_width": 0.10609536004212365
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14409300989204676,
+          "max": 0.9587628865979382,
+          "mean": 0.7809278350515464,
+          "min": 0.5979381443298969,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09985136152792161
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14166887339890272,
+          "max": 0.9484536082474226,
+          "mean": 0.7693298969072165,
+          "min": 0.5876288659793815,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09817152064215415
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.13313973565745826,
+          "max": 0.8969072164948454,
+          "mean": 0.75,
+          "min": 0.5567010309278351,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09226112973019765
+        }
+      }
+    ],
+    "smol_lms_64": [
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.10684447466762707,
+          "max": 0.8041237113402062,
+          "mean": 0.625,
+          "min": 0.44329896907216493,
+          "n_histories": 8,
+          "normal_95_half_width": 0.07403944351839753
+        }
+      },
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1204781227464952,
+          "max": 0.8969072164948454,
+          "mean": 0.7268041237113403,
+          "min": 0.5670103092783505,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08348707962709856
+        }
+      },
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.13850545198499387,
+          "max": 0.9278350515463918,
+          "mean": 0.7293814432989691,
+          "min": 0.5360824742268041,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09597938144329898
+        }
+      },
+      {
+        "config": {
+          "eta": 0.03,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.12786800610911273,
+          "max": 0.8969072164948454,
+          "mean": 0.722938144329897,
+          "min": 0.5257731958762887,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08860800753222535
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14204348246302162,
+          "max": 0.9175257731958762,
+          "mean": 0.6920103092783505,
+          "min": 0.4639175257731959,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09843111147949592
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14239711546776368,
+          "max": 0.9278350515463918,
+          "mean": 0.7345360824742269,
+          "min": 0.5360824742268041,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09867616664928631
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14451387390594006,
+          "max": 0.9175257731958762,
+          "mean": 0.7345360824742267,
+          "min": 0.5154639175257731,
+          "n_histories": 8,
+          "normal_95_half_width": 0.10014300541013932
+        }
+      },
+      {
+        "config": {
+          "eta": 0.1,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.12932172723726673,
+          "max": 0.9072164948453608,
+          "mean": 0.7293814432989691,
+          "min": 0.5257731958762887,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08961538487854377
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1382860372698242,
+          "max": 0.8865979381443299,
+          "mean": 0.7345360824742269,
+          "min": 0.4742268041237113,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09582733480297015
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.13430354185776727,
+          "max": 0.9072164948453608,
+          "mean": 0.7577319587628866,
+          "min": 0.5257731958762887,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09306760628129859
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1410243713433449,
+          "max": 0.8969072164948454,
+          "mean": 0.759020618556701,
+          "min": 0.5051546391752577,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09772490350366002
+        }
+      },
+      {
+        "config": {
+          "eta": 0.3,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.11772939237715688,
+          "max": 0.8969072164948454,
+          "mean": 0.7332474226804124,
+          "min": 0.5463917525773195,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08158230666096226
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 1.0
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1525073975037491,
+          "max": 0.9484536082474226,
+          "mean": 0.759020618556701,
+          "min": 0.5463917525773195,
+          "n_histories": 8,
+          "normal_95_half_width": 0.10568223465689305
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 0.995
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.14763211587573158,
+          "max": 0.9484536082474226,
+          "mean": 0.7706185567010309,
+          "min": 0.5773195876288659,
+          "n_histories": 8,
+          "normal_95_half_width": 0.10230383685151498
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 0.98
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.1363162961960038,
+          "max": 0.9175257731958762,
+          "mean": 0.7564432989690721,
+          "min": 0.5773195876288659,
+          "n_histories": 8,
+          "normal_95_half_width": 0.09446237387789969
+        }
+      },
+      {
+        "config": {
+          "eta": 1.0,
+          "rho": 0.95
+        },
+        "post_change_accuracy": {
+          "history_sd": 0.12923364340783686,
+          "max": 0.8865979381443299,
+          "mean": 0.7268041237113402,
+          "min": 0.5257731958762887,
+          "n_histories": 8,
+          "normal_95_half_width": 0.08955434589890308
+        }
+      }
+    ]
+  }
+}

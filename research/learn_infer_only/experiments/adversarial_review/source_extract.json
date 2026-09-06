@@ -1,0 +1,27 @@
+{
+  "source": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1599.pdf",
+  "sha256": "46481fa2d839add77603839f85c6fc7551475e2c926719816903b4a537afe067",
+  "date_utc": "2026-09-06T07:39:04.719808+00:00",
+  "text_command": [
+    "pdftotext",
+    "-layout",
+    "-f",
+    "57",
+    "-l",
+    "60",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1599.pdf",
+    "gks23_pp57-60.txt"
+  ],
+  "render_command": [
+    "pdftoppm",
+    "-f",
+    "60",
+    "-singlefile",
+    "-scale-to",
+    "1300",
+    "-png",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1599.pdf",
+    "gks23_fig8_9"
+  ],
+  "scope": "Printed pp.55-58; construction and Figs8-9 inspected. No reduction reread."
+}

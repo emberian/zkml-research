@@ -1,0 +1,44 @@
+STATUS real_BFV_arithmetic_only no_PQ_bits_claim no_private_release no_latency
+MODULI [68719403009, 68719230977, 137438822401]
+PARAMETERS N=4096 t=1032193 noise_sampler=CDB20_variance10 coefficient_encoding=true
+RANK_ONE_CORRECT seed=7 additions=1 library_noise_bits=13
+RANK_ONE_CORRECT seed=7 additions=16 library_noise_bits=28
+RANK_ONE_CORRECT seed=7 additions=32 library_noise_bits=44
+RANK_ONE_CORRECT seed=7 additions=48 library_noise_bits=60
+RANK_ONE_CORRECT seed=7 additions=64 library_noise_bits=76
+RANK_ONE_FIRST_FAILURE seed=7 additions=81 expected=771091 observed=771092
+ROUNDING_CONTROL seed=7 Enc(1)*inverse8=903169 floor(1/8)=0 Enc(16)*inverse8=2
+FRESH_INPUT_POSITIVE seed=7 input_encryptions=129 additions=128 output=129
+PACKED_FINITE_LEARN_INFER seed=7 dimension=16 steps=64 input_encryptions=65 ct_add=64 readout_ct_pt_mul=1 expected_signed_score=0 observed_residue=0 private_state_ct=1 read_all_test_key_retained=true
+PACKED_SERIALIZED_BYTES seed=7 initial_ct=111646 total_64_input_ct=7145344 state_ct=111646 readout_ct=111646 public_key=55859 ciphertext_components=2 raw_RNS_u64_state_bytes=196608 state_codec_roundtrip=true
+RANK_ONE_CORRECT seed=19 additions=1 library_noise_bits=13
+RANK_ONE_CORRECT seed=19 additions=16 library_noise_bits=28
+RANK_ONE_CORRECT seed=19 additions=32 library_noise_bits=44
+RANK_ONE_CORRECT seed=19 additions=48 library_noise_bits=60
+RANK_ONE_CORRECT seed=19 additions=64 library_noise_bits=76
+RANK_ONE_FIRST_FAILURE seed=19 additions=78 expected=741507 observed=741506
+ROUNDING_CONTROL seed=19 Enc(1)*inverse8=903169 floor(1/8)=0 Enc(16)*inverse8=2
+FRESH_INPUT_POSITIVE seed=19 input_encryptions=129 additions=128 output=129
+PACKED_FINITE_LEARN_INFER seed=19 dimension=16 steps=64 input_encryptions=65 ct_add=64 readout_ct_pt_mul=1 expected_signed_score=0 observed_residue=0 private_state_ct=1 read_all_test_key_retained=true
+PACKED_SERIALIZED_BYTES seed=19 initial_ct=111646 total_64_input_ct=7145344 state_ct=111646 readout_ct=111646 public_key=55859 ciphertext_components=2 raw_RNS_u64_state_bytes=196608 state_codec_roundtrip=true
+RANK_ONE_CORRECT seed=43 additions=1 library_noise_bits=13
+RANK_ONE_CORRECT seed=43 additions=16 library_noise_bits=28
+RANK_ONE_CORRECT seed=43 additions=32 library_noise_bits=44
+RANK_ONE_CORRECT seed=43 additions=48 library_noise_bits=60
+RANK_ONE_CORRECT seed=43 additions=64 library_noise_bits=76
+RANK_ONE_FIRST_FAILURE seed=43 additions=79 expected=450821 observed=450820
+ROUNDING_CONTROL seed=43 Enc(1)*inverse8=903169 floor(1/8)=0 Enc(16)*inverse8=2
+FRESH_INPUT_POSITIVE seed=43 input_encryptions=129 additions=128 output=129
+PACKED_FINITE_LEARN_INFER seed=43 dimension=16 steps=64 input_encryptions=65 ct_add=64 readout_ct_pt_mul=1 expected_signed_score=0 observed_residue=0 private_state_ct=1 read_all_test_key_retained=true
+PACKED_SERIALIZED_BYTES seed=43 initial_ct=111646 total_64_input_ct=7145344 state_ct=111646 readout_ct=111646 public_key=55859 ciphertext_components=2 raw_RNS_u64_state_bytes=196608 state_codec_roundtrip=true
+RANK_ONE_CORRECT seed=101 additions=1 library_noise_bits=13
+RANK_ONE_CORRECT seed=101 additions=16 library_noise_bits=28
+RANK_ONE_CORRECT seed=101 additions=32 library_noise_bits=44
+RANK_ONE_CORRECT seed=101 additions=48 library_noise_bits=60
+RANK_ONE_CORRECT seed=101 additions=64 library_noise_bits=76
+RANK_ONE_FIRST_FAILURE seed=101 additions=79 expected=450821 observed=450820
+ROUNDING_CONTROL seed=101 Enc(1)*inverse8=903169 floor(1/8)=0 Enc(16)*inverse8=2
+FRESH_INPUT_POSITIVE seed=101 input_encryptions=129 additions=128 output=129
+PACKED_FINITE_LEARN_INFER seed=101 dimension=16 steps=64 input_encryptions=65 ct_add=64 readout_ct_pt_mul=1 expected_signed_score=6 observed_residue=6 private_state_ct=1 read_all_test_key_retained=true
+PACKED_SERIALIZED_BYTES seed=101 initial_ct=111646 total_64_input_ct=7145344 state_ct=111646 readout_ct=111646 public_key=55859 ciphertext_components=2 raw_RNS_u64_state_bytes=196608 state_codec_roundtrip=true
+PASS four seeds: genuine BFV bounded addition positive, rank-one no-refresh falsifier, modular-rounding falsifier

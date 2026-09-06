@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/tree_independent_review.py",
+    "--partition-only"
+  ],
+  "review_script_sha256": "e10eeede2ec2494b4640c2d82c7421f16af36bdc8ccbd2523ea01974ebb4f5ff",
+  "started_utc": "2026-09-06T07:44:51.108052+00:00",
+  "classes_by_horizon_0_to_8": [
+    1,
+    2,
+    6,
+    14,
+    30,
+    62,
+    122,
+    208,
+    256
+  ]
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "source": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/1179.pdf",
+    "source_sha256": "4b60ee7dca5ff2e0346205af88f180b74fbba544a06b222f67e5ac61c4edcf86",
+    "command": [
+      "pdftotext",
+      "-layout",
+      "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/1179.pdf",
+      "research/learn_infer_only/experiments/recovery_policy/source_text/2016_1179.txt"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "text_sha256": "5b1d0feb17df360e68c8e4a48a3c4371d93e73b4a6a1bf926757b3ad402b0f92"
+  },
+  {
+    "source": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1284.pdf",
+    "source_sha256": "30e8daf540902da9c2e386cf9326a3bf1b2cba28e06a6f4effc03671f0f64e52",
+    "command": [
+      "pdftotext",
+      "-layout",
+      "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/1284.pdf",
+      "research/learn_infer_only/experiments/recovery_policy/source_text/2022_1284.txt"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "",
+    "text_sha256": "0e86eb5d0e619539cc8fcc32d727098bacd9a3155974d79d9d58b8b0c983e4c2"
+  }
+]

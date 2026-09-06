@@ -1,9 +1,10 @@
-# Candidate decisions after the first continuation tranche
+# Candidate decisions during the autonomous swarm
 
-[DERIVED] Keep Route 3 for integrity/continuity work. No candidate audited here realizes
-the combined tier-A/B no-master-read resident. The added formal witness is a public
-addition process. Its two-step executable loop is useful evidence about release
-authorization and closure of that control model, not encrypted learning.
+[DERIVED] Keep Route 3 for integrity/continuity work and the exact window/EMA as
+small numerical targets. Restricted FE continuations and real encrypted loops now
+exist here; no artifact joins them into the full authenticated-ingress,
+restricted-release, no-master-read, PQ resident. DECISION.md gives the current
+comparison; the route-specific historical derivations below retain their scope.
 
 ## Route 1: pre-constrained encryption
 
@@ -105,11 +106,13 @@ the derived `(genesis, slot)` token. Host `restore(manifest)` never changes that
 authority. Accepted transitions can continue from their next state without resetting
 the authority's release counter.
 
-[DERIVED limit] Finality is not currentness. Historical votes remain valid; the new
-guard checks currentness. The Lean adapter reuses `Snapshot.install` and
-`Intent.nullifiersFreshCheck`, but is not yet a DataIntent/full-preflight integration:
-its public witness does not write materialized cell roots. This is named in both
-formal files and `formal/README.md`; a root-backed production integration is still due.
+[EXECUTED successor] Finality is not currentness. Historical votes remain valid;
+the guard checks the live prefix. The first adapter's empty-rootWrites witness is
+now superseded by actual materialized DataIntent/full preflight and a journal-first
+release path. Exact installed bytes and packet origin are checked. A constant-root
+genuine-receipt falsifier keeps logical Step semantics separate. The checked EMA
+descriptor-to-cell successor now binds canonical logical pre/post values, under its
+descriptor premise and separate fixed-context ROM price. See DURABLE_INTEGRATION.md.
 
 [DERIVED conditional claim] With the specified policy/current-head checks,
 authenticated monotonic vote discipline and atomic authority update, accepted release
@@ -129,3 +132,68 @@ private transition relation and a gate whose exposed implementation cannot relea
 extra predicates. Merely installing an FHE key inside the release program fails
 tier A. Fresh private input issuance, unbiased hidden development coins, witness
 hiding, implementation leakage and a post-quantum composition remain open.
+
+## Restricted continuations and numerical controls
+
+[SOURCE/EXECUTED] PRIVATE_CONSTRUCTION.md records three distinct positives.
+The AES-GCM response tree realizes a bounded behavioral quotient with exponential
+preprocessing; the byte example's quotient becomes singleton at horizon8.
+DDH IPFE supports compact public additive continuation with one retained projection
+key after honest master erasure. ALS modular LWE supports public additions modulo p
+at q=p^k with constant noise; its executed small parameters are insecure equation
+witnesses. Hidden kernel coordinates do not affect the allowed fixed projection.
+
+[DERIVED] These positives do not supply the resident's release policy. The holder
+can project fresh accessible ciphertext inputs and can run copied histories.
+An authentication/currentness wrapper does not remove a projection already callable
+from exposed software. Fresh-input noise, stateful key-issuance consistency and
+private nonlinear behavior must be audited for each extension. The practical RLWE
+source/decoder findings in experiments/private_construction/RLWE_AUDIT.md block
+promoting those author-code artifacts to a checked concrete instantiation here.
+
+[EXECUTED] HE_CLOSURE_COSTS.md records actual TFHE EMA and BFV additive-window
+continuations. Identical-ciphertext expiration cancels old noise; re-encrypted
+expiration does not. These runs retain full secret keys for testing, so they
+establish encrypted computation, not absence of a reader. The window's queue,
+sign-release and issuer/feature origins remain in its bill. ADAPTATION_UTILITY.md
+supplies a useful structured control and a held-out neural-feature failure for
+the same family, rather than assuming cryptographic feasibility implies utility.
+
+## Additional closure lead: updatable encrypted RAM
+
+[SOURCE: construction/game/proof outline read] Arriaga–Iovino–Tang,
+ePrint2016/1179, §3 pp.9–15 and Figure9 p.17, really updates encrypted RAM.
+Each preissued token contains an obfuscated transition circuit with a decryption
+key; it validates encrypted Merkle paths and reencrypts changed nodes using a
+puncturable PRF. Theorem1 requires iO **and** distributional-indistinguishability
+security for its specified sampler class, plus CCA encryption, NIZK and hashing.
+This is a stronger, specifically stated obfuscation assumption, not an LWE-only
+construction or a measured implementation.
+
+[SOURCE: game/syntax read] Tokens carry sequential ids and TokenGen requires the
+master secret. Figure8 chooses both memories and the complete program sequence
+before setup, and requires equal outputs and access patterns. It does not list
+mpk among A1's inputs. Section4 leaves adaptive token acquisition and relaxing
+access-pattern equality to future work.
+
+[DERIVED deployment consequence] Honest setup could preissue a bounded sequence,
+then erase both PKE secrets, token-generation PRF originals and private input
+copies. That gives a genuine protected-state-to-protected-state candidate for
+that sequence under its assumptions. Extending the sequence after erasure,
+introducing unknown observations, and exposing public encryption material need
+additional syntax/security arguments; the displayed game does not establish them.
+The token id lives inside copyable ciphertext, so it supplies local sequencing,
+not an independent no-rollback authority. A token that internally performs a
+bounded computation is distinct from indefinitely issuing new resident commands.
+
+[SOURCE: contrasting syntax read] Cini et al., ePrint2022/1284 and published
+Journal of Cryptology37:8, §3 Definition5 and §5.2, use ciphertext *updates* to
+change an access tag once. Update tokens are generated from the master key;
+they do not implement a general learned-state update. Its lattice construction
+is useful for a separately scoped migration audit, with ROM and token/query
+restrictions. It should not be substituted for the encrypted-RAM continuation
+above merely because the titles share “updatable”.
+
+[OPEN] Neither additional source supplies a proved, efficient PQ resident meeting
+the full handoff. These are two algorithm-level distinctions to carry into the
+candidate/credential review, not a field-wide impossibility claim.

@@ -1,0 +1,177 @@
+Instantiation of the Tools.          Let FE′ be a selective-IND-secure, public-key FE scheme for P/Poly.
+   • We can build PRF, PRF2, Sym from any one-way-function using standard cryptographic tech-
+     niques (e.g. [Gol01, Gol09]). As FE′ implies one-way-functions, then we can build these from
+     FE′ .
+   • FE′ already satisfies the security requirements needed for FE.
+   • FE′ immediately implies a selective-IND-secure, secret-key FE scheme SKFE′ for P/Poly.
+     We can then build our function-private-selective-IND-secure, secret-key FE scheme FPFE
+     for P/Poly by using the function-privacy transformation of [BS18] on SKFE′ .
+
+6.1   Parameters
+On security parameter λ, function size ℓF , state size ℓS , input size ℓX , and output size ℓY , we will
+instantiate our primitives with the following parameters:
+   • One-sFE: We instantiate One-sFE with function size ℓF , state size ℓS , input size ℓX , and
+     output size ℓY . This means that we will use the following algorithms:
+        – One-sFE.Setup(1λ , 1ℓF , 1ℓS , 1ℓX , 1ℓY ), One-sFE.EncSetup(1ℓF , 1ℓS , 1ℓX , 1ℓY , ·),
+          One-sFE.Enc(1λ , 1ℓF , 1ℓS , 1ℓX , 1ℓY , ·, ·), One-sFE.KeyGen(1λ , 1ℓF , 1ℓS , 1ℓX , 1ℓY , ·, ·),
+          One-sFE.Dec(1λ , 1ℓF , 1ℓS , 1ℓX , 1ℓY , ·, ·)
+   • PRF: We instantiate PRF with input size λ and output size 5λ. This means that we will use
+     the following setup algorithm: PRF.Setup(1λ , 1λ , 15λ ).
+   • PRF2: We instantiate PRF2 with input size λ and output size λ. This means that we will use
+     the following setup algorithm: PRF2.Setup(1λ , 1λ , 1λ ).
+   • FPFE: We instantiate FPFE with
+        – Input Size: ℓFPFE.mλ = ℓOne-sFE.mskλ + ℓOne-sFE.Enc.stλ + ℓPRF2.kλ + 2 where ℓOne-sFE.mskλ
+          is the size of master secret keys of One-sFE, ℓOne-sFE.Enc.stλ is the size of encryption states
+          of One-sFE, and ℓPRF2.kλ is the size of keys of PRF2.
+        – Function Size: ℓHλ where ℓHλ is the maximum of the size of Hi,xi ,ti defined in Figure 8
+                           ∗
+          and the size of Hi,x              defined in Figure 10 for any
+                                   ′
+                               i ,x ,ti ,vi
+                                      i
+
+             ∗ i, ti ∈ {0, 1}λ
+             ∗ xi , x′i ∈ {0, 1}ℓX
+             ∗ vi of size ℓOne-sFE.ctλ where ℓOne-sFE.ctλ is the size of ciphertexts of One-sFE
+           Observe that the function size depends only on λ, ℓF , ℓS , ℓX , ℓY and the sizes of PRF2,
+           and One-sFE.
+        – Output Size: ℓOne-sFE.ctλ where ℓOne-sFE.ctλ is the size of ciphertexts of One-sFE
+      This means that we will use the following algorithms:
+        – FPFE.Setup(1λ , 1ℓHλ , 1ℓFPFE.mλ , 1ℓOne-sFE.ctλ ), FPFE.Enc(1λ , 1ℓHλ , 1ℓFPFE.mλ , 1ℓOne-sFE.ctλ , ·, ·),
+          FPFE.KeyGen(1λ , 1ℓHλ , 1ℓFPFE.mλ , 1ℓOne-sFE.ctλ , ·, ·), FPFE.Dec(1λ , 1ℓHλ , 1ℓFPFE.mλ , 1ℓOne-sFE.ctλ , ·, ·)
+   • Sym: We instantiate Sym with messages of length ℓSym.mλ = ℓOne-sFE.skλ + ℓFPFE.ctλ where
+     ℓOne-sFE.skλ is the size of function keys of One-sFE and ℓFPFE.ctλ is the size of ciphertexts of
+     FPFE. This means that we will use the following setup algorithm: Sym.Setup(1λ , 1ℓSym.mλ ).
+
+                                                         55
+   • FE: We instantiate FE with
+
+        – Input Size: ℓFE.mλ = ℓFPFE.mskλ + ℓPRF.kλ + 1 + ℓSym.kλ where ℓFPFE.mskλ is the size of
+          master secret keys of FPFE, ℓPRF.kλ is the size of keys of PRF, and ℓSym.kλ is the size of
+          keys of Sym.
+        – Function Size: ℓGλ where ℓGλ is the maximum size of Gf,s,c defined in Figure 9 for any
+             ∗ f ∈ F[ℓF , ℓS , ℓX , ℓY ]
+             ∗ s ∈ {0, 1}λ
+             ∗ c of size ℓSym.ctλ where ℓSym.ctλ is the size of ciphertexts of Sym
+           Note that the function length depends only on λ, ℓF , ℓS , ℓX , ℓY and the sizes of PRF,
+           PRF2, One-sFE, FPFE, and Sym.
+        – Output Size: ℓFE.outλ = ℓOne-sFE.skλ + ℓFPFE.ctλ where ℓOne-sFE.skλ is the size of secret
+          keys of One-sFE and ℓFPFE.ctλ is the size of ciphertexts of FPFE
+
+     This means that we will use the following algorithms:
+
+        – FE.Setup(1λ , 1ℓGλ , 1ℓFE.mλ , 1ℓFE.outλ ), FE.Enc(1λ , 1ℓGλ , 1ℓFE.mλ , 1ℓFE.outλ , ·, ·),
+          FE.KeyGen(1λ , 1ℓGλ , 1ℓFE.mλ , 1ℓFE.outλ , ·, ·), FE.Dec(1λ , 1ℓGλ , 1ℓFE.mλ , 1ℓFE.outλ , ·, ·)
+
+Notation. For notational convenience, when the parameters are understood, we will often omit
+the security, input size, output size, message size, function size, or state size parameters from each
+of the algorithms listed above.
+
+Remark 6.4. We assume without loss of generality that for security parameter λ, all algorithms
+only require randomness of length λ. If the original algorithm required additional randomness,
+we can replace it with a new algorithm that first expands the λ bits of randomness using a PRG
+of appropriate stretch and then runs the original algorithm. Note that this replacement does not
+affect the security of the above schemes (as long as ℓF , ℓS , ℓX , ℓY are polynomial in λ).
+
+
+
+
+                                                         56
+6.2   Construction
+We now construct our streaming FE scheme sFE. Recall that for notational convenience, we may
+omit the security, input size, output size, message size, function size, or state size parameters from
+our algorithms. For information on these parameters, please see the parameter section above.
+
+Remark 6.5. Our construction is nearly the same as in [AS16]. Here, we are bootstrapping a
+single-key, single-ciphertext streaming FE scheme as opposed to a single-key, single-ciphertext FE
+scheme for Turing machines. There are only a few minor changes from the construction of [AS16]:
+
+   • In each function Gf,s,c , in addition to encrypting One-sFE.msk under FPFE, we also encrypt
+     the starting encryption state One-sFE.Enc.st and a PRF key PRF2.k. This also slightly changes
+     the definition of each Hi,xi ,ti function . In [AS16], these additional values were not needed.
+     The proof of security can be easily modified to accommodate these values.
+
+   • For each x = x1 . . . xn , we create n FPFE function keys, one for each xi . In [AS16], we only
+     needed one function key. This change requires us to rely on an unbounded-key, function-
+     private FE scheme, as opposed to the single-key, function-private FE scheme used in [AS16].
+     The proof of security is similar except that we perform changes across all FPFE function keys
+     at once.
+
+   • We break the encryption algorithm of [AS16] into two parts: EncSetup and Enc.
+
+We now describe our construction.
+
+   • sFE.Setup(1λ , 1ℓF , 1ℓS , 1ℓX , 1ℓY ):
+
+        1. (FE.mpk, FE.msk) ← FE.Setup(1λ )
+        2. Output (MPK = FE.mpk, MSK = FE.msk).
+
+   • sFE.EncSetup(MPK):
+
+        1. Parse MPK = FE.mpk.
+        2. PRF.K ← PRF.Setup(1λ ).
+        3. FPFE.msk ← FPFE.Setup(1λ )
+        4. FE.ct ← FE.Enc(FE.mpk, (FPFE.msk, PRF.K, 0, 0ℓSym.kλ )).
+        5. Output Enc.ST = (FPFE.msk, FE.ct)
+
+   • sFE.Enc(MPK, Enc.ST, i, xi ):
+
+        1. Parse Enc.ST = (FPFE.msk, FE.ct).
+        2. ti ← {0, 1}λ
+        3. Let Hi = Hi,xi ,ti as defined in Figure 8.
+        4. FPFE.skHi = FPFE.KeyGen(FPFE.msk, Hi )
+        5. If i = 1, output CT1 = (FE.ct, FPFE.skH1 ).
+        6. Else, output CTi = FPFE.skHi
+
+
+
+
+                                                  57
+Hi,xi ,ti (One-sFE.msk, One-sFE.Enc.st, PRF2.k, β):
+  1. If β = 0
+     (a) ri ← PRF2.Eval(PRF2.k, ti )
+     (b) Output One-sFE.cti ← One-sFE.Enc(One-sFE.msk, One-sFE.Enc.st, i, xi ; ri )
+  2. Else, output ⊥
+
+
+                                             Figure 8
+
+
+ • sFE.KeyGen(MSK, f ):
+
+     1. Parse MSK = FE.msk.
+     2. s ← {0, 1}λ
+     3. c ← {0, 1}ℓSym.ctλ
+     4. Let G = Gf,s,c as defined in Figure 9.
+     5. FE.skG ← FE.KeyGen(FE.msk, G)
+     6. Output SKf = FE.skG
+
+
+Gf,s,c (FPFE.msk, PRF.K, α, Sym.k):
+  1. If α = 0
+     (a) (rSetup , rKeyGen , rEncSetup , rPRF2 , rEnc ) ← PRF.Eval(PRF.K, s)
+     (b) One-sFE.msk ← One-sFE.Setup(1λ ; rSetup )
+     (c) One-sFE.Enc.st ← One-sFE.EncSetup(One-sFE.msk; rEncSetup )
+     (d) One-sFE.skf ← One-sFE.KeyGen(One-sFE.msk, f ; rKeyGen )
+     (e) PRF2.k ← PRF2.Setup(1λ ; rPRF2 )
+     (f) FPFE.ct ← FPFE.Enc(FPFE.msk, (One-sFE.msk, One-sFE.Enc.st, PRF2.k, 0); rEnc )
+     (g) Output (One-sFE.skf , FPFE.ct)
+  2. Else
+     (a) Output (One-sFE.skf , FPFE.ct) ← Sym.Dec(Sym.k, c)
+
+
+                                             Figure 9
+
+
+ • sFE.Dec(SKf , Dec.STi , i, CTi ):
+
+     1. If i = 1
+         (a) Parse CT1 = (FE.ct, FPFE.skH1 ) and SKf = FE.skG .
+         (b) (One-sFE.skf , FPFE.ct) = FE.Dec(FE.skG , FE.ct)
+         (c) Set One-sFE.Dec.st1 = ⊥.
+     2. If i > 1
+         (a) Parse CTi = FPFE.skHi
+         (b) Parse Dec.STi = (One-sFE.skf , FPFE.ct, One-sFE.Dec.sti )
+
+                                                58
+
