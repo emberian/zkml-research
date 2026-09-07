@@ -1,0 +1,435 @@
+{
+  "correct_attribute_count": 2,
+  "correct_pair_count": 1,
+  "cpu_load_process_cpu_seconds": 2.878121,
+  "cpu_load_wall_seconds": 2.96952675000648,
+  "execution_completed": true,
+  "freeze_sha256": "4567ed61e2b1b011be4d0aecef1f6e97a14a3e6b78680323453b9c77a1a6a81f",
+  "generation_config_sha256": "5c161a22700d1f53cfb433d23541fc20f1adc1d9ecd4b29b44e82210c6b395e6",
+  "generation_process_cpu_seconds": 12.631580999999999,
+  "generation_wall_seconds": 32.45789520803373,
+  "heldout_inputs": 0,
+  "issuer_inputs_sha256": "52783ddb47962dde1e9f0f359bc71fd521d3a74d328423753115d12b053440fb",
+  "load_and_transfer_wall_seconds": 5.478511207998963,
+  "memory_after_load": {
+    "mps_current_allocated_bytes": 6150197504,
+    "mps_driver_allocated_bytes": 6484787200,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 8215461888
+  },
+  "memory_at_end": {
+    "mps_current_allocated_bytes": 6150205184,
+    "mps_driver_allocated_bytes": 6703661056,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 8215461888
+  },
+  "memory_before_load": {
+    "mps_current_allocated_bytes": 0,
+    "mps_driver_allocated_bytes": 393216,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 543621120
+  },
+  "model_parameter_count": 3075098624,
+  "raw_outputs_sha256": "698323efdb305e0d38531f6cc9b9d9fcf48518e6ce626c10bd2f6e54809fddc6",
+  "rows": [
+    {
+      "attribute_correct": [
+        false,
+        false
+      ],
+      "generated_token_ids": [
+        74694,
+        2285,
+        198,
+        517,
+        220,
+        330,
+        64,
+        794,
+        220,
+        15,
+        345,
+        220,
+        330,
+        65,
+        794,
+        854,
+        198,
+        534,
+        74694,
+        128012
+      ],
+      "generated_tokens": 20,
+      "generation_process_cpu_seconds": 2.4375350000000005,
+      "generation_wall_seconds": 10.611027332983213,
+      "input_tokens": 293,
+      "memory_after_generation": {
+        "mps_current_allocated_bytes": 6150205184,
+        "mps_driver_allocated_bytes": 6703595520,
+        "mps_recommended_max_bytes": 83494174720,
+        "process_high_water_rss_bytes_macos": 8215461888
+      },
+      "oracle": {
+        "a": 0,
+        "b": 0
+      },
+      "parse_error": "Expecting value: line 1 column 1 (char 0)",
+      "parsed": null,
+      "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": null\n}\n```",
+      "record_id": 0
+    },
+    {
+      "attribute_correct": [
+        false,
+        false
+      ],
+      "generated_token_ids": [
+        74694,
+        2285,
+        198,
+        517,
+        220,
+        330,
+        64,
+        794,
+        220,
+        15,
+        345,
+        220,
+        330,
+        65,
+        794,
+        854,
+        198,
+        534,
+        74694,
+        128012
+      ],
+      "generated_tokens": 20,
+      "generation_process_cpu_seconds": 1.5584849999999992,
+      "generation_wall_seconds": 2.493125625012908,
+      "input_tokens": 294,
+      "memory_after_generation": {
+        "mps_current_allocated_bytes": 6150205184,
+        "mps_driver_allocated_bytes": 6703611904,
+        "mps_recommended_max_bytes": 83494174720,
+        "process_high_water_rss_bytes_macos": 8215461888
+      },
+      "oracle": {
+        "a": 0,
+        "b": 1
+      },
+      "parse_error": "Expecting value: line 1 column 1 (char 0)",
+      "parsed": null,
+      "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": null\n}\n```",
+      "record_id": 16
+    },
+    {
+      "attribute_correct": [
+        false,
+        false
+      ],
+      "generated_token_ids": [
+        74694,
+        2285,
+        198,
+        517,
+        220,
+        330,
+        64,
+        794,
+        220,
+        16,
+        345,
+        220,
+        330,
+        65,
+        794,
+        220,
+        15,
+        198,
+        534,
+        74694,
+        128012
+      ],
+      "generated_tokens": 21,
+      "generation_process_cpu_seconds": 1.520779000000001,
+      "generation_wall_seconds": 4.16564545800793,
+      "input_tokens": 293,
+      "memory_after_generation": {
+        "mps_current_allocated_bytes": 6150205184,
+        "mps_driver_allocated_bytes": 6703611904,
+        "mps_recommended_max_bytes": 83494174720,
+        "process_high_water_rss_bytes_macos": 8215461888
+      },
+      "oracle": {
+        "a": 1,
+        "b": 0
+      },
+      "parse_error": "Expecting value: line 1 column 1 (char 0)",
+      "parsed": null,
+      "raw_output": "```json\n{\n  \"a\": 1,\n  \"b\": 0\n}\n```",
+      "record_id": 32
+    },
+    {
+      "attribute_correct": [
+        false,
+        false
+      ],
+      "generated_token_ids": [
+        74694,
+        2285,
+        198,
+        517,
+        220,
+        330,
+        64,
+        794,
+        220,
+        16,
+        345,
+        220,
+        330,
+        65,
+        794,
+        854,
+        198,
+        534,
+        74694,
+        128012
+      ],
+      "generated_tokens": 20,
+      "generation_process_cpu_seconds": 1.3760489999999983,
+      "generation_wall_seconds": 3.4051080420031212,
+      "input_tokens": 294,
+      "memory_after_generation": {
+        "mps_current_allocated_bytes": 6150205184,
+        "mps_driver_allocated_bytes": 6703611904,
+        "mps_recommended_max_bytes": 83494174720,
+        "process_high_water_rss_bytes_macos": 8215461888
+      },
+      "oracle": {
+        "a": 1,
+        "b": 1
+      },
+      "parse_error": "Expecting value: line 1 column 1 (char 0)",
+      "parsed": null,
+      "raw_output": "```json\n{\n  \"a\": 1,\n  \"b\": null\n}\n```",
+      "record_id": 48
+    },
+    {
+      "attribute_correct": [
+        true,
+        true
+      ],
+      "generated_token_ids": [
+        5018,
+        64,
+        794,
+        220,
+        15,
+        11,
+        330,
+        65,
+        794,
+        220,
+        15,
+        92,
+        128012
+      ],
+      "generated_tokens": 13,
+      "generation_process_cpu_seconds": 1.1102210000000028,
+      "generation_wall_seconds": 2.6674403750221245,
+      "input_tokens": 290,
+      "memory_after_generation": {
+        "mps_current_allocated_bytes": 6150205184,
+        "mps_driver_allocated_bytes": 6703661056,
+        "mps_recommended_max_bytes": 83494174720,
+        "process_high_water_rss_bytes_macos": 8215461888
+      },
+      "oracle": {
+        "a": 0,
+        "b": 0
+      },
+      "parse_error": null,
+      "parsed": {
+        "a": 0,
+        "b": 0
+      },
+      "raw_output": "{\"a\": 0, \"b\": 0}",
+      "record_id": 64
+    },
+    {
+      "attribute_correct": [
+        false,
+        false
+      ],
+      "generated_token_ids": [
+        74694,
+        2285,
+        198,
+        517,
+        220,
+        330,
+        64,
+        794,
+        220,
+        15,
+        345,
+        220,
+        330,
+        65,
+        794,
+        220,
+        16,
+        198,
+        534,
+        74694,
+        128012
+      ],
+      "generated_tokens": 21,
+      "generation_process_cpu_seconds": 1.457456999999998,
+      "generation_wall_seconds": 3.4920587920059916,
+      "input_tokens": 291,
+      "memory_after_generation": {
+        "mps_current_allocated_bytes": 6150205184,
+        "mps_driver_allocated_bytes": 6703661056,
+        "mps_recommended_max_bytes": 83494174720,
+        "process_high_water_rss_bytes_macos": 8215461888
+      },
+      "oracle": {
+        "a": 0,
+        "b": 1
+      },
+      "parse_error": "Expecting value: line 1 column 1 (char 0)",
+      "parsed": null,
+      "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": 1\n}\n```",
+      "record_id": 80
+    },
+    {
+      "attribute_correct": [
+        false,
+        false
+      ],
+      "generated_token_ids": [
+        74694,
+        2285,
+        198,
+        517,
+        220,
+        330,
+        64,
+        794,
+        854,
+        345,
+        220,
+        330,
+        65,
+        794,
+        220,
+        16,
+        198,
+        534,
+        74694,
+        128012
+      ],
+      "generated_tokens": 20,
+      "generation_process_cpu_seconds": 1.6282309999999995,
+      "generation_wall_seconds": 2.9826115829928312,
+      "input_tokens": 292,
+      "memory_after_generation": {
+        "mps_current_allocated_bytes": 6150205184,
+        "mps_driver_allocated_bytes": 6703661056,
+        "mps_recommended_max_bytes": 83494174720,
+        "process_high_water_rss_bytes_macos": 8215461888
+      },
+      "oracle": {
+        "a": 1,
+        "b": 0
+      },
+      "parse_error": "Expecting value: line 1 column 1 (char 0)",
+      "parsed": null,
+      "raw_output": "```json\n{\n  \"a\": null,\n  \"b\": 1\n}\n```",
+      "record_id": 96
+    },
+    {
+      "attribute_correct": [
+        false,
+        false
+      ],
+      "generated_token_ids": [
+        74694,
+        2285,
+        198,
+        517,
+        220,
+        330,
+        64,
+        794,
+        854,
+        345,
+        220,
+        330,
+        65,
+        794,
+        220,
+        16,
+        198,
+        534,
+        74694,
+        128012
+      ],
+      "generated_tokens": 20,
+      "generation_process_cpu_seconds": 1.5428239999999995,
+      "generation_wall_seconds": 2.640878000005614,
+      "input_tokens": 293,
+      "memory_after_generation": {
+        "mps_current_allocated_bytes": 6150205184,
+        "mps_driver_allocated_bytes": 6703661056,
+        "mps_recommended_max_bytes": 83494174720,
+        "process_high_water_rss_bytes_macos": 8215461888
+      },
+      "oracle": {
+        "a": 1,
+        "b": 1
+      },
+      "parse_error": "Expecting value: line 1 column 1 (char 0)",
+      "parsed": null,
+      "raw_output": "```json\n{\n  \"a\": null,\n  \"b\": 1\n}\n```",
+      "record_id": 112
+    }
+  ],
+  "runtime": {
+    "cuda_available": false,
+    "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "mps_available": true,
+    "mps_built": true,
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "torch": "2.10.0",
+    "transformers": "4.57.3"
+  },
+  "settings": {
+    "attention": "eager",
+    "backbone_updates": 0,
+    "device": "mps",
+    "do_sample": false,
+    "dtype": "float16",
+    "enable_thinking": false,
+    "interop_threads": 1,
+    "kv_cache": "per request only, discarded between calls",
+    "max_new_tokens": 32,
+    "prompt_candidates": 1,
+    "requests_sequential": true,
+    "seed": 7901,
+    "source_weight_dtype": "bfloat16",
+    "threads": 2
+  },
+  "teacher_attribute_denominator": 16,
+  "teacher_inputs": 8,
+  "total_process_cpu_seconds_including_imports": 24.544565000000002,
+  "total_wall_seconds_including_imports": 56.76297383298515,
+  "transfer_to_mps_wall_seconds": 2.508984457992483,
+  "utility_history_runs": 0,
+  "valid_json_count": 1
+}

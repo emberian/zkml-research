@@ -1,0 +1,61 @@
+{"first_record_id": 0, "records": 16, "padded_tokens": 26, "wall_seconds": 0.5170776250015479, "cpu_seconds": 0.2313850000000004}
+{"first_record_id": 16, "records": 16, "padded_tokens": 27, "wall_seconds": 0.42151983399526216, "cpu_seconds": 0.21223599999999987}
+{"first_record_id": 32, "records": 16, "padded_tokens": 26, "wall_seconds": 0.3862925409921445, "cpu_seconds": 0.20184900000000017}
+{"first_record_id": 48, "records": 16, "padded_tokens": 27, "wall_seconds": 0.43145287499646656, "cpu_seconds": 0.2194009999999995}
+{"first_record_id": 64, "records": 16, "padded_tokens": 23, "wall_seconds": 0.3558920829964336, "cpu_seconds": 0.19068600000000036}
+{"first_record_id": 80, "records": 16, "padded_tokens": 25, "wall_seconds": 0.4697818749991711, "cpu_seconds": 0.20029499999999967}
+{"first_record_id": 96, "records": 16, "padded_tokens": 25, "wall_seconds": 0.4751953330123797, "cpu_seconds": 0.19354300000000002}
+{"first_record_id": 112, "records": 16, "padded_tokens": 27, "wall_seconds": 0.19631495801149867, "cpu_seconds": 0.19942800000000016}
+{"first_record_id": 128, "records": 16, "padded_tokens": 25, "wall_seconds": 0.46408595802495256, "cpu_seconds": 0.20250199999999996}
+{"first_record_id": 144, "records": 16, "padded_tokens": 25, "wall_seconds": 0.4724817500100471, "cpu_seconds": 0.21093600000000023}
+{"first_record_id": 160, "records": 16, "padded_tokens": 24, "wall_seconds": 0.38423925000824966, "cpu_seconds": 0.18476299999999934}
+{"first_record_id": 176, "records": 16, "padded_tokens": 24, "wall_seconds": 0.31888258398976177, "cpu_seconds": 0.17418500000000048}
+{"first_record_id": 192, "records": 16, "padded_tokens": 27, "wall_seconds": 0.3962839999876451, "cpu_seconds": 0.19964099999999974}
+{"first_record_id": 208, "records": 16, "padded_tokens": 27, "wall_seconds": 0.37688033300219104, "cpu_seconds": 0.197921}
+{"first_record_id": 224, "records": 16, "padded_tokens": 27, "wall_seconds": 0.4665634580014739, "cpu_seconds": 0.2003390000000005}
+{"first_record_id": 240, "records": 16, "padded_tokens": 27, "wall_seconds": 0.34213458400336094, "cpu_seconds": 0.19383199999999956}
+{
+  "executed": true,
+  "kind": "e5_train",
+  "model": "intfloat/e5-base-v2",
+  "revision": "f52bf8ec8c7124536f0efb74aca902b2995e5bcd",
+  "model_path": "/Users/ember/.cache/huggingface/hub/models--intfloat--e5-base-v2/snapshots/f52bf8ec8c7124536f0efb74aca902b2995e5bcd",
+  "records": 256,
+  "parameter_count": 109482240,
+  "trainable_backbone_parameters": 0,
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+  "numpy": "2.4.2",
+  "torch": "2.10.0",
+  "transformers": "4.57.3",
+  "settings": {
+    "device": "cpu",
+    "dtype": "float32",
+    "attention": "eager",
+    "batch_size": 16,
+    "padding_side": "right",
+    "use_cache": false,
+    "threads": 2,
+    "interop_threads": 1,
+    "seed": 7901,
+    "prefix": "query: ",
+    "pooling": "masked mean final hidden states then L2",
+    "blocks_actually_executed": 12,
+    "local_files_only": true,
+    "trust_remote_code": false
+  },
+  "selection_sha256": null,
+  "freeze_sha256": "4e25fdf2aaa34bd65075cf5c42914f3222ba218c3eb92bd3d45a8277963c148f",
+  "records_sha256": "652d6fea9c7709239c6ea852e615d4325f5b4298e41405cbc253722a2cb32e11",
+  "script_sha256": "b5ee7c3f5a9e47309171443a597ececd56b9608ca436ff9fb7460b7f5873c6aa",
+  "features_sha256": "86c81d4c527e57601b1f4a8bc87b76f83e6ef54b9ec98eb74d47172c57aca83c",
+  "load_wall_seconds": 0.5294747079897206,
+  "load_cpu_seconds": 0.18715700000000002,
+  "forward_wall_seconds": 6.475079041032586,
+  "forward_cpu_seconds": 3.212942,
+  "unpadded_tokens": 6024,
+  "padded_tokens": 6592,
+  "total_wall_seconds_including_imports": 15.599204041995108,
+  "total_cpu_seconds_including_imports": 7.079694,
+  "process_high_water_rss_bytes_macos": 734658560
+}

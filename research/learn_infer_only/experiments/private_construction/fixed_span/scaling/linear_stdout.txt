@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "shape": [
+    16,
+    577
+  ],
+  "rank_Q": 16,
+  "kernel_dimension": 561,
+  "pivot_minor_determinant": -812032080,
+  "kernel_witness_max_abs": 3,
+  "max_window_score_bound": 14219936,
+  "bsgs": {
+    "common_interval": [
+      -14219936,
+      14219936
+    ],
+    "baby_entries": 5333,
+    "giant_iterations_max": 5333,
+    "raw_group_bytes": 1365248
+  },
+  "raw_sizes": {
+    "group_element_bytes": 256,
+    "public_key_bytes": 147712,
+    "fixed_key_bytes": 4096,
+    "ciphertext_bytes": 147968,
+    "two_route_queue_and_aggregate_bytes": 9765888
+  }
+}

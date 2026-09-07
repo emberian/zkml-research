@@ -55,7 +55,7 @@ empty-state zeros; 80 use nonempty encrypted state.
 |---|---|
 | [EXECUTED] Fixed useful workload | 52/96 correct over all checkpoints, 44/80 nonempty, 18/32 final. Encryption and verification preserve the original subset's successes and failures. |
 | [EXECUTED] Fresh private synthetic inputs | Separate verified run004: 40 Learn, four Infer, eight expiries, exact outputs, restart and 23 refusal controls. Inputs are unknown to host/authority process arguments; the issuer/oracle retains them. No utility estimate follows. |
-| [EXECUTED] Actual text ingress | The baseline live-text path runs the local model at the issuer, encrypts its vector, learns and returns two authorized answers. Both compare correctly and the answer changes after learning. One illustrative input is not an accuracy estimate. |
+| [EXECUTED] Actual text ingress | The independently verified live-text path runs the local model at the issuer, encrypts its vector, learns and returns two authorized answers. Both compare correctly and the answer changes after learning; zero baseline decryptions. Whole-path time 15.418 seconds. One illustrative input is not an accuracy estimate. |
 | [EXECUTED] Integrity and continuity | Exact original expiry, parent/genesis/recipient/query binding, strict canonical signed contexts and durable retries have recorded checks. The verifier's own retained persistence remains trusted. |
 | [EXECUTED] Complete workload cost | 682.666 seconds on the shared machine, including journal and reader verification; cached features exclude model encoding. Current two-route state references 66 ciphertexts, 5,616,798 bytes; verifier CAS retains 34,663,205 bytes per history. |
 | [DERIVED] Confidentiality | Conditional on encryption security, compatible allowed outputs, honest issuance and the trusted reader. Encrypting a public fixture does not create an unknown lifetime. |
@@ -88,5 +88,6 @@ continuity behavior must compose with this actual learner.
 [SOURCE / scope] [CONTRACT.md](CONTRACT.md) retains the original acceptance
 contract. [PRIVACY_SCOPE.md](PRIVACY_SCOPE.md) is the reviewed honest-authority
 argument; the stronger [verifying-reader argument](verified_reader/PRIVACY_ARGUMENT.md)
-is under review. The 708-pin combined proposal remains separately checked
+passed [independent review and closeout](../adversarial_review/verified_reader_privacy/CLOSEOUT.md)
+under its explicit issuance/primitive/reader assumptions. The 708-pin combined proposal remains separately checked
 mathematical models, not a universal correctness proof of this implementation.

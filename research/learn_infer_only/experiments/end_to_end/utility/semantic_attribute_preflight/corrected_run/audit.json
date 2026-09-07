@@ -1,0 +1,28 @@
+{
+  "actual_merge_configs_verified": 8,
+  "all_outputs_eos_before_cap": true,
+  "audit_passed": true,
+  "effective_mode_all_greedy_search": true,
+  "generated_tokens": 165,
+  "heldout_inputs": 0,
+  "input_tokens": 2340,
+  "model_calls_in_audit": 0,
+  "original_files_verified_unchanged": 26,
+  "results_sha256": "595378fe011ab72a60506fa9368f065a01a66f6419eeea1342cf7374ebc0c786",
+  "source_sha256": "e7169552ea366724abb800b24f7c227680d0ac3836ff5461c64d080ba45edc0c",
+  "strict_accepted_correct_pairs": 0,
+  "strict_correct_attribute_denominator": 16,
+  "strict_parser_valid": 0,
+  "teacher_inputs_this_corrected_run": 8,
+  "utility_history_runs": 0,
+  "visible_payload_diagnostic_only": {
+    "attribute_denominator": 16,
+    "correct_printed_bits": 11,
+    "literal_transcription_checked_against_full_raw_strings": true,
+    "none_accepted_as_encoder_output": true,
+    "null_printed_bits": 3,
+    "pair_denominator": 8,
+    "printed_pairs_matching_oracle": 4,
+    "wrong_printed_bits": 2
+  }
+}

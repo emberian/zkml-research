@@ -1,0 +1,259 @@
+{
+  "actual_e5_text_encodings": 384,
+  "actual_smol_test_text_encodings": 128,
+  "command_exit_codes": {
+    "audit": 0,
+    "e5_test": 0,
+    "e5_train": 0,
+    "evaluate": 0,
+    "fit_select": 0,
+    "prepare": 0,
+    "smol_test": 0
+  },
+  "completed": true,
+  "contract_selection_preserved": true,
+  "files": {
+    ".gitignore": {
+      "bytes": 19,
+      "ignored_regeneratable": false,
+      "sha256": "b1579782d4688cf29490f5e927c5f3ddd5bc9b9bba30b4f7db88b7fa6c2cdc0d"
+    },
+    "CONTRACT.md": {
+      "bytes": 6888,
+      "ignored_regeneratable": false,
+      "sha256": "4139b5287364f6f26813c164829aa12324314c5f367398dfaf3d8101ebbb323d"
+    },
+    "REPORT.md": {
+      "bytes": 11555,
+      "ignored_regeneratable": false,
+      "sha256": "345a382fd591333e8369911709a8b6ff9030f5d6a0257f11d82e5e2792f756c6"
+    },
+    "audit.command.json": {
+      "bytes": 351,
+      "ignored_regeneratable": false,
+      "sha256": "9fe0085688ccd0d4e0b5b6712ca3971924c6125b35d3503af591e6087d00158c"
+    },
+    "audit.json": {
+      "bytes": 2584,
+      "ignored_regeneratable": false,
+      "sha256": "05b1badebd6faaca2b9ffadcb9e25d2056d09287b1f6ee514d3480335bb84844"
+    },
+    "audit.py": {
+      "bytes": 5599,
+      "ignored_regeneratable": false,
+      "sha256": "28b9e2969266aded4a9c5bc8b68ebe7f682b5a2f572e59406b2c1050e2014487"
+    },
+    "audit.stderr": {
+      "bytes": 0,
+      "ignored_regeneratable": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "audit.stdout": {
+      "bytes": 2584,
+      "ignored_regeneratable": false,
+      "sha256": "b30359338f129dfbd46f356a45d29628ac2596e3bc94f7a434b4d8a08c3e2bec"
+    },
+    "costs.json": {
+      "bytes": 3500,
+      "ignored_regeneratable": false,
+      "sha256": "805150f354ae89a99619c4f9245866f366d97a3694c1389d6bf7ccae7b1dd7aa"
+    },
+    "e5_test.command.json": {
+      "bytes": 367,
+      "ignored_regeneratable": false,
+      "sha256": "c91961075bd8043ab426a8e3b6c6e1b7c723924d1a3110468ac26843dc522ff0"
+    },
+    "e5_test.extraction.json": {
+      "bytes": 5854,
+      "ignored_regeneratable": false,
+      "sha256": "7ef3cb1f4624a57c2f473813c9edcc5469dbc52933e4b76b2acbc117a59ccf4c"
+    },
+    "e5_test.npz": {
+      "bytes": 394768,
+      "ignored_regeneratable": true,
+      "sha256": "fe407038f7217be5aef5e59507b988f1ff3ec10f8159b751eda4f53ec238403b"
+    },
+    "e5_test.stderr": {
+      "bytes": 0,
+      "ignored_regeneratable": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "e5_test.stdout": {
+      "bytes": 2935,
+      "ignored_regeneratable": false,
+      "sha256": "2bc7ff71b186cf1bb9a55a04f09c7d9c249420fbb3b7a02d3c48f00a3bac7d03"
+    },
+    "e5_train.command.json": {
+      "bytes": 368,
+      "ignored_regeneratable": false,
+      "sha256": "2301ce128fef41a4e9987fe8f4b6909607e2fd247567dd61ef786e8fe6649d26"
+    },
+    "e5_train.extraction.json": {
+      "bytes": 8214,
+      "ignored_regeneratable": false,
+      "sha256": "2c0eed7692a6a758a7db2ef21b5d7030eaa7a4ea90b8a8ba83192a5f0fde33b7"
+    },
+    "e5_train.npz": {
+      "bytes": 789008,
+      "ignored_regeneratable": true,
+      "sha256": "86c81d4c527e57601b1f4a8bc87b76f83e6ef54b9ec98eb74d47172c57aca83c"
+    },
+    "e5_train.stderr": {
+      "bytes": 0,
+      "ignored_regeneratable": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "e5_train.stdout": {
+      "bytes": 3925,
+      "ignored_regeneratable": false,
+      "sha256": "a267304fe41c6c8c4a793bb7f04f04f5988b79c3e7c1520ea9596a6e9416220a"
+    },
+    "encoder_policy.json": {
+      "bytes": 49547,
+      "ignored_regeneratable": false,
+      "sha256": "234f85e4b661b9ab3bec6021345c58f738bcc18abcb5fcc8e9017f7deafb383b"
+    },
+    "evaluate.command.json": {
+      "bytes": 365,
+      "ignored_regeneratable": false,
+      "sha256": "b8d4972ab09ee3bc233bfd13dcf0fea775e577942e0b8dcef4b62617b2f64390"
+    },
+    "evaluate.stderr": {
+      "bytes": 0,
+      "ignored_regeneratable": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evaluate.stdout": {
+      "bytes": 2642,
+      "ignored_regeneratable": false,
+      "sha256": "135296eb25007f15a6cd44cc8970fd0ac73944f0d7f09df3384d02c858c165b8"
+    },
+    "extract.py": {
+      "bytes": 5542,
+      "ignored_regeneratable": false,
+      "sha256": "b5ee7c3f5a9e47309171443a597ececd56b9608ca436ff9fb7460b7f5873c6aa"
+    },
+    "features.npz": {
+      "bytes": 1404692,
+      "ignored_regeneratable": true,
+      "sha256": "2c99baf506613a9da460ee03724a6e30d3f804af1a592e22fadea3f2bfd77697"
+    },
+    "finalize.py": {
+      "bytes": 2849,
+      "ignored_regeneratable": false,
+      "sha256": "199a3291cbf8bc3ab78385b88e942057a5a5df57aa28f6558465cf1c4b0ad885"
+    },
+    "fit_select.command.json": {
+      "bytes": 366,
+      "ignored_regeneratable": false,
+      "sha256": "56b2294f1662ae9246237e7836cea742e9ab55e4804e8395a733500b4ca98787"
+    },
+    "fit_select.stderr": {
+      "bytes": 0,
+      "ignored_regeneratable": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fit_select.stdout": {
+      "bytes": 636,
+      "ignored_regeneratable": false,
+      "sha256": "62a777d7468c180c3eefc0953a43b9f88b52a0f370dad808531016c1ea206b89"
+    },
+    "freeze.json": {
+      "bytes": 4849,
+      "ignored_regeneratable": false,
+      "sha256": "4e25fdf2aaa34bd65075cf5c42914f3222ba218c3eb92bd3d45a8277963c148f"
+    },
+    "histories.json": {
+      "bytes": 191977,
+      "ignored_regeneratable": false,
+      "sha256": "0c62521c959b41be4d015bd1c71011f1d20d53c25ae419a7603a7cf5e6c1ee7f"
+    },
+    "launch.py": {
+      "bytes": 1245,
+      "ignored_regeneratable": false,
+      "sha256": "38911d9ccb61889d630218a57743edab9b711189cec44e90a4d20722573ed38a"
+    },
+    "prepare.command.json": {
+      "bytes": 365,
+      "ignored_regeneratable": false,
+      "sha256": "e0ca5c5a335c169844c1bec7335eb148000f74a8c1e8056ef1da563b138f5d6e"
+    },
+    "prepare.stderr": {
+      "bytes": 0,
+      "ignored_regeneratable": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "prepare.stdout": {
+      "bytes": 193,
+      "ignored_regeneratable": false,
+      "sha256": "fde989691e13a2396dc59c489eb4e6f5f8c8334048242797a984ca6f23520f0d"
+    },
+    "projection.json": {
+      "bytes": 381,
+      "ignored_regeneratable": false,
+      "sha256": "efbe11881fe81d5ed409ef54990971e1490c9e75e49640040cfe86aabb47bb5f"
+    },
+    "projection.npz": {
+      "bytes": 442632,
+      "ignored_regeneratable": true,
+      "sha256": "da670557d36768ca4199c9af69415c6dd31e970b3f08574e85ad69e8d8ce9644"
+    },
+    "records.json": {
+      "bytes": 98917,
+      "ignored_regeneratable": false,
+      "sha256": "652d6fea9c7709239c6ea852e615d4325f5b4298e41405cbc253722a2cb32e11"
+    },
+    "results.json": {
+      "bytes": 9407245,
+      "ignored_regeneratable": false,
+      "sha256": "faee9ccf6b2ed6f38c4d7968d72af68dcff8cdf2457f75f84be1fc2e6a88e34b"
+    },
+    "run.py": {
+      "bytes": 14060,
+      "ignored_regeneratable": false,
+      "sha256": "f41755d298017d2c8290233f2255ef96465061d52d1b23de0a3dc51ba5e4c0a1"
+    },
+    "selection.json": {
+      "bytes": 1951216,
+      "ignored_regeneratable": false,
+      "sha256": "3a2469fc348255e6289dab90e384580d6f8920df90952d74d8f8a1207fa74537"
+    },
+    "smol_test.command.json": {
+      "bytes": 369,
+      "ignored_regeneratable": false,
+      "sha256": "542b607e22e45da2854845489b9f8081f8dc810fad2beb646a37a76ca59f3196"
+    },
+    "smol_test.extraction.json": {
+      "bytes": 5599,
+      "ignored_regeneratable": false,
+      "sha256": "72837d8c49c18184ba99409a8af0fab3466378634a40ef1ff276405a2ebd192c"
+    },
+    "smol_test.npz": {
+      "bytes": 296464,
+      "ignored_regeneratable": true,
+      "sha256": "e1318d40822313ea88e71ef333e73b59e4f0356ae5776e3472143729c8700281"
+    },
+    "smol_test.stderr": {
+      "bytes": 0,
+      "ignored_regeneratable": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "smol_test.stdout": {
+      "bytes": 2950,
+      "ignored_regeneratable": false,
+      "sha256": "b0acec10f762d8d1ae7720deac952c88b77da12eaa5745c60ba7d2c77765a3c3"
+    },
+    "surfaces.py": {
+      "bytes": 2477,
+      "ignored_regeneratable": false,
+      "sha256": "9d30232aea6173290fa57716224505fcc37ad23056b3a644fac9283c46d499b8"
+    },
+    "training_features.npz": {
+      "bytes": 789016,
+      "ignored_regeneratable": true,
+      "sha256": "16a13388ec30daafa1993ac57619dac1ab66c50d6ac823a2468522ec4c9dcab2"
+    }
+  },
+  "total_scores": 147456,
+  "useful_successor": false
+}

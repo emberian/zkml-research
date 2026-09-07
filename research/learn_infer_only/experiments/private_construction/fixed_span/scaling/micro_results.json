@@ -1,0 +1,85 @@
+{
+  "passed": true,
+  "scope": "one actual public-fixture encryption and one authorized fixed projection",
+  "script_sha256": "ec1e790a281d610ff59d4e06dbf32d580401b6af883658d8a2583240b74dce08",
+  "approved_group_control_sha256": "bc16cd4a834784b71c8e25f75716c53dd4d0c144948a2f23f8ccb816febc36c5",
+  "linear_audit_sha256": "4a6fb32a7f1e59660e4ac6c233465b5f261ce3be7825a9227e4fc629f3f2f55a",
+  "linear_results_sha256": "cd45fe7bc4a28adcbd0c834fc3ee168f295a26d9f3c11fb585586a0aa6e17800",
+  "input_public_fixture_sha256": "3425bb4869caef7b70fa608244f7f830d2175875e8f806139dbc6f4fc443253d",
+  "input_public_fixture_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/vectors/h0-e0001.json",
+  "query0_sha256": "33dcf94fa32f932f53e421903990a02bae91f6cec52c1278d791377b81b7ada6",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "phases": [
+    {
+      "role": "honest_private_setup",
+      "elapsed_ns": 16312937083,
+      "exports": [
+        "public.bin",
+        "fixed_keys.bin"
+      ],
+      "master_exported": false,
+      "role_peak_rss_bytes_macos": 27787264,
+      "subprocess_wall_ns": 16378840541
+    },
+    {
+      "role": "private_issuer_public_key_only",
+      "encrypted_vectors": 1,
+      "encoding_table_ns": 226541,
+      "encryption_ns": 28316420459,
+      "ciphertext_bytes": 147968,
+      "diagnostic_scope": "private synthetic micro-log; not a deployed host API",
+      "role_peak_rss_bytes_macos": 27967488,
+      "subprocess_wall_ns": 28380515417
+    },
+    {
+      "role": "host_fixed_key_evaluator",
+      "validation_ns": 21887329959,
+      "validated_ciphertext_elements": 578,
+      "fixed_projection_ns": 179781500,
+      "fixed_query_index": 0,
+      "fixed_projection_reads": 1,
+      "score": 1435,
+      "bsgs_table_ns": 3879625,
+      "bsgs_decode_ns": 48452000,
+      "bsgs_common_bound": 14219936,
+      "bsgs_baby_entries": 5333,
+      "bsgs_giant_iterations_actual": 2667,
+      "bsgs_python_table_bytes_shallow_plus_entries": 1614848,
+      "master_or_plaintext_input": false,
+      "role_peak_rss_bytes_macos": 28835840,
+      "subprocess_wall_ns": 22307335375
+    }
+  ],
+  "full_384_input_benchmark": false,
+  "constant_time": false,
+  "numerical_security_bits_claimed": null,
+  "no_master_export": true,
+  "physical_erasure_verified": false,
+  "outputs": {
+    "fixed_keys.bin": {
+      "bytes": 4096,
+      "sha256": "89c847423512712ad358a4d6f0b99eee8bdaf6b1e52517bd67e8f97868184985"
+    },
+    "public.bin": {
+      "bytes": 147712,
+      "sha256": "361ed516355986d9ef9ef04efb3fab4770c7cc36317e362b3d86c15d2fa83c0b"
+    },
+    "input.bin": {
+      "bytes": 147968,
+      "sha256": "ff2662d1b3afde92073b724cb699ce0cccc51e97935b4c5d9ce0efa3fa8d6fc0"
+    }
+  },
+  "searches": {
+    "scry_sql": 0,
+    "web": 0,
+    "package_installs": 0
+  },
+  "metadata_revision": {
+    "script_sha256": "d62bb4cf2a22253458cfcb7accf850c5152784dcc56df6f54270c8ac111e9362",
+    "as_run_record_sha256": "a90fca3879c5dfbf0de17596f75481d483db03ffbf74547672e628eb5d3fb713",
+    "reason": "Independent matrix audit later added all561 basis checks and a shifted-fixture pair; same query matrix. Original micro record preserved; no crypto rerun.",
+    "timing_or_crypto_result_changed": false
+  }
+}

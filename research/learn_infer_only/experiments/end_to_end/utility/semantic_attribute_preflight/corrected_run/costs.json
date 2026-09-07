@@ -1,0 +1,31 @@
+{
+  "attempts_in_this_child": 1,
+  "caveats": [
+    "Timings are nested inside total process wall time.",
+    "Shared machine; not a controlled speed comparison.",
+    "MPS and RSS views overlap and must not be summed.",
+    "Strict encoder accepted zero outputs.",
+    "No encrypted-source privacy measurement."
+  ],
+  "cpu_load_wall_seconds": 1.4980309170205146,
+  "full_process_wall_seconds": 30.76966566700139,
+  "generated_tokens": 165,
+  "generation_process_cpu_seconds": 11.471058999999999,
+  "generation_wall_seconds": 18.177633459010394,
+  "heldout_inputs": 0,
+  "input_tokens": 2340,
+  "label": "EXECUTED; observed one corrected teacher-only run",
+  "memory_at_end": {
+    "mps_current_allocated_bytes": 6150205184,
+    "mps_driver_allocated_bytes": 6898663424,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 10474782720
+  },
+  "model_parameter_count": 3075098624,
+  "physical_attempts_including_prior": 2,
+  "physical_teacher_requests_including_prior": 16,
+  "semantic_prompt_tokens_unchanged": 222,
+  "transfer_to_mps_wall_seconds": 1.9118300409754738,
+  "unique_teacher_inputs": 8,
+  "utility_history_runs": 0
+}

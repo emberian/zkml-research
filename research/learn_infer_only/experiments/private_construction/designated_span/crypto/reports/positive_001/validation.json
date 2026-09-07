@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "classification": "EXECUTED independent normal-artifact/private-integer validation",
+  "validator_sha256": "a83a30d8cc902bb5952a6cba081ddb9c2afa0e52823723b046dca98cefbaef95",
+  "report_sha256": "6c5fdf598bfcef1c199c77ba515dc39c1f8b93b7efba4791187463b4338439f5",
+  "checks": [
+    {
+      "after_admissions": 0,
+      "row_id": 0,
+      "direct_integer_match": true,
+      "designated_output_identity": true,
+      "aggregate_randomizer_retained": true
+    },
+    {
+      "after_admissions": 1,
+      "row_id": 7,
+      "direct_integer_match": true,
+      "designated_output_identity": true,
+      "aggregate_randomizer_retained": true
+    },
+    {
+      "after_admissions": 32,
+      "row_id": 8,
+      "direct_integer_match": true,
+      "designated_output_identity": true,
+      "aggregate_randomizer_retained": true
+    },
+    {
+      "after_admissions": 33,
+      "row_id": 15,
+      "direct_integer_match": true,
+      "designated_output_identity": true,
+      "aggregate_randomizer_retained": true
+    }
+  ],
+  "exact_public_transition_replay": true,
+  "private_files_mode_and_final_recipient_inventory": true,
+  "public_host_commands_have_no_plaintext_or_recipient_key_inputs": true,
+  "recipient_outputs_and_private_timings_omitted_from_public_commands": true,
+  "full_validation_and_runtime_source_pins_match": true,
+  "private_values_and_private_file_hashes_omitted": true,
+  "scope": "normal retained artifacts only; no adversarial, malformed, routing or extraction experiment",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]"
+}

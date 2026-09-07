@@ -1,0 +1,37 @@
+{
+  "additional_heldout_inputs": 0,
+  "all_prior_bytes_preserved": true,
+  "corrected_model_attempts_authorized": 1,
+  "correction": "Disable model-default merging and explicitly select greedy; assert/log actual merged configuration",
+  "model": "HuggingFaceTB/SmolLM3-3B",
+  "model_revision": "a07cc9a04f16550a088caea529712d1d335b0ac1",
+  "new_semantic_prompt_candidates": 0,
+  "prior_frozen_file_count_verified": 26,
+  "prior_manifest_sha256": "e0961667ab288dbd5201824aa541b42383e42ca8240151cedd2d6f15bcb8decf",
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/lib/python3.14/site-packages/transformers/generation/utils.py": "a20024b1e82ed5361a524d238d2197be5407abc91297dd9888c57e8284d63fef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/PROMPT.txt": "87066dd1139efa8f6002044bd61b0b0962f967cea4eaac2786a0f360ef759280",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/config_diagnostic.json": "6c5c301f934841862b598f1eca5ae2864e3acae55478f693d6e73bd1803e1595",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/corrected_run/CONTRACT.md": "f26f297db7f6bc8f0edfa513d1d77bf5ed5c6035f91c2884f645cad31e36f261",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/corrected_run/launch.py": "b017256bf8233471dce922164c3774155f4571ad5eb53310387c2a379523c03e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/corrected_run/prepare.py": "28486449ea016a5eb309a3b405ac5b0a26d5242a417f280916581e33aadd09dc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/corrected_run/run.py": "a0a197889e87708c8b68084fd38d30d081e16861cf5b3706254e7df4d1fd725a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/freeze.json": "4567ed61e2b1b011be4d0aecef1f6e97a14a3e6b78680323453b9c77a1a6a81f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/issuer_inputs.json": "52783ddb47962dde1e9f0f359bc71fd521d3a74d328423753115d12b053440fb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/manifest.json": "e0961667ab288dbd5201824aa541b42383e42ca8240151cedd2d6f15bcb8decf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/preflight.py": "c422ef64bca10071caff812ac947ac2b2cf0a588e199272582488da67b4f99e5",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/raw_outputs.json": "698323efdb305e0d38531f6cc9b9d9fcf48518e6ce626c10bd2f6e54809fddc6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/results.json": "1dbc04ee23f3b6d5e1cc36d63b9dca6412ac456ebedc6f73dc4f2eca0f51a617",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/teacher_oracle.json": "705e70ace952d0709291e2717d31a9aa3f6af23879b4ac6cc9d056b9a618df0f"
+  },
+  "teacher_ids": [
+    0,
+    16,
+    32,
+    48,
+    64,
+    80,
+    96,
+    112
+  ]
+}

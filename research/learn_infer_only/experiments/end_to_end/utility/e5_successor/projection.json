@@ -1,0 +1,12 @@
+{
+  "candidate_projections_drawn": 1,
+  "distribution": "int8 uniform0/1 mapped to-1/+1, float64 divide24",
+  "generator": "numpy2.4.2 Generator(PCG64)",
+  "npz_sha256": "da670557d36768ca4199c9af69415c6dd31e970b3f08574e85ad69e8d8ce9644",
+  "seed": 66901,
+  "shape": [
+    768,
+    576
+  ],
+  "signs_raw_sha256": "37c448cae88ab74aee3f5357f418ff51e51dcfdca87356f542641dc742cfc731"
+}

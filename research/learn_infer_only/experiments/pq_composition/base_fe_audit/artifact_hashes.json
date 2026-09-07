@@ -1,0 +1,45 @@
+{
+  "schema": "base-fe-audit-artifacts-v1",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "caa3d07d1605371cefc16c6121c993460a247fbc3073566e609b48ea8b8c0fc5",
+      "bytes": 22
+    },
+    {
+      "path": "BASE_FE_AUDIT.md",
+      "sha256": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+      "bytes": 21970
+    },
+    {
+      "path": "access.json",
+      "sha256": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+      "bytes": 5769
+    },
+    {
+      "path": "source_spans.json",
+      "sha256": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+      "bytes": 4894
+    },
+    {
+      "path": "rate_ledger.py",
+      "sha256": "be8fa2b43a936bd27be48c1524aa7ec0399f9ac24c2c5baa3b90730a02f5617c",
+      "bytes": 3011
+    },
+    {
+      "path": "rate_ledger.json",
+      "sha256": "3c81183af2a9aebad00dda88505024ed564db0ac8a7c84291b3a4a0adad558f4",
+      "bytes": 3681
+    },
+    {
+      "path": "validate.py",
+      "sha256": "bb6eb21cbf98360a65a8711e3091e84ebbf52f32b401be25fe073a38185e42c0",
+      "bytes": 3306
+    },
+    {
+      "path": "validation.json",
+      "sha256": "15b8d471390b8595e3917cf483de7d027c1ebbc1bb1598202e3504f6f0cfdd6b",
+      "bytes": 4734
+    }
+  ]
+}

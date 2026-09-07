@@ -1,0 +1,88 @@
+{
+  "claim_label": "EXECUTED: source-hash and document validation only; no cryptographic runtime",
+  "utc": "2026-09-07T04:28:41.551671+00:00",
+  "command": "python3 heredoc: parse sources.json, recursively recompute every path/sha256 entry, check expected sibling review hash and main-note whitespace",
+  "source_hash_checks": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/review/REVIEW.md",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/scry_functional_proxy.jsonl",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/scry_inner_product_proxy.jsonl",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/318.pdf",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/2013-318.txt",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/feng_2024_poster.pdf",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/feng_2024_poster.txt",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/feng_2024_poster.png",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/feng_conference.html",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/feng_paper_retrieval.json",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/poster_retrieval.json",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/luo_2022_web_excerpt.txt",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/luo_2022_pdf_web_excerpt.txt",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/luo_retrieval.json",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/techrxiv_api.json",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/PRIOR_ART.md",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/.gitignore",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/html_retrieval.json",
+      "match": true
+    }
+  ],
+  "all_hashes_match": true,
+  "expected_review_hash_matches": true,
+  "trailing_whitespace_lines": [],
+  "prior_art_sha256": "fdaf73f298bdabd665f25ce3a76423d19c25fb9bc6bd272f06987d91d0d300aa",
+  "sources_json_sha256": "7b2df35b796d9d39b6709ce9bc44fd840cce34b5ba9eb0df7064cc927da13e07",
+  "parent_prior_web_queries": 2,
+  "lane_web_queries": 13,
+  "lane_scry_sql": 2,
+  "lane_scry_schema": 0
+}

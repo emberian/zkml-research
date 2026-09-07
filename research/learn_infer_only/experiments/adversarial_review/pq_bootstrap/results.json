@@ -1,0 +1,226 @@
+{
+  "label": "EXECUTED",
+  "scope": "Independent exact finite controls for the conditional bootstrap proof.\n\nThese are channel algebra, compatibility and error-accounting tests, not FE,\nPRG, xiO, quantum-security implementations, or state-recovery experiments.\n",
+  "script_sha256": "4b2fe081b4df5ddbc2cc80d7fd23a83d5de2c196bb3400083a8ff9d5df47f1b9",
+  "position_wrapper": {
+    "compatible_indexed_message_pairs": 1252,
+    "exact_single_challenge_public_wrapper_laws": 2504,
+    "scope": "One symbolic supplied key, one challenged position, publicly sampled remaining positions; no privacy claim for symbolic ciphertexts."
+  },
+  "shared_key": {
+    "honest_joint_support": 64,
+    "postprocessing_checks": 16,
+    "wrong_independent_sibling_key_TV": "3/4",
+    "scope": "An exact joint-law test; replacing the shared key by an independent key changes the distribution."
+  },
+  "path_marginals": {
+    "fixed_prefix_joint_law_checks": 510,
+    "by_depth": [
+      {
+        "alpha": "1/4",
+        "depth": 0,
+        "full_fresh_channel_TV": "7/32",
+        "maximum_fixed_prefix_joint_pair_TV": "0"
+      },
+      {
+        "alpha": "1/4",
+        "depth": 1,
+        "full_fresh_channel_TV": "7/32",
+        "maximum_fixed_prefix_joint_pair_TV": "1/8"
+      },
+      {
+        "alpha": "1/4",
+        "depth": 2,
+        "full_fresh_channel_TV": "7/32",
+        "maximum_fixed_prefix_joint_pair_TV": "1/8"
+      },
+      {
+        "alpha": "1/4",
+        "depth": 3,
+        "full_fresh_channel_TV": "7/32",
+        "maximum_fixed_prefix_joint_pair_TV": "1/8"
+      },
+      {
+        "alpha": "1/4",
+        "depth": 4,
+        "full_fresh_channel_TV": "7/32",
+        "maximum_fixed_prefix_joint_pair_TV": "1/8"
+      },
+      {
+        "alpha": "1/4",
+        "depth": 5,
+        "full_fresh_channel_TV": "7/32",
+        "maximum_fixed_prefix_joint_pair_TV": "1/8"
+      },
+      {
+        "alpha": "1/4",
+        "depth": 6,
+        "full_fresh_channel_TV": "7/32",
+        "maximum_fixed_prefix_joint_pair_TV": "1/8"
+      },
+      {
+        "alpha": "1/4",
+        "depth": 7,
+        "full_fresh_channel_TV": "7/32",
+        "maximum_fixed_prefix_joint_pair_TV": "1/8"
+      },
+      {
+        "alpha": "1",
+        "depth": 0,
+        "full_fresh_channel_TV": "7/8",
+        "maximum_fixed_prefix_joint_pair_TV": "0"
+      },
+      {
+        "alpha": "1",
+        "depth": 1,
+        "full_fresh_channel_TV": "7/8",
+        "maximum_fixed_prefix_joint_pair_TV": "1/2"
+      },
+      {
+        "alpha": "1",
+        "depth": 2,
+        "full_fresh_channel_TV": "7/8",
+        "maximum_fixed_prefix_joint_pair_TV": "3/4"
+      },
+      {
+        "alpha": "1",
+        "depth": 3,
+        "full_fresh_channel_TV": "7/8",
+        "maximum_fixed_prefix_joint_pair_TV": "3/4"
+      },
+      {
+        "alpha": "1",
+        "depth": 4,
+        "full_fresh_channel_TV": "7/8",
+        "maximum_fixed_prefix_joint_pair_TV": "3/4"
+      },
+      {
+        "alpha": "1",
+        "depth": 5,
+        "full_fresh_channel_TV": "7/8",
+        "maximum_fixed_prefix_joint_pair_TV": "3/4"
+      },
+      {
+        "alpha": "1",
+        "depth": 6,
+        "full_fresh_channel_TV": "7/8",
+        "maximum_fixed_prefix_joint_pair_TV": "3/4"
+      },
+      {
+        "alpha": "1",
+        "depth": 7,
+        "full_fresh_channel_TV": "7/8",
+        "maximum_fixed_prefix_joint_pair_TV": "3/4"
+      }
+    ],
+    "equal_marginals_joint_TV": "1/2",
+    "known_seed_conditional_TV": "3/4",
+    "scope": "Two finite channels test the hybrid algebra, not computational PRGs.\n\nalpha=1 is a deliberately insecure deterministic one-bit expander.\nalpha=1/4 is a randomized near-uniform channel making accumulated TV\naccounting nonvacuous. It is explicitly not a deterministic PRG.\n"
+  },
+  "pointwise_setup": {
+    "shared_setup_union_checks": 270,
+    "examples": [
+      {
+        "coincident": false,
+        "pointwise": "1/8",
+        "actual_union": "3/8",
+        "independence_formula_not_used": "169/512"
+      },
+      {
+        "coincident": true,
+        "pointwise": "1/8",
+        "actual_union": "1/8",
+        "independence_formula_not_used": "169/512"
+      }
+    ],
+    "failed_premise_sibling": "Post-setup choice i=key in the disjoint pattern has error 1 while every fixed i has error 1/K."
+  },
+  "coefficients": {
+    "privacy_and_correctness_coefficient_cases": 7936,
+    "n_zero": {
+      "privacy_RE": 2,
+      "privacy_tree_PRG": 0,
+      "correctness_nodes": 1,
+      "combined_correctness_PRG": 1
+    }
+  },
+  "author_replays_in_owned_copies": [
+    {
+      "command": [
+        "python3",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_bootstrap/reference/controls.py"
+      ],
+      "exit_code": 0,
+      "matches_frozen_author_result": true,
+      "result": {
+        "label": "EXECUTED",
+        "scope": "Finite algebra and plaintext function controls; not a cryptographic proof checker.",
+        "counts": {
+          "single_boolean_key_per_position_compatibility_cases": 145636,
+          "privacy_recurrence_rational_cases": 225,
+          "all_node_depth_coefficient_cases": 25,
+          "encoding_composition_coefficient_cases": 4096,
+          "latent_tree_failure_mask_cases": 32906,
+          "compactness_fixed_point_cases": 1056
+        },
+        "pseudorandom_tape_countercontrol": {
+          "label": "REFUTED: replacing generated tapes by uniform correctness with no PRG term",
+          "uniform_failure": "1/32",
+          "generated_failure": "1",
+          "efficient_bad_range_PRG_gap": "31/32",
+          "scope": "Deliberately insecure finite generator, not an attack on an assumed secure PRG."
+        },
+        "script_sha256": "c3099a42e6c034187ec76306fb99a664d24ecf3e02703c996da51bdebc4d60d9"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_bootstrap/reference/pointwise_controls.py"
+      ],
+      "exit_code": 0,
+      "matches_frozen_author_result": true,
+      "result": {
+        "label": "EXECUTED",
+        "scope": "Exact finite coefficient accounting for pointwise-correctness propagation.",
+        "coefficient_cases": 17408,
+        "frozen_bootstrap_sha256": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+        "supplement_sha256": "c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2",
+        "script_sha256": "344372292706c48be180e960fc45e8725b592794fc9ddb0094949c82d7f39b95",
+        "additional_network_queries": 0
+      }
+    }
+  ],
+  "additional_network_queries": 0,
+  "input_hashes_before": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/POINTWISE_CORRECTNESS.md": "c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/REVIEW_REQUEST.md": "1de4ddb3eb88360ffc02d4664efb1116e756770ab474833377f7ba872cb983e6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/controls.py": "c3099a42e6c034187ec76306fb99a664d24ecf3e02703c996da51bdebc4d60d9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/controls.json": "6b451f051d612fc4741d5c9a68ff8b813b0ff404ec815f0aa128b8ad5623b517",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/pointwise_controls.py": "344372292706c48be180e960fc45e8725b592794fc9ddb0094949c82d7f39b95",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/pointwise_controls.json": "e9ef258962cd6fd66b16f76defab42243e3abcf190eb18f6d544dfe3aff90ad8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/audit.json": "4388bede0c1d5acb54d9d091d1f8d59ea0b74faf1226efdb0299662e3125d754",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/ACCESS.md": "03d9037ede57f758860dc64d1d3d1b7cb3ddcc055bb0a61035926e7442e0faaf",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_bootstrap/extracts/2016-006.txt": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_bootstrap/extracts/2015-720.txt": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713"
+  },
+  "input_hashes_after": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/POINTWISE_CORRECTNESS.md": "c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/REVIEW_REQUEST.md": "1de4ddb3eb88360ffc02d4664efb1116e756770ab474833377f7ba872cb983e6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/controls.py": "c3099a42e6c034187ec76306fb99a664d24ecf3e02703c996da51bdebc4d60d9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/controls.json": "6b451f051d612fc4741d5c9a68ff8b813b0ff404ec815f0aa128b8ad5623b517",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/pointwise_controls.py": "344372292706c48be180e960fc45e8725b592794fc9ddb0094949c82d7f39b95",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/pointwise_controls.json": "e9ef258962cd6fd66b16f76defab42243e3abcf190eb18f6d544dfe3aff90ad8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/audit.json": "4388bede0c1d5acb54d9d091d1f8d59ea0b74faf1226efdb0299662e3125d754",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/ACCESS.md": "03d9037ede57f758860dc64d1d3d1b7cb3ddcc055bb0a61035926e7442e0faaf",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_bootstrap/extracts/2016-006.txt": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_bootstrap/extracts/2015-720.txt": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713"
+  },
+  "all_review_inputs_unchanged": true
+}

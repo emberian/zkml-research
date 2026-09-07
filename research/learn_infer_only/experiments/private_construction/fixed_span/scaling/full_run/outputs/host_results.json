@@ -1,0 +1,890 @@
+{
+  "passed": true,
+  "stats": {
+    "learns": 384,
+    "queries": 96,
+    "expirations": 256,
+    "queue_identity_checks": 384,
+    "validation_ns": 562602724511,
+    "update_ns": 90540234315,
+    "audit_queue_product_ns": 135489514009,
+    "projection_ns": 18245232084,
+    "decode_ns": 5637747460,
+    "serialization_ns": 65367834,
+    "validation_native_powers": 221952,
+    "projection_native_powers": 55488,
+    "decode_giant_iterations": 256006
+  },
+  "answers": [
+    {
+      "event_id": "h0-e0065",
+      "query_index": 0,
+      "route": 0,
+      "history": 0,
+      "score": -7697,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0066",
+      "query_index": 1,
+      "route": 0,
+      "history": 0,
+      "score": 2991,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0067",
+      "query_index": 2,
+      "route": 0,
+      "history": 0,
+      "score": 2839,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0068",
+      "query_index": 3,
+      "route": 0,
+      "history": 0,
+      "score": 11115,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0069",
+      "query_index": 4,
+      "route": 0,
+      "history": 0,
+      "score": -8616,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0070",
+      "query_index": 5,
+      "route": 0,
+      "history": 0,
+      "score": 1460,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0071",
+      "query_index": 6,
+      "route": 0,
+      "history": 0,
+      "score": 1989,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0072",
+      "query_index": 7,
+      "route": 0,
+      "history": 0,
+      "score": 9542,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0073",
+      "query_index": 8,
+      "route": 1,
+      "history": 0,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h0-e0074",
+      "query_index": 9,
+      "route": 1,
+      "history": 0,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h0-e0075",
+      "query_index": 10,
+      "route": 1,
+      "history": 0,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h0-e0076",
+      "query_index": 11,
+      "route": 1,
+      "history": 0,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h0-e0077",
+      "query_index": 12,
+      "route": 1,
+      "history": 0,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h0-e0078",
+      "query_index": 13,
+      "route": 1,
+      "history": 0,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h0-e0079",
+      "query_index": 14,
+      "route": 1,
+      "history": 0,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h0-e0080",
+      "query_index": 15,
+      "route": 1,
+      "history": 0,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h0-e0145",
+      "query_index": 0,
+      "route": 0,
+      "history": 0,
+      "score": -7697,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0146",
+      "query_index": 1,
+      "route": 0,
+      "history": 0,
+      "score": 2991,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0147",
+      "query_index": 2,
+      "route": 0,
+      "history": 0,
+      "score": 2839,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0148",
+      "query_index": 3,
+      "route": 0,
+      "history": 0,
+      "score": 11115,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0149",
+      "query_index": 4,
+      "route": 0,
+      "history": 0,
+      "score": -8616,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0150",
+      "query_index": 5,
+      "route": 0,
+      "history": 0,
+      "score": 1460,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0151",
+      "query_index": 6,
+      "route": 0,
+      "history": 0,
+      "score": 1989,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0152",
+      "query_index": 7,
+      "route": 0,
+      "history": 0,
+      "score": 9542,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0153",
+      "query_index": 8,
+      "route": 1,
+      "history": 0,
+      "score": 4512,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0154",
+      "query_index": 9,
+      "route": 1,
+      "history": 0,
+      "score": -5019,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0155",
+      "query_index": 10,
+      "route": 1,
+      "history": 0,
+      "score": -37150,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0156",
+      "query_index": 11,
+      "route": 1,
+      "history": 0,
+      "score": -41102,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0157",
+      "query_index": 12,
+      "route": 1,
+      "history": 0,
+      "score": 3050,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0158",
+      "query_index": 13,
+      "route": 1,
+      "history": 0,
+      "score": -7154,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0159",
+      "query_index": 14,
+      "route": 1,
+      "history": 0,
+      "score": -40275,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0160",
+      "query_index": 15,
+      "route": 1,
+      "history": 0,
+      "score": -45158,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0225",
+      "query_index": 0,
+      "route": 0,
+      "history": 0,
+      "score": 2154,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0226",
+      "query_index": 1,
+      "route": 0,
+      "history": 0,
+      "score": 2925,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0227",
+      "query_index": 2,
+      "route": 0,
+      "history": 0,
+      "score": 3047,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0228",
+      "query_index": 3,
+      "route": 0,
+      "history": 0,
+      "score": 3426,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0229",
+      "query_index": 4,
+      "route": 0,
+      "history": 0,
+      "score": 3130,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0230",
+      "query_index": 5,
+      "route": 0,
+      "history": 0,
+      "score": 3824,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0231",
+      "query_index": 6,
+      "route": 0,
+      "history": 0,
+      "score": 3663,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0232",
+      "query_index": 7,
+      "route": 0,
+      "history": 0,
+      "score": 4276,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0233",
+      "query_index": 8,
+      "route": 1,
+      "history": 0,
+      "score": 4512,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0234",
+      "query_index": 9,
+      "route": 1,
+      "history": 0,
+      "score": -5019,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0235",
+      "query_index": 10,
+      "route": 1,
+      "history": 0,
+      "score": -37150,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0236",
+      "query_index": 11,
+      "route": 1,
+      "history": 0,
+      "score": -41102,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0237",
+      "query_index": 12,
+      "route": 1,
+      "history": 0,
+      "score": 3050,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0238",
+      "query_index": 13,
+      "route": 1,
+      "history": 0,
+      "score": -7154,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0239",
+      "query_index": 14,
+      "route": 1,
+      "history": 0,
+      "score": -40275,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h0-e0240",
+      "query_index": 15,
+      "route": 1,
+      "history": 0,
+      "score": -45158,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0065",
+      "query_index": 0,
+      "route": 0,
+      "history": 1,
+      "score": 3280,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0066",
+      "query_index": 1,
+      "route": 0,
+      "history": 1,
+      "score": -2027,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0067",
+      "query_index": 2,
+      "route": 0,
+      "history": 1,
+      "score": -34,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0068",
+      "query_index": 3,
+      "route": 0,
+      "history": 1,
+      "score": -4800,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0069",
+      "query_index": 4,
+      "route": 0,
+      "history": 1,
+      "score": 1582,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0070",
+      "query_index": 5,
+      "route": 0,
+      "history": 1,
+      "score": -3551,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0071",
+      "query_index": 6,
+      "route": 0,
+      "history": 1,
+      "score": -1548,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0072",
+      "query_index": 7,
+      "route": 0,
+      "history": 1,
+      "score": -6006,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0073",
+      "query_index": 8,
+      "route": 1,
+      "history": 1,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h1-e0074",
+      "query_index": 9,
+      "route": 1,
+      "history": 1,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h1-e0075",
+      "query_index": 10,
+      "route": 1,
+      "history": 1,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h1-e0076",
+      "query_index": 11,
+      "route": 1,
+      "history": 1,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h1-e0077",
+      "query_index": 12,
+      "route": 1,
+      "history": 1,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h1-e0078",
+      "query_index": 13,
+      "route": 1,
+      "history": 1,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h1-e0079",
+      "query_index": 14,
+      "route": 1,
+      "history": 1,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h1-e0080",
+      "query_index": 15,
+      "route": 1,
+      "history": 1,
+      "score": 0,
+      "sign": 1,
+      "active_count": 0
+    },
+    {
+      "event_id": "h1-e0145",
+      "query_index": 0,
+      "route": 0,
+      "history": 1,
+      "score": 3280,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0146",
+      "query_index": 1,
+      "route": 0,
+      "history": 1,
+      "score": -2027,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0147",
+      "query_index": 2,
+      "route": 0,
+      "history": 1,
+      "score": -34,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0148",
+      "query_index": 3,
+      "route": 0,
+      "history": 1,
+      "score": -4800,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0149",
+      "query_index": 4,
+      "route": 0,
+      "history": 1,
+      "score": 1582,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0150",
+      "query_index": 5,
+      "route": 0,
+      "history": 1,
+      "score": -3551,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0151",
+      "query_index": 6,
+      "route": 0,
+      "history": 1,
+      "score": -1548,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0152",
+      "query_index": 7,
+      "route": 0,
+      "history": 1,
+      "score": -6006,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0153",
+      "query_index": 8,
+      "route": 1,
+      "history": 1,
+      "score": 9937,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0154",
+      "query_index": 9,
+      "route": 1,
+      "history": 1,
+      "score": 27728,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0155",
+      "query_index": 10,
+      "route": 1,
+      "history": 1,
+      "score": -3576,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0156",
+      "query_index": 11,
+      "route": 1,
+      "history": 1,
+      "score": 9093,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0157",
+      "query_index": 12,
+      "route": 1,
+      "history": 1,
+      "score": 7082,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0158",
+      "query_index": 13,
+      "route": 1,
+      "history": 1,
+      "score": 25073,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0159",
+      "query_index": 14,
+      "route": 1,
+      "history": 1,
+      "score": -6352,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0160",
+      "query_index": 15,
+      "route": 1,
+      "history": 1,
+      "score": 6723,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0225",
+      "query_index": 0,
+      "route": 0,
+      "history": 1,
+      "score": 10710,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0226",
+      "query_index": 1,
+      "route": 0,
+      "history": 1,
+      "score": 13414,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0227",
+      "query_index": 2,
+      "route": 0,
+      "history": 1,
+      "score": 4529,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0228",
+      "query_index": 3,
+      "route": 0,
+      "history": 1,
+      "score": 7122,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0229",
+      "query_index": 4,
+      "route": 0,
+      "history": 1,
+      "score": 9843,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0230",
+      "query_index": 5,
+      "route": 0,
+      "history": 1,
+      "score": 12869,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0231",
+      "query_index": 6,
+      "route": 0,
+      "history": 1,
+      "score": 4167,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0232",
+      "query_index": 7,
+      "route": 0,
+      "history": 1,
+      "score": 7217,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0233",
+      "query_index": 8,
+      "route": 1,
+      "history": 1,
+      "score": 9937,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0234",
+      "query_index": 9,
+      "route": 1,
+      "history": 1,
+      "score": 27728,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0235",
+      "query_index": 10,
+      "route": 1,
+      "history": 1,
+      "score": -3576,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0236",
+      "query_index": 11,
+      "route": 1,
+      "history": 1,
+      "score": 9093,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0237",
+      "query_index": 12,
+      "route": 1,
+      "history": 1,
+      "score": 7082,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0238",
+      "query_index": 13,
+      "route": 1,
+      "history": 1,
+      "score": 25073,
+      "sign": 1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0239",
+      "query_index": 14,
+      "route": 1,
+      "history": 1,
+      "score": -6352,
+      "sign": -1,
+      "active_count": 32
+    },
+    {
+      "event_id": "h1-e0240",
+      "query_index": 15,
+      "route": 1,
+      "history": 1,
+      "score": 6723,
+      "sign": 1,
+      "active_count": 32
+    }
+  ],
+  "decoder_setup_ns_this_process": 6098416,
+  "decode_bound": 14219936,
+  "baby_entries": 5333,
+  "master_or_input_plaintext_received": false,
+  "fixed_key_count": 16,
+  "code_sha256": "b37d033a5a8a22fe3be19ec0b13dd80c4a2eb91c91248b3b36727a30f81836c4"
+}

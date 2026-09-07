@@ -1,0 +1,85 @@
+{
+  "execution_passed": true,
+  "useful_successor": false,
+  "acceptance": {
+    "final_accuracy_at_least_75pct": false,
+    "paired_gain_over_original_at_least_10pp": false,
+    "descriptive_paired_lower_endpoint_positive": false,
+    "nonlinear_gain_over_original_at_least_10pp": false,
+    "simple_regression_no_worse_than_5pp": true,
+    "untouched_route_state_and_output_retention_exact": true,
+    "projection_loss_no_worse_than_2pp": true
+  },
+  "paired_primary_minus": {
+    "original577": {
+      "mean": 0.010986328125,
+      "n_histories": 64,
+      "sd": 0.08047938929800297,
+      "normal95_half_width": 0.019717450378010728,
+      "min": -0.1640625,
+      "max": 0.2109375
+    },
+    "quadratic8": {
+      "mean": 0.0313720703125,
+      "n_histories": 64,
+      "sd": 0.060073368284907946,
+      "normal95_half_width": 0.014717975229802447,
+      "min": -0.1015625,
+      "max": 0.171875
+    },
+    "calibrated_soft8": {
+      "mean": 0.0299072265625,
+      "n_histories": 64,
+      "sd": 0.07328185929552393,
+      "normal95_half_width": 0.017954055527403364,
+      "min": -0.171875,
+      "max": 0.171875
+    },
+    "e5_raw769": {
+      "mean": -0.009033203125,
+      "n_histories": 64,
+      "sd": 0.0294699747337403,
+      "normal95_half_width": 0.007220143809766374,
+      "min": -0.1171875,
+      "max": 0.078125
+    }
+  },
+  "nonlinear_gain": -0.0024999999999999467,
+  "simple_gain": 0.019631410256410242,
+  "denominators": {
+    "unique_new_texts": 128,
+    "new_histories": 64,
+    "methods": 6,
+    "checkpoints": 3,
+    "scores": 147456,
+    "final_queries_per_method": 8192,
+    "reset_accuracy": 0.5
+  },
+  "primary_attribute_labels": 0,
+  "frozen_soft_comparison_attribute_bits": {
+    "teacher": 256,
+    "selection": 256
+  },
+  "primary_integer_checkpoint_vectors": 384,
+  "untouched_route_state_and_output_checks": 768,
+  "selection_sha256": "3a2469fc348255e6289dab90e384580d6f8920df90952d74d8f8a1207fa74537",
+  "features_sha256": "2c99baf506613a9da460ee03724a6e30d3f804af1a592e22fadea3f2bfd77697",
+  "freeze_sha256": "4e25fdf2aaa34bd65075cf5c42914f3222ba218c3eb92bd3d45a8277963c148f",
+  "encoding_cost": {
+    "e5_both_representations": {
+      "wall_seconds": 0.006497416005004197,
+      "cpu_seconds": 0.006487999999999994,
+      "process_high_water_rss_bytes_macos": 58048512
+    },
+    "three_old_methods": {
+      "wall_seconds": 0.00836483298917301,
+      "cpu_seconds": 0.00720599999999999,
+      "process_high_water_rss_bytes_macos": 65028096
+    }
+  },
+  "cost": {
+    "wall_seconds": 1.1102650000248104,
+    "cpu_seconds": 0.9414579999999999,
+    "process_high_water_rss_bytes_macos": 74645504
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/preflight.py",
+    "run"
+  ],
+  "returncode": 0,
+  "wall_seconds": 57.533540333999554,
+  "timeout_seconds": 1200
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "designated-span-independent-math-review-v1",
+  "sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/README.md",
+      "sha256": "47c60190dbbce2409fec16939865bc2e81ef1c850f4f0fa856e4eb6d8ff550f7",
+      "read_scope": "Source equations, exposure and lifecycle sections; targeted lines20-92 and named search hits"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/scaling/GENERAL_FIXED_SPAN.md",
+      "sha256": "5d99740f9f329e0a45f9c45bcd0db684b49f66660db567d81bfc169dbca4edb9",
+      "read_scope": "Complete mathematical note; independently checked basis and hybrid derivation; no rerun"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/REPORT.md",
+      "sha256": "e3127a40ea702ace13584cc13ce65dc06f11d9cfbf81f759fc6317cbd4a2017e",
+      "read_scope": "Sections1-2 through line130; prior3D review qualifications"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span_scaling/REPORT.md",
+      "sha256": "36e724058ab5643dd4c0d176854891aabf1bbec9064ca54f5e7d0e0959dfb147",
+      "read_scope": "Sections1-5 through line210; general fixed-span review and scope"
+    }
+  ],
+  "review_sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840",
+  "search_queries": 0,
+  "construction_runtime_tests": 0,
+  "extraction_or_routing_tests": 0,
+  "scope": "Written algebraic/game review only; local source reads and artifact hashes"
+}

@@ -1,0 +1,129 @@
+{
+  "label": "EXECUTED",
+  "scope": "Independent finite mathematics/provenance controls for TERMINAL_JOINT.\n\nNo cryptographic implementation, extraction, recovery, routing or service\nadversary is executed. Toy group elements are forward algebraic coordinates;\nsymbolic payload/proof records check marginal laws, not FE/GS security.\n",
+  "author": "/root/private_ingress",
+  "reviewer": "/root/pq_composition",
+  "script_sha256": "c6790215ba868979cf542fd6187b6eedfcbe72f2ac367b1c8641ede942395de1",
+  "binding_and_replacements": {
+    "forward_binding_images_checked": 1052672,
+    "canonical_replacement_guard_cases": 42336,
+    "nonvacuous_terminal_state_pairs": [
+      [
+        32,
+        33,
+        0,
+        0
+      ],
+      [
+        33,
+        34,
+        0,
+        0
+      ]
+    ]
+  },
+  "affine_joint_laws": {
+    "joint_right_marginal_records_checked": 132098,
+    "conditional_translation_bijections": 257,
+    "scope": "Exact right-marginal laws only; H2/H3 ciphertext privacy remains a primitive game."
+  },
+  "CRS_coefficient_controls": {
+    "full_field_shift_cases": 178,
+    "sampling_convention_controls": [
+      {
+        "p": 3,
+        "nonzero_uniform_shift_TV": "1/2"
+      },
+      {
+        "p": 5,
+        "nonzero_uniform_shift_TV": "1/4"
+      },
+      {
+        "p": 7,
+        "nonzero_uniform_shift_TV": "1/6"
+      },
+      {
+        "p": 11,
+        "nonzero_uniform_shift_TV": "1/10"
+      }
+    ],
+    "scope": "Forward distribution identities and triangle coefficients, not DDH security."
+  },
+  "sampler_and_budget_controls": {
+    "exact_mod_sampler_cases": 858,
+    "four_term_budget_cases": 6425,
+    "nonuniform_coin_countercontrol_TV": "256/257",
+    "scope": "The countercontrol rejects treating arbitrary derived coins as uniform; no actual PRF is executed."
+  },
+  "quantifier_controls": {
+    "fixed_tester_abs_mean_signed_gap": "0",
+    "mean_absolute_conditional_gap": "1",
+    "cancellation_scope": "The full joint distributions in the cancellation example are distinguishable; it is not a counterexample to security for every joint tester.",
+    "rare_public_setup_controls": [
+      {
+        "setup_labels": 2,
+        "full_joint_TV": "1/2",
+        "exceptional_conditional_TV": "1"
+      },
+      {
+        "setup_labels": 4,
+        "full_joint_TV": "1/4",
+        "exceptional_conditional_TV": "1"
+      },
+      {
+        "setup_labels": 8,
+        "full_joint_TV": "1/8",
+        "exceptional_conditional_TV": "1"
+      },
+      {
+        "setup_labels": 16,
+        "full_joint_TV": "1/16",
+        "exceptional_conditional_TV": "1"
+      },
+      {
+        "setup_labels": 32,
+        "full_joint_TV": "1/32",
+        "exceptional_conditional_TV": "1"
+      },
+      {
+        "setup_labels": 64,
+        "full_joint_TV": "1/64",
+        "exceptional_conditional_TV": "1"
+      }
+    ],
+    "rare_scope": "Even full-joint closeness bounds do not imply a bound for every realized setup; no secret advice is assumed."
+  },
+  "input_hashes_before": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/TERMINAL_JOINT.md": "1c698c8361cd4d6e5bfefc96ee34d1bcc4d090ec59f09f6efaad378d5195717c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/verify_sources.py": "b18cd9a1840a18352d96296fa70906a25fec44edecf1748be622785d11856c3a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/verify_sources.stdout.txt": "faefae402fe2d59b9e8145bbd31e78dbccb51f4b6485927ff8fc112f2cb104cf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/sources.json": "faefae402fe2d59b9e8145bbd31e78dbccb51f4b6485927ff8fc112f2cb104cf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/manifest.json": "c33e70b094871c0db6d41123db427afafa39de770f599566c41cad0966e0908e",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/sources/2025-330.txt": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/155.pdf": "45358698cdd4007dddbabf74f7e32e7762d963637c8e3bfae5be2235df64868e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_sources/2007-155.txt": "0c4b2fc7fa3d22f1e85277cb8b2189052be1d69d966c465efaa46be25ac9d2f5"
+  },
+  "queries": {
+    "SQL": 0,
+    "schema": 0,
+    "web_search": 0,
+    "web_open": 0,
+    "Kagi": 0
+  },
+  "new_PDF_extracts": 0,
+  "PDF_downloads": 0,
+  "cryptographic_extraction_recovery_routing_or_service_runtimes": 0,
+  "input_hashes_after": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/TERMINAL_JOINT.md": "1c698c8361cd4d6e5bfefc96ee34d1bcc4d090ec59f09f6efaad378d5195717c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/verify_sources.py": "b18cd9a1840a18352d96296fa70906a25fec44edecf1748be622785d11856c3a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/verify_sources.stdout.txt": "faefae402fe2d59b9e8145bbd31e78dbccb51f4b6485927ff8fc112f2cb104cf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/sources.json": "faefae402fe2d59b9e8145bbd31e78dbccb51f4b6485927ff8fc112f2cb104cf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/manifest.json": "c33e70b094871c0db6d41123db427afafa39de770f599566c41cad0966e0908e",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/sources/2025-330.txt": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/155.pdf": "45358698cdd4007dddbabf74f7e32e7762d963637c8e3bfae5be2235df64868e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_sources/2007-155.txt": "0c4b2fc7fa3d22f1e85277cb8b2189052be1d69d966c465efaa46be25ac9d2f5"
+  },
+  "all_inputs_unchanged": true
+}

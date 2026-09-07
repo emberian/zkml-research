@@ -1,0 +1,8 @@
+{
+  "command": [
+    "research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/config_diagnostic.py"
+  ],
+  "returncode": 0,
+  "wall_seconds": 2.596942959004082
+}

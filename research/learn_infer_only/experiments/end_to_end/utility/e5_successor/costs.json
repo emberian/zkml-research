@@ -1,0 +1,91 @@
+{
+  "derived": {
+    "generic_577_score_bound": 297805856,
+    "generic_raw769_score_bound": 396902432,
+    "primary_added_attribute_labels": 0,
+    "projection_float64_bytes": 3538944,
+    "projection_reduction_adds_per_text": 441792,
+    "projection_scalar_products_per_text": 442368,
+    "raw769_is_offline_only": true
+  },
+  "encode_384_vectors": {
+    "e5_both_representations": {
+      "cpu_seconds": 0.006487999999999994,
+      "process_high_water_rss_bytes_macos": 58048512,
+      "wall_seconds": 0.006497416005004197
+    },
+    "three_old_methods": {
+      "cpu_seconds": 0.00720599999999999,
+      "process_high_water_rss_bytes_macos": 65028096,
+      "wall_seconds": 0.00836483298917301
+    }
+  },
+  "extraction": {
+    "e5_test": {
+      "forward_cpu_seconds": 2.0453330000000016,
+      "forward_wall_seconds": 3.063339749991428,
+      "full_process_wall_seconds": 15.03121524999733,
+      "load_cpu_seconds": 0.17365399999999998,
+      "load_wall_seconds": 0.363514333992498,
+      "model": "intfloat/e5-base-v2",
+      "padded_tokens": 4720,
+      "parameter_count": 109482240,
+      "process_high_water_rss_bytes_macos": 769622016,
+      "records": 128,
+      "revision": "f52bf8ec8c7124536f0efb74aca902b2995e5bcd",
+      "total_cpu_seconds_including_imports": 5.265636,
+      "total_wall_seconds_including_imports": 14.159927332977531,
+      "unpadded_tokens": 4408
+    },
+    "e5_train": {
+      "forward_cpu_seconds": 3.212942,
+      "forward_wall_seconds": 6.475079041032586,
+      "full_process_wall_seconds": 16.43763804199989,
+      "load_cpu_seconds": 0.18715700000000002,
+      "load_wall_seconds": 0.5294747079897206,
+      "model": "intfloat/e5-base-v2",
+      "padded_tokens": 6592,
+      "parameter_count": 109482240,
+      "process_high_water_rss_bytes_macos": 734658560,
+      "records": 256,
+      "revision": "f52bf8ec8c7124536f0efb74aca902b2995e5bcd",
+      "total_cpu_seconds_including_imports": 7.079694,
+      "total_wall_seconds_including_imports": 15.599204041995108,
+      "unpadded_tokens": 6024
+    },
+    "smol_test": {
+      "forward_cpu_seconds": 2.872818000000001,
+      "forward_wall_seconds": 8.265183914947556,
+      "full_process_wall_seconds": 24.20056695799576,
+      "load_cpu_seconds": 0.3318369999999997,
+      "load_wall_seconds": 1.1831863329862244,
+      "model": "HuggingFaceTB/SmolLM2-135M",
+      "padded_tokens": 4144,
+      "parameter_count": 134515008,
+      "process_high_water_rss_bytes_macos": 1152991232,
+      "records": 128,
+      "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+      "total_cpu_seconds_including_imports": 6.631793999999999,
+      "total_wall_seconds_including_imports": 22.85973133301013,
+      "unpadded_tokens": 3928
+    }
+  },
+  "independent_audit_wall_seconds": 1.783970541000599,
+  "label": "EXECUTED unless nested under derived",
+  "limitations": [
+    "Shared machine; timings are observed executions, not a controlled speed comparison.",
+    "Forward and load timings are nested in full process wall time.",
+    "RSS high-water values are not additive.",
+    "Projection and full source encoding are plaintext issuer/public-query work, not HE costs."
+  ],
+  "teacher_fit_and_encode_both_e5": {
+    "cpu_seconds": 0.0068130000000000135,
+    "process_high_water_rss_bytes_macos": 52510720,
+    "wall_seconds": 0.010494457994354889
+  },
+  "utility_evaluation": {
+    "cpu_seconds": 0.9414579999999999,
+    "process_high_water_rss_bytes_macos": 74645504,
+    "wall_seconds": 1.1102650000248104
+  }
+}

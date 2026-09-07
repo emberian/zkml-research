@@ -1,0 +1,61 @@
+{
+  "label": "EXECUTED",
+  "reviewer": "/root/entropy_composition",
+  "author": "/root/he_closure_costs",
+  "decision": "Accept static one-copy QA GKP/ABE audit under explicit primitive games; clarify direct all-block route for2-LWE coefficient; literal full-key recursive payload fails common bound and grows exponentially with per-level bounds.",
+  "artifacts": {
+    "REPORT.md": "0d14b9e394528d7aba9fecf40e17d4cbf59103c128cfa235246b424487a4dad4",
+    "review.py": "5738f302056348dcecf6520cf9d0af233f6ad86441a6c4e49696e3de9a45db7a",
+    "results.json": "92883f4a80f522c3beddc973ca4b443ffaf2c8804a734925932a20c0e6449b24",
+    "stdout.txt": "92883f4a80f522c3beddc973ca4b443ffaf2c8804a734925932a20c0e6449b24",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "author_replay.stdout.txt": "60fe42f6d4c7de1a735cb4cf7baf6521f2e6448d594dbc93d11787e40730a92f",
+    "author_replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".gitignore": "7e5d03ac08c7ef247f3b0e05fc7c4edefc89f7e293d17aec792fc3be124262ed"
+  },
+  "source_inputs_rechecked": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/source_spans.json": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/rate_ledger.py": "be8fa2b43a936bd27be48c1524aa7ec0399f9ac24c2c5baa3b90730a02f5617c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/rate_ledger.json": "3c81183af2a9aebad00dda88505024ed564db0ac8a7c84291b3a4a0adad558f4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/validate.py": "bb6eb21cbf98360a65a8711e3091e84ebbf52f32b401be25fe073a38185e42c0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/validation.json": "15b8d471390b8595e3917cf483de7d027c1ebbc1bb1598202e3504f6f0cfdd6b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/artifact_hashes.json": "59240902a726feea09f8a583e63a5401203411443b414fa1370016ab5d76e03b",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf": "3574f296f030d424c8cf3f818b947ff8e1a0a39c42f86737ec53cc346b3e7896",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_917.txt": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/148.pdf": "9c4776ff48ce2b1b50b0b043c1ba92fc93ecae2c573ac3b7e807ad262d10cf92",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_148.txt": "1717ee97af18c99d344dd24b997b99a910dec0cb598c3a9945210c425da7ef76",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/364.pdf": "1654075582d66a25bf817dd62b815711eecb2b255584925640663e1aa2d000f9",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_364.txt": "5be6e730ae317e989cd5ac089260e7198a188383da7d02fbc2b157b807c5a953",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/521.pdf": "104a5b9400c3fe147abfc10c37d3a960ce8ec6f74b97d93bffed995bbbf16779",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_521.txt": "0c18113bb1e62d6c2621a2c7eb77a2485091172883c5ef6d12cdf93717a855d8"
+  },
+  "source_input_count": 26,
+  "local_links_valid": true,
+  "stdout_matches_results": true,
+  "stderr_empty": true,
+  "author_clarification": "Author confirmed direct all-block replacement on each message leg, eta_stat across both legs, eta_pk aggregate per leg; black-box composition via the separately bounded TOR game may safely use4eps_LWE. Author also confirmed the explicit-tuple scope of pk>=4N.",
+  "commands": [
+    {
+      "cmd": "python3 research/learn_infer_only/experiments/adversarial_review/base_fe/review.py > research/learn_infer_only/experiments/adversarial_review/base_fe/stdout.txt 2> research/learn_infer_only/experiments/adversarial_review/base_fe/stderr.txt",
+      "exit_code": 0
+    }
+  ],
+  "additional_web_queries": 0,
+  "additional_scry_queries": 0,
+  "additional_kagi_queries": 0,
+  "PDF_downloads": 0,
+  "no_shared_or_companion_writes": true,
+  "no_commits": true
+}

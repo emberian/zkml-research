@@ -1,0 +1,61 @@
+{
+  "label": "EXECUTED independent review freeze",
+  "author": "/root/private_ingress",
+  "reviewer": "/root/pq_composition",
+  "verdict": "Accepted source-conditioned classical honest-setup-averaged terminal output lemma; no blocking error found.",
+  "preserved_boundaries": [
+    "Current compatibility bridge and numerical threshold remain open.",
+    "Same-parent descent is enforced inside F and the experiment; public R2 alone does not identify current C.",
+    "No arbitrary post-setup terminal-secret advice is inferred from source definitions.",
+    "Source Theorem6.1/internal Lemma6.8 remains a source-conditioned ingredient."
+  ],
+  "reviewed_note_sha256": "1c698c8361cd4d6e5bfefc96ee34d1bcc4d090ec59f09f6efaad378d5195717c",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/terminal_joint/REPORT.md",
+      "sha256": "458f03deb5f817ef5503f00cf01c1c0db0ebfbb8c0053628b7602f005782b08d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/terminal_joint/review.py",
+      "sha256": "c6790215ba868979cf542fd6187b6eedfcbe72f2ac367b1c8641ede942395de1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/terminal_joint/results.json",
+      "sha256": "c56e46c21acd6139db62455ce6f1f8220d4e8043b8d7871f770f0321807cf89c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/terminal_joint/stdout.txt",
+      "sha256": "c56e46c21acd6139db62455ce6f1f8220d4e8043b8d7871f770f0321807cf89c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/terminal_joint/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/terminal_joint/.gitignore",
+      "sha256": "3b90d54d8b50bc3e84b7c6a2335d1abbc5a7c088a63e274685968bc8bbfcca54"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/terminal_joint/finalize.py",
+      "sha256": "2912a290a5c24df2dbe42ac2bff3af052cd0a4e13e99c06c2f872438c7afc932"
+    }
+  ],
+  "input_hashes_rechecked": 9,
+  "local_report_links_checked": 5,
+  "command": [
+    "python3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/terminal_joint/finalize.py"
+  ],
+  "queries": {
+    "SQL": 0,
+    "schema": 0,
+    "web_search": 0,
+    "web_open": 0,
+    "Kagi": 0
+  },
+  "new_PDF_extracts": 0,
+  "PDF_downloads": 0,
+  "cryptographic_extraction_recovery_routing_or_service_runtimes": 0,
+  "author_or_companion_or_shared_writes": 0,
+  "commits": 0
+}

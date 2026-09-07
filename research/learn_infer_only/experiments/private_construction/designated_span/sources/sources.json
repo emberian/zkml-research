@@ -1,0 +1,306 @@
+{
+  "claim_label": "EXECUTED provenance; SOURCE access; DERIVED comparisons in PRIOR_ART.md",
+  "created_utc": "2026-09-07T04:27:48.784547+00:00",
+  "start_utc": "2026-09-07T04:11:31Z",
+  "owner": "/root/private_ingress",
+  "scope": "sources-only bounded independent designated-span prior-art audit; no novelty claim",
+  "input_review": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/review/REVIEW.md",
+    "sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840",
+    "bytes": 20435
+  },
+  "input_review_expected_sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840",
+  "input_review_unchanged": true,
+  "search": {
+    "instrument": "swarm/tools/scry.py using existing ~/.scry-key without outputting key; web search",
+    "scry_sql_calls_this_lane": 2,
+    "scry_schema_calls_this_lane": 0,
+    "scry_prior_parent_calls": 0,
+    "scry_queries": [
+      {
+        "sql": "SELECT id,title,doi,publication_year,primary_location.landing_page_url AS url FROM openalex.works WHERE hasAllTokens(search_text_lc,['functional','proxy','encryption']) ORDER BY cited_by_count DESC LIMIT 20",
+        "result": {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/scry_functional_proxy.jsonl",
+          "sha256": "95fca4640d8f6b07cb001a885b1f87092cd187f1c577686725d2a54bd6605d99",
+          "bytes": 3342
+        },
+        "record_id": "7b62fdb8-a0df-4931-80b6-4d1f8ef22274",
+        "row_count": 8,
+        "truncated": false,
+        "duration_ms": 10817,
+        "read_bytes": 3175671,
+        "spend_nanodollars": 0,
+        "schema_hash": "blake3:136ee5df6b98b99a1866f3b5c66ca288edd923190e2c70df70a5fd45be259528",
+        "coverage": [
+          {
+            "extent": {
+              "basis": "scan",
+              "column": "publication_date",
+              "computed_at": "2026-09-07T03:02:31Z",
+              "max": "2026-09-07",
+              "min": "1900-01-01",
+              "newest_event_at": "2026-09-07T00:00:00Z",
+              "observed_gaps": null
+            },
+            "extent_error": "clickhouse timeout",
+            "freshness_blocker": "bounded snapshot load; freshness advances when a new OpenAlex snapshot batch lands, not on a continuous schedule",
+            "freshness_lag_seconds": 6322325,
+            "known_holes": [],
+            "relation": "openalex.works"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,title,doi,publication_year,primary_location.landing_page_url AS url FROM openalex.works WHERE hasAllTokens(search_text_lc,['inner','product','proxy']) ORDER BY cited_by_count DESC LIMIT 20",
+        "result": {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/scry_inner_product_proxy.jsonl",
+          "sha256": "52efa5c71abd192ee7c3498c219b270ba76a0919848b93e801cd1749b855ef28",
+          "bytes": 2083
+        },
+        "record_id": "b0c704b4-84e1-4546-8030-ebdfa5dccb9e",
+        "row_count": 4,
+        "truncated": false,
+        "duration_ms": 2192,
+        "read_bytes": 1248270,
+        "spend_nanodollars": 0,
+        "schema_hash": "blake3:136ee5df6b98b99a1866f3b5c66ca288edd923190e2c70df70a5fd45be259528",
+        "coverage": [
+          {
+            "extent": {
+              "basis": "scan",
+              "column": "publication_date",
+              "computed_at": "2026-09-07T03:02:31Z",
+              "max": "2026-09-07",
+              "min": "1900-01-01",
+              "newest_event_at": "2026-09-07T00:00:00Z",
+              "observed_gaps": null
+            },
+            "extent_error": "clickhouse timeout",
+            "freshness_blocker": "bounded snapshot load; freshness advances when a new OpenAlex snapshot batch lands, not on a continuous schedule",
+            "freshness_lag_seconds": 6322478,
+            "known_holes": [],
+            "relation": "openalex.works"
+          }
+        ]
+      }
+    ],
+    "web_search_queries_this_lane": 13,
+    "web_queries": [
+      "\"Public Trace-and-Revoke Proxy Re-encryption\"",
+      "\"Privacy Preserving Federated Learning from Multi-Input Functional Proxy Re-Encryption\"",
+      "\"Identity-Based Key Verifiable Inner Product Functional Encryption\"",
+      "\"Feng\" \"Functional Proxy\" \"TIFS\"",
+      "\"Privacy Preserving Federated Learning\" \"10446283\" pdf",
+      "\"10446283\" \"pdf\" Feng Shen",
+      "\"Public Trace-and-Revoke\" \"IPFPRE\" \"ReKeyGen\"",
+      "\"Identity-Based Key Verifiable\" \"pdf\"",
+      "\"Public Trace-and-Revoke Proxy\" \"eprint\"",
+      "\"Privacy Preserving Federated Learning from Multi-Input\" filetype:pdf -poster -jrc",
+      "\"Public Trace-and-Revoke Proxy\" \"ReKeyGen\" \"msk\"",
+      "\"Identity-Based Key Verifiable Inner Product\" Zhang pdf",
+      "\"10446283\" filetype:pdf \"Feng\""
+    ],
+    "prior_parent_web_queries": {
+      "count": 2,
+      "queries": [
+        "\"functional proxy re-encryption\" \"inner product\"",
+        "\"designated\" \"inner product functional encryption\""
+      ]
+    },
+    "absence_scope": "Four requested leads plus metadata results of two bounded OpenAlex queries; not exhaustive prior art."
+  },
+  "sources": [
+    {
+      "id": "KT2013",
+      "claim_label": "SOURCE",
+      "title": "Fully-Anonymous Functional Proxy-Re-Encryption",
+      "authors": [
+        "Yutaka Kawai",
+        "Katsuyuki Takashima"
+      ],
+      "version": "October 11, 2013, ePrint 2013/318",
+      "url": "https://eprint.iacr.org/2013/318",
+      "access": "local mirror PDF; selective full-text reading, not abstract-only",
+      "pdf": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/318.pdf",
+        "sha256": "548958ef76498c394d027b7bd8d7a1eba3c0c86b78bf04ccbe01dfb0074e9d2a",
+        "bytes": 768945
+      },
+      "extract": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/2013-318.txt",
+        "sha256": "b5cfd4ab4f7ae075f86382e73bce9ee15a25a125b4a768fa00cdc98cbd226319",
+        "bytes": 369710
+      },
+      "locations": [
+        "§1.1 printed p.1 / PDF p.2: predicate relation",
+        "Definition 3 printed p.8 / PDF p.9: seven algorithms and correctness",
+        "§4.1–4.2 printed pp.11–13 / PDF pp.12–14: basic/anonymous algorithms"
+      ],
+      "network_pdf_downloads": 0
+    },
+    {
+      "id": "FENG2024",
+      "claim_label": "SOURCE",
+      "title": "Privacy Preserving Federated Learning from Multi-Input Functional Proxy Re-Encryption",
+      "authors": [
+        "Xinyu Feng",
+        "Qingni Shen",
+        "Cong Li",
+        "Yuejian Fang",
+        "Zhonghai Wu"
+      ],
+      "venue": "ICASSP 2024",
+      "doi": "10.1109/ICASSP48485.2024.10446283",
+      "access": "primary author poster, algorithms displayed but no complete security game; full conference paper NOT accessed",
+      "url": "https://sigport.org/documents/privacy-preserving-federated-learning-multi-input-functional-proxy-re-encryption",
+      "pdf_url": "https://sigport.org/sites/default/files/docs/ICASSP__24___Poster___MI_FPRE%20%281%29.pdf",
+      "alternate_poster_url": "https://sigport.org/sites/all/modules/pubdlcnt/pubdlcnt.php?fid=9622",
+      "pdf": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/feng_2024_poster.pdf",
+        "sha256": "c7be77a5cfe7fd7ca3d872f5c6a816b27e893648f043aa391ffb0b1804edf8a8",
+        "bytes": 501988
+      },
+      "extract": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/feng_2024_poster.txt",
+        "sha256": "ee2f49f63594550d7882748b7dae5b49fe8b65c8f8182aa4dc4c7804e428f8e9",
+        "bytes": 22178
+      },
+      "visual_check": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/feng_2024_poster.png",
+        "sha256": "7f76b43155bfa6d501c3b53e4dff18376f74f339d6dd469acfbe0a75defb1a32",
+        "bytes": 889366
+      },
+      "locations": [
+        "Poster PDF p.1: System Model",
+        "Poster PDF p.1: Construction of MI-FPRE",
+        "Poster PDF p.1: Framework 1"
+      ],
+      "conference_metadata": {
+        "url": "https://cmsworkshops.com/ICASSP2024/view_paper.php?PaperNum=7767",
+        "html": {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/feng_conference.html",
+          "sha256": "a7315b5acc59166bba31a32888ce06b65c8fcde97bfbfc8d73838a71bf097eeb",
+          "bytes": 17025
+        },
+        "source_lines": "134–138 title/authors; 175 and 227 manuscript target in onclick",
+        "retrieval_note": "HTML retrieval succeeded; first link-filter parser raised AttributeError on href=None after saving HTML. A local corrected parse and rg inspection succeeded; this is not a failed HTML retrieval."
+      },
+      "manuscript_access_log": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/feng_paper_retrieval.json",
+        "sha256": "2565c4754b6a498eef63e3ea08a7ca059ad101418803375e546f8ac13f5f119d",
+        "bytes": 440
+      },
+      "poster_access_log": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/poster_retrieval.json",
+        "sha256": "5a732e2a8f062d0eda272d0a24ecf15ee90f48a6f9e2dae8e0293d453b24c4d3",
+        "bytes": 695
+      }
+    },
+    {
+      "id": "LUO2022",
+      "claim_label": "SOURCE",
+      "title": "Public Trace-and-Revoke Proxy Re-encryption",
+      "authors": [
+        "Fucai Luo",
+        "Haiyan Wang",
+        "Willy Susilo",
+        "Weihong Han"
+      ],
+      "version": "TechRxiv v1, posted 2022-12-11; cover submitted 2022-12-05",
+      "doi": "10.36227/techrxiv.21671849.v1",
+      "supplied_pdf_url": "https://d197for5662m48.cloudfront.net/documents/publicationstatus/167566/preprint_pdf/16af9769743b35c8de0c65de139cd4f9.pdf",
+      "readable_primary_pdf_copy": "https://www.researchgate.net/publication/366187847_Public_Trace-and-Revoke_Proxy_Re-encryption/fulltext/63967447e42faa7e75b76f4d/Public-Trace-and-Revoke-Proxy-Re-encryption.pdf",
+      "html_fulltext_url": "https://www.researchgate.net/publication/366187847_Public_Trace-and-Revoke_Proxy_Re-encryption",
+      "access": "web tool PDF extraction and same author-preprint HTML; selective algorithms/game/proof reading; local PDF download unsuccessful",
+      "pdf_sha256": null,
+      "pdf_hash_unavailable_reason": "CloudFront local request failed DNS resolution; ResearchGate direct local PDF request returned HTTP 403. Web PDF extraction succeeded. Excerpt hashes identify extracts, not PDF bytes.",
+      "version_match_basis": "cover DOI, date, title, and four author names agree; no byte-identity assertion",
+      "pdf_pages": 13,
+      "locations": [
+        "§2.3 printed p.5 / PDF p.6: syntax and correctness",
+        "Definition 5 printed pp.5–6 / PDF pp.6–7: game; H→C and non-challenge honest-key restrictions on printed p.6",
+        "§3 printed p.6 / PDF p.7: LWE algorithms",
+        "Theorem 1 printed pp.7–8 / PDF pp.8–9: IND-CPA proof in Definition 5 game"
+      ],
+      "html_excerpt": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/luo_2022_web_excerpt.txt",
+        "sha256": "fa0af7ca604fd4a0539349f820b70c0dc17a66458f7f6fbbc0bd01e34a3643e0",
+        "bytes": 25209
+      },
+      "pdf_web_excerpt": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/extracts/luo_2022_pdf_web_excerpt.txt",
+        "sha256": "88201197b7aa98e6db608403049cbbea975289b1104f6b8d464c2cef87279be1",
+        "bytes": 20070
+      },
+      "local_access_log": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/luo_retrieval.json",
+        "sha256": "61a0953cc17772e0d682413f43380bafec138f98ff9fac58f57eb8b5737042fa",
+        "bytes": 280
+      },
+      "obsolete_figshare_api_log": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/techrxiv_api.json",
+        "sha256": "e4acfeb1a7cab372b1c99b59ea83ab0d69401af9b719aad94d17390b94dcfd26",
+        "bytes": 101
+      },
+      "excluded": "No final TIFS edition was silently substituted; no full-paper byte hash is claimed."
+    },
+    {
+      "id": "ZHS2024",
+      "claim_label": "SOURCE / OPEN",
+      "title": "Identity-Based Key Verifiable Inner Product Functional Encryption Scheme",
+      "authors": [
+        "Mingwu Zhang",
+        "Chao He",
+        "Gang Shen"
+      ],
+      "venue": "BlockTEA 2023 proceedings, Springer LNICST 577, pp.3–22",
+      "publication_date": "2024-05-03",
+      "doi": "10.1007/978-3-031-60037-1_1",
+      "urls": [
+        "https://link.springer.com/chapter/10.1007/978-3-031-60037-1_1",
+        "https://eudl.eu/doi/10.1007/978-3-031-60037-1_1"
+      ],
+      "access": "primary abstract/metadata only; publisher explicitly marks subscription preview",
+      "locations": [
+        "Springer heading and Abstract; web extracted lines 11–41 and citation lines 183–198",
+        "EUDL Abstract and bibliographic metadata"
+      ],
+      "pdf": null,
+      "construction_or_game_read": false,
+      "excluded": "Search result from unrelated ebook upload not adopted as primary evidence. No author-contact request or paywall circumvention."
+    }
+  ],
+  "operations": {
+    "eprint_pdf_downloads": 0,
+    "successful_non_eprint_pdf_downloads": 1,
+    "cryptographic_runtime_or_attack_experiments": 0,
+    "commits": 0,
+    "companion_edits": 0,
+    "shared_ledger_edits": 0,
+    "author_messages_sent": 0,
+    "recursive_agents_spawned": 0
+  },
+  "extraction_commands": [
+    "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/318.pdf sources/extracts/2013-318.txt",
+    "pdftotext -layout sources/feng_2024_poster.pdf sources/extracts/feng_2024_poster.txt",
+    "pdftoppm -f 1 -singlefile -png -scale-to 2200 sources/feng_2024_poster.pdf sources/extracts/feng_2024_poster"
+  ],
+  "extraction_command_note": "Paths beginning sources/ above are shorthand for this owned directory. The PNG was visually inspected with view_image. Web-only Luo extraction is explicitly distinguished from local pdftotext.",
+  "artifacts": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/PRIOR_ART.md",
+      "sha256": "fdaf73f298bdabd665f25ce3a76423d19c25fb9bc6bd272f06987d91d0d300aa",
+      "bytes": 9911
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/.gitignore",
+      "sha256": "b390e0293002068e154b787fcbe794a3d2db71cd1a6d30c7777e7432d756d370",
+      "bytes": 52
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/sources/html_retrieval.json",
+      "sha256": "5e08f0c6bea5e0bc6da3cad59470c24939112f2ab5a3230bb9f685b05ce0258f",
+      "bytes": 394
+    }
+  ]
+}

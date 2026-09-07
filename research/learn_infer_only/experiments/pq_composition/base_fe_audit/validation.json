@@ -1,0 +1,97 @@
+{
+  "schema": "base-fe-audit-validation-v1",
+  "checked_at_utc": "2026-09-07T03:59:55.062315+00:00",
+  "scope": "Source hashes, local-ignore rules, exact scalar bookkeeping and compilation of Python only. No encryption run or quantum-security proof validation.",
+  "source_pins": [
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+      "sha256": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+      "text_sha256": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713"
+    },
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "sha256": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+      "text_sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576"
+    },
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+      "text_sha256": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a"
+    },
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf",
+      "sha256": "3574f296f030d424c8cf3f818b947ff8e1a0a39c42f86737ec53cc346b3e7896",
+      "text_sha256": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa"
+    },
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+      "sha256": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325",
+      "text_sha256": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197"
+    },
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/148.pdf",
+      "sha256": "9c4776ff48ce2b1b50b0b043c1ba92fc93ecae2c573ac3b7e807ad262d10cf92",
+      "text_sha256": "1717ee97af18c99d344dd24b997b99a910dec0cb598c3a9945210c425da7ef76"
+    },
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf",
+      "sha256": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+      "text_sha256": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86"
+    },
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/364.pdf",
+      "sha256": "1654075582d66a25bf817dd62b815711eecb2b255584925640663e1aa2d000f9",
+      "text_sha256": "5be6e730ae317e989cd5ac089260e7198a188383da7d02fbc2b157b807c5a953"
+    },
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/521.pdf",
+      "sha256": "104a5b9400c3fe147abfc10c37d3a960ce8ec6f74b97d93bffed995bbbf16779",
+      "text_sha256": "0c18113bb1e62d6c2621a2c7eb77a2485091172883c5ef6d12cdf93717a855d8"
+    }
+  ],
+  "frozen_bootstrap": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md",
+    "sha256": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/rate_ledger.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"rate_examples\": 9,\n  \"last_rate_example\": {\n    \"log2_kappa\": 128,\n    \"argument_rescaled_to_kappa_power\": 4,\n    \"minus_log2_slow_negligible\": 262144,\n    \"minus_log2_target_2_to_minus_kappa_quarter\": 4294967296,\n    \"slow_error_exceeds_target\": true\n  },\n  \"wrapper_rows\": 4,\n  \"one_advice_paths\": 4\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "py_compile",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/rate_ledger.py",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/validate.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "check-ignore",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/__pycache__/validate.cpython-314.pyc"
+      ],
+      "exit_code": 0,
+      "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/__pycache__/validate.cpython-314.pyc\n",
+      "stderr": ""
+    }
+  ],
+  "source_rows": 9,
+  "search_counts": {
+    "web": 4,
+    "scry": 0,
+    "kagi": 0
+  },
+  "network_pdf_downloads": 0
+}

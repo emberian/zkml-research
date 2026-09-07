@@ -1,0 +1,530 @@
+{
+  "passed": true,
+  "classification": "EXECUTED first fully validating normal setup/encryption/Learn/Infer/recipient decode",
+  "exact_private_integer_comparison": true,
+  "query_row": 0,
+  "source_manifest": {
+    "crypto.py": "6455474e1af495fcd4097acc214e11ea667b4113712bbe2c3822290e8c50e14d",
+    "group.py": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+    "native_pow.py": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+    "rows.json": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0"
+  },
+  "public_phases": {
+    "keygen": {
+      "context_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "counts": {
+        "context_consistency_rows": 16,
+        "native_modexp": 9209,
+        "subgroup_checks": 593
+      },
+      "key_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "master_serialized": false,
+      "params_id": "33d802f5f2f2aadae699dcfaf4bebc09403709c9f5161d8a86cf91b162eb5531",
+      "phases": [
+        {
+          "command": "initializer",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 577,
+            "subgroup_checks": 0
+          },
+          "elapsed_ns": 1111432208,
+          "process_work_ns": 1036217416
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1120302041,
+          "process_work_ns": 1047777000
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1069420916,
+          "process_work_ns": 1004729458
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1066295667,
+          "process_work_ns": 998974666
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1085809083,
+          "process_work_ns": 1019638292
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1061619417,
+          "process_work_ns": 998954459
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1063319709,
+          "process_work_ns": 997524041
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1056053541,
+          "process_work_ns": 993247000
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1053800417,
+          "process_work_ns": 989881792
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1051919250,
+          "process_work_ns": 988171042
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1049272083,
+          "process_work_ns": 986589875
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1048437042,
+          "process_work_ns": 985932000
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1049904750,
+          "process_work_ns": 986580958
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1052186875,
+          "process_work_ns": 990234584
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1058386792,
+          "process_work_ns": 994867584
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1048129500,
+          "process_work_ns": 986907250
+        },
+        {
+          "command": "recipient-register",
+          "counts": {
+            "context_consistency_rows": 0,
+            "native_modexp": 578,
+            "subgroup_checks": 577
+          },
+          "elapsed_ns": 1051178958,
+          "process_work_ns": 988198250
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 8682644250,
+          "process_work_ns": 8525073416
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 8287340291,
+          "process_work_ns": 8165098666
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 4186963041,
+          "process_work_ns": 4040905625
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 8005058084,
+          "process_work_ns": 7925636875
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 6697132042,
+          "process_work_ns": 6571061500
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 6833036166,
+          "process_work_ns": 6738292583
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 5488639875,
+          "process_work_ns": 5366093584
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 3938744333,
+          "process_work_ns": 3858750458
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 4033156709,
+          "process_work_ns": 3943965792
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 3971365500,
+          "process_work_ns": 3896217917
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 3404616125,
+          "process_work_ns": 3339147167
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 3455344166,
+          "process_work_ns": 3391236584
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 3476288625,
+          "process_work_ns": 3408818542
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 3401678958,
+          "process_work_ns": 3338002791
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 3386809334,
+          "process_work_ns": 3322658208
+        },
+        {
+          "command": "recipient-finalize",
+          "counts": {
+            "context_consistency_rows": 16,
+            "native_modexp": 9210,
+            "subgroup_checks": 593
+          },
+          "elapsed_ns": 3384002541,
+          "process_work_ns": 3321052292
+        }
+      ],
+      "physical_erasure_verified": false,
+      "private_pending_files_remaining": 0,
+      "process_work_ns": 107797135792,
+      "program_id": "ae773926224df4e09390f9da6e20b77ed4db21cec88b0405992193de765c0c33",
+      "projection_delivery_files_remaining": 0,
+      "public_key_bytes": 342331,
+      "public_key_sha256": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "recipient_count": 16,
+      "recipient_key_pattern": "r%02d.key",
+      "zero_ct": {
+        "bytes": 148147,
+        "canonical": true,
+        "context_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+        "group_elements": 578,
+        "key_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+        "object_type": "state",
+        "params_id": "33d802f5f2f2aadae699dcfaf4bebc09403709c9f5161d8a86cf91b162eb5531",
+        "row_id": null,
+        "sha256": "ded52169d13e85e1acb90f76157ed97b24472841713c72a712a38d7c4cfefd48"
+      },
+      "zero_ct_sha256": "ded52169d13e85e1acb90f76157ed97b24472841713c72a712a38d7c4cfefd48"
+    },
+    "query_meta": {
+      "bytes": 1984,
+      "context_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "counts": {
+        "context_consistency_rows": 16,
+        "native_modexp": 9209,
+        "subgroup_checks": 593
+      },
+      "params_id": "33d802f5f2f2aadae699dcfaf4bebc09403709c9f5161d8a86cf91b162eb5531",
+      "process_work_ns": 3331591834,
+      "recipient_id": "2d3664c711487d0951ebc30df021bb9e5e2a81fc4f7094891645965d1cb730f8",
+      "row_id": 0,
+      "row_sha256": "c54d48b47cca38ae3ea4e3fb3d458a972baaa01422b7e27528e2cf3e8baf8ede",
+      "schema": "resident-designated-query-v1",
+      "sha256": "7aad592e969ff60b5494c11268ea13b5f9daf92c5ad20ac6faf96305d4b858fb",
+      "token_sha256": "ffb43b1fb1fd78d4e05be02541283f6f2f629c680ead2771212f52e6f5957ea9"
+    },
+    "fresh_meta": {
+      "bytes": 148147,
+      "canonical": true,
+      "context_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "counts": {
+        "context_consistency_rows": 16,
+        "native_modexp": 9788,
+        "subgroup_checks": 593
+      },
+      "group_elements": 578,
+      "key_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "object_type": "state",
+      "params_id": "33d802f5f2f2aadae699dcfaf4bebc09403709c9f5161d8a86cf91b162eb5531",
+      "process_work_ns": 4316510458,
+      "row_id": null,
+      "sha256": "9f33968f68f51ce22823c94becd4e43b8797ed94b92ffcd5da766e9ef3304443"
+    },
+    "learn_meta": {
+      "bytes": 148147,
+      "canonical": true,
+      "context_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "counts": {
+        "context_consistency_rows": 16,
+        "native_modexp": 10365,
+        "subgroup_checks": 1749
+      },
+      "expired_exact_supplied_original": false,
+      "group_elements": 578,
+      "key_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "object_type": "state",
+      "params_id": "33d802f5f2f2aadae699dcfaf4bebc09403709c9f5161d8a86cf91b162eb5531",
+      "process_work_ns": 5271033959,
+      "queue_capacity_and_old_identity_enforced_by_caller": true,
+      "row_id": null,
+      "sha256": "9f33968f68f51ce22823c94becd4e43b8797ed94b92ffcd5da766e9ef3304443"
+    },
+    "infer_meta": {
+      "bytes": 691,
+      "canonical": true,
+      "context_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "counts": {
+        "context_consistency_rows": 16,
+        "native_modexp": 10327,
+        "subgroup_checks": 1171
+      },
+      "group_elements": 2,
+      "key_id": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+      "object_type": "recipient_output",
+      "params_id": "33d802f5f2f2aadae699dcfaf4bebc09403709c9f5161d8a86cf91b162eb5531",
+      "process_work_ns": 4424714500,
+      "recipient_id": "2d3664c711487d0951ebc30df021bb9e5e2a81fc4f7094891645965d1cb730f8",
+      "row_id": 0,
+      "row_sha256": "c54d48b47cca38ae3ea4e3fb3d458a972baaa01422b7e27528e2cf3e8baf8ede",
+      "sha256": "da408a46fe9693a0e390549aafc6274dc53b7d0daaf184fdd6d565d4d8ae5996",
+      "token_sha256": "ffb43b1fb1fd78d4e05be02541283f6f2f629c680ead2771212f52e6f5957ea9"
+    }
+  },
+  "private_reader_output_and_timing_omitted": true,
+  "reader_counts": {
+    "context_consistency_rows": 16,
+    "native_modexp": 9216,
+    "subgroup_checks": 595
+  },
+  "reader_secret_scalars": 1,
+  "reader_received_master": false,
+  "context_sha256": "f315dc25afc736dfeb2f9f868b081f0b09ce817cf1ead0f383f253baebf1d56d",
+  "commands_equivalent_under_preserved_source": [
+    [
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/crypto.py",
+      "keygen",
+      "--pk",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/context.json",
+      "--sk",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/recipients",
+      "--zero",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/zero.ct"
+    ],
+    [
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/crypto.py",
+      "encode-query",
+      "--context",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/context.json",
+      "--vector",
+      "research/learn_infer_only/experiments/end_to_end/utility/public_queries/q00.json",
+      "--out",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/query.json"
+    ],
+    [
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/crypto.py",
+      "issuer-encrypt",
+      "--context",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/context.json",
+      "--pk",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/context.json",
+      "--vector",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/vector.json",
+      "--out",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/fresh.ct"
+    ],
+    [
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/crypto.py",
+      "host-learn",
+      "--context",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/context.json",
+      "--acc",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/zero.ct",
+      "--fresh",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/fresh.ct",
+      "--out",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/state.ct"
+    ],
+    [
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/crypto.py",
+      "host-infer",
+      "--context",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/context.json",
+      "--acc",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/state.ct",
+      "--query",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/query.json",
+      "--out",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/output.ct"
+    ],
+    [
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/crypto.py",
+      "reader-decrypt",
+      "--context",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/context.json",
+      "--sk",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/recipients/r00.key",
+      "--ct",
+      "research/learn_infer_only/experiments/private_construction/designated_span/crypto/runtime/smoke_001/output.ct"
+    ]
+  ],
+  "original_launcher_path": "research/learn_infer_only/experiments/private_construction/designated_span/crypto/crypto.py",
+  "note": "The executed launcher was the then-identical original source. Commands above point at its preserved byte-identical snapshot; use fresh output paths for a rerun. Actual private inputs/keys and reader output retained only in ignored smoke_001."
+}

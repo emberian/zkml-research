@@ -1,0 +1,18 @@
+{
+  "audited_scored_bits": 512,
+  "audited_teacher_pairs": 256,
+  "complete_framing_record_axis_coverage": true,
+  "freeze_sha256": "cb1fda3cef63a87677bc6882c2f8e3e45ab88ed1e95996f7a0adeea8cd93e758",
+  "gate_passed": true,
+  "heldout_inputs": 0,
+  "max_float32_conditional_probability_error": 7.764149179134705e-08,
+  "max_float32_loglik_scalar_error": 0,
+  "model_forwards_in_audit": 0,
+  "passed": true,
+  "prior_file_counts_preserved": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight": 26,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/corrected_run": 19
+  },
+  "results_sha256": "08f08cb58e5a47e66ac70acbbadba298bf7eee2a821ba88e71c71068b903dfbf",
+  "selected_framing": "A"
+}

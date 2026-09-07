@@ -8,8 +8,19 @@ conditioning or inverse-event-probability loss. The exact resource accounting
 uses the stated nonuniform circuit model. See [QIO_INTERFACE.md](experiments/pq_composition/qio_interface/QIO_INTERFACE.md)
 and [independent review](experiments/adversarial_review/qio_interface/REPORT.md).
 This removes a bespoke qualification premise; it does not instantiate iO or the
-other primitives. Whether2025/2215 supplies the required advice/resource and
-correctness conventions is a separate source audit in progress. In particular,
+other primitives. The further source audit and conditional xiO-to-iO lift are
+now complete: the [bootstrap and pointwise-correctness supplement](experiments/pq_composition/qio_instantiation/bootstrap_lift/CLOSEOUT.md)
+passed independent review under explicit one-copy quantum-advice primitive
+games, with their exact privacy and correctness coefficients retained. The
+[base-FE source audit](experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md)
+derives a conditional straight-line GKP lift but does not instantiate the
+uniform short-key/depth-compactness interfaces or quantitative quantum
+primitive rates needed by that bootstrap. [Independent review](experiments/adversarial_review/base_fe/REPORT.md)
+accepts the conditional lift, clarifies direct all-block LWE loss accounting,
+and proves a scoped obstruction for the literal full-key recursive payload:
+raw GKP/GVW public-key width is at least four times its message bound. An
+environment-specialized representation is being investigated separately.
+In particular,
 quantum external advice does not by itself require quantum-valued aviO KeySamp.
 Earlier first-pass wording below about that requirement is superseded here.
 

@@ -1,0 +1,98 @@
+{
+  "schema": "independent-reference-arithmetic-review-closeout-v1",
+  "time_utc": "2026-09-07T03:47:32.047636+00:00",
+  "all_53_author_files_unchanged_after_review": true,
+  "author_artifacts_sha256": "644e32332f287861e4f65438962630b7ea32fc7f5408818f9adb9fa73d7a31b1",
+  "reviewer_files": {
+    "REVIEW.md": {
+      "sha256": "e4f7b8ac27f7333df2a753f23a3596cf3312a5d0b0db38e9179f4e4487f8e0f4",
+      "bytes": 8994
+    },
+    "packet_inventory.json": {
+      "sha256": "5d9dd22d67ddec60771229727d9bce39aabcde57acb6c938df904e706adab89f",
+      "bytes": 10421
+    },
+    "independent_check.py": {
+      "sha256": "00808269ea6f6d336255aa9fd2843211d7f0d999ca146c7235cabdc8098e2c28",
+      "bytes": 8722
+    },
+    "independent_check.initial.py.txt": {
+      "sha256": "6979a0f2d000ce17aca443eee276ff6d8c7f8805cd647b06b0736a0357578dba",
+      "bytes": 8722
+    },
+    "independent_results.json": {
+      "sha256": "5d54e05ee062ad4e80d12228440ecfafabb2a78a9cb404aea1161175511db8aa",
+      "bytes": 6711
+    },
+    "independent_check.log": {
+      "sha256": "e615f6d7133b79eebf7abb45b6e934bfa8303a9c4518bf367b79527e8f11bcd5",
+      "bytes": 472
+    },
+    "independent_check_002.log": {
+      "sha256": "0f9a1aa5704cb7072215410bd81b04a7299edfa78078ec0d730c8bd3922fe1d4",
+      "bytes": 1086
+    },
+    "verify_sources.log": {
+      "sha256": "bc0074cacf6f1a45672d013faf5e0f1c3dc19330e75d7edc27735e1ee30be070",
+      "bytes": 126
+    },
+    "utility_replay.log": {
+      "sha256": "0d4e7f82aeedf98d2e28da60ca386cb5be2239a383b359bc3a886a9d9c3c8681",
+      "bytes": 694
+    },
+    "replay_source/reference.py": {
+      "sha256": "304538f5114d990cd3ba7ab11a05081ef05a42ac196cdab4925a1a39cd7e2522",
+      "bytes": 9786
+    },
+    "replay_source/check.py": {
+      "sha256": "59df4e76988148c010aa342c0c1a5f0c335b9002225065446142d14ad70178d3",
+      "bytes": 9713
+    },
+    "replay_source/fixtures.json": {
+      "sha256": "a63cb42bbd9fde407d2da63196eaf88df3344f8fba4fb05eb34e5ed63d23ebfb",
+      "bytes": 17465
+    },
+    "replay_source/utility-fixtures.json": {
+      "sha256": "d8e437803ad590686f309306a24afa656d4898f70ca32bba4bc65e10dc4a88a0",
+      "bytes": 2878
+    },
+    "replay_source/results/run_001/report.json": {
+      "sha256": "ae3de744ffec68e389fe19fdc51d8c2c2f33c650c973daae9687c210ae043312",
+      "bytes": 8909
+    },
+    "replay_source/results/run_002/report.json": {
+      "sha256": "f51b169e8f71499ca5feb8ffde86a9b9c0cac4230c616a01af43e443b86c9634",
+      "bytes": 4164
+    }
+  },
+  "commands": [
+    {
+      "cwd": "replay_source",
+      "command": "python3 -B check.py --run run_001",
+      "exit_code": 0
+    },
+    {
+      "cwd": "replay_source",
+      "command": "python3 -B check.py --run run_002 --manifest utility-fixtures.json",
+      "exit_code": 0
+    },
+    {
+      "cwd": ".",
+      "command": "python3 -B independent_check.py",
+      "attempt": 1,
+      "exit_code": 1,
+      "reason": "Reviewer call-site argument order error; original harness snapshot retained."
+    },
+    {
+      "cwd": ".",
+      "command": "python3 -B independent_check.py",
+      "attempt": 2,
+      "exit_code": 0
+    },
+    {
+      "cwd": "repository root",
+      "command": "python3 -B research/learn_infer_only/experiments/end_to_end/reference_arithmetic/pin_sources.py --verify",
+      "exit_code": 0
+    }
+  ]
+}

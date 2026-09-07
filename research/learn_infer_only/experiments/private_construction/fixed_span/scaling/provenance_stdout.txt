@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "as_run_record_sha256": "a90fca3879c5dfbf0de17596f75481d483db03ffbf74547672e628eb5d3fb713",
+  "annotated_record_sha256": "78e5cf6305b2e54aa6ecdbb96a45f6e12d96bc2330955f388a8e4f8edd22c4ba",
+  "crypto_measurements_unchanged": true
+}

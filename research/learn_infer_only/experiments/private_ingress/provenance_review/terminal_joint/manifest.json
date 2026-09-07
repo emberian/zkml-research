@@ -1,0 +1,37 @@
+{
+  "classification": "EXECUTED frozen completed terminal joint-output tranche",
+  "date_utc": "2026-09-07",
+  "status": "Source-conditioned classical terminal output lemma; quantitative current-epsilon promotion and current-source compatibility bridge remain open.",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/TERMINAL_JOINT.md",
+      "sha256": "1c698c8361cd4d6e5bfefc96ee34d1bcc4d090ec59f09f6efaad378d5195717c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/verify_sources.py",
+      "sha256": "b18cd9a1840a18352d96296fa70906a25fec44edecf1748be622785d11856c3a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/verify_sources.stdout.txt",
+      "sha256": "faefae402fe2d59b9e8145bbd31e78dbccb51f4b6485927ff8fc112f2cb104cf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/sources.json",
+      "sha256": "faefae402fe2d59b9e8145bbd31e78dbccb51f4b6485927ff8fc112f2cb104cf"
+    }
+  ],
+  "all_source_and_prior_frozen_identities_verified": true,
+  "prior_manifest_groups": 3,
+  "prior_file_checks": 30,
+  "no_attack_recovery_or_extraction_runtime": true,
+  "accounting": {
+    "web_search_queries": 0,
+    "web_HTML_opens": 2,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "new_PDF_extracts": 0,
+    "PDF_downloads": 0,
+    "attack_recovery_or_extraction_runtimes": 0
+  }
+}

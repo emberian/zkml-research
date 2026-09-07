@@ -1,0 +1,31 @@
+metric,value,unit,provenance
+model_parameters,3075098624,parameters,Actual loaded model parameter census
+cached_weight_shards,6150235008,bytes,Frozen source snapshot; stored BF16
+total_wall_seconds_including_imports,104.09996208298253,seconds,score_results.json; shared local load; intervals overlap where named
+total_process_cpu_seconds_including_imports,14.88168,seconds,score_results.json; shared local load; intervals overlap where named
+cpu_load_wall_seconds,1.1675131669908296,seconds,score_results.json; shared local load; intervals overlap where named
+cpu_load_process_cpu_seconds,2.04655,seconds,score_results.json; shared local load; intervals overlap where named
+transfer_to_mps_wall_seconds,1.2114570830017328,seconds,score_results.json; shared local load; intervals overlap where named
+forward_wall_seconds,93.9006720839534,seconds,score_results.json; shared local load; intervals overlap where named
+forward_process_cpu_seconds,5.840170999999994,seconds,score_results.json; shared local load; intervals overlap where named
+likelihood_and_transfer_wall_seconds,0.8367299170640763,seconds,score_results.json; shared local load; intervals overlap where named
+actual_forward_examples,512,count,score_results.json; one run only
+actual_model_forward_calls,64,count,score_results.json; one run only
+nonpadding_tokens,84832,count,score_results.json; one run only
+padded_tokens,87040,count,score_results.json; one run only
+generated_tokens,0,count,score_results.json; one run only
+weight_updates,0,count,score_results.json; one run only
+heldout_inputs,0,count,score_results.json; one run only
+utility_history_runs,0,count,score_results.json; one run only
+mps_current_allocated_bytes,6150197504,bytes,Actual MPS/RSS counters; unified memory figures are not additive
+mps_driver_allocated_bytes,7611465728,bytes,Actual MPS/RSS counters; unified memory figures are not additive
+mps_recommended_max_bytes,83494174720,bytes,Actual MPS/RSS counters; unified memory figures are not additive
+process_high_water_rss_bytes_macos,10271293440,bytes,Actual MPS/RSS counters; unified memory figures are not additive
+framing_A_forward_wall_seconds,46.62102491495898,seconds,32 batches; 256 axis examples; includes any shape warmup in that frame
+framing_A_amortized_forward_seconds_per_two_axis_text,0.36422675714811703,seconds,Batch-8 throughput accounting; not measured singleton latency
+framing_B_forward_wall_seconds,47.279647168994416,seconds,32 batches; 256 axis examples; includes any shape warmup in that frame
+framing_B_amortized_forward_seconds_per_two_axis_text,0.36937224350776887,seconds,Batch-8 throughput accounting; not measured singleton latency
+issuer_inputs.json,2029629,bytes,Actual retained public synthetic teacher artifact
+teacher_oracle.json,14029,bytes,Actual retained public synthetic teacher artifact
+raw_scores.json,382835,bytes,Actual retained public synthetic teacher artifact
+scored_teacher_rows.json,422260,bytes,Actual retained public synthetic teacher artifact

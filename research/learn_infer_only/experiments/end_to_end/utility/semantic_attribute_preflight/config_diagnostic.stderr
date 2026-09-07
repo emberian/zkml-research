@@ -1,0 +1,1 @@
+`generation_config` default values have been modified to match model-specific defaults: {'do_sample': True, 'temperature': 0.6, 'top_p': 0.95}. If this is not desired, please set these values explicitly.

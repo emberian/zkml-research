@@ -1,0 +1,49 @@
+{
+  "label": "EXECUTED",
+  "scope": "Pin read-only primary spot checks of the complementary base audit.",
+  "sources": [
+    {
+      "paper": "2012/733",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "pdf_sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+      "read_only_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt",
+      "extract_sha256": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+      "PDF_pages_read": [
+        23,
+        24
+      ],
+      "printed_pages_read": [
+        23,
+        24
+      ],
+      "locator_tokens_checked": [
+        "MPK = (fmpk1",
+        "n\u03bb"
+      ]
+    },
+    {
+      "paper": "2013/337",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf",
+      "pdf_sha256": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+      "read_only_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt",
+      "extract_sha256": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+      "PDF_pages_read": [
+        16,
+        17
+      ],
+      "printed_pages_read": [
+        15,
+        16
+      ],
+      "locator_tokens_checked": [
+        "Setup(1\u03bb",
+        "mpk :="
+      ]
+    }
+  ],
+  "extraction_provenance": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json",
+  "extraction_provenance_sha256": "54307372e4bbd455ae371f210bd510a7c900ca15c7d5d231f6f81287875282fc",
+  "additional_SQL_schema_web_queries": 0,
+  "PDF_downloads": 0,
+  "script_sha256": "0d84131bcde264007a77aa09ec8f5e98a8c52ae3aebdebb9de50251952a02192"
+}

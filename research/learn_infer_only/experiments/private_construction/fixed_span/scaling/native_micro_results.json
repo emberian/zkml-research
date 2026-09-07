@@ -1,0 +1,101 @@
+{
+  "passed": true,
+  "scope": "one native public-fixture encryption and fixed-query read; same group and equations",
+  "script_sha256": "5a24f5b7ff53e1f092a7465236c336a71fe97fd4b3a77635d4d4aa9508d088d8",
+  "base_micro_sha256": "ec1e790a281d610ff59d4e06dbf32d580401b6af883658d8a2583240b74dce08",
+  "backend_sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+  "library_path": "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib",
+  "library_sha256": "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c",
+  "input_sha256": "3425bb4869caef7b70fa608244f7f830d2175875e8f806139dbc6f4fc443253d",
+  "public_queries": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q00.json": "33dcf94fa32f932f53e421903990a02bae91f6cec52c1278d791377b81b7ada6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q01.json": "ee2af9188b47efaa6b084848f9541bf4cc9bc11a1fe9eba509fc0c9ebddad7bb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q02.json": "fdb00d9da4133d64570801b27e9ca03d44d0a5548f9568879cb0aef3329f697c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q03.json": "e5f28bd781a6155e37a4c6fbed9639577010ea9f309ed874d39216f604721b91",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q04.json": "de142b6a853130d04f5e9703253006dbec4a5bc5e9de65083be3866fbfa8483d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q05.json": "574ad2a8940e27486db5005646b35d20066b696b12b77c6abc390745377800d0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q06.json": "e7c4b435f9c95461798d2707905da722c5401f6896e622000be86beedc7d0dfc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q07.json": "e60315230f76014656f8f8cb9f1eae9b56952cdb85fb9f9d725b7f328af832df",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q08.json": "3013968da97e2afaa5b0efe9ef8ef557b4bead1443b6b9092947eddefc8b65a3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q09.json": "ea7ad5326cfd9a2b4f95075f272eafd7eb8cafad98547087bf9cd5fcb10679fe",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q10.json": "4fca373d8039a632eb56d88d5df6e5159c9ecaca9be0c90c391efeb7df309663",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q11.json": "927933f4e83e5b909410af7dd9f2bd0a1a9d1fd8e93280ee0be7d1e44fba41ed",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q12.json": "e44acf29c284cb61d385f967c4be212485f38db55f2b76a73bb2d9e145219a4c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q13.json": "c454434dfeec7b173ba47ac9c3111eb37ff27389566c55124916bb093dcca6cb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q14.json": "7a923087d9906e0e7d7b20b4ec50b12ed498c3577bc3f4257bc6f8677238e4c6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q15.json": "5c74ebf39c38d2ab38c2ea334d4d7712485c714c76c5d5e00afd6aa28793f67b"
+  },
+  "phases": [
+    {
+      "role": "honest_private_setup",
+      "elapsed_ns": 6420364875,
+      "exports": [
+        "public.bin",
+        "fixed_keys.bin"
+      ],
+      "master_exported": false,
+      "python_pow_equality_checks": 577,
+      "python_pow_verification_ns_separate": 28459856500,
+      "arithmetic_backend": "installed OpenSSL BN_mod_exp_mont_consttime + Python inversions",
+      "private_verification_values_exported": false,
+      "subprocess_wall_ns_including_separate_checks": 35033196625
+    },
+    {
+      "role": "private_issuer_public_key_only",
+      "encrypted_vectors": 1,
+      "encoding_table_ns": 336875,
+      "encryption_ns": 1264400541,
+      "ciphertext_bytes": 147968,
+      "diagnostic_scope": "private synthetic micro-log; not a deployed host API",
+      "python_pow_equality_checks": 579,
+      "python_pow_verification_ns_separate": 32955288000,
+      "arithmetic_backend": "installed OpenSSL BN_mod_exp_mont_consttime + Python inversions",
+      "private_verification_values_exported": false,
+      "subprocess_wall_ns_including_separate_checks": 34340420250
+    },
+    {
+      "role": "host_fixed_key_evaluator",
+      "validation_ns": 1169610625,
+      "validated_ciphertext_elements": 578,
+      "fixed_projection_ns": 174493167,
+      "fixed_query_index": 0,
+      "fixed_projection_reads": 1,
+      "score": 1435,
+      "bsgs_table_ns": 3647625,
+      "bsgs_decode_ns": 49635708,
+      "bsgs_common_bound": 14219936,
+      "bsgs_baby_entries": 5333,
+      "bsgs_giant_iterations_actual": 2667,
+      "bsgs_python_table_bytes_shallow_plus_entries": 1614848,
+      "master_or_plaintext_input": false,
+      "python_pow_equality_checks": 1159,
+      "python_pow_verification_ns_separate": 37614243458,
+      "arithmetic_backend": "installed OpenSSL BN_mod_exp_mont_consttime + Python inversions",
+      "private_verification_values_exported": false,
+      "subprocess_wall_ns_including_separate_checks": 39104460625
+    }
+  ],
+  "constant_time_protocol_claim": false,
+  "full_384_run": false,
+  "outputs": {
+    "fixed_keys.bin": {
+      "bytes": 4096,
+      "sha256": "58edbb22e34c29b5d1d163c4ffba29f83f5e2036187d6d409e30e0be34d69845"
+    },
+    "public.bin": {
+      "bytes": 147712,
+      "sha256": "4669f9e7a1d08ab8d2ccd1fa6b2b8677945af57f8bc644781f02c664dd9b120f"
+    },
+    "input.bin": {
+      "bytes": 147968,
+      "sha256": "401950091f754bd4b8b1e817f7a0b3c5efa5982e22ba370b0f5bb1b0525c7ee0"
+    }
+  },
+  "master_exported": false,
+  "private_pow_check_operands_exported": false,
+  "searches": {
+    "web": 0,
+    "scry_sql": 0,
+    "package_installs": 0
+  }
+}

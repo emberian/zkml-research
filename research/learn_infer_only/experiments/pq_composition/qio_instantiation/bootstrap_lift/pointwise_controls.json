@@ -1,0 +1,9 @@
+{
+  "label": "EXECUTED",
+  "scope": "Exact finite coefficient accounting for pointwise-correctness propagation.",
+  "coefficient_cases": 17408,
+  "frozen_bootstrap_sha256": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+  "supplement_sha256": "c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2",
+  "script_sha256": "344372292706c48be180e960fc45e8725b592794fc9ddb0094949c82d7f39b95",
+  "additional_network_queries": 0
+}

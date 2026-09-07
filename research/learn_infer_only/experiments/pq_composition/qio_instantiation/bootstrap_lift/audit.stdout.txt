@@ -1,0 +1,151 @@
+{
+  "label": "EXECUTED",
+  "scope": "Pin the finite local source/proof audit without any network operation.",
+  "note_sha256": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+  "script_sha256": "4dd0d1ab1d1fe530f0ed25c0fef4f34adf3c01600fc476790dd37508554cf681",
+  "controls_sha256": "6b451f051d612fc4741d5c9a68ff8b813b0ff404ec815f0aa128b8ad5623b517",
+  "sources": [
+    {
+      "paper": "2016/006",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "pdf_sha256": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+      "extract_sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+      "locator_pdf_pages": {
+        "Theorem 6.": [
+          9
+        ],
+        "Theorem 7.": [
+          11
+        ],
+        "Definition 4": [
+          6
+        ],
+        "Definition 5": [
+          6
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/extracts/2016-006.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Creator:         TeX\nProducer:        pdfTeX-1.40.16\nCreationDate:    Mon Jan  4 13:25:15 2016 EST\nModDate:         Mon Jan  4 13:25:15 2016 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           15\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       373210 bytes\nOptimized:       no\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "paper": "2015/720",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+      "pdf_sha256": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+      "extract_sha256": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+      "locator_pdf_pages": {
+        "Definition 20": [
+          28
+        ],
+        "Definition 21": [
+          28
+        ],
+        "Theorem 11.": [
+          30
+        ],
+        "Theorem 12.": [
+          32
+        ],
+        "Theorem 13.": [
+          35
+        ],
+        "Theorem 15.": [
+          37
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/extracts/2015-720.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Creator:         TeX\nProducer:        pdfTeX-1.40.13\nCreationDate:    Fri Dec 18 14:31:49 2015 EST\nModDate:         Fri Dec 18 14:31:49 2015 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           43\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       522642 bytes\nOptimized:       no\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "paper": "2015/173",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+      "pdf_sha256": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325",
+      "extract_sha256": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197",
+      "locator_pdf_pages": {
+        "From Compact (1)-Secure FE to Compact": [
+          56
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/extracts/2015-173.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Title:           \nSubject:         \nKeywords:        \nAuthor:          \nCreator:         LaTeX with hyperref package\nProducer:        pdfTeX-1.40.14\nCreationDate:    Wed Sep  2 18:49:35 2015 EDT\nModDate:         Wed Sep  2 18:49:35 2015 EDT\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           57\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       636469 bytes\nOptimized:       no\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    }
+  ],
+  "local_note_links_checked": 2,
+  "frozen_predecessor_sha256": "163ebdcc5e376441b4a146b6964aba60002c3c55952cfb1e17d0c363478109fd",
+  "accepted_interface_sha256": "2cc1d2dc58d8cde8e6a3c3badba602357f9de2d11e008b6d421177eea3dd01d3",
+  "control_counts": {
+    "single_boolean_key_per_position_compatibility_cases": 145636,
+    "privacy_recurrence_rational_cases": 225,
+    "all_node_depth_coefficient_cases": 25,
+    "encoding_composition_coefficient_cases": 4096,
+    "latent_tree_failure_mask_cases": 32906,
+    "compactness_fixed_point_cases": 1056
+  },
+  "queries_this_tranche": {
+    "SQL": 0,
+    "schema": 0,
+    "web_search": 0,
+    "web_open": 0,
+    "Kagi": 0
+  },
+  "network_PDF_downloads": 0
+}

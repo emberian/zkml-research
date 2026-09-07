@@ -1,0 +1,20 @@
+{
+  "label": "EXECUTED",
+  "scope": "Finite algebra and plaintext function controls; not a cryptographic proof checker.",
+  "counts": {
+    "single_boolean_key_per_position_compatibility_cases": 145636,
+    "privacy_recurrence_rational_cases": 225,
+    "all_node_depth_coefficient_cases": 25,
+    "encoding_composition_coefficient_cases": 4096,
+    "latent_tree_failure_mask_cases": 32906,
+    "compactness_fixed_point_cases": 1056
+  },
+  "pseudorandom_tape_countercontrol": {
+    "label": "REFUTED: replacing generated tapes by uniform correctness with no PRG term",
+    "uniform_failure": "1/32",
+    "generated_failure": "1",
+    "efficient_bad_range_PRG_gap": "31/32",
+    "scope": "Deliberately insecure finite generator, not an attack on an assumed secure PRG."
+  },
+  "script_sha256": "c3099a42e6c034187ec76306fb99a664d24ecf3e02703c996da51bdebc4d60d9"
+}
