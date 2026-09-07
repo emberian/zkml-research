@@ -1,0 +1,109 @@
+{"batch_index": 0, "first_example_index": 0, "examples": 8, "nonpadding_tokens": 1412, "padded_tokens": 1424, "forward_wall_seconds": 2.055329625000013, "forward_process_cpu_seconds": 0.19437699999999936, "likelihood_and_transfer_wall_seconds": 0.015204958006506786, "likelihood_and_transfer_process_cpu_seconds": 0.017234999999999445, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503956480, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 1, "first_example_index": 8, "examples": 8, "nonpadding_tokens": 1408, "padded_tokens": 1424, "forward_wall_seconds": 1.6069960000168066, "forward_process_cpu_seconds": 0.10111500000000007, "likelihood_and_transfer_wall_seconds": 0.010510333988349885, "likelihood_and_transfer_process_cpu_seconds": 0.01362800000000064, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503956480, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 2, "first_example_index": 16, "examples": 8, "nonpadding_tokens": 1408, "padded_tokens": 1424, "forward_wall_seconds": 1.373725250014104, "forward_process_cpu_seconds": 0.06482600000000005, "likelihood_and_transfer_wall_seconds": 0.018820500001311302, "likelihood_and_transfer_process_cpu_seconds": 0.016289999999999694, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503956480, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 3, "first_example_index": 24, "examples": 8, "nonpadding_tokens": 1412, "padded_tokens": 1424, "forward_wall_seconds": 1.2637255000008736, "forward_process_cpu_seconds": 0.09816299999999956, "likelihood_and_transfer_wall_seconds": 0.011229499999899417, "likelihood_and_transfer_process_cpu_seconds": 0.015065999999999136, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503956480, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 4, "first_example_index": 32, "examples": 8, "nonpadding_tokens": 1408, "padded_tokens": 1416, "forward_wall_seconds": 1.3690906660049222, "forward_process_cpu_seconds": 0.14047799999999988, "likelihood_and_transfer_wall_seconds": 0.01650658398284577, "likelihood_and_transfer_process_cpu_seconds": 0.014272000000000062, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503972864, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 5, "first_example_index": 40, "examples": 8, "nonpadding_tokens": 1404, "padded_tokens": 1416, "forward_wall_seconds": 1.3898418750031851, "forward_process_cpu_seconds": 0.09259199999999979, "likelihood_and_transfer_wall_seconds": 0.013610499998321757, "likelihood_and_transfer_process_cpu_seconds": 0.014950000000000685, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503972864, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 6, "first_example_index": 48, "examples": 8, "nonpadding_tokens": 1404, "padded_tokens": 1416, "forward_wall_seconds": 1.337804334005341, "forward_process_cpu_seconds": 0.09713500000000153, "likelihood_and_transfer_wall_seconds": 0.024831624992657453, "likelihood_and_transfer_process_cpu_seconds": 0.01513499999999901, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503972864, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 7, "first_example_index": 56, "examples": 8, "nonpadding_tokens": 1408, "padded_tokens": 1416, "forward_wall_seconds": 1.408419249986764, "forward_process_cpu_seconds": 0.0957440000000016, "likelihood_and_transfer_wall_seconds": 0.0160407499934081, "likelihood_and_transfer_process_cpu_seconds": 0.016252999999998963, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503972864, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 8, "first_example_index": 64, "examples": 8, "nonpadding_tokens": 1420, "padded_tokens": 1440, "forward_wall_seconds": 1.5002202920150012, "forward_process_cpu_seconds": 0.11823599999999956, "likelihood_and_transfer_wall_seconds": 0.015005832974566147, "likelihood_and_transfer_process_cpu_seconds": 0.017393999999999465, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503989248, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 9, "first_example_index": 72, "examples": 8, "nonpadding_tokens": 1416, "padded_tokens": 1440, "forward_wall_seconds": 1.4936293330101762, "forward_process_cpu_seconds": 0.07738400000000034, "likelihood_and_transfer_wall_seconds": 0.012089291994925588, "likelihood_and_transfer_process_cpu_seconds": 0.014528000000000318, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503989248, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 10, "first_example_index": 80, "examples": 8, "nonpadding_tokens": 1416, "padded_tokens": 1440, "forward_wall_seconds": 1.5511680420022458, "forward_process_cpu_seconds": 0.08849200000000046, "likelihood_and_transfer_wall_seconds": 0.015613499999744818, "likelihood_and_transfer_process_cpu_seconds": 0.017436000000000007, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503989248, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 11, "first_example_index": 88, "examples": 8, "nonpadding_tokens": 1420, "padded_tokens": 1440, "forward_wall_seconds": 1.5349151249974966, "forward_process_cpu_seconds": 0.09364799999999995, "likelihood_and_transfer_wall_seconds": 0.010190375003730878, "likelihood_and_transfer_process_cpu_seconds": 0.013428999999998581, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6503989248, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 12, "first_example_index": 96, "examples": 8, "nonpadding_tokens": 1416, "padded_tokens": 1432, "forward_wall_seconds": 1.5764114580233581, "forward_process_cpu_seconds": 0.15231900000000032, "likelihood_and_transfer_wall_seconds": 0.01287499998579733, "likelihood_and_transfer_process_cpu_seconds": 0.016235, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6504005632, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 13, "first_example_index": 104, "examples": 8, "nonpadding_tokens": 1412, "padded_tokens": 1432, "forward_wall_seconds": 1.5450704579998273, "forward_process_cpu_seconds": 0.08026499999999892, "likelihood_and_transfer_wall_seconds": 0.011410667008021846, "likelihood_and_transfer_process_cpu_seconds": 0.014000000000001123, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6504005632, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 14, "first_example_index": 112, "examples": 8, "nonpadding_tokens": 1412, "padded_tokens": 1432, "forward_wall_seconds": 1.6487017079780344, "forward_process_cpu_seconds": 0.21621799999999958, "likelihood_and_transfer_wall_seconds": 0.025891334022162482, "likelihood_and_transfer_process_cpu_seconds": 0.013977000000000572, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6504005632, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 15, "first_example_index": 120, "examples": 8, "nonpadding_tokens": 1416, "padded_tokens": 1432, "forward_wall_seconds": 1.5516869999992196, "forward_process_cpu_seconds": 0.10415099999999988, "likelihood_and_transfer_wall_seconds": 0.009235915989847854, "likelihood_and_transfer_process_cpu_seconds": 0.011870000000000047, "memory_after_batch": {"mps_current_allocated_bytes": 6153148416, "mps_driver_allocated_bytes": 6504005632, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 16, "first_example_index": 128, "examples": 8, "nonpadding_tokens": 1424, "padded_tokens": 1464, "forward_wall_seconds": 1.6651645000092685, "forward_process_cpu_seconds": 0.16898699999999955, "likelihood_and_transfer_wall_seconds": 0.023139083990827203, "likelihood_and_transfer_process_cpu_seconds": 0.017576000000000036, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586152448, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 17, "first_example_index": 136, "examples": 8, "nonpadding_tokens": 1428, "padded_tokens": 1464, "forward_wall_seconds": 1.5808301659999415, "forward_process_cpu_seconds": 0.1120839999999994, "likelihood_and_transfer_wall_seconds": 0.014913249993696809, "likelihood_and_transfer_process_cpu_seconds": 0.018653999999999726, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586152448, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 18, "first_example_index": 144, "examples": 8, "nonpadding_tokens": 1420, "padded_tokens": 1456, "forward_wall_seconds": 1.561635332996957, "forward_process_cpu_seconds": 0.12526199999999932, "likelihood_and_transfer_wall_seconds": 0.011742709000827745, "likelihood_and_transfer_process_cpu_seconds": 0.014604000000000283, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586168832, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 19, "first_example_index": 152, "examples": 8, "nonpadding_tokens": 1424, "padded_tokens": 1464, "forward_wall_seconds": 1.4926637910248246, "forward_process_cpu_seconds": 0.06356700000000082, "likelihood_and_transfer_wall_seconds": 0.014354166982229799, "likelihood_and_transfer_process_cpu_seconds": 0.017330999999998653, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586168832, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 20, "first_example_index": 160, "examples": 8, "nonpadding_tokens": 1432, "padded_tokens": 1480, "forward_wall_seconds": 1.434950334019959, "forward_process_cpu_seconds": 0.10704899999999995, "likelihood_and_transfer_wall_seconds": 0.010304416005965322, "likelihood_and_transfer_process_cpu_seconds": 0.013346999999999554, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586185216, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 21, "first_example_index": 168, "examples": 8, "nonpadding_tokens": 1436, "padded_tokens": 1480, "forward_wall_seconds": 1.6066617089963984, "forward_process_cpu_seconds": 0.06546200000000013, "likelihood_and_transfer_wall_seconds": 0.02537308298633434, "likelihood_and_transfer_process_cpu_seconds": 0.016524000000000427, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586185216, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 22, "first_example_index": 176, "examples": 8, "nonpadding_tokens": 1428, "padded_tokens": 1472, "forward_wall_seconds": 1.570858874998521, "forward_process_cpu_seconds": 0.1443329999999996, "likelihood_and_transfer_wall_seconds": 0.011653791007120162, "likelihood_and_transfer_process_cpu_seconds": 0.014397999999999911, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586201600, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 23, "first_example_index": 184, "examples": 8, "nonpadding_tokens": 1432, "padded_tokens": 1480, "forward_wall_seconds": 1.5985675000119954, "forward_process_cpu_seconds": 0.08793100000000109, "likelihood_and_transfer_wall_seconds": 0.0110055000113789, "likelihood_and_transfer_process_cpu_seconds": 0.014752999999998906, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586201600, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 24, "first_example_index": 192, "examples": 8, "nonpadding_tokens": 1408, "padded_tokens": 1456, "forward_wall_seconds": 1.547303750005085, "forward_process_cpu_seconds": 0.07388399999999962, "likelihood_and_transfer_wall_seconds": 0.014655375009169802, "likelihood_and_transfer_process_cpu_seconds": 0.017239999999999256, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586201600, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 25, "first_example_index": 200, "examples": 8, "nonpadding_tokens": 1412, "padded_tokens": 1456, "forward_wall_seconds": 1.5484707499854267, "forward_process_cpu_seconds": 0.07366599999999934, "likelihood_and_transfer_wall_seconds": 0.0166973750165198, "likelihood_and_transfer_process_cpu_seconds": 0.01841500000000096, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586201600, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 26, "first_example_index": 208, "examples": 8, "nonpadding_tokens": 1404, "padded_tokens": 1448, "forward_wall_seconds": 1.4419428340042941, "forward_process_cpu_seconds": 0.14120800000000067, "likelihood_and_transfer_wall_seconds": 0.021041458006948233, "likelihood_and_transfer_process_cpu_seconds": 0.019578000000000984, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586217984, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 27, "first_example_index": 216, "examples": 8, "nonpadding_tokens": 1408, "padded_tokens": 1456, "forward_wall_seconds": 1.431359624984907, "forward_process_cpu_seconds": 0.08956300000000006, "likelihood_and_transfer_wall_seconds": 0.013630416011437774, "likelihood_and_transfer_process_cpu_seconds": 0.014763000000000304, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586217984, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 28, "first_example_index": 224, "examples": 8, "nonpadding_tokens": 1416, "padded_tokens": 1472, "forward_wall_seconds": 1.4874855000234675, "forward_process_cpu_seconds": 0.10191400000000073, "likelihood_and_transfer_wall_seconds": 0.013535291975131258, "likelihood_and_transfer_process_cpu_seconds": 0.01612300000000033, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586217984, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 29, "first_example_index": 232, "examples": 8, "nonpadding_tokens": 1420, "padded_tokens": 1472, "forward_wall_seconds": 1.5122010000050068, "forward_process_cpu_seconds": 0.10719499999999904, "likelihood_and_transfer_wall_seconds": 0.01616525001008995, "likelihood_and_transfer_process_cpu_seconds": 0.016668000000001015, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586217984, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 30, "first_example_index": 240, "examples": 8, "nonpadding_tokens": 1412, "padded_tokens": 1464, "forward_wall_seconds": 1.558364749973407, "forward_process_cpu_seconds": 0.10167799999999971, "likelihood_and_transfer_wall_seconds": 0.015213875012705103, "likelihood_and_transfer_process_cpu_seconds": 0.016617000000000104, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586217984, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{"batch_index": 31, "first_example_index": 248, "examples": 8, "nonpadding_tokens": 1416, "padded_tokens": 1472, "forward_wall_seconds": 1.6086302919720765, "forward_process_cpu_seconds": 0.10782400000000081, "likelihood_and_transfer_wall_seconds": 0.014939833024982363, "likelihood_and_transfer_process_cpu_seconds": 0.018022999999999456, "memory_after_batch": {"mps_current_allocated_bytes": 6153431040, "mps_driver_allocated_bytes": 7586217984, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10272817152}}
+{
+  "execution_completed": true,
+  "score_attempts": 1,
+  "actual_forward_examples": 256,
+  "actual_model_forward_calls": 32,
+  "new_test_texts": 128,
+  "framings": 1,
+  "semantic_bits_per_framing": 256,
+  "pairs_per_framing": 128,
+  "heldout_inputs": 128,
+  "utility_history_runs": 0,
+  "generated_tokens": 0,
+  "weight_updates": 0,
+  "model_parameter_count": 3075098624,
+  "runtime": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "torch": "2.10.0",
+    "transformers": "4.57.3",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "mps_built": true,
+    "mps_available": true,
+    "cuda_available": false
+  },
+  "settings": {
+    "device": "mps",
+    "dtype": "float16",
+    "source_weight_dtype": "bfloat16",
+    "attention": "eager",
+    "enable_thinking": false,
+    "use_cache": false,
+    "logits_to_keep": 1,
+    "model_eval": true,
+    "inference_mode": true,
+    "generation_invoked": false,
+    "likelihood_dtype": "float32 CPU",
+    "batch_size": 8,
+    "left_padding": true,
+    "position_ids": "attention_mask.cumsum(-1)-1; pad positions zero",
+    "tie_rule": "bit0",
+    "threads": 2,
+    "interop_threads": 1,
+    "seed": 7901
+  },
+  "nonpadding_tokens": 45312,
+  "padded_tokens": 46304,
+  "cpu_load_wall_seconds": 1.3306936669978313,
+  "cpu_load_process_cpu_seconds": 2.3088430000000004,
+  "transfer_to_mps_wall_seconds": 2.407460667018313,
+  "forward_wall_seconds": 48.853826625068905,
+  "forward_process_cpu_seconds": 3.4867500000000007,
+  "likelihood_and_transfer_wall_seconds": 0.48743154198746197,
+  "total_wall_seconds_including_imports": 61.428005708003184,
+  "total_process_cpu_seconds_including_imports": 13.876964000000001,
+  "memory_before_load": {
+    "mps_current_allocated_bytes": 0,
+    "mps_driver_allocated_bytes": 393216,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 333152256
+  },
+  "memory_after_load": {
+    "mps_current_allocated_bytes": 6150197504,
+    "mps_driver_allocated_bytes": 6484787200,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 10272817152
+  },
+  "memory_at_end": {
+    "mps_current_allocated_bytes": 6150197504,
+    "mps_driver_allocated_bytes": 7586217984,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 10272817152
+  },
+  "freeze_sha256": "c9c74521b14dd9cb60743ccbf34a91c5e300fa33f03e187aba4117915cda31da",
+  "raw_scores_sha256": "9dd0fdeda7c02de9a475d85fbba67177011249f4412b9716362e0abbe457f343",
+  "prior_bytes_preserved": true,
+  "oracle_parsed_by_scoring_process": false
+}

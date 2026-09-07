@@ -1,0 +1,22 @@
+{
+  "all_parent_entries_unchanged": 53,
+  "audit_wall_seconds": 0.31539941698429175,
+  "checkpoint_vectors": 12,
+  "crypto_executions": 0,
+  "empty_route_queries": 16,
+  "encoder_executions": 0,
+  "exact_fraction_rank_by_route": {
+    "0": 4,
+    "1": 4
+  },
+  "exact_query_scores": 96,
+  "fixture_sha256": "bcdda47d227853e546427e9fb42de489b7c227ace65b10a9099cec81f4481b11",
+  "freeze_sha256": "1fe42024b756c5af49b2a27c210e35ed0b5660148d749cff8667e7989a107198",
+  "generated_files_verified": 402,
+  "global_exact_fraction_rank": 8,
+  "learn_vectors": 384,
+  "passed": true,
+  "public_query_record_count": 16,
+  "same_identity_expiries": 256,
+  "subset_utility_estimate": false
+}

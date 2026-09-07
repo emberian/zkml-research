@@ -1,0 +1,35 @@
+{
+  "crypto_or_encoder_executions_authorized": 0,
+  "expected_counts": {
+    "empty_route_queries": 16,
+    "events": 480,
+    "expiries": 256,
+    "learn": 384,
+    "public_query_records": 16,
+    "queries": 96
+  },
+  "frozen_parent_entries_verified": 53,
+  "parent_manifest_sha256": "2c2a64be129fd3afcc705c62eb37b02e4b8bee2912a00a242c47d86c3141944d",
+  "selection_sha256": "af2869bd2c4592a2931128d28ab150a333e5b9fe04ad2f513c8c88237b91fae9",
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/ERRORS.md": "82a3cb592129131ea86f541df0f8163a80eb89151522ff9465318ce50f967cfe",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/checkpoint_states.npz": "6d3bfbaaf3e30447a9c4adeea41f44f13f663bc7c8d05ab348d5790b35bae28f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/features.npz": "4971df2b5a2f8b41fa98a7da4d7c9767497d5d507bdbd6150b8d04e6dc26904e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/histories.json": "c9f84f54102757b1534078acb9a15c59e0d6656257aa091a90c30d071c30ee7c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/image_rank_scope.json": "b7dfd5ead76f330d6ebdfbf0a09b80cfe17051aacc01891e358eddf709f4f804",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/manifest.json": "2c2a64be129fd3afcc705c62eb37b02e4b8bee2912a00a242c47d86c3141944d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/.gitignore": "429a7ff8e3befe5ac528bb832881840115d63940883b125526b582eedcdcb7a9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/CONTRACT.md": "6dad886ffe02d2f1635b4585aed96de0d645ad446bdbfe5c5830b6c72ff9fa07",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/audit.py": "9de68751a5700c919933786187e4bb0a2b26d9b9354e830bf8e7ca190a0cae35",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/build.py": "1ba2d9cab2514343fb5cc15400f42ca1fb5e49d9f96d52d1ee502821a9bda88c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/common.py": "00c4efd8a7ceb8c460857dabe4b2cad311de390d5d7fda890729db82ce587271",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/launch.py": "c100d985a8fdf27d88b02798a0ec6e672c1400e1a4125f12185a8b5e44441e5c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/prepare.py": "4cf08cef7525be60b318a36f675ee8d8fe12d706945892084408ccfd3d10fa2e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/selection.json": "af2869bd2c4592a2931128d28ab150a333e5b9fe04ad2f513c8c88237b91fae9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/raw_scores.json": "9dd0fdeda7c02de9a475d85fbba67177011249f4412b9716362e0abbe457f343",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/records.json": "dfd0f81f7480cbc7097f9ca84660fb9120bcae5fe4149865096417f369ba0a63",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/results.json": "322b58077896ad2afb874481bb613069f45c7ca647b776064c438c8328e65746",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/teacher_predictions.json": "01e9581a03776d3fa4746f5d73b82800f557b83baf77d3cb0ffde5cae2abf165",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/test_predictions.json": "801b6bbfd3eda901a7964eefe016163f5c649d442dfec3a9a85e68afc1405b77"
+  }
+}

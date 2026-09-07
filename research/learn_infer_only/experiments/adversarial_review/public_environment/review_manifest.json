@@ -1,0 +1,60 @@
+{
+  "label": "EXECUTED",
+  "reviewer": "/root/entropy_composition",
+  "author": "/root/he_closure_costs",
+  "decision": "Accept conditional public-environment bootstrap and exact effective-key projection in the stated bit/circuit model; explicitly choose common output padding from the uniform sublinear ciphertext bound. Raw GKP depth, source interface and quantitative rates remain open.",
+  "artifacts": {
+    "REPORT.md": "0d5f0386a06b3a493169e0a66f7d1dda5e90b631ef6ecd44c64f112d7eab8be4",
+    "review.py": "3e3f4d151406d735d8f8888ba0722c03959afc7a8a2d907f1e6c01baa01b18b0",
+    "results.json": "e20ec82fb98a4204694d2ea94d3151e43c9190242a17e6491a8c66b9d7d6e5f8",
+    "stdout.txt": "e20ec82fb98a4204694d2ea94d3151e43c9190242a17e6491a8c66b9d7d6e5f8",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "author_replay.stdout.txt": "3baf61fa403ee0bc6f7e399360bc8c4b5d1febd3892b39dd13b8babe0fc2cdee",
+    "author_replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".gitignore": "7e5d03ac08c7ef247f3b0e05fc7c4edefc89f7e293d17aec792fc3be124262ed"
+  },
+  "source_inputs_rechecked": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/base_fe/REPORT.md": "0d14b9e394528d7aba9fecf40e17d4cbf59103c128cfa235246b424487a4dad4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/POINTWISE_CORRECTNESS.md": "c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/source_spans.json": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/.gitignore": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/inputs.json": "6de6d072d6afc9249208f3f66ff8da7d8412508795a9e6f4d8fe9427767dd6c0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.py": "79ca4109ef926c4323ac63d6dac3f4ef2fe1ea2bc896de50f1f7e2da6d294608",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.json": "85620be6ba7d6dc9a2b73e077d4babe1b93c6a0a267627b56861f61c747d06b9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/validate.py": "a8a181f7347a4683a9f458925a1177f4d858fe2bddfb5472b4885ca065944c77",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/validation.json": "d1b26aa2c1f1403057fa6f718e36a7c3432ae41934769abbf981fdb6bdb904e8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/artifact_hashes.json": "c5528234217b96c373a6425874b6a16867505275931c36574cb754c696de00d1"
+  },
+  "source_input_count": 22,
+  "local_links_valid": true,
+  "stdout_matches_results": true,
+  "stderr_empty": true,
+  "author_clarifications": [
+    "The final frozen circuit projection requires compact g+o+|r|, including direct output bindings.",
+    "Choose common raw output width from uniform Q(U,log T) T^(1-alpha) child ciphertext bound, and charge padding writes at that selected width; do not silently pad to T."
+  ],
+  "commands": [
+    {
+      "cmd": "python3 research/learn_infer_only/experiments/adversarial_review/public_environment/review.py > research/learn_infer_only/experiments/adversarial_review/public_environment/stdout.txt 2> research/learn_infer_only/experiments/adversarial_review/public_environment/stderr.txt",
+      "exit_code": 0
+    }
+  ],
+  "additional_web_queries": 0,
+  "additional_scry_queries": 0,
+  "additional_kagi_queries": 0,
+  "PDF_downloads": 0,
+  "no_shared_or_companion_writes": true,
+  "no_commits": true
+}

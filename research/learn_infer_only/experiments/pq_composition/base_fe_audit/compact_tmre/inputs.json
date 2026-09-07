@@ -1,0 +1,65 @@
+{
+  "scope": "Frozen predecessor/review and exact primary PDF/text reads",
+  "inputs": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md",
+      "sha256": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/DEPTH_INTERFACE.md",
+      "sha256": "f7a380764376f5292a65e8b0a0ebe9917f90594fc4f5e99875f28a4f080b088a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md",
+      "sha256": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md",
+      "sha256": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/depth_interface/REPORT.md",
+      "sha256": "8ccd373cbb5584ce81a31e5c958875b1a54a8a4efe16a52a01a23ab26d8a05f5"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+      "sha256": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt",
+      "sha256": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "sha256": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt",
+      "sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/356.pdf",
+      "sha256": "44062b699622cc5304c1e5e012627d195bcdfec4a7c4f42960619b5d3eec3ea5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+      "sha256": "cb26f4b9590c252f8e1759532d40953f168f43a37ba115910352600836c5b221"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/769.pdf",
+      "sha256": "2ff48e358662e3602b8119bbf919c2af3c1700c83d184d1d27c5949ed989bba8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt",
+      "sha256": "f3062776daaf61f0de021879f67e25a05bb917799db1d6885c5c4025d5e9a98c"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/925.pdf",
+      "sha256": "0e04d7df8867bf29bf1b014c9e1e1e64976e5af343cba85aa57ada74ca05cfc2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+      "sha256": "8a98e369d0b0b11bf9f512a0df4ae87210e282ffbcd12bfe22b1fd441ab80487"
+    }
+  ]
+}

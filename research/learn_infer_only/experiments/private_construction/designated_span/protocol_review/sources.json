@@ -1,0 +1,39 @@
+{
+  "schema": "designated-span-protocol-review-inputs-v1",
+  "time_utc": "2026-09-07T04:26:17.953682+00:00",
+  "sources": [
+    {
+      "review_copy": "PROTOCOL_PRIVACY.md",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/PROTOCOL_PRIVACY.md",
+      "bytes": 7456,
+      "sha256": "5960cd68c8e5355de48d226599e996bdc5e0528ccff516e3e730f8e170ffb017"
+    },
+    {
+      "review_copy": "CONTRACT.md",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/CONTRACT.md",
+      "bytes": 6792,
+      "sha256": "256e85b406a0c6a11cc97065c8bf7c9a7aad2126bff9ad8ea868e1208495703d"
+    },
+    {
+      "review_copy": "primitive.REVIEW.md",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/review/REVIEW.md",
+      "bytes": 20435,
+      "sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840"
+    },
+    {
+      "review_copy": "GENERAL_FIXED_SPAN.md",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/scaling/GENERAL_FIXED_SPAN.md",
+      "bytes": 10521,
+      "sha256": "5d99740f9f329e0a45f9c45bcd0db684b49f66660db567d81bfc169dbca4edb9"
+    },
+    {
+      "review_copy": "CONTRACT.queue-corrected.md",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/CONTRACT.md",
+      "bytes": 6810,
+      "sha256": "3d8f4eb79e9e6eca02e14e965bd533eab95b002a09eecea3f9161c2bfbfdabff",
+      "scope": "One root correction during review; ordered projected queues."
+    }
+  ],
+  "scope": "Written mathematical/capability review; moving implementation bytes are not certified.",
+  "review_sha256": "6b23143f320d57b00bd3a062c25ad47566055ed877751e5728c561587102e0c3"
+}

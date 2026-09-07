@@ -1,0 +1,150 @@
+{
+  "binary_hashes": {
+    "host": "d45d096a68a46ecfde022bf2b35a30d512d93d5cb333c9097f64c04aeeebe474",
+    "issuer": "cc7b16ed3ee5902a3c0986565721e3d3baab34deba3ee1c229a3069697f8adaf",
+    "reader": "9b952ef674c5d7a7ba8234a939df13875d8bd3e917ec6044eb6f24747c6f6790",
+    "setup": "7323fc2634f2aa617033932ed082807660f714f43ccafd39ae53a40f6ac47967"
+  },
+  "build_command": "cargo build --offline --release --manifest-path Cargo.toml > build.log 2>&1",
+  "build_log": {
+    "bytes": 1722,
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/build.log",
+    "read_scope": "Complete retained successful compiler log",
+    "sha256": "8178bff0a9ef52d38e507b1b12e90b3fea35bc2cd62b92e3d731f8e42d19529e"
+  },
+  "cargo": "cargo 1.98.0-nightly (a595d0da2 2026-06-20)",
+  "collection_command": "python3 collect.py",
+  "own_sources": [
+    {
+      "bytes": 5606,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/CONTRACT.md",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "d83c6c39259ae4418c8ac7b3e8b9ccbb365f47804adc1d9c8c1a102db2c13c3a"
+    },
+    {
+      "bytes": 219,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.toml",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "888637418d68f3688acec178273e8284e6789b6cccc3f1f7eb545523f86eece0"
+    },
+    {
+      "bytes": 15444,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.lock",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "6a677322ed8b8db7bba5f785148d3c9e0d6cfe46a7e666665b06f22d78065fa5"
+    },
+    {
+      "bytes": 10579,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/run.py",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "95f0e4f6f04c159dabca1e56a187f566a21e8a0e4711400ed9bb5641bf78e3b0"
+    },
+    {
+      "bytes": 5863,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/collect.py",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "5a4e7bdaed84ccc36cf4edc6535f2645d41326323b88a19ee5ca280dfaba7791"
+    },
+    {
+      "bytes": 1826,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/host.rs",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "f0ba609bdf7d6a2ad2b83298b526d8fecf4d8569f7db28af6c5306c14e159ac2"
+    },
+    {
+      "bytes": 1958,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/issuer.rs",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "b9bf8be29a0a38c4578448f0f77214c367595ceb0ef7753ed5298617c1ff01b8"
+    },
+    {
+      "bytes": 1561,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/reader.rs",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "00313812037bdc8862ec979b7c18e8145654189d84c29ade68c44cb5cf1c0088"
+    },
+    {
+      "bytes": 1782,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/setup.rs",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "34380136654f11a69b71d9a53f3fa64f6d382f28f671c9b0df90cfb184990f98"
+    },
+    {
+      "bytes": 4648,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/lib.rs",
+      "read_scope": "Owned full source; Cargo.lock pins resolved dependencies",
+      "sha256": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880"
+    }
+  ],
+  "parameter_claim": "Uses PARAMETERS_ERROR_PROB_2_POW_MINUS_165 exactly; source name only, no new noise/security/PQ estimate",
+  "prior_probe": [
+    {
+      "bytes": 3192,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/tfhe_ema_probe/src/main.rs",
+      "read_scope": "Complete prior arithmetic source read, unchanged",
+      "sha256": "f3592b4025eb4bffecf1ffb157c63f056d7c52084042a22058f2e2d6ae76fad7"
+    },
+    {
+      "bytes": 222,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/tfhe_ema_probe/Cargo.toml",
+      "read_scope": "Complete prior dependency declaration read, unchanged",
+      "sha256": "524ad499e2da2d12267497bdedd3b814ecd36a62dcd6e39f8e41d8701f150000"
+    },
+    {
+      "bytes": 15447,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/tfhe_ema_probe/Cargo.lock",
+      "read_scope": "Copied then Cargo updated the new package entry; dependency lock retained unchanged here",
+      "sha256": "d929e593d51ce896e157d9b003bde62d7282b8a4311f5dc680ed6eea19245543"
+    }
+  ],
+  "private_material_policy": "No private-key hash or plaintext audit content in this manifest. Client key and synthetic audit files remain in ignored private run directory. Large public keys remain locally retained but ignored for repository size.",
+  "result_file": {
+    "bytes": 37669,
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/results.json",
+    "read_scope": "Public run record only; private key/request/audit files are not read by this collector",
+    "sha256": "a5e3e6f0d7c19d0b5951a5379cf422353a72824c1418f3197bcb6270d7d0f76c"
+  },
+  "run_command": "python3 -u run.py > run_001.log 2>&1",
+  "runtime_test_scope": "Normal setup, encrypted init/ingress, two logical Learn and two Infer operations, each host operation replayed exactly once. No malformed-input, routing, extraction or 384-step run.",
+  "rustc": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7\n",
+  "schema": "resident-private-ema-sources-v1",
+  "scope": "Two-step honest encrypted EMA, API/file role separation and sampled exact byte replay; no implementation privacy proof.",
+  "tfhe_source_locations": [
+    {
+      "bytes": 5428,
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/server_key/mod.rs",
+      "read_scope": "Complete public gate wrappers, including MUX, read",
+      "sha256": "bf88871068b974a5496f861c076d8ef9714ef193742d57dba96c42f7d0e9f82a"
+    },
+    {
+      "bytes": 1537,
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/ciphertext/mod.rs",
+      "read_scope": "Complete ciphertext enum/Serde and compressed-ciphertext source read",
+      "sha256": "d2650d683cc9a23de5e8d2f700180c68e793ae038fc6376522f4f1c6e8e5b48a"
+    },
+    {
+      "bytes": 38336,
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs",
+      "read_scope": "Lines 411-580 read: MUX branch equations and beginning of AND; randomness locations searched, not a whole-engine audit",
+      "sha256": "645ca26eab47b80d16c3088b1ab776966462d4bf2b3516567559d3b4234141f5"
+    },
+    {
+      "bytes": 21651,
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/bootstrapping.rs",
+      "read_scope": "Lines 430-610 read: bootstrap/key-switch evaluation; random-generator uses searched, not a whole-file audit",
+      "sha256": "d330528dd580177e21843b1ddb504bd6e2f2eda45f46b780461f4a2fbd66cfd5"
+    },
+    {
+      "bytes": 3618,
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/parameters/params.rs",
+      "read_scope": "Lines 46-80 read: selected and adjacent named Boolean parameter constants",
+      "sha256": "3ac1db249c48c031b144f1e2300531af228196d089bedad810655922ccbb8d69"
+    },
+    {
+      "bytes": 6865,
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/public_key/standard.rs",
+      "read_scope": "Randomness/test names searched only; not complete source inspection",
+      "sha256": "65a5a7af14cc6c6bf29a3da95ebc215079292b2453d2479b983f797b5252b9db"
+    }
+  ]
+}

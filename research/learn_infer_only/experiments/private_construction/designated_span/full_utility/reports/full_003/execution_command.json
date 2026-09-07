@@ -1,0 +1,18 @@
+{
+  "classification": "EXECUTED root-authorized launch command",
+  "cwd": "/Users/ember/dev/zkml-research",
+  "argv": [
+    "python3",
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/runtime/full_003/source/driver.py",
+    "run",
+    "--runtime",
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/runtime/full_003",
+    "--reports",
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003",
+    "--small-pass",
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/report.json"
+  ],
+  "stdout_stderr": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/execution.log",
+  "root_authorized": true,
+  "runtime_success_not_yet_claimed": true
+}

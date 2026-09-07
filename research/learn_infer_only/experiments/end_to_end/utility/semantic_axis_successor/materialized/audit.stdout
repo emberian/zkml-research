@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "learn_vectors": 384,
+  "exact_query_scores": 96,
+  "same_identity_expiries": 256,
+  "checkpoint_vectors": 12,
+  "empty_route_queries": 16,
+  "public_query_record_count": 16,
+  "exact_fraction_rank_by_route": {
+    "0": 4,
+    "1": 4
+  },
+  "global_exact_fraction_rank": 8,
+  "generated_files_verified": 402,
+  "all_parent_entries_unchanged": 53,
+  "crypto_executions": 0,
+  "encoder_executions": 0,
+  "subset_utility_estimate": false,
+  "fixture_sha256": "bcdda47d227853e546427e9fb42de489b7c227ace65b10a9099cec81f4481b11",
+  "freeze_sha256": "1fe42024b756c5af49b2a27c210e35ed0b5660148d749cff8667e7989a107198",
+  "audit_wall_seconds": 0.31539941698429175
+}

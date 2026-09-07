@@ -1,4 +1,68 @@
-# Learn/infer-only resident — second timed run active
+# Learn/infer-only resident — second timed run collected after interruption
+
+[REPORTED interruption; EXECUTED recovery, 2026-09-07] The user reports an
+overnight usage-limit interruption and reboot. The goal's deadline was10am EDT
+/14:00 UTC; recovery began at11:43am EDT, after that cutoff. The goal tool reports
+paused, the live-agent inventory contains only root, and the process census
+finds no experiment still running. Root collected saved evidence without
+launching research, model runs or cryptographic experiments. No claim is made
+that the swarm worked continuously until10am. Earlier in-progress paragraphs
+below are historical checkpoints superseded by this recovery section.
+
+[EXECUTED complete designated workload] The background full_003 process
+finished384 Learn/96 Infer/256 exact expiries and480 finalized events. Its
+saved report records all96 direct/frozen integer comparisons passing and all44
+original classification mistakes retained (52/96 overall,18/32 final).
+Both public histories, independent replays and service shutdowns finish before
+private recipient decoding. The complete public phase takes11,697.338 seconds
+(3h14m57s); private decoding is deliberately outside that timing. Root's
+recovery independently checks all480 ordered public envelopes, parent-digest
+chains,256 FIFO expiry identities and both final queues, then rehashes the
+frozen source/preparation inventory. Private score comparisons remain attributed
+to the saved executed report; root does not open private answer files.
+[Saved result](experiments/private_construction/designated_span/full_utility/reports/full_003/report.json).
+The author's earlier README/static manifest still say running; preserve those
+frozen bytes and use this recovery record for completion status.
+
+[EXECUTED useful BFV join] The fresh synthetic semantic study reaches91.0889%
+versus51.0010% for the original features on the same test, with all11 registered
+gates and independent arithmetic review passing. Its separately selected
+public integration fixture now completes384 Learn/96 Infer/256 expiry through
+BFV and durable independent verification in219.733 seconds, matching all96
+integer answers. That subset is28/32 correct at its final checkpoint; it is
+not another8192-query utility estimate. Full BFV reader key, trusted plaintext
+semantic issuer and four effective bins per route remain material limits.
+[Encrypted report](experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md).
+
+[DERIVED reviewed setup; EXECUTED primitive] The public-coin designated setup
+has an accepted exact-joint-distribution proof and a passing33 Learn/four Infer/
+one-expiry implementation, total174.626 seconds including42.710 seconds setup.
+The executed constructor computes no scalar master or private projection-key
+delivery. Honest direct public sampling and independent honest recipient
+registration are explicit assumptions. All recipients still possess their
+per-input fixed query span. Its source-level implementation review found no
+blocker but its final evidence seal was interrupted. The durable journal join
+was only proposed: no journal successor directory or run is saved.
+[Theory review](experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md),
+[saved execution](experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/report.json).
+
+[EXECUTED nonlinear feasibility] Actual TFHE runs two encrypted-address
+four-bin EMA updates and two encrypted sign queries, preserving the encrypted
+state between calls. All four separate-process full-byte replay pairs pass;
+Learn costs about9–10seconds. The independently reviewed arithmetic and public
+metadata match. Full reader key remains; no utility study or journal join has
+run for this successor. [Report](experiments/end_to_end/private_ema/REPORT.md).
+
+[EXECUTED verification] The retained recovery command is
+`python3 research/learn_infer_only/experiments/end_to_end/collect_interrupted_run.py`.
+[Output](experiments/end_to_end/recovery_2026-09-07.stdout.json) passes the earlier
+27 inventories/600 file links, later source/log pins and the complete public
+journal checks. Both companion HEAD/status snapshots are unchanged. The script
+reads no private runtime material or stopped-task artifact and executes no
+cryptography. NEXT.md identifies the exact interrupted seams; new research
+awaits a new authorized scope/deadline.
+
+## Earlier second-run checkpoints
 
 [EXECUTED authorization, 2026-09-06 evening] Ember requested a new autonomous
 swarm run until **2026-09-07 10am EDT / 14:00 UTC**. The goal is active. Tonight's
@@ -66,8 +130,36 @@ keeps all costs and utility failures. A separately reviewed designated-recipient
 transform hides those scores from the host while giving recipients only their
 fixed-span credentials. The actual backend now passes 33 Learn/four exact
 recipient comparisons/one expiry and exact transition replay in 252.419 seconds.
-Its journal integration is now in progress under a
+Its durable integration now passes 40 Learn/four Infer/eight expiries, all
+44 independently replayed transitions, four private integer comparisons,
+orderly reopen and authorized exact retries. The original final substring
+log guard falsely matched public `row_signed_score_bounds`; a separate exact-key
+finalizer passed against the same completed data with no backend group-arithmetic or private-decode rerun. Public
+ciphertext acceptance precedes private decoding. The full original 384/96
+workload is now running in `designated_span/full_utility/` under the
 [new contract](experiments/private_construction/designated_span/CONTRACT.md).
+
+[EXECUTED fresh utility] A frozen forced-choice 3B semantic issuer plus four-bin
+window features reaches 7,462/8,192 = 91.0889% on fresh text/history fixtures,
+versus 4,178/8,192 = 51.0010% for the original features on those same histories.
+All eleven registered gates pass; an independent replay verifies all 73,728
+integer predictions across the three methods. These are synthetic local tasks,
+not a population estimate. Fifteen semantic errors all concern wet soil, and
+the lowest utility strata remain near 68%. The effective state has rank four
+per route: spanning recipient credentials determine that aggregate. See the
+[frozen report](experiments/end_to_end/utility/semantic_axis_successor/REPORT.md).
+Its selected public fixture now passes actual BFV integration:384 Learn,96
+matching private integer answers and256 exact expiries in219.733 seconds
+including launcher work. The selected final32 labels are28/32 correct; this
+retains the fixture errors and is not another independent accuracy estimate.
+See the [encrypted report](experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md).
+
+[DERIVED reviewed construction] A new full-row-rank designated setup samples public
+field elements and squares them into the group, then solves the row equations
+in the group. The algorithm constructs no scalar master or private dealer
+delivery, and its exact joint-distribution argument passed independent review. Honest public sampling remains an assumption; arbitrary malicious
+setup is not covered. The frozen proposal and independent review are under
+`designated_span/public_coin_setup/`; its separate normal implementation is running.
 
 [DERIVED reviewed successor] The saved eleven-hybrid conditional QIND_pre lift
 now has a completed independent review with no blocking error found under its
@@ -79,10 +171,23 @@ and [review completion](experiments/pq_composition/qind_pre/REVIEW_COMPLETION.md
 this does not establish a PQ resident or a PQ-from-LWE construction. The further
 one-copy quantum-advice xiO bootstrap and pointwise-correctness supplement also
 passed independent review under explicit base-FE/PRF/PRG/xiO interfaces. The
-source audit leaves uniform short public keys, depth-upgrade compactness and
-quantified quantum security/error rates uninstantiated.
+source audit and independently accepted public-environment repair remove one
+literal recursive-key layout obstruction under explicit compact circuit bounds.
+The next depth audit affirms the published Boolean compactness theorem and
+identifies a concrete full-output constructor conditional on compact
+Turing-machine randomized encoding. That extra primitive, the complete
+algorithm-level bridge and quantitative quantum security/error rates remain
+uninstantiated; independent depth-audit review accepts the scoped conclusions with explicit
+source normalizations for runtime padding, inactive fields and hybrid metrics.
 
-[EXECUTED collection] A root rehash of thirteen frozen inventories checks 249
+[EXECUTED latest collection] Root checkpoint004 rehashes27 frozen inventories
+and600 file links with both companion HEAD/status snapshots unchanged.
+The [retained verifier output](experiments/end_to_end/checkpoint_004.stdout.json)
+is green; this checks provenance without rereading private runtime material or
+rerunning cryptographic suites. Completed Scry use is now18 SQL/two schema;
+public-coin prior art added two SQL and five separately counted metadata searches.
+
+[EXECUTED previous collection] A root rehash of thirteen frozen inventories checks 249
 file links and confirms both companion HEAD/status snapshots are unchanged.
 Command: `python3 research/learn_infer_only/experiments/end_to_end/verify_checkpoint.py research/learn_infer_only/experiments/end_to_end/checkpoint_003.json`.
 The [retained output](experiments/end_to_end/checkpoint_003.stdout.json) is green.

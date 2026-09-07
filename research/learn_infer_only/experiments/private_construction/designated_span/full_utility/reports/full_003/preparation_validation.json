@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "stage_only": true,
+  "source_files": 24,
+  "fixture_files": 400,
+  "signature_dependency_files": 79,
+  "cryptography_version": "50.0.1",
+  "matching_root_accepted_small_report": true,
+  "unchanged_small_core_and_crypto_pins": true,
+  "crypto_commands_executed": 0,
+  "services_launched": 0,
+  "driver_sha256": "00da64333801d1babd3a17068ee60095962cb8e7c091c8d73fc6ae1d26ca9041",
+  "preparation_sha256": "fbe97c09ba6b46c1c40df4033a9669210ea16d295b0a5f9bf734ecb4a2fec6df"
+}

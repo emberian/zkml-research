@@ -1,0 +1,8 @@
+{
+  "crypto_owner_adapter_review": "read-only API compatibility, no mismatch; flat telemetry null nonblocking",
+  "protocol_review_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/REVIEW.md",
+  "protocol_review_sha256": "6b23143f320d57b00bd3a062c25ad47566055ed877751e5728c561587102e0c3",
+  "crypto_core_positive_report_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/positive_001/report.json",
+  "crypto_core_positive_report_sha256": "6c5fdf598bfcef1c199c77ba515dc39c1f8b93b7efba4791187463b4338439f5",
+  "root_scope_direction": "Preserve run001; trusted coordinator comparison/report/scheduling outside host view; future public replay before drain."
+}

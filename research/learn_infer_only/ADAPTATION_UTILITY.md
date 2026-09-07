@@ -1,5 +1,41 @@
 # History-dependent adaptation utility control
 
+[EXECUTED fresh positive successor, 2026-09-07] The separately frozen3B
+forced-choice semantic issuer plus four-bin window features reaches
+7,462/8,192 (91.0889%) on128 fresh text surfaces and64 new histories,
+versus4,178/8,192 (51.0010%) for the original features on those same histories.
+The paired history gain is40.0879 percentage points with descriptive
+1.96-standard-error halfwidth1.4704 points; texts are reused across histories,
+so this is not an independent-text population interval. All eleven registered
+utility/retention/stratum conditions pass. All15 semantic bit errors concern
+wet soil; the worst populated utility strata remain near68%.
+[The frozen report](experiments/end_to_end/utility/semantic_axis_successor/REPORT.md)
+retains the complete predictions and failures. Independent review reproduces
+all73,728 integer predictions across primary, baseline and gold controls, all
+histories and exact retention comparisons without rerunning either model.
+
+[DERIVED privacy boundary] The trusted plaintext3B issuer extracts two semantic
+bits and emits a one-hot bin. The encrypted learner can learn and reverse
+synthetic nonlinear label rules using these features, but its effective
+aggregate has only four coordinates per route. A spanning recipient coalition
+can reconstruct that effective aggregate; rank561 ambient padding is irrelevant.
+This result does not establish a hidden semantic encoder or private cognition.
+A [materialized selected fixture](experiments/end_to_end/utility/semantic_axis_successor/materialized/README.md)
+contains384 Learn/96 Infer/256 expiry. Its actual
+[BFV integration](experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md)
+now matches all96 scores and expiry identities in219.733 seconds including
+launcher work, with480 independently verified journal rows and zero baseline
+decryptions. The selected fixture is76/96 correct across checkpoints and28/32
+correct at the end. It is public and is a consistency workload, not an
+additional accuracy sample; the full BFV reader key remains.
+
+[EXECUTED teacher selection provenance] Before these fresh tests, two fixed
+forced-choice prompt framings were compared only on128 teacher texts. The
+selected framing scored246/256 attribute bits; the alternative233/256.
+Generation-format failures below remain separate and preserved. The scorer
+reads the oracle file bytes only to verify its frozen hash, never parses those
+gold labels as model input; outcome comparison occurs in the evaluator.
+
 [EXECUTED second-run integration, 2026-09-07] Actual BFV, durable history and
 independently verified release now reproduce all 96 scores of the selected
 384-Learn/96-Infer fixture. Its fixed-subset accuracy remains 52/96 overall and

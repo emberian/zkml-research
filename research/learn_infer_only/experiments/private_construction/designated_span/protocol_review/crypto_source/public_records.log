@@ -1,0 +1,70 @@
+{
+  "schema": "designated-source-public-records-review-v1",
+  "passed": true,
+  "script_sha256": "93db8d478dd7c9cf05d95afef6ea2df6a869dc32a886a76983b30a1e969a8ab6",
+  "source_manifest_sha256": "325d8f4b858b7f3116dbe21c76199013cee38e057699db040469f15d66fde692",
+  "source_pins": {
+    "crypto.py": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+    "group.py": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+    "native_pow.py": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+    "rows.json": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0"
+  },
+  "context_sha256": "234506b710398f029b4d37505fbc66b80df28b55641cfd5b75e4683e1b676a78",
+  "commands_sha256": "e2e9dfc35739303576aead2e26ac650589f02bb8eaf9d4137c3e6db7ac1772fa",
+  "command_count": 86,
+  "commands_by_name": {
+    "keygen": 1,
+    "validate-context": 1,
+    "encode-query": 5,
+    "host-infer": 4,
+    "inspect": 4,
+    "reader-decrypt": 4,
+    "issuer-encrypt": 33,
+    "host-learn": 34
+  },
+  "setup_child_counts": {
+    "initializer": 1,
+    "recipient-register": 16,
+    "recipient-finalize": 16
+  },
+  "trusted_validation_precedes_cache_calls": 83,
+  "public_role_calls_without_private_key_inputs": 46,
+  "private_calls_with_stdout_and_individual_elapsed_omitted": 4,
+  "public_output_headers_and_hashes_checked": 71,
+  "distinct_fresh_public_randomizer_fields": 33,
+  "inference_public_randomizer_links": 4,
+  "exact_final_public_replay": true,
+  "remaining_dedicated_recipient_files_metadata_only": 16,
+  "private_directory_mode": "0700",
+  "private_key_modes": "0600",
+  "private_key_bytes": 435,
+  "row_bounds": [
+    12943840,
+    13492480,
+    12956032,
+    13585952,
+    12439904,
+    13711936,
+    13606272,
+    14219936,
+    11972544,
+    13130784,
+    10956544,
+    11241024,
+    12045696,
+    13268960,
+    11050016,
+    11289792
+  ],
+  "maximum_row_bound": 14219936,
+  "group_bits": 2048,
+  "q_greater_than_twice_bound": true,
+  "private_key_input_vector_or_answer_bytes_read": false,
+  "cryptographic_execution": false,
+  "limits": [
+    "Distinct c0 values do not prove randomness independence or unpredictability.",
+    "No private integer comparison was independently rerun; its existing source/result was inspected.",
+    "Setup/issuer and aggregate benchmark timings remain public telemetry outside the protected transcript.",
+    "Inventory and hashes do not prove physical erasure, OS isolation or source correctness."
+  ]
+}

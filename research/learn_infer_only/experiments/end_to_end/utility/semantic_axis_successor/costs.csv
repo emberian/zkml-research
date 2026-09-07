@@ -1,0 +1,35 @@
+metric,value,unit,provenance
+smollm3_parameters,3075098624,parameters,Actual loaded model census
+smollm3_process_wall,61.428005708003184,seconds,Actual child process interval including imports; shared local load
+smollm3_forward_wall,48.853826625068905,seconds,Measured batch forward intervals
+smollm3_real_input_tokens,45312,tokens,Actual tokenizer counts
+smollm3_padded_input_tokens,46304,tokens,Actual padded batches
+smollm3_cpu_seconds,13.876964000000001,seconds,Actual process CPU; not accelerator duration
+smollm2_parameters,134515008,parameters,Actual loaded model census
+smollm2_process_wall,4.138120709016221,seconds,Actual child process interval including imports; shared local load
+smollm2_forward_wall,1.315563873067731,seconds,Measured batch forward intervals
+smollm2_real_input_tokens,4376,tokens,Actual tokenizer counts
+smollm2_padded_input_tokens,4704,tokens,Actual padded batches
+smollm2_cpu_seconds,4.3897569999999995,seconds,Actual process CPU; not accelerator duration
+smollm3_actual_batch_forwards,32,calls,32 batches /256 axis examples /128 new texts
+smollm2_actual_batch_forwards,8,calls,8 batches /128 new texts
+teacher_model_reencodings,0,examples,Frozen selected A bits and original mean10 teacher cache reused
+smollm3_peak_process_rss,10272817152,bytes,macOS high-water RSS; unified memory figures not additive
+smollm3_final_mps_current,6150197504,bytes,Actual MPS counter
+smollm3_final_mps_driver,7586217984,bytes,Actual MPS counter; includes allocator/cache; not additive with RSS
+smollm2_peak_process_rss,1153826816,bytes,Actual macOS high-water RSS
+semantic_and_gold_feature_conversion,0.00029424999956972897,seconds,Measured conversion of 256 inferred and384 diagnostic pairs; no model inside interval
+original_feature_conversion,0.012965333997271955,seconds,Measured cached/new hidden concatenation and public center/scale quantization
+utility_evaluation,0.26645450000069104,seconds,Three methods /64 histories /3 checkpoints /128 queries
+utility_prediction_records,73728,scores,Exact full paired denominator
+effective_aggregate_rank_per_route,4,coordinates,One-hot basis; exact image/rank scope
+ambient_coordinates_per_route,577,coordinates,Padding kept for arithmetic format; no privacy claim
+one_route_aggregate_coordinate_bound,4064,absolute integer value,32*127
+one_hot_absolute_score_bound,516128,absolute integer value,32*127^2
+features.npz,142711,bytes,Actual retained artifact; public synthetic fixture/evidence
+checkpoint_states.npz,193741,bytes,Actual retained artifact; public synthetic fixture/evidence
+issuer_inputs.json,1095045,bytes,Actual retained artifact; public synthetic fixture/evidence
+teacher_predictions.json,9557,bytes,Actual retained artifact; public synthetic fixture/evidence
+test_predictions.json,6915,bytes,Actual retained artifact; public synthetic fixture/evidence
+raw_scores.json,190954,bytes,Actual retained artifact; public synthetic fixture/evidence
+results.json,4737883,bytes,Actual retained artifact; public synthetic fixture/evidence

@@ -72,6 +72,44 @@ recipients, setup authorities and the continuity authority is explicit. A compro
 recipient knows messages addressed to it; an issuer knows its own supplied observations.
 Union-of-role exposures are recorded in `CREDENTIALS.csv`.
 
+## How the current demonstrations map to this target
+
+[DERIVED, second timed run] The completed BFV journal/verifier demonstration
+retains a full reader secret. It is a trusted-reader benchmark. Public
+recomputation reduces its dependence on the authority's arithmetic claims;
+it does not establish the Tier A exposure experiment above.
+
+[DERIVED] The [designated fixed-span experiment](experiments/private_construction/designated_span/PROTOCOL_PRIVACY.md)
+is narrower than this resident functionality. It fixes the query rows and a
+recipient coalition before secret setup. For every issued input pair it
+requires equality under the coalition's entire row span, including retained,
+unfinalized and later-expired inputs. Its conditional classical DDH proof
+protects differences satisfying that condition. The host-only specialization
+has no projection restriction, but excludes private issuer history, recipient
+answers and physical side channels. All public retry/status behavior must be
+independent of private decoding. These exclusions are explicit proof premises;
+the general target above includes physical leakage unless separately hidden.
+
+[DERIVED] Whole-span equality for every input is stronger than equality of
+the answers actually selected along one accepted history. Surviving projection
+credentials permit immediate per-input projections and counterfactual
+computations outside the journal. Consequently successful designated arithmetic
+or journal binding does not prove selected-history-only release against its
+credential holders. Removing the scalar vector master under honest erasure
+does not by itself remove every equivalent state-reading capability.
+
+[DERIVED nonvacuity obligation] Evaluate privacy on the actual permitted state
+and encoder image, including its queue contents. A rank-deficient map on a
+577-dimensional ambient vector space may be injective on a much smaller
+feature image. In particular, if a semantic learner uses four basis features
+per route and exposed exact score functionals span those four coordinates,
+they determine its effective aggregate. Applied to each retained signed
+contribution, they also determine the corresponding ordered queue. Zero
+padding does not create private useful state. This is a scope condition on
+the privacy game, not a conclusion about every richer encoder or encryption
+scheme. Useful adaptation and nonvacuous privacy must both be demonstrated
+for the same final functionality before calling it a private resident.
+
 ## Interface-relative privacy game and its nonvacuity witness
 
 [DERIVED specification] First choose a finite horizon and resource budget. The

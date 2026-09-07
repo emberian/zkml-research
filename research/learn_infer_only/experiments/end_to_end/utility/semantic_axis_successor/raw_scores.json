@@ -1,0 +1,7938 @@
+[
+  {
+    "alternative_probability_mass": 0.36248961091041565,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 0,
+    "conditional_probabilities_in_bit_order": [
+      0.907312273979187,
+      0.09268778562545776
+    ],
+    "exact_tie": false,
+    "example_index": 0,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.924528121948242,
+    "log_likelihoods_in_bit_order": [
+      -1.1120281219482422,
+      -3.393278121948242
+    ],
+    "logits_in_bit_order": [
+      29.8125,
+      27.53125
+    ],
+    "predicted_bit": 0,
+    "record_id": 256,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5305407047271729,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 0,
+    "conditional_probabilities_in_bit_order": [
+      0.44167301058769226,
+      0.5583270192146301
+    ],
+    "exact_tie": false,
+    "example_index": 1,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.1854190826416,
+    "log_likelihoods_in_bit_order": [
+      -1.4510440826416016,
+      -1.2166690826416016
+    ],
+    "logits_in_bit_order": [
+      28.734375,
+      28.96875
+    ],
+    "predicted_bit": 1,
+    "record_id": 256,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.4128915071487427,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 0,
+    "conditional_probabilities_in_bit_order": [
+      0.8991213440895081,
+      0.10087861865758896
+    ],
+    "exact_tie": false,
+    "example_index": 2,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.772157669067383,
+    "log_likelihoods_in_bit_order": [
+      -0.9909076690673828,
+      -3.178407669067383
+    ],
+    "logits_in_bit_order": [
+      29.78125,
+      27.59375
+    ],
+    "predicted_bit": 0,
+    "record_id": 257,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5215471386909485,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 0,
+    "conditional_probabilities_in_bit_order": [
+      0.907312273979187,
+      0.09268778562545776
+    ],
+    "exact_tie": false,
+    "example_index": 3,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.52947425842285,
+    "log_likelihoods_in_bit_order": [
+      -0.7482242584228516,
+      -3.0294742584228516
+    ],
+    "logits_in_bit_order": [
+      29.78125,
+      27.5
+    ],
+    "predicted_bit": 0,
+    "record_id": 257,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.36283060908317566,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 0,
+    "conditional_probabilities_in_bit_order": [
+      0.9184802770614624,
+      0.08151975274085999
+    ],
+    "exact_tie": false,
+    "example_index": 4,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.895729064941406,
+    "log_likelihoods_in_bit_order": [
+      -1.0988540649414062,
+      -3.5207290649414062
+    ],
+    "logits_in_bit_order": [
+      29.796875,
+      27.375
+    ],
+    "predicted_bit": 0,
+    "record_id": 258,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5322217345237732,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 0,
+    "conditional_probabilities_in_bit_order": [
+      0.4378235340118408,
+      0.562176525592804
+    ],
+    "exact_tie": false,
+    "example_index": 5,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.144134521484375,
+    "log_likelihoods_in_bit_order": [
+      -1.456634521484375,
+      -1.206634521484375
+    ],
+    "logits_in_bit_order": [
+      28.6875,
+      28.9375
+    ],
+    "predicted_bit": 1,
+    "record_id": 258,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.41455158591270447,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 0,
+    "conditional_probabilities_in_bit_order": [
+      0.9046505093574524,
+      0.09534946084022522
+    ],
+    "exact_tie": false,
+    "example_index": 6,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.730764389038086,
+    "log_likelihoods_in_bit_order": [
+      -0.9807643890380859,
+      -3.230764389038086
+    ],
+    "logits_in_bit_order": [
+      29.75,
+      27.5
+    ],
+    "predicted_bit": 0,
+    "record_id": 259,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5256303548812866,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 0,
+    "conditional_probabilities_in_bit_order": [
+      0.9059898257255554,
+      0.09401018172502518
+    ],
+    "exact_tie": false,
+    "example_index": 7,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.507509231567383,
+    "log_likelihoods_in_bit_order": [
+      -0.7418842315673828,
+      -3.007509231567383
+    ],
+    "logits_in_bit_order": [
+      29.765625,
+      27.5
+    ],
+    "predicted_bit": 0,
+    "record_id": 259,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.3647570013999939,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 1,
+    "conditional_probabilities_in_bit_order": [
+      0.8824278712272644,
+      0.11757213622331619
+    ],
+    "exact_tie": false,
+    "example_index": 8,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.821102142333984,
+    "log_likelihoods_in_bit_order": [
+      -1.1336021423339844,
+      -3.1492271423339844
+    ],
+    "logits_in_bit_order": [
+      29.6875,
+      27.671875
+    ],
+    "predicted_bit": 0,
+    "record_id": 260,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5356038808822632,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 1,
+    "conditional_probabilities_in_bit_order": [
+      0.41869691014289856,
+      0.581303060054779
+    ],
+    "exact_tie": false,
+    "example_index": 9,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.10434341430664,
+    "log_likelihoods_in_bit_order": [
+      -1.4949684143066406,
+      -1.1668434143066406
+    ],
+    "logits_in_bit_order": [
+      28.609375,
+      28.9375
+    ],
+    "predicted_bit": 1,
+    "record_id": 260,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.42634618282318115,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 1,
+    "conditional_probabilities_in_bit_order": [
+      0.9019206762313843,
+      0.09807932376861572
+    ],
+    "exact_tie": false,
+    "example_index": 10,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.705732345581055,
+    "log_likelihoods_in_bit_order": [
+      -0.9557323455810547,
+      -3.1744823455810547
+    ],
+    "logits_in_bit_order": [
+      29.75,
+      27.53125
+    ],
+    "predicted_bit": 0,
+    "record_id": 261,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5251798033714294,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 1,
+    "conditional_probabilities_in_bit_order": [
+      0.9230391979217529,
+      0.07696083933115005
+    ],
+    "exact_tie": false,
+    "example_index": 11,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.536598205566406,
+    "log_likelihoods_in_bit_order": [
+      -0.7240982055664062,
+      -3.2084732055664062
+    ],
+    "logits_in_bit_order": [
+      29.8125,
+      27.328125
+    ],
+    "predicted_bit": 0,
+    "record_id": 261,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.3556046783924103,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 1,
+    "conditional_probabilities_in_bit_order": [
+      0.8774768114089966,
+      0.1225232183933258
+    ],
+    "exact_tie": false,
+    "example_index": 12,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.852140426635742,
+    "log_likelihoods_in_bit_order": [
+      -1.1646404266357422,
+      -3.133390426635742
+    ],
+    "logits_in_bit_order": [
+      29.6875,
+      27.71875
+    ],
+    "predicted_bit": 0,
+    "record_id": 262,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5264599323272705,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 1,
+    "conditional_probabilities_in_bit_order": [
+      0.4073334336280823,
+      0.5926666259765625
+    ],
+    "exact_tie": false,
+    "example_index": 13,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.133453369140625,
+    "log_likelihoods_in_bit_order": [
+      -1.539703369140625,
+      -1.164703369140625
+    ],
+    "logits_in_bit_order": [
+      28.59375,
+      28.96875
+    ],
+    "predicted_bit": 1,
+    "record_id": 262,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.3980346918106079,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 1,
+    "conditional_probabilities_in_bit_order": [
+      0.8840392827987671,
+      0.11596071720123291
+    ],
+    "exact_tie": false,
+    "example_index": 14,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.716344833374023,
+    "log_likelihoods_in_bit_order": [
+      -1.0444698333740234,
+      -3.0757198333740234
+    ],
+    "logits_in_bit_order": [
+      29.671875,
+      27.640625
+    ],
+    "predicted_bit": 0,
+    "record_id": 263,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5101834535598755,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 1,
+    "conditional_probabilities_in_bit_order": [
+      0.9046505093574524,
+      0.09534946084022522
+    ],
+    "exact_tie": false,
+    "example_index": 15,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.507566452026367,
+    "log_likelihoods_in_bit_order": [
+      -0.7731914520263672,
+      -3.023191452026367
+    ],
+    "logits_in_bit_order": [
+      29.734375,
+      27.484375
+    ],
+    "predicted_bit": 0,
+    "record_id": 263,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.36268889904022217,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 2,
+    "conditional_probabilities_in_bit_order": [
+      0.8774768114089966,
+      0.1225232183933258
+    ],
+    "exact_tie": false,
+    "example_index": 16,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.863664627075195,
+    "log_likelihoods_in_bit_order": [
+      -1.1449146270751953,
+      -3.1136646270751953
+    ],
+    "logits_in_bit_order": [
+      29.71875,
+      27.75
+    ],
+    "predicted_bit": 0,
+    "record_id": 264,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5190253257751465,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 2,
+    "conditional_probabilities_in_bit_order": [
+      0.44167301058769226,
+      0.5583270192146301
+    ],
+    "exact_tie": false,
+    "example_index": 17,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.12923812866211,
+    "log_likelihoods_in_bit_order": [
+      -1.4729881286621094,
+      -1.2386131286621094
+    ],
+    "logits_in_bit_order": [
+      28.65625,
+      28.890625
+    ],
+    "predicted_bit": 1,
+    "record_id": 264,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.4101850986480713,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 2,
+    "conditional_probabilities_in_bit_order": [
+      0.894789457321167,
+      0.10521053522825241
+    ],
+    "exact_tie": false,
+    "example_index": 18,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.7366886138916,
+    "log_likelihoods_in_bit_order": [
+      -1.0023136138916016,
+      -3.1429386138916016
+    ],
+    "logits_in_bit_order": [
+      29.734375,
+      27.59375
+    ],
+    "predicted_bit": 0,
+    "record_id": 265,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5255526304244995,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 2,
+    "conditional_probabilities_in_bit_order": [
+      0.9381240010261536,
+      0.06187598779797554
+    ],
+    "exact_tie": false,
+    "example_index": 19,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.644678115844727,
+    "log_likelihoods_in_bit_order": [
+      -0.7071781158447266,
+      -3.4259281158447266
+    ],
+    "logits_in_bit_order": [
+      29.9375,
+      27.21875
+    ],
+    "predicted_bit": 0,
+    "record_id": 265,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.3688536286354065,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 2,
+    "conditional_probabilities_in_bit_order": [
+      0.896251380443573,
+      0.1037486270070076
+    ],
+    "exact_tie": false,
+    "example_index": 20,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.872514724731445,
+    "log_likelihoods_in_bit_order": [
+      -1.1068897247314453,
+      -3.2631397247314453
+    ],
+    "logits_in_bit_order": [
+      29.765625,
+      27.609375
+    ],
+    "predicted_bit": 0,
+    "record_id": 266,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5432290434837341,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 2,
+    "conditional_probabilities_in_bit_order": [
+      0.5039061903953552,
+      0.49609383940696716
+    ],
+    "exact_tie": false,
+    "example_index": 21,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.154964447021484,
+    "log_likelihoods_in_bit_order": [
+      -1.2955894470214844,
+      -1.3112144470214844
+    ],
+    "logits_in_bit_order": [
+      28.859375,
+      28.84375
+    ],
+    "predicted_bit": 0,
+    "record_id": 266,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.41874396800994873,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 2,
+    "conditional_probabilities_in_bit_order": [
+      0.8757869601249695,
+      0.12421300262212753
+    ],
+    "exact_tie": false,
+    "example_index": 22,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.690628051757812,
+    "log_likelihoods_in_bit_order": [
+      -1.0031280517578125,
+      -2.9562530517578125
+    ],
+    "logits_in_bit_order": [
+      29.6875,
+      27.734375
+    ],
+    "predicted_bit": 0,
+    "record_id": 267,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5397874116897583,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 2,
+    "conditional_probabilities_in_bit_order": [
+      0.9099069833755493,
+      0.09009299427270889
+    ],
+    "exact_tie": false,
+    "example_index": 23,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.53911781311035,
+    "log_likelihoods_in_bit_order": [
+      -0.7109928131103516,
+      -3.0234928131103516
+    ],
+    "logits_in_bit_order": [
+      29.828125,
+      27.515625
+    ],
+    "predicted_bit": 0,
+    "record_id": 267,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.3815609812736511,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 3,
+    "conditional_probabilities_in_bit_order": [
+      0.9019206762313843,
+      0.09807932376861572
+    ],
+    "exact_tie": false,
+    "example_index": 24,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.941713333129883,
+    "log_likelihoods_in_bit_order": [
+      -1.0667133331298828,
+      -3.285463333129883
+    ],
+    "logits_in_bit_order": [
+      29.875,
+      27.65625
+    ],
+    "predicted_bit": 0,
+    "record_id": 268,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5411773920059204,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 3,
+    "conditional_probabilities_in_bit_order": [
+      0.42250463366508484,
+      0.5774953365325928
+    ],
+    "exact_tie": false,
+    "example_index": 25,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.178688049316406,
+    "log_likelihoods_in_bit_order": [
+      -1.4755630493164062,
+      -1.1630630493164062
+    ],
+    "logits_in_bit_order": [
+      28.703125,
+      29.015625
+    ],
+    "predicted_bit": 1,
+    "record_id": 268,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.4268336892127991,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 3,
+    "conditional_probabilities_in_bit_order": [
+      0.9032942056655884,
+      0.09670578688383102
+    ],
+    "exact_tie": false,
+    "example_index": 26,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.781192779541016,
+    "log_likelihoods_in_bit_order": [
+      -0.9530677795410156,
+      -3.1874427795410156
+    ],
+    "logits_in_bit_order": [
+      29.828125,
+      27.59375
+    ],
+    "predicted_bit": 0,
+    "record_id": 269,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5332446098327637,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 3,
+    "conditional_probabilities_in_bit_order": [
+      0.907312273979187,
+      0.09268778562545776
+    ],
+    "exact_tie": false,
+    "example_index": 27,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.554168701171875,
+    "log_likelihoods_in_bit_order": [
+      -0.726043701171875,
+      -3.007293701171875
+    ],
+    "logits_in_bit_order": [
+      29.828125,
+      27.546875
+    ],
+    "predicted_bit": 0,
+    "record_id": 269,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.3605855107307434,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 3,
+    "conditional_probabilities_in_bit_order": [
+      0.8976953029632568,
+      0.10230471193790436
+    ],
+    "exact_tie": false,
+    "example_index": 28,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.84670066833496,
+    "log_likelihoods_in_bit_order": [
+      -1.127950668334961,
+      -3.299825668334961
+    ],
+    "logits_in_bit_order": [
+      29.71875,
+      27.546875
+    ],
+    "predicted_bit": 0,
+    "record_id": 270,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5350925326347351,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 3,
+    "conditional_probabilities_in_bit_order": [
+      0.4455295503139496,
+      0.5544704794883728
+    ],
+    "exact_tie": false,
+    "example_index": 29,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.136932373046875,
+    "log_likelihoods_in_bit_order": [
+      -1.433807373046875,
+      -1.215057373046875
+    ],
+    "logits_in_bit_order": [
+      28.703125,
+      28.921875
+    ],
+    "predicted_bit": 1,
+    "record_id": 270,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.40643519163131714,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 3,
+    "conditional_probabilities_in_bit_order": [
+      0.8933094143867493,
+      0.10669060051441193
+    ],
+    "exact_tie": false,
+    "example_index": 30,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.685028076171875,
+    "log_likelihoods_in_bit_order": [
+      -1.013153076171875,
+      -3.138153076171875
+    ],
+    "logits_in_bit_order": [
+      29.671875,
+      27.546875
+    ],
+    "predicted_bit": 0,
+    "record_id": 271,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5260164141654968,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 3,
+    "conditional_probabilities_in_bit_order": [
+      0.917302668094635,
+      0.08269734680652618
+    ],
+    "exact_tie": false,
+    "example_index": 31,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.509990692138672,
+    "log_likelihoods_in_bit_order": [
+      -0.7287406921386719,
+      -3.134990692138672
+    ],
+    "logits_in_bit_order": [
+      29.78125,
+      27.375
+    ],
+    "predicted_bit": 0,
+    "record_id": 271,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.3783707320690155,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 4,
+    "conditional_probabilities_in_bit_order": [
+      0.8976953029632568,
+      0.10230471193790436
+    ],
+    "exact_tie": false,
+    "example_index": 32,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.861055374145508,
+    "log_likelihoods_in_bit_order": [
+      -1.0798053741455078,
+      -3.251680374145508
+    ],
+    "logits_in_bit_order": [
+      29.78125,
+      27.609375
+    ],
+    "predicted_bit": 0,
+    "record_id": 272,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7067117691040039,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 4,
+    "conditional_probabilities_in_bit_order": [
+      0.004399413242936134,
+      0.9956005811691284
+    ],
+    "exact_tie": false,
+    "example_index": 33,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.49216651916504,
+    "log_likelihoods_in_bit_order": [
+      -5.773416519165039,
+      -0.35154151916503906
+    ],
+    "logits_in_bit_order": [
+      24.71875,
+      30.140625
+    ],
+    "predicted_bit": 1,
+    "record_id": 272,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.4145917296409607,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 4,
+    "conditional_probabilities_in_bit_order": [
+      0.9086179733276367,
+      0.09138211607933044
+    ],
+    "exact_tie": false,
+    "example_index": 34,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.78879165649414,
+    "log_likelihoods_in_bit_order": [
+      -0.9762916564941406,
+      -3.2731666564941406
+    ],
+    "logits_in_bit_order": [
+      29.8125,
+      27.515625
+    ],
+    "predicted_bit": 0,
+    "record_id": 273,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6977742910385132,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 4,
+    "conditional_probabilities_in_bit_order": [
+      0.005730246659368277,
+      0.9942697286605835
+    ],
+    "exact_tie": false,
+    "example_index": 35,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.5843563079834,
+    "log_likelihoods_in_bit_order": [
+      -5.521856307983398,
+      -0.36560630798339844
+    ],
+    "logits_in_bit_order": [
+      25.0625,
+      30.21875
+    ],
+    "predicted_bit": 1,
+    "record_id": 273,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.37181270122528076,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 4,
+    "conditional_probabilities_in_bit_order": [
+      0.907312273979187,
+      0.09268778562545776
+    ],
+    "exact_tie": false,
+    "example_index": 36,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.821008682250977,
+    "log_likelihoods_in_bit_order": [
+      -1.0866336822509766,
+      -3.3678836822509766
+    ],
+    "logits_in_bit_order": [
+      29.734375,
+      27.453125
+    ],
+    "predicted_bit": 0,
+    "record_id": 274,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7012767195701599,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 4,
+    "conditional_probabilities_in_bit_order": [
+      0.0038244836032390594,
+      0.9961755275726318
+    ],
+    "exact_tie": false,
+    "example_index": 37,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.514934539794922,
+    "log_likelihoods_in_bit_order": [
+      -5.921184539794922,
+      -0.3586845397949219
+    ],
+    "logits_in_bit_order": [
+      24.59375,
+      30.15625
+    ],
+    "predicted_bit": 1,
+    "record_id": 274,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.4165474772453308,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 4,
+    "conditional_probabilities_in_bit_order": [
+      0.9124361872673035,
+      0.08756384253501892
+    ],
+    "exact_tie": false,
+    "example_index": 38,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.748641967773438,
+    "log_likelihoods_in_bit_order": [
+      -0.9673919677734375,
+      -3.3111419677734375
+    ],
+    "logits_in_bit_order": [
+      29.78125,
+      27.4375
+    ],
+    "predicted_bit": 0,
+    "record_id": 275,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7010950446128845,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 4,
+    "conditional_probabilities_in_bit_order": [
+      0.005301894620060921,
+      0.9946980476379395
+    ],
+    "exact_tie": false,
+    "example_index": 39,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.610427856445312,
+    "log_likelihoods_in_bit_order": [
+      -5.5948028564453125,
+      -0.3604278564453125
+    ],
+    "logits_in_bit_order": [
+      25.015625,
+      30.25
+    ],
+    "predicted_bit": 1,
+    "record_id": 275,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.3759995102882385,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 5,
+    "conditional_probabilities_in_bit_order": [
+      0.8757869601249695,
+      0.12421300262212753
+    ],
+    "exact_tie": false,
+    "example_index": 40,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.75142478942871,
+    "log_likelihoods_in_bit_order": [
+      -1.110799789428711,
+      -3.063924789428711
+    ],
+    "logits_in_bit_order": [
+      29.640625,
+      27.6875
+    ],
+    "predicted_bit": 0,
+    "record_id": 276,
+    "task": "plant",
+    "token_count": 176,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7077551484107971,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 5,
+    "conditional_probabilities_in_bit_order": [
+      0.003649987280368805,
+      0.9963500499725342
+    ],
+    "exact_tie": false,
+    "example_index": 41,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.505563735961914,
+    "log_likelihoods_in_bit_order": [
+      -5.958688735961914,
+      -0.34931373596191406
+    ],
+    "logits_in_bit_order": [
+      24.546875,
+      30.15625
+    ],
+    "predicted_bit": 1,
+    "record_id": 276,
+    "task": "plant",
+    "token_count": 176,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.4229193925857544,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 5,
+    "conditional_probabilities_in_bit_order": [
+      0.9019206762313843,
+      0.09807932376861572
+    ],
+    "exact_tie": false,
+    "example_index": 42,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.713802337646484,
+    "log_likelihoods_in_bit_order": [
+      -0.9638023376464844,
+      -3.1825523376464844
+    ],
+    "logits_in_bit_order": [
+      29.75,
+      27.53125
+    ],
+    "predicted_bit": 0,
+    "record_id": 277,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7197266817092896,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 5,
+    "conditional_probabilities_in_bit_order": [
+      0.003429603762924671,
+      0.996570348739624
+    ],
+    "exact_tie": false,
+    "example_index": 43,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.613569259643555,
+    "log_likelihoods_in_bit_order": [
+      -6.004194259643555,
+      -0.3323192596435547
+    ],
+    "logits_in_bit_order": [
+      24.609375,
+      30.28125
+    ],
+    "predicted_bit": 1,
+    "record_id": 277,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.3642646372318268,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 5,
+    "conditional_probabilities_in_bit_order": [
+      0.8670357465744019,
+      0.13296423852443695
+    ],
+    "exact_tie": false,
+    "example_index": 44,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.777549743652344,
+    "log_likelihoods_in_bit_order": [
+      -1.1525497436523438,
+      -3.0275497436523438
+    ],
+    "logits_in_bit_order": [
+      29.625,
+      27.75
+    ],
+    "predicted_bit": 0,
+    "record_id": 278,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6939108371734619,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 5,
+    "conditional_probabilities_in_bit_order": [
+      0.0044683837331831455,
+      0.9955315589904785
+    ],
+    "exact_tie": false,
+    "example_index": 45,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.448015213012695,
+    "log_likelihoods_in_bit_order": [
+      -5.776140213012695,
+      -0.3698902130126953
+    ],
+    "logits_in_bit_order": [
+      24.671875,
+      30.078125
+    ],
+    "predicted_bit": 1,
+    "record_id": 278,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.3936147391796112,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 5,
+    "conditional_probabilities_in_bit_order": [
+      0.8887588381767273,
+      0.11124120652675629
+    ],
+    "exact_tie": false,
+    "example_index": 46,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.753437042236328,
+    "log_likelihoods_in_bit_order": [
+      -1.0503120422363281,
+      -3.128437042236328
+    ],
+    "logits_in_bit_order": [
+      29.703125,
+      27.625
+    ],
+    "predicted_bit": 0,
+    "record_id": 279,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6812722682952881,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 5,
+    "conditional_probabilities_in_bit_order": [
+      0.0064882696606218815,
+      0.9935117363929749
+    ],
+    "exact_tie": false,
+    "example_index": 47,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.546552658081055,
+    "log_likelihoods_in_bit_order": [
+      -5.421552658081055,
+      -0.3903026580810547
+    ],
+    "logits_in_bit_order": [
+      25.125,
+      30.15625
+    ],
+    "predicted_bit": 1,
+    "record_id": 279,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.37969908118247986,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 6,
+    "conditional_probabilities_in_bit_order": [
+      0.8774768114089966,
+      0.1225232183933258
+    ],
+    "exact_tie": false,
+    "example_index": 48,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.81783103942871,
+    "log_likelihoods_in_bit_order": [
+      -1.099081039428711,
+      -3.067831039428711
+    ],
+    "logits_in_bit_order": [
+      29.71875,
+      27.75
+    ],
+    "predicted_bit": 0,
+    "record_id": 280,
+    "task": "plant",
+    "token_count": 176,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6975575089454651,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 6,
+    "conditional_probabilities_in_bit_order": [
+      0.004198795184493065,
+      0.9958011507987976
+    ],
+    "exact_tie": false,
+    "example_index": 49,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.458127975463867,
+    "log_likelihoods_in_bit_order": [
+      -5.833127975463867,
+      -0.3643779754638672
+    ],
+    "logits_in_bit_order": [
+      24.625,
+      30.09375
+    ],
+    "predicted_bit": 1,
+    "record_id": 280,
+    "task": "plant",
+    "token_count": 176,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.40972569584846497,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 6,
+    "conditional_probabilities_in_bit_order": [
+      0.8688268065452576,
+      0.13117322325706482
+    ],
+    "exact_tie": false,
+    "example_index": 50,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.704753875732422,
+    "log_likelihoods_in_bit_order": [
+      -1.0328788757324219,
+      -2.923503875732422
+    ],
+    "logits_in_bit_order": [
+      29.671875,
+      27.78125
+    ],
+    "predicted_bit": 0,
+    "record_id": 281,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7072731852531433,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 6,
+    "conditional_probabilities_in_bit_order": [
+      0.004198795184493065,
+      0.9958011507987976
+    ],
+    "exact_tie": false,
+    "example_index": 51,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.58492088317871,
+    "log_likelihoods_in_bit_order": [
+      -5.819295883178711,
+      -0.35054588317871094
+    ],
+    "logits_in_bit_order": [
+      24.765625,
+      30.234375
+    ],
+    "predicted_bit": 1,
+    "record_id": 281,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.3789299428462982,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 6,
+    "conditional_probabilities_in_bit_order": [
+      0.8807970285415649,
+      0.11920291185379028
+    ],
+    "exact_tie": false,
+    "example_index": 52,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.800457000732422,
+    "log_likelihoods_in_bit_order": [
+      -1.0973320007324219,
+      -3.097332000732422
+    ],
+    "logits_in_bit_order": [
+      29.703125,
+      27.703125
+    ],
+    "predicted_bit": 0,
+    "record_id": 282,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7047718167304993,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 6,
+    "conditional_probabilities_in_bit_order": [
+      0.0034834241960197687,
+      0.9965165853500366
+    ],
+    "exact_tie": false,
+    "example_index": 53,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.525245666503906,
+    "log_likelihoods_in_bit_order": [
+      -6.009620666503906,
+      -0.35337066650390625
+    ],
+    "logits_in_bit_order": [
+      24.515625,
+      30.171875
+    ],
+    "predicted_bit": 1,
+    "record_id": 282,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.41784340143203735,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 6,
+    "conditional_probabilities_in_bit_order": [
+      0.8807970285415649,
+      0.11920291185379028
+    ],
+    "exact_tie": false,
+    "example_index": 54,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.718326568603516,
+    "log_likelihoods_in_bit_order": [
+      -0.9995765686035156,
+      -2.9995765686035156
+    ],
+    "logits_in_bit_order": [
+      29.71875,
+      27.71875
+    ],
+    "predicted_bit": 0,
+    "record_id": 283,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7075293660163879,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 6,
+    "conditional_probabilities_in_bit_order": [
+      0.0045384312979876995,
+      0.9954615235328674
+    ],
+    "exact_tie": false,
+    "example_index": 55,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.61614990234375,
+    "log_likelihoods_in_bit_order": [
+      -5.74114990234375,
+      -0.35052490234375
+    ],
+    "logits_in_bit_order": [
+      24.875,
+      30.265625
+    ],
+    "predicted_bit": 1,
+    "record_id": 283,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.38935530185699463,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 7,
+    "conditional_probabilities_in_bit_order": [
+      0.896251380443573,
+      0.1037486270070076
+    ],
+    "exact_tie": false,
+    "example_index": 56,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.880922317504883,
+    "log_likelihoods_in_bit_order": [
+      -1.0527973175048828,
+      -3.209047317504883
+    ],
+    "logits_in_bit_order": [
+      29.828125,
+      27.671875
+    ],
+    "predicted_bit": 0,
+    "record_id": 284,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7082870006561279,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 7,
+    "conditional_probabilities_in_bit_order": [
+      0.0038244836032390594,
+      0.9961755275726318
+    ],
+    "exact_tie": false,
+    "example_index": 57,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.551862716674805,
+    "log_likelihoods_in_bit_order": [
+      -5.911237716674805,
+      -0.3487377166748047
+    ],
+    "logits_in_bit_order": [
+      24.640625,
+      30.203125
+    ],
+    "predicted_bit": 1,
+    "record_id": 284,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.42708614468574524,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 7,
+    "conditional_probabilities_in_bit_order": [
+      0.9032942056655884,
+      0.09670578688383102
+    ],
+    "exact_tie": false,
+    "example_index": 58,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.780601501464844,
+    "log_likelihoods_in_bit_order": [
+      -0.9524765014648438,
+      -3.1868515014648438
+    ],
+    "logits_in_bit_order": [
+      29.828125,
+      27.59375
+    ],
+    "predicted_bit": 0,
+    "record_id": 285,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7137981653213501,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 7,
+    "conditional_probabilities_in_bit_order": [
+      0.004982269834727049,
+      0.9950177073478699
+    ],
+    "exact_tie": false,
+    "example_index": 59,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.59214973449707,
+    "log_likelihoods_in_bit_order": [
+      -5.63902473449707,
+      -0.3421497344970703
+    ],
+    "logits_in_bit_order": [
+      24.953125,
+      30.25
+    ],
+    "predicted_bit": 1,
+    "record_id": 285,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.37572166323661804,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 7,
+    "conditional_probabilities_in_bit_order": [
+      0.8902942538261414,
+      0.10970577597618103
+    ],
+    "exact_tie": false,
+    "example_index": 60,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.782609939575195,
+    "log_likelihoods_in_bit_order": [
+      -1.0951099395751953,
+      -3.1888599395751953
+    ],
+    "logits_in_bit_order": [
+      29.6875,
+      27.59375
+    ],
+    "predicted_bit": 0,
+    "record_id": 286,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7042421102523804,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 7,
+    "conditional_probabilities_in_bit_order": [
+      0.003376612439751625,
+      0.9966233968734741
+    ],
+    "exact_tie": false,
+    "example_index": 61,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.494640350341797,
+    "log_likelihoods_in_bit_order": [
+      -6.041515350341797,
+      -0.3540153503417969
+    ],
+    "logits_in_bit_order": [
+      24.453125,
+      30.140625
+    ],
+    "predicted_bit": 1,
+    "record_id": 286,
+    "task": "plant",
+    "token_count": 177,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.402469664812088,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 7,
+    "conditional_probabilities_in_bit_order": [
+      0.8807970285415649,
+      0.11920291185379028
+    ],
+    "exact_tie": false,
+    "example_index": 62,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.693313598632812,
+    "log_likelihoods_in_bit_order": [
+      -1.0370635986328125,
+      -3.0370635986328125
+    ],
+    "logits_in_bit_order": [
+      29.65625,
+      27.65625
+    ],
+    "predicted_bit": 0,
+    "record_id": 287,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7069025039672852,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 7,
+    "conditional_probabilities_in_bit_order": [
+      0.003649987280368805,
+      0.9963500499725342
+    ],
+    "exact_tie": false,
+    "example_index": 63,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.56926918029785,
+    "log_likelihoods_in_bit_order": [
+      -5.959894180297852,
+      -0.35051918029785156
+    ],
+    "logits_in_bit_order": [
+      24.609375,
+      30.21875
+    ],
+    "predicted_bit": 1,
+    "record_id": 287,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.4248877465724945,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 8,
+    "conditional_probabilities_in_bit_order": [
+      0.14223188161849976,
+      0.8577680587768555
+    ],
+    "exact_tie": false,
+    "example_index": 64,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.80622673034668,
+    "log_likelihoods_in_bit_order": [
+      -2.8062267303466797,
+      -1.0093517303466797
+    ],
+    "logits_in_bit_order": [
+      28.0,
+      29.796875
+    ],
+    "predicted_bit": 1,
+    "record_id": 288,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5297284126281738,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 8,
+    "conditional_probabilities_in_bit_order": [
+      0.4339814782142639,
+      0.5660185217857361
+    ],
+    "exact_tie": false,
+    "example_index": 65,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.204519271850586,
+    "log_likelihoods_in_bit_order": [
+      -1.470144271850586,
+      -1.204519271850586
+    ],
+    "logits_in_bit_order": [
+      28.734375,
+      29.0
+    ],
+    "predicted_bit": 1,
+    "record_id": 288,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5058808922767639,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 8,
+    "conditional_probabilities_in_bit_order": [
+      0.025565214455127716,
+      0.9744347929954529
+    ],
+    "exact_tie": false,
+    "example_index": 66,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.816726684570312,
+    "log_likelihoods_in_bit_order": [
+      -4.3479766845703125,
+      -0.7073516845703125
+    ],
+    "logits_in_bit_order": [
+      26.46875,
+      30.109375
+    ],
+    "predicted_bit": 1,
+    "record_id": 289,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5320373177528381,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 8,
+    "conditional_probabilities_in_bit_order": [
+      0.9597620368003845,
+      0.040237944573163986
+    ],
+    "exact_tie": false,
+    "example_index": 67,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.75023651123047,
+    "log_likelihoods_in_bit_order": [
+      -0.6721115112304688,
+      -3.8439865112304688
+    ],
+    "logits_in_bit_order": [
+      30.078125,
+      26.90625
+    ],
+    "predicted_bit": 0,
+    "record_id": 289,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.41696590185165405,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 8,
+    "conditional_probabilities_in_bit_order": [
+      0.14033624529838562,
+      0.859663724899292
+    ],
+    "exact_tie": false,
+    "example_index": 68,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.807214736938477,
+    "log_likelihoods_in_bit_order": [
+      -2.8384647369384766,
+      -1.0259647369384766
+    ],
+    "logits_in_bit_order": [
+      27.96875,
+      29.78125
+    ],
+    "predicted_bit": 1,
+    "record_id": 290,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5407392382621765,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 8,
+    "conditional_probabilities_in_bit_order": [
+      0.4339814782142639,
+      0.5660185217857361
+    ],
+    "exact_tie": false,
+    "example_index": 69,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.16832160949707,
+    "log_likelihoods_in_bit_order": [
+      -1.4495716094970703,
+      -1.1839466094970703
+    ],
+    "logits_in_bit_order": [
+      28.71875,
+      28.984375
+    ],
+    "predicted_bit": 1,
+    "record_id": 290,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5126582384109497,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 8,
+    "conditional_probabilities_in_bit_order": [
+      0.024053553119301796,
+      0.9759464263916016
+    ],
+    "exact_tie": false,
+    "example_index": 70,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.817493438720703,
+    "log_likelihoods_in_bit_order": [
+      -4.395618438720703,
+      -0.6924934387207031
+    ],
+    "logits_in_bit_order": [
+      26.421875,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 291,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5392038822174072,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 8,
+    "conditional_probabilities_in_bit_order": [
+      0.961533784866333,
+      0.0384661890566349
+    ],
+    "exact_tie": false,
+    "example_index": 71,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.75063705444336,
+    "log_likelihoods_in_bit_order": [
+      -0.6568870544433594,
+      -3.8756370544433594
+    ],
+    "logits_in_bit_order": [
+      30.09375,
+      26.875
+    ],
+    "predicted_bit": 0,
+    "record_id": 291,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.4443906545639038,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 9,
+    "conditional_probabilities_in_bit_order": [
+      0.10230471193790436,
+      0.8976953029632568
+    ],
+    "exact_tie": false,
+    "example_index": 72,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.793975830078125,
+    "log_likelihoods_in_bit_order": [
+      -3.090850830078125,
+      -0.918975830078125
+    ],
+    "logits_in_bit_order": [
+      27.703125,
+      29.875
+    ],
+    "predicted_bit": 1,
+    "record_id": 292,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5368490815162659,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 9,
+    "conditional_probabilities_in_bit_order": [
+      0.4035668671131134,
+      0.596433162689209
+    ],
+    "exact_tie": false,
+    "example_index": 73,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.154451370239258,
+    "log_likelihoods_in_bit_order": [
+      -1.5294513702392578,
+      -1.1388263702392578
+    ],
+    "logits_in_bit_order": [
+      28.625,
+      29.015625
+    ],
+    "predicted_bit": 1,
+    "record_id": 292,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5419472455978394,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 9,
+    "conditional_probabilities_in_bit_order": [
+      0.01640303246676922,
+      0.9835969805717468
+    ],
+    "exact_tie": false,
+    "example_index": 74,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.801000595092773,
+    "log_likelihoods_in_bit_order": [
+      -4.722875595092773,
+      -0.6291255950927734
+    ],
+    "logits_in_bit_order": [
+      26.078125,
+      30.171875
+    ],
+    "predicted_bit": 1,
+    "record_id": 293,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5385432243347168,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 9,
+    "conditional_probabilities_in_bit_order": [
+      0.9643214344978333,
+      0.035678550601005554
+    ],
+    "exact_tie": false,
+    "example_index": 75,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.71771812438965,
+    "log_likelihoods_in_bit_order": [
+      -0.6552181243896484,
+      -3.9520931243896484
+    ],
+    "logits_in_bit_order": [
+      30.0625,
+      26.765625
+    ],
+    "predicted_bit": 0,
+    "record_id": 293,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.41345351934432983,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 9,
+    "conditional_probabilities_in_bit_order": [
+      0.16667540371418,
+      0.8333246111869812
+    ],
+    "exact_tie": false,
+    "example_index": 76,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.784292221069336,
+    "log_likelihoods_in_bit_order": [
+      -2.674917221069336,
+      -1.065542221069336
+    ],
+    "logits_in_bit_order": [
+      28.109375,
+      29.71875
+    ],
+    "predicted_bit": 1,
+    "record_id": 294,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5324590802192688,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 9,
+    "conditional_probabilities_in_bit_order": [
+      0.3775406777858734,
+      0.622459352016449
+    ],
+    "exact_tie": false,
+    "example_index": 77,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.151201248168945,
+    "log_likelihoods_in_bit_order": [
+      -1.6043262481689453,
+      -1.1043262481689453
+    ],
+    "logits_in_bit_order": [
+      28.546875,
+      29.046875
+    ],
+    "predicted_bit": 1,
+    "record_id": 294,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5048403739929199,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 9,
+    "conditional_probabilities_in_bit_order": [
+      0.021948253735899925,
+      0.9780517220497131
+    ],
+    "exact_tie": false,
+    "example_index": 78,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.830705642700195,
+    "log_likelihoods_in_bit_order": [
+      -4.502580642700195,
+      -0.7057056427001953
+    ],
+    "logits_in_bit_order": [
+      26.328125,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 295,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.523227870464325,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 9,
+    "conditional_probabilities_in_bit_order": [
+      0.9626730680465698,
+      0.037326883524656296
+    ],
+    "exact_tie": false,
+    "example_index": 79,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.748279571533203,
+    "log_likelihoods_in_bit_order": [
+      -0.6857795715332031,
+      -3.935779571533203
+    ],
+    "logits_in_bit_order": [
+      30.0625,
+      26.8125
+    ],
+    "predicted_bit": 0,
+    "record_id": 295,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.44156551361083984,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 10,
+    "conditional_probabilities_in_bit_order": [
+      0.11920291185379028,
+      0.8807970285415649
+    ],
+    "exact_tie": false,
+    "example_index": 80,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.81935691833496,
+    "log_likelihoods_in_bit_order": [
+      -2.944356918334961,
+      -0.9443569183349609
+    ],
+    "logits_in_bit_order": [
+      27.875,
+      29.875
+    ],
+    "predicted_bit": 1,
+    "record_id": 296,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5215312242507935,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 10,
+    "conditional_probabilities_in_bit_order": [
+      0.43014734983444214,
+      0.5698526501655579
+    ],
+    "exact_tie": false,
+    "example_index": 81,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.182113647460938,
+    "log_likelihoods_in_bit_order": [
+      -1.4946136474609375,
+      -1.2133636474609375
+    ],
+    "logits_in_bit_order": [
+      28.6875,
+      28.96875
+    ],
+    "predicted_bit": 1,
+    "record_id": 296,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5267536044120789,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 10,
+    "conditional_probabilities_in_bit_order": [
+      0.016657041385769844,
+      0.9833430051803589
+    ],
+    "exact_tie": false,
+    "example_index": 82,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.845319747924805,
+    "log_likelihoods_in_bit_order": [
+      -4.735944747924805,
+      -0.6578197479248047
+    ],
+    "logits_in_bit_order": [
+      26.109375,
+      30.1875
+    ],
+    "predicted_bit": 1,
+    "record_id": 297,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5303641557693481,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 10,
+    "conditional_probabilities_in_bit_order": [
+      0.9678993225097656,
+      0.03210070729255676
+    ],
+    "exact_tie": false,
+    "example_index": 83,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.823068618774414,
+    "log_likelihoods_in_bit_order": [
+      -0.6668186187744141,
+      -4.073068618774414
+    ],
+    "logits_in_bit_order": [
+      30.15625,
+      26.75
+    ],
+    "predicted_bit": 0,
+    "record_id": 297,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.4396283030509949,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 10,
+    "conditional_probabilities_in_bit_order": [
+      0.14033624529838562,
+      0.859663724899292
+    ],
+    "exact_tie": false,
+    "example_index": 84,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.785539627075195,
+    "log_likelihoods_in_bit_order": [
+      -2.7855396270751953,
+      -0.9730396270751953
+    ],
+    "logits_in_bit_order": [
+      28.0,
+      29.8125
+    ],
+    "predicted_bit": 1,
+    "record_id": 298,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5462973117828369,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 10,
+    "conditional_probabilities_in_bit_order": [
+      0.4882833957672119,
+      0.5117166042327881
+    ],
+    "exact_tie": false,
+    "example_index": 85,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.16520118713379,
+    "log_likelihoods_in_bit_order": [
+      -1.321451187133789,
+      -1.274576187133789
+    ],
+    "logits_in_bit_order": [
+      28.84375,
+      28.890625
+    ],
+    "predicted_bit": 1,
+    "record_id": 298,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5347917675971985,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 10,
+    "conditional_probabilities_in_bit_order": [
+      0.01971912756562233,
+      0.9802808165550232
+    ],
+    "exact_tie": false,
+    "example_index": 86,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.817668914794922,
+    "log_likelihoods_in_bit_order": [
+      -4.552043914794922,
+      -0.6457939147949219
+    ],
+    "logits_in_bit_order": [
+      26.265625,
+      30.171875
+    ],
+    "predicted_bit": 1,
+    "record_id": 299,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.550788402557373,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 10,
+    "conditional_probabilities_in_bit_order": [
+      0.9603611826896667,
+      0.03963883966207504
+    ],
+    "exact_tie": false,
+    "example_index": 87,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.746225357055664,
+    "log_likelihoods_in_bit_order": [
+      -0.6368503570556641,
+      -3.824350357055664
+    ],
+    "logits_in_bit_order": [
+      30.109375,
+      26.921875
+    ],
+    "predicted_bit": 0,
+    "record_id": 299,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.4316544234752655,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 11,
+    "conditional_probabilities_in_bit_order": [
+      0.16451646387577057,
+      0.8354835510253906
+    ],
+    "exact_tie": false,
+    "example_index": 88,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.816749572753906,
+    "log_likelihoods_in_bit_order": [
+      -2.6448745727539062,
+      -1.0198745727539062
+    ],
+    "logits_in_bit_order": [
+      28.171875,
+      29.796875
+    ],
+    "predicted_bit": 1,
+    "record_id": 300,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.542388916015625,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 11,
+    "conditional_probabilities_in_bit_order": [
+      0.41869691014289856,
+      0.581303060054779
+    ],
+    "exact_tie": false,
+    "example_index": 89,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.201129913330078,
+    "log_likelihoods_in_bit_order": [
+      -1.4823799133300781,
+      -1.1542549133300781
+    ],
+    "logits_in_bit_order": [
+      28.71875,
+      29.046875
+    ],
+    "predicted_bit": 1,
+    "record_id": 300,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.518500804901123,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 11,
+    "conditional_probabilities_in_bit_order": [
+      0.028870906680822372,
+      0.9711290597915649
+    ],
+    "exact_tie": false,
+    "example_index": 90,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.81110954284668,
+    "log_likelihoods_in_bit_order": [
+      -4.20173454284668,
+      -0.6861095428466797
+    ],
+    "logits_in_bit_order": [
+      26.609375,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 301,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5397593379020691,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 11,
+    "conditional_probabilities_in_bit_order": [
+      0.9603611826896667,
+      0.03963883966207504
+    ],
+    "exact_tie": false,
+    "example_index": 91,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.78207778930664,
+    "log_likelihoods_in_bit_order": [
+      -0.6570777893066406,
+      -3.8445777893066406
+    ],
+    "logits_in_bit_order": [
+      30.125,
+      26.9375
+    ],
+    "predicted_bit": 0,
+    "record_id": 301,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.4334380030632019,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 11,
+    "conditional_probabilities_in_bit_order": [
+      0.13296423852443695,
+      0.8670357465744019
+    ],
+    "exact_tie": false,
+    "example_index": 92,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.775556564331055,
+    "log_likelihoods_in_bit_order": [
+      -2.8536815643310547,
+      -0.9786815643310547
+    ],
+    "logits_in_bit_order": [
+      27.921875,
+      29.796875
+    ],
+    "predicted_bit": 1,
+    "record_id": 302,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5349318981170654,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 11,
+    "conditional_probabilities_in_bit_order": [
+      0.4378235340118408,
+      0.562176525592804
+    ],
+    "exact_tie": false,
+    "example_index": 93,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.154680252075195,
+    "log_likelihoods_in_bit_order": [
+      -1.4515552520751953,
+      -1.2015552520751953
+    ],
+    "logits_in_bit_order": [
+      28.703125,
+      28.953125
+    ],
+    "predicted_bit": 1,
+    "record_id": 302,
+    "task": "plant",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.5225661993026733,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 11,
+    "conditional_probabilities_in_bit_order": [
+      0.016914913430809975,
+      0.9830850958824158
+    ],
+    "exact_tie": false,
+    "example_index": 94,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.82231330871582,
+    "log_likelihoods_in_bit_order": [
+      -4.72856330871582,
+      -0.6660633087158203
+    ],
+    "logits_in_bit_order": [
+      26.09375,
+      30.15625
+    ],
+    "predicted_bit": 1,
+    "record_id": 303,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5350654125213623,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 11,
+    "conditional_probabilities_in_bit_order": [
+      0.9609517455101013,
+      0.039048291742801666
+    ],
+    "exact_tie": false,
+    "example_index": 95,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.727697372436523,
+    "log_likelihoods_in_bit_order": [
+      -0.6651973724365234,
+      -3.8683223724365234
+    ],
+    "logits_in_bit_order": [
+      30.0625,
+      26.859375
+    ],
+    "predicted_bit": 0,
+    "record_id": 303,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.45401808619499207,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 12,
+    "conditional_probabilities_in_bit_order": [
+      0.11279541254043579,
+      0.8872045874595642
+    ],
+    "exact_tie": false,
+    "example_index": 96,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.799922943115234,
+    "log_likelihoods_in_bit_order": [
+      -2.9717979431152344,
+      -0.9092979431152344
+    ],
+    "logits_in_bit_order": [
+      27.828125,
+      29.890625
+    ],
+    "predicted_bit": 1,
+    "record_id": 304,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7069461941719055,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 12,
+    "conditional_probabilities_in_bit_order": [
+      0.002800926798954606,
+      0.9971990585327148
+    ],
+    "exact_tie": false,
+    "example_index": 97,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.583980560302734,
+    "log_likelihoods_in_bit_order": [
+      -6.224605560302734,
+      -0.3496055603027344
+    ],
+    "logits_in_bit_order": [
+      24.359375,
+      30.234375
+    ],
+    "predicted_bit": 1,
+    "record_id": 304,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5059130191802979,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 12,
+    "conditional_probabilities_in_bit_order": [
+      0.024053553119301796,
+      0.9759464263916016
+    ],
+    "exact_tie": false,
+    "example_index": 98,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.830738067626953,
+    "log_likelihoods_in_bit_order": [
+      -4.408863067626953,
+      -0.7057380676269531
+    ],
+    "logits_in_bit_order": [
+      26.421875,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 305,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6559011340141296,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 12,
+    "conditional_probabilities_in_bit_order": [
+      0.011331753805279732,
+      0.9886682629585266
+    ],
+    "exact_tie": false,
+    "example_index": 99,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.480016708374023,
+    "log_likelihoods_in_bit_order": [
+      -4.901891708374023,
+      -0.43314170837402344
+    ],
+    "logits_in_bit_order": [
+      25.578125,
+      30.046875
+    ],
+    "predicted_bit": 1,
+    "record_id": 305,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.4417109489440918,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 12,
+    "conditional_probabilities_in_bit_order": [
+      0.10818894952535629,
+      0.8918110132217407
+    ],
+    "exact_tie": false,
+    "example_index": 100,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.79097557067871,
+    "log_likelihoods_in_bit_order": [
+      -3.040975570678711,
+      -0.9316005706787109
+    ],
+    "logits_in_bit_order": [
+      27.75,
+      29.859375
+    ],
+    "predicted_bit": 1,
+    "record_id": 306,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6954154372215271,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 12,
+    "conditional_probabilities_in_bit_order": [
+      0.0026316740550100803,
+      0.997368335723877
+    ],
+    "exact_tie": false,
+    "example_index": 101,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.584630966186523,
+    "log_likelihoods_in_bit_order": [
+      -6.303380966186523,
+      -0.36588096618652344
+    ],
+    "logits_in_bit_order": [
+      24.28125,
+      30.21875
+    ],
+    "predicted_bit": 1,
+    "record_id": 306,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5095227360725403,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 12,
+    "conditional_probabilities_in_bit_order": [
+      0.024423088878393173,
+      0.9755768775939941
+    ],
+    "exact_tie": false,
+    "example_index": 102,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.839632034301758,
+    "log_likelihoods_in_bit_order": [
+      -4.386507034301758,
+      -0.6990070343017578
+    ],
+    "logits_in_bit_order": [
+      26.453125,
+      30.140625
+    ],
+    "predicted_bit": 1,
+    "record_id": 307,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6665330529212952,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 12,
+    "conditional_probabilities_in_bit_order": [
+      0.00912563782185316,
+      0.9908744096755981
+    ],
+    "exact_tie": false,
+    "example_index": 103,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.555458068847656,
+    "log_likelihoods_in_bit_order": [
+      -5.102333068847656,
+      -0.41483306884765625
+    ],
+    "logits_in_bit_order": [
+      25.453125,
+      30.140625
+    ],
+    "predicted_bit": 1,
+    "record_id": 307,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.478055864572525,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 13,
+    "conditional_probabilities_in_bit_order": [
+      0.07585818320512772,
+      0.9241418242454529
+    ],
+    "exact_tie": false,
+    "example_index": 104,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.770042419433594,
+    "log_likelihoods_in_bit_order": [
+      -3.3169174194335938,
+      -0.8169174194335938
+    ],
+    "logits_in_bit_order": [
+      27.453125,
+      29.953125
+    ],
+    "predicted_bit": 1,
+    "record_id": 308,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7046302556991577,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 13,
+    "conditional_probabilities_in_bit_order": [
+      0.0025909794494509697,
+      0.9974090456962585
+    ],
+    "exact_tie": false,
+    "example_index": 105,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.555801391601562,
+    "log_likelihoods_in_bit_order": [
+      -6.3058013916015625,
+      -0.3526763916015625
+    ],
+    "logits_in_bit_order": [
+      24.25,
+      30.203125
+    ],
+    "predicted_bit": 1,
+    "record_id": 308,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5387732982635498,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 13,
+    "conditional_probabilities_in_bit_order": [
+      0.016657041385769844,
+      0.9833430051803589
+    ],
+    "exact_tie": false,
+    "example_index": 106,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.822757720947266,
+    "log_likelihoods_in_bit_order": [
+      -4.713382720947266,
+      -0.6352577209472656
+    ],
+    "logits_in_bit_order": [
+      26.109375,
+      30.1875
+    ],
+    "predicted_bit": 1,
+    "record_id": 309,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6869955062866211,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 13,
+    "conditional_probabilities_in_bit_order": [
+      0.004331502132117748,
+      0.9956685304641724
+    ],
+    "exact_tie": false,
+    "example_index": 107,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.59851837158203,
+    "log_likelihoods_in_bit_order": [
+      -5.817268371582031,
+      -0.37976837158203125
+    ],
+    "logits_in_bit_order": [
+      24.78125,
+      30.21875
+    ],
+    "predicted_bit": 1,
+    "record_id": 309,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.42803695797920227,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 13,
+    "conditional_probabilities_in_bit_order": [
+      0.14033624529838562,
+      0.859663724899292
+    ],
+    "exact_tie": false,
+    "example_index": 108,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.749759674072266,
+    "log_likelihoods_in_bit_order": [
+      -2.8122596740722656,
+      -0.9997596740722656
+    ],
+    "logits_in_bit_order": [
+      27.9375,
+      29.75
+    ],
+    "predicted_bit": 1,
+    "record_id": 310,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.697773814201355,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 13,
+    "conditional_probabilities_in_bit_order": [
+      0.002800926798954606,
+      0.9971990585327148
+    ],
+    "exact_tie": false,
+    "example_index": 109,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.5501651763916,
+    "log_likelihoods_in_bit_order": [
+      -6.237665176391602,
+      -0.36266517639160156
+    ],
+    "logits_in_bit_order": [
+      24.3125,
+      30.1875
+    ],
+    "predicted_bit": 1,
+    "record_id": 310,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.49770185351371765,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 13,
+    "conditional_probabilities_in_bit_order": [
+      0.02161533571779728,
+      0.9783847332000732
+    ],
+    "exact_tie": false,
+    "example_index": 110,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.844606399536133,
+    "log_likelihoods_in_bit_order": [
+      -4.532106399536133,
+      -0.7196063995361328
+    ],
+    "logits_in_bit_order": [
+      26.3125,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 311,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6350749731063843,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 13,
+    "conditional_probabilities_in_bit_order": [
+      0.013636834919452667,
+      0.9863631129264832
+    ],
+    "exact_tie": false,
+    "example_index": 111,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.452117919921875,
+    "log_likelihoods_in_bit_order": [
+      -4.748992919921875,
+      -0.467742919921875
+    ],
+    "logits_in_bit_order": [
+      25.703125,
+      29.984375
+    ],
+    "predicted_bit": 1,
+    "record_id": 311,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.4707651436328888,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 14,
+    "conditional_probabilities_in_bit_order": [
+      0.09009299427270889,
+      0.9099069833755493
+    ],
+    "exact_tie": false,
+    "example_index": 112,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.800933837890625,
+    "log_likelihoods_in_bit_order": [
+      -3.160308837890625,
+      -0.847808837890625
+    ],
+    "logits_in_bit_order": [
+      27.640625,
+      29.953125
+    ],
+    "predicted_bit": 1,
+    "record_id": 312,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7009862661361694,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 14,
+    "conditional_probabilities_in_bit_order": [
+      0.0027576221618801355,
+      0.9972423315048218
+    ],
+    "exact_tie": false,
+    "example_index": 113,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.529903411865234,
+    "log_likelihoods_in_bit_order": [
+      -6.248653411865234,
+      -0.3580284118652344
+    ],
+    "logits_in_bit_order": [
+      24.28125,
+      30.171875
+    ],
+    "predicted_bit": 1,
+    "record_id": 312,
+    "task": "plant",
+    "token_count": 178,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5307338833808899,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 14,
+    "conditional_probabilities_in_bit_order": [
+      0.01384861022233963,
+      0.986151397228241
+    ],
+    "exact_tie": false,
+    "example_index": 114,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.86618995666504,
+    "log_likelihoods_in_bit_order": [
+      -4.913064956665039,
+      -0.6474399566650391
+    ],
+    "logits_in_bit_order": [
+      25.953125,
+      30.21875
+    ],
+    "predicted_bit": 1,
+    "record_id": 313,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6694340705871582,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 14,
+    "conditional_probabilities_in_bit_order": [
+      0.007695647422224283,
+      0.9923043847084045
+    ],
+    "exact_tie": false,
+    "example_index": 115,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.534048080444336,
+    "log_likelihoods_in_bit_order": [
+      -5.268423080444336,
+      -0.40904808044433594
+    ],
+    "logits_in_bit_order": [
+      25.265625,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 313,
+    "task": "plant",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.4674410820007324,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 14,
+    "conditional_probabilities_in_bit_order": [
+      0.10521053522825241,
+      0.894789457321167
+    ],
+    "exact_tie": false,
+    "example_index": 116,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.76227378845215,
+    "log_likelihoods_in_bit_order": [
+      -3.0122737884521484,
+      -0.8716487884521484
+    ],
+    "logits_in_bit_order": [
+      27.75,
+      29.890625
+    ],
+    "predicted_bit": 1,
+    "record_id": 314,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.701916515827179,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 14,
+    "conditional_probabilities_in_bit_order": [
+      0.002396730938926339,
+      0.9976032376289368
+    ],
+    "exact_tie": false,
+    "example_index": 117,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.606340408325195,
+    "log_likelihoods_in_bit_order": [
+      -6.387590408325195,
+      -0.3563404083251953
+    ],
+    "logits_in_bit_order": [
+      24.21875,
+      30.25
+    ],
+    "predicted_bit": 1,
+    "record_id": 314,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5353612899780273,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 14,
+    "conditional_probabilities_in_bit_order": [
+      0.01798621006309986,
+      0.9820137619972229
+    ],
+    "exact_tie": false,
+    "example_index": 118,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.846088409423828,
+    "log_likelihoods_in_bit_order": [
+      -4.642963409423828,
+      -0.6429634094238281
+    ],
+    "logits_in_bit_order": [
+      26.203125,
+      30.203125
+    ],
+    "predicted_bit": 1,
+    "record_id": 315,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6696777939796448,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 14,
+    "conditional_probabilities_in_bit_order": [
+      0.007460643537342548,
+      0.9925393462181091
+    ],
+    "exact_tie": false,
+    "example_index": 119,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.533447265625,
+    "log_likelihoods_in_bit_order": [
+      -5.299072265625,
+      -0.408447265625
+    ],
+    "logits_in_bit_order": [
+      25.234375,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 315,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.46175268292427063,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 15,
+    "conditional_probabilities_in_bit_order": [
+      0.1259227693080902,
+      0.8740772008895874
+    ],
+    "exact_tie": false,
+    "example_index": 120,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.813562393188477,
+    "log_likelihoods_in_bit_order": [
+      -2.8448123931884766,
+      -0.9073123931884766
+    ],
+    "logits_in_bit_order": [
+      27.96875,
+      29.90625
+    ],
+    "predicted_bit": 1,
+    "record_id": 316,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7085418701171875,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 15,
+    "conditional_probabilities_in_bit_order": [
+      0.0026316740550100803,
+      0.997368335723877
+    ],
+    "exact_tie": false,
+    "example_index": 121,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.62843132019043,
+    "log_likelihoods_in_bit_order": [
+      -6.28468132019043,
+      -0.3471813201904297
+    ],
+    "logits_in_bit_order": [
+      24.34375,
+      30.28125
+    ],
+    "predicted_bit": 1,
+    "record_id": 316,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5142154693603516,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 15,
+    "conditional_probabilities_in_bit_order": [
+      0.024798160418868065,
+      0.9752018451690674
+    ],
+    "exact_tie": false,
+    "example_index": 122,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.830848693847656,
+    "log_likelihoods_in_bit_order": [
+      -4.362098693847656,
+      -0.6902236938476562
+    ],
+    "logits_in_bit_order": [
+      26.46875,
+      30.140625
+    ],
+    "predicted_bit": 1,
+    "record_id": 317,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6763535141944885,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 15,
+    "conditional_probabilities_in_bit_order": [
+      0.008445627987384796,
+      0.9915544390678406
+    ],
+    "exact_tie": false,
+    "example_index": 123,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.524520874023438,
+    "log_likelihoods_in_bit_order": [
+      -5.1651458740234375,
+      -0.3995208740234375
+    ],
+    "logits_in_bit_order": [
+      25.359375,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 317,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.46326500177383423,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 15,
+    "conditional_probabilities_in_bit_order": [
+      0.10521053522825241,
+      0.894789457321167
+    ],
+    "exact_tie": false,
+    "example_index": 124,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.75562286376953,
+    "log_likelihoods_in_bit_order": [
+      -3.0212478637695312,
+      -0.8806228637695312
+    ],
+    "logits_in_bit_order": [
+      27.734375,
+      29.875
+    ],
+    "predicted_bit": 1,
+    "record_id": 318,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.7047221660614014,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 15,
+    "conditional_probabilities_in_bit_order": [
+      0.002287227427586913,
+      0.9977127313613892
+    ],
+    "exact_tie": false,
+    "example_index": 125,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.57099151611328,
+    "log_likelihoods_in_bit_order": [
+      -6.430366516113281,
+      -0.35224151611328125
+    ],
+    "logits_in_bit_order": [
+      24.140625,
+      30.21875
+    ],
+    "predicted_bit": 1,
+    "record_id": 318,
+    "task": "plant",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5191493630409241,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 15,
+    "conditional_probabilities_in_bit_order": [
+      0.01615283451974392,
+      0.9838472008705139
+    ],
+    "exact_tie": false,
+    "example_index": 126,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.82809829711914,
+    "log_likelihoods_in_bit_order": [
+      -4.781223297119141,
+      -0.6718482971191406
+    ],
+    "logits_in_bit_order": [
+      26.046875,
+      30.15625
+    ],
+    "predicted_bit": 1,
+    "record_id": 319,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6723515391349792,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 15,
+    "conditional_probabilities_in_bit_order": [
+      0.005469274241477251,
+      0.9945307374000549
+    ],
+    "exact_tie": false,
+    "example_index": 127,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.52745819091797,
+    "log_likelihoods_in_bit_order": [
+      -5.605583190917969,
+      -0.40245819091796875
+    ],
+    "logits_in_bit_order": [
+      24.921875,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 319,
+    "task": "plant",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6349384188652039,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 16,
+    "conditional_probabilities_in_bit_order": [
+      0.9898303151130676,
+      0.010169656947255135
+    ],
+    "exact_tie": false,
+    "example_index": 128,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.292573928833008,
+    "log_likelihoods_in_bit_order": [
+      -0.4644489288330078,
+      -5.042573928833008
+    ],
+    "logits_in_bit_order": [
+      30.828125,
+      26.25
+    ],
+    "predicted_bit": 0,
+    "record_id": 320,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7142544984817505,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 16,
+    "conditional_probabilities_in_bit_order": [
+      0.9621075391769409,
+      0.0378924235701561
+    ],
+    "exact_tie": false,
+    "example_index": 129,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.859519958496094,
+    "log_likelihoods_in_bit_order": [
+      -0.37514495849609375,
+      -3.6095199584960938
+    ],
+    "logits_in_bit_order": [
+      30.484375,
+      27.25
+    ],
+    "predicted_bit": 0,
+    "record_id": 320,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6246286630630493,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 16,
+    "conditional_probabilities_in_bit_order": [
+      0.9963500499725342,
+      0.003649987280368805
+    ],
+    "exact_tie": false,
+    "example_index": 130,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.286754608154297,
+    "log_likelihoods_in_bit_order": [
+      -0.4742546081542969,
+      -6.083629608154297
+    ],
+    "logits_in_bit_order": [
+      30.8125,
+      25.203125
+    ],
+    "predicted_bit": 0,
+    "record_id": 321,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5738406777381897,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 16,
+    "conditional_probabilities_in_bit_order": [
+      0.8221890926361084,
+      0.17781086266040802
+    ],
+    "exact_tie": false,
+    "example_index": 131,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.594938278198242,
+    "log_likelihoods_in_bit_order": [
+      -0.7511882781982422,
+      -2.282438278198242
+    ],
+    "logits_in_bit_order": [
+      29.84375,
+      28.3125
+    ],
+    "predicted_bit": 0,
+    "record_id": 321,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.643032431602478,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 16,
+    "conditional_probabilities_in_bit_order": [
+      0.9869794845581055,
+      0.013020489364862442
+    ],
+    "exact_tie": false,
+    "example_index": 132,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.298416137695312,
+    "log_likelihoods_in_bit_order": [
+      -0.4546661376953125,
+      -4.7827911376953125
+    ],
+    "logits_in_bit_order": [
+      30.84375,
+      26.515625
+    ],
+    "predicted_bit": 0,
+    "record_id": 322,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6928770542144775,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 16,
+    "conditional_probabilities_in_bit_order": [
+      0.9603611826896667,
+      0.03963883966207504
+    ],
+    "exact_tie": false,
+    "example_index": 133,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.9229736328125,
+    "log_likelihoods_in_bit_order": [
+      -0.4073486328125,
+      -3.5948486328125
+    ],
+    "logits_in_bit_order": [
+      30.515625,
+      27.328125
+    ],
+    "predicted_bit": 0,
+    "record_id": 322,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6452141404151917,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 16,
+    "conditional_probabilities_in_bit_order": [
+      0.9963500499725342,
+      0.003649987280368805
+    ],
+    "exact_tie": false,
+    "example_index": 134,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.238704681396484,
+    "log_likelihoods_in_bit_order": [
+      -0.4418296813964844,
+      -6.051204681396484
+    ],
+    "logits_in_bit_order": [
+      30.796875,
+      25.1875
+    ],
+    "predicted_bit": 0,
+    "record_id": 323,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5848068594932556,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 16,
+    "conditional_probabilities_in_bit_order": [
+      0.8244618773460388,
+      0.1755380630493164
+    ],
+    "exact_tie": false,
+    "example_index": 135,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.5888729095459,
+    "log_likelihoods_in_bit_order": [
+      -0.7294979095458984,
+      -2.2763729095458984
+    ],
+    "logits_in_bit_order": [
+      29.859375,
+      28.3125
+    ],
+    "predicted_bit": 0,
+    "record_id": 323,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6788476705551147,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 17,
+    "conditional_probabilities_in_bit_order": [
+      0.9877586960792542,
+      0.012241275049746037
+    ],
+    "exact_tie": false,
+    "example_index": 136,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.227800369262695,
+    "log_likelihoods_in_bit_order": [
+      -0.3996753692626953,
+      -4.790300369262695
+    ],
+    "logits_in_bit_order": [
+      30.828125,
+      26.4375
+    ],
+    "predicted_bit": 0,
+    "record_id": 324,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7308911681175232,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 17,
+    "conditional_probabilities_in_bit_order": [
+      0.9648551344871521,
+      0.03514484688639641
+    ],
+    "exact_tie": false,
+    "example_index": 137,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.943017959594727,
+    "log_likelihoods_in_bit_order": [
+      -0.34926795959472656,
+      -3.6617679595947266
+    ],
+    "logits_in_bit_order": [
+      30.59375,
+      27.28125
+    ],
+    "predicted_bit": 0,
+    "record_id": 324,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6560365557670593,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 17,
+    "conditional_probabilities_in_bit_order": [
+      0.9970190525054932,
+      0.0029810331761837006
+    ],
+    "exact_tie": false,
+    "example_index": 138,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.252649307250977,
+    "log_likelihoods_in_bit_order": [
+      -0.42452430725097656,
+      -6.237024307250977
+    ],
+    "logits_in_bit_order": [
+      30.828125,
+      25.015625
+    ],
+    "predicted_bit": 0,
+    "record_id": 325,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5926597714424133,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 17,
+    "conditional_probabilities_in_bit_order": [
+      0.847967803478241,
+      0.15203224122524261
+    ],
+    "exact_tie": false,
+    "example_index": 139,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.625547409057617,
+    "log_likelihoods_in_bit_order": [
+      -0.6880474090576172,
+      -2.406797409057617
+    ],
+    "logits_in_bit_order": [
+      29.9375,
+      28.21875
+    ],
+    "predicted_bit": 0,
+    "record_id": 325,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6431131362915039,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 17,
+    "conditional_probabilities_in_bit_order": [
+      0.9898303151130676,
+      0.010169656947255135
+    ],
+    "exact_tie": false,
+    "example_index": 140,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.389156341552734,
+    "log_likelihoods_in_bit_order": [
+      -0.4516563415527344,
+      -5.029781341552734
+    ],
+    "logits_in_bit_order": [
+      30.9375,
+      26.359375
+    ],
+    "predicted_bit": 0,
+    "record_id": 326,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7131971716880798,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 17,
+    "conditional_probabilities_in_bit_order": [
+      0.9674102663993835,
+      0.03258974477648735
+    ],
+    "exact_tie": false,
+    "example_index": 141,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.996129989624023,
+    "log_likelihoods_in_bit_order": [
+      -0.37112998962402344,
+      -3.7617549896240234
+    ],
+    "logits_in_bit_order": [
+      30.625,
+      27.234375
+    ],
+    "predicted_bit": 0,
+    "record_id": 326,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6490640044212341,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 17,
+    "conditional_probabilities_in_bit_order": [
+      0.9959927201271057,
+      0.004007288720458746
+    ],
+    "exact_tie": false,
+    "example_index": 142,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.31123924255371,
+    "log_likelihoods_in_bit_order": [
+      -0.43623924255371094,
+      -5.951864242553711
+    ],
+    "logits_in_bit_order": [
+      30.875,
+      25.359375
+    ],
+    "predicted_bit": 0,
+    "record_id": 327,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5887529850006104,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 17,
+    "conditional_probabilities_in_bit_order": [
+      0.7853085398674011,
+      0.2146914005279541
+    ],
+    "exact_tie": false,
+    "example_index": 143,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.583927154541016,
+    "log_likelihoods_in_bit_order": [
+      -0.7714271545410156,
+      -2.0683021545410156
+    ],
+    "logits_in_bit_order": [
+      29.8125,
+      28.515625
+    ],
+    "predicted_bit": 0,
+    "record_id": 327,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6397167444229126,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 18,
+    "conditional_probabilities_in_bit_order": [
+      0.9902915358543396,
+      0.00970847625285387
+    ],
+    "exact_tie": false,
+    "example_index": 144,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.378360748291016,
+    "log_likelihoods_in_bit_order": [
+      -0.4564857482910156,
+      -5.081485748291016
+    ],
+    "logits_in_bit_order": [
+      30.921875,
+      26.296875
+    ],
+    "predicted_bit": 0,
+    "record_id": 328,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7102080583572388,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 18,
+    "conditional_probabilities_in_bit_order": [
+      0.9669140577316284,
+      0.03308597952127457
+    ],
+    "exact_tie": false,
+    "example_index": 145,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.985218048095703,
+    "log_likelihoods_in_bit_order": [
+      -0.3758430480957031,
+      -3.750843048095703
+    ],
+    "logits_in_bit_order": [
+      30.609375,
+      27.234375
+    ],
+    "predicted_bit": 0,
+    "record_id": 328,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6458134055137634,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 18,
+    "conditional_probabilities_in_bit_order": [
+      0.9969245791435242,
+      0.00307536986656487
+    ],
+    "exact_tie": false,
+    "example_index": 146,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.330949783325195,
+    "log_likelihoods_in_bit_order": [
+      -0.4403247833251953,
+      -6.221574783325195
+    ],
+    "logits_in_bit_order": [
+      30.890625,
+      25.109375
+    ],
+    "predicted_bit": 0,
+    "record_id": 329,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5807925462722778,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 18,
+    "conditional_probabilities_in_bit_order": [
+      0.837619960308075,
+      0.16238003969192505
+    ],
+    "exact_tie": false,
+    "example_index": 147,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.642427444458008,
+    "log_likelihoods_in_bit_order": [
+      -0.7205524444580078,
+      -2.361177444458008
+    ],
+    "logits_in_bit_order": [
+      29.921875,
+      28.28125
+    ],
+    "predicted_bit": 0,
+    "record_id": 329,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.648337185382843,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 18,
+    "conditional_probabilities_in_bit_order": [
+      0.9907320141792297,
+      0.009268013760447502
+    ],
+    "exact_tie": false,
+    "example_index": 148,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.302030563354492,
+    "log_likelihoods_in_bit_order": [
+      -0.4426555633544922,
+      -5.114530563354492
+    ],
+    "logits_in_bit_order": [
+      30.859375,
+      26.1875
+    ],
+    "predicted_bit": 0,
+    "record_id": 330,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7050391435623169,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 18,
+    "conditional_probabilities_in_bit_order": [
+      0.957277774810791,
+      0.0427221953868866
+    ],
+    "exact_tie": false,
+    "example_index": 149,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.877538681030273,
+    "log_likelihoods_in_bit_order": [
+      -0.39316368103027344,
+      -3.5025386810302734
+    ],
+    "logits_in_bit_order": [
+      30.484375,
+      27.375
+    ],
+    "predicted_bit": 0,
+    "record_id": 330,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6447640061378479,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 18,
+    "conditional_probabilities_in_bit_order": [
+      0.9967774748802185,
+      0.0032224843744188547
+    ],
+    "exact_tie": false,
+    "example_index": 150,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.28584861755371,
+    "log_likelihoods_in_bit_order": [
+      -0.44209861755371094,
+      -6.176473617553711
+    ],
+    "logits_in_bit_order": [
+      30.84375,
+      25.109375
+    ],
+    "predicted_bit": 0,
+    "record_id": 331,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5770249366760254,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 18,
+    "conditional_probabilities_in_bit_order": [
+      0.8128673434257507,
+      0.18713268637657166
+    ],
+    "exact_tie": false,
+    "example_index": 151,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.616432189941406,
+    "log_likelihoods_in_bit_order": [
+      -0.7570571899414062,
+      -2.2258071899414062
+    ],
+    "logits_in_bit_order": [
+      29.859375,
+      28.390625
+    ],
+    "predicted_bit": 0,
+    "record_id": 331,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6540631651878357,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 19,
+    "conditional_probabilities_in_bit_order": [
+      0.9867772459983826,
+      0.013222821988165379
+    ],
+    "exact_tie": false,
+    "example_index": 152,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.359737396240234,
+    "log_likelihoods_in_bit_order": [
+      -0.4378623962402344,
+      -4.750362396240234
+    ],
+    "logits_in_bit_order": [
+      30.921875,
+      26.609375
+    ],
+    "predicted_bit": 0,
+    "record_id": 332,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.704239547252655,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 19,
+    "conditional_probabilities_in_bit_order": [
+      0.9658995866775513,
+      0.034100428223609924
+    ],
+    "exact_tie": false,
+    "example_index": 153,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.963457107543945,
+    "log_likelihoods_in_bit_order": [
+      -0.3853321075439453,
+      -3.7290821075439453
+    ],
+    "logits_in_bit_order": [
+      30.578125,
+      27.234375
+    ],
+    "predicted_bit": 0,
+    "record_id": 332,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6559513807296753,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 19,
+    "conditional_probabilities_in_bit_order": [
+      0.996570348739624,
+      0.003429603762924671
+    ],
+    "exact_tie": false,
+    "example_index": 154,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.33135414123535,
+    "log_likelihoods_in_bit_order": [
+      -0.42510414123535156,
+      -6.096979141235352
+    ],
+    "logits_in_bit_order": [
+      30.90625,
+      25.234375
+    ],
+    "predicted_bit": 0,
+    "record_id": 333,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5858503580093384,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 19,
+    "conditional_probabilities_in_bit_order": [
+      0.8354835510253906,
+      0.16451646387577057
+    ],
+    "exact_tie": false,
+    "example_index": 155,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.651935577392578,
+    "log_likelihoods_in_bit_order": [
+      -0.7144355773925781,
+      -2.339435577392578
+    ],
+    "logits_in_bit_order": [
+      29.9375,
+      28.3125
+    ],
+    "predicted_bit": 0,
+    "record_id": 333,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6457229256629944,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 19,
+    "conditional_probabilities_in_bit_order": [
+      0.9899863600730896,
+      0.01001356914639473
+    ],
+    "exact_tie": false,
+    "example_index": 156,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.41619873046875,
+    "log_likelihoods_in_bit_order": [
+      -0.44744873046875,
+      -5.04119873046875
+    ],
+    "logits_in_bit_order": [
+      30.96875,
+      26.375
+    ],
+    "predicted_bit": 0,
+    "record_id": 334,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7156785726547241,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 19,
+    "conditional_probabilities_in_bit_order": [
+      0.9674102663993835,
+      0.03258974477648735
+    ],
+    "exact_tie": false,
+    "example_index": 157,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.992656707763672,
+    "log_likelihoods_in_bit_order": [
+      -0.3676567077636719,
+      -3.758281707763672
+    ],
+    "logits_in_bit_order": [
+      30.625,
+      27.234375
+    ],
+    "predicted_bit": 0,
+    "record_id": 334,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6484589576721191,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 19,
+    "conditional_probabilities_in_bit_order": [
+      0.9967774748802185,
+      0.0032224843744188547
+    ],
+    "exact_tie": false,
+    "example_index": 158,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.342634201049805,
+    "log_likelihoods_in_bit_order": [
+      -0.4363842010498047,
+      -6.170759201049805
+    ],
+    "logits_in_bit_order": [
+      30.90625,
+      25.171875
+    ],
+    "predicted_bit": 0,
+    "record_id": 335,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5906751751899719,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 19,
+    "conditional_probabilities_in_bit_order": [
+      0.8418256044387817,
+      0.15817435085773468
+    ],
+    "exact_tie": false,
+    "example_index": 159,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.651796340942383,
+    "log_likelihoods_in_bit_order": [
+      -0.6986713409423828,
+      -2.370546340942383
+    ],
+    "logits_in_bit_order": [
+      29.953125,
+      28.28125
+    ],
+    "predicted_bit": 0,
+    "record_id": 335,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6677623391151428,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 20,
+    "conditional_probabilities_in_bit_order": [
+      0.9899863600730896,
+      0.01001356914639473
+    ],
+    "exact_tie": false,
+    "example_index": 160,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.22638702392578,
+    "log_likelihoods_in_bit_order": [
+      -0.41388702392578125,
+      -5.007637023925781
+    ],
+    "logits_in_bit_order": [
+      30.8125,
+      26.21875
+    ],
+    "predicted_bit": 0,
+    "record_id": 336,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6966474056243896,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 20,
+    "conditional_probabilities_in_bit_order": [
+      0.10230471193790436,
+      0.8976953029632568
+    ],
+    "exact_tie": false,
+    "example_index": 161,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.46940040588379,
+    "log_likelihoods_in_bit_order": [
+      -2.641275405883789,
+      -0.46940040588378906
+    ],
+    "logits_in_bit_order": [
+      27.828125,
+      30.0
+    ],
+    "predicted_bit": 1,
+    "record_id": 336,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6239179968833923,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 20,
+    "conditional_probabilities_in_bit_order": [
+      0.9951702952384949,
+      0.00482972152531147
+    ],
+    "exact_tie": false,
+    "example_index": 162,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.351577758789062,
+    "log_likelihoods_in_bit_order": [
+      -0.4765777587890625,
+      -5.8047027587890625
+    ],
+    "logits_in_bit_order": [
+      30.875,
+      25.546875
+    ],
+    "predicted_bit": 0,
+    "record_id": 337,
+    "task": "letter",
+    "token_count": 184,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5672760605812073,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 20,
+    "conditional_probabilities_in_bit_order": [
+      0.41869691014289856,
+      0.581303060054779
+    ],
+    "exact_tie": false,
+    "example_index": 163,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.734392166137695,
+    "log_likelihoods_in_bit_order": [
+      -1.4375171661376953,
+      -1.1093921661376953
+    ],
+    "logits_in_bit_order": [
+      29.296875,
+      29.625
+    ],
+    "predicted_bit": 1,
+    "record_id": 337,
+    "task": "letter",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6720777750015259,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 20,
+    "conditional_probabilities_in_bit_order": [
+      0.9867772459983826,
+      0.013222821988165379
+    ],
+    "exact_tie": false,
+    "example_index": 164,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.22319221496582,
+    "log_likelihoods_in_bit_order": [
+      -0.4106922149658203,
+      -4.72319221496582
+    ],
+    "logits_in_bit_order": [
+      30.8125,
+      26.5
+    ],
+    "predicted_bit": 0,
+    "record_id": 338,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6942594051361084,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 20,
+    "conditional_probabilities_in_bit_order": [
+      0.08756384253501892,
+      0.9124361872673035
+    ],
+    "exact_tie": false,
+    "example_index": 165,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.534671783447266,
+    "log_likelihoods_in_bit_order": [
+      -2.8002967834472656,
+      -0.4565467834472656
+    ],
+    "logits_in_bit_order": [
+      27.734375,
+      30.078125
+    ],
+    "predicted_bit": 1,
+    "record_id": 338,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6423000693321228,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 20,
+    "conditional_probabilities_in_bit_order": [
+      0.9954615235328674,
+      0.0045384312979876995
+    ],
+    "exact_tie": false,
+    "example_index": 166,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.369123458862305,
+    "log_likelihoods_in_bit_order": [
+      -0.4472484588623047,
+      -5.837873458862305
+    ],
+    "logits_in_bit_order": [
+      30.921875,
+      25.53125
+    ],
+    "predicted_bit": 0,
+    "record_id": 339,
+    "task": "letter",
+    "token_count": 185,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5737899541854858,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 20,
+    "conditional_probabilities_in_bit_order": [
+      0.3702253997325897,
+      0.6297746300697327
+    ],
+    "exact_tie": false,
+    "example_index": 167,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.721010208129883,
+    "log_likelihoods_in_bit_order": [
+      -1.5491352081298828,
+      -1.0178852081298828
+    ],
+    "logits_in_bit_order": [
+      29.171875,
+      29.703125
+    ],
+    "predicted_bit": 1,
+    "record_id": 339,
+    "task": "letter",
+    "token_count": 176,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6940410137176514,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 21,
+    "conditional_probabilities_in_bit_order": [
+      0.9869794845581055,
+      0.013020489364862442
+    ],
+    "exact_tie": false,
+    "example_index": 168,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.15958023071289,
+    "log_likelihoods_in_bit_order": [
+      -0.3783302307128906,
+      -4.706455230712891
+    ],
+    "logits_in_bit_order": [
+      30.78125,
+      26.453125
+    ],
+    "predicted_bit": 0,
+    "record_id": 340,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7072213292121887,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 21,
+    "conditional_probabilities_in_bit_order": [
+      0.10230471193790436,
+      0.8976953029632568
+    ],
+    "exact_tie": false,
+    "example_index": 169,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.501211166381836,
+    "log_likelihoods_in_bit_order": [
+      -2.626211166381836,
+      -0.45433616638183594
+    ],
+    "logits_in_bit_order": [
+      27.875,
+      30.046875
+    ],
+    "predicted_bit": 1,
+    "record_id": 340,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6498604416847229,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 21,
+    "conditional_probabilities_in_bit_order": [
+      0.9963500499725342,
+      0.003649987280368805
+    ],
+    "exact_tie": false,
+    "example_index": 170,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.419029235839844,
+    "log_likelihoods_in_bit_order": [
+      -0.43465423583984375,
+      -6.044029235839844
+    ],
+    "logits_in_bit_order": [
+      30.984375,
+      25.375
+    ],
+    "predicted_bit": 0,
+    "record_id": 341,
+    "task": "letter",
+    "token_count": 185,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.579584002494812,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 21,
+    "conditional_probabilities_in_bit_order": [
+      0.42250463366508484,
+      0.5774953365325928
+    ],
+    "exact_tie": false,
+    "example_index": 171,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.703874588012695,
+    "log_likelihoods_in_bit_order": [
+      -1.4069995880126953,
+      -1.0944995880126953
+    ],
+    "logits_in_bit_order": [
+      29.296875,
+      29.609375
+    ],
+    "predicted_bit": 1,
+    "record_id": 341,
+    "task": "letter",
+    "token_count": 176,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6656007766723633,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 21,
+    "conditional_probabilities_in_bit_order": [
+      0.9875683188438416,
+      0.012431650422513485
+    ],
+    "exact_tie": false,
+    "example_index": 172,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.278949737548828,
+    "log_likelihoods_in_bit_order": [
+      -0.4195747375488281,
+      -4.794574737548828
+    ],
+    "logits_in_bit_order": [
+      30.859375,
+      26.484375
+    ],
+    "predicted_bit": 0,
+    "record_id": 342,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6886768937110901,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 21,
+    "conditional_probabilities_in_bit_order": [
+      0.10521053522825241,
+      0.894789457321167
+    ],
+    "exact_tie": false,
+    "example_index": 173,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.624774932861328,
+    "log_likelihoods_in_bit_order": [
+      -2.624774932861328,
+      -0.4841499328613281
+    ],
+    "logits_in_bit_order": [
+      28.0,
+      30.140625
+    ],
+    "predicted_bit": 1,
+    "record_id": 342,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6427210569381714,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 21,
+    "conditional_probabilities_in_bit_order": [
+      0.9953181147575378,
+      0.004681821912527084
+    ],
+    "exact_tie": false,
+    "example_index": 174,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.44673728942871,
+    "log_likelihoods_in_bit_order": [
+      -0.44673728942871094,
+      -5.806112289428711
+    ],
+    "logits_in_bit_order": [
+      31.0,
+      25.640625
+    ],
+    "predicted_bit": 0,
+    "record_id": 343,
+    "task": "letter",
+    "token_count": 185,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5909309983253479,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 21,
+    "conditional_probabilities_in_bit_order": [
+      0.3557748794555664,
+      0.6442250609397888
+    ],
+    "exact_tie": false,
+    "example_index": 175,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.747013092041016,
+    "log_likelihoods_in_bit_order": [
+      -1.5595130920410156,
+      -0.9657630920410156
+    ],
+    "logits_in_bit_order": [
+      29.1875,
+      29.78125
+    ],
+    "predicted_bit": 1,
+    "record_id": 343,
+    "task": "letter",
+    "token_count": 176,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6620954275131226,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 22,
+    "conditional_probabilities_in_bit_order": [
+      0.9890130758285522,
+      0.010986942797899246
+    ],
+    "exact_tie": false,
+    "example_index": 176,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.28276824951172,
+    "log_likelihoods_in_bit_order": [
+      -0.42339324951171875,
+      -4.923393249511719
+    ],
+    "logits_in_bit_order": [
+      30.859375,
+      26.359375
+    ],
+    "predicted_bit": 0,
+    "record_id": 344,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6831141114234924,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 22,
+    "conditional_probabilities_in_bit_order": [
+      0.10087861865758896,
+      0.8991213440895081
+    ],
+    "exact_tie": false,
+    "example_index": 177,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.596805572509766,
+    "log_likelihoods_in_bit_order": [
+      -2.6749305725097656,
+      -0.4874305725097656
+    ],
+    "logits_in_bit_order": [
+      27.921875,
+      30.109375
+    ],
+    "predicted_bit": 1,
+    "record_id": 344,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6420409083366394,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 22,
+    "conditional_probabilities_in_bit_order": [
+      0.9959298968315125,
+      0.004070138093084097
+    ],
+    "exact_tie": false,
+    "example_index": 178,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.415931701660156,
+    "log_likelihoods_in_bit_order": [
+      -0.44718170166015625,
+      -5.947181701660156
+    ],
+    "logits_in_bit_order": [
+      30.96875,
+      25.46875
+    ],
+    "predicted_bit": 0,
+    "record_id": 345,
+    "task": "letter",
+    "token_count": 184,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5748277902603149,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 22,
+    "conditional_probabilities_in_bit_order": [
+      0.3812195658683777,
+      0.6187804341316223
+    ],
+    "exact_tie": false,
+    "example_index": 179,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.768064498901367,
+    "log_likelihoods_in_bit_order": [
+      -1.5180644989013672,
+      -1.0336894989013672
+    ],
+    "logits_in_bit_order": [
+      29.25,
+      29.734375
+    ],
+    "predicted_bit": 1,
+    "record_id": 345,
+    "task": "letter",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6617491841316223,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 22,
+    "conditional_probabilities_in_bit_order": [
+      0.9902915358543396,
+      0.00970847625285387
+    ],
+    "exact_tie": false,
+    "example_index": 180,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.266374588012695,
+    "log_likelihoods_in_bit_order": [
+      -0.4226245880126953,
+      -5.047624588012695
+    ],
+    "logits_in_bit_order": [
+      30.84375,
+      26.21875
+    ],
+    "predicted_bit": 0,
+    "record_id": 346,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6827744245529175,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 22,
+    "conditional_probabilities_in_bit_order": [
+      0.09807932376861572,
+      0.9019206762313843
+    ],
+    "exact_tie": false,
+    "example_index": 181,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.500444412231445,
+    "log_likelihoods_in_bit_order": [
+      -2.7035694122314453,
+      -0.4848194122314453
+    ],
+    "logits_in_bit_order": [
+      27.796875,
+      30.015625
+    ],
+    "predicted_bit": 1,
+    "record_id": 346,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6409776210784912,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 22,
+    "conditional_probabilities_in_bit_order": [
+      0.9959298968315125,
+      0.004070138093084097
+    ],
+    "exact_tie": false,
+    "example_index": 182,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.37071418762207,
+    "log_likelihoods_in_bit_order": [
+      -0.4488391876220703,
+      -5.94883918762207
+    ],
+    "logits_in_bit_order": [
+      30.921875,
+      25.421875
+    ],
+    "predicted_bit": 0,
+    "record_id": 347,
+    "task": "letter",
+    "token_count": 184,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5777488946914673,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 22,
+    "conditional_probabilities_in_bit_order": [
+      0.4073334336280823,
+      0.5926666259765625
+    ],
+    "exact_tie": false,
+    "example_index": 183,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.743614196777344,
+    "log_likelihoods_in_bit_order": [
+      -1.4467391967773438,
+      -1.0717391967773438
+    ],
+    "logits_in_bit_order": [
+      29.296875,
+      29.671875
+    ],
+    "predicted_bit": 1,
+    "record_id": 347,
+    "task": "letter",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6818268895149231,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 23,
+    "conditional_probabilities_in_bit_order": [
+      0.9852713346481323,
+      0.014728613197803497
+    ],
+    "exact_tie": false,
+    "example_index": 184,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.241567611694336,
+    "log_likelihoods_in_bit_order": [
+      -0.39781761169433594,
+      -4.600942611694336
+    ],
+    "logits_in_bit_order": [
+      30.84375,
+      26.640625
+    ],
+    "predicted_bit": 0,
+    "record_id": 348,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7024769186973572,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 23,
+    "conditional_probabilities_in_bit_order": [
+      0.09401018172502518,
+      0.9059898257255554
+    ],
+    "exact_tie": false,
+    "example_index": 185,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.62374496459961,
+    "log_likelihoods_in_bit_order": [
+      -2.7174949645996094,
+      -0.4518699645996094
+    ],
+    "logits_in_bit_order": [
+      27.90625,
+      30.171875
+    ],
+    "predicted_bit": 1,
+    "record_id": 348,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6533176302909851,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 23,
+    "conditional_probabilities_in_bit_order": [
+      0.9956685304641724,
+      0.004331502132117748
+    ],
+    "exact_tie": false,
+    "example_index": 186,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.46128273010254,
+    "log_likelihoods_in_bit_order": [
+      -0.43003273010253906,
+      -5.867532730102539
+    ],
+    "logits_in_bit_order": [
+      31.03125,
+      25.59375
+    ],
+    "predicted_bit": 0,
+    "record_id": 349,
+    "task": "letter",
+    "token_count": 185,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5802929401397705,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 23,
+    "conditional_probabilities_in_bit_order": [
+      0.3849121630191803,
+      0.6150878667831421
+    ],
+    "exact_tie": false,
+    "example_index": 187,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.76458740234375,
+    "log_likelihoods_in_bit_order": [
+      -1.49896240234375,
+      -1.03021240234375
+    ],
+    "logits_in_bit_order": [
+      29.265625,
+      29.734375
+    ],
+    "predicted_bit": 1,
+    "record_id": 349,
+    "task": "letter",
+    "token_count": 176,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.6653399467468262,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 23,
+    "conditional_probabilities_in_bit_order": [
+      0.9881309270858765,
+      0.011869121342897415
+    ],
+    "exact_tie": false,
+    "example_index": 188,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.341272354125977,
+    "log_likelihoods_in_bit_order": [
+      -0.41939735412597656,
+      -4.841272354125977
+    ],
+    "logits_in_bit_order": [
+      30.921875,
+      26.5
+    ],
+    "predicted_bit": 0,
+    "record_id": 350,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6744009256362915,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 23,
+    "conditional_probabilities_in_bit_order": [
+      0.11124120652675629,
+      0.8887588381767273
+    ],
+    "exact_tie": false,
+    "example_index": 189,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.589984893798828,
+    "log_likelihoods_in_bit_order": [
+      -2.589984893798828,
+      -0.5118598937988281
+    ],
+    "logits_in_bit_order": [
+      28.0,
+      30.078125
+    ],
+    "predicted_bit": 1,
+    "record_id": 350,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.644286572933197,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 23,
+    "conditional_probabilities_in_bit_order": [
+      0.995866060256958,
+      0.004133968148380518
+    ],
+    "exact_tie": false,
+    "example_index": 190,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 31.396879196166992,
+    "log_likelihoods_in_bit_order": [
+      -0.4437541961669922,
+      -5.928129196166992
+    ],
+    "logits_in_bit_order": [
+      30.953125,
+      25.46875
+    ],
+    "predicted_bit": 0,
+    "record_id": 351,
+    "task": "letter",
+    "token_count": 184,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.5782055854797363,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 23,
+    "conditional_probabilities_in_bit_order": [
+      0.4455295503139496,
+      0.5544704794883728
+    ],
+    "exact_tie": false,
+    "example_index": 191,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.7781925201416,
+    "log_likelihoods_in_bit_order": [
+      -1.3563175201416016,
+      -1.1375675201416016
+    ],
+    "logits_in_bit_order": [
+      29.421875,
+      29.640625
+    ],
+    "predicted_bit": 1,
+    "record_id": 351,
+    "task": "letter",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": false,
+    "unconstrained_top1_token_id": 16533
+  },
+  {
+    "alternative_probability_mass": 0.741352915763855,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 24,
+    "conditional_probabilities_in_bit_order": [
+      0.04535258188843727,
+      0.954647421836853
+    ],
+    "exact_tie": false,
+    "example_index": 192,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.720691680908203,
+    "log_likelihoods_in_bit_order": [
+      -3.392566680908203,
+      -0.3456916809082031
+    ],
+    "logits_in_bit_order": [
+      27.328125,
+      30.375
+    ],
+    "predicted_bit": 1,
+    "record_id": 352,
+    "task": "letter",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.705952525138855,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 24,
+    "conditional_probabilities_in_bit_order": [
+      0.9314625263214111,
+      0.06853749603033066
+    ],
+    "exact_tie": false,
+    "example_index": 193,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.794206619262695,
+    "log_likelihoods_in_bit_order": [
+      -0.4192066192626953,
+      -3.0285816192626953
+    ],
+    "logits_in_bit_order": [
+      30.375,
+      27.765625
+    ],
+    "predicted_bit": 0,
+    "record_id": 352,
+    "task": "letter",
+    "token_count": 170,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6675907373428345,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 24,
+    "conditional_probabilities_in_bit_order": [
+      0.25091278553009033,
+      0.7490872144699097
+    ],
+    "exact_tie": false,
+    "example_index": 194,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.52110481262207,
+    "log_likelihoods_in_bit_order": [
+      -1.7867298126220703,
+      -0.6929798126220703
+    ],
+    "logits_in_bit_order": [
+      28.734375,
+      29.828125
+    ],
+    "predicted_bit": 1,
+    "record_id": 353,
+    "task": "letter",
+    "token_count": 181,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5650543570518494,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 24,
+    "conditional_probabilities_in_bit_order": [
+      0.7217432260513306,
+      0.2782568037509918
+    ],
+    "exact_tie": false,
+    "example_index": 195,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.60004425048828,
+    "log_likelihoods_in_bit_order": [
+      -0.8969192504882812,
+      -1.8500442504882812
+    ],
+    "logits_in_bit_order": [
+      29.703125,
+      28.75
+    ],
+    "predicted_bit": 0,
+    "record_id": 353,
+    "task": "letter",
+    "token_count": 172,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7411303520202637,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 24,
+    "conditional_probabilities_in_bit_order": [
+      0.040237944573163986,
+      0.9597620368003845
+    ],
+    "exact_tie": false,
+    "example_index": 196,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.762523651123047,
+    "log_likelihoods_in_bit_order": [
+      -3.512523651123047,
+      -0.3406486511230469
+    ],
+    "logits_in_bit_order": [
+      27.25,
+      30.421875
+    ],
+    "predicted_bit": 1,
+    "record_id": 354,
+    "task": "letter",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7092575430870056,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 24,
+    "conditional_probabilities_in_bit_order": [
+      0.9230391979217529,
+      0.07696083933115005
+    ],
+    "exact_tie": false,
+    "example_index": 197,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.829870223999023,
+    "log_likelihoods_in_bit_order": [
+      -0.42362022399902344,
+      -2.9079952239990234
+    ],
+    "logits_in_bit_order": [
+      30.40625,
+      27.921875
+    ],
+    "predicted_bit": 0,
+    "record_id": 354,
+    "task": "letter",
+    "token_count": 171,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.67656409740448,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 24,
+    "conditional_probabilities_in_bit_order": [
+      0.3242354094982147,
+      0.6757646203041077
+    ],
+    "exact_tie": false,
+    "example_index": 198,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.376388549804688,
+    "log_likelihoods_in_bit_order": [
+      -1.5170135498046875,
+      -0.7826385498046875
+    ],
+    "logits_in_bit_order": [
+      28.859375,
+      29.59375
+    ],
+    "predicted_bit": 1,
+    "record_id": 355,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.589198887348175,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 24,
+    "conditional_probabilities_in_bit_order": [
+      0.7371581792831421,
+      0.2628418505191803
+    ],
+    "exact_tie": false,
+    "example_index": 199,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.58394432067871,
+    "log_likelihoods_in_bit_order": [
+      -0.8339443206787109,
+      -1.865194320678711
+    ],
+    "logits_in_bit_order": [
+      29.75,
+      28.71875
+    ],
+    "predicted_bit": 0,
+    "record_id": 355,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.75956791639328,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 25,
+    "conditional_probabilities_in_bit_order": [
+      0.04535258188843727,
+      0.954647421836853
+    ],
+    "exact_tie": false,
+    "example_index": 200,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.69641876220703,
+    "log_likelihoods_in_bit_order": [
+      -3.3682937622070312,
+      -0.32141876220703125
+    ],
+    "logits_in_bit_order": [
+      27.328125,
+      30.375
+    ],
+    "predicted_bit": 1,
+    "record_id": 356,
+    "task": "letter",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7515562772750854,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 25,
+    "conditional_probabilities_in_bit_order": [
+      0.937210738658905,
+      0.0627892017364502
+    ],
+    "exact_tie": false,
+    "example_index": 201,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.83483123779297,
+    "log_likelihoods_in_bit_order": [
+      -0.35045623779296875,
+      -3.0535812377929688
+    ],
+    "logits_in_bit_order": [
+      30.484375,
+      27.78125
+    ],
+    "predicted_bit": 0,
+    "record_id": 356,
+    "task": "letter",
+    "token_count": 171,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7043590545654297,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 25,
+    "conditional_probabilities_in_bit_order": [
+      0.2689414322376251,
+      0.7310585975646973
+    ],
+    "exact_tie": false,
+    "example_index": 202,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.382478713989258,
+    "log_likelihoods_in_bit_order": [
+      -1.6637287139892578,
+      -0.6637287139892578
+    ],
+    "logits_in_bit_order": [
+      28.71875,
+      29.71875
+    ],
+    "predicted_bit": 1,
+    "record_id": 357,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5946394205093384,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 25,
+    "conditional_probabilities_in_bit_order": [
+      0.7431679368019104,
+      0.25683197379112244
+    ],
+    "exact_tie": false,
+    "example_index": 203,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.566633224487305,
+    "log_likelihoods_in_bit_order": [
+      -0.8166332244873047,
+      -1.8791332244873047
+    ],
+    "logits_in_bit_order": [
+      29.75,
+      28.6875
+    ],
+    "predicted_bit": 0,
+    "record_id": 357,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7419334650039673,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 25,
+    "conditional_probabilities_in_bit_order": [
+      0.0427221953868866,
+      0.957277774810791
+    ],
+    "exact_tie": false,
+    "example_index": 204,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.7952823638916,
+    "log_likelihoods_in_bit_order": [
+      -3.4515323638916016,
+      -0.34215736389160156
+    ],
+    "logits_in_bit_order": [
+      27.34375,
+      30.453125
+    ],
+    "predicted_bit": 1,
+    "record_id": 358,
+    "task": "letter",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7246681451797485,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 25,
+    "conditional_probabilities_in_bit_order": [
+      0.9353464841842651,
+      0.06465348601341248
+    ],
+    "exact_tie": false,
+    "example_index": 205,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.873254776000977,
+    "log_likelihoods_in_bit_order": [
+      -0.38887977600097656,
+      -3.0607547760009766
+    ],
+    "logits_in_bit_order": [
+      30.484375,
+      27.8125
+    ],
+    "predicted_bit": 0,
+    "record_id": 358,
+    "task": "letter",
+    "token_count": 171,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6974571943283081,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 25,
+    "conditional_probabilities_in_bit_order": [
+      0.24508501589298248,
+      0.7549149990081787
+    ],
+    "exact_tie": false,
+    "example_index": 206,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.438339233398438,
+    "log_likelihoods_in_bit_order": [
+      -1.7664642333984375,
+      -0.6414642333984375
+    ],
+    "logits_in_bit_order": [
+      28.671875,
+      29.796875
+    ],
+    "predicted_bit": 1,
+    "record_id": 359,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.589270830154419,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 25,
+    "conditional_probabilities_in_bit_order": [
+      0.672331690788269,
+      0.32766830921173096
+    ],
+    "exact_tie": false,
+    "example_index": 207,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.550872802734375,
+    "log_likelihoods_in_bit_order": [
+      -0.925872802734375,
+      -1.644622802734375
+    ],
+    "logits_in_bit_order": [
+      29.625,
+      28.90625
+    ],
+    "predicted_bit": 0,
+    "record_id": 359,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7355503439903259,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 26,
+    "conditional_probabilities_in_bit_order": [
+      0.0446808747947216,
+      0.9553191661834717
+    ],
+    "exact_tie": false,
+    "example_index": 208,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.790346145629883,
+    "log_likelihoods_in_bit_order": [
+      -3.415346145629883,
+      -0.3528461456298828
+    ],
+    "logits_in_bit_order": [
+      27.375,
+      30.4375
+    ],
+    "predicted_bit": 1,
+    "record_id": 360,
+    "task": "letter",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.704974889755249,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 26,
+    "conditional_probabilities_in_bit_order": [
+      0.937210738658905,
+      0.0627892017364502
+    ],
+    "exact_tie": false,
+    "example_index": 209,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.914440155029297,
+    "log_likelihoods_in_bit_order": [
+      -0.4144401550292969,
+      -3.117565155029297
+    ],
+    "logits_in_bit_order": [
+      30.5,
+      27.796875
+    ],
+    "predicted_bit": 0,
+    "record_id": 360,
+    "task": "letter",
+    "token_count": 170,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6814008355140686,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 26,
+    "conditional_probabilities_in_bit_order": [
+      0.2422056347131729,
+      0.7577943801879883
+    ],
+    "exact_tie": false,
+    "example_index": 210,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.504697799682617,
+    "log_likelihoods_in_bit_order": [
+      -1.8015727996826172,
+      -0.6609477996826172
+    ],
+    "logits_in_bit_order": [
+      28.703125,
+      29.84375
+    ],
+    "predicted_bit": 1,
+    "record_id": 361,
+    "task": "letter",
+    "token_count": 181,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5743909478187561,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 26,
+    "conditional_probabilities_in_bit_order": [
+      0.7279754281044006,
+      0.272024542093277
+    ],
+    "exact_tie": false,
+    "example_index": 211,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.590682983398438,
+    "log_likelihoods_in_bit_order": [
+      -0.8719329833984375,
+      -1.8563079833984375
+    ],
+    "logits_in_bit_order": [
+      29.71875,
+      28.734375
+    ],
+    "predicted_bit": 0,
+    "record_id": 361,
+    "task": "letter",
+    "token_count": 172,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7393980622291565,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 26,
+    "conditional_probabilities_in_bit_order": [
+      0.04084571450948715,
+      0.9591543078422546
+    ],
+    "exact_tie": false,
+    "example_index": 212,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.7029972076416,
+    "log_likelihoods_in_bit_order": [
+      -3.4998722076416016,
+      -0.34362220764160156
+    ],
+    "logits_in_bit_order": [
+      27.203125,
+      30.359375
+    ],
+    "predicted_bit": 1,
+    "record_id": 362,
+    "task": "letter",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7043260931968689,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 26,
+    "conditional_probabilities_in_bit_order": [
+      0.9184802770614624,
+      0.08151975274085999
+    ],
+    "exact_tie": false,
+    "example_index": 213,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.810548782348633,
+    "log_likelihoods_in_bit_order": [
+      -0.4355487823486328,
+      -2.857423782348633
+    ],
+    "logits_in_bit_order": [
+      30.375,
+      27.953125
+    ],
+    "predicted_bit": 0,
+    "record_id": 362,
+    "task": "letter",
+    "token_count": 170,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6569592356681824,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 26,
+    "conditional_probabilities_in_bit_order": [
+      0.32766830921173096,
+      0.672331690788269
+    ],
+    "exact_tie": false,
+    "example_index": 214,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.442136764526367,
+    "log_likelihoods_in_bit_order": [
+      -1.5358867645263672,
+      -0.8171367645263672
+    ],
+    "logits_in_bit_order": [
+      28.90625,
+      29.625
+    ],
+    "predicted_bit": 1,
+    "record_id": 363,
+    "task": "letter",
+    "token_count": 181,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5671146512031555,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 26,
+    "conditional_probabilities_in_bit_order": [
+      0.7279754281044006,
+      0.272024542093277
+    ],
+    "exact_tie": false,
+    "example_index": 215,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.619056701660156,
+    "log_likelihoods_in_bit_order": [
+      -0.8846817016601562,
+      -1.8690567016601562
+    ],
+    "logits_in_bit_order": [
+      29.734375,
+      28.75
+    ],
+    "predicted_bit": 0,
+    "record_id": 363,
+    "task": "letter",
+    "token_count": 172,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7434447407722473,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 27,
+    "conditional_probabilities_in_bit_order": [
+      0.04672496020793915,
+      0.9532750844955444
+    ],
+    "exact_tie": false,
+    "example_index": 216,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.75056266784668,
+    "log_likelihoods_in_bit_order": [
+      -3.3599376678466797,
+      -0.3443126678466797
+    ],
+    "logits_in_bit_order": [
+      27.390625,
+      30.40625
+    ],
+    "predicted_bit": 1,
+    "record_id": 364,
+    "task": "letter",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7319616079330444,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 27,
+    "conditional_probabilities_in_bit_order": [
+      0.9381240010261536,
+      0.06187598779797554
+    ],
+    "exact_tie": false,
+    "example_index": 217,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.875900268554688,
+    "log_likelihoods_in_bit_order": [
+      -0.3759002685546875,
+      -3.0946502685546875
+    ],
+    "logits_in_bit_order": [
+      30.5,
+      27.78125
+    ],
+    "predicted_bit": 0,
+    "record_id": 364,
+    "task": "letter",
+    "token_count": 171,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7052624821662903,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 27,
+    "conditional_probabilities_in_bit_order": [
+      0.29098084568977356,
+      0.709019124507904
+    ],
+    "exact_tie": false,
+    "example_index": 218,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.489933013916016,
+    "log_likelihoods_in_bit_order": [
+      -1.5836830139160156,
+      -0.6930580139160156
+    ],
+    "logits_in_bit_order": [
+      28.90625,
+      29.796875
+    ],
+    "predicted_bit": 1,
+    "record_id": 365,
+    "task": "letter",
+    "token_count": 182,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5890417695045471,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 27,
+    "conditional_probabilities_in_bit_order": [
+      0.740174412727356,
+      0.2598256766796112
+    ],
+    "exact_tie": false,
+    "example_index": 219,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.595752716064453,
+    "log_likelihoods_in_bit_order": [
+      -0.8301277160644531,
+      -1.8770027160644531
+    ],
+    "logits_in_bit_order": [
+      29.765625,
+      28.71875
+    ],
+    "predicted_bit": 0,
+    "record_id": 365,
+    "task": "letter",
+    "token_count": 173,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.738807201385498,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 27,
+    "conditional_probabilities_in_bit_order": [
+      0.040237944573163986,
+      0.9597620368003845
+    ],
+    "exact_tie": false,
+    "example_index": 220,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.843788146972656,
+    "log_likelihoods_in_bit_order": [
+      -3.5156631469726562,
+      -0.34378814697265625
+    ],
+    "logits_in_bit_order": [
+      27.328125,
+      30.5
+    ],
+    "predicted_bit": 1,
+    "record_id": 366,
+    "task": "letter",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7050415277481079,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 27,
+    "conditional_probabilities_in_bit_order": [
+      0.9314625263214111,
+      0.06853749603033066
+    ],
+    "exact_tie": false,
+    "example_index": 221,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.90487289428711,
+    "log_likelihoods_in_bit_order": [
+      -0.4204978942871094,
+      -3.0298728942871094
+    ],
+    "logits_in_bit_order": [
+      30.484375,
+      27.875
+    ],
+    "predicted_bit": 0,
+    "record_id": 366,
+    "task": "letter",
+    "token_count": 170,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.6666133403778076,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 27,
+    "conditional_probabilities_in_bit_order": [
+      0.31742626428604126,
+      0.6825737357139587
+    ],
+    "exact_tie": false,
+    "example_index": 222,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.459304809570312,
+    "log_likelihoods_in_bit_order": [
+      -1.5530548095703125,
+      -0.7874298095703125
+    ],
+    "logits_in_bit_order": [
+      28.90625,
+      29.671875
+    ],
+    "predicted_bit": 1,
+    "record_id": 367,
+    "task": "letter",
+    "token_count": 181,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.5730717778205872,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 27,
+    "conditional_probabilities_in_bit_order": [
+      0.7549149990081787,
+      0.24508501589298248
+    ],
+    "exact_tie": false,
+    "example_index": 223,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.634769439697266,
+    "log_likelihoods_in_bit_order": [
+      -0.8378944396972656,
+      -1.9628944396972656
+    ],
+    "logits_in_bit_order": [
+      29.796875,
+      28.671875
+    ],
+    "predicted_bit": 0,
+    "record_id": 367,
+    "task": "letter",
+    "token_count": 172,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 15
+  },
+  {
+    "alternative_probability_mass": 0.7429075837135315,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 28,
+    "conditional_probabilities_in_bit_order": [
+      0.03622005507349968,
+      0.9637799859046936
+    ],
+    "exact_tie": false,
+    "example_index": 224,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.818450927734375,
+    "log_likelihoods_in_bit_order": [
+      -3.615325927734375,
+      -0.334075927734375
+    ],
+    "logits_in_bit_order": [
+      27.203125,
+      30.484375
+    ],
+    "predicted_bit": 1,
+    "record_id": 368,
+    "task": "letter",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7413439750671387,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 28,
+    "conditional_probabilities_in_bit_order": [
+      0.0627892017364502,
+      0.937210738658905
+    ],
+    "exact_tie": false,
+    "example_index": 225,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.629762649536133,
+    "log_likelihoods_in_bit_order": [
+      -3.067262649536133,
+      -0.3641376495361328
+    ],
+    "logits_in_bit_order": [
+      27.5625,
+      30.265625
+    ],
+    "predicted_bit": 1,
+    "record_id": 368,
+    "task": "letter",
+    "token_count": 170,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6936135292053223,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 28,
+    "conditional_probabilities_in_bit_order": [
+      0.2598256766796112,
+      0.740174412727356
+    ],
+    "exact_tie": false,
+    "example_index": 226,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.651084899902344,
+    "log_likelihoods_in_bit_order": [
+      -1.7135848999023438,
+      -0.6667098999023438
+    ],
+    "logits_in_bit_order": [
+      28.9375,
+      29.984375
+    ],
+    "predicted_bit": 1,
+    "record_id": 369,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6503092050552368,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 28,
+    "conditional_probabilities_in_bit_order": [
+      0.1919327825307846,
+      0.8080672025680542
+    ],
+    "exact_tie": false,
+    "example_index": 227,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.721542358398438,
+    "log_likelihoods_in_bit_order": [
+      -2.0809173583984375,
+      -0.6434173583984375
+    ],
+    "logits_in_bit_order": [
+      28.640625,
+      30.078125
+    ],
+    "predicted_bit": 1,
+    "record_id": 369,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7423662543296814,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 28,
+    "conditional_probabilities_in_bit_order": [
+      0.03258974477648735,
+      0.9674102663993835
+    ],
+    "exact_tie": false,
+    "example_index": 228,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.862295150756836,
+    "log_likelihoods_in_bit_order": [
+      -3.721670150756836,
+      -0.33104515075683594
+    ],
+    "logits_in_bit_order": [
+      27.140625,
+      30.53125
+    ],
+    "predicted_bit": 1,
+    "record_id": 370,
+    "task": "letter",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7244956493377686,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 28,
+    "conditional_probabilities_in_bit_order": [
+      0.07159119844436646,
+      0.9284088015556335
+    ],
+    "exact_tie": false,
+    "example_index": 229,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.630937576293945,
+    "log_likelihoods_in_bit_order": [
+      -2.9590625762939453,
+      -0.3965625762939453
+    ],
+    "logits_in_bit_order": [
+      27.671875,
+      30.234375
+    ],
+    "predicted_bit": 1,
+    "record_id": 370,
+    "task": "letter",
+    "token_count": 171,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6993935108184814,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 28,
+    "conditional_probabilities_in_bit_order": [
+      0.32766830921173096,
+      0.672331690788269
+    ],
+    "exact_tie": false,
+    "example_index": 230,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.504545211791992,
+    "log_likelihoods_in_bit_order": [
+      -1.4732952117919922,
+      -0.7545452117919922
+    ],
+    "logits_in_bit_order": [
+      29.03125,
+      29.75
+    ],
+    "predicted_bit": 1,
+    "record_id": 371,
+    "task": "letter",
+    "token_count": 184,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6532226204872131,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 28,
+    "conditional_probabilities_in_bit_order": [
+      0.17781086266040802,
+      0.8221890926361084
+    ],
+    "exact_tie": false,
+    "example_index": 231,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.71537208557129,
+    "log_likelihoods_in_bit_order": [
+      -2.152872085571289,
+      -0.6216220855712891
+    ],
+    "logits_in_bit_order": [
+      28.5625,
+      30.09375
+    ],
+    "predicted_bit": 1,
+    "record_id": 371,
+    "task": "letter",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7617495656013489,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 29,
+    "conditional_probabilities_in_bit_order": [
+      0.037326883524656296,
+      0.9626730680465698
+    ],
+    "exact_tie": false,
+    "example_index": 232,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.810178756713867,
+    "log_likelihoods_in_bit_order": [
+      -3.560178756713867,
+      -0.3101787567138672
+    ],
+    "logits_in_bit_order": [
+      27.25,
+      30.5
+    ],
+    "predicted_bit": 1,
+    "record_id": 372,
+    "task": "letter",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7444391846656799,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 29,
+    "conditional_probabilities_in_bit_order": [
+      0.07477004826068878,
+      0.9252300262451172
+    ],
+    "exact_tie": false,
+    "example_index": 233,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.60721206665039,
+    "log_likelihoods_in_bit_order": [
+      -2.8884620666503906,
+      -0.3728370666503906
+    ],
+    "logits_in_bit_order": [
+      27.71875,
+      30.234375
+    ],
+    "predicted_bit": 1,
+    "record_id": 372,
+    "task": "letter",
+    "token_count": 171,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7308529019355774,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 29,
+    "conditional_probabilities_in_bit_order": [
+      0.272024542093277,
+      0.7279754281044006
+    ],
+    "exact_tie": false,
+    "example_index": 234,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.474781036376953,
+    "log_likelihoods_in_bit_order": [
+      -1.6154060363769531,
+      -0.6310310363769531
+    ],
+    "logits_in_bit_order": [
+      28.859375,
+      29.84375
+    ],
+    "predicted_bit": 1,
+    "record_id": 373,
+    "task": "letter",
+    "token_count": 184,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6696689128875732,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 29,
+    "conditional_probabilities_in_bit_order": [
+      0.19436781108379364,
+      0.8056321740150452
+    ],
+    "exact_tie": false,
+    "example_index": 235,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.67959976196289,
+    "log_likelihoods_in_bit_order": [
+      -2.0389747619628906,
+      -0.6170997619628906
+    ],
+    "logits_in_bit_order": [
+      28.640625,
+      30.0625
+    ],
+    "predicted_bit": 1,
+    "record_id": 373,
+    "task": "letter",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7456942796707153,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 29,
+    "conditional_probabilities_in_bit_order": [
+      0.03676946461200714,
+      0.963230550289154
+    ],
+    "exact_tie": false,
+    "example_index": 236,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.877777099609375,
+    "log_likelihoods_in_bit_order": [
+      -3.596527099609375,
+      -0.330902099609375
+    ],
+    "logits_in_bit_order": [
+      27.28125,
+      30.546875
+    ],
+    "predicted_bit": 1,
+    "record_id": 374,
+    "task": "letter",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7160479426383972,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 29,
+    "conditional_probabilities_in_bit_order": [
+      0.09009299427270889,
+      0.9099069833755493
+    ],
+    "exact_tie": false,
+    "example_index": 237,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.709671020507812,
+    "log_likelihoods_in_bit_order": [
+      -2.7409210205078125,
+      -0.4284210205078125
+    ],
+    "logits_in_bit_order": [
+      27.96875,
+      30.28125
+    ],
+    "predicted_bit": 1,
+    "record_id": 374,
+    "task": "letter",
+    "token_count": 171,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7237691879272461,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 29,
+    "conditional_probabilities_in_bit_order": [
+      0.25091278553009033,
+      0.7490872144699097
+    ],
+    "exact_tie": false,
+    "example_index": 238,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.5184326171875,
+    "log_likelihoods_in_bit_order": [
+      -1.7059326171875,
+      -0.6121826171875
+    ],
+    "logits_in_bit_order": [
+      28.8125,
+      29.90625
+    ],
+    "predicted_bit": 1,
+    "record_id": 375,
+    "task": "letter",
+    "token_count": 184,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6651448011398315,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 29,
+    "conditional_probabilities_in_bit_order": [
+      0.19436781108379364,
+      0.8056321740150452
+    ],
+    "exact_tie": false,
+    "example_index": 239,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.748878479003906,
+    "log_likelihoods_in_bit_order": [
+      -2.0457534790039062,
+      -0.6238784790039062
+    ],
+    "logits_in_bit_order": [
+      28.703125,
+      30.125
+    ],
+    "predicted_bit": 1,
+    "record_id": 375,
+    "task": "letter",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7384194731712341,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 30,
+    "conditional_probabilities_in_bit_order": [
+      0.03622005507349968,
+      0.9637799859046936
+    ],
+    "exact_tie": false,
+    "example_index": 240,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.88701057434082,
+    "log_likelihoods_in_bit_order": [
+      -3.6213855743408203,
+      -0.3401355743408203
+    ],
+    "logits_in_bit_order": [
+      27.265625,
+      30.546875
+    ],
+    "predicted_bit": 1,
+    "record_id": 376,
+    "task": "letter",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7322503924369812,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 30,
+    "conditional_probabilities_in_bit_order": [
+      0.06754668802022934,
+      0.9324532747268677
+    ],
+    "exact_tie": false,
+    "example_index": 241,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.725318908691406,
+    "log_likelihoods_in_bit_order": [
+      -3.0065689086914062,
+      -0.38156890869140625
+    ],
+    "logits_in_bit_order": [
+      27.71875,
+      30.34375
+    ],
+    "predicted_bit": 1,
+    "record_id": 376,
+    "task": "letter",
+    "token_count": 170,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7181258201599121,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 30,
+    "conditional_probabilities_in_bit_order": [
+      0.25091278553009033,
+      0.7490872144699097
+    ],
+    "exact_tie": false,
+    "example_index": 242,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.604385375976562,
+    "log_likelihoods_in_bit_order": [
+      -1.7137603759765625,
+      -0.6200103759765625
+    ],
+    "logits_in_bit_order": [
+      28.890625,
+      29.984375
+    ],
+    "predicted_bit": 1,
+    "record_id": 377,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6524338722229004,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 30,
+    "conditional_probabilities_in_bit_order": [
+      0.19930799305438995,
+      0.8006919622421265
+    ],
+    "exact_tie": false,
+    "example_index": 243,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.727449417114258,
+    "log_likelihoods_in_bit_order": [
+      -2.039949417114258,
+      -0.6493244171142578
+    ],
+    "logits_in_bit_order": [
+      28.6875,
+      30.078125
+    ],
+    "predicted_bit": 1,
+    "record_id": 377,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7395087480545044,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 30,
+    "conditional_probabilities_in_bit_order": [
+      0.03210070729255676,
+      0.9678993225097656
+    ],
+    "exact_tie": false,
+    "example_index": 244,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.850021362304688,
+    "log_likelihoods_in_bit_order": [
+      -3.7406463623046875,
+      -0.3343963623046875
+    ],
+    "logits_in_bit_order": [
+      27.109375,
+      30.515625
+    ],
+    "predicted_bit": 1,
+    "record_id": 378,
+    "task": "letter",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7296045422554016,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 30,
+    "conditional_probabilities_in_bit_order": [
+      0.07369626313447952,
+      0.9263036847114563
+    ],
+    "exact_tie": false,
+    "example_index": 245,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.61055564880371,
+    "log_likelihoods_in_bit_order": [
+      -2.923055648803711,
+      -0.39180564880371094
+    ],
+    "logits_in_bit_order": [
+      27.6875,
+      30.21875
+    ],
+    "predicted_bit": 1,
+    "record_id": 378,
+    "task": "letter",
+    "token_count": 170,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6819278001785278,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 30,
+    "conditional_probabilities_in_bit_order": [
+      0.34510529041290283,
+      0.6548947095870972
+    ],
+    "exact_tie": false,
+    "example_index": 246,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.52486228942871,
+    "log_likelihoods_in_bit_order": [
+      -1.446737289428711,
+      -0.8061122894287109
+    ],
+    "logits_in_bit_order": [
+      29.078125,
+      29.71875
+    ],
+    "predicted_bit": 1,
+    "record_id": 379,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6402584910392761,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 30,
+    "conditional_probabilities_in_bit_order": [
+      0.20434188842773438,
+      0.7956580519676208
+    ],
+    "exact_tie": false,
+    "example_index": 247,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.721343994140625,
+    "log_likelihoods_in_bit_order": [
+      -2.033843994140625,
+      -0.674468994140625
+    ],
+    "logits_in_bit_order": [
+      28.6875,
+      30.046875
+    ],
+    "predicted_bit": 1,
+    "record_id": 379,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7528143525123596,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 31,
+    "conditional_probabilities_in_bit_order": [
+      0.040237944573163986,
+      0.9597620368003845
+    ],
+    "exact_tie": false,
+    "example_index": 248,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.87188148498535,
+    "log_likelihoods_in_bit_order": [
+      -3.4968814849853516,
+      -0.32500648498535156
+    ],
+    "logits_in_bit_order": [
+      27.375,
+      30.546875
+    ],
+    "predicted_bit": 1,
+    "record_id": 380,
+    "task": "letter",
+    "token_count": 180,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7241641879081726,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 31,
+    "conditional_probabilities_in_bit_order": [
+      0.08151975274085999,
+      0.9184802770614624
+    ],
+    "exact_tie": false,
+    "example_index": 249,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.689022064208984,
+    "log_likelihoods_in_bit_order": [
+      -2.8296470642089844,
+      -0.4077720642089844
+    ],
+    "logits_in_bit_order": [
+      27.859375,
+      30.28125
+    ],
+    "predicted_bit": 1,
+    "record_id": 380,
+    "task": "letter",
+    "token_count": 171,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7250823378562927,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 31,
+    "conditional_probabilities_in_bit_order": [
+      0.30074557662010193,
+      0.6992543935775757
+    ],
+    "exact_tie": false,
+    "example_index": 250,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.601085662841797,
+    "log_likelihoods_in_bit_order": [
+      -1.5229606628417969,
+      -0.6792106628417969
+    ],
+    "logits_in_bit_order": [
+      29.078125,
+      29.921875
+    ],
+    "predicted_bit": 1,
+    "record_id": 381,
+    "task": "letter",
+    "token_count": 184,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6604387164115906,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 31,
+    "conditional_probabilities_in_bit_order": [
+      0.18952107429504395,
+      0.8104788661003113
+    ],
+    "exact_tie": false,
+    "example_index": 251,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.734355926513672,
+    "log_likelihoods_in_bit_order": [
+      -2.078105926513672,
+      -0.6249809265136719
+    ],
+    "logits_in_bit_order": [
+      28.65625,
+      30.109375
+    ],
+    "predicted_bit": 1,
+    "record_id": 381,
+    "task": "letter",
+    "token_count": 175,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.7379334568977356,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 31,
+    "conditional_probabilities_in_bit_order": [
+      0.03258974477648735,
+      0.9674102663993835
+    ],
+    "exact_tie": false,
+    "example_index": 252,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.946409225463867,
+    "log_likelihoods_in_bit_order": [
+      -3.727659225463867,
+      -0.3370342254638672
+    ],
+    "logits_in_bit_order": [
+      27.21875,
+      30.609375
+    ],
+    "predicted_bit": 1,
+    "record_id": 382,
+    "task": "letter",
+    "token_count": 179,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.726537823677063,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 31,
+    "conditional_probabilities_in_bit_order": [
+      0.07263670861721039,
+      0.9273632764816284
+    ],
+    "exact_tie": false,
+    "example_index": 253,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.722999572753906,
+    "log_likelihoods_in_bit_order": [
+      -2.9417495727539062,
+      -0.39487457275390625
+    ],
+    "logits_in_bit_order": [
+      27.78125,
+      30.328125
+    ],
+    "predicted_bit": 1,
+    "record_id": 382,
+    "task": "letter",
+    "token_count": 170,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6966885924339294,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "a",
+    "batch_index": 31,
+    "conditional_probabilities_in_bit_order": [
+      0.33111974596977234,
+      0.66888028383255
+    ],
+    "exact_tie": false,
+    "example_index": 254,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.560441970825195,
+    "log_likelihoods_in_bit_order": [
+      -1.4666919708251953,
+      -0.7635669708251953
+    ],
+    "logits_in_bit_order": [
+      29.09375,
+      29.796875
+    ],
+    "predicted_bit": 1,
+    "record_id": 383,
+    "task": "letter",
+    "token_count": 183,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  },
+  {
+    "alternative_probability_mass": 0.6443199515342712,
+    "alternative_token_ids_in_bit_order": [
+      15,
+      16
+    ],
+    "axis": "b",
+    "batch_index": 31,
+    "conditional_probabilities_in_bit_order": [
+      0.2309197634458542,
+      0.7690802216529846
+    ],
+    "exact_tie": false,
+    "example_index": 255,
+    "framing": "A",
+    "full_vocabulary_logsumexp": 30.748994827270508,
+    "log_likelihoods_in_bit_order": [
+      -1.9052448272705078,
+      -0.7021198272705078
+    ],
+    "logits_in_bit_order": [
+      28.84375,
+      30.046875
+    ],
+    "predicted_bit": 1,
+    "record_id": 383,
+    "task": "letter",
+    "token_count": 174,
+    "unconstrained_top1_is_alternative": true,
+    "unconstrained_top1_token_id": 16
+  }
+]

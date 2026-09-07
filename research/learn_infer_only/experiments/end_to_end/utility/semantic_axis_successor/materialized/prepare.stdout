@@ -1,0 +1,33 @@
+{
+  "prepared": true,
+  "freeze_sha256": "1fe42024b756c5af49b2a27c210e35ed0b5660148d749cff8667e7989a107198",
+  "selection": {
+    "history_ids": [
+      67000,
+      67001
+    ],
+    "query_ids": [
+      256,
+      257,
+      272,
+      273,
+      288,
+      289,
+      304,
+      305,
+      320,
+      321,
+      336,
+      337,
+      352,
+      353,
+      368,
+      369
+    ],
+    "rule": "First two ascending history IDs; lowest two IDs per task/gold-attribute stratum, globally sorted",
+    "prepared_before_vector_materialization": true,
+    "query_selection_uses_outcomes": false,
+    "gold_metadata_use": "Balanced identifier selection and test oracle only; never semantic feature values",
+    "integration_correctness_subset_not_new_utility_estimate": true
+  }
+}

@@ -1,0 +1,56 @@
+{"first_record_id": 256, "records": 16, "padded_tokens_per_record": 37, "wall_seconds": 0.18122541601769626, "cpu_seconds": 0.28658399999999995}
+{"first_record_id": 272, "records": 16, "padded_tokens_per_record": 36, "wall_seconds": 0.15537854100693949, "cpu_seconds": 0.2515170000000002}
+{"first_record_id": 288, "records": 16, "padded_tokens_per_record": 39, "wall_seconds": 0.1730534170055762, "cpu_seconds": 0.28298999999999985}
+{"first_record_id": 304, "records": 16, "padded_tokens_per_record": 38, "wall_seconds": 0.16741570900194347, "cpu_seconds": 0.27056499999999994}
+{"first_record_id": 320, "records": 16, "padded_tokens_per_record": 35, "wall_seconds": 0.15628404100425541, "cpu_seconds": 0.2534289999999997}
+{"first_record_id": 336, "records": 16, "padded_tokens_per_record": 38, "wall_seconds": 0.16478991601616144, "cpu_seconds": 0.26775400000000005}
+{"first_record_id": 352, "records": 16, "padded_tokens_per_record": 34, "wall_seconds": 0.15495254201232456, "cpu_seconds": 0.24700500000000014}
+{"first_record_id": 368, "records": 16, "padded_tokens_per_record": 37, "wall_seconds": 0.16246429100283422, "cpu_seconds": 0.2635829999999997}
+{
+  "executed": true,
+  "model": "HuggingFaceTB/SmolLM2-135M",
+  "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "model_path": "/Users/ember/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM2-135M/snapshots/93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "records": 128,
+  "parameter_count": 134515008,
+  "teacher_reencodings": 0,
+  "oracle_parsed": false,
+  "runtime": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "torch": "2.10.0",
+    "transformers": "4.57.3",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "mps_built": true,
+    "mps_available": true,
+    "cuda_available": false
+  },
+  "numpy": "2.4.2",
+  "settings": {
+    "device": "cpu",
+    "dtype": "float32",
+    "attention": "eager",
+    "batch_size": 16,
+    "padding_side": "right",
+    "use_cache": false,
+    "threads": 2,
+    "interop_threads": 1,
+    "seed": 7901,
+    "pooling": "masked mean direct block9 output",
+    "blocks_actually_executed": 30,
+    "local_files_only": true,
+    "trust_remote_code": false
+  },
+  "freeze_sha256": "c9c74521b14dd9cb60743ccbf34a91c5e300fa33f03e187aba4117915cda31da",
+  "script_sha256": "fb782023cf842058adf6908e80b6f13ac387dd8d82626dc5d02687e337c98806",
+  "features_sha256": "6ffc57730247210dde7183b0a1ff792a15979dd7fd2d1a864985e38011bdefb8",
+  "load_wall_seconds": 0.1808590420114342,
+  "load_cpu_seconds": 0.2097319999999998,
+  "forward_wall_seconds": 1.315563873067731,
+  "forward_cpu_seconds": 2.1234269999999995,
+  "unpadded_tokens": 4376,
+  "padded_tokens": 4704,
+  "total_wall_seconds_including_imports": 4.138120709016221,
+  "total_cpu_seconds_including_imports": 4.3897569999999995,
+  "process_high_water_rss_bytes_macos": 1153826816
+}

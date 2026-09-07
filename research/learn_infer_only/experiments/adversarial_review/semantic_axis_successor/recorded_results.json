@@ -1,0 +1,197 @@
+{
+  "schema": "independent-semantic-successor-recorded-replay-v1",
+  "passed": true,
+  "script_sha256": "c28a108d1baca361728ab9731db9fb3af6ffcdbd1c2b5996a74fc1f19871e059",
+  "author_report_sha256": "f803be9d75fe503cd56f9925906882965e66aadaf80c1787e8782b810f1da8b1",
+  "author_manifest_sha256": "2c2a64be129fd3afcc705c62eb37b02e4b8bee2912a00a242c47d86c3141944d",
+  "frozen_sources_rehashed": 32,
+  "exact_selected_scorer_metadata_only_delta": true,
+  "new_full_text_overlaps": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/text_transfer_records.json": 0,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_records.json": 0,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/records.json": 0,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/e5_successor/records.json": 0
+  },
+  "prompt_message_constructions_checked": 256,
+  "new_token_counts": [
+    45312,
+    46304
+  ],
+  "teacher_predictions_reused_exactly": 128,
+  "factual_correct_by_axis": {
+    "plant.a": 64,
+    "plant.b": 49,
+    "letter.a": 64,
+    "letter.b": 64
+  },
+  "factual_correct_bits": 241,
+  "complete_factual_pairs": 113,
+  "all_fifteen_error_ids": [
+    256,
+    258,
+    260,
+    262,
+    264,
+    268,
+    270,
+    288,
+    290,
+    292,
+    294,
+    296,
+    298,
+    300,
+    302
+  ],
+  "all_method_integer_scores_checked": {
+    "attribute8": 24576,
+    "original577": 24576,
+    "semantic577": 24576
+  },
+  "all_three_method_checkpoint_vectors_checked": 1152,
+  "primary_direct_queue_updates": 12288,
+  "primary_original_signed_expiries": 8192,
+  "untouched_route_exact_state_and_raw_score_equalities": 384,
+  "correct_by_phase": {
+    "attribute8": [
+      6144,
+      8192,
+      8192
+    ],
+    "original577": [
+      4064,
+      4161,
+      4178
+    ],
+    "semantic577": [
+      5446,
+      7494,
+      7462
+    ]
+  },
+  "final_task_correct": {
+    "attribute8": [
+      4096,
+      4096
+    ],
+    "original577": [
+      2033,
+      2145
+    ],
+    "semantic577": [
+      3366,
+      4096
+    ]
+  },
+  "final_correct": {
+    "attribute8": 8192,
+    "original577": 4178,
+    "semantic577": 7462
+  },
+  "joint_rule_history_counts": {
+    "nonlinear/linear": 20,
+    "nonlinear/nonlinear": 5,
+    "linear/linear": 27,
+    "linear/nonlinear": 12
+  },
+  "rule_skill_instance_counts": {
+    "nonlinear": 42,
+    "linear": 86
+  },
+  "joint_rule_correct": {
+    "attribute8": {
+      "nonlinear/linear": 2560,
+      "nonlinear/nonlinear": 640,
+      "linear/linear": 3456,
+      "linear/nonlinear": 1536
+    },
+    "original577": {
+      "nonlinear/linear": 1319,
+      "nonlinear/nonlinear": 322,
+      "linear/linear": 1780,
+      "linear/nonlinear": 757
+    },
+    "semantic577": {
+      "nonlinear/linear": 2252,
+      "nonlinear/nonlinear": 557,
+      "linear/linear": 3207,
+      "linear/nonlinear": 1446
+    }
+  },
+  "attribute_strata_correct": {
+    "attribute8": {
+      "0.00": 1024,
+      "0.01": 1024,
+      "0.10": 1024,
+      "0.11": 1024,
+      "1.00": 1024,
+      "1.01": 1024,
+      "1.10": 1024,
+      "1.11": 1024
+    },
+    "original577": {
+      "0.00": 502,
+      "0.01": 486,
+      "0.10": 635,
+      "0.11": 410,
+      "1.00": 435,
+      "1.01": 297,
+      "1.10": 832,
+      "1.11": 581
+    },
+    "semantic577": {
+      "0.00": 702,
+      "0.01": 1024,
+      "0.10": 696,
+      "0.11": 944,
+      "1.00": 1024,
+      "1.01": 1024,
+      "1.10": 1024,
+      "1.11": 1024
+    }
+  },
+  "paired_gain": 0.40087890625,
+  "descriptive_history_paired_1_96_se_half_width": 0.01470367623031303,
+  "history_gain_range": [
+    0.28125,
+    0.5390625
+  ],
+  "all_eleven_frozen_gates_pass": true,
+  "observed_max_abs_scores": {
+    "attribute8": 209677,
+    "original577": 75356,
+    "semantic577": 225806
+  },
+  "effective_basis_image": {
+    "0.teacher": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "0.test": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "1.teacher": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "1.test": [
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "exact_score_basis_determinant": 67675234241018881,
+  "numpy_version": "2.5.2",
+  "elapsed_seconds": 2.2113887919986155,
+  "model_calls": 0,
+  "crypto_calls": 0,
+  "scope": "Only retained public synthetic data/source; no model/crypto rerun or privacy/routing/extraction experiment."
+}

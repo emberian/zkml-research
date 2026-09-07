@@ -1,0 +1,888 @@
+{
+  "all_correctness_checks_passed": true,
+  "all_tested_byte_replays_match": true,
+  "binary_hashes": {
+    "host": "d45d096a68a46ecfde022bf2b35a30d512d93d5cb333c9097f64c04aeeebe474",
+    "issuer": "cc7b16ed3ee5902a3c0986565721e3d3baab34deba3ee1c229a3069697f8adaf",
+    "reader": "9b952ef674c5d7a7ba8234a939df13875d8bd3e917ec6044eb6f24747c6f6790",
+    "setup": "7323fc2634f2aa617033932ed082807660f714f43ccafd39ae53a40f6ac47967"
+  },
+  "completed_prespecified_two_step_run": true,
+  "errors": [],
+  "fixture": "two preregistered synthetic updates; not an unknown-input privacy experiment",
+  "full_read_all_client_key_retained": true,
+  "initial_state_matches": true,
+  "logical_learn_count": 2,
+  "logical_steps": [
+    {
+      "all_four_registers_match": true,
+      "infer_exact_replay": true,
+      "learn_exact_replay": true,
+      "private_sign_matches": true,
+      "step": 1,
+      "unselected_registers_unchanged": true
+    },
+    {
+      "all_four_registers_match": true,
+      "infer_exact_replay": true,
+      "learn_exact_replay": true,
+      "private_sign_matches": true,
+      "step": 2,
+      "unselected_registers_unchanged": true
+    }
+  ],
+  "operations": [
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/setup",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/setup.time.txt"
+      ],
+      "name": "setup",
+      "peak_rss_bytes": 568049664,
+      "reported": {
+        "client_key_bytes": 11664,
+        "keygen_ns": 623761584,
+        "parameter_debug": "BooleanParameters { lwe_dimension: LweDimension(837), glwe_dimension: GlweDimension(2), polynomial_size: PolynomialSize(1024), lwe_noise_distribution: Gaussian(Gaussian { std: 3.374714376692653e-6, mean: 0.0 }), glwe_noise_distribution: Gaussian(Gaussian { std: 9.313225746198247e-10, mean: 0.0 }), pbs_base_log: DecompositionBaseLog(10), pbs_level: DecompositionLevelCount(2), ks_base_log: DecompositionBaseLog(3), ks_level: DecompositionLevelCount(5), encryption_key_choice: Small }",
+        "parameter_name": "PARAMETERS_ERROR_PROB_2_POW_MINUS_165",
+        "public_key_bytes": 90316428,
+        "read_all_client_key_retained": true,
+        "role": "setup",
+        "serialize_write_ns": 221362500,
+        "server_key_bytes": 157865796,
+        "work_ns": 845518792
+      },
+      "resource_log": "runs/run_001/logs/setup.time.txt",
+      "stderr_path": "runs/run_001/logs/setup.stderr",
+      "stdout_path": "runs/run_001/logs/setup.stdout",
+      "subprocess_wall_ns": 877016458,
+      "wrapper_pid": 49389
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/issuer",
+        "init",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/public_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/request_init.txt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_000.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_init.time.txt"
+      ],
+      "name": "issuer_init",
+      "peak_rss_bytes": 189480960,
+      "reported": {
+        "ciphertext_bits": 32,
+        "encrypt_ns": 167935291,
+        "operation": "init",
+        "read_ns": 52120625,
+        "role": "issuer",
+        "serialize_write_ns": 305875,
+        "serialized_bytes": 108441,
+        "work_ns": 220362000
+      },
+      "resource_log": "runs/run_001/logs/issuer_init.time.txt",
+      "stderr_path": "runs/run_001/logs/issuer_init.stderr",
+      "stdout_path": "runs/run_001/logs/issuer_init.stdout",
+      "subprocess_wall_ns": 245401333,
+      "wrapper_pid": 49413
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader",
+        "state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader/client_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_000.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/audit_state_000.json"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_000.time.txt"
+      ],
+      "name": "reader_state_000",
+      "peak_rss_bytes": 6504448,
+      "reported": {
+        "decrypt_ns": 6959,
+        "decrypted_bits": 32,
+        "operation": "state",
+        "plaintext_report_private": true,
+        "read_all_client_key_retained": true,
+        "role": "reader",
+        "work_ns": 494167
+      },
+      "resource_log": "runs/run_001/logs/reader_state_000.time.txt",
+      "stderr_path": "runs/run_001/logs/reader_state_000.stderr",
+      "stdout_path": "runs/run_001/logs/reader_state_000.stdout",
+      "subprocess_wall_ns": 9084958,
+      "wrapper_pid": 49415
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/issuer",
+        "query",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/public_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/request_query.txt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_query.time.txt"
+      ],
+      "name": "issuer_query",
+      "peak_rss_bytes": 189120512,
+      "reported": {
+        "ciphertext_bits": 2,
+        "encrypt_ns": 10720792,
+        "operation": "query",
+        "read_ns": 35963250,
+        "role": "issuer",
+        "serialize_write_ns": 249792,
+        "serialized_bytes": 6801,
+        "work_ns": 46934000
+      },
+      "resource_log": "runs/run_001/logs/issuer_query.time.txt",
+      "stderr_path": "runs/run_001/logs/issuer_query.stderr",
+      "stdout_path": "runs/run_001/logs/issuer_query.stdout",
+      "subprocess_wall_ns": 57052625,
+      "wrapper_pid": 49417
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/issuer",
+        "learn",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/public_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/request_learn_001.txt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_001.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_learn_001.time.txt"
+      ],
+      "name": "issuer_learn_001",
+      "peak_rss_bytes": 189153280,
+      "reported": {
+        "ciphertext_bits": 10,
+        "encrypt_ns": 55172583,
+        "operation": "learn",
+        "read_ns": 35955542,
+        "role": "issuer",
+        "serialize_write_ns": 450542,
+        "serialized_bytes": 33905,
+        "work_ns": 91578875
+      },
+      "resource_log": "runs/run_001/logs/issuer_learn_001.time.txt",
+      "stderr_path": "runs/run_001/logs/issuer_learn_001.stderr",
+      "stdout_path": "runs/run_001/logs/issuer_learn_001.stdout",
+      "subprocess_wall_ns": 103231959,
+      "wrapper_pid": 49419
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/host",
+        "learn",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_000.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_001.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_learn_001.time.txt"
+      ],
+      "name": "host_learn_001",
+      "peak_rss_bytes": 324812800,
+      "reported": {
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 9285263083,
+        "gate_api_calls": {
+          "and": 180,
+          "mux": 32,
+          "not": 46,
+          "trivial_encrypt": 20,
+          "xor": 264
+        },
+        "operation": "learn",
+        "output_bits": 32,
+        "read_ns": 158669708,
+        "role": "host",
+        "serialize_write_ns": 1703375,
+        "serialized_bytes": 108441,
+        "work_ns": 9445636458
+      },
+      "resource_log": "runs/run_001/logs/host_learn_001.time.txt",
+      "stderr_path": "runs/run_001/logs/host_learn_001.stderr",
+      "stdout_path": "runs/run_001/logs/host_learn_001.stdout",
+      "subprocess_wall_ns": 9458611541,
+      "wrapper_pid": 49446
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/host",
+        "learn",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_000.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_001_replay.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_learn_001.time.txt"
+      ],
+      "name": "replay_learn_001",
+      "peak_rss_bytes": 325009408,
+      "reported": {
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 8938103041,
+        "gate_api_calls": {
+          "and": 180,
+          "mux": 32,
+          "not": 46,
+          "trivial_encrypt": 20,
+          "xor": 264
+        },
+        "operation": "learn",
+        "output_bits": 32,
+        "read_ns": 153527417,
+        "role": "host",
+        "serialize_write_ns": 349666,
+        "serialized_bytes": 108441,
+        "work_ns": 9091980458
+      },
+      "resource_log": "runs/run_001/logs/replay_learn_001.time.txt",
+      "stderr_path": "runs/run_001/logs/replay_learn_001.stderr",
+      "stdout_path": "runs/run_001/logs/replay_learn_001.stdout",
+      "subprocess_wall_ns": 9104045500,
+      "wrapper_pid": 49543
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader",
+        "state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader/client_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/audit_state_001.json"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_001.time.txt"
+      ],
+      "name": "reader_state_001",
+      "peak_rss_bytes": 6504448,
+      "reported": {
+        "decrypt_ns": 7583,
+        "decrypted_bits": 32,
+        "operation": "state",
+        "plaintext_report_private": true,
+        "read_all_client_key_retained": true,
+        "role": "reader",
+        "work_ns": 387833
+      },
+      "resource_log": "runs/run_001/logs/reader_state_001.time.txt",
+      "stderr_path": "runs/run_001/logs/reader_state_001.stderr",
+      "stdout_path": "runs/run_001/logs/reader_state_001.stdout",
+      "subprocess_wall_ns": 7861500,
+      "wrapper_pid": 49675
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/host",
+        "infer",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_001.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_infer_001.time.txt"
+      ],
+      "name": "host_infer_001",
+      "peak_rss_bytes": 324780032,
+      "reported": {
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 121682292,
+        "gate_api_calls": {
+          "and": 0,
+          "mux": 3,
+          "not": 0,
+          "trivial_encrypt": 0,
+          "xor": 0
+        },
+        "operation": "infer",
+        "output_bits": 1,
+        "read_ns": 155662875,
+        "role": "host",
+        "serialize_write_ns": 221542,
+        "serialized_bytes": 3413,
+        "work_ns": 277566833
+      },
+      "resource_log": "runs/run_001/logs/host_infer_001.time.txt",
+      "stderr_path": "runs/run_001/logs/host_infer_001.stderr",
+      "stdout_path": "runs/run_001/logs/host_infer_001.stdout",
+      "subprocess_wall_ns": 289345542,
+      "wrapper_pid": 49680
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/host",
+        "infer",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_001_replay.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_infer_001.time.txt"
+      ],
+      "name": "replay_infer_001",
+      "peak_rss_bytes": 324550656,
+      "reported": {
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 130508625,
+        "gate_api_calls": {
+          "and": 0,
+          "mux": 3,
+          "not": 0,
+          "trivial_encrypt": 0,
+          "xor": 0
+        },
+        "operation": "infer",
+        "output_bits": 1,
+        "read_ns": 156511500,
+        "role": "host",
+        "serialize_write_ns": 207292,
+        "serialized_bytes": 3413,
+        "work_ns": 287227625
+      },
+      "resource_log": "runs/run_001/logs/replay_infer_001.time.txt",
+      "stderr_path": "runs/run_001/logs/replay_infer_001.stderr",
+      "stdout_path": "runs/run_001/logs/replay_infer_001.stdout",
+      "subprocess_wall_ns": 300797125,
+      "wrapper_pid": 49698
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader",
+        "output",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader/client_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/audit_output_001.json"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_output_001.time.txt"
+      ],
+      "name": "reader_output_001",
+      "peak_rss_bytes": 6144000,
+      "reported": {
+        "decrypt_ns": 5833,
+        "decrypted_bits": 1,
+        "operation": "output",
+        "plaintext_report_private": true,
+        "read_all_client_key_retained": true,
+        "role": "reader",
+        "work_ns": 358708
+      },
+      "resource_log": "runs/run_001/logs/reader_output_001.time.txt",
+      "stderr_path": "runs/run_001/logs/reader_output_001.stderr",
+      "stdout_path": "runs/run_001/logs/reader_output_001.stdout",
+      "subprocess_wall_ns": 8477875,
+      "wrapper_pid": 49723
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/issuer",
+        "learn",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/public_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/request_learn_002.txt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_002.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_learn_002.time.txt"
+      ],
+      "name": "issuer_learn_002",
+      "peak_rss_bytes": 189169664,
+      "reported": {
+        "ciphertext_bits": 10,
+        "encrypt_ns": 52220375,
+        "operation": "learn",
+        "read_ns": 36966875,
+        "role": "issuer",
+        "serialize_write_ns": 215416,
+        "serialized_bytes": 33905,
+        "work_ns": 89402833
+      },
+      "resource_log": "runs/run_001/logs/issuer_learn_002.time.txt",
+      "stderr_path": "runs/run_001/logs/issuer_learn_002.stderr",
+      "stdout_path": "runs/run_001/logs/issuer_learn_002.stdout",
+      "subprocess_wall_ns": 100046875,
+      "wrapper_pid": 49725
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/host",
+        "learn",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_002.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_learn_002.time.txt"
+      ],
+      "name": "host_learn_002",
+      "peak_rss_bytes": 325255168,
+      "reported": {
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 9825383167,
+        "gate_api_calls": {
+          "and": 180,
+          "mux": 32,
+          "not": 46,
+          "trivial_encrypt": 20,
+          "xor": 264
+        },
+        "operation": "learn",
+        "output_bits": 32,
+        "read_ns": 162620750,
+        "role": "host",
+        "serialize_write_ns": 283583,
+        "serialized_bytes": 108441,
+        "work_ns": 9988287750
+      },
+      "resource_log": "runs/run_001/logs/host_learn_002.time.txt",
+      "stderr_path": "runs/run_001/logs/host_learn_002.stderr",
+      "stdout_path": "runs/run_001/logs/host_learn_002.stdout",
+      "subprocess_wall_ns": 10003680708,
+      "wrapper_pid": 49733
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/host",
+        "learn",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_002_replay.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_learn_002.time.txt"
+      ],
+      "name": "replay_learn_002",
+      "peak_rss_bytes": 324845568,
+      "reported": {
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 9654282208,
+        "gate_api_calls": {
+          "and": 180,
+          "mux": 32,
+          "not": 46,
+          "trivial_encrypt": 20,
+          "xor": 264
+        },
+        "operation": "learn",
+        "output_bits": 32,
+        "read_ns": 161292000,
+        "role": "host",
+        "serialize_write_ns": 368084,
+        "serialized_bytes": 108441,
+        "work_ns": 9815942625
+      },
+      "resource_log": "runs/run_001/logs/replay_learn_002.time.txt",
+      "stderr_path": "runs/run_001/logs/replay_learn_002.stderr",
+      "stdout_path": "runs/run_001/logs/replay_learn_002.stdout",
+      "subprocess_wall_ns": 9828866834,
+      "wrapper_pid": 50850
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader",
+        "state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader/client_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/audit_state_002.json"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_002.time.txt"
+      ],
+      "name": "reader_state_002",
+      "peak_rss_bytes": 6504448,
+      "reported": {
+        "decrypt_ns": 8208,
+        "decrypted_bits": 32,
+        "operation": "state",
+        "plaintext_report_private": true,
+        "read_all_client_key_retained": true,
+        "role": "reader",
+        "work_ns": 395334
+      },
+      "resource_log": "runs/run_001/logs/reader_state_002.time.txt",
+      "stderr_path": "runs/run_001/logs/reader_state_002.stderr",
+      "stdout_path": "runs/run_001/logs/reader_state_002.stdout",
+      "subprocess_wall_ns": 8436459,
+      "wrapper_pid": 51295
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/host",
+        "infer",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_002.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_infer_002.time.txt"
+      ],
+      "name": "host_infer_002",
+      "peak_rss_bytes": 324763648,
+      "reported": {
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 123330834,
+        "gate_api_calls": {
+          "and": 0,
+          "mux": 3,
+          "not": 0,
+          "trivial_encrypt": 0,
+          "xor": 0
+        },
+        "operation": "infer",
+        "output_bits": 1,
+        "read_ns": 155191417,
+        "role": "host",
+        "serialize_write_ns": 249417,
+        "serialized_bytes": 3413,
+        "work_ns": 278771834
+      },
+      "resource_log": "runs/run_001/logs/host_infer_002.time.txt",
+      "stderr_path": "runs/run_001/logs/host_infer_002.stderr",
+      "stdout_path": "runs/run_001/logs/host_infer_002.stdout",
+      "subprocess_wall_ns": 291001083,
+      "wrapper_pid": 51297
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/host",
+        "infer",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_002_replay.ct"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_infer_002.time.txt"
+      ],
+      "name": "replay_infer_002",
+      "peak_rss_bytes": 324534272,
+      "reported": {
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 126332750,
+        "gate_api_calls": {
+          "and": 0,
+          "mux": 3,
+          "not": 0,
+          "trivial_encrypt": 0,
+          "xor": 0
+        },
+        "operation": "infer",
+        "output_bits": 1,
+        "read_ns": 154893084,
+        "role": "host",
+        "serialize_write_ns": 270292,
+        "serialized_bytes": 3413,
+        "work_ns": 281496208
+      },
+      "resource_log": "runs/run_001/logs/replay_infer_002.time.txt",
+      "stderr_path": "runs/run_001/logs/replay_infer_002.stderr",
+      "stdout_path": "runs/run_001/logs/replay_infer_002.stdout",
+      "subprocess_wall_ns": 293279209,
+      "wrapper_pid": 51299
+    },
+    {
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader",
+        "output",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader/client_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/audit_output_002.json"
+      ],
+      "exit_code": 0,
+      "measurement_command": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_output_002.time.txt"
+      ],
+      "name": "reader_output_002",
+      "peak_rss_bytes": 6127616,
+      "reported": {
+        "decrypt_ns": 6125,
+        "decrypted_bits": 1,
+        "operation": "output",
+        "plaintext_report_private": true,
+        "read_all_client_key_retained": true,
+        "role": "reader",
+        "work_ns": 296958
+      },
+      "resource_log": "runs/run_001/logs/reader_output_002.time.txt",
+      "stderr_path": "runs/run_001/logs/reader_output_002.stderr",
+      "stdout_path": "runs/run_001/logs/reader_output_002.stdout",
+      "subprocess_wall_ns": 8098875,
+      "wrapper_pid": 51301
+    }
+  ],
+  "platform": {
+    "machine": "arm64",
+    "python": "3.14.7",
+    "system": "Darwin"
+  },
+  "private_client_key_bytes": 11664,
+  "public_artifacts": [
+    {
+      "bytes": 33905,
+      "path": "runs/run_001/public/input_001.ct",
+      "sha256": "2ee37c564c5283dc98f2420a1b9f45e0740b26d2825ee38ad2533efb8f3b7390"
+    },
+    {
+      "bytes": 33905,
+      "path": "runs/run_001/public/input_002.ct",
+      "sha256": "245e0c661b28e505d78eddb074b6127470a142d0577f8b6a4d5e0ab83ba2f6be"
+    },
+    {
+      "bytes": 3413,
+      "path": "runs/run_001/public/output_001.ct",
+      "sha256": "784e5f07d8c272b3cc73d8dd938ae609988f37d5cdcf05101e53dd656d2d3276"
+    },
+    {
+      "bytes": 3413,
+      "path": "runs/run_001/public/output_001_replay.ct",
+      "sha256": "784e5f07d8c272b3cc73d8dd938ae609988f37d5cdcf05101e53dd656d2d3276"
+    },
+    {
+      "bytes": 3413,
+      "path": "runs/run_001/public/output_002.ct",
+      "sha256": "48c5cb91473a6dd4e18135b39d19452d8bb3830cba9cfa83a91471052e5ced14"
+    },
+    {
+      "bytes": 3413,
+      "path": "runs/run_001/public/output_002_replay.ct",
+      "sha256": "48c5cb91473a6dd4e18135b39d19452d8bb3830cba9cfa83a91471052e5ced14"
+    },
+    {
+      "bytes": 6801,
+      "path": "runs/run_001/public/query_001.ct",
+      "sha256": "cb6fd9970dc46115572b6471cd4e9d457da76f2b04be5372259be54b628cbfd6"
+    },
+    {
+      "bytes": 108441,
+      "path": "runs/run_001/public/state_000.ct",
+      "sha256": "22138ebe23141fc006c4fe90a223688b3f84fc35a43f31ef862ebddcaae3c35d"
+    },
+    {
+      "bytes": 108441,
+      "path": "runs/run_001/public/state_001.ct",
+      "sha256": "572ff2a94215275d9b44d3b03d9e86d69db183100f4412cabe2230aeed24a1a5"
+    },
+    {
+      "bytes": 108441,
+      "path": "runs/run_001/public/state_001_replay.ct",
+      "sha256": "572ff2a94215275d9b44d3b03d9e86d69db183100f4412cabe2230aeed24a1a5"
+    },
+    {
+      "bytes": 108441,
+      "path": "runs/run_001/public/state_002.ct",
+      "sha256": "d3634c7d177f80aa106f7d5bfda4fd21d30aa989c67feed598e13618d1154f38"
+    },
+    {
+      "bytes": 108441,
+      "path": "runs/run_001/public/state_002_replay.ct",
+      "sha256": "d3634c7d177f80aa106f7d5bfda4fd21d30aa989c67feed598e13618d1154f38"
+    }
+  ],
+  "public_key_artifacts": [
+    {
+      "bytes": 90316428,
+      "path": "runs/run_001/public/keys/public_key.bin",
+      "sha256": "6c2532783998e27d824ba941dbdabb8fcf266d4e36954d63139f409128363506"
+    },
+    {
+      "bytes": 157865796,
+      "path": "runs/run_001/public/keys/server_key.bin",
+      "sha256": "6ac56c1a76a83e45e159cf8ed4619a2c95efc073dbab0b2d8b33fdbe8addae2e"
+    }
+  ],
+  "replay_pairs": [
+    {
+      "equal_complete_serialized_bytes": true,
+      "first": {
+        "bytes": 108441,
+        "path": "runs/run_001/public/state_001.ct",
+        "sha256": "572ff2a94215275d9b44d3b03d9e86d69db183100f4412cabe2230aeed24a1a5"
+      },
+      "name": "learn_001",
+      "replay": {
+        "bytes": 108441,
+        "path": "runs/run_001/public/state_001_replay.ct",
+        "sha256": "572ff2a94215275d9b44d3b03d9e86d69db183100f4412cabe2230aeed24a1a5"
+      },
+      "same_serialized_read_inputs": true,
+      "separate_wrapper_pids": [
+        49446,
+        49543
+      ]
+    },
+    {
+      "equal_complete_serialized_bytes": true,
+      "first": {
+        "bytes": 3413,
+        "path": "runs/run_001/public/output_001.ct",
+        "sha256": "784e5f07d8c272b3cc73d8dd938ae609988f37d5cdcf05101e53dd656d2d3276"
+      },
+      "name": "infer_001",
+      "replay": {
+        "bytes": 3413,
+        "path": "runs/run_001/public/output_001_replay.ct",
+        "sha256": "784e5f07d8c272b3cc73d8dd938ae609988f37d5cdcf05101e53dd656d2d3276"
+      },
+      "same_serialized_read_inputs": true,
+      "separate_wrapper_pids": [
+        49680,
+        49698
+      ]
+    },
+    {
+      "equal_complete_serialized_bytes": true,
+      "first": {
+        "bytes": 108441,
+        "path": "runs/run_001/public/state_002.ct",
+        "sha256": "d3634c7d177f80aa106f7d5bfda4fd21d30aa989c67feed598e13618d1154f38"
+      },
+      "name": "learn_002",
+      "replay": {
+        "bytes": 108441,
+        "path": "runs/run_001/public/state_002_replay.ct",
+        "sha256": "d3634c7d177f80aa106f7d5bfda4fd21d30aa989c67feed598e13618d1154f38"
+      },
+      "same_serialized_read_inputs": true,
+      "separate_wrapper_pids": [
+        49733,
+        50850
+      ]
+    },
+    {
+      "equal_complete_serialized_bytes": true,
+      "first": {
+        "bytes": 3413,
+        "path": "runs/run_001/public/output_002.ct",
+        "sha256": "48c5cb91473a6dd4e18135b39d19452d8bb3830cba9cfa83a91471052e5ced14"
+      },
+      "name": "infer_002",
+      "replay": {
+        "bytes": 3413,
+        "path": "runs/run_001/public/output_002_replay.ct",
+        "sha256": "48c5cb91473a6dd4e18135b39d19452d8bb3830cba9cfa83a91471052e5ced14"
+      },
+      "same_serialized_read_inputs": true,
+      "separate_wrapper_pids": [
+        51297,
+        51299
+      ]
+    }
+  ],
+  "roles_share_os_account": true,
+  "schema": "resident-private-address-ema-feasibility-v1",
+  "source_hashes_after": {
+    "CONTRACT.md": "d83c6c39259ae4418c8ac7b3e8b9ccbb365f47804adc1d9c8c1a102db2c13c3a",
+    "Cargo.lock": "6a677322ed8b8db7bba5f785148d3c9e0d6cfe46a7e666665b06f22d78065fa5",
+    "Cargo.toml": "888637418d68f3688acec178273e8284e6789b6cccc3f1f7eb545523f86eece0",
+    "run.py": "95f0e4f6f04c159dabca1e56a187f566a21e8a0e4711400ed9bb5641bf78e3b0",
+    "src/bin/host.rs": "f0ba609bdf7d6a2ad2b83298b526d8fecf4d8569f7db28af6c5306c14e159ac2",
+    "src/bin/issuer.rs": "b9bf8be29a0a38c4578448f0f77214c367595ceb0ef7753ed5298617c1ff01b8",
+    "src/bin/reader.rs": "00313812037bdc8862ec979b7c18e8145654189d84c29ade68c44cb5cf1c0088",
+    "src/bin/setup.rs": "34380136654f11a69b71d9a53f3fa64f6d382f28f671c9b0df90cfb184990f98",
+    "src/lib.rs": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880"
+  },
+  "source_hashes_before": {
+    "CONTRACT.md": "d83c6c39259ae4418c8ac7b3e8b9ccbb365f47804adc1d9c8c1a102db2c13c3a",
+    "Cargo.lock": "6a677322ed8b8db7bba5f785148d3c9e0d6cfe46a7e666665b06f22d78065fa5",
+    "Cargo.toml": "888637418d68f3688acec178273e8284e6789b6cccc3f1f7eb545523f86eece0",
+    "run.py": "95f0e4f6f04c159dabca1e56a187f566a21e8a0e4711400ed9bb5641bf78e3b0",
+    "src/bin/host.rs": "f0ba609bdf7d6a2ad2b83298b526d8fecf4d8569f7db28af6c5306c14e159ac2",
+    "src/bin/issuer.rs": "b9bf8be29a0a38c4578448f0f77214c367595ceb0ef7753ed5298617c1ff01b8",
+    "src/bin/reader.rs": "00313812037bdc8862ec979b7c18e8145654189d84c29ade68c44cb5cf1c0088",
+    "src/bin/setup.rs": "34380136654f11a69b71d9a53f3fa64f6d382f28f671c9b0df90cfb184990f98",
+    "src/lib.rs": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880"
+  },
+  "source_hashes_unchanged": true
+}

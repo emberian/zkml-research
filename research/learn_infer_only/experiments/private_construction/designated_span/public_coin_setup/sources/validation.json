@@ -1,0 +1,88 @@
+{
+  "claim_label": "EXECUTED source identity/document validation only",
+  "utc": "2026-09-07T05:25:49.841909+00:00",
+  "command": "python3 heredoc: recursively rehash every path/sha256 entry in sources.json; inspect source page anchors and main-note whitespace",
+  "checks": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/PROPOSAL.md",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2017/989.pdf",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2017-989.txt",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/020.pdf",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2019-020.txt",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2018/250.pdf",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2018-250.txt",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2009/340.pdf",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2009-340.txt",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/scry_decentralized_ipfe.jsonl",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/scry_distributed_public_ipfe.jsonl",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/rgay_publis.html",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/PRIOR_ART.md",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/.gitignore",
+      "match": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/input_identity.json",
+      "match": true
+    }
+  ],
+  "all_hashes_match": true,
+  "proposal_unchanged": true,
+  "trailing_whitespace_lines": [],
+  "extra_page_anchors": [
+    {
+      "extract": "2017-989.txt",
+      "anchor": "Since we are now dealing with private encryption",
+      "pdf_pages": [
+        5
+      ]
+    },
+    {
+      "extract": "2018-250.txt",
+      "anchor": "decentralized key generation of functional encryption",
+      "pdf_pages": [
+        3
+      ]
+    }
+  ],
+  "prior_art_sha256": "1b4751e2d1b3c0e441cd53e26ed2039345b4573cd12656cd31c13345e1c01f64",
+  "sources_json_sha256": "fd0b98d55e7ab165258d6f871dd26cf664b0d181921629c012abe238534e5966"
+}

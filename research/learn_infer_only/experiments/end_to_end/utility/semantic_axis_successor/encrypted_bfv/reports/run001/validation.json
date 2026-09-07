@@ -1,0 +1,140 @@
+{
+  "all_match": true,
+  "all_original_and_snapshot_source_pins_unchanged": true,
+  "bfv_inner_secret_payloads_scanned": true,
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/validate.py"
+  ],
+  "histories": [
+    {
+      "all_scores_and_expiry_identities_match": true,
+      "database_bytes_after_services_closed": {
+        "authority": {
+          "-shm": 32768,
+          "-wal": 2789272,
+          "database": 851968
+        },
+        "verified_reader": {
+          "-shm": 32768,
+          "-wal": 0,
+          "database": 1146880
+        }
+      },
+      "direct_integer_queries": 48,
+      "empty_route_scores": 8,
+      "events": 240,
+      "frozen_fixture_label_correct": 38,
+      "history_id": 67000,
+      "label_count_scope": "Full predeclared integration subset only; not a new accuracy estimate.",
+      "learns": 192,
+      "phase_route_fixture_label_counts": {
+        "phase_1_route_0": {
+          "correct": 6,
+          "empty": 0,
+          "queries": 8
+        },
+        "phase_1_route_1": {
+          "correct": 4,
+          "empty": 8,
+          "queries": 8
+        },
+        "phase_2_route_0": {
+          "correct": 6,
+          "empty": 0,
+          "queries": 8
+        },
+        "phase_2_route_1": {
+          "correct": 8,
+          "empty": 0,
+          "queries": 8
+        },
+        "phase_3_route_0": {
+          "correct": 6,
+          "empty": 0,
+          "queries": 8
+        },
+        "phase_3_route_1": {
+          "correct": 8,
+          "empty": 0,
+          "queries": 8
+        }
+      },
+      "same_original_ciphertext_expiries": 128,
+      "verified_received_answers": 48,
+      "verified_records": 240
+    },
+    {
+      "all_scores_and_expiry_identities_match": true,
+      "database_bytes_after_services_closed": {
+        "authority": {
+          "-shm": 32768,
+          "-wal": 2789272,
+          "database": 851968
+        },
+        "verified_reader": {
+          "-shm": 32768,
+          "-wal": 0,
+          "database": 1146880
+        }
+      },
+      "direct_integer_queries": 48,
+      "empty_route_scores": 8,
+      "events": 240,
+      "frozen_fixture_label_correct": 38,
+      "history_id": 67001,
+      "label_count_scope": "Full predeclared integration subset only; not a new accuracy estimate.",
+      "learns": 192,
+      "phase_route_fixture_label_counts": {
+        "phase_1_route_0": {
+          "correct": 6,
+          "empty": 0,
+          "queries": 8
+        },
+        "phase_1_route_1": {
+          "correct": 4,
+          "empty": 8,
+          "queries": 8
+        },
+        "phase_2_route_0": {
+          "correct": 6,
+          "empty": 0,
+          "queries": 8
+        },
+        "phase_2_route_1": {
+          "correct": 8,
+          "empty": 0,
+          "queries": 8
+        },
+        "phase_3_route_0": {
+          "correct": 6,
+          "empty": 0,
+          "queries": 8
+        },
+        "phase_3_route_1": {
+          "correct": 8,
+          "empty": 0,
+          "queries": 8
+        }
+      },
+      "same_original_ciphertext_expiries": 128,
+      "verified_received_answers": 48,
+      "verified_records": 240
+    }
+  ],
+  "independent_direct_integer_comparisons": 96,
+  "ok": true,
+  "parent_manifest_entries_preserved": {
+    "materialized": 30,
+    "parent": 53
+  },
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "python": "3.14.7",
+  "reader_plaintext_stdout_omitted": true,
+  "runtime_gitignored": true,
+  "same_original_ciphertext_expiries": 256,
+  "scope": "Normal public semantic fixture integer and artifact audit. Full decryption keys retained. No OS isolation, exactly-once physical delivery, no-master-read, or recipient-coalition state privacy claim.",
+  "secret_files_scanned_raw_hex_base64": 8,
+  "validator_sha256": "c1af3a3ed8abbb6376c13448ae49b48563b82cf32231f9892cc84b5f1d21c339"
+}

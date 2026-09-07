@@ -1,0 +1,31 @@
+{
+  "status": "Source-read hashes before public package seal; final check pending",
+  "files": {
+    "PROPOSAL.md": {
+      "sha256": "4d30d6013642666081ebecfbcc4dbb0446afeda1e58d94f294202507a20f71c9",
+      "bytes": 7414
+    },
+    "review/REVIEW.md": {
+      "sha256": "ba063f308c66794a348517ef6ebc20e06ba1da4c76d35d35cd60d79c753cc04b",
+      "bytes": 15178
+    },
+    "review/sources.json": {
+      "sha256": "7b05158ab2c6ba7029e443e647e1a99f5b26ab93f0439115840e09760b355a41",
+      "bytes": 4801
+    },
+    "adapter/setup.py": {
+      "sha256": "b148a7a86ab22385a7659f9f54c086e52d37f5a715b5415cda5785ee23ff9d2b",
+      "bytes": 10697
+    },
+    "adapter/positive.py": {
+      "sha256": "a8c236f89aad95a6f9b541145aa7cb6a964a9a3d89b170f478d18cc49c2da19f",
+      "bytes": 10346
+    },
+    "adapter/SOURCE_PINS.json": {
+      "sha256": "fbb0a1f4334927ca970f4d121f171ba02d6df675f3b421b27a9a67aa4c137c95",
+      "bytes": 825
+    }
+  },
+  "private_reads": 0,
+  "crypto_execution": 0
+}

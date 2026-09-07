@@ -1,0 +1,234 @@
+{
+  "children_system_cpu_seconds": 51.689182,
+  "children_user_cpu_seconds": 127.601992,
+  "crypto_process_costs": {
+    "main_pipeline:authority:host-infer": {
+      "calls": 96,
+      "sum_ns": 2577370460
+    },
+    "main_pipeline:authority:host-learn": {
+      "calls": 384,
+      "sum_ns": 11743543622
+    },
+    "main_pipeline:authority:inspect": {
+      "calls": 790,
+      "sum_ns": 15050664620
+    },
+    "main_pipeline:host:host-infer": {
+      "calls": 96,
+      "sum_ns": 2618056668
+    },
+    "main_pipeline:host:host-learn": {
+      "calls": 384,
+      "sum_ns": 11470995335
+    },
+    "main_pipeline:host:inspect": {
+      "calls": 790,
+      "sum_ns": 14615893920
+    },
+    "main_pipeline:issuer:issuer-encrypt": {
+      "calls": 384,
+      "sum_ns": 11181120918
+    },
+    "main_pipeline:public_transport:inspect": {
+      "calls": 790,
+      "sum_ns": 14909976380
+    },
+    "main_pipeline:trusted_setup:encode-query": {
+      "calls": 32,
+      "sum_ns": 367680671
+    },
+    "main_pipeline:trusted_setup:keygen": {
+      "calls": 2,
+      "sum_ns": 113086875
+    },
+    "main_pipeline:trusted_setup:params": {
+      "calls": 2,
+      "sum_ns": 14141250
+    },
+    "verified_reader:reader:host-infer": {
+      "calls": 96,
+      "sum_ns": 2646234454
+    },
+    "verified_reader:reader:host-learn": {
+      "calls": 384,
+      "sum_ns": 11667192289
+    },
+    "verified_reader:reader:inspect": {
+      "calls": 790,
+      "sum_ns": 15370492744
+    },
+    "verified_reader:reader:reader-decrypt": {
+      "calls": 96,
+      "sum_ns": 1984242834
+    }
+  },
+  "events": 480,
+  "expiries": 256,
+  "histories": [
+    67000,
+    67001
+  ],
+  "infers": 96,
+  "integer_matches": 96,
+  "interval_scope": "Wall/worker/transition/crypto intervals overlap; do not sum them into end-to-end latency. Shared machine load; one measured execution.",
+  "known_empty_outputs": 16,
+  "launcher_wall_ns": 219733086417,
+  "learns": 384,
+  "max_child_rss_bytes_macos": 89669632,
+  "nonempty_outputs": 80,
+  "per_history": [
+    {
+      "bytes": {
+        "driver_to_verifier_request_bytes": 22651120,
+        "driver_to_verifier_response_bytes": 69776,
+        "logical_live_ciphertext_bytes": 5616798,
+        "logical_live_ciphertexts": 66,
+        "retained_verified_cas_bytes": 33625997,
+        "retained_verified_cas_files": 403,
+        "verified_state_manifest": 7601
+      },
+      "database_bytes_after_services_closed": {
+        "authority": {
+          "-shm": 32768,
+          "-wal": 2789272,
+          "database": 851968
+        },
+        "verified_reader": {
+          "-shm": 32768,
+          "-wal": 0,
+          "database": 1146880
+        }
+      },
+      "history_id": 67000,
+      "key_bytes": {
+        "bfv_public": 42628,
+        "bfv_reader_secret": 4180
+      },
+      "persistent_host": {
+        "actual_crypto_log_matches_meter": true,
+        "cache_canonical_json_bytes": 249641,
+        "cache_scope": "Public inspection metadata grows with distinct ciphertexts; no eviction. Lifetime is one full history. JSON size is not heap/RSS.",
+        "every_get_fully_rehashed": true,
+        "inspection_cache_entries": 395,
+        "lifetime_including_idle_pipeline_and_shutdown_ns": 115430416292,
+        "ok": true,
+        "proposal_caller_plus_startup_ns": 21534420707,
+        "proposal_caller_total_ns": 21450571665,
+        "proposal_inside_function_total_ns": 21342737636,
+        "requests": 240,
+        "startup_ns": 83849042,
+        "stats": {
+          "cas_get_calls": 25536,
+          "crypto_calls": {
+            "host-infer": 48,
+            "host-learn": 192,
+            "inspect": 395
+          },
+          "full_blob_sha256_bytes": 2165144064,
+          "full_blob_sha256_calls": 25536,
+          "requests": 240
+        },
+        "stdio_request_bytes": 134064,
+        "stdio_response_bytes": 162781,
+        "trust_scope": "Same SHA256/full reads, pinned binary checks, validators and public authority/verifier recomputation; no new credential or OS isolation.",
+        "worker_argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/runtime/e2e/host_runtime/host.py",
+          "serve",
+          "--config",
+          "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/runtime/history_0/host_config.json",
+          "--cas",
+          "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/runtime/history_0/host_cas"
+        ],
+        "worker_pid": 29203,
+        "worker_processes": 1
+      }
+    },
+    {
+      "bytes": {
+        "driver_to_verifier_request_bytes": 22651120,
+        "driver_to_verifier_response_bytes": 69776,
+        "logical_live_ciphertext_bytes": 5616798,
+        "logical_live_ciphertexts": 66,
+        "retained_verified_cas_bytes": 33625997,
+        "retained_verified_cas_files": 403,
+        "verified_state_manifest": 7601
+      },
+      "database_bytes_after_services_closed": {
+        "authority": {
+          "-shm": 32768,
+          "-wal": 2789272,
+          "database": 851968
+        },
+        "verified_reader": {
+          "-shm": 32768,
+          "-wal": 0,
+          "database": 1146880
+        }
+      },
+      "history_id": 67001,
+      "key_bytes": {
+        "bfv_public": 42628,
+        "bfv_reader_secret": 4180
+      },
+      "persistent_host": {
+        "actual_crypto_log_matches_meter": true,
+        "cache_canonical_json_bytes": 249641,
+        "cache_scope": "Public inspection metadata grows with distinct ciphertexts; no eviction. Lifetime is one full history. JSON size is not heap/RSS.",
+        "every_get_fully_rehashed": true,
+        "inspection_cache_entries": 395,
+        "lifetime_including_idle_pipeline_and_shutdown_ns": 102835490958,
+        "ok": true,
+        "proposal_caller_plus_startup_ns": 19213384082,
+        "proposal_caller_total_ns": 19142038957,
+        "proposal_inside_function_total_ns": 19059920291,
+        "requests": 240,
+        "startup_ns": 71345125,
+        "stats": {
+          "cas_get_calls": 25536,
+          "crypto_calls": {
+            "host-infer": 48,
+            "host-learn": 192,
+            "inspect": 395
+          },
+          "full_blob_sha256_bytes": 2165144064,
+          "full_blob_sha256_calls": 25536,
+          "requests": 240
+        },
+        "stdio_request_bytes": 134064,
+        "stdio_response_bytes": 162754,
+        "trust_scope": "Same SHA256/full reads, pinned binary checks, validators and public authority/verifier recomputation; no new credential or OS isolation.",
+        "worker_argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/runtime/e2e/host_runtime/host.py",
+          "serve",
+          "--config",
+          "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/runtime/history_1/host_config.json",
+          "--cas",
+          "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/runtime/history_1/host_cas"
+        ],
+        "worker_pid": 34215,
+        "worker_processes": 1
+      }
+    }
+  ],
+  "persistent_worker_wrapper_elapsed_ns": 219566682500,
+  "pipeline_elapsed_ns": 219559995500,
+  "prepare_seconds": 0.16793520798091777,
+  "rss_scope": "Launcher getrusage(RUSAGE_CHILDREN): maximum child high-water RSS, not concurrent resident memory or model RSS.",
+  "scope": "One fresh BFV setup per frozen semantic history; retained full-key verifying reader; no model execution or new utility estimate.",
+  "summarizer_sha256": "4ccd225853132dc431ea0bab353f951e689a5b30648b98279b48ae9ee0945887",
+  "transition_wall_costs": {
+    "Infer": {
+      "events": 96,
+      "mean_ns": 309588588.4583333,
+      "sum_ns": 29720504492
+    },
+    "Learn": {
+      "events": 384,
+      "mean_ns": 488298953.4609375,
+      "sum_ns": 187506798129
+    }
+  }
+}

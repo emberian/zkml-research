@@ -1,0 +1,2324 @@
+{
+  "schema": "second-timed-run-recovery-checkpoint-v1",
+  "label": "EXECUTED file inventory; claims remain scoped in STATUS/NEXT and individual reports",
+  "created_utc": "2026-09-07T15:50:06.073317+00:00",
+  "files": {
+    "research/learn_infer_only/ADAPTATION_UTILITY.md": {
+      "sha256": "7efb41f63596801c7b906111710658b6b2fc892a171ccea9cc676e06e9ece5ce",
+      "bytes": 31271
+    },
+    "research/learn_infer_only/COSTS.csv": {
+      "sha256": "99a8feac28e7cc379f6106d129e2b32041ec339d1293980010320706746fb668",
+      "bytes": 33836
+    },
+    "research/learn_infer_only/CREDENTIALS.csv": {
+      "sha256": "19e69c97f9eae3461fd6e2457f2586d2e45902e8f9fc9783ebf3c50b0cdd1473",
+      "bytes": 27151
+    },
+    "research/learn_infer_only/DECISION.md": {
+      "sha256": "a3856758292e6b5e191c4a427375a44cf14e38616862376cdb8c393de2fb7357",
+      "bytes": 18363
+    },
+    "research/learn_infer_only/NEXT.md": {
+      "sha256": "aca4af89542339b5489c72d906dcaae6e3cb34e4cfd4a48d374de6301b084ebe",
+      "bytes": 4800
+    },
+    "research/learn_infer_only/PQ_COMPOSITION.md": {
+      "sha256": "e90e7ecff8bae543ad04b16e2a83ffd4ec396c503039c6685c4d1b3e6e1d7ad9",
+      "bytes": 20312
+    },
+    "research/learn_infer_only/PRIVATE_CONSTRUCTION.md": {
+      "sha256": "5cdba98d92e376593f54ae46a064343fc58e4a1128dcfbe0a11d4adaf8c8fe1c",
+      "bytes": 33455
+    },
+    "research/learn_infer_only/SECURITY_GAME.md": {
+      "sha256": "e31add60dfda2513f053c3be708e80d3572a815a9d1169ea99ee3b3ccbe96901",
+      "bytes": 16840
+    },
+    "research/learn_infer_only/STATUS.md": {
+      "sha256": "0866dd27af84f097149280eaff8d9a3f529dec36f3c1cb898134ed3ee76e4899",
+      "bytes": 20552
+    },
+    "research/learn_infer_only/experiments/adversarial_review/depth_interface/.gitignore": {
+      "sha256": "7e5d03ac08c7ef247f3b0e05fc7c4edefc89f7e293d17aec792fc3be124262ed",
+      "bytes": 24
+    },
+    "research/learn_infer_only/experiments/adversarial_review/depth_interface/REPORT.md": {
+      "sha256": "8ccd373cbb5584ce81a31e5c958875b1a54a8a4efe16a52a01a23ab26d8a05f5",
+      "bytes": 15149
+    },
+    "research/learn_infer_only/experiments/adversarial_review/depth_interface/author_replay.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/adversarial_review/depth_interface/author_replay.stdout.txt": {
+      "sha256": "d3b0fc64572b4f69b67eb3671ff378fc1394e2e14638adecab52fec8da4911f5",
+      "bytes": 274
+    },
+    "research/learn_infer_only/experiments/adversarial_review/depth_interface/results.json": {
+      "sha256": "7c67325d6074fce46bb887f099a95e888b3723674ff3e8a2cd9b2734a2d66541",
+      "bytes": 12582
+    },
+    "research/learn_infer_only/experiments/adversarial_review/depth_interface/review.py": {
+      "sha256": "ce867da71d6e5d04d9426767685ed4d79ac2fa9c34f55d28c508c32f5b02a378",
+      "bytes": 6728
+    },
+    "research/learn_infer_only/experiments/adversarial_review/depth_interface/review_manifest.json": {
+      "sha256": "575d29601cd586932672ae0602af4c3b8f9e34ddb016a04418d2743917d26261",
+      "bytes": 8064
+    },
+    "research/learn_infer_only/experiments/adversarial_review/depth_interface/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/adversarial_review/depth_interface/stdout.txt": {
+      "sha256": "7c67325d6074fce46bb887f099a95e888b3723674ff3e8a2cd9b2734a2d66541",
+      "bytes": 12582
+    },
+    "research/learn_infer_only/experiments/adversarial_review/public_environment/.gitignore": {
+      "sha256": "7e5d03ac08c7ef247f3b0e05fc7c4edefc89f7e293d17aec792fc3be124262ed",
+      "bytes": 24
+    },
+    "research/learn_infer_only/experiments/adversarial_review/public_environment/REPORT.md": {
+      "sha256": "0d5f0386a06b3a493169e0a66f7d1dda5e90b631ef6ecd44c64f112d7eab8be4",
+      "bytes": 17705
+    },
+    "research/learn_infer_only/experiments/adversarial_review/public_environment/author_replay.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/adversarial_review/public_environment/author_replay.stdout.txt": {
+      "sha256": "3baf61fa403ee0bc6f7e399360bc8c4b5d1febd3892b39dd13b8babe0fc2cdee",
+      "bytes": 111
+    },
+    "research/learn_infer_only/experiments/adversarial_review/public_environment/results.json": {
+      "sha256": "e20ec82fb98a4204694d2ea94d3151e43c9190242a17e6491a8c66b9d7d6e5f8",
+      "bytes": 14901
+    },
+    "research/learn_infer_only/experiments/adversarial_review/public_environment/review.py": {
+      "sha256": "3e3f4d151406d735d8f8888ba0722c03959afc7a8a2d907f1e6c01baa01b18b0",
+      "bytes": 10294
+    },
+    "research/learn_infer_only/experiments/adversarial_review/public_environment/review_manifest.json": {
+      "sha256": "6d66242bdeda5fda85adfc62147ab226d32a8d6238a50a4b8e4ee17813029283",
+      "bytes": 6263
+    },
+    "research/learn_infer_only/experiments/adversarial_review/public_environment/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/adversarial_review/public_environment/stdout.txt": {
+      "sha256": "e20ec82fb98a4204694d2ea94d3151e43c9190242a17e6491a8c66b9d7d6e5f8",
+      "bytes": 14901
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/REVIEW.md": {
+      "sha256": "61b1c78bf3b7c6208cd62701f4726842a1f7f8244820ba35a9713721c1f7e056",
+      "bytes": 14418
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/check_provenance.py": {
+      "sha256": "d4e5ffd322c4c48c839b0a55fb19b9b6592466d88fd3e87fb058f8d77771ab2f",
+      "bytes": 3431
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/check_recorded.py": {
+      "sha256": "c28a108d1baca361728ab9731db9fb3af6ffcdbd1c2b5996a74fc1f19871e059",
+      "bytes": 15729
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/check_scope.py": {
+      "sha256": "e0765511014635ef3b737533206f53f6a48c21484838f13e4669595c174fc141",
+      "bytes": 5698
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/packet_inventory.json": {
+      "sha256": "8bfcfb9cbc14ab786d026f90598dc3b1812c8bf4e006743ea19b53c9ff0ce343",
+      "bytes": 8329
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/provenance_check.log": {
+      "sha256": "13937e95f50cb9124196f9274ec11c82afa243189980efcdf3a2745f67fceb91",
+      "bytes": 534
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/provenance_details.json": {
+      "sha256": "246fc66ed3af9cd9af147154a8bcc08d5a252cdfa6b255a1718d42ceab38a602",
+      "bytes": 15095
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/recorded_check.log": {
+      "sha256": "4254ba9b2d34bce6984c18afee8dee54f4183d4a9b2d5b5f93c96f361a776e81",
+      "bytes": 4473
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/recorded_results.json": {
+      "sha256": "4254ba9b2d34bce6984c18afee8dee54f4183d4a9b2d5b5f93c96f361a776e81",
+      "bytes": 4473
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/review_manifest.json": {
+      "sha256": "ca5019705b0e01189e75ed8853368f96946af7a3591efa0584aca7c90c823bf8",
+      "bytes": 2389
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/scope_check.log": {
+      "sha256": "c7bbb63179e94d44a6a2852d1c0163af88c395dc921d61e345fa390ba78fe5f2",
+      "bytes": 1483
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/scope_check_002.log": {
+      "sha256": "7a1f6590ce25402a810ea5d3dea3cf3be01ce8b424b79f4c28deca4c5cf604cf",
+      "bytes": 1555
+    },
+    "research/learn_infer_only/experiments/adversarial_review/semantic_axis_successor/scope_results.json": {
+      "sha256": "7a1f6590ce25402a810ea5d3dea3cf3be01ce8b424b79f4c28deca4c5cf604cf",
+      "bytes": 1555
+    },
+    "research/learn_infer_only/experiments/end_to_end/checkpoint_004.json": {
+      "sha256": "37a18460fe4d0c83623c2692f2da4ce55330e8fd0478dc6de099fb20a7f16560",
+      "bytes": 182307
+    },
+    "research/learn_infer_only/experiments/end_to_end/checkpoint_004.stdout.json": {
+      "sha256": "d3b64760f590c0bfea94a9e1d7f178a9d3b3c438c248e3dbfdee90834ee6185c",
+      "bytes": 285
+    },
+    "research/learn_infer_only/experiments/end_to_end/collect_interrupted_run.py": {
+      "sha256": "8ea4dbe606babd09c5de5f1261535f4ec1a3c7964372fa15e6338522af1b93c4",
+      "bytes": 7482
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/.gitignore": {
+      "sha256": "5715388365d6a7a5de9df6a29700ff4e92c7945a303d3d54716c9c94af532adb",
+      "bytes": 57
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/CONTRACT.md": {
+      "sha256": "d83c6c39259ae4418c8ac7b3e8b9ccbb365f47804adc1d9c8c1a102db2c13c3a",
+      "bytes": 5606
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.lock": {
+      "sha256": "6a677322ed8b8db7bba5f785148d3c9e0d6cfe46a7e666665b06f22d78065fa5",
+      "bytes": 15444
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.toml": {
+      "sha256": "888637418d68f3688acec178273e8284e6789b6cccc3f1f7eb545523f86eece0",
+      "bytes": 219
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/REPORT.md": {
+      "sha256": "958a279eaf41fc9e9831986ec2361a80b9d7da5c3ce5fb92263f2d27cb85c486",
+      "bytes": 8010
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/build.log": {
+      "sha256": "8178bff0a9ef52d38e507b1b12e90b3fea35bc2cd62b92e3d731f8e42d19529e",
+      "bytes": 1722
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/collect.log": {
+      "sha256": "b19a71161df4bf8aa3d1d00641de73bb6a3932e6f628b930148ada6a6786d6e5",
+      "bytes": 262
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/collect.py": {
+      "sha256": "5a4e7bdaed84ccc36cf4edc6535f2645d41326323b88a19ee5ca280dfaba7791",
+      "bytes": 5863
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/costs.csv": {
+      "sha256": "289888780fb55b13f15ffa0a5e3017511a46146bb316a0af530fb53756bcb29d",
+      "bytes": 2327
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/review/CONTRACT_REVIEW.md": {
+      "sha256": "38bb9920b01b759dd8d1e964dbe1a45a24eace694cc9468f2f118af3b42c11d1",
+      "bytes": 5706
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/review/IMPLEMENTATION_REVIEW.md": {
+      "sha256": "3c90ca9f6a54b651a5232c76032bdb5a007df9437f2da7948dc70a6edb054394",
+      "bytes": 8859
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/review/check_public_metadata.py": {
+      "sha256": "4bcaffaa40ad96e0cf8756989845c624b1e7fad86625f1162c1ee5b251a9abcb",
+      "bytes": 4751
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/review/contract_inputs.json": {
+      "sha256": "9070ed14fb6ef12a9a9f13cb98f412c1ccb436d51fac2968c26c0427c0469dc9",
+      "bytes": 2089
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/review/public_checks.json": {
+      "sha256": "c96e269a783822c7e631b5b74df13acd841cb7e51012acb0bd154aadf003a0a6",
+      "bytes": 17773
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/review/public_checks.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/review/public_checks.stdout.txt": {
+      "sha256": "c96e269a783822c7e631b5b74df13acd841cb7e51012acb0bd154aadf003a0a6",
+      "bytes": 17773
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/run.py": {
+      "sha256": "95f0e4f6f04c159dabca1e56a187f566a21e8a0e4711400ed9bb5641bf78e3b0",
+      "bytes": 10579
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/run_001.log": {
+      "sha256": "7bcae8afd1ed9ed40352b7f54268b22ff9249fae949d1d30410239b93abce78f",
+      "bytes": 1475
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_infer_001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_infer_001.stdout": {
+      "sha256": "09400420d6db4c0364171cddc98898a97dee413e5dd03a63ce2baf6c5c29c81d",
+      "bytes": 300
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_infer_001.time.txt": {
+      "sha256": "38923006d3d9a14cf7c5f9b7b8d80289facaaedb75c71059133b44f30b60b481",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_infer_002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_infer_002.stdout": {
+      "sha256": "fba7e97bca96db7fca9a678fb990bad038dfe3799d14f969474dca9647dc60f9",
+      "bytes": 300
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_infer_002.time.txt": {
+      "sha256": "a12948eebfa856ba5835e0b55ebcde0ce34cd9328d57dcfb5edfcbf34b67ba44",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_learn_001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_learn_001.stdout": {
+      "sha256": "fe1ec432f5f7a84c37865bb25069faf4155ba69ab33d61bfda5aeeb21069522c",
+      "bytes": 313
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_learn_001.time.txt": {
+      "sha256": "a8d9cb235bed1f1a94fc5385a0234d6e75cf0bb03983d9b6691ba60857be60ef",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_learn_002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_learn_002.stdout": {
+      "sha256": "c2a26491665ea3924a73e8ba4e2aaf75cb2d98899ef324ae742e8df3fa38d154",
+      "bytes": 312
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/host_learn_002.time.txt": {
+      "sha256": "88d23b1587061bcb257b61c3da7676afae9e601d44d79c29ce303376269425d1",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_init.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_init.stdout": {
+      "sha256": "95d983357c41e788218b50035c805dac8e02d34a31d896ff84bd36e729d43a70",
+      "bytes": 174
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_init.time.txt": {
+      "sha256": "96165f8902027d2cc5503f487007b51f6cf81e59a6fa232d3aa51b2af26f60cd",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_learn_001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_learn_001.stdout": {
+      "sha256": "5293069b2ae85c4fea38266e4778bf570444f89621f716cda56c10781d8f3095",
+      "bytes": 172
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_learn_001.time.txt": {
+      "sha256": "78088ca121bd2aff02015bb4ed4e2e8fc55c4f8c33df029d43b350dfc3cca6fb",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_learn_002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_learn_002.stdout": {
+      "sha256": "95b43c8c4bf51a1bf3d9c3c1411dd7b73bc6f32a76fa271dc524e235eecce8b4",
+      "bytes": 172
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_learn_002.time.txt": {
+      "sha256": "6ca689ee6bb34ccc643c74b21be1d252d5610e9af9e0a228f0661a83d313eb10",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_query.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_query.stdout": {
+      "sha256": "73dc89fe99363c09cdf2c045cbb89b49c0effb42f0ab4bd114e94f9d1b1cf0a4",
+      "bytes": 170
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/issuer_query.time.txt": {
+      "sha256": "1e91274cdb3cb7cd13c1d760198ecdee52e6f734258670a69f01fec76ff0ba78",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_output_001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_output_001.stdout": {
+      "sha256": "5a17f2a07667eca89b70025aab39aab953485f7b161b31daacb7abfc049c919e",
+      "bytes": 161
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_output_001.time.txt": {
+      "sha256": "2a4d8d85096736e8261218d0d96a5eaf41d4233ecb71d65490c879376e0002ea",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_output_002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_output_002.stdout": {
+      "sha256": "7ea98585a26752d3915d8dbf2ebc6f02f210fb322145de12acae1a54b6a675aa",
+      "bytes": 161
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_output_002.time.txt": {
+      "sha256": "c8ec46bd1a83acb335d44bf96aa11b0cf99702454942d434cc18945c48d41bf5",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_000.stdout": {
+      "sha256": "cc3a1b675cde4e908bb66b286f1b089dd601722be26a643a250b6cdc4b4b9ed9",
+      "bytes": 161
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_000.time.txt": {
+      "sha256": "e356f5289b813d9428a66cf7110cac6f8909a07c08e85a72a451926c3b6e9f29",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_001.stdout": {
+      "sha256": "585f50c2d061d24223378a48f6ba01a5daeae203c0b8033e91cad086d76f5048",
+      "bytes": 161
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_001.time.txt": {
+      "sha256": "e1446967eedcd335c9fe132e9ca30f927b5e71c18571bdc12692a6e40782b64c",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_002.stdout": {
+      "sha256": "e5e3251e63997f7503a3377cd84e10982d592c0e149a092bfa23e82094a1c537",
+      "bytes": 161
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/reader_state_002.time.txt": {
+      "sha256": "8edf7485c6cadec9c0e884aac2a257ddb39d7011b14ce4d012cd437ac90354f2",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_infer_001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_infer_001.stdout": {
+      "sha256": "59a7dea0db66e6c51848682afe50cd3448bbf02ebf12665b96b0b2cef866d374",
+      "bytes": 300
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_infer_001.time.txt": {
+      "sha256": "aeb321a54394b609a97e23aee06deef10fd609afc8e406b5c1301e9bc386dbcb",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_infer_002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_infer_002.stdout": {
+      "sha256": "ee8bac7ec08a8fee8d2b05ea6ff5dd81ebc83b0b3391c480a9629068c11238f9",
+      "bytes": 300
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_infer_002.time.txt": {
+      "sha256": "bc1d1941d5dc83ffb9b3d57aa2499bd56112708202d3d7c2ec55dfc375cfd778",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_learn_001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_learn_001.stdout": {
+      "sha256": "34488e737bd26c546c0f43c2c14b7eb96756987b817a5fbcf86a478c3fe8d9f6",
+      "bytes": 312
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_learn_001.time.txt": {
+      "sha256": "b7026d06442a83536a777929f41e21f33b7bc4d909702132b268aa8b355bd735",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_learn_002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_learn_002.stdout": {
+      "sha256": "5928e49e2acedc36f9576ac28eba48918f05bd6050032d2093279d3e338bbd86",
+      "bytes": 312
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/replay_learn_002.time.txt": {
+      "sha256": "2c1f2c58b9dfb9821bbee8cace330f868e61cf7db6eb73c1a7eb67422afc02ee",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/setup.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/setup.stdout": {
+      "sha256": "b8d40c58bf881ed245d94e4e936df0f171ea739a73858071b9a2d199808cd442",
+      "bytes": 770
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/logs/setup.time.txt": {
+      "sha256": "d88b4e49bf31478c47d1035121b480d206eb8be6021e8a2c36d4bb25a2c66b81",
+      "bytes": 777
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_001.ct": {
+      "sha256": "2ee37c564c5283dc98f2420a1b9f45e0740b26d2825ee38ad2533efb8f3b7390",
+      "bytes": 33905
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_002.ct": {
+      "sha256": "245e0c661b28e505d78eddb074b6127470a142d0577f8b6a4d5e0ab83ba2f6be",
+      "bytes": 33905
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_001.ct": {
+      "sha256": "784e5f07d8c272b3cc73d8dd938ae609988f37d5cdcf05101e53dd656d2d3276",
+      "bytes": 3413
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_001_replay.ct": {
+      "sha256": "784e5f07d8c272b3cc73d8dd938ae609988f37d5cdcf05101e53dd656d2d3276",
+      "bytes": 3413
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_002.ct": {
+      "sha256": "48c5cb91473a6dd4e18135b39d19452d8bb3830cba9cfa83a91471052e5ced14",
+      "bytes": 3413
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/output_002_replay.ct": {
+      "sha256": "48c5cb91473a6dd4e18135b39d19452d8bb3830cba9cfa83a91471052e5ced14",
+      "bytes": 3413
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct": {
+      "sha256": "cb6fd9970dc46115572b6471cd4e9d457da76f2b04be5372259be54b628cbfd6",
+      "bytes": 6801
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_000.ct": {
+      "sha256": "22138ebe23141fc006c4fe90a223688b3f84fc35a43f31ef862ebddcaae3c35d",
+      "bytes": 108441
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_001.ct": {
+      "sha256": "572ff2a94215275d9b44d3b03d9e86d69db183100f4412cabe2230aeed24a1a5",
+      "bytes": 108441
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_001_replay.ct": {
+      "sha256": "572ff2a94215275d9b44d3b03d9e86d69db183100f4412cabe2230aeed24a1a5",
+      "bytes": 108441
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_002.ct": {
+      "sha256": "d3634c7d177f80aa106f7d5bfda4fd21d30aa989c67feed598e13618d1154f38",
+      "bytes": 108441
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_002_replay.ct": {
+      "sha256": "d3634c7d177f80aa106f7d5bfda4fd21d30aa989c67feed598e13618d1154f38",
+      "bytes": 108441
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/results.json": {
+      "sha256": "a5e3e6f0d7c19d0b5951a5379cf422353a72824c1418f3197bcb6270d7d0f76c",
+      "bytes": 37669
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/source_manifest.json": {
+      "sha256": "2dd31102c7ed58a974814f48102ec2a1f9228b984c766c5b5c47ec5d695b2339",
+      "bytes": 8635
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/host.rs": {
+      "sha256": "f0ba609bdf7d6a2ad2b83298b526d8fecf4d8569f7db28af6c5306c14e159ac2",
+      "bytes": 1826
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/issuer.rs": {
+      "sha256": "b9bf8be29a0a38c4578448f0f77214c367595ceb0ef7753ed5298617c1ff01b8",
+      "bytes": 1958
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/reader.rs": {
+      "sha256": "00313812037bdc8862ec979b7c18e8145654189d84c29ade68c44cb5cf1c0088",
+      "bytes": 1561
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/setup.rs": {
+      "sha256": "34380136654f11a69b71d9a53f3fa64f6d382f28f671c9b0df90cfb184990f98",
+      "bytes": 1782
+    },
+    "research/learn_infer_only/experiments/end_to_end/private_ema/src/lib.rs": {
+      "sha256": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880",
+      "bytes": 4648
+    },
+    "research/learn_infer_only/experiments/end_to_end/recovery_2026-09-07.json": {
+      "sha256": "4ff295d805637a1c743311e68689e3168ce5863273fd8c6f15782a81512055dc",
+      "bytes": 177238
+    },
+    "research/learn_infer_only/experiments/end_to_end/recovery_2026-09-07.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/recovery_2026-09-07.stdout.json": {
+      "sha256": "5632ba0e5ee8439d5cf44e96c7596867facb0405ecdb48dbe0f3f80ecf924573",
+      "bytes": 1211
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/CONTRACT.md": {
+      "sha256": "479ae4b5975a6709ddfeb26f93ec64fd0e2f75e2f3c3020ae056b8e406773348",
+      "bytes": 7114
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/ERRORS.md": {
+      "sha256": "82a3cb592129131ea86f541df0f8163a80eb89151522ff9465318ce50f967cfe",
+      "bytes": 3920
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/IMAGE_SCOPE.md": {
+      "sha256": "0c81c9ef7af19e1c1313b25c3a9524dbe1ac9f9a045e9bf00c336a9fd5d082b2",
+      "bytes": 2372
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md": {
+      "sha256": "f803be9d75fe503cd56f9925906882965e66aadaf80c1787e8782b810f1da8b1",
+      "bytes": 14481
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/SOURCES.md": {
+      "sha256": "0e2e5f44e64886f9e4c3e5eaa14d219db4567eccc8c2816bffb158e0bed5985a",
+      "bytes": 3330
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/audit.command.json": {
+      "sha256": "e2c68260b00bbdfa104947d43ac8a3b34034cf91eb93f1d51910d8963ee478a4",
+      "bytes": 356
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/audit.json": {
+      "sha256": "768b458bb2a54d6eef317750b18df1276dd147bdc0118fabc36405906c437e31",
+      "bytes": 1512
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/audit.py": {
+      "sha256": "636b2830ca356bc73937a2a1a9714d96f3c977209832c917a734f1129d8b0b27",
+      "bytes": 6330
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/audit.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/audit.stdout": {
+      "sha256": "0ddcd90e0ba3733485d985b5d53992deee7f3eb8854b2a571a4aec9446b1a29c",
+      "bytes": 1512
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/batch_costs.json": {
+      "sha256": "0ee1263fa5337ac2849bcfef04206ac334b0da92e0b7cc1aebc2fac8bfb83b71",
+      "bytes": 19747
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/checkpoint_states.npz": {
+      "sha256": "6d3bfbaaf3e30447a9c4adeea41f44f13f663bc7c8d05ab348d5790b35bae28f",
+      "bytes": 193741
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/common.py": {
+      "sha256": "a8ecd641182731a943de387988b2d455526ad124b4288a6f0c142020d4a36044",
+      "bytes": 1696
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/costs.csv": {
+      "sha256": "89e0ed426bae7b67ba8d977ae92d43b3416c15420fe243e6ad9e6b295b154310",
+      "bytes": 3006
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/.gitignore": {
+      "sha256": "429a7ff8e3befe5ac528bb832881840115d63940883b125526b582eedcdcb7a9",
+      "bytes": 22
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/CONTRACT.md": {
+      "sha256": "cf645d8311dc5cb27a08113367784bd7b61eac2bf3252c43e18bf9f26c59f38c",
+      "bytes": 5218
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md": {
+      "sha256": "aa565bd3e64b6a9ff371ae62fb587fff2e1472af66f7c07131007a5d9c690546",
+      "bytes": 12942
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/freeze.json": {
+      "sha256": "7d03dab6617d7684bb75540d7af521e6756c8cc3b1eb703e5d6cc694fa590377",
+      "bytes": 7977
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/.gitignore": {
+      "sha256": "429a7ff8e3befe5ac528bb832881840115d63940883b125526b582eedcdcb7a9",
+      "bytes": 22
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/CONTRACT.md": {
+      "sha256": "2a9d982c218954814cdb5a271ffee2f9429421123ae492f24d9ed70dd0ed6792",
+      "bytes": 4261
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/encoder/common.py": {
+      "sha256": "13527d5fcd0ffa444faae29ac5b1f76f5d71f8a0a766d9f43613211674be6546",
+      "bytes": 1676
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/encoder/score.py": {
+      "sha256": "b66e4deddfd7ef42c5b1a0aa8976270d53ade73886548239afd2193d2ed1e8f3",
+      "bytes": 5928
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/issue_semantic_text.py": {
+      "sha256": "0b07be81604f46d1a6b4dab46f7a4ccb00580cf8156ab49f9290e259317d7b69",
+      "bytes": 4196
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/prepare.py": {
+      "sha256": "4b3700964d7be7b5a4d2a8620d83da618b45b124428d87b7e471b71b8e468af7",
+      "bytes": 10339
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/run.py": {
+      "sha256": "ce4c6a17dd413e88a6e8f9700f14efc319f7146881993cd09e6d8221bd500486",
+      "bytes": 2816
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/manifest.json": {
+      "sha256": "94181ab657a6dbe523a598cb70d5eb5ac9bad4c71f2276d9f767815dfdebff02",
+      "bytes": 8568
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/persistent_worker_adapter.diff": {
+      "sha256": "eebd5f40599f8588c660e0df2f97a861c780f50ce447766a3fb42b86f92be93d",
+      "bytes": 7417
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/prepare.py": {
+      "sha256": "04eb2998806b11f1f90aa9ea706de369d90af5fb29d1111054ad883a1da46f32",
+      "bytes": 10931
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/command.json": {
+      "sha256": "8903569d262009fe7984fdc8d5ced9bb557090e54d053f1100b16ce1b10681c9",
+      "bytes": 781
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/costs.json": {
+      "sha256": "cbe7e1171f329209aa7ea78a18dc37cad1b429ffc5df1bfa575a4c6bd265ce3b",
+      "bytes": 8240
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/dependency_pins_after.json": {
+      "sha256": "919bb1958d9f3ff5cd0caac2ec25391216572d4fabd180687c30c412b8d05c7f",
+      "bytes": 4780
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/dependency_pins_before.json": {
+      "sha256": "919bb1958d9f3ff5cd0caac2ec25391216572d4fabd180687c30c412b8d05c7f",
+      "bytes": 4780
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/execution.log": {
+      "sha256": "4482bd71a5bd8705c939deedfc828c544c8220162f34e7e5ac25d11019f4d18d",
+      "bytes": 2668
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/fast_report.json": {
+      "sha256": "ee26b636c670cd5bb25467324cf98e51a672f50a84b57eeeb1568e9d66c223ff",
+      "bytes": 4155
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/fixture_pins.json": {
+      "sha256": "fb1aa1d277c66d8e9e7d1641f54e2c2f31666194d377fad6c32efc1f47f6436b",
+      "bytes": 45336
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/full_survey_reference.json": {
+      "sha256": "8fed2f093a468752e52de9531b18648ba38ab92ef106daf24b7eee3fddc8b51e",
+      "bytes": 13372
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/accepted_envelopes.json": {
+      "sha256": "3426c672112a8fd36728b5b23f8f6d14e2409d11626883c558bdca35fd2d3a2b",
+      "bytes": 694234
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/commands.jsonl.gz": {
+      "sha256": "0b1a329671740aa6e60f791b7dd2c2a0fd80266919bbbe0351a6b5c0248937c6",
+      "bytes": 89530
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/events.jsonl.gz": {
+      "sha256": "832e2c0990f408bc2f528d8bb23d121a89dc46e2083a6a3950a53db6920e2eb4",
+      "bytes": 103232
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/genesis.json.gz": {
+      "sha256": "4b4971ea55a172b714d2997f925e6ad1e54869b1b1f27e4c2d28bea0b0688929",
+      "bytes": 1810
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/host_worker.jsonl.gz": {
+      "sha256": "7f994ca19e0765b8191dfbf6902b368e19f84f9200d666b1c3f82a141c1e2cca",
+      "bytes": 38789
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/host_worker_report.json": {
+      "sha256": "36c8b664f80b1c6ae3b2f7132db8f5850b2d2834761e91843bc331bd9591f516",
+      "bytes": 1706
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/privacy_validation.json": {
+      "sha256": "64517e4fcd9ccea731996b42acacdf69d5478c31d4b8bfe42b431c0291e464e4",
+      "bytes": 223
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/report.json": {
+      "sha256": "f7c53fe0e7ede9f4344515272a7470e77ca860bf49955c9a89864b3116ba6323",
+      "bytes": 3554
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/role_calls.jsonl.gz": {
+      "sha256": "f548242be50e0f77124cf7e9802b3d00643ace1e0377fb7bbe7ef66a1348989b",
+      "bytes": 57858
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/transitions.jsonl.gz": {
+      "sha256": "e5ac0c274a958a8ff45b226d7de4e39d2d6f0d63c9775a2fa7e0e210a4461cce",
+      "bytes": 12890
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/verified_commands.jsonl.gz": {
+      "sha256": "a1fce774ff1e11bfafc509234ff2eca78f55b7f00211856156dff42d57ceafbd",
+      "bytes": 48749
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_0/verified_rpc.jsonl.gz": {
+      "sha256": "b4d77805508c17c36f4a33eff4315a8b6e38a2cb5cdc8ffdd0bb7ee20ea3f63a",
+      "bytes": 47817
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/accepted_envelopes.json": {
+      "sha256": "db68e1818114f06dde69f7933a8ff9f96a737a8b36eb05a68d6f1433c801bd68",
+      "bytes": 694234
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/commands.jsonl.gz": {
+      "sha256": "015e0393fc2b127cfe6eeaa04ec837f5aa8bb04c73489b7a29d7cfeaabd51f13",
+      "bytes": 89443
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/events.jsonl.gz": {
+      "sha256": "6f5a3b39731709129d801347ddb7ebc6133b0660a4ae231ae464eb693d9d20b8",
+      "bytes": 103243
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/genesis.json.gz": {
+      "sha256": "c961da5dcb4f6dd1bc2e5f6f1d58937bc6202059a65392a0bd3f4737c0cb2c2b",
+      "bytes": 1809
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/host_worker.jsonl.gz": {
+      "sha256": "8892ac71ffbbffa09d7a04c6987469927d6e6b3e5db9b9b996365b306ddbe6a1",
+      "bytes": 38791
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/host_worker_report.json": {
+      "sha256": "70d6fe90571b81e069917b89aa71eab58a232e22fb6062aad9ebb53015bf7958",
+      "bytes": 1706
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/privacy_validation.json": {
+      "sha256": "64517e4fcd9ccea731996b42acacdf69d5478c31d4b8bfe42b431c0291e464e4",
+      "bytes": 223
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/report.json": {
+      "sha256": "bccaf0cee587c4254e7aea994fe780aee7e16a991cede2ab5fb7e251df655e49",
+      "bytes": 3554
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/role_calls.jsonl.gz": {
+      "sha256": "7861b27ccff1aecb85d8a5cc2378fabe3c39cd18ab1e345788e8595f4a82ed1d",
+      "bytes": 57945
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/transitions.jsonl.gz": {
+      "sha256": "affef3825cce97e7ca1d747543968b33a0d670ac5d80d4bbbfbdeb817c976c2b",
+      "bytes": 12892
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/verified_commands.jsonl.gz": {
+      "sha256": "2bce9e4ae375049f7b458bcc642b28ae00d5646aac47bb529639b970c51ef4ac",
+      "bytes": 48698
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/history_1/verified_rpc.jsonl.gz": {
+      "sha256": "73175f1e06acf6b3b2e6d3beb519ec85201adc690674e802f47fc92249b3972e",
+      "bytes": 47773
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/manifest.json": {
+      "sha256": "f9a2c5dd80dc7fb396739154957042aea94b878cf6d6709ad7f0545b157244cc",
+      "bytes": 5793
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/progress.json": {
+      "sha256": "9693cf0d069d96ca14e3bafb75dfb9fdb80e79845df10863e51b6a1e4b8536d5",
+      "bytes": 7147
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/report.json": {
+      "sha256": "484e8e136b681e9dce961ef4fbcdf863f968e5066b6f07deb958450617dd8291",
+      "bytes": 10762
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/semantic_image_scope.json": {
+      "sha256": "4582cd0cb90a6cbc1c9076b31e67805a35cc33501572b5722f97a2b2495e8c87",
+      "bytes": 1575
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/snapshot_pins_after.json": {
+      "sha256": "a4227e38eacd10aedd1cddb667d8449bbb809c0649ee7e595dac1c17c531e1b1",
+      "bytes": 2395
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/source_pins.json": {
+      "sha256": "a4227e38eacd10aedd1cddb667d8449bbb809c0649ee7e595dac1c17c531e1b1",
+      "bytes": 2395
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/source_snapshot.tar.gz": {
+      "sha256": "a81ba1a80e2359e6fdeff68eeef5d5feb05e0210eee73b8287c8099153267821",
+      "bytes": 48794
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/reports/run001/validation.json": {
+      "sha256": "8b13f3c49155df65b2b64f32fd250a0f98515afdecf694276d7acce5dd377a1d",
+      "bytes": 3975
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/run.command.json": {
+      "sha256": "267310ace203c68a00ddc492f7a7d55d57a2c84249bb33d164ee538c20933155",
+      "bytes": 1105
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/run.py": {
+      "sha256": "fc3ea120af187af5b6cdc3bef94ce6f300db0b27cc8c70a7794db4f9ed372f13",
+      "bytes": 2139
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/run_started.json": {
+      "sha256": "32be4f93b261e8da2809f64a81fef8f8320f25c5c7ebf17b49283d7e9391e629",
+      "bytes": 871
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/summarize.py": {
+      "sha256": "4ccd225853132dc431ea0bab353f951e689a5b30648b98279b48ae9ee0945887",
+      "bytes": 3165
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/utility_worker_adapter.diff": {
+      "sha256": "4f792b209b764476b5d09541e1a863287967f28bbeaec8c35a97b6b5b7a3860a",
+      "bytes": 8133
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/validate.py": {
+      "sha256": "c1af3a3ed8abbb6376c13448ae49b48563b82cf32231f9892cc84b5f1d21c339",
+      "bytes": 8421
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/validation.command.json": {
+      "sha256": "b32427dd9ebd8c66c9c5c113f862086498bd71d051fd29eff1f5690f5a0c4e4d",
+      "bytes": 490
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/validation_final.command.json": {
+      "sha256": "265bff32edd39fc7e1414172781abe33e43f328c34b27490ec9d32cfba4ce3fb",
+      "bytes": 541
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/evaluate.command.json": {
+      "sha256": "d6d8e832c46ec61e2d84c9e537eccd583c8c5c1ffceb5fe9709d312da7170592",
+      "bytes": 359
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/evaluate.py": {
+      "sha256": "9061670955f46efa241a38ee937da39cf144f171032838c42f35744a466ca538",
+      "bytes": 8585
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/evaluate.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/evaluate.stdout": {
+      "sha256": "afbcde0346f5c895afddee7ab91c95480cdd07f41d6e9f189f4ad119c23a83bb",
+      "bytes": 6118
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/extract_smol.command.json": {
+      "sha256": "dfdc3dac8e1bbc4cc736e51b62d62dfe35a1f03a461aba54f98e546addc79ee4",
+      "bytes": 361
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/extract_smol.py": {
+      "sha256": "fb782023cf842058adf6908e80b6f13ac387dd8d82626dc5d02687e337c98806",
+      "bytes": 3953
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/extract_smol.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/extract_smol.stdout": {
+      "sha256": "3039be1c46b475584eaf30979c0d8ec8dd0bbf8490b21a4c26fb848d11e3993d",
+      "bytes": 3007
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/features.npz": {
+      "sha256": "4971df2b5a2f8b41fa98a7da4d7c9767497d5d507bdbd6150b8d04e6dc26904e",
+      "bytes": 142711
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/finalize.py": {
+      "sha256": "1c81b6e8c9a04e14591049d781ac5cd04eef69cac7bfc0d2da48935d5b878c97",
+      "bytes": 5842
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/freeze.json": {
+      "sha256": "c9c74521b14dd9cb60743ccbf34a91c5e300fa33f03e187aba4117915cda31da",
+      "bytes": 8860
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/histories.json": {
+      "sha256": "c9f84f54102757b1534078acb9a15c59e0d6656257aa091a90c30d071c30ee7c",
+      "bytes": 191977
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/image_rank_scope.json": {
+      "sha256": "b7dfd5ead76f330d6ebdfbf0a09b80cfe17051aacc01891e358eddf709f4f804",
+      "bytes": 1535
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/issuer_inputs.json": {
+      "sha256": "3f33a8e6b5acc0bdf894c511ca47b6b5ac6eb58af9f04d075d60f3c08b727aa2",
+      "bytes": 1095045
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/launch.py": {
+      "sha256": "4e94d2230f455404d343180cdebaac83e59be2cfa785719f3dd8bd15abf0349f",
+      "bytes": 1119
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/manifest.json": {
+      "sha256": "2c2a64be129fd3afcc705c62eb37b02e4b8bee2912a00a242c47d86c3141944d",
+      "bytes": 7470
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/.gitignore": {
+      "sha256": "429a7ff8e3befe5ac528bb832881840115d63940883b125526b582eedcdcb7a9",
+      "bytes": 22
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/CONTRACT.md": {
+      "sha256": "6dad886ffe02d2f1635b4585aed96de0d645ad446bdbfe5c5830b6c72ff9fa07",
+      "bytes": 3044
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/README.md": {
+      "sha256": "6cb7aed6adc48d5d606534a0f625083bcdbb14228bdb91d476a8cf666f63aeef",
+      "bytes": 7304
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/audit.command.json": {
+      "sha256": "17cd8bedc65095566d06715f87d460e94920505dc3858e83f4d59eba2bcf2743",
+      "bytes": 369
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/audit.json": {
+      "sha256": "5bc6a18784e13ba4cd0b9fb9bec8c0a939dcaacbc7dd99ca03fb82171b41563d",
+      "bytes": 679
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/audit.py": {
+      "sha256": "9de68751a5700c919933786187e4bb0a2b26d9b9354e830bf8e7ca190a0cae35",
+      "bytes": 6263
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/audit.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/audit.stdout": {
+      "sha256": "272da0dd149614689eb6c0561fa2b134c67d6d567cf4507a6eaf3629cd03860d",
+      "bytes": 679
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/build.command.json": {
+      "sha256": "2be0ff2ec650a5f17df82dfa12d1e9893f7cae70af535c73f69970853ca63bbf",
+      "bytes": 368
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/build.py": {
+      "sha256": "1ba2d9cab2514343fb5cc15400f42ca1fb5e49d9f96d52d1ee502821a9bda88c",
+      "bytes": 10041
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/build.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/build.stdout": {
+      "sha256": "6c8ec64ec266f68e2c8acff42741d683177b21ce9d6cbc904a998c611b4f1267",
+      "bytes": 1575
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/build_results.json": {
+      "sha256": "4582cd0cb90a6cbc1c9076b31e67805a35cc33501572b5722f97a2b2495e8c87",
+      "bytes": 1575
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/common.py": {
+      "sha256": "00c4efd8a7ceb8c460857dabe4b2cad311de390d5d7fda890729db82ce587271",
+      "bytes": 1430
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/emit_runtime.py": {
+      "sha256": "bc02c3d70a92f12ea86b161458c81f85ac9cfb591327a4eeca443d2acd8e1828",
+      "bytes": 2855
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/emit_runtime.stdout": {
+      "sha256": "c544b9775e1e1382a135845b94bfba0e2d67fc0da3807dfe7a7138140d7b2275",
+      "bytes": 651
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/finalize.py": {
+      "sha256": "de20ca8985d88ed53f09254b5ff48c6eefcfdd5ce0960e2222c9b5a1443d56d8",
+      "bytes": 1243
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/fixture.json": {
+      "sha256": "bcdda47d227853e546427e9fb42de489b7c227ace65b10a9099cec81f4481b11",
+      "bytes": 760241
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/freeze.json": {
+      "sha256": "1fe42024b756c5af49b2a27c210e35ed0b5660148d749cff8667e7989a107198",
+      "bytes": 4398
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/full_survey_reference.json": {
+      "sha256": "8fed2f093a468752e52de9531b18648ba38ab92ef106daf24b7eee3fddc8b51e",
+      "bytes": 13372
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/integer_oracle.json": {
+      "sha256": "119b66dd3e39730897948f5f3021e73a234fa163adf43c9e27189c3264dc31cd",
+      "bytes": 74598
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/launch.py": {
+      "sha256": "c100d985a8fdf27d88b02798a0ec6e672c1400e1a4125f12185a8b5e44441e5c",
+      "bytes": 1047
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/manifest.json": {
+      "sha256": "ba7bfab4b7c68d761dd9bc4de0603d6bf8bb48bf3d2edb65429e11350f93a37a",
+      "bytes": 4432
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/prepare.command.json": {
+      "sha256": "0f8ec05807662ed10c0fa711073348ae2b3896d7c5d8690bb741dba1301d6065",
+      "bytes": 371
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/prepare.py": {
+      "sha256": "4cf08cef7525be60b318a36f675ee8d8fe12d706945892084408ccfd3d10fa2e",
+      "bytes": 1993
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/prepare.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/prepare.stdout": {
+      "sha256": "fad23af873b33d0ec89cc62993418de6ae03d0769636f296c8b87884e9825a65",
+      "bytes": 772
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/public_event_index.json": {
+      "sha256": "16d175a409f12aff573c20763290377ea310ae01895599bfe83adfa00d4922cb",
+      "bytes": 65606
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/public_query_records.json": {
+      "sha256": "835f096aa3477f05fe2303a2bf24dab99535b5c6abf7c85a9731d1c1da5a44a9",
+      "bytes": 112617
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/runtime_hash_census.json": {
+      "sha256": "1e13827ca8dc88e3f7054c9fe6ee19245ad9b2d04caee4936ba422e453b7d18b",
+      "bytes": 63402
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/selection.json": {
+      "sha256": "af2869bd2c4592a2931128d28ab150a333e5b9fe04ad2f513c8c88237b91fae9",
+      "bytes": 590
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/prepare.command.json": {
+      "sha256": "192b53e79ad6a77566607682272f0ee61330f84d109ae5958e1c03784ef107ce",
+      "bytes": 357
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/prepare.py": {
+      "sha256": "189237d331534331b4bc122ea5db5dec1ff8439e853122d4960844ece6be84dd",
+      "bytes": 6204
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/prepare.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/prepare.stdout": {
+      "sha256": "02239850d50ef8ac49febe8042cd10b5978f5e77a0c7a9d0b2673b40caa5ce3d",
+      "bytes": 310
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/protocol.py": {
+      "sha256": "230b385e38cbba150eb2ed333cc0593827a86263f55b4824b1adf48c40a6b5b5",
+      "bytes": 3194
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/raw_scores.json": {
+      "sha256": "9dd0fdeda7c02de9a475d85fbba67177011249f4412b9716362e0abbe457f343",
+      "bytes": 190954
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/records.json": {
+      "sha256": "dfd0f81f7480cbc7097f9ca84660fb9120bcae5fe4149865096417f369ba0a63",
+      "bytes": 101637
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/results.json": {
+      "sha256": "322b58077896ad2afb874481bb613069f45c7ca647b776064c438c8328e65746",
+      "bytes": 4737883
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/score.command.json": {
+      "sha256": "af2eef5c4e5b805e54621c30924993de6efe6bce2590d11822ccc8ba72a5b858",
+      "bytes": 355
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/score.py": {
+      "sha256": "1de87ab2e2c25a07f19a73c035ccb4ddd22599d6899c8d67cdc7fc161390686c",
+      "bytes": 5936
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/score.stderr": {
+      "sha256": "c076f27e384a4e53e1146c457453dfd9c2101bf13074f636c19cff2313c2e308",
+      "bytes": 335
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/score.stdout": {
+      "sha256": "44352d172496050fceefe9ae8cdbed759a29d7d590e51f012bf153b37086cb7f",
+      "bytes": 20023
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/score_results.json": {
+      "sha256": "6e0f0d581c2707c4da189c589928128e324ec44356d13c9389fbd1664f88bf32",
+      "bytes": 2743
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/score_started.json": {
+      "sha256": "ab35a942ec1ed071c71f9e54cb1bd12d2e80e0f3baf4489d4fbc07c48f1ee137",
+      "bytes": 122
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/scored_test_rows.json": {
+      "sha256": "c441e76f70e298c1f6c8c07f43acf2d7fbbc7c0e0ba285adde079e82774fb77b",
+      "bytes": 201721
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/seed_inventory.json": {
+      "sha256": "a5e8536c6862f7e774e91584ef0018c93f6c5d3db40cee28086ceb51ef24b588",
+      "bytes": 357
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/smol_test.extraction.json": {
+      "sha256": "ff9a43e21044827513be993da025c68e3298a563fcd8f16333eec1d5ecc0ec0a",
+      "bytes": 5656
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/smol_test.npz": {
+      "sha256": "6ffc57730247210dde7183b0a1ff792a15979dd7fd2d1a864985e38011bdefb8",
+      "bytes": 296464
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/smol_test.started.json": {
+      "sha256": "369a50f1adba547ecf5793e8db8dd14b91b1c12bb48419baab0d4f9c17ca006e",
+      "bytes": 106
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/surfaces.py": {
+      "sha256": "d72cde56d0e94a6d62a9a815287e50fd6b328ac68c41e2c916cdf37a544ebe43",
+      "bytes": 2626
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/teacher_predictions.json": {
+      "sha256": "01e9581a03776d3fa4746f5d73b82800f557b83baf77d3cb0ffde5cae2abf165",
+      "bytes": 9557
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/test_decisions.csv": {
+      "sha256": "c6d4437bb9be7cea694da08f29603f849265726311c49d4f14230dedc820cc28",
+      "bytes": 26183
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/test_oracle.json": {
+      "sha256": "33365e2c627678ed41a539b75524d0b1903415785462f43638ce2096ea55b68a",
+      "bytes": 9667
+    },
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/test_predictions.json": {
+      "sha256": "801b6bbfd3eda901a7964eefe016163f5c649d442dfec3a9a85e68afc1405b77",
+      "bytes": 6915
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/.gitignore": {
+      "sha256": "caa3d07d1605371cefc16c6121c993460a247fbc3073566e609b48ea8b8c0fc5",
+      "bytes": 22
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/COMPACT_TMRE.md": {
+      "sha256": "af5e6acb0feb544b739c08838dcc8c88dff63244d33c16e18792d992e662a445",
+      "bytes": 18671
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/access.json": {
+      "sha256": "14fddd08726b24281bf08c6ec1afa51e33123aa8639ae65623c88245d87a75e7",
+      "bytes": 2808
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/artifact_hashes.json": {
+      "sha256": "f74e4ffe3a6b77d162c3e5f846a6ad4827575032edaadc39c6cfd951bc41dc47",
+      "bytes": 1933
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/inputs.json": {
+      "sha256": "ce759df1c3bf95a03f63d7e650658730977fde5d2a63d0a8b7f36e2cd154b7ba",
+      "bytes": 3339
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/source_spans.json": {
+      "sha256": "6ae0042f324fd90654e0fa972c0119d919d57d8e57be93a94eb6cee7e2a0ed0b",
+      "bytes": 5267
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/validate.py": {
+      "sha256": "7603e201bd196634b5bd2ef0b158c1444f6e483104440da8a26e21be972aa216",
+      "bytes": 4926
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/validation.json": {
+      "sha256": "11e104214da40c1b1df2cc5375de2221810226609fabcc0e90fe8e7e2ddde097",
+      "bytes": 1291
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/wrapper_ledger.json": {
+      "sha256": "2dbd8a101c2eb919f5af66228d351fc1688fd2c90975f498f10f25c39fc5a5d1",
+      "bytes": 11968
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/.gitignore": {
+      "sha256": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a",
+      "bytes": 14
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/DEPTH_INTERFACE.md": {
+      "sha256": "f7a380764376f5292a65e8b0a0ebe9917f90594fc4f5e99875f28a4f080b088a",
+      "bytes": 21035
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/arity_substitution.json": {
+      "sha256": "9861e869b467c0c608ff496afa772193b023f1b7b96c1350197c773b3600c78f",
+      "bytes": 11282
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/arity_substitution.py": {
+      "sha256": "6fd669b522306d31bfc4ad637a7fed1e25d8a4350cca907686cd74d339cf93f7",
+      "bytes": 2984
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/artifact_hashes.json": {
+      "sha256": "1a1d6242e72eafaef0f19a860f59e38478572d2d86080f247efc1a74e10c0a3a",
+      "bytes": 1118
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/inputs.json": {
+      "sha256": "ae4b007437d7a0da3ce049977ca90c331d1ae9517e0d484d7ddf1a425bc884c2",
+      "bytes": 7204
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/validate.py": {
+      "sha256": "4a6143010219ab5666c7e4ba49499749630bec9162ff9d6850d1bf85af5fec19",
+      "bytes": 2753
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/validation.json": {
+      "sha256": "f3347c1790260cd11484ce97fbfd420d57b7d9d5f15f4dc711e25e3f855240c9",
+      "bytes": 1934
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/.gitignore": {
+      "sha256": "dea9c44856386d9463646b29b3d67882d8bfbe4094d863fe25b62813a5172dbe",
+      "bytes": 8
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/DIRECT_MULTIOUTPUT.md": {
+      "sha256": "a72f903330f4b4504947cb2cd49592619912f168b375a8abb4532fd373caf828",
+      "bytes": 19413
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/commands.txt": {
+      "sha256": "a27db2b38b850fd3ba762c2963d81d07c456b764ac78636375d198ff74a3bf31",
+      "bytes": 3733
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/hashes.stdout.txt": {
+      "sha256": "5aef3bad552dd2bf19724706b353e3d478a899dcd7ab1037bcb881da4c4052dc",
+      "bytes": 1703
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/inputs.json": {
+      "sha256": "c571bc01956bd4b640b7bafbaa0bc15395ca054085fa842230ab52fcf9414ab2",
+      "bytes": 6729
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/.gitignore": {
+      "sha256": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a",
+      "bytes": 14
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md": {
+      "sha256": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8",
+      "bytes": 17870
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/artifact_hashes.json": {
+      "sha256": "c5528234217b96c373a6425874b6a16867505275931c36574cb754c696de00d1",
+      "bytes": 1123
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.json": {
+      "sha256": "85620be6ba7d6dc9a2b73e077d4babe1b93c6a0a267627b56861f61c747d06b9",
+      "bytes": 2780
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.py": {
+      "sha256": "79ca4109ef926c4323ac63d6dac3f4ef2fe1ea2bc896de50f1f7e2da6d294608",
+      "bytes": 4415
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/inputs.json": {
+      "sha256": "6de6d072d6afc9249208f3f66ff8da7d8412508795a9e6f4d8fe9427767dd6c0",
+      "bytes": 4138
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/validate.py": {
+      "sha256": "a8a181f7347a4683a9f458925a1177f4d858fe2bddfb5472b4885ca065944c77",
+      "bytes": 2836
+    },
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/validation.json": {
+      "sha256": "d1b26aa2c1f1403057fa6f718e36a7c3432ae41934769abbf981fdb6bdb904e8",
+      "bytes": 1784
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/.gitignore": {
+      "sha256": "f5563c85692159ea32d74dad01ebeff445faa43525c94aa24af1277e87d25d9c",
+      "bytes": 26
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md": {
+      "sha256": "7080e96e18cd8b2458fcad15905a52c6ed970a8fd6496d697704b9c9dccb4a8a",
+      "bytes": 7424
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/artifact_manifest.json": {
+      "sha256": "7f85dec317556c77ccf070832d1aa555555187fd313e7e60d4b31d0c62926a87",
+      "bytes": 2560
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/driver.py": {
+      "sha256": "00da64333801d1babd3a17068ee60095962cb8e7c091c8d73fc6ae1d26ca9041",
+      "bytes": 31287
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/private_oracle.py": {
+      "sha256": "c2a7841e3148b78b43430907ba32e235d86cfef6f8d5688315e9d3c8d736345c",
+      "bytes": 5329
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_001/launch_command.json": {
+      "sha256": "89112f7067c4923f2f45bf9b63ffce4518854848d084b37eb3e5d668acf7efc1",
+      "bytes": 662
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_001/preparation.json": {
+      "sha256": "22b1aa8fb033234d2b8954780037ca3dcdd732703ac14f0c42e96633d2a110f9",
+      "bytes": 43761
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_002/launch_command.json": {
+      "sha256": "e66f0c203cd7776826f44608b01e6d036ac26cb657ae40b4208a071217f04585",
+      "bytes": 662
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_002/preparation.json": {
+      "sha256": "90c3879e4cf44776ad52a9c5c8b7d7dee75d07a7bf920267afe98eac4b3cbb3d",
+      "bytes": 43848
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_002/preparation_validation.json": {
+      "sha256": "103de0db51a6b1c9089386a6861e5f8318a047dfedf6e07dbd593e54cdecf311",
+      "bytes": 660
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/capacity_forecast.json": {
+      "sha256": "7548900d1acc2c868fca8b0c9459037c7b69894bec09da49fe4e247f005a7707",
+      "bytes": 962
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/checkpoint.json": {
+      "sha256": "fa9c6efb4824bb11bf0225e293e1b7bc527407864c1724fb04f8d018ef5c1fe4",
+      "bytes": 226
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/execution.log": {
+      "sha256": "433dae0853ab452904a85b37add636ee4e3687b9d89a97e92f3be2dc08998e23",
+      "bytes": 2103
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/execution_command.json": {
+      "sha256": "5c0b08be652c85676d2ba04d9a8a1f7e53736144c25488517e2507400fda5542",
+      "bytes": 895
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/accepted_envelopes.json": {
+      "sha256": "8d5210d6e61d1ad89cc8012e5d220f18eea98a9291371e8a04205cb1ffc9bcca",
+      "bytes": 760702
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/commands.jsonl.gz": {
+      "sha256": "0f8b499a5a755b74e9b9a8201cf417cb1e4e6a8b613696b209b8a5a880e27ad5",
+      "bytes": 189915
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/context_validation.json.gz": {
+      "sha256": "308625aee2c33bc242c1b6c7755c04063e38b1f1a7c287a1a29fab25dd29f226",
+      "bytes": 567
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/events.jsonl.gz": {
+      "sha256": "3d5365e8c2c4d69ce7e434e1882b8e8ee99ba3c78dcff843ec118fdb19efb4da",
+      "bytes": 122040
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/genesis.json.gz": {
+      "sha256": "95a64ab40fe06af483027acbb2a40dfd6ae171aced31cf27bf87adc06123c1e2",
+      "bytes": 5368
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/host_worker.jsonl.gz": {
+      "sha256": "a6d02c990e1ca6101c501de8a45556afa1e35e5d0aac46549f98039988d29d1f",
+      "bytes": 12029
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/public_report.json": {
+      "sha256": "a2991ba06a43c7c0e30dd8a753e356a70a4ae9d4c76998c2f5952cedc48578c1",
+      "bytes": 12222
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/replay.json.gz": {
+      "sha256": "34b2ce8f2b4648eec8bccbe602df6e7a0e3d9533d8ad52f67401932d5e76150a",
+      "bytes": 107817
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/role_calls.jsonl.gz": {
+      "sha256": "ce46aac43e4ed230fac1a259ae1dbff25c599ff3387e90365da3bf5e6dedee91",
+      "bytes": 59190
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_0/transitions.jsonl.gz": {
+      "sha256": "cbf5b0e372212d86e3c8014b5ccf6bcdd4b5bfb39b499cdc4c7db9bc0e7b60f0",
+      "bytes": 13010
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/accepted_envelopes.json": {
+      "sha256": "24eeec5d8cc8c4f6d87be3c42679a18c78fbf12aca625970ad3435dde774fb4c",
+      "bytes": 760702
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/commands.jsonl.gz": {
+      "sha256": "86e1794c1ab15920e1aaa15aaf80c8d8321654e795a05fb66294af4b82175f33",
+      "bytes": 189568
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/context_validation.json.gz": {
+      "sha256": "b9f80c73f6b29f1cf878e77ee55ea976c7fca8195109e950f1d20b33dcb68b63",
+      "bytes": 565
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/events.jsonl.gz": {
+      "sha256": "39c0e2749b5530f581045ee1e88443b281359eabdb00f2ba983c5dd2b7745e8e",
+      "bytes": 121944
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/genesis.json.gz": {
+      "sha256": "4f5292d57eef4ac18b3d486bbe0993d1bfb0b0a34090c68c95a17160d2e17681",
+      "bytes": 5365
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/host_worker.jsonl.gz": {
+      "sha256": "9a7bf7e5a0c51651b2861f417f89871c8348029bab4aeafa85d24917e8ecebf4",
+      "bytes": 12006
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/public_report.json": {
+      "sha256": "1596440df891ff320c3589b609670050e3c6eb52e0c2604643eae91dc2b5f4e5",
+      "bytes": 12209
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/replay.json.gz": {
+      "sha256": "c12a73e002fa323a0ba80a9f1c114db2d9befbb124ac8a4317048788efa9cbea",
+      "bytes": 107714
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/role_calls.jsonl.gz": {
+      "sha256": "6268c08ebcd74f4e11fe5cdb50c591a386677b0d16d364f8d0b11bf7a6cb4b9c",
+      "bytes": 59196
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/history_1/transitions.jsonl.gz": {
+      "sha256": "0297b6565e29f81c87bd826594c34ad7555a4734849fa131e8e01ebc244d67a3",
+      "bytes": 12976
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/launch_command.json": {
+      "sha256": "3f603ebc924d448dacf98f6975c83b0b085b5c66bf3f0d6e047ffcd09d5e50f8",
+      "bytes": 662
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/launched.json": {
+      "sha256": "8cc7416487bce1c73613445aeefe1105377b98b40c7eb6aa7933f76575d0e863",
+      "bytes": 1098
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/preparation.json": {
+      "sha256": "fbe97c09ba6b46c1c40df4033a9669210ea16d295b0a5f9bf734ecb4a2fec6df",
+      "bytes": 58252
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/preparation_validation.json": {
+      "sha256": "c22abb71771dc2a8d20474d59c2a5218f48504a46add232d0e4cac913807020b",
+      "bytes": 494
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/public_complete.json": {
+      "sha256": "4ab4a14e9fc1627c25921d8d7c7813595788ba937314f2f5f6e51916058de2b0",
+      "bytes": 24667
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/report.json": {
+      "sha256": "0e7c4bc2d115066aaa8a4d2dedf3e1099f98035bc087a6df1218c72b1a963c55",
+      "bytes": 41182
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/.gitignore": {
+      "sha256": "f5563c85692159ea32d74dad01ebeff445faa43525c94aa24af1277e87d25d9c",
+      "bytes": 26
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/PROTOCOL.md": {
+      "sha256": "6f58be5ca6b2a4564d6ba9c9d6915f03b4aed5f05afe4755edb4be10d2745fef",
+      "bytes": 4009
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/README.md": {
+      "sha256": "3f53a3df1080e7c57bf41eaa9512a30d30f710fae6d750616a7ed2ca532dba5a",
+      "bytes": 4132
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/artifact_manifest.json": {
+      "sha256": "97230f8d195ea329cc83ea53cf5dbf1453573ce186b6b280cc7b130162ecfa0f",
+      "bytes": 3771
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/frozen_source/journal/authority.py": {
+      "sha256": "b3567b92520e2d1789d2c2795bf630a49549f0b646ef9de9e2c65953ca456ccf",
+      "bytes": 8262
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/frozen_source/journal/common.py": {
+      "sha256": "559221659ee43582a31310c228c3e60fc8cea40676086a73f0759680aa6719d0",
+      "bytes": 9319
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/frozen_source/journal/drain.py": {
+      "sha256": "c44c272a61165fb41390d4c889adbfef9bd49cd8324e552e5c3678e645d913e6",
+      "bytes": 4240
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/frozen_source/journal/model.py": {
+      "sha256": "34280589fe888e9ff4504af0895cfc3d15f116f4e83e158cd13928c0aef5ce22",
+      "bytes": 4641
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/frozen_source/journal/reader.py": {
+      "sha256": "de997a5446d166af0edd19d5298af3738936148354dde77d779ba42b1337895e",
+      "bytes": 5136
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/frozen_source/journal/roles.py": {
+      "sha256": "4bcb4df20037937607013fb0c76989d86dc7968121eaa591513f44b8cbbb65fd",
+      "bytes": 7841
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/frozen_source/journal/run.py": {
+      "sha256": "cc65219ef4a78d248ad47e9b60d0e2d0a0675ff00014800d3c90c08705f2c6ce",
+      "bytes": 7754
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/frozen_source/verified_reader/service.py": {
+      "sha256": "c784dc02115b72ac16b68c612dae6737efbbf9c50b43f52215a760959decc6a9",
+      "bytes": 9679
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/host.py": {
+      "sha256": "70bbb6338c7600d7e6e5609524d146f9af21bfc01a94d4dfd725933fc5931916",
+      "bytes": 8504
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/paired_driver.py": {
+      "sha256": "34b248f45aa74a70b62b513e63a242e67fc7b1d102f63bf14ca48ff1b8930953",
+      "bytes": 17355
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/reports/RESULTS.md": {
+      "sha256": "cbccf7f2edb9bd40c26917b8aa12dbbad35a1847ade4da5eaf11e04b1284b63a",
+      "bytes": 4021
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/reports/paired_001/once_crypto_commands.jsonl": {
+      "sha256": "2f6dda9978ffd1ba5dcf67c2df2aacbcf5e4d11f4634d9c6689afdbd181ba91d",
+      "bytes": 87943
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/reports/paired_001/original_crypto_commands.jsonl": {
+      "sha256": "fdf3b50a2ce9ae963b51e758f3b52b7569a063b198f21f861911db974a3dd333",
+      "bytes": 4760
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/reports/paired_001/original_first_proposal.json": {
+      "sha256": "aac8ddfeb1b8cc8607f7b815b15ed657a554dbaf0c1ac69e6a384fca0c9356b2",
+      "bytes": 1480
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/reports/paired_001/pairs.jsonl": {
+      "sha256": "38a7ff2403ec1172c35c3c6af36a543d6a6b911f4be1bb32ee69547c50921484",
+      "bytes": 13753
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/reports/paired_001/persistent_crypto_commands.jsonl": {
+      "sha256": "29210e1427d9e7ec87e10bc18758a442e775279090e7896853ddd3cfe0802ae9",
+      "bytes": 36150
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/reports/paired_001/predeclared.json": {
+      "sha256": "ef3b7ecf0e690d2ebeace70ee4a6404f60091cb508ea2c074b8ed4dbd071caab",
+      "bytes": 1152
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/reports/paired_001/preparation_commands.jsonl": {
+      "sha256": "6de966bf857191568a1ef78d3778c3f3de07ee6d36b23e645026753a787e22a6",
+      "bytes": 18756
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/reports/paired_001/report.json": {
+      "sha256": "f24bdf11746242b2b0dc32d607b3db08640d108c7672dc174a2cce721392ed42",
+      "bytes": 3655
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/host_runtime/source_pins.json": {
+      "sha256": "17402dba697bd73da8aac4e519e6f7cbaeca25ecfce824d8f8cf45004e743bc7",
+      "bytes": 1923
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/.gitignore": {
+      "sha256": "96b5dfad07ba0f64948f72e2894beaabac43cd0178a6612896e63dba6abeb06a",
+      "bytes": 29
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/CLOSURE.md": {
+      "sha256": "3135d59ad0475abede6a646c4b01b1b757bba23c03a96ad2078c97cab0efabb4",
+      "bytes": 7404
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/CREDENTIALS.md": {
+      "sha256": "7f7392cd27068149ffb10ebcc0a3d5f41e7909f8eb85d784855d0d0d84d32b68",
+      "bytes": 5437
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/CRYPTO_FREEZE.json": {
+      "sha256": "b301dd984d30227fe21bbefd54b6b1d7abdc012d4539ec7524f9918c15f77b96",
+      "bytes": 613
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/ENVIRONMENT.json": {
+      "sha256": "3b8516a67904176a12d9a7f6e13088376dca4ad7944e5b48fe76f83562651831",
+      "bytes": 458
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/EVIDENCE_MANIFEST.json": {
+      "sha256": "36d8fdb7ef23e73e48ba2fb6d6d0f498fe999b933cf0aa76a5e3ea1f2109c6c5",
+      "bytes": 11158
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/HARNESS_ORIGINAL.json": {
+      "sha256": "c7e0a3da5baafd56754ba4d3788cabd0bec81fc795276259223c1314cf1b236a",
+      "bytes": 259
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/INTERFACE.md": {
+      "sha256": "a9df14988aba7e85c066dde6010aff647f695b5f3dd47ee78fe20ebf9deaf78c",
+      "bytes": 4696
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/README.md": {
+      "sha256": "4035e6cd2cf31395e2d296bc13451b6909fe0312d8bd2d128fb61fb9f0f320d4",
+      "bytes": 7327
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/REVIEW_CONTEXT.json": {
+      "sha256": "2fbdbdfb6403528e97cbb7f683d88a431a5d6509e9db0fa368815be0e842c1ef",
+      "bytes": 814
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/REVIEW_NOTES.md": {
+      "sha256": "cc2c89ed3ed426a00e4d64ad3fc7be4ab99b49bc140a00700ff75c89fd8b0bbf",
+      "bytes": 2205
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/REVIEW_SOURCE_PINS.json": {
+      "sha256": "9ba2dcefe7e8fda52cd1916b30f14d4fa6081ab23b5af00daf18afcc4e4ffa82",
+      "bytes": 601
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/SOURCE_FREEZE.json": {
+      "sha256": "08de010d9b428cbb6d37b6e258e7c06d09024d742b08ebd9409520f78a1138a4",
+      "bytes": 1419
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/CREDENTIAL_INVENTORY.json": {
+      "sha256": "25c561e970f3609a308a3ac0afe19a05f3d9560ce6a5ea7efaa9834324123618",
+      "bytes": 982
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/MANIFEST.json": {
+      "sha256": "61d01bf761ba86b6cf71ca2b2d55463b0493405e62d028d55d7086229ce9bfe3",
+      "bytes": 4615
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/PUBLIC_COSTS.json": {
+      "sha256": "8aa50ae2d654d23d9f6e2dcb36a409c0aeb49b547bfa5fe581c5471b08a2732f",
+      "bytes": 11054
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/authority-server.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/checkpoint.json": {
+      "sha256": "70539a81845a1b1ac5b651c0b0d9f2fe5b4ad092288b8b5a7c1f855fc4b56662",
+      "bytes": 154
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/commands.jsonl": {
+      "sha256": "513c5f68c2ee7a548fe20a026532dbd8660c27ef87056e2a380d0df85b73ede2",
+      "bytes": 2386344
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/context_validation.json": {
+      "sha256": "00d3922aff43f84e1775920aa0afbd0761b12a3204ebaf3342b8d87be2558c70",
+      "bytes": 909
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/events.jsonl": {
+      "sha256": "9aefb9d88000829b26103e25e2ad0093bbf3c1fbee26f49d97fed48b173706c3",
+      "bytes": 164209
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/genesis.json": {
+      "sha256": "75eec33599126963b0b1133697b57a5e4bad71ce3acc917c91124a484f275c6a",
+      "bytes": 13429
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/progress.json": {
+      "sha256": "bd42044ac8485bbd63b2cf823649771adbb76584c50b8f67c5812ce82e718963",
+      "bytes": 110
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/public_context.json": {
+      "sha256": "9d62314ebd6dba812b3e409651d948961d9ef802b68b68c36ded8b35cedfe99b",
+      "bytes": 342331
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/public_log_audit.json": {
+      "sha256": "e352c9bca84579658054c5b447b2ac2a97b4cdd2ffe81a6a9438c3579c978d54",
+      "bytes": 321
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q00.json": {
+      "sha256": "7448474769713b02fdae06ba5e7dd88480b31e710f9df7c9fd38a1905f37b3bf",
+      "bytes": 1984
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q01.json": {
+      "sha256": "c1973006395b1535ad5850f028ac70ebfc1473d0cf563e0c718782984433fe6f",
+      "bytes": 1988
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q02.json": {
+      "sha256": "f89a0bb5dc08ac0f60697b0faf241517e469e5e8e8fdb0f4318aa548ceccfac9",
+      "bytes": 1975
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q03.json": {
+      "sha256": "5e09ce8255e455112e7bb0c8254bbb7a18c19a2855d87a72d32eeb03b9eb5618",
+      "bytes": 1995
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q04.json": {
+      "sha256": "264b33f9069e03cc59bfb501f2923f4546d63e24b2c2e6a9849f3d67b6729781",
+      "bytes": 1982
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q05.json": {
+      "sha256": "2ac2c25d3d0917bf6ca4d62ab9941c6c4d89362879ac0a925902b394bb38eead",
+      "bytes": 1996
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q06.json": {
+      "sha256": "320edc7513ee4fcfeb68316ba9fa357a209469378a9de8f048868cacf880d107",
+      "bytes": 2003
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q07.json": {
+      "sha256": "6f541d79d52604070cd4594c0891b47119b30a55bfefdbe1eaddeda1749811e7",
+      "bytes": 2008
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q08.json": {
+      "sha256": "140241574c86c4575c87f19773c5bf325698eaba866b00746ccba55b53f37ec5",
+      "bytes": 1975
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q09.json": {
+      "sha256": "40cbc3541028ad677b307ab609c53e2365641543d72f7833d93eb22fdf678a07",
+      "bytes": 1987
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q10.json": {
+      "sha256": "99ea14d0de3747d976fc6f03381cda9889a29c05a3777fad32641774d0e51edb",
+      "bytes": 1959
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q11.json": {
+      "sha256": "27d32729178da0e4f5804e01d0f54b66a31b8c84c15a0c57e09a21fa1e56fd72",
+      "bytes": 1973
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q12.json": {
+      "sha256": "7dba9080a05aa9a032cc7887692b182fbf23adbd3cc6d704c82b7768b9809402",
+      "bytes": 1973
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q13.json": {
+      "sha256": "a25780f8795d5d28e4d80dc64000f4a703fbf16c002394492ea998e8c4cbb519",
+      "bytes": 1989
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q14.json": {
+      "sha256": "5b6cea2fdd37c478887cca6199e3f445d5aa01801664607c6dfaaa07f972f3e9",
+      "bytes": 1963
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/queries/q15.json": {
+      "sha256": "dc996224eacde0ed00068be3359bbfbf6ddc274540b788c36434597db4caf59d",
+      "bytes": 1964
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/reader-server.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/replay.json": {
+      "sha256": "36b077d243c88a3119fdcef852f172a7ba0526f21fb3de39d3e47129d77b31fd",
+      "bytes": 141749
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/report.json": {
+      "sha256": "dbc7b6b41ff27a380755c210d9a1c190b3792fb1922f0a492add065312113ece",
+      "bytes": 2547
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/role_calls.jsonl": {
+      "sha256": "8858aa826fd17250b17218dc022bee87f14d0476b34be7957bdbb0fcb29d1ba2",
+      "bytes": 118502
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/evidence/normal_001/server_processes.jsonl": {
+      "sha256": "fad6cd0649b38880e568cff6d338022f6b92ac6ea1d659bf78acc2cc00c0873b",
+      "bytes": 1634
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/export_evidence.py": {
+      "sha256": "654f8c01f30ea76867e4b9bc26377e2db2f8f8f7b4e518f6c4a64f0664b4c3ed",
+      "bytes": 7756
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/finalize_normal_001.py": {
+      "sha256": "d94f7ef7a3dca0462274373571ef796f448c669f8cd38911f3c0b22bb598c7fa",
+      "bytes": 6699
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/normal_flow.py": {
+      "sha256": "3a7a4b565d42a5bc6844ff3c78aece92f5152d33cc4b406b7c60eab04cdbd261",
+      "bytes": 6719
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/public_log_audit.py": {
+      "sha256": "f79fca7cb4d4a0cf69a7226b508d2293651a2dc7f7c9aa63e4319d4d637b5d04",
+      "bytes": 2017
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/reports/EXECUTION.json": {
+      "sha256": "d776b2fa1dd8cbb7b90fc7cdcc705687b07878bfc6922f992895dadca6fff1b9",
+      "bytes": 1638
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/reports/first_harness_stdout.log": {
+      "sha256": "72c7d84147b42647741e2272aa170f4a98705560ff23133a260113759834fb53",
+      "bytes": 1741
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/crypto/crypto.py": {
+      "sha256": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+      "bytes": 23037
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/crypto/group.py": {
+      "sha256": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+      "bytes": 745
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/crypto/native_pow.py": {
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+      "bytes": 2996
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/crypto/rows.json": {
+      "sha256": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0",
+      "bytes": 24189
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/journal/authority.py": {
+      "sha256": "b3567b92520e2d1789d2c2795bf630a49549f0b646ef9de9e2c65953ca456ccf",
+      "bytes": 8262
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/journal/common.py": {
+      "sha256": "559221659ee43582a31310c228c3e60fc8cea40676086a73f0759680aa6719d0",
+      "bytes": 9319
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/journal/drain.py": {
+      "sha256": "c44c272a61165fb41390d4c889adbfef9bd49cd8324e552e5c3678e645d913e6",
+      "bytes": 4240
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/journal/model.py": {
+      "sha256": "34280589fe888e9ff4504af0895cfc3d15f116f4e83e158cd13928c0aef5ce22",
+      "bytes": 4641
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/journal/reader.py": {
+      "sha256": "de997a5446d166af0edd19d5298af3738936148354dde77d779ba42b1337895e",
+      "bytes": 5136
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/journal/roles.py": {
+      "sha256": "4bcb4df20037937607013fb0c76989d86dc7968121eaa591513f44b8cbbb65fd",
+      "bytes": 7841
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/journal/run.py": {
+      "sha256": "cc65219ef4a78d248ad47e9b60d0e2d0a0675ff00014800d3c90c08705f2c6ce",
+      "bytes": 7754
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/oracle.py": {
+      "sha256": "a046b355e6fe22cf616bc35c3b01d47d49ded3e75985031d22d33bc76b270285",
+      "bytes": 1803
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source/verified_reader/service.py": {
+      "sha256": "c784dc02115b72ac16b68c612dae6737efbbf9c50b43f52215a760959decc6a9",
+      "bytes": 9679
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source_original/journal/authority.py": {
+      "sha256": "2030998d92bf2baa92055bd8e522b0c0001ffeadd5f43100f0a33e4e6ef08039",
+      "bytes": 7437
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source_original/journal/common.py": {
+      "sha256": "32afcec1c2db4a6e1ccf9eb475ad22780a0f0d4deceb18c39e66246b5a1b6b1e",
+      "bytes": 8294
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source_original/journal/model.py": {
+      "sha256": "bcbac3baac92aaeacf2fdbbf174dd0d1c57c9e0fffed93b9d7307f2b96da28eb",
+      "bytes": 4324
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source_original/journal/reader.py": {
+      "sha256": "d39c3538d8c0e660539d4e776627926449fec5fb1fc1c866853643d47ce76c9a",
+      "bytes": 5446
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source_original/journal/roles.py": {
+      "sha256": "a42bf9dc15320587e60a47332556dddc2d345eed7099c8f573f13f8697d3b2f0",
+      "bytes": 6123
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source_original/journal/run.py": {
+      "sha256": "e12ac924830544b98bbbba67f8ed8c489ee719b4d33d0307869f54f58a43c330",
+      "bytes": 9050
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source_original/normal_flow.before_guard_fix.py": {
+      "sha256": "497a3c69212a0cb61637faa2fc13ee7a1d0a603c4dc82d257a1b44703961f478",
+      "bytes": 6906
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration/source_original/verified_reader/service.py": {
+      "sha256": "f0e79c2a33baa32e2867d467735dafd29b26c480deb1f688289e7468bd2de01b",
+      "bytes": 9676
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration_review/REVIEW.md": {
+      "sha256": "1ca546100b8191910720c2166925b7ba5c041756e8bfa719f419b89cd7f5078f",
+      "bytes": 16329
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration_review/check_public.log": {
+      "sha256": "c8e410ce59fe7981d2a009f3fa366776a39787c955978268baafa9f57f66986f",
+      "bytes": 2485
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration_review/check_public.py": {
+      "sha256": "9cf7a168301f481447c60907fb68eb47b01fa50fb63412f59a900eacea313fce",
+      "bytes": 16961
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration_review/check_public_002.log": {
+      "sha256": "5ef65d66ce90f9c91be776560b2caecbaac3fbbb8f199b6553d6f3e0ac9634b4",
+      "bytes": 2485
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration_review/harness_guard.diff": {
+      "sha256": "bf3bc3329123bf71940e4391c1f5bbb54c4abc1d8fac2b05fa64955c9ac0ec64",
+      "bytes": 1563
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration_review/public_check.json": {
+      "sha256": "703bffd82e09aaa41d5e6fa9c3039343cea5a72cc62b92c361d2484c0f63aa27",
+      "bytes": 13737
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/integration_review/review_manifest.json": {
+      "sha256": "96ca4db6d4765476671a514cf8f3bb04ff45da68f827b3c3b05405a8c6716e03",
+      "bytes": 1869
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/CLOSEOUT.md": {
+      "sha256": "815d4d43eaf866c8f29dd2ac8d92b949c82d9fbacd978d50527d46df0c9d8fd0",
+      "bytes": 1648
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/CONTRACT.md": {
+      "sha256": "256e85b406a0c6a11cc97065c8bf7c9a7aad2126bff9ad8ea868e1208495703d",
+      "bytes": 6792
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/CONTRACT.queue-corrected.md": {
+      "sha256": "3d8f4eb79e9e6eca02e14e965bd533eab95b002a09eecea3f9161c2bfbfdabff",
+      "bytes": 6810
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/CONTRACT.revised.md": {
+      "sha256": "465d3a0f4eb20f9ce762bf49200e03bb2e918efd5cdd9c563405fe91d6b6c674",
+      "bytes": 7598
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/GENERAL_FIXED_SPAN.md": {
+      "sha256": "5d99740f9f329e0a45f9c45bcd0db684b49f66660db567d81bfc169dbca4edb9",
+      "bytes": 10521
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/PROTOCOL_PRIVACY.md": {
+      "sha256": "5960cd68c8e5355de48d226599e996bdc5e0528ccff516e3e730f8e170ffb017",
+      "bytes": 7456
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/PROTOCOL_PRIVACY.revised.md": {
+      "sha256": "aa7b096e5ff44b4c72ef72f005a363897e06a8fb94d0351bfa15856f3564fec0",
+      "bytes": 8921
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/REVIEW.md": {
+      "sha256": "6b23143f320d57b00bd3a062c25ad47566055ed877751e5728c561587102e0c3",
+      "bytes": 11243
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/crypto_source/REVIEW.md": {
+      "sha256": "bc6889933b0bca6ad5b54b983d21d4cfc10923fe1d9b2a25b3beb8ebd471fd19",
+      "bytes": 11742
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/crypto_source/check_public_records.py": {
+      "sha256": "93db8d478dd7c9cf05d95afef6ea2df6a869dc32a886a76983b30a1e969a8ab6",
+      "bytes": 8581
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/crypto_source/public_records.json": {
+      "sha256": "e45828d13ef31ba315753ad36dfea048f7f7a21b35c8464f6f5055a4598e4b1f",
+      "bytes": 2491
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/crypto_source/public_records.log": {
+      "sha256": "e45828d13ef31ba315753ad36dfea048f7f7a21b35c8464f6f5055a4598e4b1f",
+      "bytes": 2491
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/crypto_source/review_manifest.json": {
+      "sha256": "2cab9509ae7eddf97c03da38696eed85904e79f6b16e348a08e10aad28a28173",
+      "bytes": 1028
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/crypto_source/source_inventory.json": {
+      "sha256": "e3e2ad6c955a80d950c3ccec0b7522f3c0a6fb444d242fed2e094c8e0e85629e",
+      "bytes": 7888
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/primitive.REVIEW.md": {
+      "sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840",
+      "bytes": 20435
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/protocol_review/sources.json": {
+      "sha256": "1b49b6cfe9c492637f2cd3a379e82c84a7eed1eb348df6f17b48478dff3e9d4e",
+      "bytes": 1916
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/PROPOSAL.md": {
+      "sha256": "4d30d6013642666081ebecfbcc4dbb0446afeda1e58d94f294202507a20f71c9",
+      "bytes": 7414
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/.gitignore": {
+      "sha256": "96b5dfad07ba0f64948f72e2894beaabac43cd0178a6612896e63dba6abeb06a",
+      "bytes": 29
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/ENVIRONMENT.json": {
+      "sha256": "f649ea636905b103c991e0d51eb98819e5bf893326f7e2e6fd252db4b565fa47",
+      "bytes": 349
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/README.md": {
+      "sha256": "175f54e784998400f65201bea68bb125f785ee9ffa6adc8a6a60e42b5ab41158",
+      "bytes": 1770
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/SOURCE_PINS.json": {
+      "sha256": "fbb0a1f4334927ca970f4d121f171ba02d6df675f3b421b27a9a67aa4c137c95",
+      "bytes": 825
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/positive.py": {
+      "sha256": "a8c236f89aad95a6f9b541145aa7cb6a964a9a3d89b170f478d18cc49c2da19f",
+      "bytes": 10346
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r00.json": {
+      "sha256": "b95298b99283bd85d772538de271118cdf3f0e93838c0b83dc06f1d5debef2c9",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r01.json": {
+      "sha256": "13e20b217f59d4f347736890292c4cf381a7ab7d3a6fdc8acc98a70eb2be7f86",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r02.json": {
+      "sha256": "677776e2b9265c1b5cea2a95e08af1b9c7c1122cc0f3d3f4180067d76baf2164",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r03.json": {
+      "sha256": "40e9f977c1d943486ed6fa4ba259732d86c591c500a587c7a13888017a9f414d",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r04.json": {
+      "sha256": "eeb2fd704b9c2df103f2926da87235cbbe966e209eafabe069713f1df36bf0e3",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r05.json": {
+      "sha256": "fa17ed03aa3ffe9fd1bc750930d5ecd42beca8d2b4b88c9f4d76c0e80efdec70",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r06.json": {
+      "sha256": "aede1089e8cf26ac0327d21f27f28b87e2a543f5ca6cf188f46b60edf81c3ec7",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r07.json": {
+      "sha256": "8a721900af7a443b9eea6ceda544e66e0a38bb12b5b5f01ff64df3aaf11136ed",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r08.json": {
+      "sha256": "2d7be09aaed60c79df6d8251e55fcb736038b6a5cf2112596a2fbd36943e7cfd",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r09.json": {
+      "sha256": "7b4a2ae29cb0682c8ad74c8f64412e63d391a4310b75a89636fc005430a8e44a",
+      "bytes": 904
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r10.json": {
+      "sha256": "d142aac6b840504ec9b15748f303537b39bcf8b295d9937029ae9d898dc2313d",
+      "bytes": 905
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r11.json": {
+      "sha256": "b639eb43770a665664c7251ef5e82c1b597b0334feb852b4176a74d20afcd646",
+      "bytes": 905
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r12.json": {
+      "sha256": "cf84799168a0b61750d54e857b243988124f307c5508587b25df573fea6b5d7c",
+      "bytes": 905
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r13.json": {
+      "sha256": "9d65d37c1f6705b3b90965268cf4b2487e9caaf34df622d5c4b56a50fe097ded",
+      "bytes": 905
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r14.json": {
+      "sha256": "ca0f8176a2995b9823f3a144d75d48ddfe6a9ab3cace8ec446cc198fc9e13405",
+      "bytes": 905
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/announcements/r15.json": {
+      "sha256": "bb9d228dec3b165a0c7415f48e76ba5ce1cf4fa2693644a538d16f74cd4f56fb",
+      "bytes": 905
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/commands.jsonl": {
+      "sha256": "fd8dfdd4cd2b67b4cc889f36721b193fdb100f6ed851969e56cacd3145bd0318",
+      "bytes": 199074
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/context.json": {
+      "sha256": "708316c774c287151c677b6e78d9934f5cb5818a6f3d4fdbd6781e40afd79b58",
+      "bytes": 342331
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/context_validation.json": {
+      "sha256": "f81187eb4dbfe8b59a3adcbd49cd8236172b66a8da7eaa6e27a39caa75e56ddb",
+      "bytes": 909
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/cost_summary.json": {
+      "sha256": "f1f95d5fe3d8e95683de5dba82704ce8bd112aeab5dfe6eccd4ab345af6aa46e",
+      "bytes": 1000
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/costs.json": {
+      "sha256": "d3e8e3177b714fb2669878520c7f650c8fb7a8751c4f9ede29c3abf291be9b4f",
+      "bytes": 25669
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/execution_pins.json": {
+      "sha256": "0a3eaf86aebca344bc7e97cb3e3b580e5bde55ec7063192fa89b61e6bb243575",
+      "bytes": 1517
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x01.json": {
+      "sha256": "b58c592bf0acff48f04f4fa9986c38a9b122d7ded9d96674a59b662f9f28d12c",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x02.json": {
+      "sha256": "a3f7960601880774c178450f7cee3d0ce9772913e64caf995a49a2ecfe87568c",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x03.json": {
+      "sha256": "0d7aec504ef8d843eda35c7dd09c3697c310f26b50cf3ca5879d43f6e67537fd",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x04.json": {
+      "sha256": "fbcc6d8ecf58b3504974fdcf63643c8b566ed30d1f894aa16c3586a7edf3da1c",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x05.json": {
+      "sha256": "df5118e752112fb252395e3d6aab52924f97df225ebf82783347c21d02424e10",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x06.json": {
+      "sha256": "84bc0de984fe6dd6e8ae5f3f78f1d045d28997f1516b6a57fb04a858459bf80a",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x07.json": {
+      "sha256": "70f678137fb2c8ab76d751492788fcdd0e5b4491f37345890a832bcc44638906",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x08.json": {
+      "sha256": "2c7876fa95203d60d2b7c7f97c81a62cd3cae42fb09ed5e30fa5789a5d108d2e",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x09.json": {
+      "sha256": "b7269f3896eb5fc8855c1afea3d8e4d5dcf8b49b20e2aa6c45db1f4de8968208",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x10.json": {
+      "sha256": "b505dc635ac38e649c9aa9c129ce138a952ae3321a80e37936a711ff2d9b07bc",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x11.json": {
+      "sha256": "3a72fe1a392dfd9ae00e713f1d2de778db68930f70c56d6c944c5f7d553b5d71",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x12.json": {
+      "sha256": "64583802e847172a34d3bc4e576e067b10182cd095f72fab6adb3f0c8c42bdf9",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x13.json": {
+      "sha256": "20295192b308b20f67c1df991abb6b95a13f7a3449c00b45d11b59058ceaa994",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x14.json": {
+      "sha256": "59d41ca778d17e552f631245ed718a2ae8718f9b849fef433f91ca6ce98cfc3f",
+      "bytes": 1733
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x15.json": {
+      "sha256": "b15621ec860726e361aaa7e40fdee4ad928dc05ce09ea53aba6cb1642be4fac1",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x16.json": {
+      "sha256": "cc33dc1e91096a04df431aacba397e2b7520bd5d52abef910f1d6ea0cc7f83cb",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x17.json": {
+      "sha256": "2708a3d282ed9b43b0a9cbf7704e01c3e4ded88ba1a9080fdb87fdea7669dd08",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x18.json": {
+      "sha256": "b58c592bf0acff48f04f4fa9986c38a9b122d7ded9d96674a59b662f9f28d12c",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x19.json": {
+      "sha256": "a3f7960601880774c178450f7cee3d0ce9772913e64caf995a49a2ecfe87568c",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x20.json": {
+      "sha256": "0d7aec504ef8d843eda35c7dd09c3697c310f26b50cf3ca5879d43f6e67537fd",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x21.json": {
+      "sha256": "fbcc6d8ecf58b3504974fdcf63643c8b566ed30d1f894aa16c3586a7edf3da1c",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x22.json": {
+      "sha256": "df5118e752112fb252395e3d6aab52924f97df225ebf82783347c21d02424e10",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x23.json": {
+      "sha256": "84bc0de984fe6dd6e8ae5f3f78f1d045d28997f1516b6a57fb04a858459bf80a",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x24.json": {
+      "sha256": "70f678137fb2c8ab76d751492788fcdd0e5b4491f37345890a832bcc44638906",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x25.json": {
+      "sha256": "2c7876fa95203d60d2b7c7f97c81a62cd3cae42fb09ed5e30fa5789a5d108d2e",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x26.json": {
+      "sha256": "b7269f3896eb5fc8855c1afea3d8e4d5dcf8b49b20e2aa6c45db1f4de8968208",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x27.json": {
+      "sha256": "b505dc635ac38e649c9aa9c129ce138a952ae3321a80e37936a711ff2d9b07bc",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x28.json": {
+      "sha256": "3a72fe1a392dfd9ae00e713f1d2de778db68930f70c56d6c944c5f7d553b5d71",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x29.json": {
+      "sha256": "64583802e847172a34d3bc4e576e067b10182cd095f72fab6adb3f0c8c42bdf9",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x30.json": {
+      "sha256": "20295192b308b20f67c1df991abb6b95a13f7a3449c00b45d11b59058ceaa994",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x31.json": {
+      "sha256": "59d41ca778d17e552f631245ed718a2ae8718f9b849fef433f91ca6ce98cfc3f",
+      "bytes": 1733
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x32.json": {
+      "sha256": "b15621ec860726e361aaa7e40fdee4ad928dc05ce09ea53aba6cb1642be4fac1",
+      "bytes": 1427
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/inputs/x33.json": {
+      "sha256": "cc33dc1e91096a04df431aacba397e2b7520bd5d52abef910f1d6ea0cc7f83cb",
+      "bytes": 1428
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/progress.json": {
+      "sha256": "28a32cfbec3e80e1e15391337420796a34fc9eaed05fa6ae2e8e3ea536a90b74",
+      "bytes": 89
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/public_ciphertext_inventory.json": {
+      "sha256": "cb78c9b060f9a587fd17240a6bbba56791e1c132a024772ffec4272d33860cf5",
+      "bytes": 10940
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/public_transcript.json": {
+      "sha256": "7b11c1c81ac8527de0d83c5fb17662824a12465010b27aec283d60653b7c8e9b",
+      "bytes": 315146
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/queries/q00.json": {
+      "sha256": "9cebea645853ec4ab70dbcdd8b30237a202659d2411a062944cdfa1b8c6b481f",
+      "bytes": 1984
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/queries/q01.json": {
+      "sha256": "80954dc0520a4b468ce778e71a8dbd6d7fda67c535f06bc50d5dcd43791205ee",
+      "bytes": 1988
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/queries/q02.json": {
+      "sha256": "098b5f9cc3e8fe9c9319d4eab43cdd4fb67f9b73e1dcb200636f79b6fa9ff614",
+      "bytes": 1975
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/queries/q03.json": {
+      "sha256": "6b708b536b51c599615c3d39f1c7d45119e6bf77b574b0851f6155a77b9de328",
+      "bytes": 1995
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/queries/y00.vector.json": {
+      "sha256": "1ccfb478c1166b81673f84c49501c250054404f9fb883bd8c33387d63a1b301e",
+      "bytes": 1514
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/queries/y01.vector.json": {
+      "sha256": "053632591e1edd9405b22587dc38e00911fe0df374523c1951d159ac9df1e27b",
+      "bytes": 1518
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/queries/y02.vector.json": {
+      "sha256": "3c740b494e77a6b3727e2d8fc89d7911bcb476ddc27d6c15427c938ec777e704",
+      "bytes": 1505
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/queries/y03.vector.json": {
+      "sha256": "af6993a97369f9d1f3a27027d2ea0a12519294a377dde6dad1333400d146a87d",
+      "bytes": 1525
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/registry.json": {
+      "sha256": "edac2e3fa0f3d1e1b74da86d5de967cf855d687d184b72b9ca670980b6f9a6f0",
+      "bytes": 3006
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/report.json": {
+      "sha256": "c3cbf9b4bc1b01dd0c2796c55c55c9aea4985fb5f26f4c6dc65cf57440fe264a",
+      "bytes": 1719
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/stdout.log": {
+      "sha256": "be1eda65bb734f99537039c3132f45268ebf7830576f84f50e12baa2c5659f7b",
+      "bytes": 1044
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/setup.py": {
+      "sha256": "b148a7a86ab22385a7659f9f54c086e52d37f5a715b5415cda5785ee23ff9d2b",
+      "bytes": 10697
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/source/crypto/crypto.py": {
+      "sha256": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+      "bytes": 23037
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/source/crypto/group.py": {
+      "sha256": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+      "bytes": 745
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/source/crypto/native_pow.py": {
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+      "bytes": 2996
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/source/crypto/rows.json": {
+      "sha256": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0",
+      "bytes": 24189
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/implementation_review/REVIEW.md": {
+      "sha256": "695073e62ce7b408de4154948dac32139397009887d3970420ee626ef6c1cfdd",
+      "bytes": 9035
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/implementation_review/source_read.json": {
+      "sha256": "6be9840bd244df421985e1dc4a2e2a1a783e0b371345461b936b209415f3aa18",
+      "bytes": 982
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md": {
+      "sha256": "ba063f308c66794a348517ef6ebc20e06ba1da4c76d35d35cd60d79c753cc04b",
+      "bytes": 15178
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/sources.json": {
+      "sha256": "7b05158ab2c6ba7029e443e647e1a99f5b26ab93f0439115840e09760b355a41",
+      "bytes": 4801
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/.gitignore": {
+      "sha256": "44019fccf82df96c05ceaa4a4f75cf2c7f5df164c3b9e176aec336d37cf81fa8",
+      "bytes": 37
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/PRIOR_ART.md": {
+      "sha256": "1b4751e2d1b3c0e441cd53e26ed2039345b4573cd12656cd31c13345e1c01f64",
+      "bytes": 10376
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/input_identity.json": {
+      "sha256": "2f87f5139173197fb027692e8c10241c7d8dad9ba9de3652995b2ec0a512bdd6",
+      "bytes": 249
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/scry_decentralized_ipfe.jsonl": {
+      "sha256": "3afd2fc092d92b42531378439de4df37069420ff8ecf5228e7c83fefaad45629",
+      "bytes": 3147
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/scry_distributed_public_ipfe.jsonl": {
+      "sha256": "6bf2ceff8aa9346614b6792e30f8a9c8e2729592d77d64759ddae5d35a7c8ace",
+      "bytes": 1341
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/sources.json": {
+      "sha256": "fd0b98d55e7ab165258d6f871dd26cf664b0d181921629c012abe238534e5966",
+      "bytes": 14148
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/validation.json": {
+      "sha256": "14372e8d1613b4e4a4627170c72744c02baf8513291ec9958a5b5810b58d4ea0",
+      "bytes": 3560
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope/LINEAR_CONTINUATION.md": {
+      "sha256": "d52086249ebdc317c0e333096df7da3779a3ded4d24748963f5a71e73a14d172",
+      "bytes": 15825
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope/SCOPE.md": {
+      "sha256": "97669d67bbf114ee46d6cd04752e36de2dfff6f07e686ec782a480ca482be70c",
+      "bytes": 12755
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope/sources.json": {
+      "sha256": "3d159bbc55494a68f37d34b8dde0d674560ed287b589ecdf897628f882fb7014",
+      "bytes": 4939
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope_review/REPORT.md": {
+      "sha256": "7a6e4ab0eca3ed24a2ef76f5ee3ddedb2ba984ba43abfbdcba3bfbf631f01333",
+      "bytes": 17706
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope_review/commands.txt": {
+      "sha256": "c110c4ada436965a69b057f035c28c1766ac34200dbe004a05b5d938bffdbd96",
+      "bytes": 1482
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope_review/hashes.stdout.txt": {
+      "sha256": "e7769be82c0fc1b2461aea8f27e6095c1ce51c11d0c59f3195dc1767766f9b57",
+      "bytes": 1473
+    },
+    "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope_review/review_manifest.json": {
+      "sha256": "64703cca4931b8f8bc01e794df1168cef10d8a7285cbb66f96b2ab14020ab89e",
+      "bytes": 7132
+    }
+  },
+  "file_count": 572,
+  "total_bytes": 20651262,
+  "excluded_without_reading": [
+    "research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/other.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/policy.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/query.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/report.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/run/genesis.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/run/host_config.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/vector.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001.stderr.txt",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001.stdout.jsonl",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/other.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/policy.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/query.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/report.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/run/genesis.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/run/host_config.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/run/verified-reader-server.jsonl",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/vector.json",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001.stderr.txt",
+    "research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001.stdout.jsonl",
+    "research/learn_infer_only/experiments/end_to_end/journal/signer_route_control.py",
+    "research/learn_infer_only/experiments/end_to_end/journal/verified_route_check.py",
+    "research/learn_infer_only/experiments/private_construction/receipt_key_capsule/extracts/2013-727.txt"
+  ],
+  "stopped_tasks_resumed": false,
+  "completed_evidence_and_explicit_drafts_both_preserved": true,
+  "runtime_secrets_and_vendor_excluded": true
+}

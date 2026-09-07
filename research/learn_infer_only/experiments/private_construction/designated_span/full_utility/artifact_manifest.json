@@ -1,0 +1,67 @@
+{
+  "classification": "RUNNING full designated utility; stable source/preparation inventory only",
+  "current_run": "full_003",
+  "earlier_full_001_full_002": "unlaunched preparation snapshots",
+  "runtime_success_not_yet_claimed": true,
+  "mutable_progress_and_execution_log_not_in_static_inventory": true,
+  "files": {
+    ".gitignore": {
+      "sha256": "f5563c85692159ea32d74dad01ebeff445faa43525c94aa24af1277e87d25d9c",
+      "bytes": 26
+    },
+    "README.md": {
+      "sha256": "7080e96e18cd8b2458fcad15905a52c6ed970a8fd6496d697704b9c9dccb4a8a",
+      "bytes": 7424
+    },
+    "driver.py": {
+      "sha256": "00da64333801d1babd3a17068ee60095962cb8e7c091c8d73fc6ae1d26ca9041",
+      "bytes": 31287
+    },
+    "private_oracle.py": {
+      "sha256": "c2a7841e3148b78b43430907ba32e235d86cfef6f8d5688315e9d3c8d736345c",
+      "bytes": 5329
+    },
+    "reports/full_001/launch_command.json": {
+      "sha256": "89112f7067c4923f2f45bf9b63ffce4518854848d084b37eb3e5d668acf7efc1",
+      "bytes": 662
+    },
+    "reports/full_001/preparation.json": {
+      "sha256": "22b1aa8fb033234d2b8954780037ca3dcdd732703ac14f0c42e96633d2a110f9",
+      "bytes": 43761
+    },
+    "reports/full_002/launch_command.json": {
+      "sha256": "e66f0c203cd7776826f44608b01e6d036ac26cb657ae40b4208a071217f04585",
+      "bytes": 662
+    },
+    "reports/full_002/preparation.json": {
+      "sha256": "90c3879e4cf44776ad52a9c5c8b7d7dee75d07a7bf920267afe98eac4b3cbb3d",
+      "bytes": 43848
+    },
+    "reports/full_002/preparation_validation.json": {
+      "sha256": "103de0db51a6b1c9089386a6861e5f8318a047dfedf6e07dbd593e54cdecf311",
+      "bytes": 660
+    },
+    "reports/full_003/execution_command.json": {
+      "sha256": "5c0b08be652c85676d2ba04d9a8a1f7e53736144c25488517e2507400fda5542",
+      "bytes": 895
+    },
+    "reports/full_003/launch_command.json": {
+      "sha256": "3f603ebc924d448dacf98f6975c83b0b085b5c66bf3f0d6e047ffcd09d5e50f8",
+      "bytes": 662
+    },
+    "reports/full_003/launched.json": {
+      "sha256": "8cc7416487bce1c73613445aeefe1105377b98b40c7eb6aa7933f76575d0e863",
+      "bytes": 1098
+    },
+    "reports/full_003/preparation.json": {
+      "sha256": "fbe97c09ba6b46c1c40df4033a9669210ea16d295b0a5f9bf734ecb4a2fec6df",
+      "bytes": 58252
+    },
+    "reports/full_003/preparation_validation.json": {
+      "sha256": "c22abb71771dc2a8d20474d59c2a5218f48504a46add232d0e4cac913807020b",
+      "bytes": 494
+    }
+  },
+  "root_authorized_launch": true,
+  "matched_small_report_sha256": "dbc7b6b41ff27a380755c210d9a1c190b3792fb1922f0a492add065312113ece"
+}

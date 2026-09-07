@@ -1,0 +1,25 @@
+[EXECUTED provenance only] Working directory: /Users/ember/dev/zkml-research.
+No encryption, protected computation, mathematical control program, adversary or protocol test was executed. Commands below inspect or identify source artifacts only.
+
+[EXECUTED source reading] Inspected these byte-identical prior local extracts before reproducing them under this lane's ignored texts/ directory:
+sed -n '553,614p' research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt
+sed -n '615,694p' research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt
+sed -n '802,952p' research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt
+sed -n '975,1275p' research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt
+sed -n '1270,1475p' research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt
+sed -n '2350,2438p' research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt
+sed -n '796,899p' research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt
+sed -n '623,714p' research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_917.txt
+cat research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md
+sed -n '1,85p' research/learn_infer_only/experiments/adversarial_review/public_environment/REPORT.md
+
+[EXECUTED extraction] All three commands returned exit 0 with no stdout/stderr; no network access or PDF download:
+pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2012_733.txt
+pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2013_337.txt
+pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2014_917.txt
+
+[EXECUTED ignored-source check] Exit 0; every path matched direct_multioutput/.gitignore line 1, /texts/:
+git check-ignore -v research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2012_733.txt research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2013_337.txt research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2014_917.txt
+
+[EXECUTED final source/report identity] Exit 0; exact stdout retained in hashes.stdout.txt:
+shasum -a 256 /Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf /Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf /Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2012_733.txt research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2013_337.txt research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2014_917.txt research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/DEPTH_INTERFACE.md research/learn_infer_only/experiments/adversarial_review/public_environment/REPORT.md research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/DIRECT_MULTIOUTPUT.md > research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/hashes.stdout.txt

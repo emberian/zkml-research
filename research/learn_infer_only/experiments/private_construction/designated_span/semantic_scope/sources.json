@@ -1,0 +1,73 @@
+{
+  "schema": "resident-designated-semantic-scope-v1",
+  "as_of_utc": "2026-09-07T04:42:00Z",
+  "status": "Written mathematical specification and conditional reduction; not independently reviewed or machine checked.",
+  "scope": "Fixed-span leakage versus selected-release functionality; exact behavioral quotient; one public invertible linear moving-frame continuation.",
+  "activity": {
+    "runtime_construction_or_disclosure_tests": 0,
+    "new_executable_artifacts": 0,
+    "new_lean_theorems": 0,
+    "literature_queries": 0,
+    "scry_queries": 0,
+    "companion_edits": 0,
+    "commits": 0,
+    "local_read_instruments": ["cat", "sed", "rg"],
+    "artifact_identity_instrument": "shasum -a 256"
+  },
+  "sources": [
+    {
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/CONTRACT.md",
+      "sha256": "465d3a0f4eb20f9ce762bf49200e03bb2e918efd5cdd9c563405fe91d6b6c674",
+      "read_scope": "Complete current local document; metadata hash repeated after reading.",
+      "locations": "Privacy scope and behavioral limit, lines 53-76; selected-service continuity limit, lines 104-113.",
+      "use": "Parent target and limitations only. Execution claims in this document were not rerun here."
+    },
+    {
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/crypto/README.md",
+      "sha256": "b9b9de07b103c33ddaccaad38904516307917ec50dc73df72f6133ec702573a9",
+      "read_scope": "Complete current local document; metadata hash repeated after reading.",
+      "locations": "Setup roles, lines 57-72; fixed rows and bounded decoder, lines 85-116; mathematical versus implementation scope, lines 118-138.",
+      "use": "Backend specification boundary only; no runtime or implementation-source inspection in this tranche."
+    },
+    {
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/review/REVIEW.md",
+      "sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840",
+      "read_scope": "Complete frozen mathematical review authored and read in the preceding assigned tranche; sections 3-5 targeted again here, with section 4 reread completely.",
+      "locations": "Encryption and transform equations, section 2; exact coalition view, section 3; adaptive-message game and sampling bound, lines 173-233; correlated-key and full-coalition scope, section 5.",
+      "use": "Conditional fixed-basis DDH and independent-mask view lemma. This source does not establish the new moving-frame construction."
+    },
+    {
+      "path": "research/learn_infer_only/experiments/private_construction/fixed_span/scaling/GENERAL_FIXED_SPAN.md",
+      "sha256": "5d99740f9f329e0a45f9c45bcd0db684b49f66660db567d81bfc169dbca4edb9",
+      "read_scope": "Complete frozen local mathematical note read in the preceding assigned tranche; location searches repeated here.",
+      "locations": "Fixed-key adaptive game, lines 22-62; quantitative and sampling reduction, lines 92-145; functional limit, lines 153 onward.",
+      "use": "Underlying conditional adaptive-message IPFE reduction; source-paper claims are not expanded by this tranche."
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_span_scaling/REPORT.md",
+      "sha256": "36e724058ab5643dd4c0d176854891aabf1bbec9064ca54f5e7d0e0959dfb147",
+      "read_scope": "Lines 1-210 only, read in the preceding tranche and reread here; not the complete document.",
+      "locations": "Reviewed conditional theorem, sections 1-3; reported domain-nonvacuity limits, section 4; beginning of section 5.",
+      "use": "Independent-review status and exact scope of the earlier fixed-span lemma; no review of the new moving-frame note is implied."
+    }
+  ],
+  "new_artifacts": [
+    {
+      "path": "SCOPE.md",
+      "sha256": "97669d67bbf114ee46d6cd04752e36de2dfff6f07e686ec782a480ca482be70c",
+      "claim_kind": "DERIVED mathematical specification and quotient argument"
+    },
+    {
+      "path": "LINEAR_CONTINUATION.md",
+      "sha256": "d52086249ebdc317c0e333096df7da3779a3ded4d24748963f5a71e73a14d172",
+      "claim_kind": "DERIVED construction, exact algebraic equations and conditional reduction; symbolic 3D witness"
+    }
+  ],
+  "remaining_obligations": [
+    "Independent mathematical review of the new moving-frame reduction and functionality.",
+    "Any implementation must bind base setup, current frame, legal transitions, derived recipient key and old-record admission frames.",
+    "General field outputs are group-encoded; efficient numerical decoding needs a proved bounded range.",
+    "The full basis recipient bundle can read the observable quotient before selected releases; stronger selected-history-only enforcement remains a different cryptographic target.",
+    "No source-code refinement, encoder-image privacy, nonlinear learner, post-quantum construction or erasure mechanism is provided."
+  ]
+}

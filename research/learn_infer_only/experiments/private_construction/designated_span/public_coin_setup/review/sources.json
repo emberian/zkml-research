@@ -1,0 +1,70 @@
+{
+  "schema": "resident-public-coin-setup-review-v1",
+  "as_of_utc": "2026-09-07T05:20:02Z",
+  "verdict": "Accepted as an exact-distribution construction and conditional classical fixed-coalition reduction under the stated honest registration, direct public sampling and transcript assumptions.",
+  "evidence_kind": "Independent written mathematical review; no machine proof or cryptographic runtime.",
+  "activity": {
+    "cryptographic_runtime_tests": 0,
+    "disclosure_routing_or_extraction_tests": 0,
+    "new_executable_artifacts": 0,
+    "lean_theorems": 0,
+    "literature_queries": 0,
+    "scry_queries": 0,
+    "companion_edits": 0,
+    "commits": 0,
+    "source_read_instruments": ["cat", "sed"],
+    "identity_instrument": "shasum -a 256"
+  },
+  "reviewed_proposal": {
+    "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/PROPOSAL.md",
+    "sha256": "4d30d6013642666081ebecfbcc4dbb0446afeda1e58d94f294202507a20f71c9",
+    "read_scope": "Complete proposal, after parent announced it was written.",
+    "accepted_scope": "Fixed full-row-rank Y, static J before independent honest recipient key generation, safe-prime quadratic-residue group, honest direct uniform tau/U sampling, accepted public transcript, no extra setup-correlated information."
+  },
+  "dependencies": [
+    {
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/review/REVIEW.md",
+      "sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840",
+      "read_scope": "Complete frozen mathematical review authored and read in the earlier assigned review tranche; section 4 reread in the immediately preceding semantic-scope tranche.",
+      "locations": "Sections 2-4: algebraic endpoint, exact independent-mask view map, fixed-coalition adaptive-message DDH game and sampling bound.",
+      "use": "The new public-root simulator composes with this fixed-coalition view equivalence without additional advantage loss."
+    },
+    {
+      "path": "research/learn_infer_only/experiments/private_construction/fixed_span/scaling/GENERAL_FIXED_SPAN.md",
+      "sha256": "5d99740f9f329e0a45f9c45bcd0db684b49f66660db567d81bfc169dbca4edb9",
+      "read_scope": "Complete frozen local mathematical note read in an earlier assigned tranche; no reexecution here.",
+      "locations": "Fixed-key adaptive game and basis reduction; quantitative/sampling statement at lines 92-145.",
+      "use": "Underlying conditional DDH lemma; no new claim about an external source paper."
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_span_scaling/REPORT.md",
+      "sha256": "36e724058ab5643dd4c0d176854891aabf1bbec9064ca54f5e7d0e0959dfb147",
+      "read_scope": "Lines 1-210 read in the immediately preceding tranche; not the complete report.",
+      "locations": "Sections 1-3 accept the conditional fixed-key theorem; section 4 reports the independent modular-rank and ambient-domain checks.",
+      "use": "Independent-review status of the old theorem and matrix evidence, not an independent review of the current new setup argument."
+    },
+    {
+      "path": "research/learn_infer_only/experiments/private_construction/fixed_span/scaling/linear_results.json",
+      "sha256": "cd45fe7bc4a28adcbd0c834fc3ee168f295a26d9f3c11fb585586a0aa6e17800",
+      "read_scope": "Lines 1-180 only, including shape, reported rational/modular rank, first-16 pivot columns, determinant and beginning of free-column list.",
+      "use": "Previously recorded 16-by-577 workload pivot evidence; no determinant, rank, kernel or crypto test was rerun."
+    }
+  ],
+  "new_artifact": {
+    "path": "REVIEW.md",
+    "sha256": "ba063f308c66794a348517ef6ebc20e06ba1da4c76d35d35cd60d79c753cc04b",
+    "new_derivations": [
+      "Full joint distribution by affine bijection and matching atom probabilities.",
+      "Exact public-root conditional simulator, including identity samples and chronological display order.",
+      "No-extra-advantage transfer of the fixed-coalition adaptive-input bound.",
+      "Separate optional simulator for the complete literal independent-bit rejection-sampling tape.",
+      "Uniform-marginal known-log sampling distinction and positive implementation prerequisites."
+    ]
+  },
+  "not_established": [
+    "An externally fixed or nonprogrammable public beacon, hash transcript, CSPRNG seed or correlated RNG-state simulation.",
+    "Security for malicious or correlated recipient registration, or a malicious sampler retaining logarithms.",
+    "Implementation correctness, operational entropy, source refinement or operator-resistant recipient isolation.",
+    "Selected-output-only disclosure, nonlinear private learning, post-quantum security or encoder-image nonvacuity."
+  ]
+}

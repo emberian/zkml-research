@@ -1,0 +1,289 @@
+{
+  "label": "EXECUTED",
+  "scope": "Independent Boolean, dependency-graph and integer-bound controls.\n\nThis is not encryption, cryptographic privacy validation, state recovery, a\nquantum protocol run, or a compiler implementation for the source FE schemes.\n",
+  "script_sha256": "3e3f4d151406d735d8f8888ba0722c03959afc7a8a2d907f1e6c01baa01b18b0",
+  "projection": {
+    "circuits": 40,
+    "exhaustive_projection_equalities": 10240,
+    "nonzero_output_cases": 8528,
+    "zero_gate_passthrough": [
+      {
+        "gates": 0,
+        "outputs": 1,
+        "needed_key_bits": 1
+      },
+      {
+        "gates": 0,
+        "outputs": 2,
+        "needed_key_bits": 2
+      },
+      {
+        "gates": 0,
+        "outputs": 8,
+        "needed_key_bits": 8
+      },
+      {
+        "gates": 0,
+        "outputs": 64,
+        "needed_key_bits": 64
+      },
+      {
+        "gates": 0,
+        "outputs": 1024,
+        "needed_key_bits": 1024
+      }
+    ]
+  },
+  "channels": {
+    "regeneration_seams": [
+      {
+        "seam": "inner_to_outer",
+        "correct_support": 256,
+        "stale_environment_TV": "1"
+      },
+      {
+        "seam": "child_to_parent",
+        "correct_support": 256,
+        "stale_environment_TV": "1"
+      }
+    ],
+    "conditioning_scope_control": {
+      "fresh_key_event": "1/4",
+      "same_event_conditioned_on_parent_record": "1"
+    }
+  },
+  "setup_order": {
+    "level_dependency_checks": 561,
+    "depths_checked": 33,
+    "scope": "Exact ordering constraints only, not verification of a probabilistic setup implementation."
+  },
+  "parameter_examples": {
+    "scope": "Declared integer model bounds only.",
+    "rows": [
+      {
+        "U": 2,
+        "log2_T": 512,
+        "log2_S_upper": 4105,
+        "N": 2064,
+        "K": 278379704832,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 471,
+        "output_bound_bit_length": 452
+      },
+      {
+        "U": 4,
+        "log2_T": 768,
+        "log2_S_upper": 6153,
+        "N": 3096,
+        "K": 938006661888,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 609,
+        "output_bound_bit_length": 588
+      },
+      {
+        "U": 8,
+        "log2_T": 1024,
+        "log2_S_upper": 8201,
+        "N": 4136,
+        "K": 2225922538752,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 744,
+        "output_bound_bit_length": 723
+      },
+      {
+        "U": 16,
+        "log2_T": 1280,
+        "log2_S_upper": 10249,
+        "N": 5192,
+        "K": 4363876000000,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 877,
+        "output_bound_bit_length": 855
+      },
+      {
+        "U": 32,
+        "log2_T": 1536,
+        "log2_S_upper": 12297,
+        "N": 6280,
+        "K": 7598337992960,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 1010,
+        "output_bound_bit_length": 987
+      },
+      {
+        "U": 64,
+        "log2_T": 1792,
+        "log2_S_upper": 14345,
+        "N": 7432,
+        "K": 12236503562496,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 1141,
+        "output_bound_bit_length": 1119
+      },
+      {
+        "U": 128,
+        "log2_T": 2048,
+        "log2_S_upper": 16393,
+        "N": 8712,
+        "K": 18731722496256,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 1273,
+        "output_bound_bit_length": 1250
+      },
+      {
+        "U": 256,
+        "log2_T": 2304,
+        "log2_S_upper": 18441,
+        "N": 10248,
+        "K": 27883362130176,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 1404,
+        "output_bound_bit_length": 1381
+      },
+      {
+        "U": 512,
+        "log2_T": 2560,
+        "log2_S_upper": 20489,
+        "N": 12296,
+        "K": 41298830956800,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 1535,
+        "output_bound_bit_length": 1512
+      },
+      {
+        "U": 1024,
+        "log2_T": 2816,
+        "log2_S_upper": 22537,
+        "N": 15368,
+        "K": 62450811771136,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 1667,
+        "output_bound_bit_length": 1643
+      },
+      {
+        "U": 2048,
+        "log2_T": 3072,
+        "log2_S_upper": 24585,
+        "N": 20488,
+        "K": 99075279689984,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 1798,
+        "output_bound_bit_length": 1774
+      },
+      {
+        "U": 4096,
+        "log2_T": 3328,
+        "log2_S_upper": 26633,
+        "N": 29704,
+        "K": 168569001384192,
+        "K_exceeds_N": true,
+        "specialized_size_fits_S": true,
+        "output_padding_fits_T": true,
+        "node_work_fits_T": true,
+        "node_work_bit_length": 1930,
+        "output_bound_bit_length": 1906
+      }
+    ],
+    "fixed_time_polynomial": "T=(2U)^256",
+    "fixed_size_polynomial": "S=(2(U+T))^8"
+  },
+  "coefficients": {
+    "unchanged_privacy_and_correctness_coefficient_cases": 6400
+  },
+  "author_replay": {
+    "command": [
+      "python3",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_environment/reference/circuit_dependency.py"
+    ],
+    "exit_code": 0,
+    "byte_identical_script_and_result": true
+  },
+  "new_queries": {
+    "web": 0,
+    "scry": 0,
+    "kagi": 0
+  },
+  "PDF_downloads": 0,
+  "input_hashes_before": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/base_fe/REPORT.md": "0d14b9e394528d7aba9fecf40e17d4cbf59103c128cfa235246b424487a4dad4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/POINTWISE_CORRECTNESS.md": "c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/source_spans.json": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/.gitignore": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/inputs.json": "6de6d072d6afc9249208f3f66ff8da7d8412508795a9e6f4d8fe9427767dd6c0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.py": "79ca4109ef926c4323ac63d6dac3f4ef2fe1ea2bc896de50f1f7e2da6d294608",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.json": "85620be6ba7d6dc9a2b73e077d4babe1b93c6a0a267627b56861f61c747d06b9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/validate.py": "a8a181f7347a4683a9f458925a1177f4d858fe2bddfb5472b4885ca065944c77",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/validation.json": "d1b26aa2c1f1403057fa6f718e36a7c3432ae41934769abbf981fdb6bdb904e8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/artifact_hashes.json": "c5528234217b96c373a6425874b6a16867505275931c36574cb754c696de00d1"
+  },
+  "input_hashes_after": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/base_fe/REPORT.md": "0d14b9e394528d7aba9fecf40e17d4cbf59103c128cfa235246b424487a4dad4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/POINTWISE_CORRECTNESS.md": "c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/source_spans.json": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/.gitignore": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/inputs.json": "6de6d072d6afc9249208f3f66ff8da7d8412508795a9e6f4d8fe9427767dd6c0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.py": "79ca4109ef926c4323ac63d6dac3f4ef2fe1ea2bc896de50f1f7e2da6d294608",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.json": "85620be6ba7d6dc9a2b73e077d4babe1b93c6a0a267627b56861f61c747d06b9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/validate.py": "a8a181f7347a4683a9f458925a1177f4d858fe2bddfb5472b4885ca065944c77",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/validation.json": "d1b26aa2c1f1403057fa6f718e36a7c3432ae41934769abbf981fdb6bdb904e8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/artifact_hashes.json": "c5528234217b96c373a6425874b6a16867505275931c36574cb754c696de00d1"
+  },
+  "all_inputs_unchanged": true
+}

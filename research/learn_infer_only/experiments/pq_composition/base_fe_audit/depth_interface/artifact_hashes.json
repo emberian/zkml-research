@@ -1,0 +1,40 @@
+{
+  "schema": "depth-interface-artifacts-v1",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a",
+      "bytes": 14
+    },
+    {
+      "path": "DEPTH_INTERFACE.md",
+      "sha256": "f7a380764376f5292a65e8b0a0ebe9917f90594fc4f5e99875f28a4f080b088a",
+      "bytes": 21035
+    },
+    {
+      "path": "inputs.json",
+      "sha256": "ae4b007437d7a0da3ce049977ca90c331d1ae9517e0d484d7ddf1a425bc884c2",
+      "bytes": 7204
+    },
+    {
+      "path": "arity_substitution.py",
+      "sha256": "6fd669b522306d31bfc4ad637a7fed1e25d8a4350cca907686cd74d339cf93f7",
+      "bytes": 2984
+    },
+    {
+      "path": "arity_substitution.json",
+      "sha256": "9861e869b467c0c608ff496afa772193b023f1b7b96c1350197c773b3600c78f",
+      "bytes": 11282
+    },
+    {
+      "path": "validate.py",
+      "sha256": "4a6143010219ab5666c7e4ba49499749630bec9162ff9d6850d1bf85af5fec19",
+      "bytes": 2753
+    },
+    {
+      "path": "validation.json",
+      "sha256": "f3347c1790260cd11484ce97fbfd420d57b7d9d5f15f4dc711e25e3f855240c9",
+      "bytes": 1934
+    }
+  ]
+}

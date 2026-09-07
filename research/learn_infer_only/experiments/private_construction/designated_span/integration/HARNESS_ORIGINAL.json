@@ -1,0 +1,5 @@
+{
+  "path": "source_original/normal_flow.before_guard_fix.py",
+  "sha256": "497a3c69212a0cb61637faa2fc13ee7a1d0a603c4dc82d257a1b44703961f478",
+  "reason": "Executed first harness preserved before exact-key log-guard repair; no crypto/journal source change"
+}

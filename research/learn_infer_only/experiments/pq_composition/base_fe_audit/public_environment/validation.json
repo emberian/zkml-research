@@ -1,0 +1,45 @@
+{
+  "schema": "public-environment-validation-v1",
+  "time_utc": "2026-09-07T04:40:30.713851+00:00",
+  "scope": "Verifies unchanged frozen/source inputs and finite ordinary-circuit/integer witnesses. Does not verify the mathematical security or asymptotic parameter proof.",
+  "read_only_inputs_verified": 14,
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"exhaustive_equalities\": 32768, \"nonzero_output_cases\": 28672, \"retained_key_bits\": 4, \"closure_examples\": 8}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "py_compile",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/circuit_dependency.py",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/validate.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "check-ignore",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/__pycache__/validate.cpython-314.pyc"
+      ],
+      "exit_code": 0,
+      "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/__pycache__/validate.cpython-314.pyc\n",
+      "stderr": ""
+    }
+  ],
+  "new_queries": {
+    "web": 0,
+    "scry": 0,
+    "kagi": 0
+  },
+  "new_pdf_downloads": 0
+}

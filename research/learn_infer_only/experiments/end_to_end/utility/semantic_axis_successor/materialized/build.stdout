@@ -1,0 +1,64 @@
+{
+  "prepared": true,
+  "counts": {
+    "learn": 384,
+    "queries": 96,
+    "events": 480,
+    "expiries": 256,
+    "empty_route_queries": 16,
+    "public_query_records": 16
+  },
+  "nonempty_queries": 80,
+  "nonempty_zero_queries": 0,
+  "duplicate_query_records": 8,
+  "row_rank_by_route": {
+    "0": {
+      "row_records": 8,
+      "unique_rows": 4,
+      "exact_row_rank": 4,
+      "active_coordinates": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "basis_record_ids": {
+        "0": 257,
+        "1": 256,
+        "2": 289,
+        "3": 288
+      }
+    },
+    "1": {
+      "row_records": 8,
+      "unique_rows": 4,
+      "exact_row_rank": 4,
+      "active_coordinates": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "basis_record_ids": {
+        "4": 320,
+        "5": 336,
+        "6": 352,
+        "7": 368
+      }
+    }
+  },
+  "global_query_row_rank": 8,
+  "effective_aggregate_rank_per_route": 4,
+  "recipient_coalition_aggregate_privacy_claim": false,
+  "source_vectors_from_model_predictions_only": true,
+  "frozen_full_run_score_comparisons": 96,
+  "frozen_full_run_state_vector_comparisons": 12,
+  "crypto_executions": 0,
+  "encoder_executions": 0,
+  "subset_utility_estimate": false,
+  "parent_entries_unchanged": 53,
+  "fixture_sha256": "bcdda47d227853e546427e9fb42de489b7c227ace65b10a9099cec81f4481b11",
+  "integer_oracle_sha256": "119b66dd3e39730897948f5f3021e73a234fa163adf43c9e27189c3264dc31cd",
+  "freeze_sha256": "1fe42024b756c5af49b2a27c210e35ed0b5660148d749cff8667e7989a107198",
+  "build_wall_seconds": 0.6012227920000441
+}

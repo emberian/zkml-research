@@ -1,0 +1,6 @@
+{
+  "arity_rows": 12,
+  "chunk_rows": 36,
+  "max_underlying_boolean_keys": 512,
+  "scope": "Exact combinatorial query counts and normalized symbolic polynomial substitutions. No cryptographic implementation, security test, benchmark, or choice of hidden Theta constants."
+}

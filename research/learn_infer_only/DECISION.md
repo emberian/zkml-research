@@ -1,40 +1,79 @@
-# Decision: advance the finite private construction and join the encrypted learner to integrity
+# Decision: demonstrate the designated-recipient learner with durable verification
 
-[DERIVED current decision, 2026-09-07] The second run has joined actual BFV
-learning to a signed durable journal and selected full-key reader delivery.
-The complete useful fixture now passes through the independently verifying
-reader, and [the demonstration guide](experiments/end_to_end/README.md) records
-reproduction. The stronger reader also passes a fresh private 40 Learn/four
-Infer/eight expiry run and refuses unchecked signed outputs. It narrows the
-authority's arithmetic trust requirement while retaining the reader's full key.
-See [verified execution](experiments/end_to_end/verified_reader/reports/README.md).
-This is an end-to-end benchmark R, not the absence of unrestricted read authority.
+[DERIVED recovery decision, 2026-09-07] The next concrete milestone is the
+public-coin setup plus durable designated journal. Both components separately
+run; their exact joined successor is unfinished. The full original designated
+384/96 workload did finish before recovery, taking3h14m57s of public work;
+the useful semantic BFV join also finished in219.733seconds. The public-coin
+setup avoids creating a scalar master under honest sampling, while recipient
+keys still reveal the whole fixed per-input query span. This is substantial
+end-to-end progress without a full mental-autarky or PQ claim. The expired timed
+goal is paused; STATUS.md and NEXT.md supersede all earlier active-run wording.
 
-[EXECUTED complete timing] The original full verified run takes 682.666 seconds;
-the persistent-host successor takes 201.345 seconds, preserving all 96 outputs,
-256 expiries, complete byte hashing and authority/reader checks. This is an
-observed 3.39x improvement across separate shared-machine runs. Independent
-byte-level ring arithmetic now also matches public samples using a separate
-integer/NTT implementation; that sampled correspondence is under independent
-review and is not a universal Rust refinement.
 
-[EXECUTED current evidence] The hardened baseline passes all 96 integer outputs
-over 384 Learn/96 Infer/256 expiries. The live text path completes actual model
-encoding, issuance, learning and two selected answers. The fixed utility fixture
-is public and its final accuracy is 18/32; the separate unknown synthetic input
-run carries no utility estimate. The quadratic-feature successor failed its
-registered acceptance conditions, so the original learner remains. Evidence
-and exact source versions are under [end_to_end](experiments/end_to_end/CONTRACT.md).
+[DERIVED current decision, 2026-09-07] The immediate priority is the
+[designated-recipient fixed-span integration](experiments/private_construction/designated_span/CONTRACT.md).
+Its actual backend and first durable 40/four/eight integration now pass,
+with all44 transitions independently replayed and four exact private answers.
+The conditional public-transcript privacy argument passed written review.
+A separate exact-key finalizer resolves the original packaging guard false
+positive without rerunning backend group arithmetic or private decoding. Public ciphertext acceptance is separated
+from private decoding. The full original384/96 workload is now running.
 
-[DERIVED construction decision] The public finite quotient is a useful exact
-interface result, not concealment of the original state. The fixed-span IPFE
-lane tests a narrower actual no-master-after-erasure capability. The general
-private-input route remains conditional: source width separation defeats one
-proposed all-parameter size objection, but does not establish the required tiny
-joint future-package bound. Standard worst-case quantum-advice iO supplies the
-qualified interface used by the reviewed QIND_pre lift; a concrete compatible
-primitive suite is still missing. These are separate construction obligations,
-not gaps that a working BFV service automatically fills.
+[DERIVED precise advance] This variant leaves public input encryption and
+additive continuation usable after honest master erasure. Recipients receive
+dedicated projection credentials; the host transforms outputs without learning
+their values. Every surviving recipient coalition can still read its full fixed
+span on each retained input and compute outside its software gate. No
+cryptographic finality, sign-only disclosure or generally private cognition
+follows. The plaintext behavioral quotient is an ordered queue of projected
+records. A proper ambient kernel is not evidence of ambiguity on real encoded
+text. Physical erasure and role isolation remain assumptions.
+
+[EXECUTED complete BFV path] Actual encrypted learning, durable authorization
+and an independently recomputing reader now run together for all 384 Learn,
+96 Infer and 256 exact-original expiries. All 96 integer outputs match. The
+persistent-host run takes 201.345 seconds; the earlier unoptimized run takes
+682.666 seconds, an observed 3.39x difference across separate shared-machine
+runs. Live new text also completes actual model encoding, one Learn and two
+verified answers in 15.418 seconds. The [demonstration guide](experiments/end_to_end/README.md)
+records reproduction. This separate benchmark retains a full BFV reader key.
+Independent public integer/NTT byte reconstruction passed review for its
+recorded samples; universal Rust refinement is unproved.
+
+[EXECUTED fixed-span scale] The separate 577-coordinate DDH full workload passes
+384 Learn, 96 independent integer scores, 256 expiries and 384 exact queue
+checks in 1,537.085 seconds. Its host holds all 16 query keys, unlike the new
+designated backend. Its generalized adaptive fixed-key proof passed review.
+See [the full report](experiments/private_construction/fixed_span/scaling/full_run/README.md).
+
+[EXECUTED utility boundary] The fixed integration fixture is public and final
+accuracy remains 18/32. Unknown synthetic input runs supply no utility estimate.
+Quadratic, supervised-attribute and E5 successors failed their registered
+usefulness conditions. The later frozen3B forced-choice semantic interface
+now reaches91.0889% on fresh synthetic language/history fixtures versus51.0010%
+for the original features on those same histories. All eleven gates and an
+independent73,728-prediction integer replay pass. This is a separate sample
+from the18/32 integration result. The four-bin feature space is fully exposed
+by spanning recipient credentials, so useful semantic adaptation does not
+establish hidden cognition. A selected-fixture BFV integration is in progress.
+See [the utility ledger](ADAPTATION_UTILITY.md).
+
+[DERIVED next construction obligations] The terminal private-ingress joint
+lemma has a reviewed complete-package reduction, but its tiny numerical
+threshold and source-compatibility quantifiers remain open. The one-copy
+quantum-advice bootstrap and error propagation also passed independent review.
+The independently reviewed public-environment representation removes the
+literal recursive public-key layout obstruction under its explicit compact
+circuit premises. Actual depth-compactness,
+quantum primitive rates and the remaining suite still need instantiation.
+Moving public encryption frames supply a reviewed conditional route to
+invertible linear state transitions, with the entire observable closure exposed
+to recipients. A new public-coin designated setup is under independent review:
+it may remove the private master-generation and erasure step under honest
+public sampling, without covering arbitrary malicious setup. None of these results supplies
+a general restricted nonlinear release mechanism against all surviving
+credential holders. [NEXT.md](NEXT.md) names the current bounded tasks.
 
 [EXECUTED current proof package] Run014 passes 53 modules/708 exact theorem pins,
 including source-noise/window34 and mixed-journal framing23. All four umbrellas,

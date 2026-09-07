@@ -1,0 +1,382 @@
+{
+  "schema": "depth-interface-arity-v1",
+  "scope": "Exact combinatorial query counts and normalized symbolic polynomial substitutions. No cryptographic implementation, security test, benchmark, or choice of hidden Theta constants.",
+  "source_formulas": {
+    "t": "Theta(kappa*q^2)",
+    "N_inst": "Theta(D^2*q^2*t) = Theta(kappa*D^2*q^4)",
+    "S_share": "Theta(kappa*q^2)",
+    "bit_split_substitution": "q=Q*M",
+    "result_N_inst": "Theta(kappa*D^2*Q^4*M^4)",
+    "result_S_share": "Theta(kappa*Q^2*M^2)",
+    "normalized_multiplier_warning": "M^4 and M^2 are exact ratios of the displayed monomials, not exact ratios of implemented costs with unspecified Theta constants."
+  },
+  "arity_rows": [
+    {
+      "external_function_keys_Q": 1,
+      "randomized_encoding_output_bits_M": 1,
+      "direct_multioutput_underlying_keys": 1,
+      "bit_split_underlying_boolean_keys": 1,
+      "indexed_single_key_RE_ciphertexts_per_message": 1,
+      "normalized_N_q4_multiplier_vs_q_Q": 1,
+      "normalized_share_q2_multiplier_vs_q_Q": 1
+    },
+    {
+      "external_function_keys_Q": 1,
+      "randomized_encoding_output_bits_M": 2,
+      "direct_multioutput_underlying_keys": 1,
+      "bit_split_underlying_boolean_keys": 2,
+      "indexed_single_key_RE_ciphertexts_per_message": 2,
+      "normalized_N_q4_multiplier_vs_q_Q": 16,
+      "normalized_share_q2_multiplier_vs_q_Q": 4
+    },
+    {
+      "external_function_keys_Q": 1,
+      "randomized_encoding_output_bits_M": 8,
+      "direct_multioutput_underlying_keys": 1,
+      "bit_split_underlying_boolean_keys": 8,
+      "indexed_single_key_RE_ciphertexts_per_message": 8,
+      "normalized_N_q4_multiplier_vs_q_Q": 4096,
+      "normalized_share_q2_multiplier_vs_q_Q": 64
+    },
+    {
+      "external_function_keys_Q": 1,
+      "randomized_encoding_output_bits_M": 64,
+      "direct_multioutput_underlying_keys": 1,
+      "bit_split_underlying_boolean_keys": 64,
+      "indexed_single_key_RE_ciphertexts_per_message": 64,
+      "normalized_N_q4_multiplier_vs_q_Q": 16777216,
+      "normalized_share_q2_multiplier_vs_q_Q": 4096
+    },
+    {
+      "external_function_keys_Q": 2,
+      "randomized_encoding_output_bits_M": 1,
+      "direct_multioutput_underlying_keys": 2,
+      "bit_split_underlying_boolean_keys": 2,
+      "indexed_single_key_RE_ciphertexts_per_message": 1,
+      "normalized_N_q4_multiplier_vs_q_Q": 1,
+      "normalized_share_q2_multiplier_vs_q_Q": 1
+    },
+    {
+      "external_function_keys_Q": 2,
+      "randomized_encoding_output_bits_M": 2,
+      "direct_multioutput_underlying_keys": 2,
+      "bit_split_underlying_boolean_keys": 4,
+      "indexed_single_key_RE_ciphertexts_per_message": 2,
+      "normalized_N_q4_multiplier_vs_q_Q": 16,
+      "normalized_share_q2_multiplier_vs_q_Q": 4
+    },
+    {
+      "external_function_keys_Q": 2,
+      "randomized_encoding_output_bits_M": 8,
+      "direct_multioutput_underlying_keys": 2,
+      "bit_split_underlying_boolean_keys": 16,
+      "indexed_single_key_RE_ciphertexts_per_message": 8,
+      "normalized_N_q4_multiplier_vs_q_Q": 4096,
+      "normalized_share_q2_multiplier_vs_q_Q": 64
+    },
+    {
+      "external_function_keys_Q": 2,
+      "randomized_encoding_output_bits_M": 64,
+      "direct_multioutput_underlying_keys": 2,
+      "bit_split_underlying_boolean_keys": 128,
+      "indexed_single_key_RE_ciphertexts_per_message": 64,
+      "normalized_N_q4_multiplier_vs_q_Q": 16777216,
+      "normalized_share_q2_multiplier_vs_q_Q": 4096
+    },
+    {
+      "external_function_keys_Q": 8,
+      "randomized_encoding_output_bits_M": 1,
+      "direct_multioutput_underlying_keys": 8,
+      "bit_split_underlying_boolean_keys": 8,
+      "indexed_single_key_RE_ciphertexts_per_message": 1,
+      "normalized_N_q4_multiplier_vs_q_Q": 1,
+      "normalized_share_q2_multiplier_vs_q_Q": 1
+    },
+    {
+      "external_function_keys_Q": 8,
+      "randomized_encoding_output_bits_M": 2,
+      "direct_multioutput_underlying_keys": 8,
+      "bit_split_underlying_boolean_keys": 16,
+      "indexed_single_key_RE_ciphertexts_per_message": 2,
+      "normalized_N_q4_multiplier_vs_q_Q": 16,
+      "normalized_share_q2_multiplier_vs_q_Q": 4
+    },
+    {
+      "external_function_keys_Q": 8,
+      "randomized_encoding_output_bits_M": 8,
+      "direct_multioutput_underlying_keys": 8,
+      "bit_split_underlying_boolean_keys": 64,
+      "indexed_single_key_RE_ciphertexts_per_message": 8,
+      "normalized_N_q4_multiplier_vs_q_Q": 4096,
+      "normalized_share_q2_multiplier_vs_q_Q": 64
+    },
+    {
+      "external_function_keys_Q": 8,
+      "randomized_encoding_output_bits_M": 64,
+      "direct_multioutput_underlying_keys": 8,
+      "bit_split_underlying_boolean_keys": 512,
+      "indexed_single_key_RE_ciphertexts_per_message": 64,
+      "normalized_N_q4_multiplier_vs_q_Q": 16777216,
+      "normalized_share_q2_multiplier_vs_q_Q": 4096
+    }
+  ],
+  "chunk_rows": [
+    {
+      "Q": 1,
+      "M": 1,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 1,
+      "literal_GKP_output_slots_per_final_function": 1
+    },
+    {
+      "Q": 1,
+      "M": 1,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 1,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 1,
+      "M": 1,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 1,
+      "literal_GKP_output_slots_per_final_function": 32
+    },
+    {
+      "Q": 1,
+      "M": 2,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 2,
+      "literal_GKP_output_slots_per_final_function": 2
+    },
+    {
+      "Q": 1,
+      "M": 2,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 1,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 1,
+      "M": 2,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 1,
+      "literal_GKP_output_slots_per_final_function": 32
+    },
+    {
+      "Q": 1,
+      "M": 8,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 8,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 1,
+      "M": 8,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 1,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 1,
+      "M": 8,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 1,
+      "literal_GKP_output_slots_per_final_function": 32
+    },
+    {
+      "Q": 1,
+      "M": 64,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 64,
+      "literal_GKP_output_slots_per_final_function": 64
+    },
+    {
+      "Q": 1,
+      "M": 64,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 8,
+      "literal_GKP_output_slots_per_final_function": 64
+    },
+    {
+      "Q": 1,
+      "M": 64,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 2,
+      "literal_GKP_output_slots_per_final_function": 64
+    },
+    {
+      "Q": 2,
+      "M": 1,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 2,
+      "literal_GKP_output_slots_per_final_function": 1
+    },
+    {
+      "Q": 2,
+      "M": 1,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 2,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 2,
+      "M": 1,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 2,
+      "literal_GKP_output_slots_per_final_function": 32
+    },
+    {
+      "Q": 2,
+      "M": 2,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 4,
+      "literal_GKP_output_slots_per_final_function": 2
+    },
+    {
+      "Q": 2,
+      "M": 2,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 2,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 2,
+      "M": 2,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 2,
+      "literal_GKP_output_slots_per_final_function": 32
+    },
+    {
+      "Q": 2,
+      "M": 8,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 16,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 2,
+      "M": 8,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 2,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 2,
+      "M": 8,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 2,
+      "literal_GKP_output_slots_per_final_function": 32
+    },
+    {
+      "Q": 2,
+      "M": 64,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 128,
+      "literal_GKP_output_slots_per_final_function": 64
+    },
+    {
+      "Q": 2,
+      "M": 64,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 16,
+      "literal_GKP_output_slots_per_final_function": 64
+    },
+    {
+      "Q": 2,
+      "M": 64,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 4,
+      "literal_GKP_output_slots_per_final_function": 64
+    },
+    {
+      "Q": 8,
+      "M": 1,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 8,
+      "literal_GKP_output_slots_per_final_function": 1
+    },
+    {
+      "Q": 8,
+      "M": 1,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 8,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 8,
+      "M": 1,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 8,
+      "literal_GKP_output_slots_per_final_function": 32
+    },
+    {
+      "Q": 8,
+      "M": 2,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 16,
+      "literal_GKP_output_slots_per_final_function": 2
+    },
+    {
+      "Q": 8,
+      "M": 2,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 8,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 8,
+      "M": 2,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 8,
+      "literal_GKP_output_slots_per_final_function": 32
+    },
+    {
+      "Q": 8,
+      "M": 8,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 64,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 8,
+      "M": 8,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 8,
+      "literal_GKP_output_slots_per_final_function": 8
+    },
+    {
+      "Q": 8,
+      "M": 8,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 8,
+      "literal_GKP_output_slots_per_final_function": 32
+    },
+    {
+      "Q": 8,
+      "M": 64,
+      "bits_per_chunk_b": 1,
+      "underlying_chunk_functions": 512,
+      "literal_GKP_output_slots_per_final_function": 64
+    },
+    {
+      "Q": 8,
+      "M": 64,
+      "bits_per_chunk_b": 8,
+      "underlying_chunk_functions": 64,
+      "literal_GKP_output_slots_per_final_function": 64
+    },
+    {
+      "Q": 8,
+      "M": 64,
+      "bits_per_chunk_b": 32,
+      "underlying_chunk_functions": 16,
+      "literal_GKP_output_slots_per_final_function": 64
+    }
+  ],
+  "interface_distinction": {
+    "NC_MO": "One ciphertext plus one vector-function key yields all M output bits; assumes output-independent ciphertext construction.",
+    "indexed_RE": "One Boolean function key plus M ciphertexts yields M bits; encoding work explicitly depends on M.",
+    "bounded_boolean_backend": "One logical tuple key exposes M underlying Boolean keys; encryption setup must tolerate that many collusions."
+  }
+}

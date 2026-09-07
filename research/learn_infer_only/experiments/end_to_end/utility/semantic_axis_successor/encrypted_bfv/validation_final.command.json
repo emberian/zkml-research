@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/validate.py"
+  ],
+  "elapsed_ns": 397316375,
+  "reason": "Final evidence audit after adding derived cost report; no crypto/model rerun",
+  "returncode": 0,
+  "stderr": "",
+  "stdout": "{\"ok\": true, \"independent_scores\": 96, \"expiry_identities\": 256, \"parent_entries_preserved\": {\"parent\": 53, \"materialized\": 30}}\n"
+}

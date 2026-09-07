@@ -1,0 +1,211 @@
+{
+  "execution_passed": true,
+  "useful_restricted_successor": true,
+  "acceptance": {
+    "fresh_factual_bits_at_least_90pct": true,
+    "fresh_factual_each_task_at_least_85pct": true,
+    "final_accuracy_at_least_75pct": true,
+    "each_task_final_accuracy_at_least_75pct": true,
+    "paired_gain_over_original_at_least_10pp": true,
+    "descriptive_paired_lower_endpoint_positive": true,
+    "nonlinear_gain_over_original_at_least_10pp": true,
+    "simple_regression_no_worse_than_5pp": true,
+    "untouched_route_state_and_output_retention_exact": true,
+    "every_populated_joint_rule_stratum_at_least_65pct": true,
+    "every_task_attribute_stratum_at_least_65pct": true
+  },
+  "paired_primary_minus": {
+    "original577": {
+      "mean": 0.40087890625,
+      "n_histories": 64,
+      "sd": 0.06001500502168584,
+      "normal95_half_width": 0.01470367623031303,
+      "min": 0.28125,
+      "max": 0.5390625
+    },
+    "attribute8": {
+      "mean": -0.089111328125,
+      "n_histories": 64,
+      "sd": 0.0585911664443648,
+      "normal95_half_width": 0.014354835778869377,
+      "min": -0.1796875,
+      "max": 0.0
+    }
+  },
+  "nonlinear_gain": 0.35305059523809523,
+  "simple_gain": 0.4242369186046512,
+  "denominators": {
+    "unique_new_texts": 128,
+    "new_histories": 64,
+    "methods": 3,
+    "checkpoints": 3,
+    "scores": 73728,
+    "final_queries_per_method": 8192,
+    "new_factual_bits": 256,
+    "teacher_factual_bits_reused": 256,
+    "reset_accuracy": 0.5
+  },
+  "primary_feature_encoding_wall_seconds": 0.00029424999956972897,
+  "original_feature_encoding_wall_seconds": 0.012965333997271955,
+  "baseline_teacher_cache_exact": true,
+  "freeze_sha256": "c9c74521b14dd9cb60743ccbf34a91c5e300fa33f03e187aba4117915cda31da",
+  "features_sha256": "4971df2b5a2f8b41fa98a7da4d7c9767497d5d507bdbd6150b8d04e6dc26904e",
+  "checkpoint_states_sha256": "6d3bfbaaf3e30447a9c4adeea41f44f13f663bc7c8d05ab348d5790b35bae28f",
+  "raw_scores_sha256": "9dd0fdeda7c02de9a475d85fbba67177011249f4412b9716362e0abbe457f343",
+  "rank_scope_sha256": "b7dfd5ead76f330d6ebdfbf0a09b80cfe17051aacc01891e358eddf709f4f804",
+  "evaluation_wall_seconds": 0.26645450000069104,
+  "evaluation_cpu_seconds": 0.26157800000000003,
+  "process_high_water_rss_bytes_macos": 58130432,
+  "cryptographic_success_claim": false,
+  "new_prompt_or_feature_choices": 0
+}
+{
+  "factual": {
+    "overall": {
+      "correct_bits": 241,
+      "bits": 256,
+      "bit_accuracy": 0.94140625,
+      "correct_pairs": 113,
+      "pairs": 128,
+      "ties": 0,
+      "mean_alternative_probability_mass": 0.598059787764214
+    },
+    "tasks": {
+      "plant": {
+        "correct_bits": 113,
+        "bits": 128,
+        "bit_accuracy": 0.8828125,
+        "correct_pairs": 49,
+        "pairs": 64,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.5253142982255667
+      },
+      "letter": {
+        "correct_bits": 128,
+        "bits": 128,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 64,
+        "pairs": 64,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.6708052773028612
+      }
+    },
+    "axes": {
+      "plant.a": {
+        "correct_bits": 64,
+        "bits": 64,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 0,
+        "pairs": 0,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.43722944566980004
+      },
+      "plant.b": {
+        "correct_bits": 49,
+        "bits": 64,
+        "bit_accuracy": 0.765625,
+        "correct_pairs": 0,
+        "pairs": 0,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.6133991507813334
+      },
+      "letter.a": {
+        "correct_bits": 64,
+        "bits": 64,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 0,
+        "pairs": 0,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.6858727782964706
+      },
+      "letter.b": {
+        "correct_bits": 64,
+        "bits": 64,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 0,
+        "pairs": 0,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.6557377763092518
+      }
+    },
+    "joint_attributes": {
+      "plant.00": {
+        "correct_bits": 25,
+        "bits": 32,
+        "bit_accuracy": 0.78125,
+        "correct_pairs": 9,
+        "pairs": 16,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.4594964124262333
+      },
+      "plant.01": {
+        "correct_bits": 32,
+        "bits": 32,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 16,
+        "pairs": 16,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.5493386322632432
+      },
+      "plant.10": {
+        "correct_bits": 24,
+        "bits": 32,
+        "bit_accuracy": 0.75,
+        "correct_pairs": 8,
+        "pairs": 16,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.5058699361979961
+      },
+      "plant.11": {
+        "correct_bits": 32,
+        "bits": 32,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 16,
+        "pairs": 16,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.5865522120147943
+      },
+      "letter.00": {
+        "correct_bits": 32,
+        "bits": 32,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 16,
+        "pairs": 16,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.6474528536200523
+      },
+      "letter.01": {
+        "correct_bits": 32,
+        "bits": 32,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 16,
+        "pairs": 16,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.6456919778138399
+      },
+      "letter.10": {
+        "correct_bits": 32,
+        "bits": 32,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 16,
+        "pairs": 16,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.6805285383015871
+      },
+      "letter.11": {
+        "correct_bits": 32,
+        "bits": 32,
+        "bit_accuracy": 1.0,
+        "correct_pairs": 16,
+        "pairs": 16,
+        "ties": 0,
+        "mean_alternative_probability_mass": 0.7095477394759655
+      }
+    }
+  },
+  "final_correct": {
+    "semantic577": 7462,
+    "original577": 4178,
+    "attribute8": 8192
+  }
+}

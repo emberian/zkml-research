@@ -1,0 +1,79 @@
+{
+  "schema": "designated-integration-independent-public-review-v1",
+  "passed": true,
+  "script_sha256": "9cf7a168301f481447c60907fb68eb47b01fa50fb63412f59a900eacea313fce",
+  "package_manifest_sha256": "36d8fdb7ef23e73e48ba2fb6d6d0f498fe999b933cf0aa76a5e3ea1f2109c6c5",
+  "accepted_protocol_sha256": "aa7b096e5ff44b4c72ef72f005a363897e06a8fb94d0351bfa15856f3564fec0",
+  "package_file_count": 72,
+  "package_bytes": 3445334,
+  "exported_evidence_files": 32,
+  "genesis_core_sources": 8,
+  "genesis_crypto_sources": 4,
+  "unchanged_original_sources_and_copies": 7,
+  "native_dependency_hash_matches": true,
+  "canonical_queries_checked": 16,
+  "context_cached_identity_chain_checked_without_algebra": true,
+  "ledger_transitions_checked": 44,
+  "learns": 40,
+  "infers": 4,
+  "exact_original_expiries": 8,
+  "public_final_state_digest": "1e924a54f4dc23be0bccc3c14f83db9deefce1d6af697726707c36ca8983826e",
+  "final_queue_length": 32,
+  "historical_retries": 2,
+  "matching_logged_transition_call_sequences": {
+    "host": 44,
+    "authority": 44,
+    "reader": 44,
+    "independent_public_replay": 44
+  },
+  "public_cli_calls": 1630,
+  "crypto_processes_including_setup_children": 1663,
+  "public_role_totals": {
+    "authority": {
+      "calls": 151,
+      "elapsed_ns": 230708666763
+    },
+    "host": {
+      "calls": 1057,
+      "elapsed_ns": 1306110460990
+    },
+    "independent_public_replay": {
+      "calls": 128,
+      "elapsed_ns": 198391181087
+    },
+    "issuer": {
+      "calls": 40,
+      "elapsed_ns": 45600607830
+    },
+    "public_transport": {
+      "calls": 84,
+      "elapsed_ns": 91473493201
+    },
+    "reader": {
+      "calls": 151,
+      "elapsed_ns": 249731925173
+    },
+    "trusted_setup": {
+      "calls": 19,
+      "elapsed_ns": 81056587749
+    }
+  },
+  "public_cli_elapsed_ns_sum": 2203072922793,
+  "public_native_counters": {
+    "context_consistency_rows": 288,
+    "full_context_validations": 18,
+    "native_modexp": 1213729,
+    "pinned_context_validation_reuses": 1627,
+    "subgroup_checks": 1026248
+  },
+  "public_log_exact_field_check": {
+    "log_files": 6,
+    "json_records": 1768,
+    "nested_stdout_documents": 1718,
+    "public_bounds_metadata_fields": 1
+  },
+  "private_files_opened_or_hashed": 0,
+  "reviewer_crypto_calls": 0,
+  "new_adversarial_tests": 0,
+  "scope": "Only retained public ledger/metadata/hash accounting; no independent group arithmetic, signature verification, private integer comparison, DB inventory or timing run."
+}

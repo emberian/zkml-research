@@ -1,0 +1,27 @@
+{
+  "schema": "semantic-successor-final-provenance-review-v1",
+  "passed": true,
+  "script_sha256": "d4e5ffd322c4c48c839b0a55fb19b9b6592466d88fd3e87fb058f8d77771ab2f",
+  "csv_rows_checked": 128,
+  "all_error_rows_text_pair_logits_checked": 15,
+  "error_ids": [
+    256,
+    258,
+    260,
+    262,
+    264,
+    268,
+    270,
+    288,
+    290,
+    292,
+    294,
+    296,
+    298,
+    300,
+    302
+  ],
+  "model_calls": 0,
+  "crypto_calls": 0,
+  "scope": "Final source and retained public-data hashes; CSV/error-table agreement only."
+}

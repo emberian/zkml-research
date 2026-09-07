@@ -1,0 +1,59 @@
+{
+  "aggregate_image": "C=127*z, z integer4; L1(z)<=32, full-window sum parity even (necessary conditions)",
+  "ambient_dimensions_per_route": 577,
+  "basis_scale": 127,
+  "effective_feature_span_rank_per_route": 4,
+  "encryption_or_key_instantiation": false,
+  "exact_score_basis_determinant_per_route": 67675234241018881,
+  "exact_score_basis_diagonal": 16129,
+  "features_sha256": "4971df2b5a2f8b41fa98a7da4d7c9767497d5d507bdbd6150b8d04e6dc26904e",
+  "observed_images": {
+    "0": {
+      "teacher": {
+        "exact_rank": 4,
+        "observed_active_coordinates": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "observed_one_hot_image_count": 4
+      },
+      "test": {
+        "exact_rank": 4,
+        "observed_active_coordinates": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "observed_one_hot_image_count": 4
+      }
+    },
+    "1": {
+      "teacher": {
+        "exact_rank": 4,
+        "observed_active_coordinates": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "observed_one_hot_image_count": 4
+      },
+      "test": {
+        "exact_rank": 4,
+        "observed_active_coordinates": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "observed_one_hot_image_count": 4
+      }
+    }
+  },
+  "scope": "Four exact basis-score functionals determine the current route aggregate. Sign-only results do not give magnitudes; queue order is a separate object.",
+  "security_attack_executed": false,
+  "two_route_direct_sum_rank": 8
+}

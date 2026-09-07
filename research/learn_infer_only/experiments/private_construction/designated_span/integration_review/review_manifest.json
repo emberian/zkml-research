@@ -1,0 +1,42 @@
+{
+  "schema": "designated-normal-integration-review-manifest-v1",
+  "completed_utc": "2026-09-07T05:37:58.137589+00:00",
+  "disposition": "Accept completed positive path with nonblocking no-backend-rerun wording correction; full coordinator timing/feedback excluded.",
+  "frozen_package_sha256": "36d8fdb7ef23e73e48ba2fb6d6d0f498fe999b933cf0aa76a5e3ea1f2109c6c5",
+  "frozen_closure_sha256": "3135d59ad0475abede6a646c4b01b1b757bba23c03a96ad2078c97cab0efabb4",
+  "frozen_report_sha256": "dbc7b6b41ff27a380755c210d9a1c190b3792fb1922f0a492add065312113ece",
+  "accepted_protocol_sha256": "aa7b096e5ff44b4c72ef72f005a363897e06a8fb94d0351bfa15856f3564fec0",
+  "final_rehash_all_72_passed": true,
+  "frozen_sources_unchanged": true,
+  "private_files_opened_or_hashed": 0,
+  "reviewer_crypto_runs": 0,
+  "new_adversarial_tests": 0,
+  "metered_searches": 0,
+  "wording_correction": "Finalizer reverified 44 Ed25519 envelopes; no designated-backend CLI/group arithmetic or private scalar decode was rerun. Root and author acknowledged.",
+  "files": {
+    "REVIEW.md": {
+      "sha256": "1ca546100b8191910720c2166925b7ba5c041756e8bfa719f419b89cd7f5078f",
+      "bytes": 16329
+    },
+    "check_public.log": {
+      "sha256": "c8e410ce59fe7981d2a009f3fa366776a39787c955978268baafa9f57f66986f",
+      "bytes": 2485
+    },
+    "check_public.py": {
+      "sha256": "9cf7a168301f481447c60907fb68eb47b01fa50fb63412f59a900eacea313fce",
+      "bytes": 16961
+    },
+    "check_public_002.log": {
+      "sha256": "5ef65d66ce90f9c91be776560b2caecbaac3fbbb8f199b6553d6f3e0ac9634b4",
+      "bytes": 2485
+    },
+    "harness_guard.diff": {
+      "sha256": "bf3bc3329123bf71940e4391c1f5bbb54c4abc1d8fac2b05fa64955c9ac0ec64",
+      "bytes": 1563
+    },
+    "public_check.json": {
+      "sha256": "703bffd82e09aaa41d5e6fa9c3039343cea5a72cc62b92c361d2484c0f63aa27",
+      "bytes": 13737
+    }
+  }
+}

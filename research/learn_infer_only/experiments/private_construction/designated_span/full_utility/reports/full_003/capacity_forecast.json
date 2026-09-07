@@ -1,0 +1,23 @@
+{
+  "classification": "INFERRED capacity estimate, not a measured full-run result",
+  "source_PUBLIC_COSTS_sha256": "8aa50ae2d654d23d9f6e2dcb36a409c0aeb49b547bfa5fe581c5471b08a2732f",
+  "measured_small_counts": {
+    "learns": 40,
+    "infers": 4,
+    "expiries": 8
+  },
+  "target_counts": {
+    "learns": 384,
+    "infers": 96,
+    "expiries": 256
+  },
+  "scaled_measured_four_role_math_seconds": 4441.588752936,
+  "scaled_measured_issuer_seconds": 437.765835168,
+  "additional_expiry_state_passes_vs_small_mix": 716.8,
+  "state_membership_pass_seconds_assumed": 1.05,
+  "additional_expiry_seconds_model": 752.64,
+  "first_seen_state_objects_per_history_model": 383,
+  "state_inspecting_roles_model": 5,
+  "first_seen_state_validation_seconds_model": 4021.5,
+  "scope": "Separate role/operation capacity model. It does not scale paired-host speedup; ignores some output inspections/setup/RPC overhead and shared-machine variability. Not a promised duration."
+}

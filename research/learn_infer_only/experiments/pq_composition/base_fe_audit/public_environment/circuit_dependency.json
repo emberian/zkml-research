@@ -1,0 +1,116 @@
+{
+  "scope": "Finite ordinary Boolean-circuit and integer-inequality witnesses only. No encryption implementation or cryptographic security validation.",
+  "original_key_bits": 12,
+  "payload_bits": 2,
+  "gate_count": 4,
+  "output_bits": 3,
+  "retained_positions": [
+    2,
+    5,
+    9,
+    11
+  ],
+  "fan_in_bound": 11,
+  "exhaustive_equalities": 32768,
+  "nonzero_output_cases": 28672,
+  "gate_only_falsifier": {
+    "same_retained_key": [
+      0,
+      0,
+      0
+    ],
+    "output0": [
+      0,
+      0,
+      0
+    ],
+    "output1": [
+      0,
+      0,
+      1
+    ]
+  },
+  "zero_gate_passthrough": [
+    {
+      "gates": 0,
+      "output_bits": 8,
+      "retained_key_bits": 8
+    },
+    {
+      "gates": 0,
+      "output_bits": 32,
+      "retained_key_bits": 32
+    },
+    {
+      "gates": 0,
+      "output_bits": 128,
+      "retained_key_bits": 128
+    }
+  ],
+  "after_log_absorption_closure_examples": [
+    {
+      "U": 1,
+      "T": 1000000000000,
+      "node_work_upper_bound": 3000000005,
+      "message_bound_example": 41,
+      "effective_key_bound_example": 328,
+      "key_exceeds_message": true
+    },
+    {
+      "U": 2,
+      "T": 4096000000000000,
+      "node_work_upper_bound": 6144000000010,
+      "message_bound_example": 54,
+      "effective_key_bound_example": 432,
+      "key_exceeds_message": true
+    },
+    {
+      "U": 4,
+      "T": 16777216000000000000,
+      "node_work_upper_bound": 12582912000000020,
+      "message_bound_example": 68,
+      "effective_key_bound_example": 544,
+      "key_exceeds_message": true
+    },
+    {
+      "U": 8,
+      "T": 68719476736000000000000,
+      "node_work_upper_bound": 25769803776000000040,
+      "message_bound_example": 84,
+      "effective_key_bound_example": 672,
+      "key_exceeds_message": true
+    },
+    {
+      "U": 16,
+      "T": 281474976710656000000000000,
+      "node_work_upper_bound": 52776558133248000000080,
+      "message_bound_example": 104,
+      "effective_key_bound_example": 832,
+      "key_exceeds_message": true
+    },
+    {
+      "U": 32,
+      "T": 1152921504606846976000000000000,
+      "node_work_upper_bound": 108086391056891904000000160,
+      "message_bound_example": 132,
+      "effective_key_bound_example": 1056,
+      "key_exceeds_message": true
+    },
+    {
+      "U": 64,
+      "T": 4722366482869645213696000000000000,
+      "node_work_upper_bound": 221360928884514619392000000320,
+      "message_bound_example": 176,
+      "effective_key_bound_example": 1408,
+      "key_exceeds_message": true
+    },
+    {
+      "U": 128,
+      "T": 19342813113834066795298816000000000000,
+      "node_work_upper_bound": 453347182355485940514816000000640,
+      "message_bound_example": 252,
+      "effective_key_bound_example": 2016,
+      "key_exceeds_message": true
+    }
+  ]
+}

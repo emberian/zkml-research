@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "files_written": 0,
+  "existing_files_byte_verified": 402,
+  "total_files": 402,
+  "input_index": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/runtime/issuer/input_index.json",
+  "fixture_sha256": "bcdda47d227853e546427e9fb42de489b7c227ace65b10a9099cec81f4481b11",
+  "parent_entries_unchanged": 53,
+  "command": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/emit_runtime.py"
+  ]
+}
