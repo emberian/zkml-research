@@ -151,14 +151,13 @@ def census(source: str) -> dict:
     raw_prints = re.findall(r'#print\s+axioms\s+([\w.\'?!]+)', clean)
     forbidden = [dict(token=m.group(), line=clean.count('\n', 0, m.start()) + 1)
                  for m in re.finditer(r'\b(?:sorry|axiom|native_decide|unsafe|implemented_by|extern|run_tac)\b|#(?:eval|run)\b', clean)]
-    # `admit` is also a lawful term identifier (the admission predicate in the
-    # window modules). Record these tokens, require its explicit typed binder,
-    # and reject obvious tactic uses. Kernel axiom guards plus the compilation
-    # diagnostic check below remain authoritative for any proof placeholder.
+    # `admit` is also a lawful term identifier, including an imported admission
+    # predicate. Its declaration need not occur in this source file. Record the
+    # occurrences and reject obvious tactic uses; do not confuse a lexical name
+    # census with Lean name resolution. Mandatory exact kernel axiom guards and
+    # compilation diagnostics remain authoritative for proof placeholders.
     admit_tokens = [dict(token=m.group(), line=clean.count('\n', 0, m.start()) + 1)
                     for m in re.finditer(r'\badmit\b', clean)]
-    if admit_tokens and not re.search(r'[({]\s*admit\s*:|\bdef\s+admit\b', clean):
-        forbidden.extend(admit_tokens)
     forbidden.extend(dict(token=m.group(), line=clean.count('\n', 0, m.start()) + 1)
                      for m in re.finditer(r'\bby\s+admit\b|(?:^|[;|])\s*admit\s*(?=$|[;|])', clean, re.M))
     names = [p['theorem'] for p in pins]

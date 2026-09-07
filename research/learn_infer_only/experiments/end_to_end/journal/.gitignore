@@ -1,0 +1,26 @@
+__pycache__/
+.private/
+**/.private/
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-journal
+**/cas/
+**/host_cas/
+**/work/
+
+# Complete compressed public logs and runtime hash manifests are retained instead.
+**/commands.jsonl
+**/role_calls.jsonl
+**/events.jsonl
+**/replay.json
+**/zero.ct
+**/public_key.bin
+**/queries/
+
+# Individual compressed logs are also bundled in complete_logs.tar.gz.
+**/public_evidence/*.jsonl.gz
+**/public_evidence/*.json.gz
+**/authority-server.jsonl
+**/reader-server.jsonl
+**/server_processes.jsonl

@@ -1,5 +1,18 @@
 # Post-quantum composition audit for restricted release and finite ladders
 
+[DERIVED reviewed correction, 2026-09-07] The conditional eleven-hybrid QIND_pre
+lift now has completed independent review, and its qualified iO interface follows
+from a standard worst-case equivalent-circuit iO game with arbitrary quantum
+advice. The bound is `qualified gap <= Pr[E] * eps_wc`, with no efficient
+conditioning or inverse-event-probability loss. The exact resource accounting
+uses the stated nonuniform circuit model. See [QIO_INTERFACE.md](experiments/pq_composition/qio_interface/QIO_INTERFACE.md)
+and [independent review](experiments/adversarial_review/qio_interface/REPORT.md).
+This removes a bespoke qualification premise; it does not instantiate iO or the
+other primitives. Whether2025/2215 supplies the required advice/resource and
+correctness conventions is a separate source audit in progress. In particular,
+quantum external advice does not by itself require quantum-valued aviO KeySamp.
+Earlier first-pass wording below about that requirement is superseded here.
+
 [DERIVED decision, 2026-09-06] The inspected sources support a **conditional post-quantum iO primitive**, but they do not yet instantiate the resident's randomized-FE ladder or receipt composition against quantum adversaries. The fixed independent-key ladder uses the older, classical `IND_pre` theorem. It avoids the newer construction's weak-extractability and quantitative compatibility requirements. Its finite horizon does not itself extend that theorem to QPT adversaries.
 
 [SOURCE / scope] This audit reads seven named local primary PDFs, with exact versions, commands and access levels in [source_manifest.json](experiments/pq_composition/source_manifest.json) and [ACCESS_LOG.md](experiments/pq_composition/ACCESS_LOG.md). It is a theorem-interface audit, not a literature-wide absence claim. The ladder proof and its experimental witnesses belong to [FINITE_LADDER.md](experiments/private_construction/FINITE_LADDER.md); this note does not duplicate them. The single current-truth file `docs/VERDICTS.md` and both companion trees were left untouched.
@@ -64,4 +77,13 @@
 
 [EXECUTED accounting] Seven local PDFs, seven pinned hashes, zero Scry SQL/schema queries, zero Kagi, four web search queries, three HTML landing-page opens and zero network PDF downloads. The reproducible extraction/provenance run passed all fourteen subprocess calls. It is not a cryptographic implementation or a kernel-checked composition proof.
 
-[DERIVED draft successor] A proposed conditional QIND_pre game and eleven-hybrid lift is saved at [QIND_PRE_LIFT.md](experiments/pq_composition/qind_pre/QIND_PRE_LIFT.md). It enumerates stronger quantum-auxiliary primitive games instead of inferring them from the source theorem. Independent finite premise controls passed; the final reviewer report was interrupted by the usage limit. The source-backed primitive instantiation and whole-resident PQ conclusion remain open.
+[DERIVED reviewed successor, second authorized run] The conditional QIND_pre
+game and eleven-hybrid lift at [QIND_PRE_LIFT.md](experiments/pq_composition/qind_pre/QIND_PRE_LIFT.md)
+now has a completed independent source/proof review: no blocking error was found
+under its explicit quantum-auxiliary primitive games. [REVIEW_COMPLETION.md](experiments/pq_composition/qind_pre/REVIEW_COMPLETION.md)
+pins the exact reviewed pre-closeout bytes, reviewer attribution, full error
+formula and successful replay of the saved finite premise controls. The current
+draft's historical closeout paragraph is superseded by that completion note.
+The source-backed primitive suite and whole-resident PQ conclusion remain open;
+in particular, the stronger quantum auxiliary-state iO premise was not obtained
+from the inspected PQ iO theorem.

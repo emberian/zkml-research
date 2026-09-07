@@ -1,0 +1,42 @@
+{
+  "completed_four_record_encoder_test": true,
+  "all_2308_quantized_coordinates_match": true,
+  "model_runs": 4,
+  "full_text_to_journal_wrapper_executed": true,
+  "files_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/runtime.json": "d6b4295fab8c6934d45ce4799ce7b28e0ac9ed524b220c82a06160df238ee9dd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/audit.json": "5f402d2fa19b2cca273343715f93b2072b37ee78266053572095bb981a2c409f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/audit.py": "45445e734812ce091c02d5734b0c51fae79141312729b443e64842a0facd94c3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/FRONTEND_INTEGRATION.md": "af18c0c848ecec0b3f3248f9c35c9156fa15eb5ab0d3b2154a9edcc58ba23d54",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/issue_text.py": "f084c71abf6f903c89fec34c1a2dcdb526baccafc153749a1d9b722874523365",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/issue_text_help.log": "d3e57b1d7522a3c81425d625490dadc16f23216c09266f7bbdf966789fb084a9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/README.md": "9e1df99c49750856581dba406ca2e24656d465418bdde4f3e3eec8122617b79f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/audit.log": "5f402d2fa19b2cca273343715f93b2072b37ee78266053572095bb981a2c409f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/run_fixed.py": "2fb22104bab4146e51f6a6025f493e102f7987d7b40b8fb0bd33ba4257d8f8b7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/LIVE_PROTOCOL.md": "2a5b2d19a1f773b7d620c164ef98bead7f2b1950f49eaab0f3920f62a0d87215",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/run_fixed.log": "5167664353bc3113b944698c801f5c9f2e04c4e9c16d5323897ee83da344121e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/record_0.stdout": "6eb5bc259d06c4092ef4436aaa18c53af8ec90a229bbeca00c95217801950154",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/report.json": "e0d3a7998d58335bbada534198d8bd4a83badac5b2bec3e6ae72cc8689f05e92",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/record_256.stderr": "dbfbb87368bb1dd564563458cca9ee4817066b8742e8710f4c4887e03d2452aa",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/record_256.stdout": "8dd9cc88f8d27e8c2c167cc39775b2d05027c974c3de281fbf5b81969cac59a0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/record_0.stderr": "da6b7a93ff566b7e1678541140b3dde76c86e92f2f88e8bbe7adf4c07591b324",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/record_320.stdout": "787d6a286d9493be862ccd5d96cec5e2b8678a7ac05cb6c9969fc701601dd399",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/record_64.stdout": "60345f58bf66e2f9ec244ca27039810e109f43b1f270af6eddbc15628be7b58a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/record_64.stderr": "68d63718e22c402b6d86a3393882f5db6685c4cc13325b345998226b83179fc1",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/record_320.stderr": "8532fc1ea3cd903abc0fb1e96128a03bcdfb92d2613de2800d29e88a80b457c7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_encode_prepared.py": "7fb22689e1abafc4dbf6a55c90a88ad9643af02c33112002b0b1b0dac9f97689",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_policy.json": "de2e7356049a76bba16a09d1ac38ee8de622004f28df0c7e3aa70d7b5d347ce3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility.json": "5c61d61fb8a55586f075f6133092f196e36d1d42ec6cd79ae5fbe37fad3f0f37",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/build_mapping.py": "54b2437099a6d364490a6dfd0885cfd83d3101b46f9cf234acc4e17772755f66",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/interpreter_repair.json": "c025635bb44173fb7430197688ee9776b3ba71d6b4c4d79b146cca3cde9373de",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/snapshots/issue_text_before_interpreter_fix.py": "f1bcb0c7194c73e89ca047ed9057fed79d226b025af9990f195221cec5c882b7"
+  },
+  "command_exit_codes": {
+    "four_record_run": 0,
+    "independent_audit": 0,
+    "issue_text_help": 0
+  },
+  "ignored_plaintext_artifacts": "../issuer_oracle/live_encoder/",
+  "full_text_to_journal_wrapper_completed": false,
+  "wrapper_attempt_outcome": "Encoder succeeded; journal Python lacked cryptography. Caller interpreter repair complete; rerun pending."
+}

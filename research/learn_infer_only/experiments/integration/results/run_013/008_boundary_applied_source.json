@@ -1,0 +1,12 @@
+{
+  "label": "boundary_applied_source",
+  "command": [
+    "bash",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_013/source/scripts/check-import-boundary.sh"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_013/source",
+  "exit_code": 0,
+  "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+  "stderr": "",
+  "elapsed_seconds": 0.08571187499910593
+}

@@ -1,0 +1,91 @@
+[
+  {
+    "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/public_key.rs",
+    "sha256": "c84a8da2647b7f20800317ead510584b116c0d5d99d3163f80c8e520d4ead3c3",
+    "spans": [
+      {
+        "start": 24,
+        "end": 36,
+        "text": "impl PublicKey {\n    /// Generate a new [`PublicKey`] from a [`SecretKey`].\n    pub fn new<R: RngCore + CryptoRng>(sk: &SecretKey, rng: &mut R) -> Self {\n        let zero = Plaintext::zero(Encoding::poly(), &sk.par).unwrap();\n        let mut c: Ciphertext = sk.try_encrypt(&zero, rng).unwrap();\n        // The polynomials of a public key should not allow for variable time\n        // computation.\n        c.iter_mut()\n            .for_each(|p| p.disallow_variable_time_computations());\n        Self {\n            par: sk.par.clone(),\n            c,\n        }"
+      },
+      {
+        "start": 46,
+        "end": 102,
+        "text": "\n    fn try_encrypt<R: RngCore + CryptoRng>(\n        &self,\n        pt: &Plaintext,\n        rng: &mut R,\n    ) -> Result<Ciphertext> {\n        let needs_switch = self.c.level != pt.level;\n        let ct: Cow<'_, Ciphertext> = if needs_switch {\n            let mut owned = self.c.clone();\n            while owned.level != pt.level {\n                owned.switch_down()?;\n            }\n            Cow::Owned(owned)\n        } else {\n            Cow::Borrowed(&self.c)\n        };\n\n        let ctx = self.par.context_at_level(ct.level)?;\n        let u = Zeroizing::new(Poly::small(\n            ctx,\n            Representation::Ntt,\n            self.par.variance,\n            rng,\n        )?);\n        let e1 = Zeroizing::new(Poly::small(\n            ctx,\n            Representation::Ntt,\n            self.par.variance,\n            rng,\n        )?);\n        let e2 = Zeroizing::new(Poly::small(\n            ctx,\n            Representation::Ntt,\n            self.par.variance,\n            rng,\n        )?);\n\n        let m = Zeroizing::new(pt.to_poly());\n        let mut c0 = u.as_ref() * &ct[0];\n        c0 += &e1;\n        c0 += &m;\n        let mut c1 = u.as_ref() * &ct[1];\n        c1 += &e2;\n\n        // It is now safe to enable variable time computations.\n        unsafe {\n            c0.allow_variable_time_computations();\n            c1.allow_variable_time_computations()\n        }\n\n        Ok(Ciphertext {\n            par: self.par.clone(),\n            seed: None,\n            c: vec![c0, c1],\n            level: ct.level,\n        })\n    }"
+      }
+    ]
+  },
+  {
+    "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/keys/secret_key.rs",
+    "sha256": "337e85e2dc4a7540039b800517ec32389dc3152516c9fdad18cc58dc55acec70",
+    "spans": [
+      {
+        "start": 40,
+        "end": 52,
+        "text": "impl SecretKey {\n    /// Generate a random [`SecretKey`].\n    pub fn random<R: RngCore + CryptoRng>(par: &Arc<BfvParameters>, rng: &mut R) -> Self {\n        let s_coefficients = sample_vec_cbd(par.degree(), par.variance, rng).unwrap();\n        Self::new(s_coefficients, par)\n    }\n\n    /// Generate a [`SecretKey`] from its coefficients.\n    pub(crate) fn new(coeffs: Vec<i64>, par: &Arc<BfvParameters>) -> Self {\n        Self {\n            par: par.to_owned(),\n            coeffs: coeffs.into_boxed_slice(),\n        }"
+      },
+      {
+        "start": 101,
+        "end": 145,
+        "text": "    pub(crate) fn encrypt_poly<R: RngCore + CryptoRng>(\n        &self,\n        p: &Poly,\n        rng: &mut R,\n    ) -> Result<Ciphertext> {\n        assert_eq!(p.representation(), &Representation::Ntt);\n\n        let level = self.par.level_of_context(p.ctx())?;\n\n        let mut seed = <ChaCha8Rng as SeedableRng>::Seed::default();\n        rand::rng().fill(&mut seed);\n\n        // Let's create a secret key with the ciphertext context\n        let mut s = Zeroizing::new(Poly::try_convert_from(\n            self.coeffs.as_ref(),\n            p.ctx(),\n            false,\n            Representation::PowerBasis,\n        )?);\n        s.change_representation(Representation::Ntt);\n\n        let mut a = Poly::random_from_seed(p.ctx(), Representation::Ntt, seed);\n        let a_s = Zeroizing::new(&a * s.as_ref());\n\n        let mut b = Poly::small(p.ctx(), Representation::Ntt, self.par.variance, rng)\n            .map_err(Error::MathError)?;\n        b -= &a_s;\n        b += p;\n\n        // It is now safe to enable variable time computations.\n        unsafe {\n            a.allow_variable_time_computations();\n            b.allow_variable_time_computations()\n        }\n\n        Ok(Ciphertext {\n            par: self.par.clone(),\n            seed: Some(seed),\n            c: vec![b, a],\n            level,\n        })\n    }\n}\n\nimpl From<&SecretKey> for SecretKeyProto {"
+      },
+      {
+        "start": 198,
+        "end": 262,
+        "text": "        self.encrypt_poly(m.as_ref(), rng)\n    }\n}\n\nimpl FheDecrypter<Plaintext, Ciphertext> for SecretKey {\n    type Error = Error;\n\n    fn try_decrypt(&self, ct: &Ciphertext) -> Result<Plaintext> {\n        if !Arc::ptr_eq(&self.par, &ct.par) {\n            Err(Error::DefaultError(\n                \"Incompatible BFV parameters\".to_string(),\n            ))\n        } else {\n            // Let's create a secret key with the ciphertext context\n            let mut s = Zeroizing::new(Poly::try_convert_from(\n                self.coeffs.as_ref(),\n                ct[0].ctx(),\n                false,\n                Representation::PowerBasis,\n            )?);\n            s.change_representation(Representation::Ntt);\n            let mut si = s.clone();\n\n            let mut c = Zeroizing::new(ct[0].clone());\n            c.disallow_variable_time_computations();\n\n            // Compute the phase c0 + c1*s + c2*s^2 + ... where the secret power\n            // s^k is computed on-the-fly\n            for i in 1..ct.len() {\n                let mut cis = Zeroizing::new(ct[i].clone());\n                cis.disallow_variable_time_computations();\n                *cis.as_mut() *= si.as_ref();\n                *c.as_mut() += &cis;\n                if i + 1 < ct.len() {\n                    *si.as_mut() *= s.as_ref();\n                }\n            }\n            c.change_representation(Representation::PowerBasis);\n\n            let ctx_lvl = self.par.context_level_at(ct.level).unwrap();\n            let d = Zeroizing::new(c.scale(&ctx_lvl.cipher_plain_context.scaler)?);\n\n            // TODO: Can we handle plaintext moduli that are BigUint?\n            let v = Zeroizing::new(\n                Vec::<u64>::from(d.as_ref())\n                    .iter_mut()\n                    .map(|vi| *vi + *self.par.plaintext)\n                    .collect_vec(),\n            );\n            let mut w = v[..self.par.degree()].to_vec();\n            let q = Modulus::new(self.par.moduli[0]).map_err(Error::MathError)?;\n            q.reduce_vec(&mut w);\n            self.par.plaintext.reduce_vec(&mut w);\n\n            let mut poly =\n                Poly::try_convert_from(&w, ct[0].ctx(), false, Representation::PowerBasis)?;\n            poly.change_representation(Representation::Ntt);\n\n            let pt = Plaintext {\n                par: self.par.clone(),\n                value: w.into_boxed_slice(),\n                encoding: None,\n                poly_ntt: poly,\n                level: ct.level,\n            };"
+      }
+    ]
+  },
+  {
+    "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/plaintext.rs",
+    "sha256": "abc6d4930295aed0fe91d58be85c79c46b4261d90fb0a02897ed002935de50b8",
+    "spans": [
+      {
+        "start": 51,
+        "end": 64,
+        "text": "    pub(crate) fn to_poly(&self) -> Poly {\n        let mut m_v = Zeroizing::new(self.value.clone());\n        let ctx_lvl = self.par.context_level_at(self.level).unwrap();\n        self.par\n            .plaintext\n            .scalar_mul_vec(&mut m_v, ctx_lvl.cipher_plain_context.q_mod_t);\n        let ctx = &ctx_lvl.poly_context;\n        let mut m =\n            Poly::try_convert_from(m_v.as_ref(), ctx, false, Representation::PowerBasis).unwrap();\n        m.change_representation(Representation::Ntt);\n        m *= &ctx_lvl.cipher_plain_context.delta;\n        m\n    }\n"
+      }
+    ]
+  },
+  {
+    "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/parameters.rs",
+    "sha256": "7f6b1d364cbc8547b3f381551ec14f1ec0272c07b3c8a4ee03c4df1fc9aece30",
+    "spans": [
+      {
+        "start": 417,
+        "end": 447,
+        "text": "            let cipher_ctx = Context::new_arc(level_moduli, self.degree)?;\n            // Compute delta (scaling polynomial)\n            let mut delta_rests = vec![];\n            for m in level_moduli {\n                let q = Modulus::new(*m)?;\n                delta_rests.push(q.inv(q.neg(*plaintext_modulus)).unwrap())\n            }\n\n            // Use RnsContext to lift the delta values and create the scaling polynomial\n            let rns = RnsContext::new(level_moduli)?;\n            let mut delta = Poly::try_convert_from(\n                &[rns.lift((&delta_rests).into())],\n                &cipher_ctx,\n                true,\n                Representation::PowerBasis,\n            )?;\n            delta.change_representation(Representation::NttShoup);\n\n            // Compute q_mod_t\n            let q_mod_t = (rns.modulus() % *plaintext_modulus).to_u64().unwrap();\n\n            // Compute plain_threshold\n            let plain_threshold = self.plaintext.div_ceil(2);\n\n            // Scaler from ciphertext to plaintext context\n            let scaler = Scaler::new(\n                &cipher_ctx,\n                &plaintext_context,\n                ScalingFactor::new(&BigUint::from(*plaintext_modulus), rns.modulus()),\n            )?;\n"
+      }
+    ]
+  },
+  {
+    "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mod.rs",
+    "sha256": "99d4777b6ed571ddd497572b196aa748b7875374d81395b35e868080065e73ad",
+    "spans": [
+      {
+        "start": 15,
+        "end": 68,
+        "text": "impl Add<&Ciphertext> for &Ciphertext {\n    type Output = Ciphertext;\n\n    fn add(self, rhs: &Ciphertext) -> Ciphertext {\n        assert!(Arc::ptr_eq(&self.par, &rhs.par));\n\n        if self.is_empty() {\n            return rhs.clone();\n        }\n        if rhs.is_empty() {\n            return self.clone();\n        }\n\n        assert_eq!(self.level, rhs.level);\n        assert_eq!(self.len(), rhs.len());\n\n        let c = self\n            .iter()\n            .zip(rhs.iter())\n            .map(|(c1i, c2i)| c1i + c2i)\n            .collect::<Vec<_>>();\n        Ciphertext {\n            par: self.par.clone(),\n            seed: None,\n            c,\n            level: self.level,\n        }\n    }\n}\n\nimpl Add<&Ciphertext> for Ciphertext {\n    type Output = Ciphertext;\n\n    fn add(mut self, rhs: &Ciphertext) -> Ciphertext {\n        self += rhs;\n        self\n    }\n}\n\nimpl AddAssign<&Ciphertext> for Ciphertext {\n    fn add_assign(&mut self, rhs: &Ciphertext) {\n        assert!(Arc::ptr_eq(&self.par, &rhs.par));\n\n        if self.is_empty() {\n            *self = rhs.clone()\n        } else if !rhs.is_empty() {\n            assert_eq!(self.level, rhs.level);\n            assert_eq!(self.len(), rhs.len());\n            self.iter_mut()\n                .zip(rhs.iter())\n                .for_each(|(c1i, c2i)| *c1i += c2i);\n            self.seed = None\n        }\n    }"
+      },
+      {
+        "start": 110,
+        "end": 164,
+        "text": "impl Sub<&Ciphertext> for &Ciphertext {\n    type Output = Ciphertext;\n\n    fn sub(self, rhs: &Ciphertext) -> Ciphertext {\n        assert!(Arc::ptr_eq(&self.par, &rhs.par));\n\n        if self.is_empty() {\n            return -rhs.clone();\n        }\n        if rhs.is_empty() {\n            return self.clone();\n        }\n\n        assert_eq!(self.level, rhs.level);\n        assert_eq!(self.len(), rhs.len());\n\n        let c = self\n            .iter()\n            .zip(rhs.iter())\n            .map(|(c1i, c2i)| c1i - c2i)\n            .collect::<Vec<_>>();\n        Ciphertext {\n            par: self.par.clone(),\n            seed: None,\n            c,\n            level: self.level,\n        }\n    }\n}\n\nimpl Sub<&Ciphertext> for Ciphertext {\n    type Output = Ciphertext;\n\n    fn sub(mut self, rhs: &Ciphertext) -> Ciphertext {\n        self -= rhs;\n        self\n    }\n}\n\nimpl SubAssign<&Ciphertext> for Ciphertext {\n    fn sub_assign(&mut self, rhs: &Ciphertext) {\n        assert!(Arc::ptr_eq(&self.par, &rhs.par));\n\n        if self.is_empty() {\n            *self = -rhs\n        } else if !rhs.is_empty() {\n            assert_eq!(self.level, rhs.level);\n            assert_eq!(self.len(), rhs.len());\n            self.iter_mut()\n                .zip(rhs.iter())\n                .for_each(|(c1i, c2i)| *c1i -= c2i);\n            self.seed = None\n        }\n    }\n}"
+      },
+      {
+        "start": 229,
+        "end": 246,
+        "text": "impl MulAssign<&Plaintext> for Ciphertext {\n    fn mul_assign(&mut self, rhs: &Plaintext) {\n        assert!(Arc::ptr_eq(&self.par, &rhs.par));\n        if !self.is_empty() {\n            assert_eq!(self.level, rhs.level);\n            self.iter_mut().for_each(|ci| *ci *= &rhs.poly_ntt);\n        }\n        self.seed = None\n    }\n}\n\nimpl Mul<&Plaintext> for &Ciphertext {\n    type Output = Ciphertext;\n\n    fn mul(self, rhs: &Plaintext) -> Ciphertext {\n        let mut self_clone = self.clone();\n        self_clone *= rhs;\n        self_clone"
+      }
+    ]
+  },
+  {
+    "path": "/Users/ember/dev/breadstuffs/metatheory/Bfv/Ring.lean",
+    "sha256": "fa2981384f332fa7eeeffb78522784c804908b98280a89ad80655dc0a57bcfcf",
+    "role": "read-only mathematical negacyclic expansion anchor generalized from integers to ZMod",
+    "lines": [
+      110,
+      235
+    ]
+  }
+]

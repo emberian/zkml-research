@@ -173,4 +173,44 @@ theorem supported_noise_lift (q N : Nat) [NeZero N] [Nontrivial (ZMod q)]
   ⟨noise_coefficient_lift q N s e u e1 e2,
     integerNoise_bound s e u e1 e2 S hS hs he hu he1 he2⟩
 
+/-- info: 'Minidregg.Theory.BfvNoiseSource.reducePower_dvd' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.reducePower_dvd
+/-- info: 'Minidregg.Theory.BfvNoiseSource.pack_mul_expand' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.pack_mul_expand
+/-- info: 'Minidregg.Theory.BfvNoiseSource.pack_convolution_expand' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.pack_convolution_expand
+/-- info: 'Minidregg.Theory.BfvNoiseSource.pack_convolution_dvd' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.pack_convolution_dvd
+/-- info: 'Minidregg.Theory.BfvNoiseSource.pack_convolution_quotient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.pack_convolution_quotient
+/-- info: 'Minidregg.Theory.BfvNoiseSource.convolution_cast' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.convolution_cast
+/-- info: 'Minidregg.Theory.BfvNoiseSource.product_coefficient_lift' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.product_coefficient_lift
+/-- info: 'Minidregg.Theory.BfvNoiseSource.vector_coefficient_lift' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.vector_coefficient_lift
+/-- info: 'Minidregg.Theory.BfvNoiseSource.noise_coefficient_lift' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.noise_coefficient_lift
+/-- info: 'Minidregg.Theory.BfvNoiseSource.convolution_as_signed_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.convolution_as_signed_sum
+/-- info: 'Minidregg.Theory.BfvNoiseSource.convolution_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.convolution_bound
+/-- info: 'Minidregg.Theory.BfvNoiseSource.integerNoise_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.integerNoise_bound
+/-- info: 'Minidregg.Theory.BfvNoiseSource.supported_noise_lift' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms Minidregg.Theory.BfvNoiseSource.supported_noise_lift
+
 end Minidregg.Theory.BfvNoiseSource

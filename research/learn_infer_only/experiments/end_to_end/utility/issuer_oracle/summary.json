@@ -1,0 +1,599 @@
+{
+  "all_selected_queries": {
+    "accuracy": 0.5416666666666666,
+    "correct": 52,
+    "count": 96
+  },
+  "empty_route_query_count": 16,
+  "final_queries": {
+    "accuracy": 0.5625,
+    "correct": 18,
+    "count": 32
+  },
+  "nonempty_encrypted_queries": {
+    "accuracy": 0.55,
+    "correct": 44,
+    "count": 80
+  },
+  "nonempty_encrypted_query_count": 80,
+  "original_32_history_result": {
+    "configuration": {
+      "capacity": 64
+    },
+    "method": "model_window_routed",
+    "metrics": {
+      "final_mean": {
+        "history_sd": 0.12095114481287939,
+        "max": 0.875,
+        "mean": 0.631591796875,
+        "min": 0.46875,
+        "n_histories": 32,
+        "normal_95_half_width": 0.041907433597836934
+      },
+      "skill0_after_skill1": {
+        "history_sd": 0.09381298287576399,
+        "max": 0.8125,
+        "mean": 0.580078125,
+        "min": 0.5,
+        "n_histories": 32,
+        "normal_95_half_width": 0.03250454021384718
+      },
+      "skill0_final_changed": {
+        "history_sd": 0.10047592612835578,
+        "max": 0.765625,
+        "mean": 0.5693359375,
+        "min": 0.375,
+        "n_histories": 32,
+        "normal_95_half_width": 0.034813132268565895
+      },
+      "skill0_initial": {
+        "history_sd": 0.09381298287576399,
+        "max": 0.8125,
+        "mean": 0.580078125,
+        "min": 0.5,
+        "n_histories": 32,
+        "normal_95_half_width": 0.03250454021384718
+      },
+      "skill0_interference_loss": {
+        "history_sd": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n_histories": 32,
+        "normal_95_half_width": 0.0
+      },
+      "skill1_after_learning": {
+        "history_sd": 0.2211439916769468,
+        "max": 1.0,
+        "mean": 0.69384765625,
+        "min": 0.46875,
+        "n_histories": 32,
+        "normal_95_half_width": 0.07662248390538093
+      },
+      "skill1_final_retained": {
+        "history_sd": 0.2211439916769468,
+        "max": 1.0,
+        "mean": 0.69384765625,
+        "min": 0.46875,
+        "n_histories": 32,
+        "normal_95_half_width": 0.07662248390538093
+      },
+      "skill1_interference_loss": {
+        "history_sd": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n_histories": 32,
+        "normal_95_half_width": 0.0
+      }
+    },
+    "per_history": [
+      {
+        "final_mean": 0.65625,
+        "seed": 63000,
+        "skill0_after_skill1": 0.515625,
+        "skill0_final_changed": 0.515625,
+        "skill0_initial": 0.515625,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.796875,
+        "skill1_final_retained": 0.796875,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.5,
+        "seed": 63001,
+        "skill0_after_skill1": 0.5,
+        "skill0_final_changed": 0.5,
+        "skill0_initial": 0.5,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.5,
+        "skill1_final_retained": 0.5,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.5390625,
+        "seed": 63002,
+        "skill0_after_skill1": 0.546875,
+        "skill0_final_changed": 0.578125,
+        "skill0_initial": 0.546875,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.5,
+        "skill1_final_retained": 0.5,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.5234375,
+        "seed": 63003,
+        "skill0_after_skill1": 0.59375,
+        "skill0_final_changed": 0.546875,
+        "skill0_initial": 0.59375,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.5,
+        "skill1_final_retained": 0.5,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.7578125,
+        "seed": 63004,
+        "skill0_after_skill1": 0.578125,
+        "skill0_final_changed": 0.515625,
+        "skill0_initial": 0.578125,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.859375,
+        "seed": 63005,
+        "skill0_after_skill1": 0.734375,
+        "skill0_final_changed": 0.71875,
+        "skill0_initial": 0.734375,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.546875,
+        "seed": 63006,
+        "skill0_after_skill1": 0.5625,
+        "skill0_final_changed": 0.5,
+        "skill0_initial": 0.5625,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.59375,
+        "skill1_final_retained": 0.59375,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.6171875,
+        "seed": 63007,
+        "skill0_after_skill1": 0.75,
+        "skill0_final_changed": 0.640625,
+        "skill0_initial": 0.75,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.59375,
+        "skill1_final_retained": 0.59375,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.7578125,
+        "seed": 63008,
+        "skill0_after_skill1": 0.5,
+        "skill0_final_changed": 0.515625,
+        "skill0_initial": 0.5,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.671875,
+        "seed": 63009,
+        "skill0_after_skill1": 0.796875,
+        "skill0_final_changed": 0.734375,
+        "skill0_initial": 0.796875,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.609375,
+        "skill1_final_retained": 0.609375,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.5,
+        "seed": 63010,
+        "skill0_after_skill1": 0.515625,
+        "skill0_final_changed": 0.5,
+        "skill0_initial": 0.515625,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.5,
+        "skill1_final_retained": 0.5,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.6171875,
+        "seed": 63011,
+        "skill0_after_skill1": 0.671875,
+        "skill0_final_changed": 0.765625,
+        "skill0_initial": 0.671875,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.46875,
+        "skill1_final_retained": 0.46875,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.6875,
+        "seed": 63012,
+        "skill0_after_skill1": 0.5,
+        "skill0_final_changed": 0.375,
+        "skill0_initial": 0.5,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.5390625,
+        "seed": 63013,
+        "skill0_after_skill1": 0.515625,
+        "skill0_final_changed": 0.5625,
+        "skill0_initial": 0.515625,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.515625,
+        "skill1_final_retained": 0.515625,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.515625,
+        "seed": 63014,
+        "skill0_after_skill1": 0.59375,
+        "skill0_final_changed": 0.5625,
+        "skill0_initial": 0.59375,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.46875,
+        "skill1_final_retained": 0.46875,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.625,
+        "seed": 63015,
+        "skill0_after_skill1": 0.6875,
+        "skill0_final_changed": 0.65625,
+        "skill0_initial": 0.6875,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.59375,
+        "skill1_final_retained": 0.59375,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.578125,
+        "seed": 63016,
+        "skill0_after_skill1": 0.53125,
+        "skill0_final_changed": 0.578125,
+        "skill0_initial": 0.53125,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.578125,
+        "skill1_final_retained": 0.578125,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.859375,
+        "seed": 63017,
+        "skill0_after_skill1": 0.6875,
+        "skill0_final_changed": 0.71875,
+        "skill0_initial": 0.6875,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.7109375,
+        "seed": 63018,
+        "skill0_after_skill1": 0.515625,
+        "skill0_final_changed": 0.421875,
+        "skill0_initial": 0.515625,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.7421875,
+        "seed": 63019,
+        "skill0_after_skill1": 0.5625,
+        "skill0_final_changed": 0.484375,
+        "skill0_initial": 0.5625,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.65625,
+        "seed": 63020,
+        "skill0_after_skill1": 0.53125,
+        "skill0_final_changed": 0.578125,
+        "skill0_initial": 0.53125,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.734375,
+        "skill1_final_retained": 0.734375,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.6796875,
+        "seed": 63021,
+        "skill0_after_skill1": 0.65625,
+        "skill0_final_changed": 0.75,
+        "skill0_initial": 0.65625,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.609375,
+        "skill1_final_retained": 0.609375,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.875,
+        "seed": 63022,
+        "skill0_after_skill1": 0.8125,
+        "skill0_final_changed": 0.75,
+        "skill0_initial": 0.8125,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.7890625,
+        "seed": 63023,
+        "skill0_after_skill1": 0.515625,
+        "skill0_final_changed": 0.578125,
+        "skill0_initial": 0.515625,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.59375,
+        "seed": 63024,
+        "skill0_after_skill1": 0.5,
+        "skill0_final_changed": 0.578125,
+        "skill0_initial": 0.5,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.609375,
+        "skill1_final_retained": 0.609375,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.5,
+        "seed": 63025,
+        "skill0_after_skill1": 0.5,
+        "skill0_final_changed": 0.53125,
+        "skill0_initial": 0.5,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.46875,
+        "skill1_final_retained": 0.46875,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.53125,
+        "seed": 63026,
+        "skill0_after_skill1": 0.5,
+        "skill0_final_changed": 0.5625,
+        "skill0_initial": 0.5,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.5,
+        "skill1_final_retained": 0.5,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.546875,
+        "seed": 63027,
+        "skill0_after_skill1": 0.5,
+        "skill0_final_changed": 0.53125,
+        "skill0_initial": 0.5,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.5625,
+        "skill1_final_retained": 0.5625,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.7734375,
+        "seed": 63028,
+        "skill0_after_skill1": 0.53125,
+        "skill0_final_changed": 0.546875,
+        "skill0_initial": 0.53125,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 1.0,
+        "skill1_final_retained": 1.0,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.484375,
+        "seed": 63029,
+        "skill0_after_skill1": 0.5625,
+        "skill0_final_changed": 0.46875,
+        "skill0_initial": 0.5625,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.5,
+        "skill1_final_retained": 0.5,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.5078125,
+        "seed": 63030,
+        "skill0_after_skill1": 0.59375,
+        "skill0_final_changed": 0.515625,
+        "skill0_initial": 0.59375,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.5,
+        "skill1_final_retained": 0.5,
+        "skill1_interference_loss": 0.0
+      },
+      {
+        "final_mean": 0.46875,
+        "seed": 63031,
+        "skill0_after_skill1": 0.5,
+        "skill0_final_changed": 0.4375,
+        "skill0_initial": 0.5,
+        "skill0_interference_loss": 0.0,
+        "skill1_after_learning": 0.5,
+        "skill1_final_retained": 0.5,
+        "skill1_interference_loss": 0.0
+      }
+    ],
+    "representation": "mean_10",
+    "selected_representation_for_method": true
+  },
+  "phase_combined": [
+    {
+      "accuracy": 0.5,
+      "correct": 16,
+      "count": 32,
+      "phase": 1
+    },
+    {
+      "accuracy": 0.5625,
+      "correct": 18,
+      "count": 32,
+      "phase": 2
+    },
+    {
+      "accuracy": 0.5625,
+      "correct": 18,
+      "count": 32,
+      "phase": 3
+    }
+  ],
+  "phase_skill_history": [
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63000,
+      "phase": 1,
+      "phase_name": "teach plant rule",
+      "public_structural_zero": false,
+      "route": 0
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63000,
+      "phase": 1,
+      "phase_name": "teach plant rule",
+      "public_structural_zero": true,
+      "route": 1
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63000,
+      "phase": 2,
+      "phase_name": "teach independent letter rule",
+      "public_structural_zero": false,
+      "route": 0
+    },
+    {
+      "accuracy": 0.75,
+      "correct": 6,
+      "count": 8,
+      "history_seed": 63000,
+      "phase": 2,
+      "phase_name": "teach independent letter rule",
+      "public_structural_zero": false,
+      "route": 1
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63000,
+      "phase": 3,
+      "phase_name": "reverse plant rule",
+      "public_structural_zero": false,
+      "route": 0
+    },
+    {
+      "accuracy": 0.75,
+      "correct": 6,
+      "count": 8,
+      "history_seed": 63000,
+      "phase": 3,
+      "phase_name": "reverse plant rule",
+      "public_structural_zero": false,
+      "route": 1
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63001,
+      "phase": 1,
+      "phase_name": "teach plant rule",
+      "public_structural_zero": false,
+      "route": 0
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63001,
+      "phase": 1,
+      "phase_name": "teach plant rule",
+      "public_structural_zero": true,
+      "route": 1
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63001,
+      "phase": 2,
+      "phase_name": "teach independent letter rule",
+      "public_structural_zero": false,
+      "route": 0
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63001,
+      "phase": 2,
+      "phase_name": "teach independent letter rule",
+      "public_structural_zero": false,
+      "route": 1
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63001,
+      "phase": 3,
+      "phase_name": "reverse plant rule",
+      "public_structural_zero": false,
+      "route": 0
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 4,
+      "count": 8,
+      "history_seed": 63001,
+      "phase": 3,
+      "phase_name": "reverse plant rule",
+      "public_structural_zero": false,
+      "route": 1
+    }
+  ],
+  "public_structural_zero_queries": {
+    "accuracy": 0.5,
+    "correct": 8,
+    "count": 16
+  },
+  "retention_state_equalities": 4,
+  "scope": "Descriptive fixed-subset arithmetic/oracle summary; no new population utility estimate",
+  "selected_queries": 96,
+  "sign_tie_convention": "score >= 0 maps to +1; otherwise -1",
+  "teaching_events": 384
+}

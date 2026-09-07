@@ -1,0 +1,12 @@
+{
+  "full_secret_files_scanned_raw_hex_base64": 4,
+  "ok": true,
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "private_vector_full_encodings_scanned": 40,
+  "public_artifacts_expanded_before_scan": true,
+  "python": "3.14.7",
+  "reader_cli_outputs_omitted_in_all_public_logs": true,
+  "runtime_gitignored": true,
+  "scope": "Whole-vector/key scan plus typed command-log omission; not a general information-flow proof. Public query and admitted ciphertext/authorization metadata are intentionally retained.",
+  "source_pins_match_runtime_and_current_driver_service": true
+}

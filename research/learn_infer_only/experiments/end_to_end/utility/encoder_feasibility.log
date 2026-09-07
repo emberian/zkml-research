@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "scope": "Read-only cached source/runtime inventory; no model loaded or run",
+  "python_executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+  "torch": "2.10.0",
+  "transformers": "4.57.3",
+  "numpy": "2.4.2",
+  "model_path": "/Users/ember/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM2-135M/snapshots/93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "recorded_original_parameter_count": 134515008,
+  "recorded_original_full_feature_pass_seconds": 3.2402837529662065,
+  "requirements_sha256": "fe68f9bd8a5e24b74b7728eb27312a0de9ed055d8fb4ab945d222dbf4f21f9d6",
+  "script_sha256": "00818f3979a9c0d17fbf733607e3eaec20ce2b98c10bf45365720a7bb11ec6ec",
+  "new_dependencies": [],
+  "model_executed": false,
+  "read_inventory_seconds": 0.2091052499890793
+}

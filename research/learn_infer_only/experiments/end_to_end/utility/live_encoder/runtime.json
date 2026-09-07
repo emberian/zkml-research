@@ -1,0 +1,20 @@
+{
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "torch": "2.10.0",
+  "transformers": "4.57.3",
+  "numpy": "2.4.2",
+  "device": "cpu",
+  "dtype": "float32",
+  "attention": "eager",
+  "torch_threads": 2,
+  "interop_threads": 1,
+  "seed": 7901,
+  "executed_blocks": 30,
+  "selected_representation_block_index": 9,
+  "prompt_batch_size": 1,
+  "remote_code": false,
+  "offline": true,
+  "backbone_training": false
+}

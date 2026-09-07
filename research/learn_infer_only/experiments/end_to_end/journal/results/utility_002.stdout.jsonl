@@ -1,0 +1,13 @@
+{"history": 0, "events_completed": 40}
+{"history": 0, "events_completed": 80}
+{"history": 0, "events_completed": 120}
+{"history": 0, "events_completed": 160}
+{"history": 0, "events_completed": 200}
+{"history": 0, "events_completed": 240}
+{"history": 1, "events_completed": 40}
+{"history": 1, "events_completed": 80}
+{"history": 1, "events_completed": 120}
+{"history": 1, "events_completed": 160}
+{"history": 1, "events_completed": 200}
+{"history": 1, "events_completed": 240}
+{"ok": true, "events": 480, "oracle_comparisons": 96}

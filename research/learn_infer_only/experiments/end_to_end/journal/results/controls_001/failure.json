@@ -1,0 +1,9 @@
+{
+  "command": "python3 research/learn_infer_only/experiments/end_to_end/journal/controls.py --root research/learn_infer_only/experiments/end_to_end/journal/results/controls_001",
+  "exit_code": 1,
+  "case": "after_publication",
+  "exception": "AssertionError: expected SIGKILL",
+  "observed": "Trusted startup hook wrote after_publication marker and requested SIGKILL, but an accepted acknowledged RPC response reached the coordinator before signal termination. No claim that the process survived SIGKILL.",
+  "retained": "after_publication/events.jsonl and crash_marker.txt; other completed cases in partial_report.json",
+  "repair": "After requesting SIGKILL, wait for signal delivery rather than returning to response code."
+}

@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "issuer_vectors": 384,
+  "public_query_vectors": 16,
+  "oracle_queries": 96,
+  "private_index": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/input_index.json"
+}

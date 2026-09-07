@@ -1,6 +1,45 @@
-# Finished-proposal integration, 2026-09-06
+# Finished-proposal integration
 
-[EXECUTED] The final batched integration passed. It compiles **41 proposed
+[EXECUTED current check, 2026-09-07] **Run014 passes 53 modules / 708 exact theorem
+pins and all four umbrellas**, using existing read-only dependency oleans. It
+adds the source-noise/window successor (34 pins) and the two mixed-journal
+window-frame modules (23 pins) to the prior 651-pin
+collection. Patch application, exact content comparison, both import-boundary
+checks and all recorded source/companion hashes pass. Elapsed472.952 seconds on
+the shared machine. This is not a clean whole-tree build or Rust/runtime refinement.
+
+[EXECUTED] The explicit manifest is `modules_with_source_window.json`; the frozen
+proposal is `formal/integration/minidregg-combined-resident-708.patch`, SHA256
+`a290120197d9679d9d59060121b7a7b7dc17dc3ccbbef263ac8eac057d77f2c2`.
+The current unnumbered proposal has those same bytes. Apply one compatible
+combined patch; the historical snapshots below remain separate alternatives.
+
+[EXECUTED] The exact axiom census is 561 standard triples, 48 axiom-free,
+41 `propext`, 54 `propext, Quot.sound`, and four `Quot.sound`. Run014's
+[summary](results/run_014/SUMMARY.md) and report retain the actual commands,
+manifest, harness and source hashes. The completed674 proposal and manifest
+remain unchanged. The new source-window theorem derives a Q83/W32/r577 decoding
+bound from supported source coefficients; Rust sampler/RNS/NTT/scaler refinement
+and admission provenance remain assumptions outside that theorem.
+
+[EXECUTED instrument correction] Run012 stopped before Lean on a lexical false
+positive: a witness uses the lawful **imported** admission predicate `admit`,
+without declaring a local binder. The census now records such identifiers and
+leaves name resolution to Lean, while rejecting obvious placeholder tactics and
+requiring every exact kernel axiom guard. `check_census.py` accepts that real
+14-pin witness and rejects five missing-guard/placeholder controls. Run013 then
+elaborated every guard. The failed run and its checker snapshot remain preserved.
+
+[DERIVED scope] MixedHistory supports real non-window journal entries only with
+an explicit check that they preserve the selected window and genesis bytes.
+Its admission count is derived from the actual journal projection. The witness
+has five commits and three learning admissions, including expiry and retry.
+This removes the previous exclusive-window-history restriction at the model
+level; the new executable E2E journal still needs its own correspondence checks.
+
+## Historical 528-pin checkpoint
+
+[EXECUTED] The earlier batched integration passed. It compiles **41 proposed
 modules, 528 guarded theorem pins, and all four Theory/Compiler/Selvage/Assurance
 umbrellas together in one fresh overlay**. This is integration against existing
 read-only dependency oleans, not a clean full companion build.

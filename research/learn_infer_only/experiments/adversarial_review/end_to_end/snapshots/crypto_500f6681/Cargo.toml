@@ -1,0 +1,16 @@
+[package]
+name = "resident-crypto"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+fhe = { path = "/Users/ember/dev/breadstuffs/vendor/fhe-dregg" }
+fhe-traits = "=0.1.1"
+rand = "=0.9.2"
+rand_chacha = "=0.9.0"
+sha2 = "=0.10.9"
+serde_json = "=1.0.151"
+prost = "=0.14.4"

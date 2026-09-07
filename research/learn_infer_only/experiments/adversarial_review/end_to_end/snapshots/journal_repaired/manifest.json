@@ -1,0 +1,9 @@
+{
+  "common.py": "32afcec1c2db4a6e1ccf9eb475ad22780a0f0d4deceb18c39e66246b5a1b6b1e",
+  "model.py": "bcbac3baac92aaeacf2fdbbf174dd0d1c57c9e0fffed93b9d7307f2b96da28eb",
+  "roles.py": "a42bf9dc15320587e60a47332556dddc2d345eed7099c8f573f13f8697d3b2f0",
+  "authority.py": "2030998d92bf2baa92055bd8e522b0c0001ffeadd5f43100f0a33e4e6ef08039",
+  "reader.py": "d39c3538d8c0e660539d4e776627926449fec5fb1fc1c866853643d47ce76c9a",
+  "run.py": "e12ac924830544b98bbbba67f8ed8c489ee719b4d33d0307869f54f58a43c330",
+  "client.py": "489c23061e8e8724773d6c7f8f1c1aafe66cc6524e31a5b9b2c3d6d680d4f7d0"
+}

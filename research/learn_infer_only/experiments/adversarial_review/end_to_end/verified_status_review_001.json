@@ -1,0 +1,48 @@
+{
+  "recorded_utc": "2026-09-07T02:37:39.420605+00:00",
+  "classification": "EXECUTED targeted independent concurrent verified-reader status check",
+  "review_script_sha256": "d13068086db59df472e1a86e25bf18dd68aab4e49ef3edd78ebdbe891a255ba9",
+  "service_sha256": "f0e79c2a33baa32e2867d467735dafd29b26c480deb1f688289e7468bd2de01b",
+  "journal_snapshot_manifest": {
+    "common.py": "32afcec1c2db4a6e1ccf9eb475ad22780a0f0d4deceb18c39e66246b5a1b6b1e",
+    "model.py": "bcbac3baac92aaeacf2fdbbf174dd0d1c57c9e0fffed93b9d7307f2b96da28eb",
+    "roles.py": "a42bf9dc15320587e60a47332556dddc2d345eed7099c8f573f13f8697d3b2f0",
+    "authority.py": "2030998d92bf2baa92055bd8e522b0c0001ffeadd5f43100f0a33e4e6ef08039",
+    "reader.py": "d39c3538d8c0e660539d4e776627926449fec5fb1fc1c866853643d47ce76c9a",
+    "run.py": "e12ac924830544b98bbbba67f8ed8c489ee719b4d33d0307869f54f58a43c330",
+    "client.py": "489c23061e8e8724773d6c7f8f1c1aafe66cc6524e31a5b9b2c3d6d680d4f7d0"
+  },
+  "schedule": [
+    "status reads head at revision0",
+    "status pauses before count SELECT",
+    "separate RPC sync verifies real signed BFV Learn and commits revision1",
+    "status resumes count SELECT in original read transaction"
+  ],
+  "traced_status_selects": [
+    "SELECT revision,state_digest FROM verified_head",
+    "SELECT count(*) FROM verified_journal",
+    "SELECT revision,state_digest FROM verified_head",
+    "SELECT count(*) FROM verified_journal"
+  ],
+  "concurrent_sync": {
+    "envelope_sha256": "0a4b07253da4791821550bff400aa4aa730377ad8b81dfd840a228594a4e7751",
+    "ok": true,
+    "revision": 1,
+    "state_digest": "25c187aa6d67449190e106f486d15fa67098a00b3798c04c18f089854d89ef19",
+    "status": "verified"
+  },
+  "status_during_commit": {
+    "ok": true,
+    "revision": 0,
+    "state_digest": "875d5f9ebc025bc6d69f71daf9cc3c3e034f1fc700f2b8b5f296e138965184e2",
+    "verified_records": 0
+  },
+  "status_after_commit": {
+    "ok": true,
+    "revision": 1,
+    "state_digest": "25c187aa6d67449190e106f486d15fa67098a00b3798c04c18f089854d89ef19",
+    "verified_records": 1
+  },
+  "passed": true,
+  "scope": "Actual strict RPC handler, Ed25519, BFV recomputation and SQLite WAL. A trace callback only schedules the SELECT interleaving. This one-history status check does not replace the owner's mixed-history/crash/release suite or establish masterless security."
+}

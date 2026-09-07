@@ -1,0 +1,17 @@
+{
+  "change": "Use caller sys.executable for journal roles.py issue; retain adaptation venv for model encoder",
+  "previous_source_sha256": "f1bcb0c7194c73e89ca047ed9057fed79d226b025af9990f195221cec5c882b7",
+  "repaired_source_sha256": "f084c71abf6f903c89fec34c1a2dcdb526baccafc153749a1d9b722874523365",
+  "failure_evidence_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/results/live_text_001/.private/issuer/live_encoder/processes.json",
+  "failure_evidence_sha256": "393c92b89ddad6beefaf7bdb7519e97ac674c487f8a8aff02d952a49366f66b3",
+  "failure_summary": {
+    "live_encoder_exit": 0,
+    "encrypted_signed_issuer_exit": 1,
+    "error": "ModuleNotFoundError: cryptography"
+  },
+  "validated_caller_python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "validated_cryptography_version": "50.0.1",
+  "syntax_and_help_passed": true,
+  "new_dependencies_installed": false,
+  "full_integration_rerun": "Owned by durable_integration; pending at repair time"
+}

@@ -1,0 +1,122 @@
+{
+  "classification": "EXECUTED codec domain checks; intentionally separates syntax from cryptographic provenance",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/codec_domain_review.py"
+  ],
+  "source_sha256": "500f66817e30feb059c4233de3912d1b1e8824d5a2643c7e1bb917cd77b7b8e7",
+  "binary_sha256": "93307bdaed3fa666c8b5c81c9598eb6c9e350ce908b476947535cffc3847ca37",
+  "script_sha256": "0a71b96e0c9214b11350fd92ab449fed47ac51056ebf07217bbd416206438850",
+  "short_degree_CT_and_PK_rejected": true,
+  "seeded_normalization_honest_zero": true,
+  "canonical_ciphertext_mutation_is_syntactically_valid": true,
+  "records": [
+    {
+      "name": "short_degree_strict",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/coherent_short_degree.ct"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"noncanonical polynomial degree/encoding\"}\n"
+    },
+    {
+      "name": "short_degree_normalize",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "normalize",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/coherent_short_degree.ct",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/short_normalized.ct"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"noncanonical polynomial degree/encoding\"}\n"
+    },
+    {
+      "name": "short_degree_public_key",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "issuer-encrypt",
+        "--pk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/coherent_short_degree.pk",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_a.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/short_pk_encrypted.ct"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"noncanonical polynomial degree/encoding\"}\n"
+    },
+    {
+      "name": "seeded_not_canonical_full",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_seeded_zero.ct"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"expected two full polynomials or allowed seeded equivalent\"}\n"
+    },
+    {
+      "name": "seeded_normalize",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "normalize",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_seeded_zero.ct",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_seeded_zero_full.ct"
+      ],
+      "exit": 0,
+      "stdout": "{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":31138500,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"36b8de6832e0bd693731b89ca7db14d1ce67c23393f1c77b8d0ee24bba4ed990\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "normalized_is_canonical",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_seeded_zero_full.ct"
+      ],
+      "exit": 0,
+      "stdout": "{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":15822708,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"36b8de6832e0bd693731b89ca7db14d1ce67c23393f1c77b8d0ee24bba4ed990\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "normalized_zero_read",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "reader-decrypt",
+        "--sk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.sk",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_seeded_zero_full.ct"
+      ],
+      "exit": 0,
+      "stdout": "{\"ciphertext_sha256\":\"36b8de6832e0bd693731b89ca7db14d1ce67c23393f1c77b8d0ee24bba4ed990\",\"coefficient\":576,\"full_key_reader\":true,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"kind\":\"trusted_reader_score\",\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"process_work_ns\":16776416,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"scope\":\"benchmark R; finalization/policy gate is external; full polynomial decrypted internally\",\"sign\":1,\"signed_score\":0}\n",
+      "stderr": ""
+    },
+    {
+      "name": "canonical_coefficient_mutation_passes_syntax",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/canonical_coefficient_mutation.ct"
+      ],
+      "exit": 0,
+      "stdout": "{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":18112041,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"f8a961d0c2c5fedfe6ab9d8e3b924f49119b7ff088bf7beb9f055ce7b2ce387a\"}\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Full-key helper is a trusted arithmetic oracle. Journal must bind and verify admitted/proposed full ciphertexts; inspect alone is not integrity."
+}

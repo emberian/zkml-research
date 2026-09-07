@@ -1,0 +1,56 @@
+{
+  "review_complete": true,
+  "commands": [
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/audit_retained.py",
+        "--run",
+        "004"
+      ],
+      "exit_code": 0,
+      "started_ns": 1788746088970413000,
+      "finished_ns": 1788746089058239000,
+      "log": "retained_audit.log"
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/audit_retained.py",
+        "--run",
+        "005"
+      ],
+      "exit_code": 0,
+      "started_ns": 1788746089058262000,
+      "finished_ns": 1788746089139871000,
+      "log": "retained_audit_run005.log"
+    }
+  ],
+  "files_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/REPORT.md": "9fc089cc590534767dc0f02699536a493521a5a38f18c4d13c0a18f1aacc96d8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/audit_retained.py": "330f605076084c3ea858e45ce23524136e34fd91e1469e11aeb5e96a0b192dab",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/focused_pending_retry.py": "581ad161e5e493825d815516d24d905d17e225c1b30c43cb272cc9a83a7145a4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/initial_source_pin.json": "5958fb172f2ff1a8165fb29aa7039909554a3a5c0a7a9dcf830636d65505eade",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/retained_audit.json": "23220149a2cecc05fa9ae7e74fc20a148b0e1281fed37911ff082438f8076a4e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/retained_audit_run005.json": "880cc5d04743f3d737655898f48063224a43d7d71ede73ac1750bef48ca17b19",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/focused_results/run_001/report.json": "e5b7f3537711ffb5790d90d990b6f93f2481c51c4f356b335ed1404c25cd7b86",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run004_protocol.py": "0db1c116a4d9b3990e02d249d1140feea8605be4e6b031fa7096571ef6f545a6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run004_run.py": "2370c4632ad06b86b4e833228d819c39daec2f2183a8d849798877f5b35a1f68",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run004_fixture.json": "584e575c782a5b0c6c350f957912ac40a2791df8e604b68a51e8e7baad422801",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_protocol.py": "014eaffa1210b70881efe5e49672653bf0373f33df980001b4272baa2ecc5b80",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_run.py": "9691f642b4920e97264d6933bd13d1895e4774ddfed783b8db8dd0b7a66c7403",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/run005_fixture.json": "584e575c782a5b0c6c350f957912ac40a2791df8e604b68a51e8e7baad422801",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_004/report.json": "7184ca75310b0338e41292a30618f683419be25571737477b778d002f045fd6b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/report.json": "25d65944fcd981a4c669d9f70614f13dfdfee3555c322ae023bdca384f3974a6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/ExportFixture.lean": "afda90d0c734472c28b6c1f4760ae733cde6f9e9df0a565744ea1051606854ca",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/export.py": "0709d1775b1c54a99acdd5bfadb7e0726bfb2981a6e846dd6ae82049404ce182",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/export_01.json": "aa199d6039c715f558ff59163a9dd1b600e9ef2bea2bf2369879360aa738997f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/README.md": "c5b6af8226fddf99dd0488d56f7fddc200d6b6b1d9bc7602156a52dca1e25198"
+  },
+  "focused_command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/persistent_journal/focused_pending_retry.py"
+  ],
+  "focused_passed": true,
+  "scope": "Frozen source/read-only retained-evidence audit plus owned benign local process check; no implementation edits"
+}

@@ -1,0 +1,1 @@
+{"distinct_fresh_ciphertexts":true,"elapsed_ns":3751403125,"historical_retry":true,"infers":2,"learns":2,"mixed_events":4,"ok":true,"oracle_all_match":true,"oracle_comparisons":2,"replay":{"admissions":{"0":2,"1":0},"ok":true,"public_recomputation":true,"queue_lengths":{"0":2,"1":0},"revision":4,"state_digest":"a05da6edf560c24befc4d980804dbb9bf17681caed21fcaad2f15bc9f9c4c629"}}

@@ -40,6 +40,13 @@ capability must both appear in the credential ledger.
 | Recipient | Selected output and finalized context, independent delivery memory as needed | Duplicate transmission may occur; logical delivery is deduplicated. |
 | Test oracle | Frozen plaintext reference and expected scores | Used to check results outside the host/authority path. It is explicitly excluded from a confidentiality experiment. |
 
+[DERIVED authority trust] A reader that trusts a finalization signature without
+independent arithmetic/history verification also trusts the authority's
+validation. A compromised signer could endorse a substituted output ciphertext;
+its credential may then confer indirect decryption through the reader. The
+benchmark must inventory this capability explicitly. Absence of a BFV secret at
+the authority is not a security claim against active authority compromise.
+
 [OPEN realization] These are data-flow roles on one research machine. Separate
 processes/directories do not establish isolation against that machine's operator.
 Authentication primitives, actual serialized credentials, and any transport

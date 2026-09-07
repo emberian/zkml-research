@@ -1,0 +1,12 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling resident-crypto v0.1.0 (/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto)
+    Finished `release` profile [optimized] target(s) in 2.45s
+     Running unittests src/main.rs (research/learn_infer_only/experiments/end_to_end/crypto/target/release/deps/resident_crypto-73964860358cd820)
+
+running 1 test
+test tests::secret_output_retry_requires_private_regular_file ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

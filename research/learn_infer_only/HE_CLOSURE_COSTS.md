@@ -1,5 +1,20 @@
 # HE closure and complete learner costs
 
+[EXECUTED successor, 2026-09-07] The source-noise/window34 package is complete
+and included in the combined708-pin run014. It derives the concrete Q83/W32/r577
+decoding margin from bounded source coefficients, with a nonzero32-entry witness
+and range/margin/sign falsifiers. See [the pinned report](formal/he_closure_costs/source_phase/noise_window/REPORT.md).
+The source45 and conditional-noise62 predecessors remain unchanged. Accepted
+Rust bytes, sampler execution, RNS/NTT/scaler semantics and honest admission are
+not automatically supplied by this model proof.
+
+[EXECUTED actual integration] The new [role-separated BFV CLI](experiments/end_to_end/crypto/README.md)
+uses OS-random production keys, strict canonical envelopes and no secret input
+to host arithmetic. Its fresh private history is joined to independent reader
+verification in [run004](experiments/end_to_end/verified_reader/reports/README.md).
+That reader retains a full key. Wrapped ciphertexts are85,103 bytes; the earlier
+85,022-byte payload measurements below exclude the new81-byte envelope.
+
 [DERIVED] 2026-09-06 tranche: **low-rank state is not a ciphertext refresh
 operation**. To reduce the whole private computation bill, restrict where
 private information enters, or change the learner. Fewer trainable parameters

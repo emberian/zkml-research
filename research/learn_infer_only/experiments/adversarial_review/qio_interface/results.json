@@ -1,0 +1,108 @@
+{
+  "classification": "Independent bounded source/proof review plus exact finite premise controls",
+  "timestamp_utc": "2026-09-07T02:18:58.294318+00:00",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/qio_interface/review.py"
+  ],
+  "target": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_interface/QIO_INTERFACE.md",
+    "sha256": "2cc1d2dc58d8cde8e6a3c3badba602357f9de2d11e008b6d421177eea3dd01d3"
+  },
+  "sources": [
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/265.pdf",
+      "sha256": "18dce0afa750386cdf530c6ce4f4cc6aa6be29703e9782ee1e152e527e0afeb9",
+      "read_pdf_pages": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/265.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/qio_interface/extracts/2023-265.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "extract_sha256": "c32ddb9192daef02d452ea5159540ecc8219a23e5c0b620e6f1ebfad6ca18a3b"
+    },
+    {
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf",
+      "sha256": "5ffbaabd34120b58c46b3c6763d6e665be7a535118566c709ad007ea0fa99866",
+      "read_pdf_pages": [
+        3,
+        10,
+        16
+      ],
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/qio_interface/extracts/2025-2215.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "extract_sha256": "97c34540bef4e890cfec6797ce0aafb7e5098eddc268ce2e1b1522936781f0e4"
+    }
+  ],
+  "controls": {
+    "exact_density_matrix_mixtures": 12005,
+    "cq_qualified_cases": 600,
+    "branch_gap_values": [
+      "-1",
+      "-1/2",
+      "0",
+      "1/2",
+      "1"
+    ],
+    "rare_good_event": {
+      "good_mass": "1/4294967296",
+      "qualified_gap": "1/4294967296",
+      "bound": "1/4294967296"
+    },
+    "cancellation": {
+      "total_gap": "0",
+      "qualified_gap": "1/2"
+    },
+    "fresh_coin_independence_falsifier": [
+      "0",
+      "1"
+    ],
+    "model": "Exact 2x2 rational complex density matrices and POVM effects, including X/Y coherences; not a quantum iO implementation."
+  },
+  "quantifier_control": {
+    "moving_witness": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "scope": "All-sequences diagonalization, not an efficient witness-selector algorithm"
+  },
+  "queries": {
+    "web": 0,
+    "SQL": 0,
+    "schema": 0,
+    "Kagi": 0,
+    "Scry": 0,
+    "network_PDF_downloads": 0
+  },
+  "script_sha256": "4bbf9601a8501ff5d53cc476df1c20dba2882344e417ffc11270639460a3df8a"
+}

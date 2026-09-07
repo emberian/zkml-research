@@ -1,0 +1,97 @@
+{
+  "inventory": {
+    "Assurance/CiphertextWindowFrame.lean": {
+      "source_sha256": "ba0e26b70c5a52365e9f5bd260c9a30ac3568df507e487598185625fc25132d0",
+      "pins": 9,
+      "forbidden_tokens": []
+    },
+    "Assurance/CiphertextWindowFrameWitness.lean": {
+      "source_sha256": "629ef9054f66a365ee10fc54236f9b11cfba5b8fcc50127e14eceb3386f543bd",
+      "pins": 14,
+      "forbidden_tokens": []
+    }
+  },
+  "direct_import_dependencies": {
+    "Assurance.CiphertextWindowCell": {
+      "source_sha256": "7b215707ee631a3d04854f6dd2fd044511dbcfd6d59b21c602380ff1d4c8a77d",
+      "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean",
+      "olean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build/Assurance/CiphertextWindowCell.olean",
+      "olean_sha256": "f26b5cd6fe12299b72b376a525a191e3bc62cc381b935272cf8e9f2e57751114"
+    },
+    "Assurance.CiphertextWindowFrame": {
+      "source_sha256": "ba0e26b70c5a52365e9f5bd260c9a30ac3568df507e487598185625fc25132d0",
+      "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrame.lean",
+      "olean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build/Assurance/CiphertextWindowFrame.olean",
+      "olean_sha256": "7961daefb5f08da06a5e38dbfba5323dd41683862f745c155c8a5d390c946c4e"
+    },
+    "Assurance.CiphertextWindowWitness": {
+      "source_sha256": "8503df829d5f5bcd9aa13bb5febd578b533dd3f8e8a075a687fa4fd30ffe9d92",
+      "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowWitness.lean",
+      "olean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build/Assurance/CiphertextWindowWitness.olean",
+      "olean_sha256": "557df0231e56172afd4eb3a85d1b470c2c7a311ca711fef16033397c9c093186"
+    }
+  },
+  "checks": [
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build/review/Assurance.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build/review",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 35.97362303733826
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/minidregg-window-frame.patch"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 0.023386716842651367
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--unsafe-paths",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/minidregg-window-frame.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build/review/full_source",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_seconds": 0.023943185806274414
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build/review/full_source/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build/review/full_source",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.08950400352478027
+    }
+  ],
+  "patch_sha256": "0bc70c1db6bc0d6c205cca88ce65c77dd9538af6364096211dd3dada32fda992",
+  "frozen_window44_preserved": {
+    "Theory/CiphertextWindow.lean": "ad2e496b8f8d1fbf7125cf6be9306a97c9933a66c7882066d087a2b04c8605ee",
+    "Assurance/CiphertextWindowCell.lean": "7b215707ee631a3d04854f6dd2fd044511dbcfd6d59b21c602380ff1d4c8a77d",
+    "Assurance/CiphertextWindowWitness.lean": "8503df829d5f5bcd9aa13bb5febd578b533dd3f8e8a075a687fa4fd30ffe9d92",
+    "minidregg-ciphertext-window.patch": "630d2fa6c0ec0c2b049fcc0affeca6c9b22a5a264cf638890780e9e0fe5eb4eb"
+  },
+  "prerequisites": [
+    "resident-release",
+    "durable-integration",
+    "ciphertext-window"
+  ],
+  "scope": "Two new Assurance modules; reused dependency oleans; no clean whole-tree build or implementation-refinement claim"
+}

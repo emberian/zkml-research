@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/live_text.py", line 33, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/live_text.py", line 19, in main
+    write_json(root/'live_frontend_call.json',public_call);require(process.returncode==0,'liveIssuerFrontend:'+process.stdout.decode())
+                                                           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/common.py", line 10, in require
+    if not condition:raise Refusal(reason)
+                     ^^^^^^^^^^^^^^^^^^^^^
+common.Refusal: liveIssuerFrontend:{"ok": false, "failed_stage": "encrypted_signed_issuer", "exit_code": 1, "details": "retained in issuer-only work directory"}
+

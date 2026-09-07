@@ -1,0 +1,193 @@
+{
+  "passed": true,
+  "records": [
+    0,
+    64,
+    256,
+    320
+  ],
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_encode_prepared.py": "7fb22689e1abafc4dbf6a55c90a88ad9643af02c33112002b0b1b0dac9f97689",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_policy.json": "de2e7356049a76bba16a09d1ac38ee8de622004f28df0c7e3aa70d7b5d347ce3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility.json": "5c61d61fb8a55586f075f6133092f196e36d1d42ec6cd79ae5fbe37fad3f0f37",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_features.npz": "754497f6cf74a50e4b19444469f17837d21a5341711e8a8fb9e267242f7b92ca",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_records.json": "423a0dd83e43d1786b1c649ab6a54aab349de913c531447f2261ef7e5dc9156e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/requirements-lock.txt": "fe68f9bd8a5e24b74b7728eb27312a0de9ed055d8fb4ab945d222dbf4f21f9d6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/LIVE_PROTOCOL.md": "2a5b2d19a1f773b7d620c164ef98bead7f2b1950f49eaab0f3920f62a0d87215",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/run_fixed.py": "2fb22104bab4146e51f6a6025f493e102f7987d7b40b8fb0bd33ba4257d8f8b7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/fixture.txt": "41978a10b974a3e8b7f30d5f9c66f7d396fdf7df83b723b3f14dc00359cdb4c0"
+  },
+  "sources_unchanged": true,
+  "commands": [
+    {
+      "record_id": 0,
+      "pool": "teach",
+      "route": 0,
+      "command": [
+        "/usr/bin/time",
+        "-l",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_encode_prepared.py",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/live_encoder/run_001/input_0.json",
+        "--output",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/live_encoder/run_001/vector_0.json",
+        "--expect-record-id",
+        "0"
+      ],
+      "exit_code": 0,
+      "started_ns": 1788747714921960000,
+      "finished_ns": 1788747726421739000,
+      "wrapper_wall_seconds": 11.499779,
+      "stdout_file": "record_0.stdout",
+      "stderr_file": "record_0.stderr",
+      "max_rss_bytes_macos": 1420083200,
+      "time_command": {
+        "real_seconds": 11.49,
+        "user_seconds": 3.52,
+        "sys_seconds": 1.53
+      },
+      "encoder_result": {
+        "encoded_vectors": 1,
+        "dimension": 577,
+        "load_seconds": 0.5625253750185948,
+        "feature_seconds": 0.20608116599032655,
+        "cached_quantized_comparison": true,
+        "scope": "Issuer plaintext processing; output must enter issuer encryption before host admission"
+      },
+      "vector_sha256": "83207194a3d4a8b5f0128be83ac4850000b32a487240ad20cdc96d93cdc2bea3",
+      "input_sha256": "138e14a26b721354b2831f28be442276448c6ae372734ec73ea96338437d3dfe",
+      "vector_mode": "0600"
+    },
+    {
+      "record_id": 64,
+      "pool": "teach",
+      "route": 1,
+      "command": [
+        "/usr/bin/time",
+        "-l",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_encode_prepared.py",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/live_encoder/run_001/input_64.json",
+        "--output",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/live_encoder/run_001/vector_64.json",
+        "--expect-record-id",
+        "64"
+      ],
+      "exit_code": 0,
+      "started_ns": 1788747726424084000,
+      "finished_ns": 1788747735145296000,
+      "wrapper_wall_seconds": 8.721212,
+      "stdout_file": "record_64.stdout",
+      "stderr_file": "record_64.stderr",
+      "max_rss_bytes_macos": 1419952128,
+      "time_command": {
+        "real_seconds": 8.71,
+        "user_seconds": 3.56,
+        "sys_seconds": 1.33
+      },
+      "encoder_result": {
+        "encoded_vectors": 1,
+        "dimension": 577,
+        "load_seconds": 0.6515520419925451,
+        "feature_seconds": 0.19154125000932254,
+        "cached_quantized_comparison": true,
+        "scope": "Issuer plaintext processing; output must enter issuer encryption before host admission"
+      },
+      "vector_sha256": "7c66015fa5e9d01fca0c3c68e6db1402de08622825940da19eff63163f784769",
+      "input_sha256": "03c8520a915190a946485e52fb5cf1a3361bb56d7cd6ca1a241e48a523358d3d",
+      "vector_mode": "0600"
+    },
+    {
+      "record_id": 256,
+      "pool": "test",
+      "route": 0,
+      "command": [
+        "/usr/bin/time",
+        "-l",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_encode_prepared.py",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/live_encoder/run_001/input_256.json",
+        "--output",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/live_encoder/run_001/vector_256.json",
+        "--expect-record-id",
+        "256"
+      ],
+      "exit_code": 0,
+      "started_ns": 1788747735147201000,
+      "finished_ns": 1788747743387922000,
+      "wrapper_wall_seconds": 8.240721,
+      "stdout_file": "record_256.stdout",
+      "stderr_file": "record_256.stderr",
+      "max_rss_bytes_macos": 1420492800,
+      "time_command": {
+        "real_seconds": 8.23,
+        "user_seconds": 3.59,
+        "sys_seconds": 1.41
+      },
+      "encoder_result": {
+        "encoded_vectors": 1,
+        "dimension": 577,
+        "load_seconds": 0.5627000829845201,
+        "feature_seconds": 0.1769378750177566,
+        "cached_quantized_comparison": true,
+        "scope": "Issuer plaintext processing; output must enter issuer encryption before host admission"
+      },
+      "vector_sha256": "1ccfb478c1166b81673f84c49501c250054404f9fb883bd8c33387d63a1b301e",
+      "input_sha256": "f10df679ca1b4f117400abc7ec92cccd59e6d669a4f4de7b7d5e237667b74a29",
+      "vector_mode": "0600"
+    },
+    {
+      "record_id": 320,
+      "pool": "test",
+      "route": 1,
+      "command": [
+        "/usr/bin/time",
+        "-l",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_encode_prepared.py",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/live_encoder/run_001/input_320.json",
+        "--output",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/live_encoder/run_001/vector_320.json",
+        "--expect-record-id",
+        "320"
+      ],
+      "exit_code": 0,
+      "started_ns": 1788747743391012000,
+      "finished_ns": 1788747752664597000,
+      "wrapper_wall_seconds": 9.273585,
+      "stdout_file": "record_320.stdout",
+      "stderr_file": "record_320.stderr",
+      "max_rss_bytes_macos": 1420214272,
+      "time_command": {
+        "real_seconds": 9.26,
+        "user_seconds": 3.62,
+        "sys_seconds": 1.36
+      },
+      "encoder_result": {
+        "encoded_vectors": 1,
+        "dimension": 577,
+        "load_seconds": 0.5187880829907954,
+        "feature_seconds": 0.1979759579990059,
+        "cached_quantized_comparison": true,
+        "scope": "Issuer plaintext processing; output must enter issuer encryption before host admission"
+      },
+      "vector_sha256": "b871342f5981705f9f77648b75dba8b6c82d2f6d1caed039b0f81273f3d2b414",
+      "input_sha256": "ea10c4d04f5c26e57c10d02a3b75f261d372d4bbab1afb5a8f7f7be9f11cb05e",
+      "vector_mode": "0600"
+    }
+  ],
+  "scope": "Four live trusted-issuer model executions; plaintext/vector paths excluded from host/authority roles",
+  "model_runs": 4,
+  "backbone_training": false,
+  "downloads": false,
+  "new_dependencies": false,
+  "original_e2e_fixture_unchanged": true
+}

@@ -185,4 +185,25 @@ theorem mixed_queue_sum (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
   have inv := mixed_invariant ct hash admit W selected classify initialData data logical h
   exact ⟨inv.2.2.2.2.1.1,inv.2.2.2.2.1.2,inv.2.2.1⟩
 
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.projection_install' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in #print axioms projection_install
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.count_admission' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in #print axioms count_admission
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.count_frame' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in #print axioms count_frame
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.frameCheck_iff' depends on axioms: [propext] -/
+#guard_msgs in #print axioms frameCheck_iff
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.framesSelected_iff' depends on axioms: [propext] -/
+#guard_msgs in #print axioms framesSelected_iff
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.changed_window_refused' depends on axioms: [propext] -/
+#guard_msgs in #print axioms changed_window_refused
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.noncanonical_tag_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms noncanonical_tag_refused
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.mixed_invariant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms mixed_invariant
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.mixed_queue_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms mixed_queue_sum
+
 end Minidregg.Assurance.CiphertextWindowFrame

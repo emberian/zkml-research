@@ -1,5 +1,41 @@
 # Decision: advance the finite private construction and join the encrypted learner to integrity
 
+[DERIVED current decision, 2026-09-07] The second run has joined actual BFV
+learning to a signed durable journal and selected full-key reader delivery.
+The next priority is finishing the complete useful fixture through the
+independently verifying reader, then publishing a concise reproducible local
+demonstration. The stronger reader already passes a fresh private 40 Learn/four
+Infer/eight expiry run and refuses unchecked signed outputs. It narrows the
+authority's arithmetic trust requirement while retaining the reader's full key.
+See [verified execution](experiments/end_to_end/verified_reader/reports/README.md).
+This is an end-to-end benchmark R, not the absence of unrestricted read authority.
+
+[EXECUTED current evidence] The hardened baseline passes all 96 integer outputs
+over 384 Learn/96 Infer/256 expiries. The live text path completes actual model
+encoding, issuance, learning and two selected answers. The fixed utility fixture
+is public and its final accuracy is 18/32; the separate unknown synthetic input
+run carries no utility estimate. The quadratic-feature successor failed its
+registered acceptance conditions, so the original learner remains. Evidence
+and exact source versions are under [end_to_end](experiments/end_to_end/CONTRACT.md).
+
+[DERIVED construction decision] The public finite quotient is a useful exact
+interface result, not concealment of the original state. The fixed-span IPFE
+lane tests a narrower actual no-master-after-erasure capability. The general
+private-input route remains conditional: source width separation defeats one
+proposed all-parameter size objection, but does not establish the required tiny
+joint future-package bound. Standard worst-case quantum-advice iO supplies the
+qualified interface used by the reviewed QIND_pre lift; a concrete compatible
+primitive suite is still missing. These are separate construction obligations,
+not gaps that a working BFV service automatically fills.
+
+[EXECUTED current proof package] Run014 passes 53 modules/708 exact theorem pins,
+including source-noise/window34 and mixed-journal framing23. All four umbrellas,
+patch application/content and both boundaries pass against existing dependency
+oleans, with unchanged companion sources. No runtime or clean-build theorem is
+inferred. Earlier decision text below is retained as the first-run record.
+
+## Historical first-run decision
+
 [DERIVED decision, 2026-09-06 closeout] The strongest new confidentiality candidate is a reverse-setup, independent-key randomized-FE ladder. The strongest executed numerical path is a BFV rolling-window learner on frozen useful model features. The strongest integrity path binds public exact arithmetic, context and materialized state to a journal. Continue trying to join them. Their conjunction is not yet a private resident: authenticated unknown inputs, restricted release, complete mediation and PQ composition remain open.
 
 ## A protected continuation with an explicit lifetime

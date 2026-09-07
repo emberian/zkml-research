@@ -1,0 +1,51 @@
+{
+  "recorded_utc": "2026-09-07T02:19:24.417827+00:00",
+  "classification": "EXECUTED finite integer controls, DERIVED conditional argument review",
+  "source_sha256": "77d3328b9a11492459d5e40edb1145de5b5eb79e8188f2c6ca55c945d72bded9",
+  "reviewed_note": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/PRIVACY_SCOPE.md",
+  "reviewed_note_sha256": "e6c8af45523757d558afcbe2392d372cd815eff38dec2ea70f870a768e72223e",
+  "width": 577,
+  "all_fresh_coordinates_in_declared_range": true,
+  "nonvacuity": {
+    "distinct_private_vectors": true,
+    "one_learn_then_fixed_sum_query_scores": [
+      1,
+      1
+    ],
+    "zero_state_score": 0,
+    "scope": "Illustrative range-only issuance and one fixed query, not the actual feature-policy or a claim about all deployed query continuations."
+  },
+  "mixed_hybrid": {
+    "public_schedule": [
+      "Learn",
+      "Learn",
+      "Infer(first-coordinate)"
+    ],
+    "endpoint_scores": [
+      1,
+      1
+    ],
+    "one_ciphertext_switched_plaintext_scores": [
+      2,
+      0
+    ],
+    "simulated_reader_score_in_every_hybrid": 1,
+    "scope": "A common efficient output simulator matches both endpoints despite mixed histories having different actual outputs; the reduction need not decrypt them."
+  },
+  "authority_substitution": {
+    "authorized_sum_scores": [
+      1,
+      1
+    ],
+    "unauthorized_first_coordinate_scores": [
+      1,
+      0
+    ],
+    "scope": "Derived sensitivity at one valid release opportunity if a reader trusts a compromised finalizer's substituted ciphertext. No service/signature exploit is executed here; no unlimited authorization or read-all conclusion."
+  },
+  "encryption_instantiated": false,
+  "formal_crypto_reduction": false,
+  "adaptive_fresh_input_generator_established": false,
+  "earlier_separate_disclosure_task_resumed": false,
+  "passed": true
+}

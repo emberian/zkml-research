@@ -1,0 +1,380 @@
+{
+  "label": "EXECUTED integration of selected proposed Lean modules",
+  "status": "failed",
+  "started_utc": "2026-09-07T01:59:18.047122+00:00",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "research/learn_infer_only/experiments/integration/check_all_formal.py",
+    "--manifest",
+    "research/learn_infer_only/experiments/integration/modules_with_window_frame.json"
+  ],
+  "commands": [
+    {
+      "label": "companion_head_before",
+      "log": "001_companion_head_before.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_status_before",
+      "log": "002_companion_status_before.json",
+      "exit_code": 0
+    },
+    {
+      "label": "lean_version",
+      "log": "003_lean_version.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_source_list",
+      "log": "004_companion_source_list.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_head_after",
+      "log": "005_companion_head_after.json",
+      "exit_code": 0
+    },
+    {
+      "label": "companion_status_after",
+      "log": "006_companion_status_after.json",
+      "exit_code": 0
+    }
+  ],
+  "no_clean_full_build_claim": true,
+  "metered_search_queries": 0,
+  "manifest": {
+    "schema": 1,
+    "expected_theorem_pins": 674,
+    "scope": "Second authorized night: prior completed651 plus two mixed-journal frame modules23. Existing read-only dependency oleans; no clean build or runtime refinement claim.",
+    "lanes": [
+      {
+        "name": "resident",
+        "root": "formal",
+        "patch": "formal/minidregg-resident-release.patch",
+        "expected_pins": 31
+      },
+      {
+        "name": "policy",
+        "root": "formal/recovery_policy",
+        "patch": "formal/recovery_policy/minidregg-private-policy-evolution.patch",
+        "expected_pins": 15
+      },
+      {
+        "name": "durable",
+        "root": "formal/durable_integration",
+        "patch": "formal/durable_integration/minidregg-durable-integration.patch",
+        "expected_pins": 45
+      },
+      {
+        "name": "randomness",
+        "root": "formal/randomness_composition",
+        "patch": "formal/randomness_composition/minidregg-randomness-selection.patch",
+        "expected_pins": 13
+      },
+      {
+        "name": "adaptive",
+        "root": "formal/randomness_composition",
+        "patch": "formal/randomness_composition/minidregg-adaptive-context.patch",
+        "expected_pins": 13
+      },
+      {
+        "name": "schedule",
+        "root": "formal/randomness_composition",
+        "patch": "formal/randomness_composition/minidregg-multi-receipt-schedule.patch",
+        "expected_pins": 20
+      },
+      {
+        "name": "bfv_lift",
+        "root": "formal/bfv_lift_refinement",
+        "patch": "formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch",
+        "expected_pins": 27
+      },
+      {
+        "name": "bfv_engine",
+        "root": "formal/bfv_lift_refinement/engine_refinement",
+        "patch": "formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch",
+        "expected_pins": 33
+      },
+      {
+        "name": "integer",
+        "root": "formal/integer_certificate_emission",
+        "patch": "formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch",
+        "expected_pins": 20
+      },
+      {
+        "name": "ema",
+        "root": "formal/durable_integration",
+        "patch": "formal/durable_integration/minidregg-ema-semantic-bridge.patch",
+        "expected_pins": 48
+      },
+      {
+        "name": "generic_contextual_ema",
+        "root": "formal/randomness_composition/generic",
+        "patch": "formal/randomness_composition/generic/minidregg-contextual-gate-ema.patch",
+        "expected_pins": 42
+      },
+      {
+        "name": "distribution_budget",
+        "root": "formal/recovery_policy",
+        "patch": "formal/recovery_policy/minidregg-private-distribution-budget.patch",
+        "expected_pins": 14
+      },
+      {
+        "name": "air_simplification",
+        "root": "formal/integer_certificate_emission/optimization",
+        "patch": "formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch",
+        "expected_pins": 27
+      },
+      {
+        "name": "bfv_source_certificate",
+        "root": "formal/bfv_lift_refinement/source_certificate",
+        "patch": "formal/bfv_lift_refinement/source_certificate/minidregg-fhe-source-certificate.patch",
+        "expected_pins": 23
+      },
+      {
+        "name": "ciphertext_window",
+        "root": "formal/durable_integration/bfv_window",
+        "patch": "formal/durable_integration/bfv_window/minidregg-ciphertext-window.patch",
+        "expected_pins": 44
+      },
+      {
+        "name": "window_noise",
+        "root": "formal/he_closure_costs",
+        "patch": "experiments/he_closure_costs/window_formal/proposed_minidregg.patch",
+        "expected_pins": 62
+      },
+      {
+        "name": "bfv_target_projection",
+        "root": "formal/bfv_lift_refinement/target_projection",
+        "patch": "formal/bfv_lift_refinement/target_projection/minidregg-fhe-target-projection.patch",
+        "expected_pins": 22
+      },
+      {
+        "name": "mixed_oracle_phases",
+        "root": "formal/randomness_composition/mixed",
+        "patch": "formal/randomness_composition/mixed/minidregg-mixed-oracle-phases.patch",
+        "expected_pins": 29
+      },
+      {
+        "name": "horizon_arithmetic",
+        "root": "formal/horizon_composition",
+        "patch": "formal/horizon_composition/minidregg-horizon-arithmetic.patch",
+        "expected_pins": 40
+      },
+      {
+        "name": "bfv_source_phase",
+        "root": "formal/he_closure_costs/source_phase",
+        "patch": "formal/he_closure_costs/source_phase/minidregg-bfv-source-phase.patch",
+        "expected_pins": 45
+      },
+      {
+        "name": "bfv_modular_words",
+        "root": "formal/bfv_lift_refinement/modular_lowering",
+        "patch": "formal/bfv_lift_refinement/modular_lowering/minidregg-fhe-modular-lowering.patch",
+        "expected_pins": 38
+      },
+      {
+        "name": "window_frame",
+        "root": "formal/durable_integration/window_frame",
+        "patch": "formal/durable_integration/window_frame/minidregg-window-frame.patch",
+        "expected_pins": 23
+      }
+    ],
+    "checks": [
+      "formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean",
+      "formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean"
+    ],
+    "excluded": [
+      {
+        "glob": "experiments/adversarial_review/**/*.lean",
+        "reason": "Independent review witnesses and snapshots are not proposed umbrella modules."
+      },
+      {
+        "glob": "formal/**/build/**",
+        "reason": "Generated overlays are not source-discovery inputs."
+      },
+      {
+        "glob": "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateChecks.lean",
+        "reason": "Executable IO check runner; not part of the six proposed library modules."
+      },
+      {
+        "glob": "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateRetain.lean",
+        "reason": "Executable IO retention runner; not an umbrella import."
+      },
+      {
+        "glob": "formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionChecks.lean",
+        "reason": "Executable IO runner is not one of the five proposed library modules."
+      },
+      {
+        "glob": "formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionAxiomReport.lean",
+        "reason": "Auxiliary report runner is not a rooted proposed library module."
+      }
+    ]
+  },
+  "companion_head_before": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+  "companion_status_before": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+  "error": "Forbidden constructs in proposed proof source: [{'token': 'admit', 'line': 68}, {'token': 'admit', 'line': 69}, {'token': 'admit', 'line': 71}, {'token': 'admit', 'line': 73}, {'token': 'admit', 'line': 75}, {'token': 'admit', 'line': 87}, {'token': 'admit', 'line': 89}, {'token': 'admit', 'line': 135}, {'token': 'admit', 'line': 138}]",
+  "traceback": "Traceback (most recent call last):\n  File \"/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py\", line 508, in main\n    integrate(run, args.manifest.resolve(), args.checks)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py\", line 338, in integrate\n    inventory = census(text)\n  File \"/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py\", line 176, in census\n    raise ValueError(f'Forbidden constructs in proposed proof source: {forbidden}')\nValueError: Forbidden constructs in proposed proof source: [{'token': 'admit', 'line': 68}, {'token': 'admit', 'line': 69}, {'token': 'admit', 'line': 71}, {'token': 'admit', 'line': 73}, {'token': 'admit', 'line': 75}, {'token': 'admit', 'line': 87}, {'token': 'admit', 'line': 89}, {'token': 'admit', 'line': 135}, {'token': 'admit', 'line': 138}]\n",
+  "input_hashes_before": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py": "27ba33f594b35df63a69e6bcc843dba63b73347de3409f63a8d25bc6d194419e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/modules_with_window_frame.json": "f7995e9fb7438ed79e42e550bc9a9bca79f58ccb8d2a35cd3cb95768295e9895",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/results/environment.json": "ec7e407ac7c21d1fa34523d3df58cff54a62bf77701e4f475b36ea907c9b71ef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/minidregg-resident-release.patch": "440c14ff480a113431b6bc4684feb70c136deffcdf72093ff71c712f9ab5b49d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean": "1ecebe305a618398fb4d00b904ab28f6e38aeae019bc1663fc2a55700504e286",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/minidregg-private-policy-evolution.patch": "072c08f2a587ca2774dddeb6eb1d1afff27b0ccb7d2a68c2b4ded20daaa1b556",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/Theory/PrivatePolicyEvolution.lean": "b1b36ecd921a4b2dacc122fb70e25804fc30893d07de42644bcb6ccb1f3f209a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/minidregg-durable-integration.patch": "945d70ab4a7504f25bbc598f70951fae8f1a1a5318459a396bfe1fcbf8e57a5a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableCollision.lean": "b410206075a03338ef6d569c777c2d2a2420f3ddc8f3280cfcf6d062685a028c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-randomness-selection.patch": "6147b1e50e1af7cc614a9d6b7b8fda495fd29574d3353e051acdbce669918a93",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Selvage/RandomnessSelection.lean": "670e93843760823413cc2e18bf9bafadba3247dd11f56feaff3d5ebca83dbb57",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-adaptive-context.patch": "369cba799fa20f5d9c56ab08135c2e8793d819479cbbd5d12e3c5f0eb4f823de",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean": "9eb3318ca21240162355a7e166e258b085aaa038b66f466c2b8f90df777fd90e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-multi-receipt-schedule.patch": "d57e13912dea6c0476ddf577438491036934100253db8c0341ab4e5075dcdb85",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentMultiReceiptSchedule.lean": "0dcbf2e07534bf430d0f17b969f9174fdd2bda533f537bccddb9f7cb6265ab82",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch": "929f79e168a1e236b04a2fa6edbf9448e22da5041124b7484e0fd9348072dc11",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch": "de9490c464d332810bd5de79d21fd9b8db03c6bd29f2a28d8de26a78d41114b0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch": "476daa58f31cdcdecaf48909ff30b3f5f1d172b40ff4b8cccec68418e9ebd11e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmission.lean": "4330a8f99bf1b325b0c1cecb7f7dc6efe655c24021269cbafef2a854e8a7d579",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/minidregg-ema-semantic-bridge.patch": "3f5d9c6895b5a423ce134e586c02141e448052ed559bca0a1aeec707dd99232a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Compiler/ResidentEmaCertificate.lean": "f6b9c07240bc4f5341a8412b7bc00a5c8c6e19e17743d86c3cecc8b3ea72588d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaCell.lean": "68cdb084b839364328bc0717c5b6fa763a8342efbfc4244c02181603af4a9437",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean": "470a6b5daf54cbd373799fa0b075137d06f5a115395d07ecbabfac130efbc8ee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaWitness.lean": "e412cad31eba9eac302a597239fcaee14987b79db6b134c0de884e2ca74f3eeb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/minidregg-contextual-gate-ema.patch": "4ea469e2e5122189d7f2a1028547cde536d9bccb5d7bf91d05966ed2b95a3d78",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Compiler/ContextualGate.lean": "d17239cd62b3f09ab6f4a3a0adfa117876a088e60061f2fcaeb1a81a5750fc00",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Assurance/ResidentEmaAdaptive.lean": "99dc9d24683880bb4a434c5e204185512e9212f7334910def85f4355d22b7ac9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/minidregg-private-distribution-budget.patch": "e0ff46cd158debc50d901a4059266eef1afc311f968462ad345b5a87eca2a188",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/Theory/PrivateDistributionBudget.lean": "2b17dd27ac821a50f7364a6ff6d116d93189c587f6ee765bf19f64300b927d52",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch": "389015b446a8a09b4327de4dcc1008ef0d0a8a8a95342dc2a9b8b4b65f2d375f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/IntegerCertificateSimplification.lean": "0cf4b3cbc725e186264c13eac1b681b66f65bcc8a1d5544108b0da84c8b7c8ef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/minidregg-fhe-source-certificate.patch": "55ffecdf2db1d330b0cc76126781dbc39c4ea581fe4edc4fbb7da7830e771d2f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean": "8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean": "ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/minidregg-ciphertext-window.patch": "630d2fa6c0ec0c2b049fcc0affeca6c9b22a5a264cf638890780e9e0fe5eb4eb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean": "ad2e496b8f8d1fbf7125cf6be9306a97c9933a66c7882066d087a2b04c8605ee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean": "7b215707ee631a3d04854f6dd2fd044511dbcfd6d59b21c602380ff1d4c8a77d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowWitness.lean": "8503df829d5f5bcd9aa13bb5febd578b533dd3f8e8a075a687fa4fd30ffe9d92",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/window_formal/proposed_minidregg.patch": "25a1c9de9bad4ede5226b83597d5194b4345681442bd417b03f3f568a88facef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/IntegerWindowNoise.lean": "b3d49c23cf627f4598d5c81ed36ba93541f8e0463fe54da8629f2ee7d924bd98",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/CiphertextWindowNoise.lean": "20bcc3b442c5e86f6d6abe4aad439228d5c6e965aa15f49140faa3769e2e8702",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Assurance/ResidentBfvWindowNoise.lean": "cc98b5498fb737b7cd5bf5ccd3b8bda079e9c7707aa7f1c83e0401da35b8ecb6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Assurance/ResidentBfvWindowPhase.lean": "74b61e28fe43883aa3e96717f5fa881f2a16bb1b70eb6e42dc269a167d540fac",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/minidregg-fhe-target-projection.patch": "61f35e724f5de29d7338a381232b31e60c36cf39845665f8ac4073f150e0ea97",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean": "4f6f6f1d5bc89d416a9275f732fb623736232c6ef4bfe3abfccdf64bacb0f1d0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean": "8194cb7e55cce3ae1e3266a35267e00f26f588b3cd0246a608dedc1fee8fd439",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionEmit.lean": "23653006b13b339c5d3a1e58255e273c8d607e17a108ec4c1c4b38614a585363",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionVerifier.lean": "41d8e514bc3a93463a7b6cbae4bc44b0de24298c8e4c2b3c4deedf1ce09a2e2b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean": "dd0c8ee14a1dbc779f7d4c16ec6b9c314444304c9652a13134b966fd8386a79c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/minidregg-mixed-oracle-phases.patch": "555b41015e5ea248558f0d0bb4a953ce52d3f9558691d901a95fe81cd1e4d164",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Compiler/DisjointOraclePhases.lean": "d68ceb0ef64f6e1dd6eae597b10ea68a24e8d1743be0da58d4c892d82d2e8503",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Assurance/ResidentMixedPhases.lean": "42ff5733ed7618b5e1b0ef15e57906c77db334429f303b8acb96b13c98d0b560",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/minidregg-horizon-arithmetic.patch": "2a511cbf0b2aa93d968bf71a3b94da7e2927f818360fb2aa31d88c6717be7478",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean": "ea3ee025c40346a894685ca04d4173fc4c8dc34668ca4dd011fa999aa795cf16",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonCompositionWitnesses.lean": "a811bfa03f64b3be4c051139856f1f2bb8be253c1c1b13f615f326506183fded",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/minidregg-bfv-source-phase.patch": "88f27268139956ca646b49281b1c4ef2505c35b6d2bf50b791a9e7644bd09553",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Theory/BfvPhaseAlgebra.lean": "a88ac6b76142ece2bb67079d0ba6744a391b3018aca4fcc0a97918f3d5f18f03",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Assurance/ResidentBfvSourcePhase.lean": "9c79add63eddd92ae1c947fea2a195a7ed7d40d4477013d0fdc7a3022b848f62",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/minidregg-fhe-modular-lowering.patch": "994e75fece5090d9cc29a8408dd18b105f25d05825ae01048cf8216e16bfc464",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheShoupWord.lean": "90c097acc41372fa7a350d515967c88c68380884a066bb2f7a7e748f6b528d0e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean": "8cf7b57f258b9138afaebd1b924b50005b8ad0b0185a07bd0835044910098b01",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheRnsModularAccumulation.lean": "69264039ef3001828d428668d1d78e3837443e23737425da3d20d4440fb671dc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheRnsSourceWord.lean": "4a5e6c29c511897ea7db15a302c863fa8f44acceb33ad2a447dfbd53b48d630a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/minidregg-window-frame.patch": "0bc70c1db6bc0d6c205cca88ce65c77dd9538af6364096211dd3dada32fda992",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrame.lean": "ba0e26b70c5a52365e9f5bd260c9a30ac3568df507e487598185625fc25132d0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrameWitness.lean": "629ef9054f66a365ee10fc54236f9b11cfba5b8fcc50127e14eceb3386f543bd"
+  },
+  "input_hashes_after": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/window_formal/proposed_minidregg.patch": "25a1c9de9bad4ede5226b83597d5194b4345681442bd417b03f3f568a88facef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py": "27ba33f594b35df63a69e6bcc843dba63b73347de3409f63a8d25bc6d194419e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/modules_with_window_frame.json": "f7995e9fb7438ed79e42e550bc9a9bca79f58ccb8d2a35cd3cb95768295e9895",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/results/environment.json": "ec7e407ac7c21d1fa34523d3df58cff54a62bf77701e4f475b36ea907c9b71ef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentReleaseContext.lean": "f132aaf37c6c6b88c5ff1b3d4e8182799626b1c89979692e7be03b222d359f6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/Assurance/ResidentRestoreFinality.lean": "1ecebe305a618398fb4d00b904ab28f6e38aeae019bc1663fc2a55700504e286",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean": "1abe56f822ba911e85b0697887cf2317eecc990433f460dedc95a3085ccab2fd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch": "de9490c464d332810bd5de79d21fd9b8db03c6bd29f2a28d8de26a78d41114b0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch": "929f79e168a1e236b04a2fa6edbf9448e22da5041124b7484e0fd9348072dc11",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheBarrettWord.lean": "8cf7b57f258b9138afaebd1b924b50005b8ad0b0185a07bd0835044910098b01",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheRnsModularAccumulation.lean": "69264039ef3001828d428668d1d78e3837443e23737425da3d20d4440fb671dc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheRnsSourceWord.lean": "4a5e6c29c511897ea7db15a302c863fa8f44acceb33ad2a447dfbd53b48d630a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/Compiler/FheShoupWord.lean": "90c097acc41372fa7a350d515967c88c68380884a066bb2f7a7e748f6b528d0e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/modular_lowering/minidregg-fhe-modular-lowering.patch": "994e75fece5090d9cc29a8408dd18b105f25d05825ae01048cf8216e16bfc464",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean": "8afd28c21adfb97210d55661711e13959e5a025e9c3e8a5cbc998d3183ae4c9b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean": "ff91e93e771a133bc61ca5f9620f139f13bf94fedab9208f556b5fc8a1b13ccc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/minidregg-fhe-source-certificate.patch": "55ffecdf2db1d330b0cc76126781dbc39c4ea581fe4edc4fbb7da7830e771d2f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean": "4f6f6f1d5bc89d416a9275f732fb623736232c6ef4bfe3abfccdf64bacb0f1d0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionEmit.lean": "23653006b13b339c5d3a1e58255e273c8d607e17a108ec4c1c4b38614a585363",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean": "8194cb7e55cce3ae1e3266a35267e00f26f588b3cd0246a608dedc1fee8fd439",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionVerifier.lean": "41d8e514bc3a93463a7b6cbae4bc44b0de24298c8e4c2b3c4deedf1ce09a2e2b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean": "dd0c8ee14a1dbc779f7d4c16ec6b9c314444304c9652a13134b966fd8386a79c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/minidregg-fhe-target-projection.patch": "61f35e724f5de29d7338a381232b31e60c36cf39845665f8ac4073f150e0ea97",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableCollision.lean": "b410206075a03338ef6d569c777c2d2a2420f3ddc8f3280cfcf6d062685a028c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentDurableIntegration.lean": "80239c7fbc060c6f0c60a4a085c78b078987b46ffbf7b17017f3f92af57c022a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaCell.lean": "68cdb084b839364328bc0717c5b6fa763a8342efbfc4244c02181603af4a9437",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaRelease.lean": "470a6b5daf54cbd373799fa0b075137d06f5a115395d07ecbabfac130efbc8ee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Assurance/ResidentEmaWitness.lean": "e412cad31eba9eac302a597239fcaee14987b79db6b134c0de884e2ca74f3eeb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/Compiler/ResidentEmaCertificate.lean": "f6b9c07240bc4f5341a8412b7bc00a5c8c6e19e17743d86c3cecc8b3ea72588d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowCell.lean": "7b215707ee631a3d04854f6dd2fd044511dbcfd6d59b21c602380ff1d4c8a77d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Assurance/CiphertextWindowWitness.lean": "8503df829d5f5bcd9aa13bb5febd578b533dd3f8e8a075a687fa4fd30ffe9d92",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/Theory/CiphertextWindow.lean": "ad2e496b8f8d1fbf7125cf6be9306a97c9933a66c7882066d087a2b04c8605ee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/minidregg-ciphertext-window.patch": "630d2fa6c0ec0c2b049fcc0affeca6c9b22a5a264cf638890780e9e0fe5eb4eb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/minidregg-durable-integration.patch": "945d70ab4a7504f25bbc598f70951fae8f1a1a5318459a396bfe1fcbf8e57a5a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/minidregg-ema-semantic-bridge.patch": "3f5d9c6895b5a423ce134e586c02141e448052ed559bca0a1aeec707dd99232a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrame.lean": "ba0e26b70c5a52365e9f5bd260c9a30ac3568df507e487598185625fc25132d0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrameWitness.lean": "629ef9054f66a365ee10fc54236f9b11cfba5b8fcc50127e14eceb3386f543bd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/minidregg-window-frame.patch": "0bc70c1db6bc0d6c205cca88ce65c77dd9538af6364096211dd3dada32fda992",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Assurance/ResidentBfvWindowNoise.lean": "cc98b5498fb737b7cd5bf5ccd3b8bda079e9c7707aa7f1c83e0401da35b8ecb6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Assurance/ResidentBfvWindowPhase.lean": "74b61e28fe43883aa3e96717f5fa881f2a16bb1b70eb6e42dc269a167d540fac",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/CiphertextWindowNoise.lean": "20bcc3b442c5e86f6d6abe4aad439228d5c6e965aa15f49140faa3769e2e8702",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/IntegerWindowNoise.lean": "b3d49c23cf627f4598d5c81ed36ba93541f8e0463fe54da8629f2ee7d924bd98",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Assurance/ResidentBfvSourcePhase.lean": "9c79add63eddd92ae1c947fea2a195a7ed7d40d4477013d0fdc7a3022b848f62",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Theory/BfvPhaseAlgebra.lean": "a88ac6b76142ece2bb67079d0ba6744a391b3018aca4fcc0a97918f3d5f18f03",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/minidregg-bfv-source-phase.patch": "88f27268139956ca646b49281b1c4ef2505c35b6d2bf50b791a9e7644bd09553",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonComposition.lean": "ea3ee025c40346a894685ca04d4173fc4c8dc34668ca4dd011fa999aa795cf16",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/Theory/HorizonCompositionWitnesses.lean": "a811bfa03f64b3be4c051139856f1f2bb8be253c1c1b13f615f326506183fded",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/horizon_composition/minidregg-horizon-arithmetic.patch": "2a511cbf0b2aa93d968bf71a3b94da7e2927f818360fb2aa31d88c6717be7478",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmission.lean": "4330a8f99bf1b325b0c1cecb7f7dc6efe655c24021269cbafef2a854e8a7d579",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch": "476daa58f31cdcdecaf48909ff30b3f5f1d172b40ff4b8cccec68418e9ebd11e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/IntegerCertificateSimplification.lean": "0cf4b3cbc725e186264c13eac1b681b66f65bcc8a1d5544108b0da84c8b7c8ef",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch": "389015b446a8a09b4327de4dcc1008ef0d0a8a8a95342dc2a9b8b4b65f2d375f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/minidregg-resident-release.patch": "440c14ff480a113431b6bc4684feb70c136deffcdf72093ff71c712f9ab5b49d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentAdaptiveContext.lean": "9eb3318ca21240162355a7e166e258b085aaa038b66f466c2b8f90df777fd90e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Assurance/ResidentMultiReceiptSchedule.lean": "0dcbf2e07534bf430d0f17b969f9174fdd2bda533f537bccddb9f7cb6265ab82",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/Selvage/RandomnessSelection.lean": "670e93843760823413cc2e18bf9bafadba3247dd11f56feaff3d5ebca83dbb57",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Assurance/ResidentEmaAdaptive.lean": "99dc9d24683880bb4a434c5e204185512e9212f7334910def85f4355d22b7ac9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/Compiler/ContextualGate.lean": "d17239cd62b3f09ab6f4a3a0adfa117876a088e60061f2fcaeb1a81a5750fc00",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/generic/minidregg-contextual-gate-ema.patch": "4ea469e2e5122189d7f2a1028547cde536d9bccb5d7bf91d05966ed2b95a3d78",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-adaptive-context.patch": "369cba799fa20f5d9c56ab08135c2e8793d819479cbbd5d12e3c5f0eb4f823de",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-multi-receipt-schedule.patch": "d57e13912dea6c0476ddf577438491036934100253db8c0341ab4e5075dcdb85",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/minidregg-randomness-selection.patch": "6147b1e50e1af7cc614a9d6b7b8fda495fd29574d3353e051acdbce669918a93",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Assurance/ResidentMixedPhases.lean": "42ff5733ed7618b5e1b0ef15e57906c77db334429f303b8acb96b13c98d0b560",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/Compiler/DisjointOraclePhases.lean": "d68ceb0ef64f6e1dd6eae597b10ea68a24e8d1743be0da58d4c892d82d2e8503",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/randomness_composition/mixed/minidregg-mixed-oracle-phases.patch": "555b41015e5ea248558f0d0bb4a953ce52d3f9558691d901a95fe81cd1e4d164",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/Theory/PrivateDistributionBudget.lean": "2b17dd27ac821a50f7364a6ff6d116d93189c587f6ee765bf19f64300b927d52",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/Theory/PrivatePolicyEvolution.lean": "b1b36ecd921a4b2dacc122fb70e25804fc30893d07de42644bcb6ccb1f3f209a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/minidregg-private-distribution-budget.patch": "e0ff46cd158debc50d901a4059266eef1afc311f968462ad345b5a87eca2a188",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/recovery_policy/minidregg-private-policy-evolution.patch": "072c08f2a587ca2774dddeb6eb1d1afff27b0ccb7d2a68c2b4ded20daaa1b556"
+  },
+  "changed_inputs": [],
+  "changed_companion_sources": [],
+  "companion_head_after": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+  "companion_status_after": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+  "elapsed_seconds": 0.7421435000142083,
+  "finished_utc": "2026-09-07T01:59:18.789477+00:00"
+}

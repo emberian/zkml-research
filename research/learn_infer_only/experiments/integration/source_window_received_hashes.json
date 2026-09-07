@@ -1,0 +1,96 @@
+{
+  "owner_validation": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/noise_window/validation.json",
+  "owner_validation_sha256": "b7666ffcb8ecc42d35b9e755e4febdb95d5eb9bc40da8d90fc7753383e401a55",
+  "verified": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/noise_window/minidregg-bfv-source-window.patch",
+      "sha256": "bc55d32d84affc77a33b7a585f86599039569ac5a3655f7bd153f45dc7a740fe",
+      "role": "frozen successor patch"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Theory/BfvNoiseSource.lean",
+      "sha256": "d3a51f747bce5377c8b2303f6d51bdc7920abe815edef4b04a3d882252714f42",
+      "role": "new module"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/source_phase/lean_BfvNoiseSource_07.json",
+      "sha256": "f0b3175a417d4d8f0b79486c02a1fd67334832132b64bf251997bb2525ab26b0",
+      "role": "source matching green elaboration record"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Assurance/ResidentBfvSourceWindow.lean",
+      "sha256": "6fec6378aba6acd3062313c6171a79a794099306032777a0a7b632cd4f3303e0",
+      "role": "new module"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/source_phase/lean_ResidentBfvSourceWindow_06.json",
+      "sha256": "fa1182560259147c8ae9364c50c62162886eec33d962f5bea187d8aa6f9109c3",
+      "role": "source matching green elaboration record"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Theory.lean",
+      "sha256": "8f8ffa996db7929d0146f597223ea14a97667d0741ae56e281585eb0c4321b11",
+      "role": "captured companion umbrella baseline"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Assurance.lean",
+      "sha256": "2a2056d18af342d028b38afa2a4eaf4fc9300dff2bed4ec1d6ebf2a1e2817c05",
+      "role": "captured companion umbrella baseline"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/minidregg-bfv-source-phase.patch",
+      "sha256": "88f27268139956ca646b49281b1c4ef2505c35b6d2bf50b791a9e7644bd09553",
+      "role": "required frozen source phase 45-pin patch"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/window_formal/proposed_minidregg.patch",
+      "sha256": "25a1c9de9bad4ede5226b83597d5194b4345681442bd417b03f3f568a88facef",
+      "role": "required frozen window 62-pin patch; includes broader durable-dependent modules"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/minidregg-ciphertext-window.patch",
+      "sha256": "630d2fa6c0ec0c2b049fcc0affeca6c9b22a5a264cf638890780e9e0fe5eb4eb",
+      "role": "prerequisite of full window patch; durable queue 44-pin patch"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Theory/BfvPhaseAlgebra.lean",
+      "sha256": "a88ac6b76142ece2bb67079d0ba6744a391b3018aca4fcc0a97918f3d5f18f03",
+      "role": "direct frozen source dependency"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Assurance/ResidentBfvSourcePhase.lean",
+      "sha256": "9c79add63eddd92ae1c947fea2a195a7ed7d40d4477013d0fdc7a3022b848f62",
+      "role": "direct frozen source dependency"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/IntegerWindowNoise.lean",
+      "sha256": "b3d49c23cf627f4598d5c81ed36ba93541f8e0463fe54da8629f2ee7d924bd98",
+      "role": "direct frozen source dependency"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Assurance/ResidentBfvWindowNoise.lean",
+      "sha256": "cc98b5498fb737b7cd5bf5ccd3b8bda079e9c7707aa7f1c83e0401da35b8ecb6",
+      "role": "direct frozen source dependency"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh",
+      "sha256": "66f66a89dad655e7f2837062d489ddb1b817e74a6903d24ecef80b85536b1ec1",
+      "role": "import boundary instrument"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage.lean",
+      "sha256": "9ca29209aef767d1232ed7a18344b281c9a70167779ea2345e891149ea93db15",
+      "role": "boundary root"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/lean-toolchain",
+      "sha256": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",
+      "role": "toolchain"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/source_phase/check_lean.py",
+      "sha256": "97954cd6e4caf923dd8c387add0670b603d5ab557874e9ea500d6b6477e2d143",
+      "role": "module elaboration instrument"
+    }
+  ]
+}

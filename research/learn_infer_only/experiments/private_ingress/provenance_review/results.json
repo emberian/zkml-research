@@ -1,0 +1,236 @@
+{
+  "classification": "EXECUTED symbolic checks only; no cryptography implemented",
+  "command": "python3 /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/audit.py",
+  "python": "3.14.7",
+  "source_sha256": "58d52c0085ba3b3add543565f082324e4aa643d4f44a72ebb78be064831a5a5e",
+  "parent_compatibility": {
+    "classification": "EXECUTED ideal guard projection, not full rMIFE compatibility",
+    "same_genesis_valid_distinct_pairs": 2,
+    "honest_terminal_answers": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "all_stored_query_mixtures": [
+      {
+        "state_query": 0,
+        "observation_query": 0,
+        "success_bits": [
+          true,
+          true
+        ]
+      },
+      {
+        "state_query": 0,
+        "observation_query": 1,
+        "success_bits": [
+          false,
+          false
+        ]
+      },
+      {
+        "state_query": 1,
+        "observation_query": 0,
+        "success_bits": [
+          false,
+          false
+        ]
+      },
+      {
+        "state_query": 1,
+        "observation_query": 1,
+        "success_bits": [
+          true,
+          true
+        ]
+      }
+    ],
+    "U_observation_success_bits": [
+      true,
+      false
+    ],
+    "U_state_success_bits": [
+      true,
+      false
+    ],
+    "U_both_success_bits": [
+      true,
+      true
+    ],
+    "compatibility_probability_gap": 1,
+    "fixed_parent_distinct_observation_guard_control_count": 4
+  },
+  "history_guard": {
+    "classification": "EXECUTED local guard-completeness control",
+    "original_guard_accepts_bad_supplied_history": true,
+    "internal_history_relation_check_rejects": true,
+    "repaired_guard_honest_control_accepts": true
+  },
+  "coin_counting": {
+    "classification": "EXECUTED finite probability identity, not encryption security",
+    "payload_coin_bits": 2,
+    "first_PKE_coin_bits": 3,
+    "left_fixed_ciphertext_event": "1/32",
+    "right_event": "0",
+    "incorrect_inherited_bound": "1/8",
+    "correct_general_guaranteed_bound": "2^(-rho-lambda_next)",
+    "equal_parameter_width_premise": "rho <= input_bits_current <= s_current",
+    "epsilon_exponent": "4*s_current + lambda_current"
+  },
+  "initial_private_input": {
+    "classification": "EXECUTED finite interface witness, source-conditional crypto separate",
+    "initial_private_values": [
+      0,
+      1
+    ],
+    "public_command_horizon": 2,
+    "all_fork_tree_equal": true,
+    "trace_count": 9,
+    "traces": [
+      {
+        "commands": [
+          "add",
+          "add"
+        ],
+        "common_trace": [
+          "ACK",
+          "ACK",
+          0
+        ]
+      },
+      {
+        "commands": [
+          "add",
+          "double"
+        ],
+        "common_trace": [
+          "ACK",
+          "ACK",
+          0
+        ]
+      },
+      {
+        "commands": [
+          "add",
+          "infer"
+        ],
+        "common_trace": [
+          "ACK",
+          0,
+          0
+        ]
+      },
+      {
+        "commands": [
+          "double",
+          "add"
+        ],
+        "common_trace": [
+          "ACK",
+          "ACK",
+          0
+        ]
+      },
+      {
+        "commands": [
+          "double",
+          "double"
+        ],
+        "common_trace": [
+          "ACK",
+          "ACK",
+          0
+        ]
+      },
+      {
+        "commands": [
+          "double",
+          "infer"
+        ],
+        "common_trace": [
+          "ACK",
+          0,
+          0
+        ]
+      },
+      {
+        "commands": [
+          "infer",
+          "add"
+        ],
+        "common_trace": [
+          0,
+          "ACK",
+          0
+        ]
+      },
+      {
+        "commands": [
+          "infer",
+          "double"
+        ],
+        "common_trace": [
+          0,
+          "ACK",
+          0
+        ]
+      },
+      {
+        "commands": [
+          "infer",
+          "infer"
+        ],
+        "common_trace": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "behavioral_class_count": 14,
+    "class_containing_zero": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "falsifier_pair": [
+      63,
+      64
+    ],
+    "falsifier_trees_distinct": true
+  }
+}
