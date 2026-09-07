@@ -1,0 +1,8 @@
+{
+  "command": [
+    "research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility/runtime_check.py"
+  ],
+  "returncode": 0,
+  "wall_seconds": 6.342428791016573
+}

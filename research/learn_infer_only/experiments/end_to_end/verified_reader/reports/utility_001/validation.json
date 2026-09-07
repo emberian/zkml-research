@@ -1,0 +1,66 @@
+{
+  "all_match": true,
+  "bfv_inner_secret_payloads_scanned": true,
+  "command": [
+    "python3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/reports/validate_utility.py",
+    "--run",
+    "utility_001"
+  ],
+  "histories": [
+    {
+      "all_actual_outputs_equal_direct_integer_reference": true,
+      "all_frozen_oracle_values_equal_direct_integer_reference": true,
+      "correct": 28,
+      "database_bytes_after_services_closed": {
+        "authority": {
+          "-shm": 32768,
+          "-wal": 2789272,
+          "database": 851968
+        },
+        "verified_reader": {
+          "-shm": 32768,
+          "-wal": 0,
+          "database": 1146880
+        }
+      },
+      "expiries": 128,
+      "history": 0,
+      "integer_queries_recomputed": 48,
+      "learns": 192,
+      "verified_journal_records": 240
+    },
+    {
+      "all_actual_outputs_equal_direct_integer_reference": true,
+      "all_frozen_oracle_values_equal_direct_integer_reference": true,
+      "correct": 24,
+      "database_bytes_after_services_closed": {
+        "authority": {
+          "-shm": 32768,
+          "-wal": 2789272,
+          "database": 851968
+        },
+        "verified_reader": {
+          "-shm": 32768,
+          "-wal": 0,
+          "database": 1146880
+        }
+      },
+      "expiries": 128,
+      "history": 1,
+      "integer_queries_recomputed": 48,
+      "learns": 192,
+      "verified_journal_records": 240
+    }
+  ],
+  "independent_integer_comparisons": 96,
+  "ok": true,
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "python": "3.14.7",
+  "reader_plaintext_stdout_omitted": true,
+  "runtime_gitignored": true,
+  "scope": "Exact mathematical replay of this public fixture and artifact omission audit; not an OS-isolation or information-flow proof.",
+  "secret_files_scanned_raw_hex_base64": 8,
+  "source_binary_and_fixture_pins_match": true,
+  "validator_sha256": "7395e9500a0fde7ae59bbb2f78e458f20a8d547fe1979ea78835b3de504fffec"
+}

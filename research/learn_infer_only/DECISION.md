@@ -2,13 +2,21 @@
 
 [DERIVED current decision, 2026-09-07] The second run has joined actual BFV
 learning to a signed durable journal and selected full-key reader delivery.
-The next priority is finishing the complete useful fixture through the
-independently verifying reader, then publishing a concise reproducible local
-demonstration. The stronger reader already passes a fresh private 40 Learn/four
+The complete useful fixture now passes through the independently verifying
+reader, and [the demonstration guide](experiments/end_to_end/README.md) records
+reproduction. The stronger reader also passes a fresh private 40 Learn/four
 Infer/eight expiry run and refuses unchecked signed outputs. It narrows the
 authority's arithmetic trust requirement while retaining the reader's full key.
 See [verified execution](experiments/end_to_end/verified_reader/reports/README.md).
 This is an end-to-end benchmark R, not the absence of unrestricted read authority.
+
+[EXECUTED complete timing] The original full verified run takes 682.666 seconds;
+the persistent-host successor takes 201.345 seconds, preserving all 96 outputs,
+256 expiries, complete byte hashing and authority/reader checks. This is an
+observed 3.39x improvement across separate shared-machine runs. Independent
+byte-level ring arithmetic now also matches public samples using a separate
+integer/NTT implementation; that sampled correspondence is under independent
+review and is not a universal Rust refinement.
 
 [EXECUTED current evidence] The hardened baseline passes all 96 integer outputs
 over 384 Learn/96 Infer/256 expiries. The live text path completes actual model

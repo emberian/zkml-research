@@ -1,0 +1,1094 @@
+{
+  "corpus": "/Users/ember/.cache/huggingface/hub",
+  "entries": [
+    {
+      "cache": "models--EleutherAI--pythia-160m",
+      "snapshots": []
+    },
+    {
+      "cache": "models--EleutherAI--pythia-70m",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 567,
+              "name": "config.json"
+            },
+            {
+              "bytes": 166029852,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 99,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 2113710,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 396,
+              "name": "tokenizer_config.json"
+            }
+          ],
+          "logical_bytes": 168144624,
+          "revision": "a39f36b100fe8a5377810d56c3f4789b9c53ac42"
+        }
+      ]
+    },
+    {
+      "cache": "models--EricB--t5-v1_1-xxl-enc-only",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 592,
+              "name": "config.json"
+            },
+            {
+              "bytes": 4848792128,
+              "name": "t5_xxl-shard-0.safetensors"
+            },
+            {
+              "bytes": 4675856384,
+              "name": "t5_xxl-shard-1.safetensors"
+            }
+          ],
+          "logical_bytes": 9524649104,
+          "revision": "a487a18dec0a39855c54d486c8a69cc0667b4a55"
+        }
+      ]
+    },
+    {
+      "cache": "models--EricB--t5_tokenizer",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 2424257,
+              "name": "t5-v1_1-xxl.tokenizer.json"
+            }
+          ],
+          "logical_bytes": 2424257,
+          "revision": "22d22db19b50b32a5dd133363f1b44ebc6c5e92e"
+        }
+      ]
+    },
+    {
+      "cache": "models--HuggingFaceTB--SmolLM2-135M",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 704,
+              "name": "config.json"
+            },
+            {
+              "bytes": 111,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 466391,
+              "name": "merges.txt"
+            },
+            {
+              "bytes": 269060552,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 831,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 2104556,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 3658,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 800662,
+              "name": "vocab.json"
+            }
+          ],
+          "logical_bytes": 272437465,
+          "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2"
+        }
+      ]
+    },
+    {
+      "cache": "models--HuggingFaceTB--SmolLM3-3B",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 5598,
+              "name": "chat_template.jinja"
+            },
+            {
+              "bytes": 1915,
+              "name": "config.json"
+            },
+            {
+              "bytes": 182,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 4966315264,
+              "name": "model-00001-of-00002.safetensors"
+            },
+            {
+              "bytes": 1183919744,
+              "name": "model-00002-of-00002.safetensors"
+            },
+            {
+              "bytes": 26899,
+              "name": "model.safetensors.index.json"
+            },
+            {
+              "bytes": 289,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 17208819,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 50387,
+              "name": "tokenizer_config.json"
+            }
+          ],
+          "logical_bytes": 6167529097,
+          "revision": "a07cc9a04f16550a088caea529712d1d335b0ac1"
+        }
+      ]
+    },
+    {
+      "cache": "models--HuggingFaceTB--SmolLM3-3B-Base",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 943,
+              "name": "config.json"
+            },
+            {
+              "bytes": 151,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 17208861,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 50405,
+              "name": "tokenizer_config.json"
+            }
+          ],
+          "logical_bytes": 17260360,
+          "revision": "d78a42f79198603e614095753484a04c10c2b940"
+        }
+      ]
+    },
+    {
+      "cache": "models--IFM--K2-Horizon-0.9B",
+      "snapshots": []
+    },
+    {
+      "cache": "models--IFM--K2-Horizon-3.7B",
+      "snapshots": []
+    },
+    {
+      "cache": "models--IFM--K2-Horizon-3.7B-GGUF",
+      "snapshots": []
+    },
+    {
+      "cache": "models--NeelNanda--Attn_Only_2L512W_C4_Code",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 1280,
+              "name": "config.json"
+            },
+            {
+              "bytes": 210302350,
+              "name": "model_final.pth"
+            }
+          ],
+          "logical_bytes": 210303630,
+          "revision": "4fb5f8490562081b69a0139e0469f36e88fdb160"
+        }
+      ]
+    },
+    {
+      "cache": "models--NeelNanda--gpt-neox-tokenizer-digits",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 81,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 2037698,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 51,
+              "name": "tokenizer_config.json"
+            }
+          ],
+          "logical_bytes": 2037830,
+          "revision": "0f6671571a20be9756b9991d978047c03b75e749"
+        }
+      ]
+    },
+    {
+      "cache": "models--PaddlePaddle--PP-DocLayoutV3",
+      "snapshots": []
+    },
+    {
+      "cache": "models--PaddlePaddle--PaddleOCR-VL-1.6",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 25381,
+              "name": "added_tokens.json"
+            },
+            {
+              "bytes": 1474,
+              "name": "chat_template.jinja"
+            },
+            {
+              "bytes": 2059,
+              "name": "config.json"
+            },
+            {
+              "bytes": 8104,
+              "name": "configuration_paddleocr_vl.py"
+            },
+            {
+              "bytes": 133,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 25032,
+              "name": "image_processing_paddleocr_vl.py"
+            },
+            {
+              "bytes": 1917255968,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 103889,
+              "name": "modeling_paddleocr_vl.py"
+            },
+            {
+              "bytes": 641,
+              "name": "preprocessor_config.json"
+            },
+            {
+              "bytes": 12253,
+              "name": "processing_paddleocr_vl.py"
+            },
+            {
+              "bytes": 137,
+              "name": "processor_config.json"
+            },
+            {
+              "bytes": 1151,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 11189060,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 1614363,
+              "name": "tokenizer.model"
+            },
+            {
+              "bytes": 186947,
+              "name": "tokenizer_config.json"
+            }
+          ],
+          "logical_bytes": 1930426592,
+          "revision": "c5630abae1d940eafe0697512a0325494b02ab42"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen2.5-0.5B",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 681,
+              "name": "config.json"
+            },
+            {
+              "bytes": 138,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 988097824,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 7031645,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 7228,
+              "name": "tokenizer_config.json"
+            }
+          ],
+          "logical_bytes": 995137516,
+          "revision": "060db6499f32faf8b98477b0a26969ef7d8b9987"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen2.5-0.5B-Instruct",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 659,
+              "name": "config.json"
+            },
+            {
+              "bytes": 242,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 1671839,
+              "name": "merges.txt"
+            },
+            {
+              "bytes": 988097824,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 7031645,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 7305,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 2776833,
+              "name": "vocab.json"
+            }
+          ],
+          "logical_bytes": 999586347,
+          "revision": "7ae557604adf67be50417f59c2c2f167def9a775"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen2.5-0.5B-Instruct-GGUF",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 675710816,
+              "name": "qwen2.5-0.5b-instruct-q8_0.gguf"
+            }
+          ],
+          "logical_bytes": 675710816,
+          "revision": "9217f5db79a29953eb74d5343926648285ec7e67"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen2.5-1.5B-Instruct-GGUF",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 1117320736,
+              "name": "qwen2.5-1.5b-instruct-q4_k_m.gguf"
+            }
+          ],
+          "logical_bytes": 1117320736,
+          "revision": "91cad51170dc346986eccefdc2dd33a9da36ead9"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen2.5-3B-Instruct-GGUF",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 2104932768,
+              "name": "qwen2.5-3b-instruct-q4_k_m.gguf"
+            }
+          ],
+          "logical_bytes": 2104932768,
+          "revision": "7dabda4d13d513e3e842b20f0d435c732f172cbe"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen3-0.6B",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 726,
+              "name": "config.json"
+            },
+            {
+              "bytes": 239,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 1503300328,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 11422654,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 9732,
+              "name": "tokenizer_config.json"
+            }
+          ],
+          "logical_bytes": 1514733679,
+          "revision": "c1899de289a04d12100db370d81485cdf75e47ca"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen3-0.6B-GGUF",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 639446688,
+              "name": "Qwen3-0.6B-Q8_0.gguf"
+            }
+          ],
+          "logical_bytes": 639446688,
+          "revision": "23749fefcc72300e3a2ad315e1317431b06b590a"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen3-14B-GGUF",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 9001752960,
+              "name": "Qwen3-14B-Q4_K_M.gguf"
+            }
+          ],
+          "logical_bytes": 9001752960,
+          "revision": "530227a7d994db8eca5ab5ced2fb692b614357fd"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen3-TTS-12Hz-1.7B-Base",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 4494,
+              "name": "config.json"
+            },
+            {
+              "bytes": 245,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 1671839,
+              "name": "merges.txt"
+            },
+            {
+              "bytes": 3857413744,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 127,
+              "name": "preprocessor_config.json"
+            },
+            {
+              "bytes": 2336,
+              "name": "speech_tokenizer/config.json"
+            },
+            {
+              "bytes": 76,
+              "name": "speech_tokenizer/configuration.json"
+            },
+            {
+              "bytes": 682293092,
+              "name": "speech_tokenizer/model.safetensors"
+            },
+            {
+              "bytes": 234,
+              "name": "speech_tokenizer/preprocessor_config.json"
+            },
+            {
+              "bytes": 7344,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 2776833,
+              "name": "vocab.json"
+            }
+          ],
+          "logical_bytes": 4544170364,
+          "revision": "fd4b254389122332181a7c3db7f27e918eec64e3"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 4421,
+              "name": "config.json"
+            },
+            {
+              "bytes": 245,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 1671839,
+              "name": "merges.txt"
+            },
+            {
+              "bytes": 3833402552,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 127,
+              "name": "preprocessor_config.json"
+            },
+            {
+              "bytes": 2336,
+              "name": "speech_tokenizer/config.json"
+            },
+            {
+              "bytes": 76,
+              "name": "speech_tokenizer/configuration.json"
+            },
+            {
+              "bytes": 682293092,
+              "name": "speech_tokenizer/model.safetensors"
+            },
+            {
+              "bytes": 234,
+              "name": "speech_tokenizer/preprocessor_config.json"
+            },
+            {
+              "bytes": 7344,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 2776833,
+              "name": "vocab.json"
+            }
+          ],
+          "logical_bytes": 4520159099,
+          "revision": "5ecdb67327fd37bb2e042aab12ff7391903235d3"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen3.5-0.8B-Base",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 2907,
+              "name": "config.json"
+            },
+            {
+              "bytes": 3353259,
+              "name": "merges.txt"
+            },
+            {
+              "bytes": 1746942600,
+              "name": "model.safetensors-00001-of-00001.safetensors"
+            },
+            {
+              "bytes": 50900,
+              "name": "model.safetensors.index.json"
+            },
+            {
+              "bytes": 390,
+              "name": "preprocessor_config.json"
+            },
+            {
+              "bytes": 12807196,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 16712,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 386,
+              "name": "video_preprocessor_config.json"
+            },
+            {
+              "bytes": 6722759,
+              "name": "vocab.json"
+            }
+          ],
+          "logical_bytes": 1769897109,
+          "revision": "dc7cdfe2ee4154fa7e30f5b51ca41bfa40174e68"
+        }
+      ]
+    },
+    {
+      "cache": "models--Qwen--Qwen3.8-27B",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 1570,
+              "name": ".gitattributes"
+            },
+            {
+              "bytes": 11544,
+              "name": "LICENSE"
+            },
+            {
+              "bytes": 65012,
+              "name": "README.md"
+            },
+            {
+              "bytes": 8952,
+              "name": "chat_template.jinja"
+            },
+            {
+              "bytes": 4312,
+              "name": "config.json"
+            },
+            {
+              "bytes": 238,
+              "name": "crc32.txt"
+            },
+            {
+              "bytes": 202,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 3353259,
+              "name": "merges.txt"
+            },
+            {
+              "bytes": 112216,
+              "name": "model.safetensors.index.json"
+            },
+            {
+              "bytes": 12809320,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 17928,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 6722759,
+              "name": "vocab.json"
+            }
+          ],
+          "logical_bytes": 23107312,
+          "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0"
+        }
+      ]
+    },
+    {
+      "cache": "models--Systran--faster-whisper-large-v2",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 2796,
+              "name": "config.json"
+            },
+            {
+              "bytes": 3086912962,
+              "name": "model.bin"
+            },
+            {
+              "bytes": 2203239,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 459861,
+              "name": "vocabulary.txt"
+            }
+          ],
+          "logical_bytes": 3089578858,
+          "revision": "f0fe81560cb8b68660e564f55dd99207059c092e"
+        }
+      ]
+    },
+    {
+      "cache": "models--allenai--OLMo-2-0425-1B",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 623,
+              "name": "config.json"
+            },
+            {
+              "bytes": 916646,
+              "name": "merges.txt"
+            },
+            {
+              "bytes": 125,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 7137177,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 4345,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 1611056,
+              "name": "vocab.json"
+            }
+          ],
+          "logical_bytes": 9669972,
+          "revision": "a1847dff35000b4271fa70afc5db10fd29fedbdf"
+        }
+      ]
+    },
+    {
+      "cache": "models--bartowski--Llama-3.2-3B-Instruct-GGUF",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 3421899296,
+              "name": "Llama-3.2-3B-Instruct-Q8_0.gguf"
+            }
+          ],
+          "logical_bytes": 3421899296,
+          "revision": "5ab33fa94d1d04e903623ae72c95d1696f09f9e8"
+        }
+      ]
+    },
+    {
+      "cache": "models--emberian--h-05b-replay",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 1507,
+              "name": "config.json"
+            },
+            {
+              "bytes": 138,
+              "name": "generation_config.json"
+            },
+            {
+              "bytes": 7415,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 2350986,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 99694,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 1174,
+              "name": "trainer_state.json"
+            }
+          ],
+          "logical_bytes": 2460914,
+          "revision": "76a2d97965cbe691ffabd140c82767c71d9ac572"
+        }
+      ]
+    },
+    {
+      "cache": "models--gpt2",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 665,
+              "name": "config.json"
+            },
+            {
+              "bytes": 456318,
+              "name": "merges.txt"
+            },
+            {
+              "bytes": 1355256,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 26,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 1042301,
+              "name": "vocab.json"
+            }
+          ],
+          "logical_bytes": 2854566,
+          "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e"
+        }
+      ]
+    },
+    {
+      "cache": "models--intfloat--e5-base-v2",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 200,
+              "name": "1_Pooling/config.json"
+            },
+            {
+              "bytes": 67561,
+              "name": "README.md"
+            },
+            {
+              "bytes": 650,
+              "name": "config.json"
+            },
+            {
+              "bytes": 437955512,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 387,
+              "name": "modules.json"
+            },
+            {
+              "bytes": 57,
+              "name": "sentence_bert_config.json"
+            },
+            {
+              "bytes": 125,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 711396,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 314,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 231508,
+              "name": "vocab.txt"
+            }
+          ],
+          "logical_bytes": 438967710,
+          "revision": "f52bf8ec8c7124536f0efb74aca902b2995e5bcd"
+        }
+      ]
+    },
+    {
+      "cache": "models--microsoft--harrier-oss-v1-0.6b",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 1570,
+              "name": ".gitattributes"
+            },
+            {
+              "bytes": 297,
+              "name": "1_Pooling/config.json"
+            },
+            {
+              "bytes": 7606,
+              "name": "README.md"
+            },
+            {
+              "bytes": 707,
+              "name": "added_tokens.json"
+            },
+            {
+              "bytes": 4116,
+              "name": "chat_template.jinja"
+            },
+            {
+              "bytes": 1355,
+              "name": "config.json"
+            },
+            {
+              "bytes": 351,
+              "name": "config_sentence_transformers.json"
+            },
+            {
+              "bytes": 1671853,
+              "name": "merges.txt"
+            },
+            {
+              "bytes": 1192133232,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 349,
+              "name": "modules.json"
+            },
+            {
+              "bytes": 11877,
+              "name": "mteb_v2_eval_prompts.json"
+            },
+            {
+              "bytes": 613,
+              "name": "special_tokens_map.json"
+            },
+            {
+              "bytes": 11423705,
+              "name": "tokenizer.json"
+            },
+            {
+              "bytes": 5404,
+              "name": "tokenizer_config.json"
+            },
+            {
+              "bytes": 2776833,
+              "name": "vocab.json"
+            }
+          ],
+          "logical_bytes": 1208039868,
+          "revision": "f9b9dc8d367d443f2479d27aa5d8d2850c0774ee"
+        }
+      ]
+    },
+    {
+      "cache": "models--minishlab--potion-base-8M",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 202,
+              "name": "config.json"
+            },
+            {
+              "bytes": 30236760,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 683666,
+              "name": "tokenizer.json"
+            }
+          ],
+          "logical_bytes": 30920628,
+          "revision": "bf8b056651a2c21b8d2565580b8569da283cab23"
+        }
+      ]
+    },
+    {
+      "cache": "models--mlx-community--Qwen3.8-27B-4bit",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 632,
+              "name": "README.md"
+            },
+            {
+              "bytes": 4932,
+              "name": "config.json"
+            },
+            {
+              "bytes": 218281,
+              "name": "model.safetensors.index.json"
+            }
+          ],
+          "logical_bytes": 223845,
+          "revision": "3e6447f082e89cc7f0bc6e5441afd38dfce760ff"
+        }
+      ]
+    },
+    {
+      "cache": "models--mlx-community--whisper-large-v3-turbo",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 1519,
+              "name": ".gitattributes"
+            },
+            {
+              "bytes": 359,
+              "name": "README.md"
+            },
+            {
+              "bytes": 268,
+              "name": "config.json"
+            },
+            {
+              "bytes": 1613977612,
+              "name": "weights.safetensors"
+            }
+          ],
+          "logical_bytes": 1613979758,
+          "revision": "a4aaeec0636e6fef84abdcbe3544cb2bf7e9f6fb"
+        }
+      ]
+    },
+    {
+      "cache": "models--openai--clip-vit-large-patch14",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 4519,
+              "name": "config.json"
+            },
+            {
+              "bytes": 1710540580,
+              "name": "model.safetensors"
+            },
+            {
+              "bytes": 2224003,
+              "name": "tokenizer.json"
+            }
+          ],
+          "logical_bytes": 1712769102,
+          "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41"
+        }
+      ]
+    },
+    {
+      "cache": "models--tiiuae--Falcon-H1-Tiny-90M-Base",
+      "snapshots": [
+        {
+          "files": [
+            {
+              "bytes": 2350986,
+              "name": "tokenizer.json"
+            }
+          ],
+          "logical_bytes": 2350986,
+          "revision": "7994372e93b62822ae25f8bfb19f653649cea3a3"
+        }
+      ]
+    }
+  ],
+  "instrument": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility/inspect_cache.py",
+  "scope": "Immediate models--*/snapshots trees; logical files/sizes only; no unrelated file contents"
+}

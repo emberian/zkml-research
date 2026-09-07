@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "models": {
+    "HuggingFaceTB/SmolLM3-3B": {
+      "config_class": "SmolLM3Config",
+      "tokenizer_class": "PreTrainedTokenizerFast",
+      "model_class_available": "SmolLM3ForCausalLM",
+      "tokenizer_vocab_size": 128256,
+      "weights_loaded": false,
+      "forward_calls": 0
+    },
+    "Qwen/Qwen2.5-0.5B-Instruct": {
+      "config_class": "Qwen2Config",
+      "tokenizer_class": "Qwen2TokenizerFast",
+      "model_class_available": "Qwen2ForCausalLM",
+      "tokenizer_vocab_size": 151665,
+      "weights_loaded": false,
+      "forward_calls": 0
+    },
+    "intfloat/e5-base-v2": {
+      "config_class": "BertConfig",
+      "tokenizer_class": "BertTokenizerFast",
+      "model_class_available": "BertModel",
+      "tokenizer_vocab_size": 30522,
+      "weights_loaded": false,
+      "forward_calls": 0
+    },
+    "microsoft/harrier-oss-v1-0.6b": {
+      "config_class": "Qwen3Config",
+      "tokenizer_class": "Qwen2TokenizerFast",
+      "model_class_available": "Qwen3Model",
+      "tokenizer_vocab_size": 151669,
+      "weights_loaded": false,
+      "forward_calls": 0
+    }
+  },
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+  "torch": "2.10.0",
+  "transformers": "4.57.3",
+  "sentence_transformers_installed": false,
+  "extra_package_required_for_AutoModel_usage": false,
+  "wall_seconds_including_imports": 5.740136874985183,
+  "metadata_only_process_high_water_rss_bytes": 629964800,
+  "script_sha256": "1a9e9124f5a200bdbb8334dba0c2e028e75b1d8ddf94b00d3b857fbdfd0781ad"
+}

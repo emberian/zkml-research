@@ -41,11 +41,17 @@ def collision_control():
     collision = sum((Fraction(v, len(left))**2 for v in distribution.values()), Fraction(0))
     cross = sum(Fraction(x == y, len(left)*len(right)) for x in left for y in right)
     assert collision == Fraction(25, 32) and cross == 0
-    assert collision >= Fraction(1, 2**2)
+    projection_bits = 2
+    strict_bound = Fraction(1, 2**projection_bits-1)
+    assert set(left).isdisjoint(right) and len(set(left)) <= 2**projection_bits-1
+    assert collision >= strict_bound > Fraction(1, 2**projection_bits)
     return {'classification': 'EXECUTED finite sample-collision identity',
-            'projection_bits': 2, 'left_collision': str(collision),
+            'projection_bits': projection_bits, 'left_collision': str(collision),
             'right_against_left_sample': str(cross),
-            'general_projection_bound': '2^(-projection_bits)',
+            'general_projection_bound': '1/(2^projection_bits-1) > 2^(-projection_bits)',
+            'strict_bound_in_saved_example': str(strict_bound),
+            'required_projection_width': 'L > E',
+            'L_equals_E_excluded': True,
             'rare_fixed_left_output_probability': '1/8'}
 
 

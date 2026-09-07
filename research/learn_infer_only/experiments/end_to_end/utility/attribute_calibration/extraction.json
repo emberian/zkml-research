@@ -1,0 +1,150 @@
+{
+  "backbone_training_steps": 0,
+  "batches": [
+    {
+      "cpu_seconds": 0.37509700000000024,
+      "first_record_id": 256,
+      "padded_tokens": 34,
+      "records": 16,
+      "wall_seconds": 0.4614790420164354
+    },
+    {
+      "cpu_seconds": 0.38153499999999996,
+      "first_record_id": 272,
+      "padded_tokens": 38,
+      "records": 16,
+      "wall_seconds": 0.34548341599293053
+    },
+    {
+      "cpu_seconds": 0.339353,
+      "first_record_id": 288,
+      "padded_tokens": 35,
+      "records": 16,
+      "wall_seconds": 0.3042383329884615
+    },
+    {
+      "cpu_seconds": 0.3814789999999997,
+      "first_record_id": 304,
+      "padded_tokens": 39,
+      "records": 16,
+      "wall_seconds": 0.28602712499559857
+    },
+    {
+      "cpu_seconds": 0.33323199999999975,
+      "first_record_id": 320,
+      "padded_tokens": 34,
+      "records": 16,
+      "wall_seconds": 0.23724662500899285
+    },
+    {
+      "cpu_seconds": 0.3505339999999997,
+      "first_record_id": 336,
+      "padded_tokens": 38,
+      "records": 16,
+      "wall_seconds": 0.2548628749791533
+    },
+    {
+      "cpu_seconds": 0.2998189999999994,
+      "first_record_id": 352,
+      "padded_tokens": 34,
+      "records": 16,
+      "wall_seconds": 0.21808674998464994
+    },
+    {
+      "cpu_seconds": 0.35226299999999977,
+      "first_record_id": 368,
+      "padded_tokens": 38,
+      "records": 16,
+      "wall_seconds": 0.24556424998445436
+    }
+  ],
+  "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+  "executed": true,
+  "features_sha256": "b6ad86b52893e42cdf65a3722e0483f569239da21aa86d06d4805bb3bd8894ed",
+  "forward_cpu_seconds": 2.8133119999999985,
+  "forward_wall_seconds": 2.3529884159506764,
+  "freeze_sha256": "3da0345f2745792683bb30ff9b8ab0cbd1c014f44e46800190533f82b4b7d0af",
+  "load_cpu_seconds": 0.341685,
+  "load_wall_seconds": 0.4038122500060126,
+  "model": "HuggingFaceTB/SmolLM2-135M",
+  "model_files": {
+    "config.json": {
+      "bytes": 704,
+      "sha256": "1d556eab73b69c7f11f64c557a2f9c6f440bd4c6b89bb2584a6b498c92603843"
+    },
+    "generation_config.json": {
+      "bytes": 111,
+      "sha256": "2056c988e990b0d13670f63f2f3b87b3b6d07edaf7a3416998ba27dab2d8a059"
+    },
+    "merges.txt": {
+      "bytes": 466391,
+      "sha256": "0b54e8aa4e53d5383e2e4bc635a56b43f9647f7b13832d5d9ecd8f82dac4f510"
+    },
+    "model.safetensors": {
+      "bytes": 269060552,
+      "sha256": "80521b40281d6ce74e35c9282c22539e75aa0ac8578892b2a59955ef78d55da1"
+    },
+    "special_tokens_map.json": {
+      "bytes": 831,
+      "sha256": "e786b595b9a23148bf1630df78d9037a048ea671e48bfd3549a1e3c233742bb3"
+    },
+    "tokenizer.json": {
+      "bytes": 2104556,
+      "sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c"
+    },
+    "tokenizer_config.json": {
+      "bytes": 3658,
+      "sha256": "4bb9af56a342753d39374f4016a16574cab299fe088e896f425ce3c433f61424"
+    },
+    "vocab.json": {
+      "bytes": 800662,
+      "sha256": "82b84012e3add4d01d12ba14442026e49b8cbbaead1f79ecf3d919784f82dc79"
+    }
+  },
+  "model_path": "/Users/ember/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM2-135M/snapshots/93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "new_texts": 128,
+  "numpy": "2.4.2",
+  "padded_tokens": 4640,
+  "parameter_count": 134515008,
+  "process_high_water_rss_bytes_macos": 1421328384,
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "records_sha256": "8690bd0e48901426cfd4ce2748bfacba4638ee3c2fd21e44d436c2fa31e3029d",
+  "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "script_sha256": "f149a729f5465feb698425dc136cb64a8871fbca7d5a594f87b0b4666f8d0067",
+  "selection_sha256": "e18b88d93a12f70d8d48d3d3051f23c50efa50f4520d7c0d71f50eefd64debd6",
+  "settings": {
+    "attention": "eager",
+    "batch_size": 16,
+    "blocks_actually_executed": 30,
+    "device": "cpu",
+    "dtype": "float32",
+    "gradients": false,
+    "interop_threads": 1,
+    "local_files_only": true,
+    "padding_side": "right",
+    "representation": "masked mean direct block9 output; padding excluded",
+    "seed": 7901,
+    "threads": 2,
+    "trust_remote_code": false,
+    "use_cache": false
+  },
+  "token_length_histogram": {
+    "29": 8,
+    "30": 11,
+    "31": 14,
+    "32": 19,
+    "33": 22,
+    "34": 18,
+    "35": 4,
+    "36": 3,
+    "37": 14,
+    "38": 13,
+    "39": 2
+  },
+  "torch": "2.10.0",
+  "total_cpu_seconds_including_imports": 5.96808,
+  "total_wall_seconds_including_imports": 6.480595583998365,
+  "trainable_parameter_count": 0,
+  "transformers": "4.57.3",
+  "unpadded_tokens": 4280
+}

@@ -1,5 +1,12 @@
 # One executable encrypted learner with an explicit trust boundary
 
+[EXECUTED status, 2026-09-07] The benchmark is now realized by actual BFV and
+the independently verifying reader: all 384 Learn/96 Infer/256 expiry events
+and 96 integer comparisons pass. The [demonstration guide](README.md) links the
+fixed useful workload, fresh private smoke, normal live text path and exact
+costs. The original contract below is retained as the design record.
+Its trusted-reader boundary remains; it is not no-master-read cryptography.
+
 [OPEN task contract, 2026-09-06 evening EDT] This is the next authorized night's
 integration target, not a report that the target already passes. The run ends at
 2026-09-07 10am EDT / 14:00 UTC. The starting evidence is commit `6c56170`;

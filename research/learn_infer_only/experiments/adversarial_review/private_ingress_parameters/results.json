@@ -1,0 +1,241 @@
+{
+  "classification": "EXECUTED independent finite analytic controls only",
+  "command": "python3 /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/review.py",
+  "python": "3.14.7",
+  "script_sha256": "279e1ceb3a2eae2511be3b3da1cb14451b37271b4df22a3f5aeb9b8cf3c8f209",
+  "author_pure_reproduction": {
+    "pure_function_result_groups_matching_saved_json": 5,
+    "author_main_called": false,
+    "author_files_written": false
+  },
+  "independent_collision": {
+    "positive_dyadic_histograms_checked": 1467,
+    "strict_width_bound": "gap >= 1/(2^L-1) > 2^-L when both supports are nonempty and disjoint",
+    "equality_L_E": "incompatible with exact gap <= 2^-E",
+    "equality_h_E_positive_boundary": [
+      {
+        "effective_seed_bits": 1,
+        "projection_width": 2,
+        "fixed_atom_and_collision_gap": "1/2"
+      },
+      {
+        "effective_seed_bits": 2,
+        "projection_width": 3,
+        "fixed_atom_and_collision_gap": "1/4"
+      },
+      {
+        "effective_seed_bits": 3,
+        "projection_width": 4,
+        "fixed_atom_and_collision_gap": "1/8"
+      },
+      {
+        "effective_seed_bits": 4,
+        "projection_width": 5,
+        "fixed_atom_and_collision_gap": "1/16"
+      },
+      {
+        "effective_seed_bits": 5,
+        "projection_width": 6,
+        "fixed_atom_and_collision_gap": "1/32"
+      }
+    ],
+    "overlap_failed_premise_gap": "0"
+  },
+  "independent_seed": {
+    "deterministic_seed_maps_checked": 63,
+    "claim": "deterministic expansion cannot reduce the fixed-seed output atom below 2^-h"
+  },
+  "independent_sizing": {
+    "layer_inequality_cases": 54,
+    "closed_form": "lambda_i = 18^i*k + (8*M+2*k+1)*(18^i-1)/17, M=16*k^3",
+    "scope": "dimension model only; fixed i gives degree 3 in k; no primitive implementation or entropy realization",
+    "metadata_domain": "k >= 2 in checked family; no k=1 claim"
+  },
+  "independent_rates": {
+    "slow_negligible_examples": [
+      {
+        "degree": 1,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 4096,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 2,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 16384,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 3,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 36864,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 4,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 65536,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 5,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 102400,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 6,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 147456,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 7,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 200704,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 8,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 262144,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 9,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 331776,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 10,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 409600,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 11,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 495616,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 12,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 589824,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 13,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 692224,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 14,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 802816,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 15,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 921600,
+        "lower_bound_E": 18446744073709551616
+      },
+      {
+        "degree": 16,
+        "log2_lambda": 64,
+        "log2_inverse_negligible_rate": 1048576,
+        "lower_bound_E": 18446744073709551616
+      }
+    ],
+    "hypothetical_subexponential_rate_examples": [
+      {
+        "E": 128,
+        "t": 65536,
+        "conservative_exponent": 208
+      },
+      {
+        "E": 1024,
+        "t": 4194304,
+        "conservative_exponent": 1982
+      },
+      {
+        "E": 262288,
+        "t": 275179979776,
+        "conservative_exponent": 524459
+      },
+      {
+        "E": 4983625,
+        "t": 99346072562500,
+        "conservative_exponent": 9967109
+      }
+    ],
+    "scope": "arithmetic controls; no cryptographic upper bound supplied"
+  },
+  "source": {
+    "pdf_sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+    "fresh_extract_sha256": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54",
+    "fresh_extract_equals_retained": true,
+    "anchors_pdf_pages_1based": {
+      "Definition 4.1": 21,
+      "Definition 4.3": 22,
+      "Ciphertexts of length s on inputs": 48,
+      "Theorem 6.1": 50,
+      "Here s denotes the length of the PKE ciphertexts": 51,
+      "Lemma 6.7": 65
+    }
+  },
+  "input_hashes_before": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/PARAMETER_CLOSURE.md",
+      "sha256": "f7bce8ced8c8460c13a7fe43dfaffbad8bd644f698303f62dc9497b790858fca"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.py",
+      "sha256": "242a7299ad13f11e2936acf07f6ae3f3d15d0574cf33703631933bac3f159df4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.stdout.txt",
+      "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_results.json",
+      "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_sources.json",
+      "sha256": "ce6adf20bcca0d9d728400eb4fb0adebb183a9b14a5d3e6b369ac60fae7a4843"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_hashes.json",
+      "sha256": "cb3918cf2b8c63a08eccb33501acde8d5541a808ffa54633ebc0f5877e36b028"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/DUAL_MODE.md",
+      "sha256": "f907f3f4cf68dc449fabaf5e397f633e3bc5ee12fc4989a207e2d0f4b600012c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/PROVENANCE.md",
+      "sha256": "0868164a235780917ab1c7d08e810078c5bfa73ef68bb862e729396c5ba0e437"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+      "sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/sources/2025-330.txt",
+      "sha256": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54"
+    }
+  ],
+  "input_hashes_after_equal_before": true,
+  "accounting": {
+    "Scry_queries": 0,
+    "Kagi_queries": 0,
+    "web_queries": 0,
+    "local_PDF_extractions": 1,
+    "PDF_downloads": 0,
+    "state_recovery_or_extraction_experiments": 0
+  }
+}

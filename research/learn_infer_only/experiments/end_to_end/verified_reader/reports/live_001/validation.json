@@ -1,0 +1,34 @@
+{
+  "actual_live_forward_without_cached_record_substitution": true,
+  "all_match": true,
+  "baseline_decryptions": 0,
+  "bfv_inner_secret_payload_scanned": true,
+  "command": [
+    "python3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/reports/validate_live.py",
+    "--run",
+    "live_001"
+  ],
+  "direct_integer_comparisons": 2,
+  "ok": true,
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "private_text_vector_and_their_hashes_absent_from_expanded_public_artifacts": true,
+  "python": "3.14.7",
+  "reader_scalar_output_omission_checked": true,
+  "runtime_gitignored": true,
+  "scope": "One illustrative text and concrete artifact checks, not an accuracy estimate or information-flow/OS-isolation proof.",
+  "secret_files_scanned_raw_hex_base64": 4,
+  "source_binary_and_frontend_pins_match": true,
+  "ticket_parent_revisions": [
+    0,
+    2
+  ],
+  "two_distinct_signed_tickets_same_public_query": true,
+  "validator_sha256": "49936f08e2b7b216016448b43be61ec4d8b5c7a95e97e741c33cbfee762a3ae8",
+  "verified_decryptions": 2,
+  "verified_history_kinds": [
+    "Infer",
+    "Learn",
+    "Infer"
+  ]
+}

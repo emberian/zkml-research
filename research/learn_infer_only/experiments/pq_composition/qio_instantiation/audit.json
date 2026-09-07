@@ -1,0 +1,284 @@
+{
+  "label": "EXECUTED",
+  "scope": "source pins and arithmetic, not a cryptographic theorem checker",
+  "note_sha256": "163ebdcc5e376441b4a146b6964aba60002c3c55952cfb1e17d0c363478109fd",
+  "local_note_links_checked": 6,
+  "sources": [
+    {
+      "paper": "2025/2215",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf",
+      "pdf_sha256": "5ffbaabd34120b58c46b3c6763d6e665be7a535118566c709ad007ea0fa99866",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2025-2215.txt",
+      "extract_sha256": "97c34540bef4e890cfec6797ce0aafb7e5098eddc268ce2e1b1522936781f0e4",
+      "locator_pdf_pages": {
+        "Theorem 2.": [
+          3
+        ],
+        "Definition 6 (Pseudorandom Obfuscation)": [
+          16
+        ],
+        "Lemma 4 (Correctness)": [
+          18
+        ],
+        "Theorem 5.": [
+          18
+        ],
+        "Claim 4.": [
+          20
+        ],
+        "Claim 5.": [
+          20
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2025-2215.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Title:           Obfuscating Pseudorandom Functions is Post-Quantum Complete\nSubject:         \nKeywords:        \nAuthor:          Pedro Branco, Bocconi University ; Abhishek Jain, NTT and JHU ; Akshayaram Srinivasan , University of Toronto \nCreator:         LaTeX with hyperref\nProducer:        pdfTeX-1.40.26\nCreationDate:    Mon Dec  8 12:04:41 2025 EST\nModDate:         Mon Dec  8 12:04:41 2025 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           28\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       536474 bytes\nOptimized:       yes\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "paper": "2025/096",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/096.pdf",
+      "pdf_sha256": "be3cbf9d2b66c2954fb8e566a57849b68a073f0d2e21bb9fa09c496500c7e168",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2025-096.txt",
+      "extract_sha256": "5dc9530163a6bb69096a8258fe5262b97da8894da069b97a261af17d04792fa5",
+      "locator_pdf_pages": {
+        "Definition 1 (Learning With Errors)": [
+          12
+        ],
+        "Theorem 3 (Succinct NIVOLE": [
+          15
+        ],
+        "5.4": [
+          2,
+          18
+        ],
+        "Security for Alice.": [
+          21,
+          27
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/096.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2025-096.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/096.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Title:           SMS\nSubject:         \nKeywords:        \nAuthor:          \nCreator:         LaTeX with hyperref\nProducer:        pdfTeX-1.40.26\nCreationDate:    Mon Feb 24 18:40:43 2025 EST\nModDate:         Mon Feb 24 18:40:43 2025 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           53\nEncrypted:       no\nPage size:       595.276 x 841.89 pts (A4)\nPage rot:        0\nFile size:       751322 bytes\nOptimized:       yes\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "paper": "2016/006",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "pdf_sha256": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2016-006.txt",
+      "extract_sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+      "locator_pdf_pages": {
+        "Theorem 3 ([GKP": [
+          6
+        ],
+        "Theorem 4 ([GHRW": [
+          6
+        ],
+        "Theorem 6.": [
+          9
+        ],
+        "Theorem 7.": [
+          11
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2016-006.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Creator:         TeX\nProducer:        pdfTeX-1.40.16\nCreationDate:    Mon Jan  4 13:25:15 2016 EST\nModDate:         Mon Jan  4 13:25:15 2016 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           15\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       373210 bytes\nOptimized:       no\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "paper": "2015/720",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+      "pdf_sha256": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2015-720.txt",
+      "extract_sha256": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+      "locator_pdf_pages": {
+        "Theorem 11.": [
+          30
+        ],
+        "Theorem 12.": [
+          32
+        ],
+        "Theorem 13.": [
+          35
+        ],
+        "Theorem 15.": [
+          37
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2015-720.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Creator:         TeX\nProducer:        pdfTeX-1.40.13\nCreationDate:    Fri Dec 18 14:31:49 2015 EST\nModDate:         Fri Dec 18 14:31:49 2015 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           43\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       522642 bytes\nOptimized:       no\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "paper": "2012/733",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "pdf_sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2012-733.txt",
+      "extract_sha256": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+      "locator_pdf_pages": {
+        "Theorem 3.1.": [
+          20,
+          22,
+          24
+        ],
+        "Corollary 3.2": [
+          21,
+          30,
+          38,
+          39,
+          42
+        ],
+        "Lemma 3.9.": [
+          26
+        ],
+        "Lemma 3.10.": [
+          27
+        ],
+        "Lemma 3.11.": [
+          28
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2012-733.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Title:           \nSubject:         \nKeywords:        \nAuthor:          \nCreator:         LaTeX with hyperref package\nProducer:        pdfTeX-1.40.11\nCreationDate:    Sun Mar 24 15:30:22 2013 EDT\nModDate:         Sun Mar 24 15:30:22 2013 EDT\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           52\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       534014 bytes\nOptimized:       no\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "paper": "2014/917",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf",
+      "pdf_sha256": "3574f296f030d424c8cf3f818b947ff8e1a0a39c42f86737ec53cc346b3e7896",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2014-917.txt",
+      "extract_sha256": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa",
+      "locator_pdf_pages": {
+        "Theorem 3. Assuming that:": [
+          13
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/extracts/2014-917.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Creator:         TeX\nProducer:        pdfTeX-1.40.14\nCreationDate:    Mon Feb 16 17:50:49 2015 EST\nModDate:         Mon Feb 16 17:50:49 2015 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           21\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       453247 bytes\nOptimized:       no\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    }
+  ],
+  "2016_006_theorem6_coefficient_checks": 64,
+  "queries": {
+    "SQL": 0,
+    "schema": 0,
+    "web_search": 2,
+    "web_open": 0,
+    "Kagi": 0
+  },
+  "network_pdf_downloads": 0,
+  "script_sha256": "560f97ada18cc2f06728dbc4b4095f1ec23daa7eaab42ac9aced1b16cc329b8e"
+}

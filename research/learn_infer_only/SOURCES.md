@@ -1,5 +1,30 @@
 # Source register for this tranche
 
+## Second timed run, 2026-09-07
+
+[SOURCE / EXECUTED] New primary-source access and exact versions are recorded
+by the owning lanes below. Their mathematical reductions are labeled separately
+from what the papers state. No companion tree or eprint PDF was written from
+this run; PDF extractions use the local mirror.
+
+| Source and location read | New use and provenance |
+|---|---|
+| [SOURCE]2025/330, Definitions4.1–4.4 pp.21–23; §6.1 pp.48–50; hybrids pp.51,57–58; Lemma6.7 p.65 | Separates current PKE input-ciphertext width from function/randomness/output widths. [Parameter note and reviewed correction](experiments/private_ingress/provenance_review/PARAMETER_REVIEW_COMPLETION.md) preserve the lambda/ellR syntax issue and exact L>E support bound. |
+| [SOURCE]2007/155, §9 pp.24–25 and proof definitions | Exact hiding-mode commitment equivocation equations and their limits for a common-parent transition. [DUAL_MODE.md](experiments/private_ingress/provenance_review/DUAL_MODE.md) pins local source and derived mode ordering. |
+| [SOURCE]2023/265, §4.1 p.19 and Definition4.3 p.20 | Nonuniform QPT/quantum advice and worst-case equivalent-circuit iO convention. [QIO_INTERFACE.md](experiments/pq_composition/qio_interface/QIO_INTERFACE.md) derives the qualified-event lemma; independent review records its resource-model qualification. |
+| [SOURCE]2025/2215 and bootstrap dependencies2016/006,2015/720 | The [new source audit](experiments/pq_composition/qio_instantiation/INSTANTIATION.md) traces the actual xiO reduction, average-case precondition and correctness amplification. A full quantum-advice bootstrap lift remains separate work. |
+| [SOURCE]2017/276 Definition2.4/§3.1 and2017/274 Definition3.4;2019/1010 follow-up | [Lockable gate audit](experiments/private_construction/lockable_gate/README.md) checks full auxiliary-input lock unpredictability and source-game applicability. This lane adds two Scry SQL queries, zero schema calls and two web searches. |
+| [SOURCE]2015/017 Construction3.1 and selective security theorem | Actual fixed-span DDH window control and a separately derived adaptive specialization; [fixed_span](experiments/private_construction/fixed_span/README.md) preserves the source and exposed-interface boundary. |
+| [SOURCE / EXECUTED] Pinned local fhe-dregg sources and Cargo.lock | [Crypto manifest](experiments/end_to_end/crypto/README.md) supplies literal role/serialization dependencies and the caller-RNG versus internal-RNG distinction. Production keys use OS randomness; the public-seed historical secret-recovery warning remains. |
+| [SOURCE / EXECUTED] Pinned local SmolLM2-135M model/tokenizer/config and encoder | [Live integration consolidation](experiments/end_to_end/utility/live_encoder/FINAL_INTEGRATION.md) verifies actual model execution and exact source/binary agreement. New feature studies keep their own frozen contracts, cost and data-provenance manifests. |
+
+[EXECUTED search scope] First-run aggregate was12 Scry SQL/two schema. The
+lockable audit adds two SQL/zero schema; other new source-access counts are
+recorded in their lane manifests, with web accesses separate. The root's second
+run has made no Scry query so far. This is not a literature-wide absence claim.
+
+## Historical first-tranche register
+
 [EXECUTED provenance] Run date: 2026-09-06. `experiments/results/environment.json`
 records Python/OS/Lean versions, repository revisions, the initial companion dirty
 state, local PDF SHA-256s and the `pdftotext -layout` commands. `source_hashes.json`

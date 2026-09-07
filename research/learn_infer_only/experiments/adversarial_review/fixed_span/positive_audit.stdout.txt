@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "bounded_input_states": 125,
+  "observable_classes": 61,
+  "ordered_equivalence_checks": 15625,
+  "actual_fixed_projection_outputs_compared": 48,
+  "exact_queue_product_checks": 24,
+  "exact_old_ciphertext_expirations": 16,
+  "framed_checkpoint_bytes": 5140,
+  "measurements": {
+    "public_encryption_ns_median": 126976291.5,
+    "validation_ns_median": 132161729.5,
+    "update_ns_median": 1596271.0,
+    "two_read_ns_median": 66018083.0
+  }
+}

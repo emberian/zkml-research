@@ -1,0 +1,8 @@
+{
+  "command": [
+    "python3",
+    "research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility/inspect_cache.py"
+  ],
+  "returncode": 0,
+  "wall_seconds": 0.5450876250106376
+}

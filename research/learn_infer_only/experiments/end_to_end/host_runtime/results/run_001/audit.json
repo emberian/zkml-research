@@ -1,0 +1,53 @@
+{
+  "ok": true,
+  "paired_saved_request_and_ciphertext_comparisons": 44,
+  "all_recorded_full_blob_hash_counts_and_bytes_equal": true,
+  "command_audit": {
+    "baseline": {
+      "commands": 1045,
+      "by_command": {
+        "inspect": 1001,
+        "host-learn": 40,
+        "host-infer": 4
+      },
+      "cli_elapsed_ns": 16476969571
+    },
+    "persistent": {
+      "commands": 128,
+      "by_command": {
+        "inspect": 84,
+        "host-learn": 40,
+        "host-infer": 4
+      },
+      "cli_elapsed_ns": 2403123969
+    }
+  },
+  "direct_original_cli_control_commands_excluded": 3,
+  "all_keyless_host_commands": true,
+  "reader_plaintext_not_in_public_command_logs": true,
+  "cache_entries": 84,
+  "cache_canonical_json_bytes": 53089,
+  "cache_bytes_scope": "serialized metadata proxy; Python heap/RSS not measured",
+  "timing_groups": {
+    "baseline_first": {
+      "events": 22,
+      "baseline_ns": 10632802626,
+      "persistent_ns": 1551625457,
+      "ratio_excludes_startup": 6.852686373526031
+    },
+    "persistent_first": {
+      "events": 22,
+      "baseline_ns": 11149412332,
+      "persistent_ns": 1429446623,
+      "ratio_excludes_startup": 7.799810187106231
+    },
+    "expiry_events": {
+      "events": 8,
+      "baseline_ns": 5877023041,
+      "persistent_ns": 567388084,
+      "ratio_excludes_startup": 10.358030432306364
+    }
+  },
+  "core_and_binary_pins_rechecked": true,
+  "scope": "Saved normal-workload evidence inspection only; no new cryptographic calls or adversarial tests"
+}

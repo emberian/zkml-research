@@ -5,11 +5,13 @@
 Root owns shared ledgers and named-file commits. Companion trees and
 docs/VERDICTS.md remain read-only.
 
-1. [OPEN normal integration] Finish the 384 Learn/96 Infer useful-fixture run
-   through the independently verifying reader, following its passed private
-   run004. Compare all outputs, pin source snapshots and report complete costs.
-   The hardened baseline and live text path already pass. Complete a compact
-   reproducible demonstration guide after the conjunction is measured.
+1. [EXECUTED baseline; OPEN optimization] The 384 Learn/96 Infer useful-fixture
+   run now passes through the independently verifying reader, with all 96
+   integer comparisons, 256 expiries and no baseline decryption. Its total
+   runtime is 682.666 seconds. The complete persistent-host successor also passes
+   in 201.345 seconds. The worker's separate 7.16x paired host-only result is a
+   different measurement. Finish actual live text through this verified path;
+   the baseline live text path already passes.
 
 2. [OPEN review/repair] Independently review private_ingress/provenance_review/
    PARAMETER_CLOSURE.md. The current PKE input-ciphertext width s is distinct

@@ -1,0 +1,166 @@
+{
+  "classification": "EXECUTED symbolic parameter/support audit only",
+  "command": "python3 /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.py",
+  "python": "3.14.7",
+  "source_sha256": "242a7299ad13f11e2936acf07f6ae3f3d15d0574cf33703631933bac3f159df4",
+  "short_seed_falsifier": {
+    "classification": "EXECUTED injective tuple support control; no encryption",
+    "effective_seed_bits": 3,
+    "declared_coin_tape_bits": 64,
+    "expanded_next_coin_bits": 128,
+    "left_fixed_output_mass": "1/8",
+    "right_mass": "0",
+    "epsilon_exponent": 19,
+    "padding_or_stretching_does_not_fix": true
+  },
+  "collision_bound": {
+    "classification": "EXECUTED finite sample-collision identity",
+    "projection_bits": 2,
+    "left_collision": "25/32",
+    "right_against_left_sample": "0",
+    "general_projection_bound": "2^(-projection_bits)",
+    "rare_fixed_left_output_probability": "1/8"
+  },
+  "sizing_escape": {
+    "classification": "EXECUTED dimension inequalities only, no security realization",
+    "base_parameter": 16,
+    "horizon": 2,
+    "s_model": "s(lambda,M)=2*lambda+M",
+    "hypothetical_explicit_rate_used": false,
+    "security_parameters": [
+      16,
+      524609,
+      9967283
+    ],
+    "PKE_ciphertext_bits": [
+      65568,
+      1114754,
+      20000102
+    ],
+    "rows": [
+      {
+        "layer": 0,
+        "lambda_current": 16,
+        "input_bits": 65536,
+        "s_current_PKE_bits": 65568,
+        "epsilon_exponent_E": 262288,
+        "lambda_next": 524609,
+        "s_next_PKE_bits": 1114754,
+        "payload_coin_plus_first_PKE_exponent": 524625,
+        "function_coin_bits_ellR": 1053330,
+        "function_output_bits_ellY": 52029304348457,
+        "illustrative_description_budget_ellF": 140845863678723717220628134195923051372773,
+        "metadata_carried_into_next_input_bits": 16992,
+        "all_three_lower_bound_exponents_exceed_E": true
+      },
+      {
+        "layer": 1,
+        "lambda_current": 524609,
+        "input_bits": 65536,
+        "s_current_PKE_bits": 1114754,
+        "epsilon_exponent_E": 4983625,
+        "lambda_next": 9967283,
+        "s_next_PKE_bits": 20000102,
+        "payload_coin_plus_first_PKE_exponent": 9967299,
+        "function_coin_bits_ellR": 19938678,
+        "function_output_bits_ellY": 16891654030684013,
+        "illustrative_description_budget_ellF": 4819661479647499370224520307841080894256106234375,
+        "metadata_carried_into_next_input_bits": 16992,
+        "all_three_lower_bound_exponents_exceed_E": true
+      }
+    ]
+  },
+  "hypothetical_quantitative_sizing": {
+    "classification": "EXECUTED dimension inequalities only, no security realization",
+    "base_parameter": 16,
+    "horizon": 2,
+    "s_model": "s(lambda,M)=2*lambda+M",
+    "hypothetical_explicit_rate_used": true,
+    "security_parameters": [
+      16,
+      275179979776,
+      24534588085172884561985536
+    ],
+    "PKE_ciphertext_bits": [
+      65568,
+      550360025088,
+      49069176170345769124036608
+    ],
+    "rows": [
+      {
+        "layer": 0,
+        "lambda_current": 16,
+        "input_bits": 65536,
+        "s_current_PKE_bits": 65568,
+        "epsilon_exponent_E": 262288,
+        "lambda_next": 275179979776,
+        "s_next_PKE_bits": 550360025088,
+        "payload_coin_plus_first_PKE_exponent": 275179979792,
+        "function_coin_bits_ellR": 550359963664,
+        "function_output_bits_ellY": 12797362407891695099460194,
+        "illustrative_description_budget_ellF": 2095855837853639917713767795320728602762647501379038341197533962456225072875,
+        "metadata_carried_into_next_input_bits": 16992,
+        "all_three_lower_bound_exponents_exceed_E": true,
+        "hypothetical_upper_bound_safe_exponent": 524459
+      },
+      {
+        "layer": 1,
+        "lambda_current": 275179979776,
+        "input_bits": 65536,
+        "s_current_PKE_bits": 550360025088,
+        "epsilon_exponent_E": 2476620080128,
+        "lambda_next": 24534588085172884561985536,
+        "s_next_PKE_bits": 49069176170345769124036608,
+        "payload_coin_plus_first_PKE_exponent": 24534588085172884561985552,
+        "function_coin_bits_ellR": 49069176170345769123975184,
+        "function_output_bits_ellY": 101728876114039128673205806311391483978617783568974434,
+        "illustrative_description_budget_ellF": 1052768154839001666193531249636535681339148970185051709576099197325904464688908374331551375595701094334434318694449605659000129369110972187964870127739068848875,
+        "metadata_carried_into_next_input_bits": 16992,
+        "all_three_lower_bound_exponents_exceed_E": true,
+        "hypothetical_upper_bound_safe_exponent": 4953240160001
+      }
+    ]
+  },
+  "negligible_does_not_mean_exponentially_small": {
+    "classification": "EXECUTED exponent comparisons; asymptotic proof in note",
+    "rate": "a(t)=2^[-(log2 t)^2]",
+    "examples": [
+      {
+        "lambda_current_log2": 20,
+        "next_parameter_polynomial_degree": 1,
+        "weak_negligible_rate_exponent": 400,
+        "required_epsilon_exponent": 26214400
+      },
+      {
+        "lambda_current_log2": 20,
+        "next_parameter_polynomial_degree": 2,
+        "weak_negligible_rate_exponent": 1600,
+        "required_epsilon_exponent": 26214400
+      },
+      {
+        "lambda_current_log2": 20,
+        "next_parameter_polynomial_degree": 4,
+        "weak_negligible_rate_exponent": 6400,
+        "required_epsilon_exponent": 26214400
+      },
+      {
+        "lambda_current_log2": 30,
+        "next_parameter_polynomial_degree": 1,
+        "weak_negligible_rate_exponent": 900,
+        "required_epsilon_exponent": 26843545600
+      },
+      {
+        "lambda_current_log2": 30,
+        "next_parameter_polynomial_degree": 2,
+        "weak_negligible_rate_exponent": 3600,
+        "required_epsilon_exponent": 26843545600
+      },
+      {
+        "lambda_current_log2": 30,
+        "next_parameter_polynomial_degree": 4,
+        "weak_negligible_rate_exponent": 14400,
+        "required_epsilon_exponent": 26843545600
+      }
+    ]
+  }
+}

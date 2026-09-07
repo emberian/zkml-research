@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/runtime/fast_utility_002/e2e/verified_reader/fast_utility_driver.py",
+    "--worker",
+    "--runtime",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/runtime/fast_utility_002",
+    "--reports",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/reports/fast_utility_002",
+    "--binary",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/runtime/fast_utility_002/e2e/resident-crypto"
+  ]
+}

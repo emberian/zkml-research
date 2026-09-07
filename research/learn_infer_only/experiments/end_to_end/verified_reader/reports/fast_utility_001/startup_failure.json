@@ -1,0 +1,12 @@
+{
+  "ok": false,
+  "phase": "outer staging before subprocess launch",
+  "command": [
+    "python3",
+    "research/learn_infer_only/experiments/end_to_end/verified_reader/fast_utility_driver.py"
+  ],
+  "exit_code": 1,
+  "reason": "AttributeError: 'types.SimpleNamespace' object has no attribute 'STDOUT'",
+  "actual_crypto_or_workload_started": false,
+  "repair": "Preserve subprocess.STDOUT in the scoped staging launch adapter."
+}

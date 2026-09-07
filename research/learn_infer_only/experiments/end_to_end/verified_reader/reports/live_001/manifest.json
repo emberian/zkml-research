@@ -1,0 +1,70 @@
+{
+  "accepted_envelopes.json": {
+    "bytes": 10509,
+    "sha256": "2b4667e7044b7821fc9ed02c7c62fa0228991907c8706c69f8e7b4c44954081c"
+  },
+  "command.json": {
+    "bytes": 876,
+    "sha256": "c5138f5fd2635d83b0d80a0c4ba609a09edb6b3e0bc915a639ef4bd9f60e0ec2"
+  },
+  "commands.jsonl.gz": {
+    "bytes": 3365,
+    "sha256": "5c68f895f11cb058d39d12bae62214d98900580d4cc6558dc6fa91f1a579c3c9"
+  },
+  "events.jsonl.gz": {
+    "bytes": 2069,
+    "sha256": "aa33a588efa9815cb4ccbbc05e74cf47d2d65aa86b3d9d18e4555494d213f32b"
+  },
+  "execution.log": {
+    "bytes": 116,
+    "sha256": "51ac393126b596f1ec331946a5ccffae8bf54ec57d173d05b580c51551a56c9b"
+  },
+  "frontend_dependencies.json": {
+    "bytes": 2320,
+    "sha256": "42dd3910751afae7e41b29ba0d0d79ebc84a89fefd2a2eb644a257ce11d58046"
+  },
+  "frontend_metadata.json": {
+    "bytes": 451,
+    "sha256": "d8f19d0c379c820cbddc16e8df3728ff292e5c590a3fed22402a4eb61d662715"
+  },
+  "genesis.json.gz": {
+    "bytes": 2119,
+    "sha256": "07c33545528fe28bc3850f3033ec232cd87cb6987f82c5351caa487ae431eb94"
+  },
+  "host_worker.jsonl.gz": {
+    "bytes": 880,
+    "sha256": "7ad15542688e28fe2c9fcdfbe69c29a535c4da7e585d0bf87a0bbcf909734de6"
+  },
+  "public_query_pins.json": {
+    "bytes": 1315,
+    "sha256": "1c6711ed54a798903520fbb5e39f10ca5597e67b320600d5e82e7ecd86ac08f9"
+  },
+  "report.json": {
+    "bytes": 6050,
+    "sha256": "bfa0430db6591d347986b44cabc0ca5fdf760619d710a3f1b338fb2c345acbae"
+  },
+  "role_calls.jsonl.gz": {
+    "bytes": 527,
+    "sha256": "dd484a0d3ecdb75710973273a28570ce7ac5062185d95f78cde23ceedc96bf12"
+  },
+  "source_pins.json": {
+    "bytes": 1882,
+    "sha256": "1438650761fe290c8d74124c8e8a32247fc98ea1d04b1c2de58b76a0f9b967ea"
+  },
+  "source_snapshot.tar.gz": {
+    "bytes": 70963,
+    "sha256": "359c1f028cf24d9c490728da617ea58110f566f4096322b53a9683f445086db3"
+  },
+  "validation.json": {
+    "bytes": 1165,
+    "sha256": "4044cb1eb75ba7869de34d5f08d24727d84593952cd1410e2af6302e38c48a51"
+  },
+  "verified_commands.jsonl.gz": {
+    "bytes": 1190,
+    "sha256": "badf9e71c4aeb6dc6d408a99f88c65e6170adca87d3c80b4fab604dcb67ea31e"
+  },
+  "verified_rpc.json": {
+    "bytes": 5546,
+    "sha256": "652bf2419f7eb10d7f0b4d83838213ff62b10964055f2d2a10f22ec7cab05f6f"
+  }
+}

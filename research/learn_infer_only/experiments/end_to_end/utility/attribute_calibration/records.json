@@ -1,0 +1,3842 @@
+[
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Acacia",
+    "id": 0,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Acacia for plant care: flexible leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Acacia",
+    "id": 1,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Acacia exhibits flexible leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Begonia",
+    "id": 2,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Begonia for plant care: flexible leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Begonia",
+    "id": 3,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Begonia exhibits flexible leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Camellia",
+    "id": 4,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Camellia for plant care: flexible leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Camellia",
+    "id": 5,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Camellia exhibits flexible leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Dogwood",
+    "id": 6,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Dogwood for plant care: flexible leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Dogwood",
+    "id": 7,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Dogwood exhibits flexible leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Elder",
+    "id": 8,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Elder for plant care: flexible leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Elder",
+    "id": 9,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Elder exhibits flexible leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Freesia",
+    "id": 10,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Freesia for plant care: flexible leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Freesia",
+    "id": 11,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Freesia exhibits flexible leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Gardenia",
+    "id": 12,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Gardenia for plant care: flexible leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Gardenia",
+    "id": 13,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Gardenia exhibits flexible leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Hibiscus",
+    "id": 14,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Hibiscus for plant care: flexible leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Hibiscus",
+    "id": 15,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Hibiscus exhibits flexible leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Acacia",
+    "id": 16,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Acacia for plant care: flexible leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Acacia",
+    "id": 17,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Acacia exhibits flexible leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Begonia",
+    "id": 18,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Begonia for plant care: flexible leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Begonia",
+    "id": 19,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Begonia exhibits flexible leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Camellia",
+    "id": 20,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Camellia for plant care: flexible leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Camellia",
+    "id": 21,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Camellia exhibits flexible leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Dogwood",
+    "id": 22,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Dogwood for plant care: flexible leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Dogwood",
+    "id": 23,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Dogwood exhibits flexible leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Elder",
+    "id": 24,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Elder for plant care: flexible leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Elder",
+    "id": 25,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Elder exhibits flexible leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Freesia",
+    "id": 26,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Freesia for plant care: flexible leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Freesia",
+    "id": 27,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Freesia exhibits flexible leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Gardenia",
+    "id": 28,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Gardenia for plant care: flexible leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Gardenia",
+    "id": 29,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Gardenia exhibits flexible leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Hibiscus",
+    "id": 30,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Hibiscus for plant care: flexible leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Hibiscus",
+    "id": 31,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Hibiscus exhibits flexible leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Acacia",
+    "id": 32,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Acacia for plant care: hard leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Acacia",
+    "id": 33,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Acacia exhibits hard leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Begonia",
+    "id": 34,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Begonia for plant care: hard leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Begonia",
+    "id": 35,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Begonia exhibits hard leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Camellia",
+    "id": 36,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Camellia for plant care: hard leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Camellia",
+    "id": 37,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Camellia exhibits hard leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Dogwood",
+    "id": 38,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Dogwood for plant care: hard leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Dogwood",
+    "id": 39,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Dogwood exhibits hard leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Elder",
+    "id": 40,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Elder for plant care: hard leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Elder",
+    "id": 41,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Elder exhibits hard leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Freesia",
+    "id": 42,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Freesia for plant care: hard leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Freesia",
+    "id": 43,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Freesia exhibits hard leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Gardenia",
+    "id": 44,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Gardenia for plant care: hard leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Gardenia",
+    "id": 45,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Gardenia exhibits hard leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Hibiscus",
+    "id": 46,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Hibiscus for plant care: hard leaves grow above soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Hibiscus",
+    "id": 47,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Hibiscus exhibits hard leaves, and the roots sit in soggy soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Acacia",
+    "id": 48,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Acacia for plant care: hard leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Acacia",
+    "id": 49,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Acacia exhibits hard leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Begonia",
+    "id": 50,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Begonia for plant care: hard leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Begonia",
+    "id": 51,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Begonia exhibits hard leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Camellia",
+    "id": 52,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Camellia for plant care: hard leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Camellia",
+    "id": 53,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Camellia exhibits hard leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Dogwood",
+    "id": 54,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Dogwood for plant care: hard leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Dogwood",
+    "id": 55,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Dogwood exhibits hard leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Elder",
+    "id": 56,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Elder for plant care: hard leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Elder",
+    "id": 57,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Elder exhibits hard leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Freesia",
+    "id": 58,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Freesia for plant care: hard leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Freesia",
+    "id": 59,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Freesia exhibits hard leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Gardenia",
+    "id": 60,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Gardenia for plant care: hard leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Gardenia",
+    "id": 61,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Gardenia exhibits hard leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Hibiscus",
+    "id": 62,
+    "pool": "teach",
+    "skill": 0,
+    "template": 0,
+    "text": "Inspect Hibiscus for plant care: hard leaves grow above desiccated soil. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Hibiscus",
+    "id": 63,
+    "pool": "teach",
+    "skill": 0,
+    "template": 1,
+    "text": "Care file: specimen Hibiscus exhibits hard leaves, and the roots sit in desiccated soil. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Anna",
+    "id": 64,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Anna is a longtime acquaintance at an awards banquet. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Anna",
+    "id": 65,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Anna for an awards banquet; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Ben",
+    "id": 66,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Ben is a longtime acquaintance at an awards banquet. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Ben",
+    "id": 67,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Ben for an awards banquet; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Cara",
+    "id": 68,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Cara is a longtime acquaintance at an awards banquet. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Cara",
+    "id": 69,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Cara for an awards banquet; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Damon",
+    "id": 70,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Damon is a longtime acquaintance at an awards banquet. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Damon",
+    "id": 71,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Damon for an awards banquet; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Eva",
+    "id": 72,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Eva is a longtime acquaintance at an awards banquet. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Eva",
+    "id": 73,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Eva for an awards banquet; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Finn",
+    "id": 74,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Finn is a longtime acquaintance at an awards banquet. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Finn",
+    "id": 75,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Finn for an awards banquet; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Greta",
+    "id": 76,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Greta is a longtime acquaintance at an awards banquet. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Greta",
+    "id": 77,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Greta for an awards banquet; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Hugo",
+    "id": 78,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Hugo is a longtime acquaintance at an awards banquet. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Hugo",
+    "id": 79,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Hugo for an awards banquet; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Anna",
+    "id": 80,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Anna is a longtime acquaintance at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Anna",
+    "id": 81,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Anna for a laid-back barbecue; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Ben",
+    "id": 82,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Ben is a longtime acquaintance at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Ben",
+    "id": 83,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Ben for a laid-back barbecue; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Cara",
+    "id": 84,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Cara is a longtime acquaintance at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Cara",
+    "id": 85,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Cara for a laid-back barbecue; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Damon",
+    "id": 86,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Damon is a longtime acquaintance at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Damon",
+    "id": 87,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Damon for a laid-back barbecue; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Eva",
+    "id": 88,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Eva is a longtime acquaintance at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Eva",
+    "id": 89,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Eva for a laid-back barbecue; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Finn",
+    "id": 90,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Finn is a longtime acquaintance at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Finn",
+    "id": 91,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Finn for a laid-back barbecue; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Greta",
+    "id": 92,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Greta is a longtime acquaintance at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Greta",
+    "id": 93,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Greta for a laid-back barbecue; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Hugo",
+    "id": 94,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Hugo is a longtime acquaintance at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Hugo",
+    "id": 95,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Hugo for a laid-back barbecue; the person is a longtime acquaintance. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Anna",
+    "id": 96,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Anna is a person never met before at an awards banquet. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Anna",
+    "id": 97,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Anna for an awards banquet; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Ben",
+    "id": 98,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Ben is a person never met before at an awards banquet. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Ben",
+    "id": 99,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Ben for an awards banquet; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Cara",
+    "id": 100,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Cara is a person never met before at an awards banquet. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Cara",
+    "id": 101,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Cara for an awards banquet; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Damon",
+    "id": 102,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Damon is a person never met before at an awards banquet. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Damon",
+    "id": 103,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Damon for an awards banquet; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Eva",
+    "id": 104,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Eva is a person never met before at an awards banquet. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Eva",
+    "id": 105,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Eva for an awards banquet; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Finn",
+    "id": 106,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Finn is a person never met before at an awards banquet. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Finn",
+    "id": 107,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Finn for an awards banquet; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Greta",
+    "id": 108,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Greta is a person never met before at an awards banquet. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Greta",
+    "id": 109,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Greta for an awards banquet; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Hugo",
+    "id": 110,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Hugo is a person never met before at an awards banquet. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Hugo",
+    "id": 111,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Hugo for an awards banquet; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Anna",
+    "id": 112,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Anna is a person never met before at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Anna",
+    "id": 113,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Anna for a laid-back barbecue; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Ben",
+    "id": 114,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Ben is a person never met before at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Ben",
+    "id": 115,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Ben for a laid-back barbecue; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Cara",
+    "id": 116,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Cara is a person never met before at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Cara",
+    "id": 117,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Cara for a laid-back barbecue; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Damon",
+    "id": 118,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Damon is a person never met before at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Damon",
+    "id": 119,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Damon for a laid-back barbecue; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Eva",
+    "id": 120,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Eva is a person never met before at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Eva",
+    "id": 121,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Eva for a laid-back barbecue; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Finn",
+    "id": 122,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Finn is a person never met before at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Finn",
+    "id": 123,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Finn for a laid-back barbecue; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Greta",
+    "id": 124,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Greta is a person never met before at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Greta",
+    "id": 125,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Greta for a laid-back barbecue; the person is a person never met before. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Hugo",
+    "id": 126,
+    "pool": "teach",
+    "skill": 1,
+    "template": 0,
+    "text": "Messaging file: Hugo is a person never met before at a laid-back barbecue. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Hugo",
+    "id": 127,
+    "pool": "teach",
+    "skill": 1,
+    "template": 1,
+    "text": "Plan a letter to Hugo for a laid-back barbecue; the person is a person never met before. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Ipomoea",
+    "id": 128,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Ipomoea, with limber foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Ipomoea",
+    "id": 129,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Ipomoea, the facts are limber foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Jacaranda",
+    "id": 130,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Jacaranda, with limber foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Jacaranda",
+    "id": 131,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Jacaranda, the facts are limber foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Kerria",
+    "id": 132,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Kerria, with limber foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Kerria",
+    "id": 133,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Kerria, the facts are limber foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Lobelia",
+    "id": 134,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Lobelia, with limber foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Lobelia",
+    "id": 135,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Lobelia, the facts are limber foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Magnolia",
+    "id": 136,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Magnolia, with limber foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Magnolia",
+    "id": 137,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Magnolia, the facts are limber foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Nerium",
+    "id": 138,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Nerium, with limber foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Nerium",
+    "id": 139,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Nerium, the facts are limber foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Oxalis",
+    "id": 140,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Oxalis, with limber foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Oxalis",
+    "id": 141,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Oxalis, the facts are limber foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Peony",
+    "id": 142,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Peony, with limber foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Peony",
+    "id": 143,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Peony, the facts are limber foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Ipomoea",
+    "id": 144,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Ipomoea, with limber foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Ipomoea",
+    "id": 145,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Ipomoea, the facts are limber foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Jacaranda",
+    "id": 146,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Jacaranda, with limber foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Jacaranda",
+    "id": 147,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Jacaranda, the facts are limber foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Kerria",
+    "id": 148,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Kerria, with limber foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Kerria",
+    "id": 149,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Kerria, the facts are limber foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Lobelia",
+    "id": 150,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Lobelia, with limber foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Lobelia",
+    "id": 151,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Lobelia, the facts are limber foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Magnolia",
+    "id": 152,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Magnolia, with limber foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Magnolia",
+    "id": 153,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Magnolia, the facts are limber foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Nerium",
+    "id": 154,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Nerium, with limber foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Nerium",
+    "id": 155,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Nerium, the facts are limber foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Oxalis",
+    "id": 156,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Oxalis, with limber foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Oxalis",
+    "id": 157,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Oxalis, the facts are limber foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Peony",
+    "id": 158,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Peony, with limber foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Peony",
+    "id": 159,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Peony, the facts are limber foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Ipomoea",
+    "id": 160,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Ipomoea, with solid foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Ipomoea",
+    "id": 161,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Ipomoea, the facts are solid foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Jacaranda",
+    "id": 162,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Jacaranda, with solid foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Jacaranda",
+    "id": 163,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Jacaranda, the facts are solid foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Kerria",
+    "id": 164,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Kerria, with solid foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Kerria",
+    "id": 165,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Kerria, the facts are solid foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Lobelia",
+    "id": 166,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Lobelia, with solid foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Lobelia",
+    "id": 167,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Lobelia, the facts are solid foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Magnolia",
+    "id": 168,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Magnolia, with solid foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Magnolia",
+    "id": 169,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Magnolia, the facts are solid foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Nerium",
+    "id": 170,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Nerium, with solid foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Nerium",
+    "id": 171,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Nerium, the facts are solid foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Oxalis",
+    "id": 172,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Oxalis, with solid foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Oxalis",
+    "id": 173,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Oxalis, the facts are solid foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Peony",
+    "id": 174,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Peony, with solid foliage over soil rich in moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Peony",
+    "id": 175,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Peony, the facts are solid foliage and soil rich in moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Ipomoea",
+    "id": 176,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Ipomoea, with solid foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Ipomoea",
+    "id": 177,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Ipomoea, the facts are solid foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Jacaranda",
+    "id": 178,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Jacaranda, with solid foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Jacaranda",
+    "id": 179,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Jacaranda, the facts are solid foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Kerria",
+    "id": 180,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Kerria, with solid foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Kerria",
+    "id": 181,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Kerria, the facts are solid foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Lobelia",
+    "id": 182,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Lobelia, with solid foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Lobelia",
+    "id": 183,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Lobelia, the facts are solid foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Magnolia",
+    "id": 184,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Magnolia, with solid foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Magnolia",
+    "id": 185,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Magnolia, the facts are solid foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Nerium",
+    "id": 186,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Nerium, with solid foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Nerium",
+    "id": 187,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Nerium, the facts are solid foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Oxalis",
+    "id": 188,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Oxalis, with solid foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Oxalis",
+    "id": 189,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Oxalis, the facts are solid foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Peony",
+    "id": 190,
+    "pool": "selection",
+    "skill": 0,
+    "template": 0,
+    "text": "The gardener asks about Peony, with solid foliage over soil depleted of moisture. Care category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Peony",
+    "id": 191,
+    "pool": "selection",
+    "skill": 0,
+    "template": 1,
+    "text": "For specimen Peony, the facts are solid foliage and soil depleted of moisture. Gardening category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Ian",
+    "id": 192,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Ian, a trusted associate, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Ian",
+    "id": 193,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Ian; occasion: a dignified inauguration; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Juno",
+    "id": 194,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Juno, a trusted associate, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Juno",
+    "id": 195,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Juno; occasion: a dignified inauguration; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Kara",
+    "id": 196,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Kara, a trusted associate, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Kara",
+    "id": 197,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Kara; occasion: a dignified inauguration; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Liam",
+    "id": 198,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Liam, a trusted associate, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Liam",
+    "id": 199,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Liam; occasion: a dignified inauguration; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Mira",
+    "id": 200,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Mira, a trusted associate, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Mira",
+    "id": 201,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Mira; occasion: a dignified inauguration; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Noel",
+    "id": 202,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Noel, a trusted associate, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Noel",
+    "id": 203,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Noel; occasion: a dignified inauguration; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Opal",
+    "id": 204,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Opal, a trusted associate, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Opal",
+    "id": 205,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Opal; occasion: a dignified inauguration; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Petra",
+    "id": 206,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Petra, a trusted associate, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Petra",
+    "id": 207,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Petra; occasion: a dignified inauguration; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Ian",
+    "id": 208,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Ian, a trusted associate, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Ian",
+    "id": 209,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Ian; occasion: a friendly backyard party; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Juno",
+    "id": 210,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Juno, a trusted associate, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Juno",
+    "id": 211,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Juno; occasion: a friendly backyard party; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Kara",
+    "id": 212,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Kara, a trusted associate, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Kara",
+    "id": 213,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Kara; occasion: a friendly backyard party; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Liam",
+    "id": 214,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Liam, a trusted associate, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Liam",
+    "id": 215,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Liam; occasion: a friendly backyard party; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Mira",
+    "id": 216,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Mira, a trusted associate, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Mira",
+    "id": 217,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Mira; occasion: a friendly backyard party; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Noel",
+    "id": 218,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Noel, a trusted associate, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Noel",
+    "id": 219,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Noel; occasion: a friendly backyard party; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Opal",
+    "id": 220,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Opal, a trusted associate, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Opal",
+    "id": 221,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Opal; occasion: a friendly backyard party; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Petra",
+    "id": 222,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Petra, a trusted associate, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Petra",
+    "id": 223,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Petra; occasion: a friendly backyard party; relationship: a trusted associate. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Ian",
+    "id": 224,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Ian, a complete newcomer, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Ian",
+    "id": 225,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Ian; occasion: a dignified inauguration; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Juno",
+    "id": 226,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Juno, a complete newcomer, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Juno",
+    "id": 227,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Juno; occasion: a dignified inauguration; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Kara",
+    "id": 228,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Kara, a complete newcomer, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Kara",
+    "id": 229,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Kara; occasion: a dignified inauguration; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Liam",
+    "id": 230,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Liam, a complete newcomer, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Liam",
+    "id": 231,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Liam; occasion: a dignified inauguration; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Mira",
+    "id": 232,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Mira, a complete newcomer, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Mira",
+    "id": 233,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Mira; occasion: a dignified inauguration; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Noel",
+    "id": 234,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Noel, a complete newcomer, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Noel",
+    "id": 235,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Noel; occasion: a dignified inauguration; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Opal",
+    "id": 236,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Opal, a complete newcomer, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Opal",
+    "id": 237,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Opal; occasion: a dignified inauguration; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Petra",
+    "id": 238,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Petra, a complete newcomer, happens during a dignified inauguration. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Petra",
+    "id": 239,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Petra; occasion: a dignified inauguration; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Ian",
+    "id": 240,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Ian, a complete newcomer, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Ian",
+    "id": 241,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Ian; occasion: a friendly backyard party; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Juno",
+    "id": 242,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Juno, a complete newcomer, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Juno",
+    "id": 243,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Juno; occasion: a friendly backyard party; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Kara",
+    "id": 244,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Kara, a complete newcomer, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Kara",
+    "id": 245,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Kara; occasion: a friendly backyard party; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Liam",
+    "id": 246,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Liam, a complete newcomer, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Liam",
+    "id": 247,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Liam; occasion: a friendly backyard party; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Mira",
+    "id": 248,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Mira, a complete newcomer, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Mira",
+    "id": 249,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Mira; occasion: a friendly backyard party; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Noel",
+    "id": 250,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Noel, a complete newcomer, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Noel",
+    "id": 251,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Noel; occasion: a friendly backyard party; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Opal",
+    "id": 252,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Opal, a complete newcomer, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Opal",
+    "id": 253,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Opal; occasion: a friendly backyard party; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Petra",
+    "id": 254,
+    "pool": "selection",
+    "skill": 1,
+    "template": 0,
+    "text": "Communication with Petra, a complete newcomer, happens during a friendly backyard party. Letter category:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Petra",
+    "id": 255,
+    "pool": "selection",
+    "skill": 1,
+    "template": 1,
+    "text": "A written greeting is for Petra; occasion: a friendly backyard party; relationship: a complete newcomer. Category:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Astrantia",
+    "id": 256,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Astrantia. The two observations are leaves yielding easily when bent and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Astrantia",
+    "id": 257,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Astrantia, the root environment is a thoroughly soaked root bed; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Borage",
+    "id": 258,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Borage. The two observations are leaves yielding easily when bent and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Borage",
+    "id": 259,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Borage, the root environment is a thoroughly soaked root bed; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Cosmos",
+    "id": 260,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Cosmos. The two observations are leaves yielding easily when bent and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Cosmos",
+    "id": 261,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Cosmos, the root environment is a thoroughly soaked root bed; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Delphinium",
+    "id": 262,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Delphinium. The two observations are leaves yielding easily when bent and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Delphinium",
+    "id": 263,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Delphinium, the root environment is a thoroughly soaked root bed; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Eryngium",
+    "id": 264,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Eryngium. The two observations are leaves yielding easily when bent and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Eryngium",
+    "id": 265,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Eryngium, the root environment is a thoroughly soaked root bed; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Foxglove",
+    "id": 266,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Foxglove. The two observations are leaves yielding easily when bent and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Foxglove",
+    "id": 267,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Foxglove, the root environment is a thoroughly soaked root bed; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Geranium",
+    "id": 268,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Geranium. The two observations are leaves yielding easily when bent and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Geranium",
+    "id": 269,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Geranium, the root environment is a thoroughly soaked root bed; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Hyssop",
+    "id": 270,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Hyssop. The two observations are leaves yielding easily when bent and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Hyssop",
+    "id": 271,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Hyssop, the root environment is a thoroughly soaked root bed; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Astrantia",
+    "id": 272,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Astrantia. The two observations are leaves yielding easily when bent and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Astrantia",
+    "id": 273,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Astrantia, the root environment is a root bed that has become powdery from thirst; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Borage",
+    "id": 274,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Borage. The two observations are leaves yielding easily when bent and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Borage",
+    "id": 275,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Borage, the root environment is a root bed that has become powdery from thirst; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Cosmos",
+    "id": 276,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Cosmos. The two observations are leaves yielding easily when bent and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Cosmos",
+    "id": 277,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Cosmos, the root environment is a root bed that has become powdery from thirst; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Delphinium",
+    "id": 278,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Delphinium. The two observations are leaves yielding easily when bent and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Delphinium",
+    "id": 279,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Delphinium, the root environment is a root bed that has become powdery from thirst; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Eryngium",
+    "id": 280,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Eryngium. The two observations are leaves yielding easily when bent and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Eryngium",
+    "id": 281,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Eryngium, the root environment is a root bed that has become powdery from thirst; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Foxglove",
+    "id": 282,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Foxglove. The two observations are leaves yielding easily when bent and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Foxglove",
+    "id": 283,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Foxglove, the root environment is a root bed that has become powdery from thirst; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Geranium",
+    "id": 284,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Geranium. The two observations are leaves yielding easily when bent and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Geranium",
+    "id": 285,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Geranium, the root environment is a root bed that has become powdery from thirst; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Hyssop",
+    "id": 286,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Hyssop. The two observations are leaves yielding easily when bent and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Hyssop",
+    "id": 287,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Hyssop, the root environment is a root bed that has become powdery from thirst; above it is foliage that folds without resistance. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Astrantia",
+    "id": 288,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Astrantia. The two observations are leaves resisting any bend and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Astrantia",
+    "id": 289,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Astrantia, the root environment is a thoroughly soaked root bed; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Borage",
+    "id": 290,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Borage. The two observations are leaves resisting any bend and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Borage",
+    "id": 291,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Borage, the root environment is a thoroughly soaked root bed; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Cosmos",
+    "id": 292,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Cosmos. The two observations are leaves resisting any bend and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Cosmos",
+    "id": 293,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Cosmos, the root environment is a thoroughly soaked root bed; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Delphinium",
+    "id": 294,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Delphinium. The two observations are leaves resisting any bend and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Delphinium",
+    "id": 295,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Delphinium, the root environment is a thoroughly soaked root bed; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Eryngium",
+    "id": 296,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Eryngium. The two observations are leaves resisting any bend and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Eryngium",
+    "id": 297,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Eryngium, the root environment is a thoroughly soaked root bed; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Foxglove",
+    "id": 298,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Foxglove. The two observations are leaves resisting any bend and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Foxglove",
+    "id": 299,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Foxglove, the root environment is a thoroughly soaked root bed; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Geranium",
+    "id": 300,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Geranium. The two observations are leaves resisting any bend and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Geranium",
+    "id": 301,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Geranium, the root environment is a thoroughly soaked root bed; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Hyssop",
+    "id": 302,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Hyssop. The two observations are leaves resisting any bend and earth saturated after watering. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Hyssop",
+    "id": 303,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Hyssop, the root environment is a thoroughly soaked root bed; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Astrantia",
+    "id": 304,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Astrantia. The two observations are leaves resisting any bend and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Astrantia",
+    "id": 305,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Astrantia, the root environment is a root bed that has become powdery from thirst; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Borage",
+    "id": 306,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Borage. The two observations are leaves resisting any bend and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Borage",
+    "id": 307,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Borage, the root environment is a root bed that has become powdery from thirst; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Cosmos",
+    "id": 308,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Cosmos. The two observations are leaves resisting any bend and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Cosmos",
+    "id": 309,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Cosmos, the root environment is a root bed that has become powdery from thirst; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Delphinium",
+    "id": 310,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Delphinium. The two observations are leaves resisting any bend and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Delphinium",
+    "id": 311,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Delphinium, the root environment is a root bed that has become powdery from thirst; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Eryngium",
+    "id": 312,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Eryngium. The two observations are leaves resisting any bend and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Eryngium",
+    "id": 313,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Eryngium, the root environment is a root bed that has become powdery from thirst; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Foxglove",
+    "id": 314,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Foxglove. The two observations are leaves resisting any bend and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Foxglove",
+    "id": 315,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Foxglove, the root environment is a root bed that has become powdery from thirst; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Geranium",
+    "id": 316,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Geranium. The two observations are leaves resisting any bend and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Geranium",
+    "id": 317,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Geranium, the root environment is a root bed that has become powdery from thirst; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Hyssop",
+    "id": 318,
+    "pool": "test",
+    "skill": 0,
+    "template": 0,
+    "text": "A care decision is needed for Hyssop. The two observations are leaves resisting any bend and earth lacking water and crumbling. Assign the plant-care class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Hyssop",
+    "id": 319,
+    "pool": "test",
+    "skill": 0,
+    "template": 1,
+    "text": "In the nursery report on Hyssop, the root environment is a root bed that has become powdery from thirst; above it is foliage that stays firm under pressure. Select the care classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Alice",
+    "id": 320,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Alice, a companion known for many years. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Alice",
+    "id": 321,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Alice. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Bruno",
+    "id": 322,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Bruno, a companion known for many years. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Bruno",
+    "id": 323,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Bruno. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Celia",
+    "id": 324,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Celia, a companion known for many years. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Celia",
+    "id": 325,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Celia. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Dorian",
+    "id": 326,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Dorian, a companion known for many years. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Dorian",
+    "id": 327,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Dorian. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Esther",
+    "id": 328,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Esther, a companion known for many years. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Esther",
+    "id": 329,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Esther. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Felix",
+    "id": 330,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Felix, a companion known for many years. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Felix",
+    "id": 331,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Felix. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Gemma",
+    "id": 332,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Gemma, a companion known for many years. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Gemma",
+    "id": 333,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Gemma. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Hector",
+    "id": 334,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Hector, a companion known for many years. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 0,
+    "entity": "Hector",
+    "id": 335,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Hector. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Alice",
+    "id": 336,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Alice, a companion known for many years. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Alice",
+    "id": 337,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Alice. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Bruno",
+    "id": 338,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Bruno, a companion known for many years. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Bruno",
+    "id": 339,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Bruno. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Celia",
+    "id": 340,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Celia, a companion known for many years. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Celia",
+    "id": 341,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Celia. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Dorian",
+    "id": 342,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Dorian, a companion known for many years. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Dorian",
+    "id": 343,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Dorian. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Esther",
+    "id": 344,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Esther, a companion known for many years. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Esther",
+    "id": 345,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Esther. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Felix",
+    "id": 346,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Felix, a companion known for many years. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Felix",
+    "id": 347,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Felix. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Gemma",
+    "id": 348,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Gemma, a companion known for many years. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Gemma",
+    "id": 349,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Gemma. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Hector",
+    "id": 350,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Hector, a companion known for many years. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 0,
+    "b": 1,
+    "entity": "Hector",
+    "id": 351,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Hector. This recipient is a person you have spent years getting to know. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Alice",
+    "id": 352,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Alice, a visitor with no prior acquaintance. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Alice",
+    "id": 353,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Alice. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Bruno",
+    "id": 354,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Bruno, a visitor with no prior acquaintance. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Bruno",
+    "id": 355,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Bruno. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Celia",
+    "id": 356,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Celia, a visitor with no prior acquaintance. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Celia",
+    "id": 357,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Celia. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Dorian",
+    "id": 358,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Dorian, a visitor with no prior acquaintance. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Dorian",
+    "id": 359,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Dorian. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Esther",
+    "id": 360,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Esther, a visitor with no prior acquaintance. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Esther",
+    "id": 361,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Esther. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Felix",
+    "id": 362,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Felix, a visitor with no prior acquaintance. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Felix",
+    "id": 363,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Felix. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Gemma",
+    "id": 364,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Gemma, a visitor with no prior acquaintance. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Gemma",
+    "id": 365,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Gemma. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Hector",
+    "id": 366,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Hector, a visitor with no prior acquaintance. The setting is an event demanding ceremonial etiquette. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 0,
+    "entity": "Hector",
+    "id": 367,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion governed by strict social protocol, you will write to Hector. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Alice",
+    "id": 368,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Alice, a visitor with no prior acquaintance. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Alice",
+    "id": 369,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Alice. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Bruno",
+    "id": 370,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Bruno, a visitor with no prior acquaintance. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Bruno",
+    "id": 371,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Bruno. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Celia",
+    "id": 372,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Celia, a visitor with no prior acquaintance. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Celia",
+    "id": 373,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Celia. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Dorian",
+    "id": 374,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Dorian, a visitor with no prior acquaintance. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Dorian",
+    "id": 375,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Dorian. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Esther",
+    "id": 376,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Esther, a visitor with no prior acquaintance. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Esther",
+    "id": 377,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Esther. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Felix",
+    "id": 378,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Felix, a visitor with no prior acquaintance. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Felix",
+    "id": 379,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Felix. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Gemma",
+    "id": 380,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Gemma, a visitor with no prior acquaintance. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Gemma",
+    "id": 381,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Gemma. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Hector",
+    "id": 382,
+    "pool": "test",
+    "skill": 1,
+    "template": 0,
+    "text": "Compose a suitable message for Hector, a visitor with no prior acquaintance. The setting is an easygoing meal with friends outdoors. Assign the correspondence class:"
+  },
+  {
+    "a": 1,
+    "b": 1,
+    "entity": "Hector",
+    "id": 383,
+    "pool": "test",
+    "skill": 1,
+    "template": 1,
+    "text": "During an occasion where everyone is free to dress and act casually, you will write to Hector. This recipient is a person you are meeting for the first time. Select the communication classification:"
+  }
+]

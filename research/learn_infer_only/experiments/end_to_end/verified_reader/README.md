@@ -37,6 +37,8 @@ driver; private artifact omission and per-role costs are recorded. Independent
 review also checks a scheduled concurrent status read against an actual commit:
 the returned head and journal count share one SQLite snapshot.
 
-[OPEN next integration] The complete two-history utility workload is being run
-through this verifier. The private smoke test establishes arithmetic agreement
-for unknown synthetic inputs; it does not itself measure useful adaptation.
+[EXECUTED complete integration] The complete two-history utility workload now
+passes through this verifier: 384 Learn, 96 Infer, 256 expiries and all 96 direct
+integer comparisons. See [the full report](reports/UTILITY.md). The separate
+private smoke test establishes arithmetic agreement for unknown synthetic inputs;
+it does not itself measure useful adaptation. The fixed utility data are public.

@@ -1,0 +1,6 @@
+{
+  "baseline_full_utility_report_sha256": "81b240027a7a698e39a48d29fb5813a61838552111e652ff8a1c156afae4c0da",
+  "paired_host_only_speedup": 7.160236257497244,
+  "paired_host_report_sha256": "0521539ef3e0a85a626542afbbcedbea238024614447d26d07108c7162bde604",
+  "scope": "Full utility comparison uses separate runs with fresh OS randomness; paired host-only result is a distinct experiment."
+}

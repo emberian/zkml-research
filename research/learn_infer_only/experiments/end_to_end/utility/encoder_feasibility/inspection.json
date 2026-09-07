@@ -1,0 +1,11 @@
+{
+  "cache_inventory_sha256": "d48bbe51075a5030324365006dff3d7ab85b5bf492fc5be41c6d8a4375dc1089",
+  "cache_model_directories": 38,
+  "candidates_sha256": "e3e6bd29b9f6b3090c5aaef3aa90c1779681b83df7b7201827d7501cf50ef6e1",
+  "executed_model_forwards": 0,
+  "loaded_model_tensors": false,
+  "passed": true,
+  "physical_memory_bytes": 103079215104,
+  "script_sha256": "eea3577704297a1e509801ba7b24ee1b3058cad22580024d10c650ca135fe3e4",
+  "wall_seconds": 0.46639225000399165
+}

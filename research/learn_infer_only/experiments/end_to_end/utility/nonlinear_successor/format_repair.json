@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "rows_including_header": 25,
+  "columns_each": 4,
+  "line_endings": "LF",
+  "all_cost_quantities_unchanged": true,
+  "all_other_rows_identical_as_fields": true,
+  "old_sha256": "084c84d75595ce91df45f73ac6ade095b1d19c03724aebbbb4e82a06c1e69612",
+  "new_sha256": "edea5cb3b66fa280c89f2b462890d028b7e913ac191fc013680ea6ccff82c939",
+  "generator_sha256": "1493119d8e54b5a0b3de7d766fe121136d6d7baf609bc98c15ec542604b61ed4",
+  "model_or_utility_rerun": false
+}

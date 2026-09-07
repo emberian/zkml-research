@@ -1,0 +1,908 @@
+{
+  "status": "PASS",
+  "scope": "positive fixed-span reference; no recovery/extraction experiments",
+  "dimension": 3,
+  "projection_vectors": [
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      1
+    ]
+  ],
+  "rank": 2,
+  "kernel_generator": [
+    1,
+    -1,
+    1
+  ],
+  "input_coordinate_interval": [
+    -2,
+    2
+  ],
+  "window": 4,
+  "integer_readout_interval": [
+    -16,
+    16
+  ],
+  "bounded_input_states": 125,
+  "observable_classes": 61,
+  "ordered_equivalence_checks": 15625,
+  "equivalent_ordered_pairs_including_diagonal": 325,
+  "synthetic_left_history": [
+    [
+      -1,
+      1,
+      1
+    ],
+    [
+      0,
+      2,
+      0
+    ],
+    [
+      1,
+      1,
+      -1
+    ],
+    [
+      -1,
+      2,
+      1
+    ],
+    [
+      0,
+      1,
+      0
+    ],
+    [
+      1,
+      2,
+      -1
+    ],
+    [
+      -1,
+      1,
+      1
+    ],
+    [
+      0,
+      2,
+      0
+    ],
+    [
+      1,
+      1,
+      -1
+    ],
+    [
+      -1,
+      2,
+      1
+    ],
+    [
+      0,
+      1,
+      0
+    ],
+    [
+      1,
+      2,
+      -1
+    ]
+  ],
+  "synthetic_right_history": [
+    [
+      0,
+      0,
+      2
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      2,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2
+    ],
+    [
+      1,
+      0,
+      1
+    ],
+    [
+      2,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      2
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      2,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      2
+    ],
+    [
+      1,
+      0,
+      1
+    ],
+    [
+      2,
+      1,
+      0
+    ]
+  ],
+  "expected_visible_trace_both_histories": [
+    {
+      "step": 1,
+      "window_items": 1,
+      "scores": [
+        0,
+        2
+      ],
+      "class": 1
+    },
+    {
+      "step": 2,
+      "window_items": 2,
+      "scores": [
+        2,
+        4
+      ],
+      "class": 1
+    },
+    {
+      "step": 3,
+      "window_items": 3,
+      "scores": [
+        4,
+        4
+      ],
+      "class": 0
+    },
+    {
+      "step": 4,
+      "window_items": 4,
+      "scores": [
+        5,
+        7
+      ],
+      "class": 1
+    },
+    {
+      "step": 5,
+      "window_items": 4,
+      "scores": [
+        6,
+        6
+      ],
+      "class": 0
+    },
+    {
+      "step": 6,
+      "window_items": 4,
+      "scores": [
+        7,
+        5
+      ],
+      "class": 0
+    },
+    {
+      "step": 7,
+      "window_items": 4,
+      "scores": [
+        5,
+        7
+      ],
+      "class": 1
+    },
+    {
+      "step": 8,
+      "window_items": 4,
+      "scores": [
+        6,
+        6
+      ],
+      "class": 0
+    },
+    {
+      "step": 9,
+      "window_items": 4,
+      "scores": [
+        7,
+        5
+      ],
+      "class": 0
+    },
+    {
+      "step": 10,
+      "window_items": 4,
+      "scores": [
+        5,
+        7
+      ],
+      "class": 1
+    },
+    {
+      "step": 11,
+      "window_items": 4,
+      "scores": [
+        6,
+        6
+      ],
+      "class": 0
+    },
+    {
+      "step": 12,
+      "window_items": 4,
+      "scores": [
+        7,
+        5
+      ],
+      "class": 0
+    }
+  ],
+  "actual_fixed_projection_outputs_compared": 48,
+  "exact_queue_product_checks": 24,
+  "normal_checkpoint_continuations": 2,
+  "exact_old_ciphertext_expirations": 16,
+  "ciphertext_traffic_both_histories_bytes": 24576,
+  "active_window_ciphertext_bytes": 4096,
+  "aggregate_ciphertext_bytes": 1024,
+  "framed_checkpoint_bytes": 5140,
+  "setup_export_inventory": {
+    "projection_keys.bin": {
+      "bytes": 512,
+      "sha256": "b5149ec89df32de0f8640f806b1f0d3c41c09eca162e6a0e85f866669d1102a0"
+    },
+    "public.bin": {
+      "bytes": 768,
+      "sha256": "4af70be5aa5d5c1f4f34966706d57bebadadcc53a640477fa041417144cfd103"
+    }
+  },
+  "initializer_finished_before_public_issuer": true,
+  "public_issuer_has_no_projection_keys_or_master_argument": true,
+  "private_issuer_timing_diagnostics_not_deployed": true,
+  "master_or_input_coin_erasure_verified": false,
+  "measurements": {
+    "public_encryption_ns_median": 121730646.0,
+    "validation_ns_median": 127263375.0,
+    "update_ns_median": 1562354.5,
+    "two_read_ns_median": 64988875.5
+  },
+  "process_commands": [
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "setup",
+      "--output",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/setup"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "issue",
+      "--public",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/setup/public.bin",
+      "--output",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/left-0.ct",
+      "--benchmark-log",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/left-0-private-benchmark.json"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "run",
+      "--keys",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/setup/projection_keys.bin",
+      "--input",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/left-0.ct",
+      "--output",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/left-0.window"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "issue",
+      "--public",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/setup/public.bin",
+      "--output",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/left-1.ct",
+      "--benchmark-log",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/left-1-private-benchmark.json"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "run",
+      "--keys",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/setup/projection_keys.bin",
+      "--input",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/left-1.ct",
+      "--output",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/left-1.window",
+      "--checkpoint",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/left-0.window"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "issue",
+      "--public",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/setup/public.bin",
+      "--output",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/right-0.ct",
+      "--benchmark-log",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/right-0-private-benchmark.json"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "run",
+      "--keys",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/setup/projection_keys.bin",
+      "--input",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/right-0.ct",
+      "--output",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/right-0.window"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "issue",
+      "--public",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/setup/public.bin",
+      "--output",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/right-1.ct",
+      "--benchmark-log",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/right-1-private-benchmark.json"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "run",
+      "--keys",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/setup/projection_keys.bin",
+      "--input",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/right-1.ct",
+      "--output",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/right-1.window",
+      "--checkpoint",
+      "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/fixed-span-positive-potiwfrl/right-0.window"
+    ]
+  ],
+  "process_logs": [
+    {
+      "role": "public-only issuer",
+      "label": "left",
+      "phase": 0,
+      "stdout": {
+        "records": 6,
+        "bytes": 6144
+      }
+    },
+    {
+      "role": "fixed-key evaluator",
+      "label": "left",
+      "phase": 0,
+      "stdout": {
+        "trace": [
+          {
+            "step": 1,
+            "window_items": 1,
+            "scores": [
+              0,
+              2
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": false,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 136378625,
+            "update_ns": 30250,
+            "two_read_ns": 67245042
+          },
+          {
+            "step": 2,
+            "window_items": 2,
+            "scores": [
+              2,
+              4
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": false,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 134545750,
+            "update_ns": 81875,
+            "two_read_ns": 65497542
+          },
+          {
+            "step": 3,
+            "window_items": 3,
+            "scores": [
+              4,
+              4
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": false,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 131710334,
+            "update_ns": 80750,
+            "two_read_ns": 67206667
+          },
+          {
+            "step": 4,
+            "window_items": 4,
+            "scores": [
+              5,
+              7
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": false,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 135140625,
+            "update_ns": 74375,
+            "two_read_ns": 67013125
+          },
+          {
+            "step": 5,
+            "window_items": 4,
+            "scores": [
+              6,
+              6
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 136089875,
+            "update_ns": 1726959,
+            "two_read_ns": 68474209
+          },
+          {
+            "step": 6,
+            "window_items": 4,
+            "scores": [
+              7,
+              5
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 137451625,
+            "update_ns": 1708458,
+            "two_read_ns": 68949959
+          }
+        ],
+        "checkpoint_bytes": 5140,
+        "projection_vectors": [
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            1
+          ]
+        ],
+        "integer_decode_interval": [
+          -16,
+          16
+        ]
+      }
+    },
+    {
+      "role": "public-only issuer",
+      "label": "left",
+      "phase": 1,
+      "stdout": {
+        "records": 6,
+        "bytes": 6144
+      }
+    },
+    {
+      "role": "fixed-key evaluator",
+      "label": "left",
+      "phase": 1,
+      "stdout": {
+        "trace": [
+          {
+            "step": 7,
+            "window_items": 4,
+            "scores": [
+              5,
+              7
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126073417,
+            "update_ns": 1524625,
+            "two_read_ns": 64328250
+          },
+          {
+            "step": 8,
+            "window_items": 4,
+            "scores": [
+              6,
+              6
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 127327500,
+            "update_ns": 1598500,
+            "two_read_ns": 65872208
+          },
+          {
+            "step": 9,
+            "window_items": 4,
+            "scores": [
+              7,
+              5
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 127199250,
+            "update_ns": 1551500,
+            "two_read_ns": 64041541
+          },
+          {
+            "step": 10,
+            "window_items": 4,
+            "scores": [
+              5,
+              7
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126858666,
+            "update_ns": 1578042,
+            "two_read_ns": 64900667
+          },
+          {
+            "step": 11,
+            "window_items": 4,
+            "scores": [
+              6,
+              6
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126674291,
+            "update_ns": 1596458,
+            "two_read_ns": 67285875
+          },
+          {
+            "step": 12,
+            "window_items": 4,
+            "scores": [
+              7,
+              5
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126513000,
+            "update_ns": 1543584,
+            "two_read_ns": 64479875
+          }
+        ],
+        "checkpoint_bytes": 5140,
+        "projection_vectors": [
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            1
+          ]
+        ],
+        "integer_decode_interval": [
+          -16,
+          16
+        ]
+      }
+    },
+    {
+      "role": "public-only issuer",
+      "label": "right",
+      "phase": 0,
+      "stdout": {
+        "records": 6,
+        "bytes": 6144
+      }
+    },
+    {
+      "role": "fixed-key evaluator",
+      "label": "right",
+      "phase": 0,
+      "stdout": {
+        "trace": [
+          {
+            "step": 1,
+            "window_items": 1,
+            "scores": [
+              0,
+              2
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": false,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126275083,
+            "update_ns": 23292,
+            "two_read_ns": 64161625
+          },
+          {
+            "step": 2,
+            "window_items": 2,
+            "scores": [
+              2,
+              4
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": false,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126278500,
+            "update_ns": 76250,
+            "two_read_ns": 63948292
+          },
+          {
+            "step": 3,
+            "window_items": 3,
+            "scores": [
+              4,
+              4
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": false,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126100708,
+            "update_ns": 72750,
+            "two_read_ns": 63840708
+          },
+          {
+            "step": 4,
+            "window_items": 4,
+            "scores": [
+              5,
+              7
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": false,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126639958,
+            "update_ns": 73833,
+            "two_read_ns": 64062083
+          },
+          {
+            "step": 5,
+            "window_items": 4,
+            "scores": [
+              6,
+              6
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126757083,
+            "update_ns": 1625375,
+            "two_read_ns": 64041833
+          },
+          {
+            "step": 6,
+            "window_items": 4,
+            "scores": [
+              7,
+              5
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 130499500,
+            "update_ns": 1630125,
+            "two_read_ns": 65314083
+          }
+        ],
+        "checkpoint_bytes": 5140,
+        "projection_vectors": [
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            1
+          ]
+        ],
+        "integer_decode_interval": [
+          -16,
+          16
+        ]
+      }
+    },
+    {
+      "role": "public-only issuer",
+      "label": "right",
+      "phase": 1,
+      "stdout": {
+        "records": 6,
+        "bytes": 6144
+      }
+    },
+    {
+      "role": "fixed-key evaluator",
+      "label": "right",
+      "phase": 1,
+      "stdout": {
+        "trace": [
+          {
+            "step": 7,
+            "window_items": 4,
+            "scores": [
+              5,
+              7
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126349375,
+            "update_ns": 1511750,
+            "two_read_ns": 64445000
+          },
+          {
+            "step": 8,
+            "window_items": 4,
+            "scores": [
+              6,
+              6
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 127511125,
+            "update_ns": 1586583,
+            "two_read_ns": 63806417
+          },
+          {
+            "step": 9,
+            "window_items": 4,
+            "scores": [
+              7,
+              5
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 126720792,
+            "update_ns": 1625541,
+            "two_read_ns": 63833583
+          },
+          {
+            "step": 10,
+            "window_items": 4,
+            "scores": [
+              5,
+              7
+            ],
+            "class": 1,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 128512084,
+            "update_ns": 1573209,
+            "two_read_ns": 65077084
+          },
+          {
+            "step": 11,
+            "window_items": 4,
+            "scores": [
+              6,
+              6
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 132018584,
+            "update_ns": 1634292,
+            "two_read_ns": 66131875
+          },
+          {
+            "step": 12,
+            "window_items": 4,
+            "scores": [
+              7,
+              5
+            ],
+            "class": 0,
+            "expired_exact_old_ciphertext": true,
+            "aggregate_bytes_equal_current_queue_product": true,
+            "validation_ns": 132242750,
+            "update_ns": 1611291,
+            "two_read_ns": 65786167
+          }
+        ],
+        "checkpoint_bytes": 5140,
+        "projection_vectors": [
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            1
+          ]
+        ],
+        "integer_decode_interval": [
+          -16,
+          16
+        ]
+      }
+    }
+  ],
+  "environment": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O"
+  },
+  "source_manifest": {
+    "paper_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/017.pdf",
+    "paper_sha256": "353f454857a5ef421ab7b17545b9657f5d192dc0a37f022cca7b71e916f84712",
+    "paper_access": "Fig2 pp6-7; Constr3.1/Thm3.2 pp7-9 and generic-proof norm remark inspected",
+    "approved_control_sha256": "bc16cd4a834784b71c8e25f75716c53dd4d0c144948a2f23f8ccb816febc36c5",
+    "span_source_sha256": "a0ce6572e3e2f49d94aadc5e1182c9b4a9d5006e106a685a08d74a3bcff22290",
+    "audit_source_sha256": "2ad9807b7d54dc3e5b4899b734b63bc309c5a7e716e2b2142a7efde1c3bf6451"
+  },
+  "search_queries": 0
+}

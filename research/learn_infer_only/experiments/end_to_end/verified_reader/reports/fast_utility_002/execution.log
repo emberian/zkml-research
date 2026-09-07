@@ -1,0 +1,26 @@
+{"history": 0, "events_completed": 20, "verified_outputs": 0, "all_oracle_matches": true}
+{"history": 0, "events_completed": 40, "verified_outputs": 0, "all_oracle_matches": true}
+{"history": 0, "events_completed": 60, "verified_outputs": 0, "all_oracle_matches": true}
+{"history": 0, "events_completed": 80, "verified_outputs": 16, "all_oracle_matches": true}
+{"history": 0, "events_completed": 100, "verified_outputs": 16, "all_oracle_matches": true}
+{"history": 0, "events_completed": 120, "verified_outputs": 16, "all_oracle_matches": true}
+{"history": 0, "events_completed": 140, "verified_outputs": 16, "all_oracle_matches": true}
+{"history": 0, "events_completed": 160, "verified_outputs": 32, "all_oracle_matches": true}
+{"history": 0, "events_completed": 180, "verified_outputs": 32, "all_oracle_matches": true}
+{"history": 0, "events_completed": 200, "verified_outputs": 32, "all_oracle_matches": true}
+{"history": 0, "events_completed": 220, "verified_outputs": 32, "all_oracle_matches": true}
+{"history": 0, "events_completed": 240, "verified_outputs": 48, "all_oracle_matches": true}
+{"history": 1, "events_completed": 20, "verified_outputs": 0, "all_oracle_matches": true}
+{"history": 1, "events_completed": 40, "verified_outputs": 0, "all_oracle_matches": true}
+{"history": 1, "events_completed": 60, "verified_outputs": 0, "all_oracle_matches": true}
+{"history": 1, "events_completed": 80, "verified_outputs": 16, "all_oracle_matches": true}
+{"history": 1, "events_completed": 100, "verified_outputs": 16, "all_oracle_matches": true}
+{"history": 1, "events_completed": 120, "verified_outputs": 16, "all_oracle_matches": true}
+{"history": 1, "events_completed": 140, "verified_outputs": 16, "all_oracle_matches": true}
+{"history": 1, "events_completed": 160, "verified_outputs": 32, "all_oracle_matches": true}
+{"history": 1, "events_completed": 180, "verified_outputs": 32, "all_oracle_matches": true}
+{"history": 1, "events_completed": 200, "verified_outputs": 32, "all_oracle_matches": true}
+{"history": 1, "events_completed": 220, "verified_outputs": 32, "all_oracle_matches": true}
+{"history": 1, "events_completed": 240, "verified_outputs": 48, "all_oracle_matches": true}
+{"ok": true, "events": 480, "verified_outputs": 96, "all_oracle_matches": true, "report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/reports/fast_utility_002/report.json"}
+{"ok": true, "optimized_total_ns": 201345117583, "full_e2e_speedup_separate_runs": 3.3905271486684363, "fast_report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/reports/fast_utility_002/fast_report.json"}

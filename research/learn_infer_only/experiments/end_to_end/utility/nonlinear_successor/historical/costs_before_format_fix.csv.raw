@@ -1,0 +1,25 @@
+role,operation,quantity,unit_and_scope
+source_encoder,backbone,cached mean10 only; no forward in this study,0,executed forward calls
+issuer_or_public_query,center_embedding,576,scalar subtractions
+issuer_or_public_query,PCA_projection,4608,public-coefficient scalar products
+issuer_or_public_query,PCA_reduction,4600,scalar additions
+issuer_or_public_query,component_standardization,8,public divisions/scalings
+issuer_or_public_query,unique_degree2_products,36,source-feature products
+issuer_or_public_query,transformed_centering,44,scalar subtractions
+issuer_or_public_query,norm_scaling,45,public divisions/scalings
+issuer_or_public_query,round_and_clip,45,nearest-even rounding and clipping
+issuer_only,observed_label_multiply,45,scalar sign multiplications
+public_policy,selected_calibration_per_two_routes,10474,float64 coefficients; excludes serialization metadata
+public_policy,selected_calibration_payload,83792,bytes atfloat64; selected transform only
+resident,dimension_after_public_zero_padding,577,coordinates; unchanged contract
+resident,route_capacity,32,original contributions per route
+resident,universal_abs_score_bound,297805856,integer; unchanged signed range
+measurement,PCA_fit_wall,0.02304437500424683,seconds for2route SVDs
+measurement,PCA_fit_CPU,0.009848999999999997,process CPUseconds
+measurement,PCA_fit_highwater_RSS,55361536,"bytes; whole process, not incremental"
+measurement,quadratic8_encode_wall,0.0007663750147912651,seconds for384 cached vectors
+measurement,quadratic8_encode_CPU,0.0007669999999999899,process CPUseconds
+measurement,quadratic8_encode_highwater_RSS,55754752,"bytes; whole process, not incremental"
+measurement,full_evaluation_wall,5.441266166017158,seconds includes independent integer audits
+measurement,full_evaluation_CPU,1.6910120000000002,process CPUseconds
+measurement,full_evaluation_highwater_RSS,47366144,"bytes; whole process, not incremental"
