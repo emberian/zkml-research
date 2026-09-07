@@ -1,0 +1,130 @@
+{
+  "schema": "independent-public-bfv-arithmetic-v1",
+  "ok": true,
+  "suite": "utility_002_dense_h0_e0065",
+  "fixture_manifest_file": "utility-fixtures.json",
+  "scope": "Sampled public BFV operation and serialized-byte correspondence; no secret keys, private ingress vectors, decryption, adversarial extraction/routing tests, production arithmetic calls or universal Rust/compiler/noise refinement",
+  "degree": 4096,
+  "ciphertext_moduli": [
+    2199023190017,
+    4398046486529
+  ],
+  "query_width": 577,
+  "events": [
+    {
+      "event_id": "utility-h0-e0065",
+      "kind": "Infer",
+      "expiry": false,
+      "coefficients_checked": 16384,
+      "all_coefficients_match": true,
+      "all_85103_bytes_match": true,
+      "result_sha256": "6f2ba933af20935a2a56db2183704f7bf75a250d6e215867e53b6fbb1e480eff",
+      "elapsed_seconds": 7.385571041988442,
+      "independent_ntt_seconds": 0.5805851249897387,
+      "public_query_support": {
+        "width": 577,
+        "positive": 270,
+        "negative": 269,
+        "zero": 38,
+        "first_coefficient": 7,
+        "last_coefficient": 8
+      }
+    }
+  ],
+  "learns": 0,
+  "expiries": 0,
+  "infers": 1,
+  "ciphertext_objects_decoded_and_reencoded": 2,
+  "public_queries_decoded": 1,
+  "total_output_coefficients_checked": 16384,
+  "total_output_bytes_checked": 85103,
+  "small_transform_basis_checks": [
+    {
+      "degree": 8,
+      "modulus": 97,
+      "independent_primitive_root": 8,
+      "basis_vectors_checked": 16,
+      "two_roots_product_and_inverse_match": true
+    },
+    {
+      "degree": 16,
+      "modulus": 193,
+      "independent_primitive_root": 185,
+      "basis_vectors_checked": 32,
+      "two_roots_product_and_inverse_match": true
+    },
+    {
+      "degree": 32,
+      "modulus": 257,
+      "independent_primitive_root": 81,
+      "basis_vectors_checked": 64,
+      "two_roots_product_and_inverse_match": true
+    }
+  ],
+  "full_source_indexed_equation_checks": [
+    {
+      "event_id": "utility-h0-e0065",
+      "component": 0,
+      "limb": 0,
+      "modulus": 2199023190017,
+      "independent_root": 707897838669,
+      "source_odd_root_ordering": true,
+      "source_equation_inverse": true,
+      "source_equation_product_matches_direct": true
+    },
+    {
+      "event_id": "utility-h0-e0065",
+      "component": 0,
+      "limb": 1,
+      "modulus": 4398046486529,
+      "independent_root": 3119419343111,
+      "source_odd_root_ordering": true,
+      "source_equation_inverse": true,
+      "source_equation_product_matches_direct": true
+    },
+    {
+      "event_id": "utility-h0-e0065",
+      "component": 1,
+      "limb": 0,
+      "modulus": 2199023190017,
+      "independent_root": 707897838669,
+      "source_odd_root_ordering": true,
+      "source_equation_inverse": true,
+      "source_equation_product_matches_direct": true
+    },
+    {
+      "event_id": "utility-h0-e0065",
+      "component": 1,
+      "limb": 1,
+      "modulus": 4398046486529,
+      "independent_root": 3119419343111,
+      "source_odd_root_ordering": true,
+      "source_equation_inverse": true,
+      "source_equation_product_matches_direct": true
+    }
+  ],
+  "prime_and_root_checks": [
+    {
+      "modulus": 2199023190017,
+      "odd_trial_divisors_checked": 741454,
+      "trial_division_through_integer_sqrt": true,
+      "independent_primitive_8192_root": 707897838669,
+      "root_power_4096": 2199023190016,
+      "root_power_8192": 1
+    },
+    {
+      "modulus": 4398046486529,
+      "odd_trial_divisors_checked": 1048575,
+      "trial_division_through_integer_sqrt": true,
+      "independent_primitive_8192_root": 3119419343111,
+      "root_power_4096": 4398046486528,
+      "root_power_8192": 1
+    }
+  ],
+  "fixture_manifest_sha256": "d8e437803ad590686f309306a24afa656d4898f70ca32bba4bc65e10dc4a88a0",
+  "reference_source_sha256": "304538f5114d990cd3ba7ab11a05081ef05a42ac196cdab4925a1a39cd7e2522",
+  "checker_source_sha256": "59df4e76988148c010aa342c0c1a5f0c335b9002225065446142d14ad70178d3",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "elapsed_seconds": 8.818193208018783
+}

@@ -1,0 +1,86 @@
+{
+  "passed": true,
+  "all_prediction_records": 122880,
+  "all_final_prediction_records": 40960,
+  "primary_independent_python_integer_scores": 24576,
+  "primary_independent_checkpoint_vectors": 384,
+  "primary_max_abs_score_observed": 185931,
+  "correct_counts_by_phase": {
+    "attribute8": {
+      "phase1": 6144,
+      "phase2": 8192,
+      "phase3": 8192
+    },
+    "calibrated_hard8": {
+      "phase1": 4096,
+      "phase2": 4288,
+      "phase3": 4288
+    },
+    "calibrated_soft8": {
+      "phase1": 4083,
+      "phase2": 4457,
+      "phase3": 4468
+    },
+    "original577": {
+      "phase1": 4138,
+      "phase2": 4843,
+      "phase3": 4820
+    },
+    "quadratic8": {
+      "phase1": 4146,
+      "phase2": 4319,
+      "phase3": 4319
+    }
+  },
+  "paired_counts": {
+    "calibrated_soft8": {
+      "original577": {
+        "net_additional_final_correct": -352,
+        "paired_histories": 64
+      },
+      "quadratic8": {
+        "net_additional_final_correct": 149,
+        "paired_histories": 64
+      }
+    },
+    "calibrated_hard8": {
+      "original577": {
+        "net_additional_final_correct": -532,
+        "paired_histories": 64
+      },
+      "quadratic8": {
+        "net_additional_final_correct": -31,
+        "paired_histories": 64
+      }
+    }
+  },
+  "state_and_output_retention_equalities": 640,
+  "four_model_derived_feature_arrays_rebuilt_without_gold_attribute_arguments": true,
+  "attribute_accuracy_by_all_route_template_cells": {
+    "route0_template0": {
+      "texts": 32,
+      "attribute_a_correct": 16,
+      "attribute_b_correct": 16
+    },
+    "route0_template1": {
+      "texts": 32,
+      "attribute_a_correct": 16,
+      "attribute_b_correct": 16
+    },
+    "route1_template0": {
+      "texts": 32,
+      "attribute_a_correct": 18,
+      "attribute_b_correct": 16
+    },
+    "route1_template1": {
+      "texts": 32,
+      "attribute_a_correct": 16,
+      "attribute_b_correct": 24
+    }
+  },
+  "sha256": {
+    "audit.py": "652134b57d65cf264601de1776e4554eed5ed95ee3f1d56dc150d477b8d5ddad",
+    "results.json": "5fbaacbb35466c675eaef3c68ee34381edf4e12ef2007b47bcdaa2f889b96948"
+  },
+  "wall_seconds": 0.16463674997794442
+}

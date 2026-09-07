@@ -1,0 +1,254 @@
+{
+  "schema": "independent-public-arithmetic-source-map-v1",
+  "sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/src/main.rs",
+      "sha256": "22f0cbe304772263094c228f6598eb4cbfa00432902ba9e5de0993f6735e1b7c",
+      "line_ranges": [
+        [
+          15,
+          37
+        ],
+        [
+          75,
+          132
+        ],
+        [
+          220,
+          254
+        ]
+      ],
+      "claim": "[SOURCE: implementation] Fixed parameters, canonical full-CT wrapper and public Learn/Infer commands"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/Cargo.toml",
+      "sha256": "5603bde5054c9a5dddde0056293501c662313c6a8e42d143341c663e4131c538",
+      "line_ranges": [
+        [
+          1,
+          20
+        ]
+      ],
+      "claim": "[SOURCE: dependency selection] Path dependency and no optional TFHE NTT feature"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/Cargo.lock",
+      "sha256": "fe9f7c3847b3361b4df5953e02f1754372c46f3823f8ef4b3e3a431f1081ea33",
+      "line_ranges": [],
+      "claim": "[SOURCE: dependency versions] Frozen resolved crate graph"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/params.json",
+      "sha256": "577a384bacf95e85fd19dc893d969d70d05b440323a0f06bd4ed3e852de6f2d4",
+      "line_ranges": [],
+      "claim": "[SOURCE: retained metadata] Parameter identity used by captured execution"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/proto/bfv.proto",
+      "sha256": "66c88bf6a34f8a27a215c841cfc5a0bea7c913654d1b4e84b30745eff6c4de9e",
+      "line_ranges": [
+        [
+          1,
+          9
+        ]
+      ],
+      "claim": "[SOURCE: schema] Repeated ciphertext polynomial bytes; absent seed and zero level"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ciphertext.rs",
+      "sha256": "236b1b3f42d96c1ec1f0a66e4abe215b29ba9c8e6096fd9bf963b81e5fba8d85",
+      "line_ranges": [
+        [
+          167,
+          223
+        ]
+      ],
+      "claim": "[SOURCE: implementation] Full ciphertext protobuf encoding and polynomial decoder"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/ops/mod.rs",
+      "sha256": "99d4777b6ed571ddd497572b196aa748b7875374d81395b35e868080065e73ad",
+      "line_ranges": [
+        [
+          54,
+          69
+        ],
+        [
+          149,
+          164
+        ],
+        [
+          229,
+          255
+        ]
+      ],
+      "claim": "[SOURCE: implementation] Componentwise add/sub and unscaled ciphertext-plaintext polynomial product"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/plaintext_vec.rs",
+      "sha256": "50bf227ec96093b88e34055c0115483052daa5f0ebc17a24e32483a3ea8005c8",
+      "line_ranges": [
+        [
+          93,
+          139
+        ]
+      ],
+      "claim": "[SOURCE: implementation] Polynomial encoding copies query prefix and zero-pads; converts to NTT"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/fhe-dregg/src/bfv/plaintext.rs",
+      "sha256": "abc6d4930295aed0fe91d58be85c79c46b4261d90fb0a02897ed002935de50b8",
+      "line_ranges": [
+        [
+          153,
+          166
+        ]
+      ],
+      "claim": "[SOURCE: implementation] UInt plaintext encoder delegates to PlaintextVec"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/proto/rq.proto",
+      "sha256": "2888433831ced39dc4eefe82d906440b84298355b96b2c78a7b5eaaab4c8eddf",
+      "line_ranges": [
+        [
+          1,
+          17
+        ]
+      ],
+      "claim": "[SOURCE: schema] NTT tag=2; degree, coefficient bytes, variable-time flag"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/convert.rs",
+      "sha256": "d1f828ee3e233c644734a01ad7df6286765600fd54a94f888191dc3b6d27d8ac",
+      "line_ranges": [
+        [
+          15,
+          47
+        ],
+        [
+          151,
+          210
+        ]
+      ],
+      "claim": "[SOURCE: implementation] Serialized coefficients are power basis regardless of representation tag; inverse then forward on roundtrip"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/ops.rs",
+      "sha256": "909562e519eba1cddd77f0d1d1e75a4ea2634f06527f8980854a43fbef6115a3",
+      "line_ranges": [
+        [
+          112,
+          163
+        ]
+      ],
+      "claim": "[SOURCE: implementation] NTT polynomial multiplication is per-limb pointwise modular multiplication"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/rq/mod.rs",
+      "sha256": "e57c981bd82f8834ddac280f6d2aaaf8d93e95f2970d70815cd17f18e1731543",
+      "line_ranges": [
+        [
+          161,
+          208
+        ],
+        [
+          303,
+          323
+        ]
+      ],
+      "claim": "[SOURCE: implementation] Representation switch and variable-time/public transform dispatch"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/zq/mod.rs",
+      "sha256": "12d082a17076f9f1b46a642958df1fc0ecef3b8b2c5c51e714735ebee938e7b3",
+      "line_ranges": [
+        [
+          747,
+          770
+        ]
+      ],
+      "claim": "[SOURCE: implementation] Coefficient packing width is bit_length(q-1)"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-util-0.1.1/src/lib.rs",
+      "sha256": "688eea292be729ee75b682678b6a9a4ddb9c18ff8e4b757eeabe1aff434cf173",
+      "line_ranges": [
+        [
+          58,
+          125
+        ]
+      ],
+      "claim": "[SOURCE: implementation] Contiguous little-endian bitstream transcode"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/ntt/mod.rs",
+      "sha256": "2321dfc59ce165a36216b0e63f9db168e32a69033d963e6e1b9ac9a0c5f9f8a5",
+      "line_ranges": [
+        [
+          5,
+          15
+        ]
+      ],
+      "claim": "[SOURCE: backend selection] Native NTT when optional TFHE features absent"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fhe-math-0.1.1/src/ntt/native.rs",
+      "sha256": "9f15a4725d2e1ce5500b6ab603ab68d92e3252cda2a948629b733af88acf30d4",
+      "line_ranges": [
+        [
+          28,
+          64
+        ],
+        [
+          67,
+          124
+        ],
+        [
+          126,
+          232
+        ],
+        [
+          244,
+          311
+        ],
+        [
+          314,
+          347
+        ]
+      ],
+      "claim": "[SOURCE: implementation] Bit-reversed root tables, butterfly schedules, inverse scale, deterministic primitive-root selection"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/target/release/.fingerprint/fhe-math-6bfde6bc930a05a6/lib-fhe_math.json",
+      "sha256": "2c30a61276bbec760958d21168bd26afbb4cdf056cf36984aafd592854e94cd2",
+      "line_ranges": [],
+      "claim": "[SOURCE: local build metadata] Actual retained dependency feature list is empty; native backend selected"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/benchmark.py",
+      "sha256": "ff44cc218e345bc83af498f295532b2bdcbc07bb816a86aaccbf251f50dbffee",
+      "line_ranges": [
+        [
+          173,
+          201
+        ]
+      ],
+      "claim": "[SOURCE: fixture construction] Explicit public deterministic synthetic vectors/queries; 40 Learns, four Infers, window32"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/source_pins.json",
+      "sha256": "71e19df2f8735aeec17175048bf341537e67e770520162dceb0a800c9956c805",
+      "line_ranges": [],
+      "claim": "[SOURCE: retained provenance] Source and binary hashes for captured original run"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto",
+      "sha256": "9c79c02e7d919ecdc24851c6f77e50ed6990397bd669f571a886f8e2b85058c2",
+      "line_ranges": [],
+      "claim": "[SOURCE: executable identity only] Historical copied binary is rehashed, never executed here"
+    }
+  ],
+  "source_and_captured_binary_pins_match": true,
+  "search_queries": 0,
+  "scope": "Read-only local source inspection and hashes, not Rust execution semantics or a source-to-binary proof"
+}

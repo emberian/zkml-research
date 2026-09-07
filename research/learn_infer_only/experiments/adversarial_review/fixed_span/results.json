@@ -1,0 +1,116 @@
+{
+  "classification": "EXECUTED independent positive fixed-span proof review",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/review.py"
+  ],
+  "python": "3.14.7",
+  "script_sha256": "7a435ed798bb6b10040d9233d5e3e2aba4ddcaaaebea2b6c78144e803bf2753f",
+  "algebra": {
+    "setup_bijection_cases": 495,
+    "kernel_equivalence_cases": 495,
+    "real_DDH_embedding_identities": 3107,
+    "conditioned_uniform_C_multiset_equalities": 20175,
+    "scope": "exact finite public group algebra; no hardness claim"
+  },
+  "adaptive_hybrid": {
+    "field_order": 3,
+    "max_queries_T": 3,
+    "padded_ranks_M": 4,
+    "hybrid_acceptance_probabilities": [
+      "370/729",
+      "112/243",
+      "341/729",
+      "380/729"
+    ],
+    "DDH_real_acceptance": "1453/2916",
+    "DDH_independent_acceptance": "1/2",
+    "signed_telescoping_identity": true,
+    "absolute_endpoint_gap": "10/729",
+    "dummy_or_unreached_cases": [
+      7290,
+      21870
+    ],
+    "strategy": "admissible pairs depend on public setup and actual prior ciphertexts; public early stop",
+    "scope": "finite verification of reduction identity, not finite-group security"
+  },
+  "positive_reference_replay": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/reference/fixed_span/audit.py"
+    ],
+    "returncode": 0,
+    "source_copies_byte_identical": true,
+    "matched_result_fields": [
+      "status",
+      "bounded_input_states",
+      "observable_classes",
+      "ordered_equivalence_checks",
+      "equivalent_ordered_pairs_including_diagonal",
+      "expected_visible_trace_both_histories",
+      "actual_fixed_projection_outputs_compared",
+      "exact_queue_product_checks",
+      "normal_checkpoint_continuations",
+      "exact_old_ciphertext_expirations",
+      "ciphertext_traffic_both_histories_bytes",
+      "framed_checkpoint_bytes"
+    ],
+    "approved_positive_audit_replayed": true,
+    "old_additive_main_called": false,
+    "timings": "new local measurements are retained but not compared as deterministic facts"
+  },
+  "input_hashes_before": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/ADAPTIVE_FIXED_SPAN.md",
+      "sha256": "091403d6f3e1a7a65e5baef3977dc789595584582d17bbbf2190878fa18874d9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "sha256": "a0ce6572e3e2f49d94aadc5e1182c9b4a9d5006e106a685a08d74a3bcff22290"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/audit.py",
+      "sha256": "2ad9807b7d54dc3e5b4899b734b63bc309c5a7e716e2b2142a7efde1c3bf6451"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/README.md",
+      "sha256": "47c60190dbbce2409fec16939865bc2e81ef1c850f4f0fa856e4eb6d8ff550f7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/results/results.json",
+      "sha256": "9d806a91afb05de2eeceb04f18193654af60533fd03558998fcffc59a4914687"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/results/public.bin",
+      "sha256": "4af70be5aa5d5c1f4f34966706d57bebadadcc53a640477fa041417144cfd103"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/results/projection_keys.bin",
+      "sha256": "b5149ec89df32de0f8640f806b1f0d3c41c09eca162e6a0e85f866669d1102a0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/results/synthetic_final.window",
+      "sha256": "d39548a58eb6fc2999a24a0256f91a3bd595020ed89212f6748e106b89aa39bd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/additive_ipfe.py",
+      "sha256": "bc16cd4a834784b71c8e25f75716c53dd4d0c144948a2f23f8ccb816febc36c5"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/017.pdf",
+      "sha256": "353f454857a5ef421ab7b17545b9657f5d192dc0a37f022cca7b71e916f84712"
+    }
+  ],
+  "fresh_local_extract_sha256": "2f15d7761a28d7337214d6f7b30d2029017cf62767981fa87c0aa0e41c1094c6",
+  "input_hashes_after_equal_before": true,
+  "accounting": {
+    "Scry_queries": 0,
+    "Kagi_queries": 0,
+    "web_queries": 0,
+    "PDF_downloads": 0,
+    "local_PDF_extractions": 1,
+    "recovery_or_extraction_experiments": 0
+  }
+}

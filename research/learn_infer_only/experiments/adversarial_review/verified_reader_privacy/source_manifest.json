@@ -1,0 +1,55 @@
+{
+  "recorded_utc": "2026-09-07T03:16:34.633933+00:00",
+  "review_type": "read-only source and mathematical argument review",
+  "sources": {
+    "end_to_end/verified_reader/PRIVACY_ARGUMENT.md": {
+      "sha256": "cbda02868ad5381cc1741712707c3ccdc5b6c071433e6e9a1b8e3b7b1460ce99",
+      "bytes": 8236
+    },
+    "end_to_end/verified_reader/service.py": {
+      "sha256": "f0e79c2a33baa32e2867d467735dafd29b26c480deb1f688289e7468bd2de01b",
+      "bytes": 9676
+    },
+    "end_to_end/verified_reader/README.md": {
+      "sha256": "b8cea156f909e4ac65bcdab9b48c3a2d5d4ac6f5f91d7cbe4e9df63fb0391f57",
+      "bytes": 2666
+    },
+    "end_to_end/verified_reader/reports/run_004/report.json": {
+      "sha256": "5d8537f4b09813735ed400428f01f392812a2c15cae2e3f4821e3b76ae76950a",
+      "bytes": 11021
+    },
+    "end_to_end/journal/common.py": {
+      "sha256": "32afcec1c2db4a6e1ccf9eb475ad22780a0f0d4deceb18c39e66246b5a1b6b1e",
+      "bytes": 8294
+    },
+    "end_to_end/journal/model.py": {
+      "sha256": "bcbac3baac92aaeacf2fdbbf174dd0d1c57c9e0fffed93b9d7307f2b96da28eb",
+      "bytes": 4324
+    },
+    "end_to_end/journal/roles.py": {
+      "sha256": "a42bf9dc15320587e60a47332556dddc2d345eed7099c8f573f13f8697d3b2f0",
+      "bytes": 6123
+    },
+    "end_to_end/journal/reader.py": {
+      "sha256": "d39c3538d8c0e660539d4e776627926449fec5fb1fc1c866853643d47ce76c9a",
+      "bytes": 5446
+    },
+    "end_to_end/crypto/src/main.rs": {
+      "sha256": "22f0cbe304772263094c228f6598eb4cbfa00432902ba9e5de0993f6735e1b7c",
+      "bytes": 19018
+    },
+    "end_to_end/PRIVACY_SCOPE.md": {
+      "sha256": "e6c8af45523757d558afcbe2392d372cd815eff38dec2ea70f870a768e72223e",
+      "bytes": 7547
+    }
+  },
+  "new_runtime_experiments": false,
+  "new_adversarial_routing_or_extraction_experiments": false,
+  "stopped_task_resumed": false,
+  "metered_queries": 0,
+  "companion_writes": false,
+  "review_file": "REVIEW.md",
+  "review_sha256": "478c4e1245a8f887a61c3ada396a09ceeb4583b27961f4f7c8681645247c79f2",
+  "reviewed_note_copy_sha256": "cbda02868ad5381cc1741712707c3ccdc5b6c071433e6e9a1b8e3b7b1460ce99",
+  "reviewed_core_unchanged_at_completion": true
+}

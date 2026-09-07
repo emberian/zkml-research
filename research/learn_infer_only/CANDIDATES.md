@@ -6,6 +6,21 @@ exist here; no artifact joins them into the full authenticated-ingress,
 restricted-release, no-master-read, PQ resident. DECISION.md gives the current
 comparison; the route-specific historical derivations below retain their scope.
 
+[EXECUTED / DERIVED second run] Benchmark R now joins actual BFV learning,
+durable history and independently verified release over the complete fixed
+384 Learn/96 Infer workload. All 96 integer outputs match; the full key remains
+at the reader. The optimized normal run takes 201.345 seconds. Separately,
+the fixed-span DDH control runs actual encrypted continuation after no-export
+master setup, under explicit honest erasure. It exposes both fixed projections
+on every input and retained snapshot. Its adaptive specialization passed bounded
+independent review; the 577-coordinate/16-query scaling experiment is separate.
+See [the main demo](experiments/end_to_end/README.md) and
+[fixed-span scope](experiments/private_construction/fixed_span/README.md).
+
+[DERIVED decision] Keep those results separate: a verified full-key reader
+provides stronger history/recipient mediation, while exposed fixed FE keys permit
+local reads and forks. Their conjunction is not supplied by either experiment.
+
 ## Route 1: pre-constrained encryption
 
 [SOURCE: construction read] The local `2024/1294.pdf`, printed pp.15–16, fixes the

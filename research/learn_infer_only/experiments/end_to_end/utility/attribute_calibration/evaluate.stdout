@@ -1,0 +1,106 @@
+{
+  "execution_passed": true,
+  "useful_successor": false,
+  "acceptance": {
+    "final_at_least_75pct": false,
+    "paired_gain_at_least_10pp": false,
+    "descriptive_lower_endpoint_positive": false,
+    "nonlinear_gain_at_least_10pp": false,
+    "simple_regression_at_most_5pp": false,
+    "untouched_route_state_and_output_retention_exact": true
+  },
+  "teacher_attribute_bits": 256,
+  "selection_attribute_bits": 256,
+  "test_attribute_report": {
+    "head_accuracy": {
+      "route0_attribute0": 0.5,
+      "route0_attribute1": 0.5,
+      "route1_attribute0": 0.53125,
+      "route1_attribute1": 0.625
+    },
+    "mean_accuracy": 0.5390625,
+    "mse_clipped": 0.3173013330245335,
+    "joint_attribute_accuracy": 0.265625
+  },
+  "paired_final": {
+    "calibrated_soft8": {
+      "original577": {
+        "mean": -0.04296875,
+        "n_histories": 64,
+        "sd": 0.07673616722327906,
+        "normal95_half_width": 0.01880036096970337,
+        "min": -0.2109375,
+        "max": 0.109375
+      },
+      "quadratic8": {
+        "mean": 0.0181884765625,
+        "n_histories": 64,
+        "sd": 0.06846326342653662,
+        "normal95_half_width": 0.016773499539501472,
+        "min": -0.109375,
+        "max": 0.1953125
+      }
+    },
+    "calibrated_hard8": {
+      "original577": {
+        "mean": -0.06494140625,
+        "n_histories": 64,
+        "sd": 0.0447578040257267,
+        "normal95_half_width": 0.01096566198630304,
+        "min": -0.1640625,
+        "max": 0.015625
+      },
+      "quadratic8": {
+        "mean": -0.0037841796875,
+        "n_histories": 64,
+        "sd": 0.05217611132945068,
+        "normal95_half_width": 0.012783147275715416,
+        "min": -0.109375,
+        "max": 0.1015625
+      }
+    }
+  },
+  "nonlinear_gain": 0.013569078947368418,
+  "simple_gain": -0.06684027777777779,
+  "denominators": {
+    "histories": 64,
+    "unique_new_texts": 128,
+    "checkpoints": 3,
+    "methods": 5,
+    "predictions": 122880,
+    "final_predictions_per_method": 8192,
+    "zero_reset_accuracy": 0.5
+  },
+  "exact_checks": {
+    "baseline_and_quadratic_teacher_selection_coordinates": 295424,
+    "primary_python_integer_checkpoint_vectors": 384,
+    "primary_python_integer_final_scores": 8192,
+    "untouched_route_state_and_output_equalities": 640
+  },
+  "selection_sha256": "e18b88d93a12f70d8d48d3d3051f23c50efa50f4520d7c0d71f50eefd64debd6",
+  "freeze_sha256": "3da0345f2745792683bb30ff9b8ab0cbd1c014f44e46800190533f82b4b7d0af",
+  "extraction_sha256": "529af7c3cf6df5d137dda9a998d79be22594fa0e7fd3d59b0b73c7cf2b5a317f",
+  "features_sha256": "fb967cc9b65dacc14c99de9a422a1932f0f50169ae58c2b5738eea3f84f87fe3",
+  "encoding_cost": {
+    "original577": {
+      "wall_seconds": 0.00271333398995921,
+      "cpu_seconds": 0.0023040000000000005,
+      "process_high_water_rss_bytes_macos": 49266688
+    },
+    "calibration_soft_and_hard": {
+      "wall_seconds": 0.0013102499942760915,
+      "cpu_seconds": 0.0012510000000000021,
+      "process_high_water_rss_bytes_macos": 49709056
+    },
+    "quadratic8": {
+      "wall_seconds": 0.002147249993868172,
+      "cpu_seconds": 0.002129999999999993,
+      "process_high_water_rss_bytes_macos": 51281920
+    }
+  },
+  "evaluation_cost": {
+    "wall_seconds": 2.6928456670138985,
+    "cpu_seconds": 1.50185,
+    "process_high_water_rss_bytes_macos": 57540608
+  }
+}

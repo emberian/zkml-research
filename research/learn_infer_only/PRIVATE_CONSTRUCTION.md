@@ -1,5 +1,30 @@
 # Restricted private continuation: positive controls and their limits
 
+[EXECUTED / DERIVED successor, 2026-09-07] The actual DDH fixed-span control now
+has a complete encrypted W4 window and process checkpoint continuation: two
+12-input histories, 48 fixed projections and 16 expiries pass. All three input
+coordinates participate in the two query vectors; a nonzero common kernel gives
+bounded nonidentical admissible inputs. The initializer exports only the public
+key and two fixed projection keys, under assumed private setup and honest erasure.
+The host may read every input's whole fixed span and keep every snapshot; there
+is no recipient or finality gate. [The exact scope](experiments/private_construction/fixed_span/README.md)
+also states that the same observable functionality can be implemented with
+plaintext projected statistics. This is encrypted representation privacy, not
+demonstrated private cognition from the hidden kernel.
+
+[DERIVED reviewed proof] A direct adaptive fixed-span DDH specialization passed
+independent review with explicit common rejection, unvisited-rank handling and
+scalar-sampling conventions. The paper itself supplies a selective theorem.
+The separate general fixed-span proof and 577-coordinate/16-query useful-fixture
+experiment are in progress; no completed large run is claimed here yet.
+
+[EXECUTED finite abstraction] The finite mistake-driven learner additionally
+has an exact compact public quotient: an 87-byte resident with exhaustive
+equivalence/transition controls. It removes the generic catalog cost for this
+restricted learner by discarding distinctions outside its finite interface.
+See [COMPACT.md](experiments/private_construction/practical_bounded/COMPACT.md).
+The earlier tree construction below remains a historical alternative.
+
 [DERIVED; 2026-09-06] A fixed transition does not need general
 iO merely to accept new observations or to continue twice. A finite response-tree
 compilation below realizes a much smaller target after honest initialization:

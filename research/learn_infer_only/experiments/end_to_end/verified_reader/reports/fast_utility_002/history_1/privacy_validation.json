@@ -1,0 +1,1 @@
+{"baseline_reader_decryptions":0,"full_secret_files_scanned":4,"ok":true,"reader_outputs_omitted":true,"scope":"Previously public fixture; log/argv and full-key omission audit, not OS isolation or information-flow proof."}

@@ -1,0 +1,79 @@
+{
+  "completed": true,
+  "direct_web_page_fetches": 4,
+  "files": {
+    "REPORT.md": {
+      "bytes": 8832,
+      "sha256": "8e2e4fa341c3129f2b8e6378e5036be94373229a14fc30647320213f79ed6b5c"
+    },
+    "SOURCES.md": {
+      "bytes": 2596,
+      "sha256": "ebdcff1f337c37f1d039e8d8a703d2d68d733d4b52ed48e64ba2197b35efb0e2"
+    },
+    "cache_inventory.json": {
+      "bytes": 27111,
+      "sha256": "d48bbe51075a5030324365006dff3d7ab85b5bf492fc5be41c6d8a4375dc1089"
+    },
+    "candidates.json": {
+      "bytes": 14366,
+      "sha256": "e3e6bd29b9f6b3090c5aaef3aa90c1779681b83df7b7201827d7501cf50ef6e1"
+    },
+    "cost_estimates.json": {
+      "bytes": 2498,
+      "sha256": "fa0390a0238e34332ca2c8207a1ac965d95d6b60e563c782c556d99ac8a05d1b"
+    },
+    "derive.py": {
+      "bytes": 2582,
+      "sha256": "c1ff6336250228061dbff2507a0e719d1600874a86b274afa7415c47b2758dcf"
+    },
+    "failure_diagnostic.json": {
+      "bytes": 2180,
+      "sha256": "c1795ede51313157700d5d62cf8b2cbbfecf738734637bd1397cb81ff98bc2e7"
+    },
+    "inspect_cache.py": {
+      "bytes": 3483,
+      "sha256": "eea3577704297a1e509801ba7b24ee1b3058cad22580024d10c650ca135fe3e4"
+    },
+    "inspection.command.json": {
+      "bytes": 195,
+      "sha256": "e4e7024041fe027b63dda056c0d30b655da3a8c72b7b70f61490f07a11d0635b"
+    },
+    "inspection.json": {
+      "bytes": 473,
+      "sha256": "3dd03632111d26bfb43cc57814c036f15f1d29dc6a7d3eeb5d0154139d1910f9"
+    },
+    "inspection.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "inspection.stdout": {
+      "bytes": 3023,
+      "sha256": "7100702ad569455455e6e09fc4d848a136c71c3f37d152e0cebbfd39c798196b"
+    },
+    "runtime.command.json": {
+      "bytes": 260,
+      "sha256": "e88378314e2e306e5dca642b37b5def03584e90a85262800b63444a8f1e199c0"
+    },
+    "runtime.json": {
+      "bytes": 1675,
+      "sha256": "655591e132b3d82ff3f5d2fa71d80ff91f7d648c0fd50d6c27e8ff5cd303a049"
+    },
+    "runtime.stderr": {
+      "bytes": 444,
+      "sha256": "913e1ae6184845409419113fa5d1888d18483e1dfcc58ea90c4951f9e5e32388"
+    },
+    "runtime.stdout": {
+      "bytes": 1675,
+      "sha256": "b234c4e0dca3f2ec71efa9eb7ce8ee7864481f472ade3a8ee4e4e17f1d6db191"
+    },
+    "runtime_check.py": {
+      "bytes": 1822,
+      "sha256": "1a9e9124f5a200bdbb8334dba0c2e028e75b1d8ddf94b00d3b857fbdfd0781ad"
+    }
+  },
+  "loaded_weight_tensors": false,
+  "metered_kagi_queries": 0,
+  "metered_scry_queries": 0,
+  "model_forwards": 0,
+  "recommended_candidate": "intfloat/e5-base-v2"
+}

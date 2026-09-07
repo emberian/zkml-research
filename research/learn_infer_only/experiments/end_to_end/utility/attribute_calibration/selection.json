@@ -1,0 +1,135 @@
+{
+  "chosen_lambda": 0.01,
+  "cost": {
+    "cpu_seconds": 0.019853999999999983,
+    "process_high_water_rss_bytes_macos": 46972928,
+    "wall_seconds": 0.07391695899423212
+  },
+  "freeze_sha256": "3da0345f2745792683bb30ff9b8ab0cbd1c014f44e46800190533f82b4b7d0af",
+  "frozen_before_test_extraction": true,
+  "grid": {
+    "0.0001": {
+      "selection": {
+        "head_accuracy": {
+          "route0_attribute0": 0.484375,
+          "route0_attribute1": 0.59375,
+          "route1_attribute0": 0.515625,
+          "route1_attribute1": 0.6875
+        },
+        "joint_attribute_accuracy": 0.328125,
+        "mean_accuracy": 0.5703125,
+        "mse_clipped": 0.273118114087363
+      },
+      "teacher": {
+        "head_accuracy": {
+          "route0_attribute0": 1.0,
+          "route0_attribute1": 1.0,
+          "route1_attribute0": 1.0,
+          "route1_attribute1": 1.0
+        },
+        "joint_attribute_accuracy": 1.0,
+        "mean_accuracy": 1.0,
+        "mse_clipped": 1.7361157918539756e-06
+      }
+    },
+    "0.001": {
+      "selection": {
+        "head_accuracy": {
+          "route0_attribute0": 0.46875,
+          "route0_attribute1": 0.546875,
+          "route1_attribute0": 0.5,
+          "route1_attribute1": 0.71875
+        },
+        "joint_attribute_accuracy": 0.3125,
+        "mean_accuracy": 0.55859375,
+        "mse_clipped": 0.25248410270424415
+      },
+      "teacher": {
+        "head_accuracy": {
+          "route0_attribute0": 1.0,
+          "route0_attribute1": 1.0,
+          "route1_attribute0": 1.0,
+          "route1_attribute1": 1.0
+        },
+        "joint_attribute_accuracy": 1.0,
+        "mean_accuracy": 1.0,
+        "mse_clipped": 2.1543919534627722e-05
+      }
+    },
+    "0.01": {
+      "selection": {
+        "head_accuracy": {
+          "route0_attribute0": 0.484375,
+          "route0_attribute1": 0.5,
+          "route1_attribute0": 0.5,
+          "route1_attribute1": 0.890625
+        },
+        "joint_attribute_accuracy": 0.3515625,
+        "mean_accuracy": 0.59375,
+        "mse_clipped": 0.23639674209933415
+      },
+      "teacher": {
+        "head_accuracy": {
+          "route0_attribute0": 1.0,
+          "route0_attribute1": 1.0,
+          "route1_attribute0": 1.0,
+          "route1_attribute1": 1.0
+        },
+        "joint_attribute_accuracy": 1.0,
+        "mean_accuracy": 1.0,
+        "mse_clipped": 0.00011144354948057665
+      }
+    },
+    "0.1": {
+      "selection": {
+        "head_accuracy": {
+          "route0_attribute0": 0.515625,
+          "route0_attribute1": 0.53125,
+          "route1_attribute0": 0.5,
+          "route1_attribute1": 0.71875
+        },
+        "joint_attribute_accuracy": 0.3125,
+        "mean_accuracy": 0.56640625,
+        "mse_clipped": 0.2325421840963085
+      },
+      "teacher": {
+        "head_accuracy": {
+          "route0_attribute0": 1.0,
+          "route0_attribute1": 1.0,
+          "route1_attribute0": 1.0,
+          "route1_attribute1": 1.0
+        },
+        "joint_attribute_accuracy": 1.0,
+        "mean_accuracy": 1.0,
+        "mse_clipped": 0.0007246034847190881
+      }
+    },
+    "1.0": {
+      "selection": {
+        "head_accuracy": {
+          "route0_attribute0": 0.515625,
+          "route0_attribute1": 0.59375,
+          "route1_attribute0": 0.5,
+          "route1_attribute1": 0.703125
+        },
+        "joint_attribute_accuracy": 0.3203125,
+        "mean_accuracy": 0.578125,
+        "mse_clipped": 0.23068806770201317
+      },
+      "teacher": {
+        "head_accuracy": {
+          "route0_attribute0": 1.0,
+          "route0_attribute1": 1.0,
+          "route1_attribute0": 1.0,
+          "route1_attribute1": 1.0
+        },
+        "joint_attribute_accuracy": 1.0,
+        "mean_accuracy": 1.0,
+        "mse_clipped": 0.01008871816458426
+      }
+    }
+  },
+  "parameters_sha256": "86fe6e82797ef7f1cfeae8669736aa6339553b3ec9fde121a8ceba44de88a332",
+  "policy_sha256": "8120d1e8ae1cad6d4efae6560776d8a4417f069b93e6690a66b634dd69582b2a",
+  "stage": "selection"
+}

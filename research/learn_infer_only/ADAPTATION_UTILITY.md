@@ -1,5 +1,30 @@
 # History-dependent adaptation utility control
 
+[EXECUTED second-run integration, 2026-09-07] Actual BFV, durable history and
+independently verified release now reproduce all 96 scores of the selected
+384-Learn/96-Infer fixture. Its fixed-subset accuracy remains 52/96 overall and
+18/32 final; these do not replace the broader held-out estimates below.
+[The optimized run](experiments/end_to_end/verified_reader/reports/FAST_UTILITY.md)
+takes 201.345 seconds including the protocol machinery and excluding fresh
+model encoding. The reader retains its full key and the fixture is public.
+
+[EXECUTED negative successors] A teacher-only PCA/quadratic feature study fails
+its registered gates. A further supervised attribute-calibration study on new
+text surfaces also fails: 54.541% versus 58.838% for the original features on
+64 new histories, despite 256 additional teacher and 256 selection attribute
+bits. All 122,880 predictions and exact retention controls are retained in
+[attribute_calibration](experiments/end_to_end/utility/attribute_calibration/REPORT.md).
+The true-attribute control is 100%; it is privileged structured information,
+not a demonstrated natural-language encoder.
+
+[OPEN next hypothesis] A cached E5 sentence encoder offers a different training
+objective with no new model download. Its preregistered 768-to-576 public
+projection plus bias preserves the 577-coordinate encrypted interface, with a
+raw-dimension diagnostic and fresh evaluation texts/histories. No result is
+claimed before that separate experiment completes.
+
+## Historical utility studies
+
 [EXECUTED] An actual cached **SmolLM2-135M** supplied frozen features for a synthetic
 continual-learning task. A 577-scalar learned readout attained **77.84%** held-out
 post-change accuracy, against **82.76%** for retrieval over the same model features.

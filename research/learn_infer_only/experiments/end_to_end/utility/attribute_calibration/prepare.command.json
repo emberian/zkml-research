@@ -1,0 +1,16 @@
+{
+  "command": [
+    "research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/run.py",
+    "prepare"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "provenance": "Recorded from exec tool result; not a rerun",
+  "returncode": 0,
+  "stdout": {
+    "freeze_sha256": "3da0345f2745792683bb30ff9b8ab0cbd1c014f44e46800190533f82b4b7d0af",
+    "stage": "prepare",
+    "test_texts": 128
+  },
+  "tool_reported_wall_seconds": 0.298225208
+}

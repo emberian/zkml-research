@@ -1,0 +1,72 @@
+{
+  "status": "PASS",
+  "scope": "positive public encryption, two fixed projections, exact ciphertext addition/removal; no recovery tests",
+  "dimension": 3,
+  "projection_vectors": [
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      1
+    ]
+  ],
+  "window": 4,
+  "input_domain": [
+    -2,
+    2
+  ],
+  "window_projection_range": [
+    -16,
+    16
+  ],
+  "group_bits": 2048,
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "source_sha256": "bc16cd4a834784b71c8e25f75716c53dd4d0c144948a2f23f8ccb816febc36c5",
+  "samples": {
+    "public_encrypt": {
+      "ns_samples": [
+        541386375,
+        465351583,
+        540021584,
+        460872917,
+        518895375
+      ],
+      "median_ns": 518895375
+    },
+    "encrypted_add": {
+      "ns_samples": [
+        77583,
+        72416,
+        70375,
+        68708,
+        68625
+      ],
+      "median_ns": 70375
+    },
+    "exact_remove": {
+      "ns_samples": [
+        1638167,
+        1606292,
+        1588041,
+        28093291,
+        1594166
+      ],
+      "median_ns": 1606292
+    },
+    "two_validated_projections": {
+      "ns_samples": [
+        1153365041,
+        1076761375,
+        1483585125,
+        1304721792,
+        1285516209
+      ],
+      "median_ns": 1285516209
+    }
+  },
+  "master_erasure_verified": false
+}

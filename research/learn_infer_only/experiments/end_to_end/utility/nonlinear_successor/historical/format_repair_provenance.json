@@ -1,0 +1,10 @@
+{
+  "original_commit": "8659c3a6285c837af4279c1f502a84d87e794a1f",
+  "original_repository_path": "research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/costs.csv",
+  "original_committed_sha256": "084c84d75595ce91df45f73ac6ade095b1d19c03724aebbbb4e82a06c1e69612",
+  "original_working_sha256": "084c84d75595ce91df45f73ac6ade095b1d19c03724aebbbb4e82a06c1e69612",
+  "working_matched_committed": true,
+  "preserved_original_file": "costs_before_format_fix.csv.raw",
+  "original_row_count_including_header": 25,
+  "original_CRLF_count": 25
+}

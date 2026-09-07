@@ -2,7 +2,7 @@
   "classification": "EXECUTED symbolic parameter/support audit only",
   "command": "python3 /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.py",
   "python": "3.14.7",
-  "source_sha256": "242a7299ad13f11e2936acf07f6ae3f3d15d0574cf33703631933bac3f159df4",
+  "source_sha256": "8428aae92dee4adc784ccebf616e27378ffeda299300756be14b15c00da580af",
   "short_seed_falsifier": {
     "classification": "EXECUTED injective tuple support control; no encryption",
     "effective_seed_bits": 3,
@@ -18,7 +18,10 @@
     "projection_bits": 2,
     "left_collision": "25/32",
     "right_against_left_sample": "0",
-    "general_projection_bound": "2^(-projection_bits)",
+    "general_projection_bound": "1/(2^projection_bits-1) > 2^(-projection_bits)",
+    "strict_bound_in_saved_example": "1/3",
+    "required_projection_width": "L > E",
+    "L_equals_E_excluded": true,
     "rare_fixed_left_output_probability": "1/8"
   },
   "sizing_escape": {

@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "histories": [
+    {
+      "history": 0,
+      "ok": true,
+      "requests": 240,
+      "single_worker_pid": true,
+      "actual_commands_match_meter": true,
+      "full_hashes": 25536,
+      "full_hash_bytes": 2165178024
+    },
+    {
+      "history": 1,
+      "ok": true,
+      "requests": 240,
+      "single_worker_pid": true,
+      "actual_commands_match_meter": true,
+      "full_hashes": 25536,
+      "full_hash_bytes": 2165178024
+    }
+  ],
+  "instrument": "Independent reread of retained worker meters and actual crypto command JSONL; no crypto reinvocation.",
+  "scope": "Meter delegates to original hash; this checks its retained arithmetic and actual subprocess counts, not a new cryptographic theorem."
+}

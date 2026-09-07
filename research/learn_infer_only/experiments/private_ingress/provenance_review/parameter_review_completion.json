@@ -1,0 +1,110 @@
+{
+  "classification": "EXECUTED completed bounded correction after independent review",
+  "date_utc": "2026-09-07",
+  "correction": "For nonempty disjoint separating supports, L > E; equality L=E fails. Other stated equality caveats unchanged.",
+  "independent_review": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/REPORT.md",
+    "sha256": "866e3988318e242369261869088660b0cee5d27488bc79cc6a189e7488ff4561"
+  },
+  "independent_review_manifest": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/review_manifest.json",
+    "sha256": "e887fce810daee7e0bb7c7c310880ce14af9fc19cd25baad362b5ff02fc1a696"
+  },
+  "historical_manifest": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_hashes.json",
+    "sha256": "cb3918cf2b8c63a08eccb33501acde8d5541a808ffa54633ebc0f5877e36b028"
+  },
+  "historical_manifest_archive": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_hashes.json",
+    "sha256": "cb3918cf2b8c63a08eccb33501acde8d5541a808ffa54633ebc0f5877e36b028"
+  },
+  "identities": [
+    {
+      "reviewed_original": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/PARAMETER_CLOSURE.md",
+        "sha256": "f7bce8ced8c8460c13a7fe43dfaffbad8bd644f698303f62dc9497b790858fca"
+      },
+      "preserved_copy": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/PARAMETER_CLOSURE.md",
+        "sha256": "f7bce8ced8c8460c13a7fe43dfaffbad8bd644f698303f62dc9497b790858fca"
+      },
+      "current": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/PARAMETER_CLOSURE.md",
+        "sha256": "ba2142fd63f95e352ce4a6a7e3dd41951b755d7c63e26151298eda53a6628546"
+      }
+    },
+    {
+      "reviewed_original": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.py",
+        "sha256": "242a7299ad13f11e2936acf07f6ae3f3d15d0574cf33703631933bac3f159df4"
+      },
+      "preserved_copy": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_audit.py",
+        "sha256": "242a7299ad13f11e2936acf07f6ae3f3d15d0574cf33703631933bac3f159df4"
+      },
+      "current": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.py",
+        "sha256": "8428aae92dee4adc784ccebf616e27378ffeda299300756be14b15c00da580af"
+      }
+    },
+    {
+      "reviewed_original": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.stdout.txt",
+        "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+      },
+      "preserved_copy": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_audit.stdout.txt",
+        "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+      },
+      "current": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.stdout.txt",
+        "sha256": "b089f96be23d7e7264c8adbd0563ed129f3ca7de2049f7f136d53487601d84dd"
+      }
+    },
+    {
+      "reviewed_original": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_results.json",
+        "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+      },
+      "preserved_copy": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_results.json",
+        "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+      },
+      "current": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_results.json",
+        "sha256": "b089f96be23d7e7264c8adbd0563ed129f3ca7de2049f7f136d53487601d84dd"
+      }
+    },
+    {
+      "reviewed_original": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_sources.json",
+        "sha256": "ce6adf20bcca0d9d728400eb4fb0adebb183a9b14a5d3e6b369ac60fae7a4843"
+      },
+      "preserved_copy": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_sources.json",
+        "sha256": "ce6adf20bcca0d9d728400eb4fb0adebb183a9b14a5d3e6b369ac60fae7a4843"
+      },
+      "current": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_sources.json",
+        "sha256": "ce6adf20bcca0d9d728400eb4fb0adebb183a9b14a5d3e6b369ac60fae7a4843"
+      }
+    }
+  ],
+  "completion_note": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/PARAMETER_REVIEW_COMPLETION.md",
+    "sha256": "3ebdecb98a4f67c7d884860c61c05353bf39b225c4ac44d379b05bcebf5974c9"
+  },
+  "verification": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_check.json",
+    "sha256": "5371cdf8e3cb6ef1099596ba933fd874b24d09cc615b599ca140d2b649db736a"
+  },
+  "audit_command": "python3 research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.py > research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.stdout.txt",
+  "saved_sizing_examples_unchanged": true,
+  "source_identities_unchanged": true,
+  "new_attack_or_extraction_experiments": 0,
+  "web_queries": 0,
+  "scry_sql_queries": 0,
+  "scry_schema_queries": 0,
+  "pdf_extracts": 0,
+  "pdf_downloads": 0
+}

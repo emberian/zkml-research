@@ -1,5 +1,11 @@
 # Parameter closure of the encrypted-output obstruction
 
+[DERIVED review correction; 2026-09-07] The independent review sharpens the
+separating-output condition below to **L > E_i**, including exclusion of
+L=E_i. The original reviewed note, code and results are preserved byte for
+byte in `parameter_review_original/`; `PARAMETER_REVIEW_COMPLETION.md` and
+`parameter_review_completion.json` record the correction and identities.
+
 [DERIVED decision; 2026-09-07] The proposed circuit-size argument does **not**
 give an all-parameter impossibility from 2025/330. Its s is the length of a
 **current underlying PKE ciphertext on an input message**. It is not the
@@ -145,11 +151,14 @@ ellR=lambda_i specialization fails because `lambda_i < E_i` for positive n,s_i.
 does not search for a most-probable output. A samples a fresh left output
 itself, using f and the left advice, and compares its first next-PKE component
 to that of the challenged output. If P is the distribution on that s_next-bit
-component, the left probability is `sum_c P(c)^2 >= 2^-s_next`; the right
-probability is zero. Thus `s_next < E_i` also rules out compatibility,
-independently of the number of random bits F declares. More generally, the
-same bound holds for any efficiently computed L-bit output projection with
-disjoint left/right supports, replacing s_next by L.
+component, the left probability is `sum_c P(c)^2`; the right probability is
+zero. Both supports are nonempty, so disjointness gives
+`|support(P)| <= 2^s_next-1`. By Cauchy--Schwarz,
+`sum_c P(c)^2 >= 1/|support(P)| >= 1/(2^s_next-1) > 2^-s_next`.
+Thus `s_next <= E_i` rules out compatibility, including equality,
+independently of the number of random bits F declares. More generally, for
+any efficiently computed L-bit output projection with nonempty disjoint
+left/right supports, the gap is at least `1/(2^L-1) > 2^-L`.
 
 [DERIVED relation to the earlier bound] When rho payload-affecting bits and
 lambda_next first-PKE coins are independently uniform, the previous test has
@@ -158,13 +167,15 @@ to avoid the identified tests are therefore:
 
 ```text
 effective functional seed length h >= E_i,
-next separating ciphertext/projection width L >= E_i,
+next separating ciphertext/projection width L > E_i,
 rho + lambda_next >= E_i       # under that independent-coin layout.
 ```
 
-[DERIVED] Equality in one inequality is not a proof of failure or success:
-a lower bound equal to epsilon need not violate a `<= epsilon` condition,
-and other distinguishers may have a larger advantage. The next parameter's
+[DERIVED] Equality in the h or rho+lambda_next lower bound is not a proof
+of failure or success: a lower bound equal to epsilon need not violate a
+`<= epsilon` condition, and other distinguishers may have a larger advantage.
+In contrast, L=E_i fails by the strict collision bound; integer separating
+widths must satisfy L>=E_i+1. The next parameter's
 numeric value does not guarantee any of these entropy properties if the
 encryption algorithm ignores coins or exposes a shorter separating component.
 
@@ -172,7 +183,9 @@ encryption algorithm ignores coins or exposes a shorter separating component.
 to 128 bits still has fixed-output mass 1/8, despite a declared 64-bit coin
 tape. A separate four-output distribution has left-sample collision 25/32
 and cross-world collision zero; its rare fixed left output has mass only
-1/8. These are finite support identities. The tuple representations expose
+1/8. The same saved distribution now checks the strict projection bound
+`25/32 >= 1/3 > 1/4`, which excludes L=E=2. These are finite support
+identities. The tuple representations expose
 their values and implement no encryption.
 
 ## 4. A consistent fixed-H sizing escape

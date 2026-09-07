@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/run.py",
+    "select"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "returncode": 0,
+  "wall_seconds": 0.26690866600256413
+}

@@ -22,8 +22,17 @@ Its fresh private40/four/eight run passes all scalar comparisons,23 refusal
 controls, actual reader SIGKILL recovery and copied-authority rollback refusal.
 Source and execution are pinned in [run004](experiments/end_to_end/verified_reader/reports/README.md).
 The full reader key, trusted input issuer/query policy and reader persistence
-remain explicit boundaries. A complete384/96 useful-fixture run through this
-stronger reader is in progress.
+remain explicit boundaries. The complete 384/96 useful-fixture run through this
+stronger reader now passes all 96 direct integer comparisons, with 256 expiries,
+96 verifier decryptions and zero baseline decryptions. Its total runtime was
+682.666 seconds. See the [demonstration guide](experiments/end_to_end/README.md).
+
+[EXECUTED optimized successor] The same full workload now passes in 201.345
+seconds with a persistent keyless host: observed 3.39x across separate runs.
+Full-byte hashing and authority/reader checks remain. A separate public reference
+implementation reproduces the sampled ciphertext coefficients and bytes using
+integer negacyclic multiplication and independent NTT equations; independent
+review is in progress.
 
 [EXECUTED utility limit] The original fixed integration histories have final
 accuracy18/32 (56.25%); the broader earlier held-out window estimate is63.16%.
@@ -39,7 +48,11 @@ raw model. The parent-bound private-input hybrid's guard failure is now reviewed
 and fixed-coin parameter objections have been narrowed: independently longer
 functional coins and next ciphertexts evade those particular lower bounds.
 An actual tiny quantitative joint future-package bound and provenance repair
-remain open. A fixed-query-span FE construction audit is in progress.
+remain open. The actual three-coordinate fixed-span FE control now passes two
+encrypted 12-input histories with 48 permitted projections and 16 expiries; its
+direct adaptive fixed-span DDH proof is under independent review. It assumes
+honest master erasure and exposes each input's entire fixed span, with no
+recipient gate, single-history finality or PQ claim.
 
 [DERIVED reviewed successor] The saved eleven-hybrid conditional QIND_pre lift
 now has a completed independent review with no blocking error found under its

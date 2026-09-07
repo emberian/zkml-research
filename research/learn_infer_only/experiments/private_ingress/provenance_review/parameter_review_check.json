@@ -1,0 +1,29 @@
+{
+  "classification": "EXECUTED bounded review-correction verification",
+  "unchanged_result_groups": [
+    "short_seed_falsifier",
+    "sizing_escape",
+    "hypothetical_quantitative_sizing",
+    "negligible_does_not_mean_exponentially_small"
+  ],
+  "saved_sizing_rows_identical": true,
+  "results_equal_stdout": true,
+  "historical_reviewed_files_match_original_manifest": true,
+  "prior_review_and_dual_mode_manifests_match": true,
+  "review_report": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/REPORT.md",
+    "sha256": "866e3988318e242369261869088660b0cee5d27488bc79cc6a189e7488ff4561"
+  },
+  "corrected_collision_group": {
+    "classification": "EXECUTED finite sample-collision identity",
+    "projection_bits": 2,
+    "left_collision": "25/32",
+    "right_against_left_sample": "0",
+    "general_projection_bound": "1/(2^projection_bits-1) > 2^(-projection_bits)",
+    "strict_bound_in_saved_example": "1/3",
+    "required_projection_width": "L > E",
+    "L_equals_E_excluded": true,
+    "rare_fixed_left_output_probability": "1/8"
+  },
+  "new_state_recovery_or_extraction_experiments": 0
+}

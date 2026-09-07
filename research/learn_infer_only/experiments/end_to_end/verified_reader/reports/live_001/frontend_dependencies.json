@@ -1,0 +1,15 @@
+{
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/authority.py": "2030998d92bf2baa92055bd8e522b0c0001ffeadd5f43100f0a33e4e6ef08039",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/client.py": "489c23061e8e8724773d6c7f8f1c1aafe66cc6524e31a5b9b2c3d6d680d4f7d0",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/common.py": "32afcec1c2db4a6e1ccf9eb475ad22780a0f0d4deceb18c39e66246b5a1b6b1e",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/model.py": "bcbac3baac92aaeacf2fdbbf174dd0d1c57c9e0fffed93b9d7307f2b96da28eb",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/reader.py": "d39c3538d8c0e660539d4e776627926449fec5fb1fc1c866853643d47ce76c9a",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/roles.py": "a42bf9dc15320587e60a47332556dddc2d345eed7099c8f573f13f8697d3b2f0",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/run.py": "e12ac924830544b98bbbba67f8ed8c489ee719b4d33d0307869f54f58a43c330",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/build_mapping.py": "54b2437099a6d364490a6dfd0885cfd83d3101b46f9cf234acc4e17772755f66",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility.json": "5c61d61fb8a55586f075f6133092f196e36d1d42ec6cd79ae5fbe37fad3f0f37",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_policy.json": "de2e7356049a76bba16a09d1ac38ee8de622004f28df0c7e3aa70d7b5d347ce3",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_encode_prepared.py": "7fb22689e1abafc4dbf6a55c90a88ad9643af02c33112002b0b1b0dac9f97689",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/issue_text.py": "f084c71abf6f903c89fec34c1a2dcdb526baccafc153749a1d9b722874523365",
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/results/run_001/report.json": "e0d3a7998d58335bbada534198d8bd4a83badac5b2bec3e6ae72cc8689f05e92"
+}

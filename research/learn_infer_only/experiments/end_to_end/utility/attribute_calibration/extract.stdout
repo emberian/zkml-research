@@ -1,0 +1,66 @@
+{"first_record_id": 256, "records": 16, "padded_tokens": 34, "wall_seconds": 0.4614790420164354, "cpu_seconds": 0.37509700000000024}
+{"first_record_id": 272, "records": 16, "padded_tokens": 38, "wall_seconds": 0.34548341599293053, "cpu_seconds": 0.38153499999999996}
+{"first_record_id": 288, "records": 16, "padded_tokens": 35, "wall_seconds": 0.3042383329884615, "cpu_seconds": 0.339353}
+{"first_record_id": 304, "records": 16, "padded_tokens": 39, "wall_seconds": 0.28602712499559857, "cpu_seconds": 0.3814789999999997}
+{"first_record_id": 320, "records": 16, "padded_tokens": 34, "wall_seconds": 0.23724662500899285, "cpu_seconds": 0.33323199999999975}
+{"first_record_id": 336, "records": 16, "padded_tokens": 38, "wall_seconds": 0.2548628749791533, "cpu_seconds": 0.3505339999999997}
+{"first_record_id": 352, "records": 16, "padded_tokens": 34, "wall_seconds": 0.21808674998464994, "cpu_seconds": 0.2998189999999994}
+{"first_record_id": 368, "records": 16, "padded_tokens": 38, "wall_seconds": 0.24556424998445436, "cpu_seconds": 0.35226299999999977}
+{
+  "executed": true,
+  "new_texts": 128,
+  "backbone_training_steps": 0,
+  "parameter_count": 134515008,
+  "trainable_parameter_count": 0,
+  "model": "HuggingFaceTB/SmolLM2-135M",
+  "revision": "93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "model_path": "/Users/ember/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM2-135M/snapshots/93efa2f097d58c2a74874c7e644dbc9b0cee75a2",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+  "numpy": "2.4.2",
+  "torch": "2.10.0",
+  "transformers": "4.57.3",
+  "settings": {
+    "device": "cpu",
+    "dtype": "float32",
+    "attention": "eager",
+    "threads": 2,
+    "interop_threads": 1,
+    "seed": 7901,
+    "batch_size": 16,
+    "padding_side": "right",
+    "use_cache": false,
+    "gradients": false,
+    "blocks_actually_executed": 30,
+    "representation": "masked mean direct block9 output; padding excluded",
+    "local_files_only": true,
+    "trust_remote_code": false
+  },
+  "selection_sha256": "e18b88d93a12f70d8d48d3d3051f23c50efa50f4520d7c0d71f50eefd64debd6",
+  "script_sha256": "f149a729f5465feb698425dc136cb64a8871fbca7d5a594f87b0b4666f8d0067",
+  "records_sha256": "8690bd0e48901426cfd4ce2748bfacba4638ee3c2fd21e44d436c2fa31e3029d",
+  "freeze_sha256": "3da0345f2745792683bb30ff9b8ab0cbd1c014f44e46800190533f82b4b7d0af",
+  "features_sha256": "b6ad86b52893e42cdf65a3722e0483f569239da21aa86d06d4805bb3bd8894ed",
+  "load_wall_seconds": 0.4038122500060126,
+  "load_cpu_seconds": 0.341685,
+  "forward_wall_seconds": 2.3529884159506764,
+  "forward_cpu_seconds": 2.8133119999999985,
+  "unpadded_tokens": 4280,
+  "padded_tokens": 4640,
+  "token_length_histogram": {
+    "29": 8,
+    "30": 11,
+    "31": 14,
+    "32": 19,
+    "33": 22,
+    "34": 18,
+    "35": 4,
+    "36": 3,
+    "37": 14,
+    "38": 13,
+    "39": 2
+  },
+  "total_wall_seconds_including_imports": 6.480595583998365,
+  "total_cpu_seconds_including_imports": 5.96808,
+  "process_high_water_rss_bytes_macos": 1421328384
+}

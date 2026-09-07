@@ -1,0 +1,30 @@
+{
+  "full_names_templates_cues_disjoint_from_two_prior_generators": true,
+  "new_history_count": 64,
+  "new_test_surfaces": true,
+  "ordinary_words_and_all_logical_combinations_overlap": true,
+  "selection_and_test_not_yet_run": true,
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/model_manifest.json": "c157ce309791546a02e2e543e08c6b207d3b23adef45de885809a01e89bffdd4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_data.py": "c9d39e22bb27ae31a5fd78982c4696a1107cd418f613ec418941a5c1d319ed7b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_features.npz": "754497f6cf74a50e4b19444469f17837d21a5341711e8a8fb9e267242f7b92ca",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_model_manifest.json": "6b41f835943c2cdbc240fab105bc38bbe0295ae5cd11caa961e9e73b3a499d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_records.json": "423a0dd83e43d1786b1c649ab6a54aab349de913c531447f2261ef7e5dc9156e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/requirements-lock.txt": "fe68f9bd8a5e24b74b7728eb27312a0de9ed055d8fb4ab945d222dbf4f21f9d6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/text_transfer_data.py": "a55d84a475c672252213e94d4842d97620cb14bca0b016da7f1445cb88f1e609",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/CONTRACT.md": "10d056194b435dc39f1a8d3fbb66e13440958a8d88bd500457b701a3ab57c66f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/attribute_supervision.json": "ae40f19376d358443341ca8623ab3c4fff1bde18033336d53be486fcc57456fb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/data.py": "b4127a054588e0f04853d5166b136650d74fde64ac61651ca2472ba7917172d9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/extract.py": "f149a729f5465feb698425dc136cb64a8871fbca7d5a594f87b0b4666f8d0067",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/histories.json": "1467f39523b0d9e19bc243ee994e1a8a6b3266a4ef4ae5ae183322a926f9434b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/records.json": "8690bd0e48901426cfd4ce2748bfacba4638ee3c2fd21e44d436c2fa31e3029d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/run.py": "c217cd210143dbc50ce30cfd497e9982bbb733226dffeca2e50d790a2a8bd71b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility.json": "5c61d61fb8a55586f075f6133092f196e36d1d42ec6cd79ae5fbe37fad3f0f37",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_policy.json": "de2e7356049a76bba16a09d1ac38ee8de622004f28df0c7e3aa70d7b5d347ce3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/parameters.npz": "065f5be1349721388ffb868d9309a2e96223cebfee6ceed5301406c76bce51dd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/preparation.json": "075eff018f73aa0cb8b98ffe3ec18f660f8435d4c4fb321b2823bfbf4463b042",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/run.py": "3832b961631075545fddde72c749527f4b991d5b1c583d6df043309daa16ea71",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/selection.json": "f3bee099dde0fd3bc4a6b13a82ad9d2a8a1f12984d74277e65fde46c8e89f85e"
+  },
+  "test_texts": 128
+}

@@ -1,0 +1,1538 @@
+[
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.8482808269653068,
+      0.1796223334924787
+    ],
+    "record_id": 256,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.7921854919141684,
+      0.275848127362638
+    ],
+    "record_id": 257,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.8254395343870473,
+      0.24584977397136154
+    ],
+    "record_id": 258,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.7753119575259425,
+      0.33245217123114745
+    ],
+    "record_id": 259,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.7468897228207864,
+      0.17485216510771057
+    ],
+    "record_id": 260,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.6797804879207143,
+      0.2825639012894809
+    ],
+    "record_id": 261,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.7509725357308974,
+      0.27917079623124375
+    ],
+    "record_id": 262,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.6684782114837005,
+      0.366037563920115
+    ],
+    "record_id": 263,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.9421741088871096,
+      0.26748546955469754
+    ],
+    "record_id": 264,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.8410326608475795,
+      0.3557884051426612
+    ],
+    "record_id": 265,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.6761936630786854,
+      0.2254155582264204
+    ],
+    "record_id": 266,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.6365892220148938,
+      0.3059081046584244
+    ],
+    "record_id": 267,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.8721122756083403,
+      0.226614665153741
+    ],
+    "record_id": 268,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.7611936996705825,
+      0.3382264209297273
+    ],
+    "record_id": 269,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.9435813816372055,
+      0.21577243822422693
+    ],
+    "record_id": 270,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.8982534707465912,
+      0.29663343403410036
+    ],
+    "record_id": 271,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.8482058015198539,
+      0.1567740113104002
+    ],
+    "record_id": 272,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.9060255297560973,
+      0.2867395501257517
+    ],
+    "record_id": 273,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.8475232400335939,
+      0.22506742965929105
+    ],
+    "record_id": 274,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.9088278530831853,
+      0.34360847717193244
+    ],
+    "record_id": 275,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.7575530447887572,
+      0.15099590831102627
+    ],
+    "record_id": 276,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.8252100344727618,
+      0.2938751680905294
+    ],
+    "record_id": 277,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.7735084839767928,
+      0.25497543752423335
+    ],
+    "record_id": 278,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.8085051951499629,
+      0.371277516184109
+    ],
+    "record_id": 279,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.9485329355253416,
+      0.24629917632847215
+    ],
+    "record_id": 280,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.9486576007094705,
+      0.35935726581345595
+    ],
+    "record_id": 281,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.68727235785388,
+      0.2062668045223201
+    ],
+    "record_id": 282,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.7843431504817592,
+      0.3154990825782156
+    ],
+    "record_id": 283,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.8971015361268446,
+      0.20318659684002127
+    ],
+    "record_id": 284,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.8866579936315137,
+      0.33925946777605487
+    ],
+    "record_id": 285,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.9518314840864841,
+      0.18853037605863343
+    ],
+    "record_id": 286,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.30826224926283724
+    ],
+    "record_id": 287,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.7351040381199977,
+      0.11137473324283292
+    ],
+    "record_id": 288,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.9935599270254166,
+      0.17531912939894884
+    ],
+    "record_id": 289,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.6993816822096168,
+      0.1812174003114605
+    ],
+    "record_id": 290,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.993812015936443,
+      0.22426784227258406
+    ],
+    "record_id": 291,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.6244812132448174,
+      0.10155896757513205
+    ],
+    "record_id": 292,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.9011237326752652,
+      0.17448844741774572
+    ],
+    "record_id": 293,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.6243420965634582,
+      0.2076520679042428
+    ],
+    "record_id": 294,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.8838706875869901,
+      0.2583069206651208
+    ],
+    "record_id": 295,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.8083498927894488,
+      0.20880433567107165
+    ],
+    "record_id": 296,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.25141224479705826
+    ],
+    "record_id": 297,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5649914441644521,
+      0.15323330663571288
+    ],
+    "record_id": 298,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.8522704919341094,
+      0.19826353686634485
+    ],
+    "record_id": 299,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.7393906097637871,
+      0.15739545891609136
+    ],
+    "record_id": 300,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.977398890236921,
+      0.22769766565682698
+    ],
+    "record_id": 301,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.8133510181486143,
+      0.14117532625688162
+    ],
+    "record_id": 302,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.19187916718836934
+    ],
+    "record_id": 303,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.7232453130486567,
+      0.08726751475026134
+    ],
+    "record_id": 304,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.19507148777380895
+    ],
+    "record_id": 305,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.715438756571269,
+      0.1601177268936807
+    ],
+    "record_id": 306,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.24592613648999728
+    ],
+    "record_id": 307,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.6281874858381478,
+      0.07830854462954218
+    ],
+    "record_id": 308,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.1962848386828756
+    ],
+    "record_id": 309,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.6413689656597662,
+      0.18185740424309865
+    ],
+    "record_id": 310,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.9939241943450683,
+      0.2752861279835971
+    ],
+    "record_id": 311,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.8093946371660155,
+      0.18211965957100879
+    ],
+    "record_id": 312,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.2659833339663379
+    ],
+    "record_id": 313,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.5680732908939559,
+      0.13167525571759559
+    ],
+    "record_id": 314,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.9702626432195746,
+      0.21781408945425162
+    ],
+    "record_id": 315,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.7591662446989536,
+      0.13412813905376064
+    ],
+    "record_id": 316,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.24152500687762868
+    ],
+    "record_id": 317,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.8178802505641899,
+      0.11875688575857668
+    ],
+    "record_id": 318,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.212899587790722
+    ],
+    "record_id": 319,
+    "route": 0
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5667115552889742,
+      0.293925873073534
+    ],
+    "record_id": 320,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.45505367111036854
+    ],
+    "record_id": 321,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5141885670119974,
+      0.27882186035311707
+    ],
+    "record_id": 322,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.47843546717255847
+    ],
+    "record_id": 323,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.43702725577168244,
+      0.31371177199330913
+    ],
+    "record_id": 324,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.9532110986668976,
+      0.4969369947466485
+    ],
+    "record_id": 325,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5060559911239554,
+      0.2861554209024797
+    ],
+    "record_id": 326,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.4673801978069426
+    ],
+    "record_id": 327,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5125312976030381,
+      0.268906985155949
+    ],
+    "record_id": 328,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.4522755758822225
+    ],
+    "record_id": 329,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5073808060239048,
+      0.2882170307325522
+    ],
+    "record_id": 330,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.4778022748846969
+    ],
+    "record_id": 331,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5025277366535712,
+      0.29890771536221755
+    ],
+    "record_id": 332,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.4723916183672682
+    ],
+    "record_id": 333,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      0.4965372684586345,
+      0.2780552540347447
+    ],
+    "record_id": 334,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.47256243735979675
+    ],
+    "record_id": 335,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.6291028177647409,
+      0.4483390358447157
+    ],
+    "record_id": 336,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.5380631198239259
+    ],
+    "record_id": 337,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.5775047176782115,
+      0.453975803305562
+    ],
+    "record_id": 338,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.5406926504266754
+    ],
+    "record_id": 339,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.5017574415503481,
+      0.477646773196431
+    ],
+    "record_id": 340,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.5607002774794869
+    ],
+    "record_id": 341,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.565081144197417,
+      0.450164317751119
+    ],
+    "record_id": 342,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.5307390577534347
+    ],
+    "record_id": 343,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.5698080925883728,
+      0.4389827821442338
+    ],
+    "record_id": 344,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.5221843724140836
+    ],
+    "record_id": 345,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.5708917732589474,
+      0.4546504070915348
+    ],
+    "record_id": 346,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.5454469856383727
+    ],
+    "record_id": 347,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.5669121783736393,
+      0.4544930474130457
+    ],
+    "record_id": 348,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.5492133949677274
+    ],
+    "record_id": 349,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      0.5561738095530543,
+      0.45340406993800736
+    ],
+    "record_id": 350,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      0,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.5385227553227818
+    ],
+    "record_id": 351,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.626631634258783,
+      0.26846195133112455
+    ],
+    "record_id": 352,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.3578411896704585
+    ],
+    "record_id": 353,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5693706750196597,
+      0.2693458152855638
+    ],
+    "record_id": 354,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.3846902607397954
+    ],
+    "record_id": 355,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5015795962541562,
+      0.29908768376801265
+    ],
+    "record_id": 356,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.4043111145337282
+    ],
+    "record_id": 357,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5625635341931866,
+      0.2817592382881713
+    ],
+    "record_id": 358,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.37250361100506213
+    ],
+    "record_id": 359,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5680654927758672,
+      0.2550689485081179
+    ],
+    "record_id": 360,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.3569677321116542
+    ],
+    "record_id": 361,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.568633076956669,
+      0.28257101559363496
+    ],
+    "record_id": 362,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.3829942606480181
+    ],
+    "record_id": 363,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5724847063698947,
+      0.2851962438467104
+    ],
+    "record_id": 364,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.3783030293745313
+    ],
+    "record_id": 365,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      0.5375992943013732,
+      0.2703999738021169
+    ],
+    "record_id": 366,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      0
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.3769946980889765
+    ],
+    "record_id": 367,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.687216309681886,
+      0.423138994237517
+    ],
+    "record_id": 368,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.45971164775223405
+    ],
+    "record_id": 369,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.6353895132837386,
+      0.4424078427887205
+    ],
+    "record_id": 370,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.4637501096980351
+    ],
+    "record_id": 371,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.5707891997672213,
+      0.4629454748397161
+    ],
+    "record_id": 372,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.48346085874305283
+    ],
+    "record_id": 373,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.6244719932088479,
+      0.44555498106728475
+    ],
+    "record_id": 374,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.4522427715470652
+    ],
+    "record_id": 375,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.6284688624578985,
+      0.42501954807107745
+    ],
+    "record_id": 376,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.4450671068534019
+    ],
+    "record_id": 377,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.6340970710866651,
+      0.4480182673856337
+    ],
+    "record_id": 378,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.46784676699483196
+    ],
+    "record_id": 379,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.6377495023698944,
+      0.44001573724997595
+    ],
+    "record_id": 380,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.47152434990580117
+    ],
+    "record_id": 381,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      0.6034262771643998,
+      0.4429626358458509
+    ],
+    "record_id": 382,
+    "route": 1
+  },
+  {
+    "gold_attributes": [
+      1,
+      1
+    ],
+    "predicted_probabilities": [
+      1.0,
+      0.4602527797686832
+    ],
+    "record_id": 383,
+    "route": 1
+  }
+]

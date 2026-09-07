@@ -1,0 +1,57 @@
+{
+  "candidates": {
+    "HuggingFaceTB/SmolLM3-3B": {
+      "dense_linear_and_attention_MACs_per_text": 112727162880,
+      "float32_parameter_storage_lower_bound_bytes": 12300394496,
+      "on_disk_weight_bytes": 6150235008,
+      "sequence_length_assumed": 40,
+      "source_config": "/Users/ember/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM3-3B/snapshots/a07cc9a04f16550a088caea529712d1d335b0ac1/config.json",
+      "two_FLOPs_per_MAC": 225454325760
+    },
+    "Qwen/Qwen2.5-0.5B-Instruct": {
+      "dense_linear_and_attention_MACs_per_text": 14381875200,
+      "float32_parameter_storage_lower_bound_bytes": 1976131072,
+      "on_disk_weight_bytes": 988097824,
+      "sequence_length_assumed": 40,
+      "source_config": "/Users/ember/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775/config.json",
+      "two_FLOPs_per_MAC": 28763750400
+    },
+    "intfloat/e5-base-v2": {
+      "dense_linear_and_attention_MACs_per_text": 3426877440,
+      "float32_parameter_storage_lower_bound_bytes": 437928960,
+      "on_disk_weight_bytes": 437955512,
+      "sequence_length_assumed": 40,
+      "source_config": "/Users/ember/.cache/huggingface/hub/models--intfloat--e5-base-v2/snapshots/f52bf8ec8c7124536f0efb74aca902b2995e5bcd/config.json",
+      "two_FLOPs_per_MAC": 6853754880
+    },
+    "microsoft/harrier-oss-v1-0.6b": {
+      "dense_linear_and_attention_MACs_per_text": 17799577600,
+      "float32_parameter_storage_lower_bound_bytes": 2384199680,
+      "on_disk_weight_bytes": 1192133232,
+      "sequence_length_assumed": 40,
+      "source_config": "/Users/ember/.cache/huggingface/hub/models--microsoft--harrier-oss-v1-0.6b/snapshots/f9b9dc8d367d443f2479d27aa5d8d2850c0774ee/config.json",
+      "two_FLOPs_per_MAC": 35599155200
+    }
+  },
+  "excluded": [
+    "embedding lookup",
+    "biases",
+    "normalization",
+    "activation functions",
+    "softmax",
+    "pooling/pooler",
+    "padding variation",
+    "framework and memory traffic"
+  ],
+  "formula": "BERT n*(L*(4h\u00b2+2hI)+2L\u00b2h); gated decoder n*(L*(2hQ+2hKV+3hI)+2L\u00b2Q)",
+  "label": "DERIVED, not executed model timings",
+  "not_a_latency_or_peak_memory_estimate": true,
+  "proposed_fixed_projection_768_to_576": {
+    "float32_matrix_bytes": 1769472,
+    "float64_matrix_bytes": 3538944,
+    "public_scalar_products": 442368,
+    "reduction_adds": 441792,
+    "seeded_Rademacher_generation_possible": true
+  },
+  "raw769_control_not_577_interface": true
+}

@@ -1,0 +1,69 @@
+{
+  "classification": "EXECUTED frozen independent parameter review",
+  "verdict": "Scoped acceptance with strict separating-width correction L > E; no construction claim",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/.gitignore",
+      "sha256": "b3f43a550332eaf186abaf249cdc64e9edf091b47ed1984aa60b19159e82e630"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/REPORT.md",
+      "sha256": "866e3988318e242369261869088660b0cee5d27488bc79cc6a189e7488ff4561"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/review.py",
+      "sha256": "279e1ceb3a2eae2511be3b3da1cb14451b37271b4df22a3f5aeb9b8cf3c8f209"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/results.json",
+      "sha256": "0acfb85964eeaeaeb5048d01cae6462b7130d27aad52a391cc838d0f90b46cfd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/stdout.txt",
+      "sha256": "0acfb85964eeaeaeb5048d01cae6462b7130d27aad52a391cc838d0f90b46cfd"
+    }
+  ],
+  "input_hashes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/PARAMETER_CLOSURE.md",
+      "sha256": "f7bce8ced8c8460c13a7fe43dfaffbad8bd644f698303f62dc9497b790858fca"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.py",
+      "sha256": "242a7299ad13f11e2936acf07f6ae3f3d15d0574cf33703631933bac3f159df4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.stdout.txt",
+      "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_results.json",
+      "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_sources.json",
+      "sha256": "ce6adf20bcca0d9d728400eb4fb0adebb183a9b14a5d3e6b369ac60fae7a4843"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_hashes.json",
+      "sha256": "cb3918cf2b8c63a08eccb33501acde8d5541a808ffa54633ebc0f5877e36b028"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/DUAL_MODE.md",
+      "sha256": "f907f3f4cf68dc449fabaf5e397f633e3bc5ee12fc4989a207e2d0f4b600012c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/PROVENANCE.md",
+      "sha256": "0868164a235780917ab1c7d08e810078c5bfa73ef68bb862e729396c5ba0e437"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+      "sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/sources/2025-330.txt",
+      "sha256": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54"
+    }
+  ],
+  "inputs_unchanged": true
+}

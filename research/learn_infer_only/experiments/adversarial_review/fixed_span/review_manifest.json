@@ -1,0 +1,81 @@
+{
+  "classification": "EXECUTED frozen independent fixed-span review",
+  "verdict": "Accept conditional adaptive fixed-span DDH lemma; name unreachable-rank/common-abort branches and exact-sampler convention",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/.gitignore",
+      "sha256": "e732a0bc2e4f3b889a562c8009e9b6c50531bc8c34b468a68b23cd3eb42ec8f2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/REPORT.md",
+      "sha256": "e3127a40ea702ace13584cc13ce65dc06f11d9cfbf81f759fc6317cbd4a2017e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/review.py",
+      "sha256": "7a435ed798bb6b10040d9233d5e3e2aba4ddcaaaebea2b6c78144e803bf2753f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/results.json",
+      "sha256": "49946fb52a97c25efdf649cb1ed36351aef61e633eb23b8732ca094f92eb63d2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/stdout.txt",
+      "sha256": "49946fb52a97c25efdf649cb1ed36351aef61e633eb23b8732ca094f92eb63d2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/positive_audit.stdout.txt",
+      "sha256": "3b6f00587a71388710b61a3c0a8c12014a527f68f2ab01fa472d02d33190d8ae"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/positive_audit.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span/reference/fixed_span/results/results.json",
+      "sha256": "260eaa6d272e60e0f4deb3c33c3937650e30b5f6490b52972c334acf0b45572f"
+    }
+  ],
+  "input_hashes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/ADAPTIVE_FIXED_SPAN.md",
+      "sha256": "091403d6f3e1a7a65e5baef3977dc789595584582d17bbbf2190878fa18874d9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/span.py",
+      "sha256": "a0ce6572e3e2f49d94aadc5e1182c9b4a9d5006e106a685a08d74a3bcff22290"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/audit.py",
+      "sha256": "2ad9807b7d54dc3e5b4899b734b63bc309c5a7e716e2b2142a7efde1c3bf6451"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/README.md",
+      "sha256": "47c60190dbbce2409fec16939865bc2e81ef1c850f4f0fa856e4eb6d8ff550f7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/results/results.json",
+      "sha256": "9d806a91afb05de2eeceb04f18193654af60533fd03558998fcffc59a4914687"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/results/public.bin",
+      "sha256": "4af70be5aa5d5c1f4f34966706d57bebadadcc53a640477fa041417144cfd103"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/results/projection_keys.bin",
+      "sha256": "b5149ec89df32de0f8640f806b1f0d3c41c09eca162e6a0e85f866669d1102a0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/results/synthetic_final.window",
+      "sha256": "d39548a58eb6fc2999a24a0256f91a3bd595020ed89212f6748e106b89aa39bd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/additive_ipfe.py",
+      "sha256": "bc16cd4a834784b71c8e25f75716c53dd4d0c144948a2f23f8ccb816febc36c5"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/017.pdf",
+      "sha256": "353f454857a5ef421ab7b17545b9657f5d192dc0a37f022cca7b71e916f84712"
+    }
+  ],
+  "inputs_unchanged": true
+}

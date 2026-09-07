@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/runtime/live_001/e2e/verified_reader/live_driver.py",
+    "--worker",
+    "--input",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/runtime/live_001/.private/input.json",
+    "--runtime",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/runtime/live_001",
+    "--reports",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/reports/live_001",
+    "--binary",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/runtime/live_001/e2e/resident-crypto"
+  ],
+  "input_is_ignored_generic_runtime_copy": true
+}

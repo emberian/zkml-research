@@ -1,0 +1,232 @@
+{
+  "classification": "EXECUTED independent general fixed-span proof and public matrix review",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_span_scaling/review.py"
+  ],
+  "python": "3.14.7",
+  "script_sha256": "b53d7367a60e66341cf6abcb97ca8abe0f2157e33ae252189614a1df9c7f8f9e",
+  "matrix": {
+    "shape": [
+      16,
+      577
+    ],
+    "rank": 16,
+    "kernel_dimension": 561,
+    "independent_Bareiss_determinant": -812032080,
+    "rational_basis_sha256": "9d2253ecc68b6390fee527f25154d37063947958c29543cd08f7b01933933462",
+    "rational_and_actual_field_columns_checked": 561,
+    "nonzero_integer_witness_max_abs": 3,
+    "witness_squared_norm": 80,
+    "public_fixture_shifted_range": [
+      -22,
+      24
+    ],
+    "bias_preserved": true,
+    "encoder_image_membership": "not tested or claimed",
+    "window_projection_bound": 14219936,
+    "baby_step_entries": 5333,
+    "author_LLL_or_main_rerun": false,
+    "old_reference_main_called": false
+  },
+  "finite_bases": {
+    "all_2_by_2_and_2_by_3_matrices_over_F2_F3": 890,
+    "uniform_master_and_exposed_key_cases": 20988,
+    "rank_histogram": {
+      "q=2,d=2,rank=0,kernel=2": 1,
+      "q=2,d=2,rank=1,kernel=1": 9,
+      "q=2,d=2,rank=2,kernel=0": 6,
+      "q=2,d=3,rank=0,kernel=3": 1,
+      "q=2,d=3,rank=1,kernel=2": 21,
+      "q=2,d=3,rank=2,kernel=1": 42,
+      "q=3,d=2,rank=0,kernel=2": 1,
+      "q=3,d=2,rank=1,kernel=1": 32,
+      "q=3,d=2,rank=2,kernel=0": 48,
+      "q=3,d=3,rank=0,kernel=3": 1,
+      "q=3,d=3,rank=1,kernel=2": 104,
+      "q=3,d=3,rank=2,kernel=1": 624
+    },
+    "includes_zero_and_redundant_rows": true
+  },
+  "adaptive_masks": {
+    "q": 3,
+    "dimension": 3,
+    "rank": 1,
+    "kernel": 2,
+    "T": 3,
+    "M": 8,
+    "endpoint_hybrid_probabilities": [
+      "202/729",
+      "10/27",
+      "265/729",
+      "263/729"
+    ],
+    "transitions": [
+      {
+        "request": 1,
+        "mask": 1,
+        "real": "661/1458",
+        "random": "118/243",
+        "gap": "-47/1458"
+      },
+      {
+        "request": 1,
+        "mask": 2,
+        "real": "118/243",
+        "random": "1/2",
+        "gap": "-7/486"
+      },
+      {
+        "request": 2,
+        "mask": 1,
+        "real": "367/729",
+        "random": "1097/2187",
+        "gap": "4/2187"
+      },
+      {
+        "request": 2,
+        "mask": 2,
+        "real": "1097/2187",
+        "random": "1/2",
+        "gap": "7/4374"
+      },
+      {
+        "request": 3,
+        "mask": 1,
+        "real": "731/1458",
+        "random": "2189/4374",
+        "gap": "2/2187"
+      },
+      {
+        "request": 3,
+        "mask": 2,
+        "real": "2189/4374",
+        "random": "1/2",
+        "gap": "1/2187"
+      }
+    ],
+    "signed_transition_sum": "-61/1458",
+    "padded_DDH_gap": "61/11664",
+    "endpoint_gap": "61/729",
+    "dummy_padded_ranks": 2,
+    "unreached_cases": 62208,
+    "common_abort_cases": 46845,
+    "one_unknown_direction_public_setup_checks": 972,
+    "identity_Delta_equals_2M_times_gap": true,
+    "scope": "exact public toy-group distribution control, no hardness or recovery claim"
+  },
+  "input_hashes_before": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/scaling/GENERAL_FIXED_SPAN.md",
+      "sha256": "5d99740f9f329e0a45f9c45bcd0db684b49f66660db567d81bfc169dbca4edb9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/scaling/linear_audit.py",
+      "sha256": "4a6fb32a7f1e59660e4ac6c233465b5f261ce3be7825a9227e4fc629f3f2f55a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/scaling/linear_results.json",
+      "sha256": "cd45fe7bc4a28adcbd0c834fc3ee168f295a26d9f3c11fb585586a0aa6e17800"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/scaling/linear_stdout.txt",
+      "sha256": "e64a3ec80ba510f27a39e72fc0ad884ef88d27ae595042fc7b6170666f99be98"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/additive_ipfe.py",
+      "sha256": "bc16cd4a834784b71c8e25f75716c53dd4d0c144948a2f23f8ccb816febc36c5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/vectors/h0-e0001.json",
+      "sha256": "3425bb4869caef7b70fa608244f7f830d2175875e8f806139dbc6f4fc443253d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q00.json",
+      "sha256": "33dcf94fa32f932f53e421903990a02bae91f6cec52c1278d791377b81b7ada6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q01.json",
+      "sha256": "ee2af9188b47efaa6b084848f9541bf4cc9bc11a1fe9eba509fc0c9ebddad7bb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q02.json",
+      "sha256": "fdb00d9da4133d64570801b27e9ca03d44d0a5548f9568879cb0aef3329f697c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q03.json",
+      "sha256": "e5f28bd781a6155e37a4c6fbed9639577010ea9f309ed874d39216f604721b91"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q04.json",
+      "sha256": "de142b6a853130d04f5e9703253006dbec4a5bc5e9de65083be3866fbfa8483d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q05.json",
+      "sha256": "574ad2a8940e27486db5005646b35d20066b696b12b77c6abc390745377800d0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q06.json",
+      "sha256": "e7c4b435f9c95461798d2707905da722c5401f6896e622000be86beedc7d0dfc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q07.json",
+      "sha256": "e60315230f76014656f8f8cb9f1eae9b56952cdb85fb9f9d725b7f328af832df"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q08.json",
+      "sha256": "3013968da97e2afaa5b0efe9ef8ef557b4bead1443b6b9092947eddefc8b65a3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q09.json",
+      "sha256": "ea7ad5326cfd9a2b4f95075f272eafd7eb8cafad98547087bf9cd5fcb10679fe"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q10.json",
+      "sha256": "4fca373d8039a632eb56d88d5df6e5159c9ecaca9be0c90c391efeb7df309663"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q11.json",
+      "sha256": "927933f4e83e5b909410af7dd9f2bd0a1a9d1fd8e93280ee0be7d1e44fba41ed"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q12.json",
+      "sha256": "e44acf29c284cb61d385f967c4be212485f38db55f2b76a73bb2d9e145219a4c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q13.json",
+      "sha256": "c454434dfeec7b173ba47ac9c3111eb37ff27389566c55124916bb093dcca6cb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q14.json",
+      "sha256": "7a923087d9906e0e7d7b20b4ec50b12ed498c3577bc3f4257bc6f8677238e4c6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_queries/q15.json",
+      "sha256": "5c74ebf39c38d2ab38c2ea334d4d7712485c714c76c5d5e00afd6aa28793f67b"
+    }
+  ],
+  "coefficient_checks": [
+    {
+      "T": 1,
+      "k": 561,
+      "M": 1024,
+      "coefficient": 2048
+    },
+    {
+      "T": 384,
+      "k": 561,
+      "M": 262144,
+      "coefficient": 524288
+    }
+  ],
+  "input_hashes_after_equal_before": true,
+  "accounting": {
+    "Scry_queries": 0,
+    "Kagi_queries": 0,
+    "web_queries": 0,
+    "PDF_downloads_or_new_extractions": 0,
+    "encrypted_benchmark_runs": 0,
+    "recovery_or_extraction_experiments": 0
+  }
+}

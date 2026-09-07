@@ -1,0 +1,6 @@
+{
+  "encoder_inventory": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility.json",
+  "frontend_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/live_encoder/issue_text.py",
+  "input_path_and_input_hash_omitted": true,
+  "source_snapshot_scope": "Public roles frozen; original live frontend/encoder sources pinned and checked before and after."
+}

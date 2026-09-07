@@ -1,5 +1,5 @@
 role,operation,quantity,unit_and_scope
-source_encoder,backbone,cached mean10 only; no forward in this study,0,executed forward calls
+source_encoder,backbone,0,executed forward calls; cached mean10 only; no forward in this study
 issuer_or_public_query,center_embedding,576,scalar subtractions
 issuer_or_public_query,PCA_projection,4608,public-coefficient scalar products
 issuer_or_public_query,PCA_reduction,4600,scalar additions

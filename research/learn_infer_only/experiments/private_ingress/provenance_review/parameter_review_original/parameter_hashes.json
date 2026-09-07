@@ -1,0 +1,25 @@
+{
+  "classification": "EXECUTED frozen completed parameter-closure audit",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/PARAMETER_CLOSURE.md",
+      "sha256": "f7bce8ced8c8460c13a7fe43dfaffbad8bd644f698303f62dc9497b790858fca"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.py",
+      "sha256": "242a7299ad13f11e2936acf07f6ae3f3d15d0574cf33703631933bac3f159df4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.stdout.txt",
+      "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_results.json",
+      "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_sources.json",
+      "sha256": "ce6adf20bcca0d9d728400eb4fb0adebb183a9b14a5d3e6b369ac60fae7a4843"
+    }
+  ]
+}

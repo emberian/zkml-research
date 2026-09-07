@@ -33,4 +33,20 @@ python3 research/learn_infer_only/experiments/end_to_end/journal/controls.py --r
 
 [EXECUTED hardened private ingress] `results/private_002/report.json` records40 OS-random observations, eight expiries, four private scalar agreements and full public recomputed replay. The single trusted issuer/test oracle retains every observation and can reconstruct this zero-genesis deterministic window; the experiment demonstrates private ingress relative to keyless host/authority process inputs, not privacy from the issuer coalition. It has no utility claim.
 
-[OPEN until final report] Hardened full two-history utility run, successful live text integration and final evidence packaging. Current queue storage is O(W) ciphertexts; retained fresh/accumulator/output blobs and delta log are O(T). Runtime CAS/SQLite/private keys/private vectors are ignored. Complete command/event evidence is retained in aggregate JSONL rather than per-call files. Public fixed utility histories demonstrate arithmetic and utility preservation, not an unknown lifetime; the separate private ingress fixture demonstrates unknown synthetic observations but makes no utility claim. Scry0/web0 in this lane.
+[EXECUTED completed normal integration] `results/utility_002/report.json` passes
+both histories, all 384 Learn/96 Infer/256 expiry events and 96 oracle scores.
+All 96 queries use the ciphertext/finality/reader path; 16 are still known
+empty-state zeros. `results/live_text_002/report.json` passes actual source-model
+encoding, one Learn and two Infer, after the interpreter repair. The root has
+packaged their complete public command/event logs and runtime hash inventories.
+[Independent consolidation](../utility/live_encoder/FINAL_INTEGRATION.md) checks
+the normal source pins and complete log census. The separate verifying-reader
+successor also completes the full workload, as its own reports record.
+
+[DERIVED retention] Current queues are O(W) ciphertexts; retained fresh/
+accumulator/output blobs and delta logs are O(T). Runtime CAS/SQLite/private
+keys/vectors are ignored. Public fixed utility histories demonstrate arithmetic
+and utility preservation, not an unknown lifetime; fresh synthetic ingress has
+no utility claim. Scry0/web0 in this lane. The additional adversarial routing
+task was stopped at automatic safety review; it is not resumed or counted as
+part of this normal-integration closeout.

@@ -1,0 +1,69 @@
+{
+  "derived": {
+    "active_quantizations": 4,
+    "added_public_policy_float64_count": 2308,
+    "added_public_policy_raw_bytes": 18464,
+    "clip_calls": 2,
+    "conjunction_products": 4,
+    "generic_absolute_score_bound": 297805856,
+    "head_operations_are_plaintext": true,
+    "head_reduction_adds": 1150,
+    "intercept_adds": 2,
+    "new_encrypted_execution": false,
+    "nonzero_slots_per_route_at_most": 4,
+    "representation_dimensions": 577,
+    "signed_int8_contribution_raw_bytes": 577,
+    "two_heads_scalar_products_per_text_after_normalization": 1152,
+    "window_per_route": 32
+  },
+  "executed": {
+    "encode_384_cached_hidden_vectors": {
+      "calibration_soft_and_hard": {
+        "cpu_seconds": 0.0012510000000000021,
+        "process_high_water_rss_bytes_macos": 49709056,
+        "wall_seconds": 0.0013102499942760915
+      },
+      "original577": {
+        "cpu_seconds": 0.0023040000000000005,
+        "process_high_water_rss_bytes_macos": 49266688,
+        "wall_seconds": 0.00271333398995921
+      },
+      "quadratic8": {
+        "cpu_seconds": 0.002129999999999993,
+        "process_high_water_rss_bytes_macos": 51281920,
+        "wall_seconds": 0.002147249993868172
+      }
+    },
+    "extraction_process_wall_seconds": 7.029319458990358,
+    "five_lambda_fit_and_selection_including_hash_cache_checks": {
+      "cpu_seconds": 0.019853999999999983,
+      "process_high_water_rss_bytes_macos": 46972928,
+      "wall_seconds": 0.07391695899423212
+    },
+    "independent_audit_wall_seconds": 0.16463674997794442,
+    "model_extraction": {
+      "forward_cpu_seconds": 2.8133119999999985,
+      "forward_wall_seconds": 2.3529884159506764,
+      "load_cpu_seconds": 0.341685,
+      "load_wall_seconds": 0.4038122500060126,
+      "new_texts": 128,
+      "padded_tokens": 4640,
+      "process_high_water_rss_bytes_macos": 1421328384,
+      "total_cpu_seconds_including_imports": 5.96808,
+      "total_wall_seconds_including_imports": 6.480595583998365,
+      "unpadded_tokens": 4280
+    },
+    "source": "extraction.json, selection.json, results.json, audit.json and command records",
+    "utility_evaluation": {
+      "cpu_seconds": 1.50185,
+      "process_high_water_rss_bytes_macos": 57540608,
+      "wall_seconds": 2.6928456670138985
+    }
+  },
+  "limits": [
+    "Process high-water RSS values are not additive.",
+    "Calibration encode includes soft and hard arrays; shared normalization is timed with original577.",
+    "Batched model time per text is not single-query latency.",
+    "Fitted parameter count does not measure total private computation."
+  ]
+}
