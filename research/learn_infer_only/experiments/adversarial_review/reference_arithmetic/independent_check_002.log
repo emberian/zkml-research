@@ -1,0 +1,26 @@
+{
+  "schema": "independent-public-reference-review-v1",
+  "ok": true,
+  "time_utc": "2026-09-07T03:45:08.167859+00:00",
+  "script_sha256": "00808269ea6f6d336255aa9fd2843211d7f0d999ca146c7235cabdc8098e2c28",
+  "reference_sha256": "304538f5114d990cd3ba7ab11a05081ef05a42ac196cdab4925a1a39cd7e2522",
+  "manifests": {
+    "fixtures.json": "a63cb42bbd9fde407d2da63196eaf88df3344f8fba4fb05eb34e5ed63d23ebfb",
+    "utility-fixtures.json": "d8e437803ad590686f309306a24afa656d4898f70ca32bba4bc65e10dc4a88a0"
+  },
+  "public_ciphertexts_stream_decoded": 27,
+  "rns_coefficients_stream_decoded": 442368,
+  "public_query_count": 3,
+  "inverse_table_index_identities": 4095,
+  "utility_output_coefficients_checked": 16384,
+  "utility_horner_evaluations_checked": 48,
+  "utility_query_support": {
+    "positive": 270,
+    "negative": 269,
+    "zero": 38
+  },
+  "elapsed_seconds": 8.929318750015227,
+  "production_arithmetic_executed": false,
+  "secret_inputs_read": false,
+  "scope": "Positive retained public codec and ring-equation samples; no universal runtime/refinement/noise/privacy theorem."
+}

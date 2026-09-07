@@ -1,0 +1,121 @@
+{
+  "schema": "base-fe-bookkeeping-v1",
+  "scope": "Exact scalar/routing bookkeeping only; no cryptographic implementation or machine proof of quantum security",
+  "gkp_one_leg_bound": "n*eps_FHE + eps_GC + L*eps_ABE2 + delta_FHE",
+  "gkp_static_ind_bound": "2*(n*eps_FHE + eps_GC + L*eps_ABE2 + delta_FHE)",
+  "gkp_correctness_bound": "delta_FHE + delta_GC + L*delta_ABE2",
+  "rate_counterexamples": [
+    {
+      "log2_kappa": 32,
+      "argument_rescaled_to_kappa_power": 1,
+      "minus_log2_slow_negligible": 1024,
+      "minus_log2_target_2_to_minus_kappa_quarter": 256,
+      "slow_error_exceeds_target": false
+    },
+    {
+      "log2_kappa": 32,
+      "argument_rescaled_to_kappa_power": 2,
+      "minus_log2_slow_negligible": 4096,
+      "minus_log2_target_2_to_minus_kappa_quarter": 256,
+      "slow_error_exceeds_target": false
+    },
+    {
+      "log2_kappa": 32,
+      "argument_rescaled_to_kappa_power": 4,
+      "minus_log2_slow_negligible": 16384,
+      "minus_log2_target_2_to_minus_kappa_quarter": 256,
+      "slow_error_exceeds_target": false
+    },
+    {
+      "log2_kappa": 64,
+      "argument_rescaled_to_kappa_power": 1,
+      "minus_log2_slow_negligible": 4096,
+      "minus_log2_target_2_to_minus_kappa_quarter": 65536,
+      "slow_error_exceeds_target": true
+    },
+    {
+      "log2_kappa": 64,
+      "argument_rescaled_to_kappa_power": 2,
+      "minus_log2_slow_negligible": 16384,
+      "minus_log2_target_2_to_minus_kappa_quarter": 65536,
+      "slow_error_exceeds_target": true
+    },
+    {
+      "log2_kappa": 64,
+      "argument_rescaled_to_kappa_power": 4,
+      "minus_log2_slow_negligible": 65536,
+      "minus_log2_target_2_to_minus_kappa_quarter": 65536,
+      "slow_error_exceeds_target": false
+    },
+    {
+      "log2_kappa": 128,
+      "argument_rescaled_to_kappa_power": 1,
+      "minus_log2_slow_negligible": 16384,
+      "minus_log2_target_2_to_minus_kappa_quarter": 4294967296,
+      "slow_error_exceeds_target": true
+    },
+    {
+      "log2_kappa": 128,
+      "argument_rescaled_to_kappa_power": 2,
+      "minus_log2_slow_negligible": 65536,
+      "minus_log2_target_2_to_minus_kappa_quarter": 4294967296,
+      "slow_error_exceeds_target": true
+    },
+    {
+      "log2_kappa": 128,
+      "argument_rescaled_to_kappa_power": 4,
+      "minus_log2_slow_negligible": 262144,
+      "minus_log2_target_2_to_minus_kappa_quarter": 4294967296,
+      "slow_error_exceeds_target": true
+    }
+  ],
+  "independent_boolean_wrapper": [
+    {
+      "output_bits": 16,
+      "boolean_ciphertext_copies": 16,
+      "log2_output_bits": 4
+    },
+    {
+      "output_bits": 256,
+      "boolean_ciphertext_copies": 256,
+      "log2_output_bits": 8
+    },
+    {
+      "output_bits": 4096,
+      "boolean_ciphertext_copies": 4096,
+      "log2_output_bits": 12
+    },
+    {
+      "output_bits": 65536,
+      "boolean_ciphertext_copies": 65536,
+      "log2_output_bits": 16
+    }
+  ],
+  "one_advice_reduction_paths": {
+    "fhe_single_bit": [
+      "classical_setup_other_components",
+      "embed_one_fhe_challenge",
+      "assemble_classical_view",
+      "consume_rho_once_in_D"
+    ],
+    "garbling": [
+      "classical_setup_fhe_and_abe",
+      "request_one_real_or_simulated_garbling",
+      "assemble_classical_view",
+      "consume_rho_once_in_D"
+    ],
+    "abe_hidden_label": [
+      "sample_static_attribute_and_predicate",
+      "choose_unopened_branch",
+      "embed_one_abe_challenge",
+      "assemble_classical_view",
+      "consume_rho_once_in_D"
+    ],
+    "lwe_joint_block": [
+      "embed_one_classical_lwe_tuple",
+      "simulate_classical_trapdoor_transcript",
+      "assemble_classical_view",
+      "consume_rho_once_in_D"
+    ]
+  }
+}

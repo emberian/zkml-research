@@ -17,11 +17,26 @@ bits. All 122,880 predictions and exact retention controls are retained in
 The true-attribute control is 100%; it is privileged structured information,
 not a demonstrated natural-language encoder.
 
-[OPEN next hypothesis] A cached E5 sentence encoder offers a different training
-objective with no new model download. Its preregistered 768-to-576 public
-projection plus bias preserves the 577-coordinate encrypted interface, with a
-raw-dimension diagnostic and fresh evaluation texts/histories. No result is
-claimed before that separate experiment completes.
+[EXECUTED further negative] The cached E5 sentence encoder's preregistered
+768-to-576 projection plus bias also fails its usefulness gates on fresh texts
+and 64 new histories: 4,430/8,192 (54.077%) versus the original 4,340/8,192
+(52.979%) on that same test. The mean improvement of 1.099 percentage points
+does not clear its uncertainty/acceptance condition; nonlinear transfer does
+not improve. The raw 769-coordinate diagnostic scores 4,504/8,192. All
+147,456 predictions and exact retention controls are retained in
+[e5_successor](experiments/end_to_end/utility/e5_successor/REPORT.md).
+
+[EXECUTED implementation preflight; OPEN utility] A teacher-only eight-input
+SmolLM3-3B semantic-prompt preflight runs on local MPS. Its initial runtime
+silently substituted sampling for intended greedy decoding; this deviation is
+preserved and not called a valid greedy evaluation. A separately authorized
+configuration correction kept prompts, inputs and parser fixed and confirmed
+greedy decoding in all eight actual calls. It still accepts zero of eight
+responses under the frozen parser; visible payloads also include three nulls
+and two wrong bits. Neither attempt uses held-out texts or supplies a
+continual-learning utility estimate. A distinct teacher-only binary-likelihood
+selection study now separates factual comprehension from generated JSON format.
+See [the preflight record](experiments/end_to_end/utility/semantic_attribute_preflight/REPORT.md).
 
 ## Historical utility studies
 

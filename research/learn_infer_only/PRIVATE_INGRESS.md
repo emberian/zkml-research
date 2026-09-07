@@ -24,8 +24,21 @@ therefore withdraws an all-parameter circuit-size objection: fixed-H polynomial
 enlargement can evade the particular support lower bounds. A short effective
 random seed remains an obstruction, including deterministic PRG stretching.
 The source's lambda/ellR shorthand and the derived width-complete reading are
-stated separately. Independent review is in progress; none of these sizing
-controls establishes a quantitative joint future-package compatibility bound.
+stated separately. Independent review passed after strengthening the separating
+next-ciphertext condition to L>E and preserving the original weaker wording as
+history. None of these sizing controls establishes source compatibility.
+
+[DERIVED terminal successor] The [terminal joint-output lemma](experiments/private_ingress/provenance_review/terminal_joint/TERMINAL_JOINT.md)
+gives a nonvacuous same-parent pair with distinct next states and equal terminal
+high-bit outputs. Its complete earlier-package simulation uses no terminal
+master and bounds the joint gap by `4(d1+d2)+2p+Q(t)2^-t+2N2^-b` under named
+primitive games. Quantitative primitive rates and the bridge from random-setup
+security to the source's compatibility quantifiers remain open. A hardwired
+terminal-secret auxiliary string is not claimed as a source-definition
+refutation. [Independent mathematical review](experiments/adversarial_review/terminal_joint/REPORT.md)
+accepts the conditional setup-averaged lemma. It clarifies that the public R2
+statement omits the current parent commitment; same-parent descent is enforced
+by F and the experiment, not by that public statement alone.
 
 [DERIVED same-parent repair boundary] [DUAL_MODE.md](experiments/private_ingress/provenance_review/DUAL_MODE.md)
 shows how an equivocal hiding commitment can keep one current parent valid on

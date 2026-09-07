@@ -1,0 +1,20 @@
+{
+  "label": "EXECUTED",
+  "scope": "Verify frozen proof/review provenance and closeout links, without replaying others' tools.",
+  "closeout_sha256": "b759230559fc27463281b3ef0ff449df8bffbbff989fc6c633ea2839ee521eb7",
+  "script_sha256": "b54b7846c01d7d323e99d450894291b32b8f8a012a7ec48755a1c6d955009f10",
+  "frozen_proof_source_and_review_files_checked": 7,
+  "review_input_hashes_rechecked": 13,
+  "closeout_local_links_checked": 5,
+  "expected_hashes": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/POINTWISE_CORRECTNESS.md": "c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/INSTANTIATION.md": "163ebdcc5e376441b4a146b6964aba60002c3c55952cfb1e17d0c363478109fd",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_bootstrap/REPORT.md": "7809d588814e987b5bc05a165f681601229bcdc098b75c7508255ad4898642e7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_bootstrap/results.json": "64d819f1970cd96b261a16b5923525e380f3ec390e2c7c8a02fb321304acc7ea",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_bootstrap/review_manifest.json": "d5901811297c56475327856855c98c63eb027fbd3f51c33c04e4f8e59f964298",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d"
+  },
+  "additional_queries": 0,
+  "external_or_frozen_writes": 0
+}

@@ -1,0 +1,75 @@
+{"record_id": 0, "input_tokens": 293, "generated_tokens": 20, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 15, 345, 220, 330, 65, 794, 854, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": null\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "generation_wall_seconds": 10.611027332983213, "generation_process_cpu_seconds": 2.4375350000000005, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6703595520, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 8215461888}}
+{"record_id": 16, "input_tokens": 294, "generated_tokens": 20, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 15, 345, 220, 330, 65, 794, 854, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": null\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "generation_wall_seconds": 2.493125625012908, "generation_process_cpu_seconds": 1.5584849999999992, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6703611904, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 8215461888}}
+{"record_id": 32, "input_tokens": 293, "generated_tokens": 21, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 16, 345, 220, 330, 65, 794, 220, 15, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 1,\n  \"b\": 0\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "generation_wall_seconds": 4.16564545800793, "generation_process_cpu_seconds": 1.520779000000001, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6703611904, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 8215461888}}
+{"record_id": 48, "input_tokens": 294, "generated_tokens": 20, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 16, 345, 220, 330, 65, 794, 854, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 1,\n  \"b\": null\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "generation_wall_seconds": 3.4051080420031212, "generation_process_cpu_seconds": 1.3760489999999983, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6703611904, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 8215461888}}
+{"record_id": 64, "input_tokens": 290, "generated_tokens": 13, "generated_token_ids": [5018, 64, 794, 220, 15, 11, 330, 65, 794, 220, 15, 92, 128012], "raw_output": "{\"a\": 0, \"b\": 0}", "parsed": {"a": 0, "b": 0}, "parse_error": null, "generation_wall_seconds": 2.6674403750221245, "generation_process_cpu_seconds": 1.1102210000000028, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6703661056, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 8215461888}}
+{"record_id": 80, "input_tokens": 291, "generated_tokens": 21, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 15, 345, 220, 330, 65, 794, 220, 16, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": 1\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "generation_wall_seconds": 3.4920587920059916, "generation_process_cpu_seconds": 1.457456999999998, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6703661056, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 8215461888}}
+{"record_id": 96, "input_tokens": 292, "generated_tokens": 20, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 854, 345, 220, 330, 65, 794, 220, 16, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": null,\n  \"b\": 1\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "generation_wall_seconds": 2.9826115829928312, "generation_process_cpu_seconds": 1.6282309999999995, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6703661056, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 8215461888}}
+{"record_id": 112, "input_tokens": 293, "generated_tokens": 20, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 854, 345, 220, 330, 65, 794, 220, 16, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": null,\n  \"b\": 1\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "generation_wall_seconds": 2.640878000005614, "generation_process_cpu_seconds": 1.5428239999999995, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6703661056, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 8215461888}}
+{
+  "execution_completed": true,
+  "teacher_inputs": 8,
+  "teacher_attribute_denominator": 16,
+  "valid_json_count": 1,
+  "correct_attribute_count": 2,
+  "correct_pair_count": 1,
+  "heldout_inputs": 0,
+  "utility_history_runs": 0,
+  "model_parameter_count": 3075098624,
+  "runtime": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "torch": "2.10.0",
+    "transformers": "4.57.3",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "mps_built": true,
+    "mps_available": true,
+    "cuda_available": false
+  },
+  "settings": {
+    "device": "mps",
+    "dtype": "float16",
+    "source_weight_dtype": "bfloat16",
+    "attention": "eager",
+    "enable_thinking": false,
+    "do_sample": false,
+    "max_new_tokens": 32,
+    "requests_sequential": true,
+    "kv_cache": "per request only, discarded between calls",
+    "threads": 2,
+    "interop_threads": 1,
+    "seed": 7901,
+    "backbone_updates": 0,
+    "prompt_candidates": 1
+  },
+  "cpu_load_wall_seconds": 2.96952675000648,
+  "cpu_load_process_cpu_seconds": 2.878121,
+  "transfer_to_mps_wall_seconds": 2.508984457992483,
+  "load_and_transfer_wall_seconds": 5.478511207998963,
+  "generation_wall_seconds": 32.45789520803373,
+  "generation_process_cpu_seconds": 12.631580999999999,
+  "total_wall_seconds_including_imports": 56.76297383298515,
+  "total_process_cpu_seconds_including_imports": 24.544565000000002,
+  "memory_before_load": {
+    "mps_current_allocated_bytes": 0,
+    "mps_driver_allocated_bytes": 393216,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 543621120
+  },
+  "memory_after_load": {
+    "mps_current_allocated_bytes": 6150197504,
+    "mps_driver_allocated_bytes": 6484787200,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 8215461888
+  },
+  "memory_at_end": {
+    "mps_current_allocated_bytes": 6150205184,
+    "mps_driver_allocated_bytes": 6703661056,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 8215461888
+  },
+  "freeze_sha256": "4567ed61e2b1b011be4d0aecef1f6e97a14a3e6b78680323453b9c77a1a6a81f",
+  "generation_config_sha256": "5c161a22700d1f53cfb433d23541fc20f1adc1d9ecd4b29b44e82210c6b395e6",
+  "issuer_inputs_sha256": "52783ddb47962dde1e9f0f359bc71fd521d3a74d328423753115d12b053440fb",
+  "raw_outputs_sha256": "698323efdb305e0d38531f6cc9b9d9fcf48518e6ce626c10bd2f6e54809fddc6"
+}

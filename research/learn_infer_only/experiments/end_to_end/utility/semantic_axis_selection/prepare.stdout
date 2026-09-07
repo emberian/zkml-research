@@ -1,0 +1,55 @@
+{
+  "model": "HuggingFaceTB/SmolLM3-3B",
+  "revision": "a07cc9a04f16550a088caea529712d1d335b0ac1",
+  "model_path": "/Users/ember/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM3-3B/snapshots/a07cc9a04f16550a088caea529712d1d335b0ac1",
+  "previously_inspected_teacher_ids": [
+    0,
+    16,
+    32,
+    48,
+    64,
+    80,
+    96,
+    112
+  ],
+  "prompt_framings": [
+    "A",
+    "B"
+  ],
+  "actual_forward_examples": 512,
+  "score_batches": 64,
+  "batch_size": 8,
+  "one_token_suffix_checks": 1024,
+  "alternatives": {
+    "A": [
+      15,
+      16
+    ],
+    "B": [
+      9642,
+      2822
+    ]
+  },
+  "pad_token_id": 128012,
+  "runtime": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "torch": "2.10.0",
+    "transformers": "4.57.3",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "mps_built": true,
+    "mps_available": true,
+    "cuda_available": false
+  },
+  "prior_files_verified": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight": 26,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/corrected_run": 19
+  },
+  "weights_loaded_in_prepare": false,
+  "heldout_inputs": 0,
+  "utility_history_runs": 0,
+  "prepare_wall_seconds_including_imports": 6.074684166989755,
+  "nonpadding_tokens": 84832,
+  "padded_tokens": 87040
+}
+freeze_sha256 cb1fda3cef63a87677bc6882c2f8e3e45ab88ed1e95996f7a0adeea8cd93e758

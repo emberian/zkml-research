@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "scope": "five repeated public exponentiations; no IPFE replacement or secret data",
+  "script_sha256": "268bef83ed774f3512a60c311381adaaa0fdf8631ae53c68f94cf03e61d2fb91",
+  "library_path": "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib",
+  "library_sha256": "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c",
+  "library_version": "OpenSSL 3.6.4 25 Aug 2026",
+  "manual_path": "/opt/homebrew/opt/openssl@3/share/man/man3/BN_mod_exp_mont.3ssl",
+  "manual_sha256": "3cd2a12373c9c0c4c09a08e1565ad512173abb93696a6fc1d070613019d8112b",
+  "manual_location": "DESCRIPTION, source lines169-176: fixed-window exponent routine",
+  "function": "BN_mod_exp_mont_consttime",
+  "same_2048_bit_MODP_group": true,
+  "public_base_rule": "pow(2,123456789,P)",
+  "public_exponent_rule": "Q//3",
+  "samples": 5,
+  "python_ns": [
+    230370584,
+    149952708,
+    85635542,
+    108916084,
+    106376542
+  ],
+  "native_ns": [
+    2308042,
+    1934583,
+    53263583,
+    2104291,
+    12684875
+  ],
+  "python_median_ns": 108916084,
+  "native_median_ns": 2308042,
+  "whole_protocol_constant_time_claim": false,
+  "full_crypto_measurement": false,
+  "package_installations": 0,
+  "installed_python_modules": {
+    "gmpy2": null,
+    "nacl": null,
+    "cryptography": "/opt/homebrew/lib/python3.14/site-packages/cryptography/__init__.py",
+    "Crypto": null,
+    "sympy": "/Users/ember/Library/Python/3.14/lib/python/site-packages/sympy/__init__.py"
+  }
+}

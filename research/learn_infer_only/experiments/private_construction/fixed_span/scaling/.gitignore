@@ -1,0 +1,8 @@
+# Fresh randomized arithmetic artifacts; replay from pinned source and fixture.
+/micro_results/*.bin
+/native_micro_outputs/*.bin
+/full_run/outputs/*.bin
+/full_run/outputs/ciphertexts/
+/full_run/outputs/checkpoints/
+__pycache__/
+*.py[cod]

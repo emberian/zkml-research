@@ -1,0 +1,140 @@
+{
+  "metered_searches": 0,
+  "web_queries": 4,
+  "local_pdf_reads": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+      "sha256": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "text_sha256": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "sha256": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "text_sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt"
+      ],
+      "exit_code": 0,
+      "text_sha256": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf",
+      "sha256": "3574f296f030d424c8cf3f818b947ff8e1a0a39c42f86737ec53cc346b3e7896",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_917.txt"
+      ],
+      "exit_code": 0,
+      "text_sha256": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+      "sha256": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt"
+      ],
+      "exit_code": 0,
+      "text_sha256": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/148.pdf",
+      "sha256": "9c4776ff48ce2b1b50b0b043c1ba92fc93ecae2c573ac3b7e807ad262d10cf92",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/148.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_148.txt"
+      ],
+      "exit_code": 0,
+      "text_sha256": "1717ee97af18c99d344dd24b997b99a910dec0cb598c3a9945210c425da7ef76"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf",
+      "sha256": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt"
+      ],
+      "exit_code": 0,
+      "text_sha256": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/364.pdf",
+      "sha256": "1654075582d66a25bf817dd62b815711eecb2b255584925640663e1aa2d000f9",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/364.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_364.txt"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "text_sha256": "5be6e730ae317e989cd5ac089260e7198a188383da7d02fbc2b157b807c5a953"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/521.pdf",
+      "sha256": "104a5b9400c3fe147abfc10c37d3a960ce8ec6f74b97d93bffed995bbbf16779",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/521.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_521.txt"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "text_sha256": "0c18113bb1e62d6c2621a2c7eb77a2485091172883c5ef6d12cdf93717a855d8"
+    }
+  ],
+  "web_query_log": [
+    {
+      "query": "\"Outsourcing Private RAM Computation\" eprint",
+      "purpose": "identify primary reference number; no PDF opened or downloaded",
+      "reference": "https://eprint.iacr.org/2014/148"
+    },
+    {
+      "query": "\"Attribute-Based Encryption for Circuits\" \"2013/\" Gorbunov",
+      "purpose": "identify primary reference number; no PDF opened or downloaded",
+      "reference": "https://eprint.iacr.org/2013/337"
+    },
+    {
+      "query": "\"On the achievability of simulation-based security for functional encryption\" eprint",
+      "purpose": "identify primary reference number; no PDF opened or downloaded",
+      "reference": "https://eprint.iacr.org/2013/364"
+    },
+    {
+      "query": "\"Functional encryption with bounded collusions via multi-party computation\" eprint",
+      "purpose": "identify primary reference number; no PDF opened or downloaded",
+      "reference": "https://eprint.iacr.org/2012/521"
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+#!/usr/bin/env python3
+"""Review only: saved public valid samples, no production arithmetic execution.
+
+Independent streaming-bit codec and output-indexed integer convolution. The
+copied author's reference is used only as a second decoder/transform comparison.
+"""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import importlib.util
+import json
+import sys
+import time
+
+HERE = Path(__file__).resolve().parent
+PACKET = HERE.parents[1] / "end_to_end" / "reference_arithmetic"
+N = 4096
+QS = (2199023190017, 4398046486529)
+WIDTH = 577
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def fields(data):
+    # Cursor-based valid wire parser, independent of reference.proto_fields.
+    cursor = 0
+
+    def take_varint():
+        nonlocal cursor
+        value, scale = 0, 1
+        while True:
+            byte = data[cursor]
+            cursor += 1
+            value += (byte % 128) * scale
+            if byte < 128:
+                return value
+            scale *= 128
+
+    result = []
+    while cursor < len(data):
+        tag = take_varint()
+        if tag % 8 == 0:
+            value = take_varint()
+        else:
+            assert tag % 8 == 2
+            length = take_varint()
+            value = data[cursor:cursor + length]
+            assert len(value) == length
+            cursor += length
+        result.append((tag // 8, tag % 8, value))
+    assert cursor == len(data)
+    return result
+
+
+def unpack_stream(data, bits):
+    # One small byte window per coefficient; never one giant integer per limb.
+    result = []
+    for i in range(N):
+        offset = i * bits
+        first, shift = divmod(offset, 8)
+        last = (offset + bits + 7) // 8
+        value = 0
+        for j in range(last - first):
+            value += data[first + j] * 256**j
+        result.append((value // 2**shift) % 2**bits)
+    return result
+
+
+def pack_stream(values, bits):
+    # Emit successive little-endian bytes from a bounded carry accumulator.
+    result = bytearray()
+    buffer, used = 0, 0
+    for value in values:
+        buffer += value * 2**used
+        used += bits
+        while used >= 8:
+            result.append(buffer % 256)
+            buffer //= 256
+            used -= 8
+    assert used == 0 and buffer == 0
+    return bytes(result)
+
+
+def decode_ct(data):
+    assert len(data) == 85103 and data[:9] == b"RSBFV001\x01"
+    assert data[9:41].hex() == "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3"
+    assert int.from_bytes(data[73:81], "little") == 85022
+    polynomials = fields(data[81:])
+    assert [(f, w) for f, w, _ in polynomials] == [(1, 2), (1, 2)]
+    result = []
+    for _, _, poly in polynomials:
+        assert len(poly) == 42507
+        fs = fields(poly)
+        assert [(f, w) for f, w, _ in fs] == [(1, 0), (2, 0), (3, 2), (4, 0)]
+        assert fs[0][2] == 2 and fs[1][2] == N and fs[3][2] == 1
+        raw = fs[2][2]
+        assert len(raw) == 42496
+        limbs, offset = [], 0
+        for q, bits in zip(QS, (41, 42)):
+            size = N * bits // 8
+            limb_bytes = raw[offset:offset + size]
+            limb = unpack_stream(limb_bytes, bits)
+            assert all(0 <= c < q for c in limb)
+            assert pack_stream(limb, bits) == limb_bytes
+            limbs.append(limb)
+            offset += size
+        assert offset == len(raw)
+        result.append(limbs)
+    return result
+
+
+def reverse_bits(value, width):
+    result = 0
+    for _ in range(width):
+        result = 2 * result + value % 2
+        value //= 2
+    assert value == 0
+    return result
+
+
+def coefficient_product(a, b, q):
+    # Output-centric formula, distinct from the author's input-scatter loops.
+    result = []
+    for k in range(N):
+        cut = min(k + 1, len(b))
+        ordinary = sum(a[k - j] * b[j] for j in range(cut))
+        wrap = sum(a[N + k - j] * b[j] for j in range(cut, len(b)))
+        result.append((ordinary - wrap) % q)
+    return result
+
+
+def main():
+    started = time.monotonic()
+    module_path = HERE / "replay_source/reference.py"
+    spec = importlib.util.spec_from_file_location("reviewed_reference", module_path)
+    ref = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = ref
+    spec.loader.exec_module(ref)
+    assert sha(module_path.read_bytes()) == "304538f5114d990cd3ba7ab11a05081ef05a42ac196cdab4925a1a39cd7e2522"
+    manifests = {name: json.loads((PACKET / name).read_text()) for name in
+                 ("fixtures.json", "utility-fixtures.json")}
+    blobs, decoded, inventory = {}, {}, []
+    for manifest in manifests.values():
+        for digest, entry in manifest["blobs"].items():
+            packed = (PACKET / entry["path"]).read_bytes()
+            assert sha(packed) == entry["gzip_sha256"]
+            raw = gzip.decompress(packed)
+            assert sha(raw) == digest and len(raw) == entry["bytes"]
+            blobs[digest] = raw
+            if entry["kind"] == "public_ciphertext":
+                value = decode_ct(raw)
+                assert value == ref.decode_ct(raw).components
+                decoded[digest] = value
+            inventory.append({"sha256": digest, "kind": entry["kind"], "bytes": len(raw)})
+
+    # Verify the inverse-table integer index identity at every actual layer/block.
+    index_count = 0
+    for r in range(12):
+        m = 2**r
+        for i in range(m):
+            forward = reverse_bits(m + i, 12)
+            inverse = reverse_bits(N - 2*m + i, 12) + 1
+            closed = 2**(12-r-1) + 2**(12-r)*reverse_bits(i, r)
+            assert forward == inverse == closed
+            index_count += 1
+
+    event = manifests["utility-fixtures.json"]["events"][0]
+    ids = event["hashes"]
+    query = json.loads(blobs[ids["query"]])["coefficients"]
+    assert len(query) == WIDTH and all(type(x) is int and -127 <= x <= 127 for x in query)
+    b = list(reversed(query))
+    acc, expected = decoded[ids["acc"]], decoded[ids["result"]]
+    assert any(c for p in acc for limb in p for c in limb)
+    rows = []
+    # Direct Horner evaluations validate odd-root/bit-reversal interpretation
+    # on actual nonzero polynomial arrays, independently of either NTT routine.
+    indices = [0, 1, 2, 3, 7, 31, 63, 127, 575, 576, 2048, 4095]
+    for component in range(2):
+        for limb, q in enumerate(QS):
+            a = acc[component][limb]
+            actual = coefficient_product(a, b, q)
+            assert actual == expected[component][limb]
+            psi = ref.primitive_root(q, N)
+            assert pow(psi, N, q) == q - 1 and pow(psi, 2*N, q) == 1
+            transformed = ref.source_indexed_forward(a, psi, q)
+            for k in indices:
+                root = pow(psi, 2*reverse_bits(k, 12)+1, q)
+                evaluation = 0
+                for c in reversed(a):
+                    evaluation = (evaluation*root + c) % q
+                assert evaluation == transformed[k]
+            rows.append({"component": component, "limb": limb, "modulus": q,
+                         "coefficients_match": N, "horner_evaluations_match": len(indices),
+                         "integer_array_sha256": sha(json.dumps(actual, separators=(",", ":")).encode())})
+
+    report = {"schema": "independent-public-reference-review-v1", "ok": True,
+              "time_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "script_sha256": sha(Path(__file__).read_bytes()),
+              "reference_sha256": sha(module_path.read_bytes()),
+              "manifests": {k: sha((PACKET/k).read_bytes()) for k in manifests},
+              "public_ciphertexts_stream_decoded": len(decoded),
+              "rns_coefficients_stream_decoded": len(decoded)*2*2*N,
+              "public_query_count": sum(x["kind"] == "public_query" for x in inventory),
+              "inverse_table_index_identities": index_count,
+              "utility_output_coefficients_checked": 2*2*N,
+              "utility_horner_evaluations_checked": len(indices)*2*2,
+              "utility_query_support": {"positive": sum(x>0 for x in query),
+                                        "negative": sum(x<0 for x in query),
+                                        "zero": sum(x==0 for x in query)},
+              "rows": rows, "public_inputs": inventory,
+              "elapsed_seconds": time.monotonic()-started,
+              "production_arithmetic_executed": False, "secret_inputs_read": False,
+              "scope": "Positive retained public codec and ring-equation samples; no universal runtime/refinement/noise/privacy theorem."}
+    (HERE / "independent_results.json").write_text(json.dumps(report, indent=2)+"\n")
+    print(json.dumps({k:v for k,v in report.items() if k not in ("public_inputs", "rows")}, indent=2))
+
+
+if __name__ == "__main__":
+    main()

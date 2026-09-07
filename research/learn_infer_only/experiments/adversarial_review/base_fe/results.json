@@ -1,0 +1,288 @@
+{
+  "label": "EXECUTED",
+  "scope": "Exact finite algebra for a source-level base-FE review.\n\nNo encryption, runtime privacy, state-recovery, extraction, or quantum protocol\nexperiment is implemented. The probability spaces below test bookkeeping and\nfinite-group translation facts used in the written conditional reductions.\n",
+  "script_sha256": "5738f302056348dcecf6520cf9d0af233f6ad86441a6c4e49696e3de9a45db7a",
+  "all_block_replacement": {
+    "finite_group_message_pair_checks": 2145,
+    "direct_two_leg_bound_tight": {
+      "one_leg": "1/8",
+      "message_gap": "1/4"
+    },
+    "uniform_marginal_without_independence_gap": "1",
+    "correlated_shortcut_witness": {
+      "modulus": 3,
+      "all_block_TV": "1/9",
+      "correlated_to_uniform_last_TV": "4/27",
+      "row_major_masses": [
+        "2/9",
+        "1/9",
+        "1/9",
+        "0",
+        "1/9",
+        "1/9",
+        "1/9",
+        "1/9",
+        "1/9"
+      ]
+    },
+    "scope": "Finite group laws, not instantiated TOR/LWE/ABE games."
+  },
+  "branch_errors": {
+    "wrapper_failure_implication_cases": 32,
+    "exact_false_branch_refusal_cases": 8,
+    "static_unopened_branch_cases": 2
+  },
+  "key_width": {
+    "literal_matrix_tuple_width_checks": 69632,
+    "per_level_lower_bound_rows": [
+      {
+        "depth": 0,
+        "relaxed_root_payload_lower_bound": 1,
+        "weaker_four_to_depth_bound": 1
+      },
+      {
+        "depth": 1,
+        "relaxed_root_payload_lower_bound": 6,
+        "weaker_four_to_depth_bound": 4
+      },
+      {
+        "depth": 2,
+        "relaxed_root_payload_lower_bound": 26,
+        "weaker_four_to_depth_bound": 16
+      },
+      {
+        "depth": 3,
+        "relaxed_root_payload_lower_bound": 106,
+        "weaker_four_to_depth_bound": 64
+      },
+      {
+        "depth": 4,
+        "relaxed_root_payload_lower_bound": 426,
+        "weaker_four_to_depth_bound": 256
+      },
+      {
+        "depth": 5,
+        "relaxed_root_payload_lower_bound": 1706,
+        "weaker_four_to_depth_bound": 1024
+      },
+      {
+        "depth": 6,
+        "relaxed_root_payload_lower_bound": 6826,
+        "weaker_four_to_depth_bound": 4096
+      },
+      {
+        "depth": 7,
+        "relaxed_root_payload_lower_bound": 27306,
+        "weaker_four_to_depth_bound": 16384
+      },
+      {
+        "depth": 8,
+        "relaxed_root_payload_lower_bound": 109226,
+        "weaker_four_to_depth_bound": 65536
+      },
+      {
+        "depth": 9,
+        "relaxed_root_payload_lower_bound": 436906,
+        "weaker_four_to_depth_bound": 262144
+      },
+      {
+        "depth": 10,
+        "relaxed_root_payload_lower_bound": 1747626,
+        "weaker_four_to_depth_bound": 1048576
+      },
+      {
+        "depth": 11,
+        "relaxed_root_payload_lower_bound": 6990506,
+        "weaker_four_to_depth_bound": 4194304
+      },
+      {
+        "depth": 12,
+        "relaxed_root_payload_lower_bound": 27962026,
+        "weaker_four_to_depth_bound": 16777216
+      },
+      {
+        "depth": 13,
+        "relaxed_root_payload_lower_bound": 111848106,
+        "weaker_four_to_depth_bound": 67108864
+      },
+      {
+        "depth": 14,
+        "relaxed_root_payload_lower_bound": 447392426,
+        "weaker_four_to_depth_bound": 268435456
+      },
+      {
+        "depth": 15,
+        "relaxed_root_payload_lower_bound": 1789569706,
+        "weaker_four_to_depth_bound": 1073741824
+      },
+      {
+        "depth": 16,
+        "relaxed_root_payload_lower_bound": 7158278826,
+        "weaker_four_to_depth_bound": 4294967296
+      },
+      {
+        "depth": 17,
+        "relaxed_root_payload_lower_bound": 28633115306,
+        "weaker_four_to_depth_bound": 17179869184
+      },
+      {
+        "depth": 18,
+        "relaxed_root_payload_lower_bound": 114532461226,
+        "weaker_four_to_depth_bound": 68719476736
+      },
+      {
+        "depth": 19,
+        "relaxed_root_payload_lower_bound": 458129844906,
+        "weaker_four_to_depth_bound": 274877906944
+      },
+      {
+        "depth": 20,
+        "relaxed_root_payload_lower_bound": 1832519379626,
+        "weaker_four_to_depth_bound": 1099511627776
+      },
+      {
+        "depth": 21,
+        "relaxed_root_payload_lower_bound": 7330077518506,
+        "weaker_four_to_depth_bound": 4398046511104
+      },
+      {
+        "depth": 22,
+        "relaxed_root_payload_lower_bound": 29320310074026,
+        "weaker_four_to_depth_bound": 17592186044416
+      },
+      {
+        "depth": 23,
+        "relaxed_root_payload_lower_bound": 117281240296106,
+        "weaker_four_to_depth_bound": 70368744177664
+      },
+      {
+        "depth": 24,
+        "relaxed_root_payload_lower_bound": 469124961184426,
+        "weaker_four_to_depth_bound": 281474976710656
+      },
+      {
+        "depth": 25,
+        "relaxed_root_payload_lower_bound": 1876499844737706,
+        "weaker_four_to_depth_bound": 1125899906842624
+      },
+      {
+        "depth": 26,
+        "relaxed_root_payload_lower_bound": 7505999378950826,
+        "weaker_four_to_depth_bound": 4503599627370496
+      },
+      {
+        "depth": 27,
+        "relaxed_root_payload_lower_bound": 30023997515803306,
+        "weaker_four_to_depth_bound": 18014398509481984
+      },
+      {
+        "depth": 28,
+        "relaxed_root_payload_lower_bound": 120095990063213226,
+        "weaker_four_to_depth_bound": 72057594037927936
+      },
+      {
+        "depth": 29,
+        "relaxed_root_payload_lower_bound": 480383960252852906,
+        "weaker_four_to_depth_bound": 288230376151711744
+      },
+      {
+        "depth": 30,
+        "relaxed_root_payload_lower_bound": 1921535841011411626,
+        "weaker_four_to_depth_bound": 1152921504606846976
+      },
+      {
+        "depth": 31,
+        "relaxed_root_payload_lower_bound": 7686143364045646506,
+        "weaker_four_to_depth_bound": 4611686018427387904
+      },
+      {
+        "depth": 32,
+        "relaxed_root_payload_lower_bound": 30744573456182586026,
+        "weaker_four_to_depth_bound": 18446744073709551616
+      }
+    ],
+    "premises": [
+      "uncompressed explicit GKP/GVW tuple",
+      "complete next-level public key embedded in plaintext",
+      "next-level GKP message bound covers its payload",
+      "L>=1 and nonempty encoding of each matrix"
+    ],
+    "scope": "Refutes this literal recursive-payload substitution only; no claim about compressed or alternative short-key constructions."
+  },
+  "coefficients": {
+    "gkp_and_abe_gate_coefficient_cases": 16384,
+    "direct_ABE_LWE_coefficient": 2,
+    "black_box_TOR_composition_safe_LWE_coefficient": 4,
+    "ABE_gate_statistical_coefficient_for_one_key": "2*g*(eta_recode + eta_key), when each is a per-replacement TV envelope"
+  },
+  "author_replay": {
+    "command": [
+      "python3",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/base_fe/reference/rate_ledger.py"
+    ],
+    "exit_code": 0,
+    "byte_identical_owned_script": true,
+    "result_matches_frozen_author": true
+  },
+  "additional_web_queries": 0,
+  "additional_scry_queries": 0,
+  "additional_kagi_queries": 0,
+  "PDF_downloads": 0,
+  "input_hashes_before": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/source_spans.json": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/rate_ledger.py": "be8fa2b43a936bd27be48c1524aa7ec0399f9ac24c2c5baa3b90730a02f5617c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/rate_ledger.json": "3c81183af2a9aebad00dda88505024ed564db0ac8a7c84291b3a4a0adad558f4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/validate.py": "bb6eb21cbf98360a65a8711e3091e84ebbf52f32b401be25fe073a38185e42c0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/validation.json": "15b8d471390b8595e3917cf483de7d027c1ebbc1bb1598202e3504f6f0cfdd6b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/artifact_hashes.json": "59240902a726feea09f8a583e63a5401203411443b414fa1370016ab5d76e03b",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf": "3574f296f030d424c8cf3f818b947ff8e1a0a39c42f86737ec53cc346b3e7896",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_917.txt": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/148.pdf": "9c4776ff48ce2b1b50b0b043c1ba92fc93ecae2c573ac3b7e807ad262d10cf92",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_148.txt": "1717ee97af18c99d344dd24b997b99a910dec0cb598c3a9945210c425da7ef76",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/364.pdf": "1654075582d66a25bf817dd62b815711eecb2b255584925640663e1aa2d000f9",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_364.txt": "5be6e730ae317e989cd5ac089260e7198a188383da7d02fbc2b157b807c5a953",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/521.pdf": "104a5b9400c3fe147abfc10c37d3a960ce8ec6f74b97d93bffed995bbbf16779",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_521.txt": "0c18113bb1e62d6c2621a2c7eb77a2485091172883c5ef6d12cdf93717a855d8"
+  },
+  "input_hashes_after": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/source_spans.json": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/rate_ledger.py": "be8fa2b43a936bd27be48c1524aa7ec0399f9ac24c2c5baa3b90730a02f5617c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/rate_ledger.json": "3c81183af2a9aebad00dda88505024ed564db0ac8a7c84291b3a4a0adad558f4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/validate.py": "bb6eb21cbf98360a65a8711e3091e84ebbf52f32b401be25fe073a38185e42c0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/validation.json": "15b8d471390b8595e3917cf483de7d027c1ebbc1bb1598202e3504f6f0cfdd6b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/artifact_hashes.json": "59240902a726feea09f8a583e63a5401203411443b414fa1370016ab5d76e03b",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf": "3574f296f030d424c8cf3f818b947ff8e1a0a39c42f86737ec53cc346b3e7896",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_917.txt": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/148.pdf": "9c4776ff48ce2b1b50b0b043c1ba92fc93ecae2c573ac3b7e807ad262d10cf92",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_148.txt": "1717ee97af18c99d344dd24b997b99a910dec0cb598c3a9945210c425da7ef76",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/364.pdf": "1654075582d66a25bf817dd62b815711eecb2b255584925640663e1aa2d000f9",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_364.txt": "5be6e730ae317e989cd5ac089260e7198a188383da7d02fbc2b157b807c5a953",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/521.pdf": "104a5b9400c3fe147abfc10c37d3a960ce8ec6f74b97d93bffed995bbbf16779",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_521.txt": "0c18113bb1e62d6c2621a2c7eb77a2485091172883c5ef6d12cdf93717a855d8"
+  },
+  "all_inputs_unchanged": true
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "independent-public-arithmetic-fixtures-v1",
+  "suite": "utility_002_dense_h0_e0065",
+  "scope": "One already-finalized public utility Infer; accumulator/query/output bytes only; no keys, private vectors, decryption or workload rerun",
+  "events": [
+    {
+      "event_id": "utility-h0-e0065",
+      "kind": "Infer",
+      "hashes": {
+        "acc": "a1f40d6786f70a332282358b389592a95b15b9f14641817e3a60de86f7e53501",
+        "query": "aa6d65b048571cebfa7c93766dc9849b9d21545250314eca9eb81280c6ec6293",
+        "result": "6f2ba933af20935a2a56db2183704f7bf75a250d6e215867e53b6fbb1e480eff"
+      },
+      "command_log_entry_sha256": "039fdb50ca5c41030cd7284d0ea4c8d6f68cb92ab5a49469680540e479dd3acb",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/target/release/resident-crypto"
+    }
+  ],
+  "blobs": {
+    "a1f40d6786f70a332282358b389592a95b15b9f14641817e3a60de86f7e53501": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "utility_fixtures/a1f40d6786f70a332282358b389592a95b15b9f14641817e3a60de86f7e53501.gz",
+      "gzip_sha256": "e95f981f551694b1ebd7a5533d5427276eea7c7f83456a7b65495051c40a5c79"
+    },
+    "aa6d65b048571cebfa7c93766dc9849b9d21545250314eca9eb81280c6ec6293": {
+      "kind": "public_query",
+      "bytes": 1645,
+      "path": "utility_fixtures/aa6d65b048571cebfa7c93766dc9849b9d21545250314eca9eb81280c6ec6293.gz",
+      "gzip_sha256": "cd9bfd8cd8c5f73daf9a82be81a7939c3779202fd14e3d40d2b6f0c75332fd8f"
+    },
+    "6f2ba933af20935a2a56db2183704f7bf75a250d6e215867e53b6fbb1e480eff": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "utility_fixtures/6f2ba933af20935a2a56db2183704f7bf75a250d6e215867e53b6fbb1e480eff.gz",
+      "gzip_sha256": "33a4a9098e146689d61d79268f2db10bbc24a0cd2a2b899a0aad30f47cf9b813"
+    }
+  },
+  "retained_public_finalization_sha256": "25b1b52a60b7cf0145a8c0af7cac623e34c3b88046f0e26a31e43ae28ca5a44b",
+  "provenance": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/results/utility_002/history_0/report.json": "a96b969897a5d4de0a1aef8d3978964e42541dbfa9aaac9354cceb608a58755b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/results/utility_002/history_0/commands.jsonl": "85e7a57f3d20d512eaf7302001d74f4321ebdad2746dfb7be1e840fb091ade2c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/results/utility_002/public_evidence/representative_finalized_infer.json": "90bb7fd24f04b33d3823e769fdb53ecaa03f45807e533938bb47e6214c40542a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/journal/results/utility_002/public_evidence/runtime_hash_inventory.json": "c5f9eb4dae952d877791aecee43410746e512e2e71ccaa5fa141804d37303a19"
+  }
+}

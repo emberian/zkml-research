@@ -1,0 +1,18 @@
+{
+  "all_outputs_ended_with_eos_before_cap": true,
+  "all_prompt_hashes_and_inputs_match": true,
+  "attributes": 16,
+  "audit_passed": true,
+  "correct_attributes_under_strict_parser": 2,
+  "correct_pairs": 1,
+  "deviation": "Recorded do_sample=False intent was merged to effective sampling by installed Transformers.",
+  "greedy_contract_fulfilled": false,
+  "heldout_inputs": 0,
+  "model_runtime_completed": true,
+  "new_model_calls_in_audit": 0,
+  "oracle_fields_absent_from_input_records": true,
+  "results_sha256": "1dbc04ee23f3b6d5e1cc36d63b9dca6412ac456ebedc6f73dc4f2eca0f51a617",
+  "source_sha256": "c9022a30c31c3513fd1df3ce5bb054b258838000aff12fef64b89785034b5cc3",
+  "teacher_inputs": 8,
+  "valid_strict_json": 1
+}

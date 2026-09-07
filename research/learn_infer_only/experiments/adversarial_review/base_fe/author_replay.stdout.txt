@@ -1,0 +1,12 @@
+{
+  "rate_examples": 9,
+  "last_rate_example": {
+    "log2_kappa": 128,
+    "argument_rescaled_to_kappa_power": 4,
+    "minus_log2_slow_negligible": 262144,
+    "minus_log2_target_2_to_minus_kappa_quarter": 4294967296,
+    "slow_error_exceeds_target": true
+  },
+  "wrapper_rows": 4,
+  "one_advice_paths": 4
+}

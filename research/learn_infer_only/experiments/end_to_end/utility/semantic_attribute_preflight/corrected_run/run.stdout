@@ -1,0 +1,83 @@
+{"record_id": 0, "input_tokens": 293, "generated_tokens": 21, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 15, 345, 220, 330, 65, 794, 220, 15, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": 0\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "effective_config_call_index": 0, "generation_wall_seconds": 5.510119667014806, "generation_process_cpu_seconds": 2.277144999999999, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6881820672, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10474782720}}
+{"record_id": 16, "input_tokens": 294, "generated_tokens": 21, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 15, 345, 220, 330, 65, 794, 220, 16, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": 1\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "effective_config_call_index": 1, "generation_wall_seconds": 2.825479249993805, "generation_process_cpu_seconds": 1.4964589999999998, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6898614272, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10474782720}}
+{"record_id": 32, "input_tokens": 293, "generated_tokens": 21, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 16, 345, 220, 330, 65, 794, 220, 15, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 1,\n  \"b\": 0\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "effective_config_call_index": 2, "generation_wall_seconds": 1.680107041989686, "generation_process_cpu_seconds": 1.2094810000000003, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6898614272, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10474782720}}
+{"record_id": 48, "input_tokens": 294, "generated_tokens": 21, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 16, 345, 220, 330, 65, 794, 220, 15, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 1,\n  \"b\": 0\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "effective_config_call_index": 3, "generation_wall_seconds": 1.583193124999525, "generation_process_cpu_seconds": 1.3104479999999992, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6898614272, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10474782720}}
+{"record_id": 64, "input_tokens": 290, "generated_tokens": 20, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 15, 345, 220, 330, 65, 794, 854, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": null\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "effective_config_call_index": 4, "generation_wall_seconds": 1.6566244589921553, "generation_process_cpu_seconds": 1.2837689999999995, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6898663424, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10474782720}}
+{"record_id": 80, "input_tokens": 291, "generated_tokens": 21, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 220, 15, 345, 220, 330, 65, 794, 220, 16, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": 0,\n  \"b\": 1\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "effective_config_call_index": 5, "generation_wall_seconds": 1.7354350830137264, "generation_process_cpu_seconds": 1.3576170000000012, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6898663424, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10474782720}}
+{"record_id": 96, "input_tokens": 292, "generated_tokens": 20, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 854, 345, 220, 330, 65, 794, 220, 16, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": null,\n  \"b\": 1\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "effective_config_call_index": 6, "generation_wall_seconds": 1.5656920000037644, "generation_process_cpu_seconds": 1.2411180000000002, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6898663424, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10474782720}}
+{"record_id": 112, "input_tokens": 293, "generated_tokens": 20, "generated_token_ids": [74694, 2285, 198, 517, 220, 330, 64, 794, 854, 345, 220, 330, 65, 794, 220, 16, 198, 534, 74694, 128012], "raw_output": "```json\n{\n  \"a\": null,\n  \"b\": 1\n}\n```", "parsed": null, "parse_error": "Expecting value: line 1 column 1 (char 0)", "effective_config_call_index": 7, "generation_wall_seconds": 1.6209828330029268, "generation_process_cpu_seconds": 1.2950219999999995, "memory_after_generation": {"mps_current_allocated_bytes": 6150205184, "mps_driver_allocated_bytes": 6898663424, "mps_recommended_max_bytes": 83494174720, "process_high_water_rss_bytes_macos": 10474782720}}
+{
+  "execution_completed": true,
+  "corrected_decoding_contract_verified": true,
+  "model_attempt_in_this_child": 1,
+  "total_teacher_model_attempts_including_deviating_parent": 2,
+  "teacher_inputs_this_run": 8,
+  "teacher_attribute_denominator": 16,
+  "valid_json_count": 0,
+  "correct_attribute_count": 0,
+  "correct_pair_count": 0,
+  "heldout_inputs": 0,
+  "utility_history_runs": 0,
+  "model_parameter_count": 3075098624,
+  "runtime": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "torch": "2.10.0",
+    "transformers": "4.57.3",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "mps_built": true,
+    "mps_available": true,
+    "cuda_available": false
+  },
+  "settings": {
+    "device": "mps",
+    "dtype": "float16",
+    "source_weight_dtype": "bfloat16",
+    "attention": "eager",
+    "enable_thinking": false,
+    "do_sample": false,
+    "use_model_defaults": false,
+    "effective_mode_asserted_in_actual_merge": true,
+    "max_new_tokens": 32,
+    "requests_sequential": true,
+    "kv_cache": "per request only",
+    "threads": 2,
+    "interop_threads": 1,
+    "seed": 7901,
+    "semantic_prompt_changed": false,
+    "parser_changed": false,
+    "teacher_inputs_changed": false
+  },
+  "cpu_load_wall_seconds": 1.4980309170205146,
+  "cpu_load_process_cpu_seconds": 2.491899,
+  "transfer_to_mps_wall_seconds": 1.9118300409754738,
+  "load_and_transfer_wall_seconds": 3.4098609579959884,
+  "generation_wall_seconds": 18.177633459010394,
+  "generation_process_cpu_seconds": 11.471058999999999,
+  "total_wall_seconds_including_imports": 30.101374500023667,
+  "total_process_cpu_seconds_including_imports": 21.059663999999998,
+  "memory_before_load": {
+    "mps_current_allocated_bytes": 0,
+    "mps_driver_allocated_bytes": 393216,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 542572544
+  },
+  "memory_after_load": {
+    "mps_current_allocated_bytes": 6150197504,
+    "mps_driver_allocated_bytes": 6484787200,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 10474782720
+  },
+  "memory_at_end": {
+    "mps_current_allocated_bytes": 6150205184,
+    "mps_driver_allocated_bytes": 6898663424,
+    "mps_recommended_max_bytes": 83494174720,
+    "process_high_water_rss_bytes_macos": 10474782720
+  },
+  "freeze_sha256": "493b9c845a14277e8ed75c4ca163b1aa668b1d3575f5aabd65229dbfc9b20271",
+  "prior_manifest_sha256": "e0961667ab288dbd5201824aa541b42383e42ca8240151cedd2d6f15bcb8decf",
+  "prior_issuer_inputs_sha256": "52783ddb47962dde1e9f0f359bc71fd521d3a74d328423753115d12b053440fb",
+  "raw_outputs_sha256": "ab05d8749c6ad312f8f056385c5674fb22de7cb7aa42479898ba4d74b2208b46",
+  "effective_configurations_sha256": "c4b43c676f9ad8d9cdf883b8eee5f34ab659cf8a5b98c6e4fd00396fb3a4cd13",
+  "all_prior_bytes_preserved": true
+}

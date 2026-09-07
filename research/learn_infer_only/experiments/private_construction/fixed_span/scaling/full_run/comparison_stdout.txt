@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "all_96_scores_match": true,
+  "all_384_exact_queue_identities": true,
+  "script_sha256": "e89c0217aa79d502f51e239fa7bf6a3bc2cbcadfd9b2664785803992e363dc0b",
+  "host_result_sha256": "1351963e0f53df28b6f4c63afeca74096ea443dde5914103b0cd90321998ac7d",
+  "independent_oracle_sha256": "ce5ef38398c89fab97bf2041f620d745aae8655d96c3779d96f0650bac8ce3eb",
+  "utility_unchanged": {
+    "all": {
+      "correct": 52,
+      "total": 96
+    },
+    "nonempty": {
+      "correct": 44,
+      "total": 80
+    },
+    "final": {
+      "correct": 18,
+      "total": 32
+    }
+  }
+}

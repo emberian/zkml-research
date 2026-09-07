@@ -1,0 +1,792 @@
+{
+  "passed": true,
+  "all_96_scores_match": true,
+  "all_384_exact_queue_identities": true,
+  "script_sha256": "e89c0217aa79d502f51e239fa7bf6a3bc2cbcadfd9b2664785803992e363dc0b",
+  "host_result_sha256": "1351963e0f53df28b6f4c63afeca74096ea443dde5914103b0cd90321998ac7d",
+  "independent_oracle_sha256": "ce5ef38398c89fab97bf2041f620d745aae8655d96c3779d96f0650bac8ce3eb",
+  "utility_unchanged": {
+    "all": {
+      "correct": 52,
+      "total": 96
+    },
+    "nonempty": {
+      "correct": 44,
+      "total": 80
+    },
+    "final": {
+      "correct": 18,
+      "total": 32
+    }
+  },
+  "comparisons": [
+    {
+      "event_id": "h0-e0065",
+      "actual_score": -7697,
+      "expected_score": -7697,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0066",
+      "actual_score": 2991,
+      "expected_score": 2991,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0067",
+      "actual_score": 2839,
+      "expected_score": 2839,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0068",
+      "actual_score": 11115,
+      "expected_score": 11115,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0069",
+      "actual_score": -8616,
+      "expected_score": -8616,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0070",
+      "actual_score": 1460,
+      "expected_score": 1460,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0071",
+      "actual_score": 1989,
+      "expected_score": 1989,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0072",
+      "actual_score": 9542,
+      "expected_score": 9542,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0073",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h0-e0074",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h0-e0075",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h0-e0076",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h0-e0077",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h0-e0078",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h0-e0079",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h0-e0080",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h0-e0145",
+      "actual_score": -7697,
+      "expected_score": -7697,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0146",
+      "actual_score": 2991,
+      "expected_score": 2991,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0147",
+      "actual_score": 2839,
+      "expected_score": 2839,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0148",
+      "actual_score": 11115,
+      "expected_score": 11115,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0149",
+      "actual_score": -8616,
+      "expected_score": -8616,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0150",
+      "actual_score": 1460,
+      "expected_score": 1460,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0151",
+      "actual_score": 1989,
+      "expected_score": 1989,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0152",
+      "actual_score": 9542,
+      "expected_score": 9542,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0153",
+      "actual_score": 4512,
+      "expected_score": 4512,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0154",
+      "actual_score": -5019,
+      "expected_score": -5019,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0155",
+      "actual_score": -37150,
+      "expected_score": -37150,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0156",
+      "actual_score": -41102,
+      "expected_score": -41102,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0157",
+      "actual_score": 3050,
+      "expected_score": 3050,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0158",
+      "actual_score": -7154,
+      "expected_score": -7154,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0159",
+      "actual_score": -40275,
+      "expected_score": -40275,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0160",
+      "actual_score": -45158,
+      "expected_score": -45158,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0225",
+      "actual_score": 2154,
+      "expected_score": 2154,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0226",
+      "actual_score": 2925,
+      "expected_score": 2925,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0227",
+      "actual_score": 3047,
+      "expected_score": 3047,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0228",
+      "actual_score": 3426,
+      "expected_score": 3426,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0229",
+      "actual_score": 3130,
+      "expected_score": 3130,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0230",
+      "actual_score": 3824,
+      "expected_score": 3824,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0231",
+      "actual_score": 3663,
+      "expected_score": 3663,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0232",
+      "actual_score": 4276,
+      "expected_score": 4276,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0233",
+      "actual_score": 4512,
+      "expected_score": 4512,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0234",
+      "actual_score": -5019,
+      "expected_score": -5019,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0235",
+      "actual_score": -37150,
+      "expected_score": -37150,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0236",
+      "actual_score": -41102,
+      "expected_score": -41102,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0237",
+      "actual_score": 3050,
+      "expected_score": 3050,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0238",
+      "actual_score": -7154,
+      "expected_score": -7154,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0239",
+      "actual_score": -40275,
+      "expected_score": -40275,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h0-e0240",
+      "actual_score": -45158,
+      "expected_score": -45158,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0065",
+      "actual_score": 3280,
+      "expected_score": 3280,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0066",
+      "actual_score": -2027,
+      "expected_score": -2027,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0067",
+      "actual_score": -34,
+      "expected_score": -34,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0068",
+      "actual_score": -4800,
+      "expected_score": -4800,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0069",
+      "actual_score": 1582,
+      "expected_score": 1582,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0070",
+      "actual_score": -3551,
+      "expected_score": -3551,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0071",
+      "actual_score": -1548,
+      "expected_score": -1548,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0072",
+      "actual_score": -6006,
+      "expected_score": -6006,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0073",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h1-e0074",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h1-e0075",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h1-e0076",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h1-e0077",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h1-e0078",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h1-e0079",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h1-e0080",
+      "actual_score": 0,
+      "expected_score": 0,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": true
+    },
+    {
+      "event_id": "h1-e0145",
+      "actual_score": 3280,
+      "expected_score": 3280,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0146",
+      "actual_score": -2027,
+      "expected_score": -2027,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0147",
+      "actual_score": -34,
+      "expected_score": -34,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0148",
+      "actual_score": -4800,
+      "expected_score": -4800,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0149",
+      "actual_score": 1582,
+      "expected_score": 1582,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0150",
+      "actual_score": -3551,
+      "expected_score": -3551,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0151",
+      "actual_score": -1548,
+      "expected_score": -1548,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0152",
+      "actual_score": -6006,
+      "expected_score": -6006,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0153",
+      "actual_score": 9937,
+      "expected_score": 9937,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0154",
+      "actual_score": 27728,
+      "expected_score": 27728,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0155",
+      "actual_score": -3576,
+      "expected_score": -3576,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0156",
+      "actual_score": 9093,
+      "expected_score": 9093,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0157",
+      "actual_score": 7082,
+      "expected_score": 7082,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0158",
+      "actual_score": 25073,
+      "expected_score": 25073,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0159",
+      "actual_score": -6352,
+      "expected_score": -6352,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0160",
+      "actual_score": 6723,
+      "expected_score": 6723,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0225",
+      "actual_score": 10710,
+      "expected_score": 10710,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0226",
+      "actual_score": 13414,
+      "expected_score": 13414,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0227",
+      "actual_score": 4529,
+      "expected_score": 4529,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0228",
+      "actual_score": 7122,
+      "expected_score": 7122,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0229",
+      "actual_score": 9843,
+      "expected_score": 9843,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0230",
+      "actual_score": 12869,
+      "expected_score": 12869,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0231",
+      "actual_score": 4167,
+      "expected_score": 4167,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0232",
+      "actual_score": 7217,
+      "expected_score": 7217,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0233",
+      "actual_score": 9937,
+      "expected_score": 9937,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0234",
+      "actual_score": 27728,
+      "expected_score": 27728,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0235",
+      "actual_score": -3576,
+      "expected_score": -3576,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0236",
+      "actual_score": 9093,
+      "expected_score": 9093,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0237",
+      "actual_score": 7082,
+      "expected_score": 7082,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0238",
+      "actual_score": 25073,
+      "expected_score": 25073,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0239",
+      "actual_score": -6352,
+      "expected_score": -6352,
+      "matched": true,
+      "utility_correct": false,
+      "structural_zero": false
+    },
+    {
+      "event_id": "h1-e0240",
+      "actual_score": 6723,
+      "expected_score": 6723,
+      "matched": true,
+      "utility_correct": true,
+      "structural_zero": false
+    }
+  ]
+}

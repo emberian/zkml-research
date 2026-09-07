@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "phases": [
+    {
+      "role": "setup",
+      "wall_ns": 5759576375,
+      "exit_code": 0
+    },
+    {
+      "role": "issue",
+      "wall_ns": 716941308708,
+      "exit_code": 0
+    },
+    {
+      "role": "evaluate",
+      "wall_ns": 813900544250,
+      "exit_code": 0
+    }
+  ],
+  "wall_seconds": 1537.084687948227,
+  "learns": 384,
+  "selected_scores": 96,
+  "expirations": 256,
+  "oracle_comparison": "separate oracle.py required",
+  "no_master_export": true
+}

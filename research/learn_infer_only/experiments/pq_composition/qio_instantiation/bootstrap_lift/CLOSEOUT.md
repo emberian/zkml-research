@@ -1,0 +1,30 @@
+# Bootstrap-lift closeout
+
+[DERIVED author result] The source-audited algorithmic bridge from quantum-advice xiO to bounded-circuit iO is conditionally closed under the explicit base primitive games in [BOOTSTRAP_LIFT.md](BOOTSTRAP_LIFT.md). Every inspected privacy reduction is straight-line and preserves one arbitrary advice state. No required adversary extraction, rewinding, cloning, quantum conditioning, or quantum-valued classical setup sampler was found in this bridge. This does not establish an implementation or an instantiation from LWE alone.
+
+[DERIVED error improvement] [POINTWISE_CORRECTNESS.md](POINTWISE_CORRECTNESS.md) weakens perfect Boolean-FE correctness to a uniform pointwise fresh-setup/key/encryption error. For `M=2^(n+1)-1`, a common polynomial encoding bound `B`, and the resource-indexed primitive errors defined in the notes, the sufficient bounds are
+
+```text
+eps_R <= (l_H+s)eps_B + (2s+2)eps_X + 2s eps_P + 5eps_G,
+Delta_IO <= (2^(n+2)-2)eps_R + (2^(n+1)-2)eps_G,
+eta_IO <= M[delta_X+2B delta_B+B eps_P,corr]
+          +(n*2^(n+1)+1)eps_G,corr.
+```
+
+[DERIVED] The last probability is a uniform event over **all inputs** of the final classical circuit, proved by fixed-prefix marginal PRG tests and an all-node union bound. Exponential hybrid counts affect advantages; each actual reduction's work grows only additively with depth and retains the same advice state.
+
+[OPEN exact advertised instantiation] The conditional lemma's base-suite and quantitative aviO precondition-to-postcondition promises remain assumptions. In particular, an instantiation must supply the same recursive parameter family's short public key and sufficiently small statistical/correctness rates. Source notation that merely says classical PPT is not used as a refutation.
+
+[REPORTED complementary source audit] `/root/he_closure_costs` independently reports that the raw GKP/GVW base construction's public key scales with its selected message/attribute bound, so absorbing a predetermined polynomial message family into `poly(kappa)` does not itself establish the recursive short-key contract used here. Some audited sampling/correctness interfaces state only negligible rates; the base note separately records exponential rates where actually supplied. These are **named missing parameter premises**, not claims that a suitable compiler or parameterization cannot exist. The author's pointwise supplement removes the need to insist on perfect correctness, but does not invent a numerical rate. The complementary note is frozen at SHA256 `3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d`; its mathematical base-suite lemma has its own review status and is not silently covered by the bootstrap review below.
+
+[SOURCE / primary spot-check] The author also read GKP 2012/733 §3.1 printed pp.23–24 and GVW 2013/337 §6.1 printed pp.15–16 directly from their pinned local extracts. GKP's master public key is a vector of `L` ABE2 public keys; its evaluated ABE predicate has input width `|hpk|+nL`. GVW's `Setup(1^kappa,1^h,d_max)` explicitly generates two public keys per input wire plus one output public key. This confirms the stated message-bound dependence of this literal base construction; it does not rule out another short-key transformation. `source_spotcheck.json` records the exact PDF/extract hashes and the PDF/printed-page distinction. The complementary [base audit](../../base_fe_audit/BASE_FE_AUDIT.md) owns the wider depth/parameter analysis.
+
+[REPORTED independent review status; complete] Reviewer `/root/entropy_composition` accepted both frozen targets under their explicit `B/P/G/X` hypotheses and the pointwise-correctness supplement, finding no blocking proof error. The [independent report](../../../adversarial_review/pq_bootstrap/REPORT.md), SHA256 `7809d588814e987b5bc05a165f681601229bcdc098b75c7508255ad4898642e7`, covers one-key bit indexing, shared-next-key induction, the common resource bound, joint complete-tape marginal correctness and pointwise error propagation. Author `/root/pq_composition` records that attributed conclusion here; this is not self-independent review.
+
+[EXECUTED review provenance] Independent results SHA256 `64d819f1970cd96b261a16b5923525e380f3ec390e2c7c8a02fb321304acc7ea`; the reviewer reported all thirteen review inputs unchanged. Its independent finite controls passed, and its owned copies of the author's controls reproduced the recorded results. Acceptance remains conditional on the same-family short-key parameterization and charged quantum-advice resource/security/error bounds. It does not establish the base construction from LWE, QROM, an implemented PQ FE service, private ingress or a resident-system theorem.
+
+[EXECUTED frozen targets] Main theorem SHA256 `ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792`; pointwise supplement SHA256 `c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2`. The predecessor remains unchanged at `163ebdcc5e376441b4a146b6964aba60002c3c55952cfb1e17d0c363478109fd`. Exact source paths/hashes, extraction commands, two corrected instrumentation errors and successful controls are retained in [ACCESS.md](ACCESS.md), `audit.json`, `controls.json`, and `pointwise_controls.json` with stdout files. These are provenance/algebra controls, not a cryptographic theorem checker.
+
+[EXECUTED scope accounting] Zero SQL/schema/web/Kagi queries in this tranche, zero PDF downloads, no installs, no commits, no frozen-proof/shared-ledger/companion writes. All new work is contained in `bootstrap_lift/`; local source extracts are ignored.
+
+[EXECUTED final provenance check] `python3 research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/closeout_check.py > research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/closeout_check.stdout.txt` exited 0. It verifies seven frozen proof/source/review hashes, rechecks all thirteen independent-review input hashes, and checks this closeout's five local links. The result is retained in `closeout_check.json`; no reviewer tool was replayed and no external or frozen file was written.

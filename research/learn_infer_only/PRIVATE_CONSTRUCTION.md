@@ -15,8 +15,24 @@ demonstrated private cognition from the hidden kernel.
 [DERIVED reviewed proof] A direct adaptive fixed-span DDH specialization passed
 independent review with explicit common rejection, unvisited-rank handling and
 scalar-sampling conventions. The paper itself supplies a selective theorem.
-The separate general fixed-span proof and 577-coordinate/16-query useful-fixture
-experiment are in progress; no completed large run is claimed here yet.
+The [general fixed-span proof](experiments/private_construction/fixed_span/scaling/GENERAL_FIXED_SPAN.md)
+also passed independent review. The 577-coordinate/16-query useful-fixture run
+now completes all 384 Learn, 96 outputs, 256 expiries and 384 exact queue-product
+checks. Every output matches an independent integer replay; utility remains
+52/96 overall and 18/32 final. Whole-run wall time is 1,537.085 seconds, with
+56,819,712 bytes of retained input ciphertexts and 9,765,888 bytes of current
+queue/aggregate payload. See the [full measured report](experiments/private_construction/fixed_span/scaling/full_run/README.md).
+
+[DERIVED recipient successor] An independently reviewed affine transform can
+give the host recipient-encrypted fixed projections after master erasure.
+Each recipient privately receives k_i=<s,y_i>, chooses its own dedicated a_i,
+and publishes tau_i=k_i-a_i and A_i=g^a_i. Host-only input hiding is equivalent
+to ordinary public encryption; a fixed recipient coalition has exactly its
+ordinary fixed-span key view. Correlated/derived recipient keys, all-per-input
+span leakage, honest setup/erasure and lack of cryptographic finality remain
+explicit. [The construction contract](experiments/private_construction/designated_span/CONTRACT.md)
+starts a separate actual journal integration; no completed integration is
+claimed here yet. This does not make the hidden kernel affect useful behavior.
 
 [EXECUTED finite abstraction] The finite mistake-driven learner additionally
 has an exact compact public quotient: an 87-byte resident with exhaustive

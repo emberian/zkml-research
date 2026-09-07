@@ -1,0 +1,53 @@
+{"first_record_id": 256, "records": 16, "padded_tokens": 37, "wall_seconds": 0.29480104200774804, "cpu_seconds": 0.2910140000000001}
+{"first_record_id": 272, "records": 16, "padded_tokens": 38, "wall_seconds": 0.3535400410182774, "cpu_seconds": 0.269031}
+{"first_record_id": 288, "records": 16, "padded_tokens": 38, "wall_seconds": 0.2872007089899853, "cpu_seconds": 0.26170000000000027}
+{"first_record_id": 304, "records": 16, "padded_tokens": 38, "wall_seconds": 0.47419445801642723, "cpu_seconds": 0.2667250000000001}
+{"first_record_id": 320, "records": 16, "padded_tokens": 36, "wall_seconds": 0.5348589999775868, "cpu_seconds": 0.2619680000000004}
+{"first_record_id": 336, "records": 16, "padded_tokens": 34, "wall_seconds": 0.39891545797581784, "cpu_seconds": 0.22523400000000038}
+{"first_record_id": 352, "records": 16, "padded_tokens": 38, "wall_seconds": 0.40381645900197327, "cpu_seconds": 0.2470270000000001}
+{"first_record_id": 368, "records": 16, "padded_tokens": 36, "wall_seconds": 0.31601258300361224, "cpu_seconds": 0.22263400000000022}
+{
+  "executed": true,
+  "kind": "e5_test",
+  "model": "intfloat/e5-base-v2",
+  "revision": "f52bf8ec8c7124536f0efb74aca902b2995e5bcd",
+  "model_path": "/Users/ember/.cache/huggingface/hub/models--intfloat--e5-base-v2/snapshots/f52bf8ec8c7124536f0efb74aca902b2995e5bcd",
+  "records": 128,
+  "parameter_count": 109482240,
+  "trainable_backbone_parameters": 0,
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+  "numpy": "2.4.2",
+  "torch": "2.10.0",
+  "transformers": "4.57.3",
+  "settings": {
+    "device": "cpu",
+    "dtype": "float32",
+    "attention": "eager",
+    "batch_size": 16,
+    "padding_side": "right",
+    "use_cache": false,
+    "threads": 2,
+    "interop_threads": 1,
+    "seed": 7901,
+    "prefix": "query: ",
+    "pooling": "masked mean final hidden states then L2",
+    "blocks_actually_executed": 12,
+    "local_files_only": true,
+    "trust_remote_code": false
+  },
+  "selection_sha256": "3a2469fc348255e6289dab90e384580d6f8920df90952d74d8f8a1207fa74537",
+  "freeze_sha256": "4e25fdf2aaa34bd65075cf5c42914f3222ba218c3eb92bd3d45a8277963c148f",
+  "records_sha256": "652d6fea9c7709239c6ea852e615d4325f5b4298e41405cbc253722a2cb32e11",
+  "script_sha256": "b5ee7c3f5a9e47309171443a597ececd56b9608ca436ff9fb7460b7f5873c6aa",
+  "features_sha256": "fe407038f7217be5aef5e59507b988f1ff3ec10f8159b751eda4f53ec238403b",
+  "load_wall_seconds": 0.363514333992498,
+  "load_cpu_seconds": 0.17365399999999998,
+  "forward_wall_seconds": 3.063339749991428,
+  "forward_cpu_seconds": 2.0453330000000016,
+  "unpadded_tokens": 4408,
+  "padded_tokens": 4720,
+  "total_wall_seconds_including_imports": 14.159927332977531,
+  "total_cpu_seconds_including_imports": 5.265636,
+  "process_high_water_rss_bytes_macos": 769622016
+}

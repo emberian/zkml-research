@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/e5_successor/extract.py",
+    "e5_test"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "returncode": 0,
+  "wall_seconds": 15.03121524999733
+}

@@ -31,8 +31,12 @@ stronger reader now passes all 96 direct integer comparisons, with 256 expiries,
 seconds with a persistent keyless host: observed 3.39x across separate runs.
 Full-byte hashing and authority/reader checks remain. A separate public reference
 implementation reproduces the sampled ciphertext coefficients and bytes using
-integer negacyclic multiplication and independent NTT equations; independent
-review is in progress.
+integer negacyclic multiplication and independent NTT equations. Independent
+review passed both suites and separately checked the codec, convolution and
+transform indexing; it does not establish universal Rust refinement or noise
+correctness. The [live verified path](experiments/end_to_end/verified_reader/reports/LIVE.md)
+also passes: one new model-encoded Learn and two Infer, two matching private
+integer answers, zero baseline decryptions, 15.418 seconds for the whole path.
 
 [EXECUTED utility limit] The original fixed integration histories have final
 accuracy18/32 (56.25%); the broader earlier held-out window estimate is63.16%.
@@ -47,12 +51,23 @@ behavioral quotient and exhaustive equivalence controls; it is not an encrypted
 raw model. The parent-bound private-input hybrid's guard failure is now reviewed,
 and fixed-coin parameter objections have been narrowed: independently longer
 functional coins and next ciphertexts evade those particular lower bounds.
-An actual tiny quantitative joint future-package bound and provenance repair
-remain open. The actual three-coordinate fixed-span FE control now passes two
-encrypted 12-input histories with 48 permitted projections and 16 expiries; its
-direct adaptive fixed-span DDH proof is under independent review. It assumes
-honest master erasure and exposes each input's entire fixed span, with no
-recipient gate, single-history finality or PQ claim.
+A terminal same-parent joint-output lemma now has an explicit conditional
+bound and a nontrivial example; its source-compatibility quantifier bridge and
+tiny primitive rates remain open. Independent review accepted the conditional,
+setup-averaged lemma, with no blocking error found.
+
+[EXECUTED / DERIVED fixed-span result] The generalized adaptive fixed-key DDH
+proof passed independent review. Its actual 577-coordinate/16-query workload
+now completes 384 Learn, 96 matching integer scores, 256 expiries and 384 exact
+queue-product checks in 1,537.085 seconds. No master is exported by the private
+initializer; honest erasure is assumed. Every input's entire fixed query span
+is exposed to the host in this run. The [full report](experiments/private_construction/fixed_span/scaling/full_run/README.md)
+keeps all costs and utility failures. A separately reviewed designated-recipient
+transform hides those scores from the host while giving recipients only their
+fixed-span credentials. The actual backend now passes 33 Learn/four exact
+recipient comparisons/one expiry and exact transition replay in 252.419 seconds.
+Its journal integration is now in progress under a
+[new contract](experiments/private_construction/designated_span/CONTRACT.md).
 
 [DERIVED reviewed successor] The saved eleven-hybrid conditional QIND_pre lift
 now has a completed independent review with no blocking error found under its
@@ -61,7 +76,18 @@ suite remains uninstantiated. Its qualified iO interface follows from a standard
 worst-case quantum-advice iO assumption, with the explicit resource model;
 see [interface lemma](experiments/pq_composition/qio_interface/QIO_INTERFACE.md)
 and [review completion](experiments/pq_composition/qind_pre/REVIEW_COMPLETION.md);
-this does not establish a PQ resident or a PQ-from-LWE construction.
+this does not establish a PQ resident or a PQ-from-LWE construction. The further
+one-copy quantum-advice xiO bootstrap and pointwise-correctness supplement also
+passed independent review under explicit base-FE/PRF/PRG/xiO interfaces. The
+source audit leaves uniform short public keys, depth-upgrade compactness and
+quantified quantum security/error rates uninstantiated.
+
+[EXECUTED collection] A root rehash of thirteen frozen inventories checks 249
+file links and confirms both companion HEAD/status snapshots are unchanged.
+Command: `python3 research/learn_infer_only/experiments/end_to_end/verify_checkpoint.py research/learn_infer_only/experiments/end_to_end/checkpoint_003.json`.
+The [retained output](experiments/end_to_end/checkpoint_003.stdout.json) is green.
+This is provenance verification, not a rerun of the mathematical or crypto
+suites, and reads no stopped-task artifact.
 
 [EXECUTED new proof integration] Run014 passes **53 modules / 708 exact theorem
 pins**, adding mixed-journal window framing23 and source-noise/window34 to the

@@ -1,0 +1,87 @@
+{
+  "passed": true,
+  "execution_counts": {
+    "learns": 384,
+    "selected_scores": 96,
+    "expirations": 256,
+    "exact_queue_product_checks": 384,
+    "subgroup_elements_checked": 221952,
+    "native_powers_by_phase": {
+      "setup": 577,
+      "issuer_encryptions": 221952,
+      "issuer_message_table": 1,
+      "host_subgroup_validation": 221952,
+      "host_fixed_projections": 55488,
+      "host_decoder_setup": 2
+    },
+    "native_powers_total": 499972,
+    "native_counter_scope": "from completed call loops; no low-level instruction/RNG-retry count",
+    "unissued_queries": 0,
+    "full_run_python_secret_exponent_comparisons": 0,
+    "model_runs": 0,
+    "training": 0,
+    "fresh_unknown_input_trials": 0,
+    "extraction_tests": 0
+  },
+  "correctness": {
+    "scores_matched": 96,
+    "score_comparison_sha256": "6f147d63b50cb8a041eb745fb2593d1a4a89dc9bef666aad89af2ddcdd72043e",
+    "utility_unchanged": {
+      "all": {
+        "correct": 52,
+        "total": 96
+      },
+      "nonempty": {
+        "correct": 44,
+        "total": 80
+      },
+      "final": {
+        "correct": 18,
+        "total": 32
+      }
+    }
+  },
+  "timing": {
+    "setup_measured_seconds": 5.190112125,
+    "issuer_encryption_seconds": 706.491857373,
+    "issuer_serialization_seconds": 7.31555196,
+    "issuer_input_read_seconds": 0.445137083,
+    "validation_seconds": 562.602724511,
+    "update_seconds": 90.540234315,
+    "audit_queue_product_seconds": 135.489514009,
+    "projection_seconds": 18.245232084,
+    "decode_seconds": 5.63774746,
+    "serialization_seconds": 0.065367834,
+    "host_decoder_setup_seconds": 0.006098416,
+    "phase_wall_seconds": {
+      "setup": 5.759576375,
+      "issue": 716.941308708,
+      "evaluate": 813.90054425
+    },
+    "full_crypto_wall_seconds": 1537.084687948227
+  },
+  "storage": {
+    "ciphertext_bytes_each": 147968,
+    "public_key_bytes": 147712,
+    "fixed_keys_bytes": 4096,
+    "retained_issued_ciphertext_count": 384,
+    "retained_issued_ciphertext_bytes": 56819712,
+    "final_live_queue_ciphertexts": 64,
+    "final_live_queue_plus_aggregates_bytes": 9765888,
+    "retained_aggregate_checkpoint_count": 30,
+    "retained_aggregate_checkpoint_bytes": 8878080,
+    "other_recorded_evidence_bytes": 583920,
+    "issuer_model_included": false,
+    "encoder_cost_measured": false
+  },
+  "observed_memory": {
+    "scope": "10-second RSS samples of this run only, started after setup; not an OS high-water mark",
+    "max_observed_rss_kib_by_role": {
+      "driver": 25280,
+      "issue": 29600,
+      "evaluate": 43648
+    },
+    "samples": 104,
+    "sha256": "c84490b5322c50ce05845ce283134e459655ab74482dbab377fb14d50d73990d"
+  }
+}

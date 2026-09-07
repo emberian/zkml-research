@@ -1,0 +1,79 @@
+{
+  "generated_tokens_limit_per_input": 32,
+  "heldout_inputs": 0,
+  "model": "HuggingFaceTB/SmolLM3-3B",
+  "model_files": {
+    "chat_template.jinja": {
+      "bytes": 5598,
+      "sha256": "3e0e275a527f249670056e0078e474eadbdd007c134b4fdfae5a7b3089702814"
+    },
+    "config.json": {
+      "bytes": 1915,
+      "sha256": "c72b1031274ff4626e434d0019e88e95a767460135db9ee492eb80652b786af1"
+    },
+    "generation_config.json": {
+      "bytes": 182,
+      "sha256": "3458d62b3f9654f4bbe285223b0f4e5a1e67cae61c92bb6aeaadf04468bf9e01"
+    },
+    "model-00001-of-00002.safetensors": {
+      "bytes": 4966315264,
+      "sha256": "e5eed4113a925264c33e3cdf76cd9f547c06a207ef2270914a7274a2bf685ffd"
+    },
+    "model-00002-of-00002.safetensors": {
+      "bytes": 1183919744,
+      "sha256": "6c3ad90646457295723e4da5ee8afac47006e20407b122df5174693dd8d68a43"
+    },
+    "model.safetensors.index.json": {
+      "bytes": 26899,
+      "sha256": "e3a7254c086c4a78f95ad5864f435d165ffed1ed8998326ce5107b4423c15b76"
+    },
+    "special_tokens_map.json": {
+      "bytes": 289,
+      "sha256": "12403efb970f069ba62ddf3b66166a27254be4a198166b61ad1ee604bd3a4515"
+    },
+    "tokenizer.json": {
+      "bytes": 17208819,
+      "sha256": "7b6a500b662a34eb3f0374db856ba4ad7de4c81040571d78dc0d357238930005"
+    },
+    "tokenizer_config.json": {
+      "bytes": 50387,
+      "sha256": "59a64b39f05ee0acf7479bbccf99a44d9e481c1a4a494eb03838ae3c35eb29be"
+    }
+  },
+  "model_path": "/Users/ember/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM3-3B/snapshots/a07cc9a04f16550a088caea529712d1d335b0ac1",
+  "prompts_tried": 1,
+  "public_instruction_token_count": 222,
+  "public_instruction_utf8_bytes": 955,
+  "revision": "a07cc9a04f16550a088caea529712d1d335b0ac1",
+  "runtime": {
+    "cuda_available": false,
+    "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "mps_available": true,
+    "mps_built": true,
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "torch": "2.10.0",
+    "transformers": "4.57.3"
+  },
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_records.json": "423a0dd83e43d1786b1c649ab6a54aab349de913c531447f2261ef7e5dc9156e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility/candidates.json": "e3e6bd29b9f6b3090c5aaef3aa90c1779681b83df7b7201827d7501cf50ef6e1",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/CONTRACT.md": "472cf27f030220fbbaa14d8632d6db2b879645469966382af7cbfa7d37c494da",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/PROMPT.txt": "87066dd1139efa8f6002044bd61b0b0962f967cea4eaac2786a0f360ef759280",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/issuer_inputs.json": "52783ddb47962dde1e9f0f359bc71fd521d3a74d328423753115d12b053440fb",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/preflight.py": "c422ef64bca10071caff812ac947ac2b2cf0a588e199272582488da67b4f99e5",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_attribute_preflight/teacher_oracle.json": "705e70ace952d0709291e2717d31a9aa3f6af23879b4ac6cc9d056b9a618df0f"
+  },
+  "teacher_ids": [
+    0,
+    16,
+    32,
+    48,
+    64,
+    80,
+    96,
+    112
+  ],
+  "wall_seconds_including_imports": 11.856148582999595,
+  "weights_not_loaded_in_prepare": true
+}

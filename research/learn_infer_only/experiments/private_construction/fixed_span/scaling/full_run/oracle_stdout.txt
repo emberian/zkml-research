@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "learns": 384,
+  "scores": 96,
+  "expirations": 256,
+  "utility": {
+    "all": {
+      "correct": 52,
+      "total": 96
+    },
+    "nonempty": {
+      "correct": 44,
+      "total": 80
+    },
+    "final": {
+      "correct": 18,
+      "total": 32
+    }
+  }
+}

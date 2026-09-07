@@ -1,0 +1,313 @@
+{
+  "schema": "independent-public-arithmetic-fixtures-v1",
+  "scope": "Only public synthetic fixture ciphertexts and authorized public queries; no keys, ingress vectors or decrypted values",
+  "events": [
+    {
+      "event_id": "learn-001",
+      "kind": "Learn",
+      "hashes": {
+        "acc": "5d40ee0da9123b5a2b9b7d13d953e32f223773bed7edf7626038b5d6aba1a3db",
+        "result": "11f489f0043b0afde38b8783ee72772b2626ec7a7286f89c9c4853b15539e6a7",
+        "fresh": "11f489f0043b0afde38b8783ee72772b2626ec7a7286f89c9c4853b15539e6a7"
+      },
+      "command_log_entry_sha256": "f09325959e91a191fa1f20711235bfbb69e832e422cbc88f0694c5e3844566ad",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "infer-001",
+      "kind": "Infer",
+      "hashes": {
+        "acc": "11f489f0043b0afde38b8783ee72772b2626ec7a7286f89c9c4853b15539e6a7",
+        "result": "cf0adf08409992b3889cb84c3d6f601e8329e6c32a8ace0fdaeb37acf407ebce",
+        "query": "7446f8ea10750d8ab64d03abf733616f6ddf532591571c444a1894e38e027458"
+      },
+      "command_log_entry_sha256": "168f091f69404ab6d3de4367ef340d4c20a7124862b1879a4c0598b01d463b4a",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "learn-002",
+      "kind": "Learn",
+      "hashes": {
+        "acc": "11f489f0043b0afde38b8783ee72772b2626ec7a7286f89c9c4853b15539e6a7",
+        "result": "e4502fc09a1e20ca64639f3d6ab88ee51b21545eb6c479f30a1476d13d2ebb19",
+        "fresh": "b00f2f485e42ca5bac8c7022d8c0ff3cb501ce130df511247a28ea3a1d8ad3c6"
+      },
+      "command_log_entry_sha256": "1a6e85287ea2fbd0f0e0e1ce42de138edb35a0dbc9462332f0df552f0317006b",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "learn-016",
+      "kind": "Learn",
+      "hashes": {
+        "acc": "046da082d67c707ca55005ccceda795162741401f8fc5cc09dc16563b315b0fe",
+        "result": "b3d5eb9a2501bdeeffa1c8c300ba42860492e9b707328f4e23cd6f8074a97a28",
+        "fresh": "0e9e0b186b2790d60e8c3d3a107f13effa1048fed5ea92bea55c3dbe06244856"
+      },
+      "command_log_entry_sha256": "91bec6507cc0eb185cd584aec6739ddf595135974f7e22fbc0cdcf854aa80fa4",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "infer-016",
+      "kind": "Infer",
+      "hashes": {
+        "acc": "b3d5eb9a2501bdeeffa1c8c300ba42860492e9b707328f4e23cd6f8074a97a28",
+        "result": "6591e4b4d5399e9ad317c146ca126ac7989ea69d39ce4680426bf58619e70065",
+        "query": "26362af9f916a6e02af2179a42793168177efca6d11d9cad0dd0598761bc66c9"
+      },
+      "command_log_entry_sha256": "1699fc6da374ebb9279175ba8212ab66fba31fd160d3572a6e2592e890ff88d8",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "learn-032",
+      "kind": "Learn",
+      "hashes": {
+        "acc": "6ae5444f925425a4bdbb3052ffb2a613188b9ff98424067328fc863abaf323db",
+        "result": "a7a250c4a6dadd7b221f38ad1594702c121fdb59a4e4def93a87ff2bf3a4e066",
+        "fresh": "906bc67bdcdf09e0afa9e9c317a9900e2c2e18860e440a17830582d7002a8745"
+      },
+      "command_log_entry_sha256": "112e6ae18f9a3341968383b779a9490e67e1bd69b9f921aee2c8a6f8813f3e20",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "learn-033",
+      "kind": "Learn",
+      "hashes": {
+        "acc": "a7a250c4a6dadd7b221f38ad1594702c121fdb59a4e4def93a87ff2bf3a4e066",
+        "result": "a0f1664589f0b115789a9f139bb115049df37f21abf9a94a5b7c6d49c0bef708",
+        "fresh": "33ed0f8010a11677d8731a19b3978587a784e613b1dc89d3a96537243815932e",
+        "old": "11f489f0043b0afde38b8783ee72772b2626ec7a7286f89c9c4853b15539e6a7"
+      },
+      "command_log_entry_sha256": "315d396b460c3806fa290f7b4b2cc7bc70a308fcfb76a888fd09a94c95ceca3d",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "infer-033",
+      "kind": "Infer",
+      "hashes": {
+        "acc": "a0f1664589f0b115789a9f139bb115049df37f21abf9a94a5b7c6d49c0bef708",
+        "result": "456ef3405173e62b806e8471906ba089887ffcc1c153f896066e763c579b956d",
+        "query": "7446f8ea10750d8ab64d03abf733616f6ddf532591571c444a1894e38e027458"
+      },
+      "command_log_entry_sha256": "b0d62cbfe0e0b1160121a169b9f3c76658dc73b4654a4bc5ee9ee61456eca336",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "learn-034",
+      "kind": "Learn",
+      "hashes": {
+        "acc": "a0f1664589f0b115789a9f139bb115049df37f21abf9a94a5b7c6d49c0bef708",
+        "result": "52f117a7b1646cf8935e9691d31ad0319fc174db75eba2ae517b44ea3834523f",
+        "fresh": "f0d7d7edd2ede5c773a1533015e0af12688bf48c873161b50a0f47b769721557",
+        "old": "b00f2f485e42ca5bac8c7022d8c0ff3cb501ce130df511247a28ea3a1d8ad3c6"
+      },
+      "command_log_entry_sha256": "253a7666c39a0f004cbfe9101a5b7c61e170e88dc6722ba7dcf90f59670074f9",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "learn-039",
+      "kind": "Learn",
+      "hashes": {
+        "acc": "163b673c619adc633e800193ee2baf22dd3d8b9dfe757fd37a22ba9651e8e539",
+        "result": "d4a656ecc4b853823ee00331e67508d6d2b1d87dd0e9978074252952d0d01df4",
+        "fresh": "8168d640fa2b38e8f40d2b10b3772f637ee04a06792a1bb0468c125024606770",
+        "old": "aa24ed3f60675a4da79b68303949b30d89c5ee41ebf18b7c106de50790307f47"
+      },
+      "command_log_entry_sha256": "8c5afb0eadb0d532367934914f80ec344c327cca76230ca10e20c72379c59f02",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "learn-040",
+      "kind": "Learn",
+      "hashes": {
+        "acc": "d4a656ecc4b853823ee00331e67508d6d2b1d87dd0e9978074252952d0d01df4",
+        "result": "8d7431967741d24f0eaea40c47a16d07b64df0f8f9dfea8afb3e75d3c9a63779",
+        "fresh": "1f94217098a0520e9ec484ca50b8704224d458a10cabf8a641a607fa2aa34e4a",
+        "old": "7a05e02d4f456873309eb3080cd83a753b1038fd6ec72207e8b0f6a7894f9a6b"
+      },
+      "command_log_entry_sha256": "32e2d2c82962a08bd94e6e4a65f69917e35cb389d9bb326227ad5fd3ab036c73",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    },
+    {
+      "event_id": "infer-040",
+      "kind": "Infer",
+      "hashes": {
+        "acc": "8d7431967741d24f0eaea40c47a16d07b64df0f8f9dfea8afb3e75d3c9a63779",
+        "result": "2addad79449aa132d19395ae3b352ef3820b40a69087c8c866157e10ed3e6f51",
+        "query": "26362af9f916a6e02af2179a42793168177efca6d11d9cad0dd0598761bc66c9"
+      },
+      "command_log_entry_sha256": "fdf7897dd5a1a2a04ad5e47f8e86e8b63e0ecfad5bd777395b7b41d8199eb9d1",
+      "historical_binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/runtime/run_001/resident-crypto"
+    }
+  ],
+  "blobs": {
+    "5d40ee0da9123b5a2b9b7d13d953e32f223773bed7edf7626038b5d6aba1a3db": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/5d40ee0da9123b5a2b9b7d13d953e32f223773bed7edf7626038b5d6aba1a3db.gz",
+      "gzip_sha256": "8f48559758cfc26038dd34d0f7a94a3c241e21d9e505c170d7e4189e0425ec19"
+    },
+    "11f489f0043b0afde38b8783ee72772b2626ec7a7286f89c9c4853b15539e6a7": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/11f489f0043b0afde38b8783ee72772b2626ec7a7286f89c9c4853b15539e6a7.gz",
+      "gzip_sha256": "1f46e10d299b1421ccbcfe669562d6cf8ec39574ee8007ba9a6b3e30933a2c24"
+    },
+    "cf0adf08409992b3889cb84c3d6f601e8329e6c32a8ace0fdaeb37acf407ebce": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/cf0adf08409992b3889cb84c3d6f601e8329e6c32a8ace0fdaeb37acf407ebce.gz",
+      "gzip_sha256": "d72e48c9df52966537ce515a52963cc24d681e9633685f5ddfcbd511e1a09ff8"
+    },
+    "7446f8ea10750d8ab64d03abf733616f6ddf532591571c444a1894e38e027458": {
+      "kind": "public_query",
+      "bytes": 1788,
+      "path": "fixtures/7446f8ea10750d8ab64d03abf733616f6ddf532591571c444a1894e38e027458.gz",
+      "gzip_sha256": "95dd513ba8f0c03003fbcc22d048ee52a4e9ee4b70b01a2d06deb78ede1786b6"
+    },
+    "e4502fc09a1e20ca64639f3d6ab88ee51b21545eb6c479f30a1476d13d2ebb19": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/e4502fc09a1e20ca64639f3d6ab88ee51b21545eb6c479f30a1476d13d2ebb19.gz",
+      "gzip_sha256": "4b01cef071980a740eee80379c500cbda49c30f57d4e42a0d3704d7325f00964"
+    },
+    "b00f2f485e42ca5bac8c7022d8c0ff3cb501ce130df511247a28ea3a1d8ad3c6": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/b00f2f485e42ca5bac8c7022d8c0ff3cb501ce130df511247a28ea3a1d8ad3c6.gz",
+      "gzip_sha256": "a28fe97a983f3c2d796d3a2aebb334273de42725fb0521a68385ecbe970d019d"
+    },
+    "046da082d67c707ca55005ccceda795162741401f8fc5cc09dc16563b315b0fe": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/046da082d67c707ca55005ccceda795162741401f8fc5cc09dc16563b315b0fe.gz",
+      "gzip_sha256": "fc651e8b6ca0d86d0b9cc54466dd5ac6e3068be45589e88e5c09fd47067f7d84"
+    },
+    "b3d5eb9a2501bdeeffa1c8c300ba42860492e9b707328f4e23cd6f8074a97a28": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/b3d5eb9a2501bdeeffa1c8c300ba42860492e9b707328f4e23cd6f8074a97a28.gz",
+      "gzip_sha256": "74b46bc5e5dda97c4caf0f1082398d6c349ac55f3e7155b88415c1ddf1437e54"
+    },
+    "0e9e0b186b2790d60e8c3d3a107f13effa1048fed5ea92bea55c3dbe06244856": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/0e9e0b186b2790d60e8c3d3a107f13effa1048fed5ea92bea55c3dbe06244856.gz",
+      "gzip_sha256": "f386dde5d6628c7be8384ab5722f15e50175ae53f858e4b2f0efe41695078efa"
+    },
+    "6591e4b4d5399e9ad317c146ca126ac7989ea69d39ce4680426bf58619e70065": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/6591e4b4d5399e9ad317c146ca126ac7989ea69d39ce4680426bf58619e70065.gz",
+      "gzip_sha256": "28d20b5e49870ed45e5a046610626f01c57f6f11fa27bb38525848fa6aa711de"
+    },
+    "26362af9f916a6e02af2179a42793168177efca6d11d9cad0dd0598761bc66c9": {
+      "kind": "public_query",
+      "bytes": 1790,
+      "path": "fixtures/26362af9f916a6e02af2179a42793168177efca6d11d9cad0dd0598761bc66c9.gz",
+      "gzip_sha256": "1d451fe57d4d95270bb64a66a57343a0818013fc16dce9a046fb32d6ac93d56c"
+    },
+    "6ae5444f925425a4bdbb3052ffb2a613188b9ff98424067328fc863abaf323db": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/6ae5444f925425a4bdbb3052ffb2a613188b9ff98424067328fc863abaf323db.gz",
+      "gzip_sha256": "740d85686377ff809b0af54ac7d4abd304abba45c7b4ad63b087ec450224e723"
+    },
+    "a7a250c4a6dadd7b221f38ad1594702c121fdb59a4e4def93a87ff2bf3a4e066": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/a7a250c4a6dadd7b221f38ad1594702c121fdb59a4e4def93a87ff2bf3a4e066.gz",
+      "gzip_sha256": "d118a4c27fddb43a2f1727f6ce3e202ea5c2040a13147b136032af018a508ac4"
+    },
+    "906bc67bdcdf09e0afa9e9c317a9900e2c2e18860e440a17830582d7002a8745": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/906bc67bdcdf09e0afa9e9c317a9900e2c2e18860e440a17830582d7002a8745.gz",
+      "gzip_sha256": "72baab154ef1b16e0cb95e7d9fb344d7e0ff79c37b9c5e8d8c1bdf315d90c85e"
+    },
+    "a0f1664589f0b115789a9f139bb115049df37f21abf9a94a5b7c6d49c0bef708": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/a0f1664589f0b115789a9f139bb115049df37f21abf9a94a5b7c6d49c0bef708.gz",
+      "gzip_sha256": "8fcb09fdfae379467ee94351c1381e8491e4a73ccaede332ac1a464e45ae38b0"
+    },
+    "33ed0f8010a11677d8731a19b3978587a784e613b1dc89d3a96537243815932e": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/33ed0f8010a11677d8731a19b3978587a784e613b1dc89d3a96537243815932e.gz",
+      "gzip_sha256": "f9ad1843109310310d961666c40dcf95ded4ebb48e5a8dfc339566e32cd494b8"
+    },
+    "456ef3405173e62b806e8471906ba089887ffcc1c153f896066e763c579b956d": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/456ef3405173e62b806e8471906ba089887ffcc1c153f896066e763c579b956d.gz",
+      "gzip_sha256": "01352c6be425889fd5614827b6d6a289195b49ca4af688ded21423c9aa52d55f"
+    },
+    "52f117a7b1646cf8935e9691d31ad0319fc174db75eba2ae517b44ea3834523f": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/52f117a7b1646cf8935e9691d31ad0319fc174db75eba2ae517b44ea3834523f.gz",
+      "gzip_sha256": "f9d02322b8cccd341533a972aa62d3f15c65f8ba2e984e8f55ad4e8fb240c7a0"
+    },
+    "f0d7d7edd2ede5c773a1533015e0af12688bf48c873161b50a0f47b769721557": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/f0d7d7edd2ede5c773a1533015e0af12688bf48c873161b50a0f47b769721557.gz",
+      "gzip_sha256": "c22e8c1a46cb7900c373c1b4f24be069cdff84d5b5e486c35ae41008b1301dff"
+    },
+    "163b673c619adc633e800193ee2baf22dd3d8b9dfe757fd37a22ba9651e8e539": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/163b673c619adc633e800193ee2baf22dd3d8b9dfe757fd37a22ba9651e8e539.gz",
+      "gzip_sha256": "0be130825149552c1d5bc32da2a397c3b1ffb86771ec56637a67e52b86793566"
+    },
+    "d4a656ecc4b853823ee00331e67508d6d2b1d87dd0e9978074252952d0d01df4": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/d4a656ecc4b853823ee00331e67508d6d2b1d87dd0e9978074252952d0d01df4.gz",
+      "gzip_sha256": "3d9ce075a24b6b23452fc58cd2a37ae057474e3a7e9ff56f22a11cdf0aea65a0"
+    },
+    "8168d640fa2b38e8f40d2b10b3772f637ee04a06792a1bb0468c125024606770": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/8168d640fa2b38e8f40d2b10b3772f637ee04a06792a1bb0468c125024606770.gz",
+      "gzip_sha256": "8e2b7368a0da9a3d4da3850a56d7ce05c6174cc01ae7dc96280aab5389a58dda"
+    },
+    "aa24ed3f60675a4da79b68303949b30d89c5ee41ebf18b7c106de50790307f47": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/aa24ed3f60675a4da79b68303949b30d89c5ee41ebf18b7c106de50790307f47.gz",
+      "gzip_sha256": "44ec71856cf52b0f1fdc85bf07fe91017bc90aa5c53192aaaa92776a07c2b626"
+    },
+    "8d7431967741d24f0eaea40c47a16d07b64df0f8f9dfea8afb3e75d3c9a63779": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/8d7431967741d24f0eaea40c47a16d07b64df0f8f9dfea8afb3e75d3c9a63779.gz",
+      "gzip_sha256": "e183beb184b0cda65acabf374f2b9c4e35fbe272c7373c24fa611cb8ce6a72bf"
+    },
+    "1f94217098a0520e9ec484ca50b8704224d458a10cabf8a641a607fa2aa34e4a": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/1f94217098a0520e9ec484ca50b8704224d458a10cabf8a641a607fa2aa34e4a.gz",
+      "gzip_sha256": "0b7f5c5b6f57600bca3fa633e31346c3a5bf79739c23ce436d7769c4e5b93c62"
+    },
+    "7a05e02d4f456873309eb3080cd83a753b1038fd6ec72207e8b0f6a7894f9a6b": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/7a05e02d4f456873309eb3080cd83a753b1038fd6ec72207e8b0f6a7894f9a6b.gz",
+      "gzip_sha256": "3c3ad579aa8e90c1c5046c2d599c4c8a8e990e421760e7a4bdf9809e81c5f10d"
+    },
+    "2addad79449aa132d19395ae3b352ef3820b40a69087c8c866157e10ed3e6f51": {
+      "kind": "public_ciphertext",
+      "bytes": 85103,
+      "path": "fixtures/2addad79449aa132d19395ae3b352ef3820b40a69087c8c866157e10ed3e6f51.gz",
+      "gzip_sha256": "114eb6cc0932d32898e0848334429c572900323fb70adfe99b5294b1f4d22e5d"
+    }
+  },
+  "provenance": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/results/run_001/report.json": "0521539ef3e0a85a626542afbbcedbea238024614447d26d07108c7162bde604",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/results/run_001/pairs.jsonl": "6219c84a920f723a91db9d61bcb933b29c32a123a11599d5a163b99a4f1494e8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/results/run_001/commands.jsonl.gz": "ba11e1d14ca3e1ae6dd90c4c6a315d7dd24cc95f66ef28835efde1f00943dd15",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/benchmark.py": "ff44cc218e345bc83af498f295532b2bdcbc07bb816a86aaccbf251f50dbffee",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/source_pins.json": "71e19df2f8735aeec17175048bf341537e67e770520162dceb0a800c9956c805"
+  }
+}

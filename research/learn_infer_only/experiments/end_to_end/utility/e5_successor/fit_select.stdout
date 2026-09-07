@@ -1,0 +1,21 @@
+{
+  "stage": "fit_select",
+  "selection_means": {
+    "e5_projected577": 0.55859375,
+    "e5_raw769": 0.55810546875,
+    "original577": 0.58984375,
+    "quadratic8": 0.54052734375,
+    "calibrated_soft8": 0.58056640625
+  },
+  "selection_sha256": "3a2469fc348255e6289dab90e384580d6f8920df90952d74d8f8a1207fa74537",
+  "teacher_fit_encoding_cost": {
+    "wall_seconds": 0.010494457994354889,
+    "cpu_seconds": 0.0068130000000000135,
+    "process_high_water_rss_bytes_macos": 52510720
+  },
+  "cost": {
+    "wall_seconds": 0.2613555419957265,
+    "cpu_seconds": 0.12451900000000002,
+    "process_high_water_rss_bytes_macos": 57344000
+  }
+}

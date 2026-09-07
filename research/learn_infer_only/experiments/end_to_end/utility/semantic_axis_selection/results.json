@@ -1,0 +1,448 @@
+{
+  "framings": {
+    "A": {
+      "axes": {
+        "letter.a": {
+          "bit_accuracy": 1.0,
+          "bits": 64,
+          "correct_bits": 64,
+          "correct_pairs": 0,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.594728528521955,
+          "mean_chosen_conditional_probability": 0.9610598664730787,
+          "minimum_alternative_probability_mass": 0.5056813955307007,
+          "pairs": 0,
+          "top1_is_alternative_count": 64
+        },
+        "letter.b": {
+          "bit_accuracy": 1.0,
+          "bits": 64,
+          "correct_bits": 64,
+          "correct_pairs": 0,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.6318834470584989,
+          "mean_chosen_conditional_probability": 0.7647020602598786,
+          "minimum_alternative_probability_mass": 0.5501030683517456,
+          "pairs": 0,
+          "top1_is_alternative_count": 57
+        },
+        "plant.a": {
+          "bit_accuracy": 0.984375,
+          "bits": 64,
+          "correct_bits": 63,
+          "correct_pairs": 0,
+          "exact_ties": 1,
+          "mean_alternative_probability_mass": 0.38538974802941084,
+          "mean_chosen_conditional_probability": 0.8295854991301894,
+          "minimum_alternative_probability_mass": 0.34403911232948303,
+          "pairs": 0,
+          "top1_is_alternative_count": 0
+        },
+        "plant.b": {
+          "bit_accuracy": 0.859375,
+          "bits": 64,
+          "correct_bits": 55,
+          "correct_pairs": 0,
+          "exact_ties": 1,
+          "mean_alternative_probability_mass": 0.5341426115483046,
+          "mean_chosen_conditional_probability": 0.7922781715169549,
+          "minimum_alternative_probability_mass": 0.4111135005950928,
+          "pairs": 0,
+          "top1_is_alternative_count": 32
+        }
+      },
+      "gold_pairs": {
+        "letter.00": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.598075982183218,
+          "mean_chosen_conditional_probability": 0.8493488859385252,
+          "minimum_alternative_probability_mass": 0.5135555863380432,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "letter.01": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.5675002336502075,
+          "mean_chosen_conditional_probability": 0.9019946828484535,
+          "minimum_alternative_probability_mass": 0.5056813955307007,
+          "pairs": 16,
+          "top1_is_alternative_count": 25
+        },
+        "letter.10": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.6538335550576448,
+          "mean_chosen_conditional_probability": 0.7988468091934919,
+          "minimum_alternative_probability_mass": 0.6269434690475464,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "letter.11": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.6338141802698374,
+          "mean_chosen_conditional_probability": 0.9013334754854441,
+          "minimum_alternative_probability_mass": 0.6084583401679993,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "plant.00": {
+          "bit_accuracy": 0.96875,
+          "bits": 32,
+          "correct_bits": 31,
+          "correct_pairs": 15,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.41536520700901747,
+          "mean_chosen_conditional_probability": 0.7510038167238235,
+          "minimum_alternative_probability_mass": 0.34403911232948303,
+          "pairs": 16,
+          "top1_is_alternative_count": 0
+        },
+        "plant.01": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.4874745039269328,
+          "mean_chosen_conditional_probability": 0.9389526695013046,
+          "minimum_alternative_probability_mass": 0.3447451591491699,
+          "pairs": 16,
+          "top1_is_alternative_count": 16
+        },
+        "plant.10": {
+          "bit_accuracy": 0.75,
+          "bits": 32,
+          "correct_bits": 24,
+          "correct_pairs": 8,
+          "exact_ties": 1,
+          "mean_alternative_probability_mass": 0.4332638969644904,
+          "mean_chosen_conditional_probability": 0.6870583351701498,
+          "minimum_alternative_probability_mass": 0.35637158155441284,
+          "pairs": 16,
+          "top1_is_alternative_count": 0
+        },
+        "plant.11": {
+          "bit_accuracy": 0.96875,
+          "bits": 32,
+          "correct_bits": 31,
+          "correct_pairs": 15,
+          "exact_ties": 1,
+          "mean_alternative_probability_mass": 0.5029611112549901,
+          "mean_chosen_conditional_probability": 0.8667125198990107,
+          "minimum_alternative_probability_mass": 0.3625996708869934,
+          "pairs": 16,
+          "top1_is_alternative_count": 16
+        }
+      },
+      "inspected_status": {
+        "False": {
+          "bit_accuracy": 0.9583333333333334,
+          "bits": 240,
+          "correct_bits": 230,
+          "correct_pairs": 110,
+          "exact_ties": 2,
+          "mean_alternative_probability_mass": 0.5361497692763806,
+          "mean_chosen_conditional_probability": 0.8390172988176345,
+          "minimum_alternative_probability_mass": 0.34403911232948303,
+          "pairs": 120,
+          "top1_is_alternative_count": 144
+        },
+        "True": {
+          "bit_accuracy": 1.0,
+          "bits": 16,
+          "correct_bits": 16,
+          "correct_pairs": 8,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.542330801486969,
+          "mean_chosen_conditional_probability": 0.805242907255888,
+          "minimum_alternative_probability_mass": 0.3805454969406128,
+          "pairs": 8,
+          "top1_is_alternative_count": 9
+        }
+      },
+      "overall": {
+        "bit_accuracy": 0.9609375,
+        "bits": 256,
+        "correct_bits": 246,
+        "correct_pairs": 118,
+        "exact_ties": 2,
+        "mean_alternative_probability_mass": 0.5365360837895423,
+        "mean_chosen_conditional_probability": 0.8369063993450254,
+        "minimum_alternative_probability_mass": 0.34403911232948303,
+        "pairs": 128,
+        "top1_is_alternative_count": 153
+      },
+      "route_balanced_bit_accuracy": 0.9609375,
+      "tasks": {
+        "letter": {
+          "bit_accuracy": 1.0,
+          "bits": 128,
+          "correct_bits": 128,
+          "correct_pairs": 64,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.6133059877902269,
+          "mean_chosen_conditional_probability": 0.8628809633664787,
+          "minimum_alternative_probability_mass": 0.5056813955307007,
+          "pairs": 64,
+          "top1_is_alternative_count": 121
+        },
+        "plant": {
+          "bit_accuracy": 0.921875,
+          "bits": 128,
+          "correct_bits": 118,
+          "correct_pairs": 54,
+          "exact_ties": 2,
+          "mean_alternative_probability_mass": 0.4597661797888577,
+          "mean_chosen_conditional_probability": 0.8109318353235722,
+          "minimum_alternative_probability_mass": 0.34403911232948303,
+          "pairs": 64,
+          "top1_is_alternative_count": 32
+        }
+      }
+    },
+    "B": {
+      "axes": {
+        "letter.a": {
+          "bit_accuracy": 1.0,
+          "bits": 64,
+          "correct_bits": 64,
+          "correct_pairs": 0,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.996031996794045,
+          "mean_chosen_conditional_probability": 0.9982186201959848,
+          "minimum_alternative_probability_mass": 0.9926623702049255,
+          "pairs": 0,
+          "top1_is_alternative_count": 64
+        },
+        "letter.b": {
+          "bit_accuracy": 1.0,
+          "bits": 64,
+          "correct_bits": 64,
+          "correct_pairs": 0,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9909293185919523,
+          "mean_chosen_conditional_probability": 0.9284092215821147,
+          "minimum_alternative_probability_mass": 0.9860653281211853,
+          "pairs": 0,
+          "top1_is_alternative_count": 64
+        },
+        "plant.a": {
+          "bit_accuracy": 0.8125,
+          "bits": 64,
+          "correct_bits": 52,
+          "correct_pairs": 0,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9908827748149633,
+          "mean_chosen_conditional_probability": 0.9119857773184776,
+          "minimum_alternative_probability_mass": 0.9705897569656372,
+          "pairs": 0,
+          "top1_is_alternative_count": 64
+        },
+        "plant.b": {
+          "bit_accuracy": 0.828125,
+          "bits": 64,
+          "correct_bits": 53,
+          "correct_pairs": 0,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9873834671452641,
+          "mean_chosen_conditional_probability": 0.8545161439105868,
+          "minimum_alternative_probability_mass": 0.9742603302001953,
+          "pairs": 0,
+          "top1_is_alternative_count": 64
+        }
+      },
+      "gold_pairs": {
+        "letter.00": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9957059938460588,
+          "mean_chosen_conditional_probability": 0.9803608953952789,
+          "minimum_alternative_probability_mass": 0.9920194149017334,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "letter.01": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9935015290975571,
+          "mean_chosen_conditional_probability": 0.9380027204751968,
+          "minimum_alternative_probability_mass": 0.9880462288856506,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "letter.10": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9929780717939138,
+          "mean_chosen_conditional_probability": 0.9772542994469404,
+          "minimum_alternative_probability_mass": 0.9895721673965454,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "letter.11": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9917370360344648,
+          "mean_chosen_conditional_probability": 0.9576377682387829,
+          "minimum_alternative_probability_mass": 0.9860653281211853,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "plant.00": {
+          "bit_accuracy": 1.0,
+          "bits": 32,
+          "correct_bits": 32,
+          "correct_pairs": 16,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9957079328596592,
+          "mean_chosen_conditional_probability": 0.9734168481081724,
+          "minimum_alternative_probability_mass": 0.9875261187553406,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "plant.01": {
+          "bit_accuracy": 0.90625,
+          "bits": 32,
+          "correct_bits": 29,
+          "correct_pairs": 13,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9914064537733793,
+          "mean_chosen_conditional_probability": 0.8945659846067429,
+          "minimum_alternative_probability_mass": 0.9742603302001953,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "plant.10": {
+          "bit_accuracy": 0.84375,
+          "bits": 32,
+          "correct_bits": 27,
+          "correct_pairs": 11,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9856301452964544,
+          "mean_chosen_conditional_probability": 0.8411159049719572,
+          "minimum_alternative_probability_mass": 0.9705897569656372,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        },
+        "plant.11": {
+          "bit_accuracy": 0.53125,
+          "bits": 32,
+          "correct_bits": 17,
+          "correct_pairs": 8,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.983787951990962,
+          "mean_chosen_conditional_probability": 0.8239051047712564,
+          "minimum_alternative_probability_mass": 0.9716262221336365,
+          "pairs": 16,
+          "top1_is_alternative_count": 32
+        }
+      },
+      "inspected_status": {
+        "False": {
+          "bit_accuracy": 0.9208333333333333,
+          "bits": 240,
+          "correct_bits": 221,
+          "correct_pairs": 107,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9913059162596861,
+          "mean_chosen_conditional_probability": 0.9242007891337077,
+          "minimum_alternative_probability_mass": 0.9705897569656372,
+          "pairs": 120,
+          "top1_is_alternative_count": 240
+        },
+        "True": {
+          "bit_accuracy": 0.75,
+          "bits": 16,
+          "correct_bits": 12,
+          "correct_pairs": 5,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9913214854896069,
+          "mean_chosen_conditional_probability": 0.9095072150230408,
+          "minimum_alternative_probability_mass": 0.978268027305603,
+          "pairs": 8,
+          "top1_is_alternative_count": 16
+        }
+      },
+      "overall": {
+        "bit_accuracy": 0.91015625,
+        "bits": 256,
+        "correct_bits": 233,
+        "correct_pairs": 112,
+        "exact_ties": 0,
+        "mean_alternative_probability_mass": 0.9913068893365562,
+        "mean_chosen_conditional_probability": 0.923282440751791,
+        "minimum_alternative_probability_mass": 0.9705897569656372,
+        "pairs": 128,
+        "top1_is_alternative_count": 256
+      },
+      "route_balanced_bit_accuracy": 0.91015625,
+      "tasks": {
+        "letter": {
+          "bit_accuracy": 1.0,
+          "bits": 128,
+          "correct_bits": 128,
+          "correct_pairs": 64,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9934806576929986,
+          "mean_chosen_conditional_probability": 0.9633139208890498,
+          "minimum_alternative_probability_mass": 0.9860653281211853,
+          "pairs": 64,
+          "top1_is_alternative_count": 128
+        },
+        "plant": {
+          "bit_accuracy": 0.8203125,
+          "bits": 128,
+          "correct_bits": 105,
+          "correct_pairs": 48,
+          "exact_ties": 0,
+          "mean_alternative_probability_mass": 0.9891331209801137,
+          "mean_chosen_conditional_probability": 0.8832509606145322,
+          "minimum_alternative_probability_mass": 0.9705897569656372,
+          "pairs": 64,
+          "top1_is_alternative_count": 128
+        }
+      }
+    }
+  },
+  "freeze_sha256": "cb1fda3cef63a87677bc6882c2f8e3e45ab88ed1e95996f7a0adeea8cd93e758",
+  "heldout_inputs": 0,
+  "prior_inspected_texts": 8,
+  "raw_scores_sha256": "79d5e1e5d757c4caf31217b936e6f2fe59688383cc36e86182119c0575623811",
+  "recommend_fresh_preregistered_evaluation_only": true,
+  "scope": "Teacher-selected forced-choice factual axes; no held-out/utility evidence",
+  "scored_teacher_rows_sha256": "0cffd881293de610e5296dc0b068bb037d3c7432c7cc68f6c3ba2259cdab94e7",
+  "selected_framing": "A",
+  "source_results_sha256": "300471f4c145d8103b930bcefd55e37e4c87e32ea9199a3a6e8ef5d227896e2c",
+  "teacher_bit_denominator_per_framing": 256,
+  "teacher_gate_passed": true,
+  "teacher_inputs": 128,
+  "teacher_pair_denominator_per_framing": 128,
+  "utility_history_runs": 0
+}

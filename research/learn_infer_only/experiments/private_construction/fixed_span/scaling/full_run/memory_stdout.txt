@@ -1,0 +1,1 @@
+{"finished": true, "samples": 104, "max_observed_rss_kib_by_role": {"driver": 25280, "issue": 29600, "evaluate": 43648}}

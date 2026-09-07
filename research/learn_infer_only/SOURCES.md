@@ -12,7 +12,8 @@ this run; PDF extractions use the local mirror.
 | [SOURCE]2025/330, Definitions4.1–4.4 pp.21–23; §6.1 pp.48–50; hybrids pp.51,57–58; Lemma6.7 p.65 | Separates current PKE input-ciphertext width from function/randomness/output widths. [Parameter note and reviewed correction](experiments/private_ingress/provenance_review/PARAMETER_REVIEW_COMPLETION.md) preserve the lambda/ellR syntax issue and exact L>E support bound. |
 | [SOURCE]2007/155, §9 pp.24–25 and proof definitions | Exact hiding-mode commitment equivocation equations and their limits for a common-parent transition. [DUAL_MODE.md](experiments/private_ingress/provenance_review/DUAL_MODE.md) pins local source and derived mode ordering. |
 | [SOURCE]2023/265, §4.1 p.19 and Definition4.3 p.20 | Nonuniform QPT/quantum advice and worst-case equivalent-circuit iO convention. [QIO_INTERFACE.md](experiments/pq_composition/qio_interface/QIO_INTERFACE.md) derives the qualified-event lemma; independent review records its resource-model qualification. |
-| [SOURCE]2025/2215 and bootstrap dependencies2016/006,2015/720 | The [new source audit](experiments/pq_composition/qio_instantiation/INSTANTIATION.md) traces the actual xiO reduction, average-case precondition and correctness amplification. A full quantum-advice bootstrap lift remains separate work. |
+| [SOURCE]2025/2215 and bootstrap dependencies2016/006,2015/720 | The [source audit](experiments/pq_composition/qio_instantiation/INSTANTIATION.md) traces the actual xiO reduction, average-case precondition and correctness amplification. The separately derived [quantum-advice bootstrap and pointwise-correctness supplement](experiments/pq_composition/qio_instantiation/bootstrap_lift/CLOSEOUT.md) now have independent review; exact base-suite instantiation remains open. |
+| [SOURCE]2012/733,2012/521,2013/364 and the six additional local sources pinned by the base lane | The [base-FE audit](experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md) follows actual static-FE, garbling, ABE/TOR and amplification reductions. Its own conditional one-copy advice lemma is distinct from source claims. Nine PDFs are pinned; four metadata web searches, no Scry or PDF downloads. |
 | [SOURCE]2017/276 Definition2.4/§3.1 and2017/274 Definition3.4;2019/1010 follow-up | [Lockable gate audit](experiments/private_construction/lockable_gate/README.md) checks full auxiliary-input lock unpredictability and source-game applicability. This lane adds two Scry SQL queries, zero schema calls and two web searches. |
 | [SOURCE]2015/017 Construction3.1 and selective security theorem | Actual fixed-span DDH window control and a separately derived adaptive specialization; [fixed_span](experiments/private_construction/fixed_span/README.md) preserves the source and exposed-interface boundary. |
 | [SOURCE / EXECUTED] Pinned local fhe-dregg sources and Cargo.lock | [Crypto manifest](experiments/end_to_end/crypto/README.md) supplies literal role/serialization dependencies and the caller-RNG versus internal-RNG distinction. Production keys use OS randomness; the public-seed historical secret-recovery warning remains. |
@@ -21,7 +22,14 @@ this run; PDF extractions use the local mirror.
 [EXECUTED search scope] First-run aggregate was12 Scry SQL/two schema. The
 lockable audit adds two SQL/zero schema; other new source-access counts are
 recorded in their lane manifests, with web accesses separate. The root's second
-run has made no Scry query so far. This is not a literature-wide absence claim.
+run has made no Scry query directly. It made two metadata searches for functional
+proxy re-encryption/designated inner-product FE. The completed
+[designated-span source audit](experiments/private_construction/designated_span/sources/PRIOR_ART.md)
+adds two Scry SQL/zero schema and thirteen lane web queries. It corrects the
+Feng publication to ICASSP 2024, distinguishes predicate PRE from numeric
+projection output, and does not import a recipient-exposure theorem from
+incompatible games. The combined recorded Scry total is now **16 SQL/two schema**.
+This is not a literature-wide absence claim.
 
 ## Historical first-tranche register
 

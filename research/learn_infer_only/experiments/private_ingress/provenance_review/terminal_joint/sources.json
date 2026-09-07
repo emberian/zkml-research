@@ -1,0 +1,246 @@
+{
+  "classification": "EXECUTED primary-source identities and frozen-input verification only",
+  "command": "python3 /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/verify_sources.py",
+  "python": "3.14.7",
+  "verifier_sha256": "b18cd9a1840a18352d96296fa70906a25fec44edecf1748be622785d11856c3a",
+  "note": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/terminal_joint/TERMINAL_JOINT.md",
+    "sha256": "1c698c8361cd4d6e5bfefc96ee34d1bcc4d090ec59f09f6efaad378d5195717c"
+  },
+  "sources": [
+    {
+      "id": "2025/330",
+      "url": "https://eprint.iacr.org/2025/330",
+      "pdf": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+        "sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2"
+      },
+      "retained_extract": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/sources/2025-330.txt",
+        "sha256": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54"
+      },
+      "access": "Notation p15; PKE/iO definitions p18; NIZK p21; Defs4.1-4.4 pp21-23; recalled older definition and footnote6 pp28-29; section6.1/Construction2 pp48-49; Thm6.1 and hybrids pp50-63; Lemmas6.2-6.8 and final sum pp64-67. Retained text read with rg/sed; no new extraction.",
+      "anchor_PDF_pages_1_based": {
+        "Throughout, we will use": [
+          15
+        ],
+        "Definition 4.3": [
+          22
+        ],
+        "Definition 4.4": [
+          23
+        ],
+        "all non-uniform PPT adversaries A": [
+          21
+        ],
+        "The original definition in [GJKS15] considers non-uniform attackers": [
+          29
+        ],
+        "Lemma 6.2.": [
+          64
+        ],
+        "Lemma 6.8.": [
+          66
+        ]
+      },
+      "quantifier_search_terms": [
+        "non-uniform",
+        "nonuniform",
+        "auxiliary",
+        "auxilliary",
+        "compatible",
+        "compatibility",
+        "generator",
+        "coin tosses",
+        "randomness of",
+        "probability is over"
+      ]
+    },
+    {
+      "id": "2007/155",
+      "url": "https://eprint.iacr.org/2007/155",
+      "pdf": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/155.pdf",
+        "sha256": "45358698cdd4007dddbabf74f7e32e7762d963637c8e3bfae5be2235df64868e"
+      },
+      "retained_extract": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_sources/2007-155.txt",
+        "sha256": "0c4b2fc7fa3d22f1e85277cb8b2189052be1d69d966c465efaa46be25ac9d2f5"
+      },
+      "access": "Defs4-5 pp9-10; scalar commitments, source CRS and SXDH instantiation pp24-28; section11 construction/Theorem18 and proof pp34-36. Retained text read with rg/sed; no new extraction.",
+      "anchor_PDF_pages_1_based": {
+        "Definition 4 (Composable": [
+          9
+        ],
+        "Definition 5 (Composable": [
+          9
+        ],
+        "Theorem 15": [
+          28
+        ],
+        "Theorem 18": [
+          35
+        ]
+      }
+    }
+  ],
+  "frozen_checks": [
+    {
+      "manifest": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/review_hashes.json",
+        "sha256": "981aeb3e134247ec57661cefa910f8bc2736c341a1e3442f83cc7f5c0660a9f3"
+      },
+      "verified_files": [
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/REVIEW.md",
+          "sha256": "9bdaacf0da4e8fa0acc78ab5e0fa170940248529e16da40eadfba25e108b107e"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/audit.py",
+          "sha256": "58d52c0085ba3b3add543565f082324e4aa643d4f44a72ebb78be064831a5a5e"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/audit.stdout.txt",
+          "sha256": "4a5cda5f0e8270075d9b8147c12dfb06dd8869a0daa5f9833ef390d34ad09ee6"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/check_sources.py",
+          "sha256": "fbf404f9e881b58bc86ca29ba56dd27621ca1ce831d59cab7b7ffc0548abeff7"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/check_sources.stdout.txt",
+          "sha256": "647457c108eeb0e6dedfee369413e0b6e85b9d431b4ce3da930c11f9f19d70d8"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/frozen_hashes.json",
+          "sha256": "db3079df7884a59f732001ea10f9ec825f98e3cbc892be4b27754b9e041cc5f7"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/results.json",
+          "sha256": "4a5cda5f0e8270075d9b8147c12dfb06dd8869a0daa5f9833ef390d34ad09ee6"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/source_manifest.json",
+          "sha256": "a5bd4c0616597e933ca0d0d9b00cb32c9d1917cd78861e70ee8e80ca451157b1"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_hashes.json",
+        "sha256": "3407d7d049a91a0240ae29b97e67cb4ddfa5fd1892b2418a112ca60cbd45464f"
+      },
+      "verified_files": [
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/DUAL_MODE.md",
+          "sha256": "f907f3f4cf68dc449fabaf5e397f633e3bc5ee12fc4989a207e2d0f4b600012c"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_audit.py",
+          "sha256": "8e8a3079c3d7a1a3e7cd27d43ade2e3893c8f761f50694fe85593711bcf65c20"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_audit.stdout.txt",
+          "sha256": "51609f77137cd57b341327f1e8ba65dc54be4db4ef294b519942aa4b07b8fd52"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_results.json",
+          "sha256": "51609f77137cd57b341327f1e8ba65dc54be4db4ef294b519942aa4b07b8fd52"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_sources.json",
+          "sha256": "78033e4938e5d6f126593b48d4cc760779098ea2063e35f391aaae8fb0df9bc5"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/.gitignore",
+          "sha256": "f05d174180fd76156980e67c970b53249bae9fb076d60fabdc40c051b99c34ba"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_completion.json",
+        "sha256": "6c5a96aeb5a590dda0c73ae959c3ef9a2174af20993e1f273ef974eb9b339963"
+      },
+      "verified_files": [
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/PARAMETER_CLOSURE.md",
+          "sha256": "f7bce8ced8c8460c13a7fe43dfaffbad8bd644f698303f62dc9497b790858fca"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/PARAMETER_CLOSURE.md",
+          "sha256": "ba2142fd63f95e352ce4a6a7e3dd41951b755d7c63e26151298eda53a6628546"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_audit.py",
+          "sha256": "242a7299ad13f11e2936acf07f6ae3f3d15d0574cf33703631933bac3f159df4"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.py",
+          "sha256": "8428aae92dee4adc784ccebf616e27378ffeda299300756be14b15c00da580af"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_audit.stdout.txt",
+          "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_audit.stdout.txt",
+          "sha256": "b089f96be23d7e7264c8adbd0563ed129f3ca7de2049f7f136d53487601d84dd"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_results.json",
+          "sha256": "c833b1b0b355dad5b912bc1cda4a6c7db666b2f36bfa06c74c01798187e3ea97"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_results.json",
+          "sha256": "b089f96be23d7e7264c8adbd0563ed129f3ca7de2049f7f136d53487601d84dd"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_sources.json",
+          "sha256": "ce6adf20bcca0d9d728400eb4fb0adebb183a9b14a5d3e6b369ac60fae7a4843"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_sources.json",
+          "sha256": "ce6adf20bcca0d9d728400eb4fb0adebb183a9b14a5d3e6b369ac60fae7a4843"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_hashes.json",
+          "sha256": "cb3918cf2b8c63a08eccb33501acde8d5541a808ffa54633ebc0f5877e36b028"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_original/parameter_hashes.json",
+          "sha256": "cb3918cf2b8c63a08eccb33501acde8d5541a808ffa54633ebc0f5877e36b028"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/PARAMETER_REVIEW_COMPLETION.md",
+          "sha256": "3ebdecb98a4f67c7d884860c61c05353bf39b225c4ac44d379b05bcebf5974c9"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/parameter_review_check.json",
+          "sha256": "5371cdf8e3cb6ef1099596ba933fd874b24d09cc615b599ca140d2b649db736a"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/REPORT.md",
+          "sha256": "866e3988318e242369261869088660b0cee5d27488bc79cc6a189e7488ff4561"
+        },
+        {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_ingress_parameters/review_manifest.json",
+          "sha256": "e887fce810daee7e0bb7c7c310880ce14af9fc19cd25baad362b5ff02fc1a696"
+        }
+      ]
+    }
+  ],
+  "all_expected_identities_match": true,
+  "note_trailing_whitespace_check": true,
+  "accounting": {
+    "web_search_queries": 0,
+    "web_HTML_opens": 2,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "new_PDF_extracts": 0,
+    "PDF_downloads": 0,
+    "attack_recovery_or_extraction_runtimes": 0
+  },
+  "web_scope": "Primary eprint HTML publication/version metadata only; theorem/game evidence is the pinned local full text."
+}

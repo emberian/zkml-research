@@ -1,0 +1,134 @@
+{
+  "schema": "base-fe-source-spans-v1",
+  "read_scope": "The listed constructions, games and reductions were inspected in locally extracted pinned PDFs; not a claim of auditing every reference or appendix.",
+  "sources": [
+    {
+      "eprint": "2015/720",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+      "locations": [
+        "Definitions10\u201312/Theorems6\u20137, printed pp10\u201311",
+        "CRS/short-key definitions around printed pp28\u201330"
+      ],
+      "supports": [
+        "static Boolean succinct FE target",
+        "short-public-key requirement is independent of encryption succinctness"
+      ]
+    },
+    {
+      "eprint": "2016/006",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "locations": [
+        "Definitions3\u20135/Theorems3\u20134, printed pp5\u20136"
+      ],
+      "supports": [
+        "static single-key game",
+        "perfect correctness in stated syntax",
+        "GKP/depth-upgrade citation chain"
+      ]
+    },
+    {
+      "eprint": "2012/733",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "locations": [
+        "Definitions2.2/2.6/2.8/2.10/2.12",
+        "Theorem3.1/Corollaries3.2\u20133.5, printed pp20\u201322",
+        "Remark3.7/Construction3.1, printed pp23\u201324",
+        "Simulator and Lemmas3.9\u20133.11, printed pp25\u201329",
+        "AppendixB ABE2, printed pp47\u201349"
+      ],
+      "supports": [
+        "literal constructor and size formula",
+        "straight-line FHE/GC/ABE hybrids",
+        "component correctness errors",
+        "q*k output expansion and chaining warning"
+      ]
+    },
+    {
+      "eprint": "2013/337",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf",
+      "locations": [
+        "Lemma3.1, printed p8",
+        "TOR definitions Section4, printed pp9\u201311",
+        "LWE TOR constructor Section5, printed pp12\u201315",
+        "ABE algorithms Section6, printed pp15\u201317",
+        "Lemma6.4, printed pp18\u201320"
+      ],
+      "supports": [
+        "trapdoor/statistical sampling contracts",
+        "correlated LWE sample game",
+        "literal mask translation",
+        "gate-by-gate simulation and explicit false-predicate refusal"
+      ]
+    },
+    {
+      "eprint": "2014/917",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf",
+      "locations": [
+        "Section4/Theorem3, printed pp12\u201314"
+      ],
+      "supports": [
+        "multi-output shallow-FE prerequisite",
+        "private depth-upgrade constructor and hybrids",
+        "public version stated essentially identical"
+      ]
+    },
+    {
+      "eprint": "2014/148",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/148.pdf",
+      "locations": [
+        "AppendixD, printed pp34\u201339; including footnote15 p35 and D.3 p38"
+      ],
+      "supports": [
+        "arbitrary-output prerequisite",
+        "Boolean equivalence uses unbounded key queries",
+        "constructor and hybrid proof inspected"
+      ]
+    },
+    {
+      "eprint": "2015/173",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+      "locations": [
+        "AppendixC, printed pp56\u201357"
+      ],
+      "supports": [
+        "IND-to-SIM, bounded-key, depth-upgrade reference chain",
+        "explicit encryption-runtime bookkeeping",
+        "compactness preservation caveat"
+      ]
+    },
+    {
+      "eprint": "2013/364",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/364.pdf",
+      "locations": [
+        "Definition10, printed p12",
+        "Section3.3/Definition13/Theorem14, printed pp15\u201317"
+      ],
+      "supports": [
+        "standard-model trapdoor slots and algorithms",
+        "straight-line IND-FE/SYM switches",
+        "shallow symmetric decryption needed for NC1 port; general theorem does not provide it"
+      ]
+    },
+    {
+      "eprint": "2012/521",
+      "local_pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/521.pdf",
+      "locations": [
+        "Sections5.1\u20135.3/Claims5.1.1\u20135.1.3, printed pp16\u201322",
+        "Section6 opening, printed p22"
+      ],
+      "supports": [
+        "N-instance bounded-key constructor",
+        "subset parameters and exponential bad-event rates",
+        "static simulator and Shamir privacy",
+        "field-valued underlying output interface"
+      ]
+    }
+  ],
+  "conditional_proof_status": "Mathematical source audit, not Lean-checked or independently reviewed here.",
+  "unread_dependency_obligations": [
+    "Concrete QA garbling from primitive games",
+    "Concrete leveled FHE QA reduction and full error parameters",
+    "Uniform output-independent depth-upgrade and recursive short-key parameter choice",
+    "Concrete rates for remaining trapdoor/sampler/correctness terms"
+  ]
+}

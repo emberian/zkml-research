@@ -1,0 +1,212 @@
+{
+  "schema": "independent-public-reference-review-v1",
+  "ok": true,
+  "time_utc": "2026-09-07T03:45:08.167859+00:00",
+  "script_sha256": "00808269ea6f6d336255aa9fd2843211d7f0d999ca146c7235cabdc8098e2c28",
+  "reference_sha256": "304538f5114d990cd3ba7ab11a05081ef05a42ac196cdab4925a1a39cd7e2522",
+  "manifests": {
+    "fixtures.json": "a63cb42bbd9fde407d2da63196eaf88df3344f8fba4fb05eb34e5ed63d23ebfb",
+    "utility-fixtures.json": "d8e437803ad590686f309306a24afa656d4898f70ca32bba4bc65e10dc4a88a0"
+  },
+  "public_ciphertexts_stream_decoded": 27,
+  "rns_coefficients_stream_decoded": 442368,
+  "public_query_count": 3,
+  "inverse_table_index_identities": 4095,
+  "utility_output_coefficients_checked": 16384,
+  "utility_horner_evaluations_checked": 48,
+  "utility_query_support": {
+    "positive": 270,
+    "negative": 269,
+    "zero": 38
+  },
+  "rows": [
+    {
+      "component": 0,
+      "limb": 0,
+      "modulus": 2199023190017,
+      "coefficients_match": 4096,
+      "horner_evaluations_match": 12,
+      "integer_array_sha256": "fe0a79d48cbd874609e264e5aed563e6146c2ba25f3017ba6da6f5bfe0f6c8af"
+    },
+    {
+      "component": 0,
+      "limb": 1,
+      "modulus": 4398046486529,
+      "coefficients_match": 4096,
+      "horner_evaluations_match": 12,
+      "integer_array_sha256": "910c7358f20d6620dfe77043340c67491a5dcc050b1adb94dd8baed7b47bdd1d"
+    },
+    {
+      "component": 1,
+      "limb": 0,
+      "modulus": 2199023190017,
+      "coefficients_match": 4096,
+      "horner_evaluations_match": 12,
+      "integer_array_sha256": "cca64387b39a42de6ed4c73980e6ad5a075b54f3fca4a61f932cd75caf70ca00"
+    },
+    {
+      "component": 1,
+      "limb": 1,
+      "modulus": 4398046486529,
+      "coefficients_match": 4096,
+      "horner_evaluations_match": 12,
+      "integer_array_sha256": "10bb4f311f82febbf0eac8824b93236a68edb4da65570b50d33d3103612e61d3"
+    }
+  ],
+  "public_inputs": [
+    {
+      "sha256": "5d40ee0da9123b5a2b9b7d13d953e32f223773bed7edf7626038b5d6aba1a3db",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "11f489f0043b0afde38b8783ee72772b2626ec7a7286f89c9c4853b15539e6a7",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "cf0adf08409992b3889cb84c3d6f601e8329e6c32a8ace0fdaeb37acf407ebce",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "7446f8ea10750d8ab64d03abf733616f6ddf532591571c444a1894e38e027458",
+      "kind": "public_query",
+      "bytes": 1788
+    },
+    {
+      "sha256": "e4502fc09a1e20ca64639f3d6ab88ee51b21545eb6c479f30a1476d13d2ebb19",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "b00f2f485e42ca5bac8c7022d8c0ff3cb501ce130df511247a28ea3a1d8ad3c6",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "046da082d67c707ca55005ccceda795162741401f8fc5cc09dc16563b315b0fe",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "b3d5eb9a2501bdeeffa1c8c300ba42860492e9b707328f4e23cd6f8074a97a28",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "0e9e0b186b2790d60e8c3d3a107f13effa1048fed5ea92bea55c3dbe06244856",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "6591e4b4d5399e9ad317c146ca126ac7989ea69d39ce4680426bf58619e70065",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "26362af9f916a6e02af2179a42793168177efca6d11d9cad0dd0598761bc66c9",
+      "kind": "public_query",
+      "bytes": 1790
+    },
+    {
+      "sha256": "6ae5444f925425a4bdbb3052ffb2a613188b9ff98424067328fc863abaf323db",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "a7a250c4a6dadd7b221f38ad1594702c121fdb59a4e4def93a87ff2bf3a4e066",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "906bc67bdcdf09e0afa9e9c317a9900e2c2e18860e440a17830582d7002a8745",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "a0f1664589f0b115789a9f139bb115049df37f21abf9a94a5b7c6d49c0bef708",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "33ed0f8010a11677d8731a19b3978587a784e613b1dc89d3a96537243815932e",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "456ef3405173e62b806e8471906ba089887ffcc1c153f896066e763c579b956d",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "52f117a7b1646cf8935e9691d31ad0319fc174db75eba2ae517b44ea3834523f",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "f0d7d7edd2ede5c773a1533015e0af12688bf48c873161b50a0f47b769721557",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "163b673c619adc633e800193ee2baf22dd3d8b9dfe757fd37a22ba9651e8e539",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "d4a656ecc4b853823ee00331e67508d6d2b1d87dd0e9978074252952d0d01df4",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "8168d640fa2b38e8f40d2b10b3772f637ee04a06792a1bb0468c125024606770",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "aa24ed3f60675a4da79b68303949b30d89c5ee41ebf18b7c106de50790307f47",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "8d7431967741d24f0eaea40c47a16d07b64df0f8f9dfea8afb3e75d3c9a63779",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "1f94217098a0520e9ec484ca50b8704224d458a10cabf8a641a607fa2aa34e4a",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "7a05e02d4f456873309eb3080cd83a753b1038fd6ec72207e8b0f6a7894f9a6b",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "2addad79449aa132d19395ae3b352ef3820b40a69087c8c866157e10ed3e6f51",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "a1f40d6786f70a332282358b389592a95b15b9f14641817e3a60de86f7e53501",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    },
+    {
+      "sha256": "aa6d65b048571cebfa7c93766dc9849b9d21545250314eca9eb81280c6ec6293",
+      "kind": "public_query",
+      "bytes": 1645
+    },
+    {
+      "sha256": "6f2ba933af20935a2a56db2183704f7bf75a250d6e215867e53b6fbb1e480eff",
+      "kind": "public_ciphertext",
+      "bytes": 85103
+    }
+  ],
+  "elapsed_seconds": 8.929318750015227,
+  "production_arithmetic_executed": false,
+  "secret_inputs_read": false,
+  "scope": "Positive retained public codec and ring-equation samples; no universal runtime/refinement/noise/privacy theorem."
+}

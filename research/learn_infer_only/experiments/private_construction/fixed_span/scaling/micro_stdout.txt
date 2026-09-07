@@ -1,0 +1,7 @@
+{"event": "starting", "role": "setup"}
+{"role": "honest_private_setup", "elapsed_ns": 16312937083, "exports": ["public.bin", "fixed_keys.bin"], "master_exported": false, "role_peak_rss_bytes_macos": 27787264, "subprocess_wall_ns": 16378840541}
+{"event": "starting", "role": "issue"}
+{"role": "private_issuer_public_key_only", "encrypted_vectors": 1, "encoding_table_ns": 226541, "encryption_ns": 28316420459, "ciphertext_bytes": 147968, "diagnostic_scope": "private synthetic micro-log; not a deployed host API", "role_peak_rss_bytes_macos": 27967488, "subprocess_wall_ns": 28380515417}
+{"event": "starting", "role": "evaluate"}
+{"role": "host_fixed_key_evaluator", "validation_ns": 21887329959, "validated_ciphertext_elements": 578, "fixed_projection_ns": 179781500, "fixed_query_index": 0, "fixed_projection_reads": 1, "score": 1435, "bsgs_table_ns": 3879625, "bsgs_decode_ns": 48452000, "bsgs_common_bound": 14219936, "bsgs_baby_entries": 5333, "bsgs_giant_iterations_actual": 2667, "bsgs_python_table_bytes_shallow_plus_entries": 1614848, "master_or_plaintext_input": false, "role_peak_rss_bytes_macos": 28835840, "subprocess_wall_ns": 22307335375}
+{"passed": true, "score_matches_separate_oracle": true, "encrypted_vectors": 1, "fixed_projection_reads": 1}

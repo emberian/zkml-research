@@ -1,0 +1,26 @@
+{
+  "no_model_loaded": true,
+  "actual_generation_calls": 0,
+  "original_default_merge": {
+    "do_sample": true,
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "generation_mode": "sample"
+  },
+  "disable_model_defaults": {
+    "do_sample": false,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "generation_mode": "greedy_search"
+  },
+  "disable_and_explicit_kwargs": {
+    "do_sample": false,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "generation_mode": "greedy_search"
+  },
+  "installed_source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/lib/python3.14/site-packages/transformers/generation/utils.py",
+  "installed_source_sha256": "a20024b1e82ed5361a524d238d2197be5407abc91297dd9888c57e8284d63fef",
+  "source_locations": "GenerationMixin._prepare_generation_config lines1704-1801; generate lines2378-2381",
+  "diagnostic_script_sha256": "f668398953b6d0aaab878c9d9db24f0978775c6466976921bd998f9424a47cb0"
+}
