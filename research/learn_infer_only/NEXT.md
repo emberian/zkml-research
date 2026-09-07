@@ -1,8 +1,25 @@
-# Resume after the timed run
+# Next work in the second authorized timed run
+
+[EXECUTED authorization] A new run is active until **2026-09-07 10am EDT /
+14:00 UTC**. Start from the [end-to-end contract](experiments/end_to_end/CONTRACT.md):
+join actual encrypted updates/queries, keyless public recomputation, mixed
+durable history and selected recipient delivery. Keep the full-key benchmark
+reader explicitly outside the stronger no-master-read claim. Root coordinates
+the shared ledgers; lane owners write their own artifacts and review findings.
+
+[OPEN sequencing] The earlier resume items below remain valid obligations.
+Prioritize those needed by the concrete demonstration and those deciding the
+privacy construction. Do not automatically resume every unfinished theorem lane.
+The previous run was closed; this work is authorized by Ember's new request.
 
 [EXECUTED] The original 10am EDT deadline has passed. The run closed after collecting saved work following the usage-limit interruption. Start a new authorized work tranche before resuming these investigations; do not treat this file as a new autonomous deadline.
 
-1. [OPEN; strongest construction] Finish independent review of experiments/pq_composition/qind_pre/QIND_PRE_LIFT.md. Independent finite controls in experiments/adversarial_review/qind_pre/results.json passed, but a final review report was interrupted. Keep the named quantum-auxiliary iO/WI/PPRF/PKE/COM/SUF games explicit; no primitive suite was instantiated from LWE or 2025/2215.
+1. [DERIVED review complete; OPEN instantiation] The saved QIND_pre eleven-hybrid
+   lift passed bounded independent source/proof review under its explicit games;
+   see experiments/pq_composition/qind_pre/REVIEW_COMPLETION.md. The next obligation
+   is an actual source-backed primitive suite, beginning with its qualified
+   quantum auxiliary-state iO game. Keep WI/PPRF/PKE/COM/SUF and correctness
+   assumptions explicit; no suite was instantiated from LWE or 2025/2215.
 
 2. [OPEN; private ingress] Review experiments/private_ingress/provenance/PROVENANCE.md and its exact parent-bound two-input layout. The ideal controls pass; the parent reconstructed its five-source manifest from retained local extracts. The required joint commitment/proof/FE hybrid is not proved. Public proof-generation parameters and unrestricted state-signing/extraction credentials are different capabilities.
 

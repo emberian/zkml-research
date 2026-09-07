@@ -1,4 +1,23 @@
-# Learn/infer-only resident — timed run closed
+# Learn/infer-only resident — second timed run active
+
+[EXECUTED authorization, 2026-09-06 evening] Ember requested a new autonomous
+swarm run until **2026-09-07 10am EDT / 14:00 UTC**. The goal is active. Tonight's
+priority is an actual end-to-end demonstration, with the absence of unrestricted
+read authority kept as a separate, decisive construction obligation. See the
+[acceptance contract](experiments/end_to_end/CONTRACT.md). The previous run's
+results and interruption history follow unchanged below.
+
+[OPEN current work] Real BFV role/serialization CLI and mixed durable journal
+integration are in progress, with independent adversarial review. Separate
+bounded lanes review the finite masterless implementation, parent-bound private
+ingress and the saved conditional QIND_pre lift. No new integration result is
+claimed before its recorded execution.
+
+[DERIVED reviewed successor] The saved eleven-hybrid conditional QIND_pre lift
+now has a completed independent review with no blocking error found under its
+explicit primitive games. The exact quantum auxiliary-state iO/NIWI/PKE/etc.
+suite remains uninstantiated. See [review completion](experiments/pq_composition/qind_pre/REVIEW_COMPLETION.md);
+this does not establish a PQ resident or a PQ-from-LWE construction.
 
 [EXECUTED timing] The requested deadline was **2026-09-06 10am EDT / 14:00 UTC**. The swarm hit its usage limit before that cutoff. Replenishment arrived at 17:25 EDT, after the deadline; the parent then collected and checked saved work without starting new research lanes. This is not a claim that the swarm worked continuously until 10am.
 
