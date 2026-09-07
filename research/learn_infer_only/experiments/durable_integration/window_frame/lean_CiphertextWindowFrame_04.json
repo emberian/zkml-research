@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build/Assurance/CiphertextWindowFrame.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrame.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame",
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/bfv_window/build:/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source_sha256": "f0912368003396d30ede40ba5f72ae2d13a73c368b411a25b0c87338287c3a55",
+  "inputs_unchanged": true,
+  "exit_code": 0,
+  "stdout": "'Minidregg.Assurance.CiphertextWindowFrame.projection_install' depends on axioms: [propext, Quot.sound]\n'Minidregg.Assurance.CiphertextWindowFrame.count_admission' depends on axioms: [propext, Quot.sound]\n'Minidregg.Assurance.CiphertextWindowFrame.count_frame' depends on axioms: [propext, Quot.sound]\n'Minidregg.Assurance.CiphertextWindowFrame.frameCheck_iff' depends on axioms: [propext]\n'Minidregg.Assurance.CiphertextWindowFrame.framesSelected_iff' depends on axioms: [propext]\n'Minidregg.Assurance.CiphertextWindowFrame.changed_window_refused' depends on axioms: [propext]\n'Minidregg.Assurance.CiphertextWindowFrame.noncanonical_tag_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Assurance.CiphertextWindowFrame.mixed_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Assurance.CiphertextWindowFrame.mixed_queue_sum' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+  "stderr": "",
+  "elapsed_seconds": 20.762306213378906,
+  "olean_sha256": "7961daefb5f08da06a5e38dbfba5323dd41683862f745c155c8a5d390c946c4e"
+}

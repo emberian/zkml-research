@@ -1,0 +1,68 @@
+{
+  "recorded_utc": "2026-09-07T02:22:43.519646+00:00",
+  "classification": "EXECUTED counterexamples to exact canonical signed-action binding",
+  "review_script_sha256": "19396692cbe2ba3d68551a1641f615ca07cb1be1b23e56257831d844f70efe34",
+  "sources": {
+    "common.py": "698311b47cc9b8c8809b668a21f1749cb186bd57b192f358c418fd27686a4209",
+    "model.py": "6f52483bc80e928f0268962553a10dbe8365fa7613fa57fd35a4632324393323",
+    "roles.py": "a42bf9dc15320587e60a47332556dddc2d345eed7099c8f573f13f8697d3b2f0",
+    "authority.py": "99f59445b4048ae9e87a4201829e3e686090d6141002f05bdde7f7e2380890fa",
+    "reader.py": "3710fe1a811f269d994a863164f6a971486f015c31629a839399b4f8f5d06fa1",
+    "run.py": "f92029a85b3f87003d7d2ea3f851ee8c29f5411998d3222cfabf37ff149e5286",
+    "client.py": "489c23061e8e8724773d6c7f8f1c1aafe66cc6524e31a5b9b2c3d6d680d4f7d0",
+    "crypto/src/main.rs": "22f0cbe304772263094c228f6598eb4cbfa00432902ba9e5de0993f6735e1b7c"
+  },
+  "binary_sha256": "9c79c02e7d919ecdc24851c6f77e50ed6990397bd669f571a886f8e2b85058c2",
+  "controls": [
+    {
+      "name": "honest_learn",
+      "ok": true,
+      "status": "accepted"
+    },
+    {
+      "name": "boolean-program-version",
+      "signed_authorization_unchanged": true,
+      "action_differs_from_signed_canonical_payload": true,
+      "accepted": true,
+      "status": "accepted",
+      "delivery": {
+        "reader": {
+          "envelope_sha256": "66679f94a7394c8ee7fc1267cfdbd295b2182042405e792be3f6b31c73b74e04",
+          "nonce": "nonce-boolean-program-version",
+          "ok": true,
+          "status": "received"
+        },
+        "status": "acknowledged"
+      },
+      "reason": null
+    },
+    {
+      "name": "float-program-version",
+      "signed_authorization_unchanged": true,
+      "action_differs_from_signed_canonical_payload": true,
+      "accepted": true,
+      "status": "accepted",
+      "delivery": {
+        "status": "not_a_release"
+      },
+      "reason": null
+    },
+    {
+      "name": "float-range-assertion",
+      "signed_authorization_unchanged": true,
+      "action_differs_from_signed_canonical_payload": true,
+      "accepted": true,
+      "status": "accepted",
+      "delivery": {
+        "status": "not_a_release"
+      },
+      "reason": null
+    }
+  ],
+  "private_test_oracle_public_vector_answers": {
+    "boolean-program-version": 1
+  },
+  "final_revision": 4,
+  "all_alias_witnesses_observed": true,
+  "scope": "Actual isolated authority and reader RPCs, real signatures and BFV. Numerical meanings match, but canonical signed context differs. No plaintext authorization bypass or masterless-security claim."
+}

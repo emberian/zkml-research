@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "prediction_label_checks": 98304,
+  "recomputed_history_method_rows": 256,
+  "all_histories_retained": 64,
+  "fresh_history_seed_disjointness": true,
+  "reused_text_surfaces": true,
+  "selection_precedes_test_retained_mtime": true,
+  "frozen_hashes_agree": true,
+  "old_e2e_fixture_unchanged": true,
+  "useful_successor": false,
+  "script_sha256": "918d76b3167ec1bbd46c49b59ccbd5085b14d572429b6288a1e25a74a84011bf"
+}

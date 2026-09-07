@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/test_cli.py", line 140, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/test_cli.py", line 121, in main
+    call('oracle-keygen','--pk',opk,'--sk',osk,'--zero',ozero,'--seed','37')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/test_cli.py", line 24, in call
+    assert p.returncode==expected,(argv,p.returncode,p.stdout,p.stderr)
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (['/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/target/release/resident-crypto', 'oracle-keygen', '--pk', '/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/runs/validation_1788747001215294000/public/oracle.pk', '--sk', '/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/runs/validation_1788747001215294000/private/oracle.sk', '--zero', '/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/runs/validation_1788747001215294000/public/oracle.zero', '--seed', '37'], 2, '', '{"error":"output exists with different bytes"}\n')

@@ -1,0 +1,29 @@
+{
+  "classification": "EXECUTED frozen bounded dual-mode feasibility followup",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/DUAL_MODE.md",
+      "sha256": "f907f3f4cf68dc449fabaf5e397f633e3bc5ee12fc4989a207e2d0f4b600012c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_audit.py",
+      "sha256": "8e8a3079c3d7a1a3e7cd27d43ade2e3893c8f761f50694fe85593711bcf65c20"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_audit.stdout.txt",
+      "sha256": "51609f77137cd57b341327f1e8ba65dc54be4db4ef294b519942aa4b07b8fd52"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_results.json",
+      "sha256": "51609f77137cd57b341327f1e8ba65dc54be4db4ef294b519942aa4b07b8fd52"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_sources.json",
+      "sha256": "78033e4938e5d6f126593b48d4cc760779098ea2063e35f391aaae8fb0df9bc5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/.gitignore",
+      "sha256": "f05d174180fd76156980e67c970b53249bae9fb076d60fabdc40c051b99c34ba"
+    }
+  ]
+}

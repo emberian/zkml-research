@@ -1,0 +1,40 @@
+{
+  "complete_mapping_tranche": true,
+  "files_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/audit_mapping.log": "d434c9893b47653dfce335547fd4d6981ae06b4d1d39c39a02c3915b187809c3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility.json": "5c61d61fb8a55586f075f6133092f196e36d1d42ec6cd79ae5fbe37fad3f0f37",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_encode_help.log": "015f637443e89e0d23560610e26ce2cbf0f6ee378406aefc88302db5d6ce942c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_policy.json": "de2e7356049a76bba16a09d1ac38ee8de622004f28df0c7e3aa70d7b5d347ce3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/audit_mapping.json": "a776cb6e8492be92308fede901b093199f1c069d81f5939b3c59c0fd556bfcb7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/public_event_index.json": "d1b9a1faefcc4f80024d0793a386d56b3a923b895ba5b3beb12b5f289d59afca",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/build_mapping.log": "361f845acb5958a3b087aebced51a9768470a7d439b9566e39692ecb79233d8e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_encode_prepared.py": "7fb22689e1abafc4dbf6a55c90a88ad9643af02c33112002b0b1b0dac9f97689",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/audit_mapping.py": "28444808cf994d5854c64ea4f631c952b97d85a670bbbd68314c309c75a740d8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/mapping_manifest.json": "b07a88b8d414b776fa182f1f2ef455204d1bab2aca1a0dd717fb8433265857a2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/materialize_inputs.py": "2165edea21db133d2c20ee57a35e5a36c748ead6b8ac968c55ea7ba2d1619f0f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/README.md": "29b0093a4273e62f801f835c939f652bda56027a9c85913760646c65f233b019",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/build_mapping.py": "54b2437099a6d364490a6dfd0885cfd83d3101b46f9cf234acc4e17772755f66",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/.gitignore": "7a9c0526d5753287e455814db68b7d05125f7dfa55ede461ebe093e5eeb6a290",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/encoder_feasibility.log": "33139427f08d9511a2f9a04ab838f19c277425267cea2cdf80ffaec5ede8dafe",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/TRANSCRIPT_SELECTION.md": "c8e4c4da2d60c7698daa5ebb652d8e56eccee668718d2cf32b240e4a15c2d032",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/materialize_inputs.log": "d307feda5bc46adb24283e3db90e521ed7f8653a85b4ac9e3e0f6bbebe1c6432",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/check_encoder_feasibility.py": "00818f3979a9c0d17fbf733607e3eaec20ce2b98c10bf45365720a7bb11ec6ec",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/materialized_inputs_manifest.json": "58e735f41f6eb55dc0e52e1bdd887e22197da5dc32ad5c839afb4fc7d27aa2a9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/original_preregistrations/encrypted_window_PREREGISTRATION.md": "1d6c88d6e42adba24240fd6450fffed93f1b739fea89ef14cd920fcfc85b35e7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/original_preregistrations/representation_PROTOCOL.md": "ab07a3f24c144ad60b5e1c7a09ebcf5688e5c1b1449aee346b9a43acd2ea46d1",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/summary.json": "a40af55d2776c876da79f3751492e7a6ddbb1f8cb83da54187422bb21990338e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/illustrative_sequence.json": "a1ca1e9f9ec097664f7c85f47ffde47a94bb25eadf84e81d88959bf195d40e6e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/transcript_63000.md": "6723a4f8e9ab00aacce0a834dff26e8e4433d60ff2a818aaa7f942632579772d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/mapping.json": "9a4de844ae71854a20819ebfc0a25b4e472055541b8195b0f3c5093dd449e27d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/transcript_63001.md": "8a171d9b2110019b7a65a6ff4a9ee5093ee0fa29b5f3f492040b59ca98209bea"
+  },
+  "reported_commands_exit_codes": {
+    "build_mapping.py": 0,
+    "materialize_inputs.py": 0,
+    "audit_mapping.py": 0,
+    "check_encoder_feasibility.py": 0,
+    "issuer_encode_prepared.py --help": 0
+  },
+  "prepared_encoder_model_executed": false,
+  "source_model_forward_calls_this_tranche": 0
+}

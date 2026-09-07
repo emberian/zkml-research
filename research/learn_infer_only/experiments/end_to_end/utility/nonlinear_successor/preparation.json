@@ -1,0 +1,236 @@
+{
+  "dimensions": {
+    "attribute8": 8,
+    "linear16": 17,
+    "linear32": 33,
+    "linear8": 9,
+    "original577": 577,
+    "quadratic16": 153,
+    "quadratic32": 561,
+    "quadratic8": 45
+  },
+  "encodings": {
+    "linear16": {
+      "clipping_counts": {
+        "0": {
+          "selection": 20,
+          "teach": 0,
+          "test": 29
+        },
+        "1": {
+          "selection": 0,
+          "teach": 0,
+          "test": 0
+        }
+      },
+      "cost": {
+        "cpu_seconds": 0.0006000000000000172,
+        "process_high_water_rss_bytes_macos": 55984128,
+        "wall_seconds": 0.0006001660076435655
+      },
+      "dimension_before_padding": 17
+    },
+    "linear32": {
+      "clipping_counts": {
+        "0": {
+          "selection": 440,
+          "teach": 0,
+          "test": 488
+        },
+        "1": {
+          "selection": 400,
+          "teach": 0,
+          "test": 385
+        }
+      },
+      "cost": {
+        "cpu_seconds": 0.0016110000000000013,
+        "process_high_water_rss_bytes_macos": 57458688,
+        "wall_seconds": 0.0016821659810375422
+      },
+      "dimension_before_padding": 33
+    },
+    "linear8": {
+      "clipping_counts": {
+        "0": {
+          "selection": 0,
+          "teach": 0,
+          "test": 0
+        },
+        "1": {
+          "selection": 0,
+          "teach": 0,
+          "test": 0
+        }
+      },
+      "cost": {
+        "cpu_seconds": 0.0009019999999999861,
+        "process_high_water_rss_bytes_macos": 55508992,
+        "wall_seconds": 0.0009387500176671892
+      },
+      "dimension_before_padding": 9
+    },
+    "quadratic16": {
+      "clipping_counts": {
+        "0": {
+          "selection": 35,
+          "teach": 0,
+          "test": 62
+        },
+        "1": {
+          "selection": 16,
+          "teach": 0,
+          "test": 2
+        }
+      },
+      "cost": {
+        "cpu_seconds": 0.0013189999999999868,
+        "process_high_water_rss_bytes_macos": 57393152,
+        "wall_seconds": 0.0013176249922253191
+      },
+      "dimension_before_padding": 153
+    },
+    "quadratic32": {
+      "clipping_counts": {
+        "0": {
+          "selection": 4500,
+          "teach": 0,
+          "test": 5403
+        },
+        "1": {
+          "selection": 4498,
+          "teach": 0,
+          "test": 3859
+        }
+      },
+      "cost": {
+        "cpu_seconds": 0.0037629999999999886,
+        "process_high_water_rss_bytes_macos": 63258624,
+        "wall_seconds": 0.0037682080001104623
+      },
+      "dimension_before_padding": 561
+    },
+    "quadratic8": {
+      "clipping_counts": {
+        "0": {
+          "selection": 0,
+          "teach": 0,
+          "test": 0
+        },
+        "1": {
+          "selection": 0,
+          "teach": 0,
+          "test": 0
+        }
+      },
+      "cost": {
+        "cpu_seconds": 0.0007669999999999899,
+        "process_high_water_rss_bytes_macos": 55754752,
+        "wall_seconds": 0.0007663750147912651
+      },
+      "dimension_before_padding": 45
+    }
+  },
+  "features_sha256": "3ed0765849a635d4fe6f8493e1adabd2d24499c1e3d83e873243a30a0504a201",
+  "fitting": {
+    "0": {
+      "teacher_count": 64,
+      "top32_singular_values": [
+        71.29309226703745,
+        38.39697923464665,
+        25.61833937152266,
+        24.415318333308882,
+        22.44186971458244,
+        21.48632765557016,
+        19.82017847997156,
+        18.652942934070737,
+        16.524172692181843,
+        16.004870602045575,
+        6.57489962145589,
+        6.252280608115807,
+        5.961893086303698,
+        5.430474459778277,
+        5.17919305351846,
+        4.868900291438793,
+        4.4868322794728135,
+        4.3495195369834505,
+        3.860750032749726,
+        1.3487906597978976,
+        1.3021553325995148,
+        1.104154005777146,
+        0.9777793320836209,
+        0.9497098524337373,
+        0.8813739171409367,
+        0.8411468975434923,
+        0.7715651000812377,
+        0.6894547970629396,
+        0.6497393254792361,
+        0.6144544517297778,
+        0.6069383444258044,
+        0.5541966368560899
+      ]
+    },
+    "1": {
+      "teacher_count": 64,
+      "top32_singular_values": [
+        69.60194562659224,
+        55.273418341020765,
+        46.867482582566744,
+        23.228438774843056,
+        19.29539746924117,
+        18.170183195602895,
+        13.674807542816694,
+        13.2029768098088,
+        11.670949506803357,
+        10.58220340446097,
+        9.94674285608351,
+        8.684839907491476,
+        5.044480926514346,
+        4.569975165098364,
+        4.194607768867337,
+        3.709316962298787,
+        2.898293315834173,
+        2.5211294727651627,
+        2.4089338586103435,
+        2.16138022271936,
+        1.6251501954255705,
+        1.3874401990655614,
+        1.2194066354703847,
+        1.1703658179279692,
+        1.0545269376476025,
+        0.9415109413741048,
+        0.8883568516939686,
+        0.8381936088922702,
+        0.8012055731046631,
+        0.769212580777054,
+        0.7266043395291493,
+        0.65421682598365
+      ]
+    }
+  },
+  "histories_sha256": "cf593ee66184c160be54428374ccdfae58a2b210a4b4e0e3d5da8ad2889f0b2e",
+  "model_executed": false,
+  "parameters_sha256": "065f5be1349721388ffb868d9309a2e96223cebfee6ceed5301406c76bce51dd",
+  "passed": true,
+  "pca_fit_cost": {
+    "cpu_seconds": 0.009848999999999997,
+    "process_high_water_rss_bytes_macos": 55361536,
+    "wall_seconds": 0.02304437500424683
+  },
+  "preregistration_sha256": "b3e02f740d43458c23ccc47799242220b29823d031db89bcaca9b9955f4d9c71",
+  "script_sha256": "3832b961631075545fddde72c749527f4b991d5b1c583d6df043309daa16ea71",
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_features.npz": "754497f6cf74a50e4b19444469f17837d21a5341711e8a8fb9e267242f7b92ca",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_histories.json": "ebc8db520600209dc3d4fd277a011e6ac3aa035a1db1417b7877728e8bfbe346",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_model_manifest.json": "6b41f835943c2cdbc240fab105bc38bbe0295ae5cd11caa961e9e73b3a499d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_records.json": "423a0dd83e43d1786b1c649ab6a54aab349de913c531447f2261ef7e5dc9156e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_results.json": "5852439e353217c92cd7171ea2369b70af5a9e455a20db01a56ad931bc19280a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_selection.json": "0485b302a1f0dcb939689571de575e73cfca1324c8b44348fad16f0e3819e800",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/text_transfer_data.py": "a55d84a475c672252213e94d4842d97620cb14bca0b016da7f1445cb88f1e609"
+  },
+  "total_cost": {
+    "cpu_seconds": 0.07631900000000003,
+    "process_high_water_rss_bytes_macos": 66830336,
+    "wall_seconds": 0.12900537499808706
+  }
+}

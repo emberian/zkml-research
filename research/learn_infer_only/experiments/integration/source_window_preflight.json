@@ -1,0 +1,14 @@
+{
+  "baseline_report": "research/learn_infer_only/experiments/integration/results/run_013/report.json",
+  "baseline_report_sha256": "89b3abd8d61595bad5537e724a5787a13f9c23f2bc297098e548219cd47799a7",
+  "baseline_pins": 674,
+  "baseline_modules": 51,
+  "baseline_manifest_sha256": "f7995e9fb7438ed79e42e550bc9a9bca79f58ccb8d2a35cd3cb95768295e9895",
+  "frozen_combined_patch": "research/learn_infer_only/formal/integration/minidregg-combined-resident-674.patch",
+  "frozen_combined_sha256": "e52059b489357589ae44ba62e6c8311bbeaa6eb793900625ca1538f08c11d449",
+  "checker_sha256": "612e3cbc11ab841886229c8cc405bdeda02abc90d2f2d2697a14665b691917c0",
+  "expected_additional_pins": 34,
+  "expected_total_pins": 708,
+  "status": "Completed as run_014;708pins53modules; frozen674patch/manifest unchanged.",
+  "completed_report": "experiments/integration/results/run_014/report.json"
+}

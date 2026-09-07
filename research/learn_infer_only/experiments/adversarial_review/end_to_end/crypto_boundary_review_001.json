@@ -1,0 +1,607 @@
+{
+  "classification": "EXECUTED actual BFV component boundary review; no finalized journal/release claim",
+  "started_utc": "2026-09-07T02:04:28.024084+00:00",
+  "script_sha256": "77a39a9c4fa5e8379495c8b74bc6ed0292b30385090c43cd2f08b31d76d5fa75",
+  "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/src/main.rs",
+  "source_sha256": "500f66817e30feb059c4233de3912d1b1e8824d5a2643c7e1bb917cd77b7b8e7",
+  "binary_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/target/release/resident-crypto",
+  "snapshot_binary_sha256": "93307bdaed3fa666c8b5c81c9598eb6c9e350ce908b476947535cffc3847ca37",
+  "params": {
+    "parameters": {
+      "capacity_per_route": 32,
+      "ciphertext_moduli": [
+        2199023190017,
+        4398046486529
+      ],
+      "codec": "RSBFV001-kind-params32-key32-lengthLE64-canonicalpayload",
+      "components": 2,
+      "degree": 4096,
+      "encoding": "polynomial;reversed-positive-minus-negative-query",
+      "input_coefficient_bound": 127,
+      "level": 0,
+      "output_coefficient": 576,
+      "plaintext_modulus": 4294828033,
+      "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+      "query_coefficient_bound": 127,
+      "routes": 2,
+      "schema": "resident-crypto-parameters-v1",
+      "signed_score_bound": 297805856,
+      "variance": 10,
+      "width": 577
+    },
+    "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+    "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+    "program_spec": "resident-crypto-v1;BFV-poly-N4096-t4294828033-q2199023190017,4398046486529-CBDvariance10-level0-two-components;canonical-full-ct;learn=acc+fresh-exact_original_old;W32-per-public-route;two-routes;577-signed-int8-coordinates-bound127;infer=acc*reverse(max(q,0))-acc*reverse(max(-q,0));read=coefficient576-centered-mod-t-bound297805856-sign-ge0",
+    "source_sha256": "500f66817e30feb059c4233de3912d1b1e8824d5a2643c7e1bb917cd77b7b8e7"
+  },
+  "checks": {
+    "binary_source_identity": true,
+    "OS_random_repeated_encryption_bytes_differ": true,
+    "exact_original_expiry_algebra": true,
+    "actual_signed_score": 587,
+    "strict_ciphertext_mutations_refused": [
+      "wrong_magic",
+      "wrong_kind",
+      "wrong_params",
+      "trailing_byte",
+      "truncated",
+      "over_cap",
+      "extra_component",
+      "wrong_level",
+      "unknown_proto_field",
+      "representation_1",
+      "representation_3"
+    ],
+    "relabelled_foreign_payload_passes_syntax_only": true,
+    "strict_query_and_role_argument_refusals": true
+  },
+  "commands": [
+    {
+      "name": "source_identity",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "params"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.006416167016141117,
+      "stdout": "{\"parameters\":{\"capacity_per_route\":32,\"ciphertext_moduli\":[2199023190017,4398046486529],\"codec\":\"RSBFV001-kind-params32-key32-lengthLE64-canonicalpayload\",\"components\":2,\"degree\":4096,\"encoding\":\"polynomial;reversed-positive-minus-negative-query\",\"input_coefficient_bound\":127,\"level\":0,\"output_coefficient\":576,\"plaintext_modulus\":4294828033,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"query_coefficient_bound\":127,\"routes\":2,\"schema\":\"resident-crypto-parameters-v1\",\"signed_score_bound\":297805856,\"variance\":10,\"width\":577},\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"program_spec\":\"resident-crypto-v1;BFV-poly-N4096-t4294828033-q2199023190017,4398046486529-CBDvariance10-level0-two-components;canonical-full-ct;learn=acc+fresh-exact_original_old;W32-per-public-route;two-routes;577-signed-int8-coordinates-bound127;infer=acc*reverse(max(q,0))-acc*reverse(max(-q,0));read=coefficient576-centered-mod-t-bound297805856-sign-ge0\",\"source_sha256\":\"500f66817e30feb059c4233de3912d1b1e8824d5a2643c7e1bb917cd77b7b8e7\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "keygen_a",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "keygen",
+        "--pk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.pk",
+        "--sk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.sk",
+        "--zero",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.zero"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.04251991701312363,
+      "stdout": "{\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"kind\":\"keygen\",\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"process_work_ns\":38195875,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"public_key\":{\"bytes\":42628,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"public_key\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":42547,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"519e24cab16804cd441032ec25ba0097364be22203a002a9e531cce7314ec196\"},\"reader_trust\":\"benchmark R; single full-key reader; no no-master-read claim\",\"rng\":\"rand::rng OS-seeded ThreadRng; no public seed\",\"secret_key_bytes\":4180,\"zero\":{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"2c6abfbf626950e90b90fc6d9fed0209a819284d12b644e9229532cbaecf1352\"}}\n",
+      "stderr": ""
+    },
+    {
+      "name": "keygen_b",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "keygen",
+        "--pk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/b.pk",
+        "--sk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/b.sk",
+        "--zero",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/b.zero"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.03772258400567807,
+      "stdout": "{\"key_id\":\"512a84d8ebc3d410f10abd53fd71d5203345f710fc5f7bc20e1a822a39f2a05c\",\"kind\":\"keygen\",\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"process_work_ns\":32964458,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"public_key\":{\"bytes\":42628,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"512a84d8ebc3d410f10abd53fd71d5203345f710fc5f7bc20e1a822a39f2a05c\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"public_key\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":42547,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"66667dfda10d17f3b55b25d5c66464888050b185de972bc054e936dc8791e559\"},\"reader_trust\":\"benchmark R; single full-key reader; no no-master-read claim\",\"rng\":\"rand::rng OS-seeded ThreadRng; no public seed\",\"secret_key_bytes\":4180,\"zero\":{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"512a84d8ebc3d410f10abd53fd71d5203345f710fc5f7bc20e1a822a39f2a05c\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"323a6e3539aaad0316a162a64fa7bab2ba437809319d881f675d85411ab1173c\"}}\n",
+      "stderr": ""
+    },
+    {
+      "name": "encrypt_a1",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "issuer-encrypt",
+        "--pk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.pk",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_a.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a1.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.023901375010609627,
+      "stdout": "{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":19240125,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"rng\":\"rand::rng OS-seeded ThreadRng; no public seed\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"1c5baa95ef785d3b8dc5965717eec4fb06da205f6cc789d1588a1f3d51da2b8b\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "encrypt_a2",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "issuer-encrypt",
+        "--pk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.pk",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_a.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a2.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.023779082985129207,
+      "stdout": "{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":19308500,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"rng\":\"rand::rng OS-seeded ThreadRng; no public seed\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"5b951db0c28d5a5b806e903169168187e30ea320afe79b4055efe931baf4743e\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "encrypt_a3",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "issuer-encrypt",
+        "--pk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.pk",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_b.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a3.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.025202499993611127,
+      "stdout": "{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":20131459,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"rng\":\"rand::rng OS-seeded ThreadRng; no public seed\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"aee1b0bbcc947baec0d5bb1305ae7ae3dd627f780617df20d46214e50f1fc085\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "encrypt_b1",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "issuer-encrypt",
+        "--pk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/b.pk",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_a.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/b1.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.024846415995853022,
+      "stdout": "{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"512a84d8ebc3d410f10abd53fd71d5203345f710fc5f7bc20e1a822a39f2a05c\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":20100500,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"rng\":\"rand::rng OS-seeded ThreadRng; no public seed\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"0b909303843aa4525c2155952026ddc5e6b565058ccdfc117556d877cc1c4380\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "first_add",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "host-learn",
+        "--acc",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.zero",
+        "--fresh",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a1.ct",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/state1.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.025467165978625417,
+      "stdout": "{\"acc_sha256\":\"2c6abfbf626950e90b90fc6d9fed0209a819284d12b644e9229532cbaecf1352\",\"arithmetic_ns\":8958,\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"fresh_sha256\":\"1c5baa95ef785d3b8dc5965717eec4fb06da205f6cc789d1588a1f3d51da2b8b\",\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"learn_result\",\"level\":0,\"old_sha256\":null,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":21000833,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"1c5baa95ef785d3b8dc5965717eec4fb06da205f6cc789d1588a1f3d51da2b8b\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "second_add",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "host-learn",
+        "--acc",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/state1.ct",
+        "--fresh",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a3.ct",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/state2.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.025639167026383802,
+      "stdout": "{\"acc_sha256\":\"1c5baa95ef785d3b8dc5965717eec4fb06da205f6cc789d1588a1f3d51da2b8b\",\"arithmetic_ns\":9250,\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"fresh_sha256\":\"aee1b0bbcc947baec0d5bb1305ae7ae3dd627f780617df20d46214e50f1fc085\",\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"learn_result\",\"level\":0,\"old_sha256\":null,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":21130083,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"6042e52347edaaf44e565b8f2d439300ec2dec342f53e307a3d469020bc6bc1b\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "exact_old_algebra",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "host-learn",
+        "--acc",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/state1.ct",
+        "--fresh",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a3.ct",
+        "--old",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a1.ct",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/expired.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.02748154100845568,
+      "stdout": "{\"acc_sha256\":\"1c5baa95ef785d3b8dc5965717eec4fb06da205f6cc789d1588a1f3d51da2b8b\",\"arithmetic_ns\":17042,\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"fresh_sha256\":\"aee1b0bbcc947baec0d5bb1305ae7ae3dd627f780617df20d46214e50f1fc085\",\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"learn_result\",\"level\":0,\"old_sha256\":\"1c5baa95ef785d3b8dc5965717eec4fb06da205f6cc789d1588a1f3d51da2b8b\",\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":22813541,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"aee1b0bbcc947baec0d5bb1305ae7ae3dd627f780617df20d46214e50f1fc085\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "encode_query",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "encode-query",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/public_q.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/query.json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.009274541022023186,
+      "stdout": "{\"bytes\":1534,\"canonical\":true,\"kind\":\"public_query\",\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"sha256\":\"cfe0f3eab7d414db1eccd6df50e50389c79ecc8ab8f34ed7d2e31666f01eca3f\",\"width\":577}\n",
+      "stderr": ""
+    },
+    {
+      "name": "actual_infer",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "host-infer",
+        "--acc",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/state2.ct",
+        "--query",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/query.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/answer.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.023123749997466803,
+      "stdout": "{\"acc_sha256\":\"6042e52347edaaf44e565b8f2d439300ec2dec342f53e307a3d469020bc6bc1b\",\"arithmetic_ns\":151750,\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"encoding_ns\":213584,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"infer_result\",\"level\":0,\"output_coefficient\":576,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":18751084,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"query_sha256\":\"cfe0f3eab7d414db1eccd6df50e50389c79ecc8ab8f34ed7d2e31666f01eca3f\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"0904092dff0731a231542fdeb37c97afacc5a100f719fd539c563176e6e9fe35\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "trusted_oracle_score",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "reader-decrypt",
+        "--sk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.sk",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/answer.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.018852208013413474,
+      "stdout": "{\"ciphertext_sha256\":\"0904092dff0731a231542fdeb37c97afacc5a100f719fd539c563176e6e9fe35\",\"coefficient\":576,\"full_key_reader\":true,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"kind\":\"trusted_reader_score\",\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"process_work_ns\":14078417,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"scope\":\"benchmark R; finalization/policy gate is external; full polynomial decrypted internally\",\"sign\":1,\"signed_score\":587}\n",
+      "stderr": ""
+    },
+    {
+      "name": "wrong_magic",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/wrong_magic.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.01633287500590086,
+      "stdout": "",
+      "stderr": "{\"error\":\"wrong object magic/version/kind\"}\n"
+    },
+    {
+      "name": "wrong_kind",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/wrong_kind.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.01620300000649877,
+      "stdout": "",
+      "stderr": "{\"error\":\"wrong object magic/version/kind\"}\n"
+    },
+    {
+      "name": "wrong_params",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/wrong_params.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.01570383398211561,
+      "stdout": "",
+      "stderr": "{\"error\":\"wrong fixed params identity\"}\n"
+    },
+    {
+      "name": "trailing_byte",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/trailing_byte.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.016066582989878953,
+      "stdout": "",
+      "stderr": "{\"error\":\"wrong payload length/trailing bytes\"}\n"
+    },
+    {
+      "name": "truncated",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/truncated.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.01593529200181365,
+      "stdout": "",
+      "stderr": "{\"error\":\"wrong payload length/trailing bytes\"}\n"
+    },
+    {
+      "name": "over_cap",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/over_cap.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.016362083988497034,
+      "stdout": "",
+      "stderr": "{\"error\":\"file exceeds fixed byte cap\"}\n"
+    },
+    {
+      "name": "extra_component",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/extra_component.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.015724915981991217,
+      "stdout": "",
+      "stderr": "{\"error\":\"expected two full polynomials or allowed seeded equivalent\"}\n"
+    },
+    {
+      "name": "wrong_level",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/wrong_level.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.017175582994241267,
+      "stdout": "",
+      "stderr": "{\"error\":\"only ciphertext level 0 is allowed\"}\n"
+    },
+    {
+      "name": "unknown_proto_field",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/unknown_proto_field.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.01792958300211467,
+      "stdout": "",
+      "stderr": "{\"error\":\"noncanonical ciphertext payload\"}\n"
+    },
+    {
+      "name": "representation_1",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/representation_1.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.01768395901308395,
+      "stdout": "",
+      "stderr": "{\"error\":\"Math library error: Incorrect representation: got PowerBasis, expected Ntt.\"}\n"
+    },
+    {
+      "name": "representation_3",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/representation_3.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.018304375000298023,
+      "stdout": "",
+      "stderr": "{\"error\":\"Math library error: Incorrect representation: got NttShoup, expected Ntt.\"}\n"
+    },
+    {
+      "name": "different_key_label",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "host-learn",
+        "--acc",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.zero",
+        "--fresh",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/b1.ct",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad-key.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.02039708397933282,
+      "stdout": "",
+      "stderr": "{\"error\":\"declared key mismatch\"}\n"
+    },
+    {
+      "name": "metadata_is_not_key_proof",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "inspect",
+        "--ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/foreign_relabelled.ct"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.019166790996678174,
+      "stdout": "{\"bytes\":85103,\"canonical\":true,\"components\":2,\"degree\":4096,\"key_id\":\"5b20d1419292ae3771bc5a7c49fa2c0c9749b2d2fda358cab7353ae217bbe237\",\"key_id_scope\":\"declared metadata; no proof ciphertext belongs to this key\",\"kind\":\"ciphertext\",\"level\":0,\"params_id\":\"fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3\",\"payload_bytes\":85022,\"process_work_ns\":13877250,\"program_id\":\"d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862\",\"schema\":\"resident-crypto-result-v1\",\"sha256\":\"b9a49d9906c1e8070edb778f7053e7ce2ad31f188314c30a48febddaa722a2f6\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "vector_boolean",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "encode-query",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_vector_boolean.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_query_boolean.json"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.004888791998382658,
+      "stdout": "",
+      "stderr": "{\"error\":\"coefficient must be an integer, not boolean/float/overflow\"}\n"
+    },
+    {
+      "name": "vector_float",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "encode-query",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_vector_float.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_query_float.json"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.004285000002710149,
+      "stdout": "",
+      "stderr": "{\"error\":\"coefficient must be an integer, not boolean/float/overflow\"}\n"
+    },
+    {
+      "name": "vector_range128",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "encode-query",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_vector_range128.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_query_range128.json"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.004710250010248274,
+      "stdout": "",
+      "stderr": "{\"error\":\"coefficient outside [-127,127]\"}\n"
+    },
+    {
+      "name": "vector_negative128",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "encode-query",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_vector_negative128.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_query_negative128.json"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.0051506669842638075,
+      "stdout": "",
+      "stderr": "{\"error\":\"coefficient outside [-127,127]\"}\n"
+    },
+    {
+      "name": "vector_overflow",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "encode-query",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_vector_overflow.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/bad_query_overflow.json"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.004570624994812533,
+      "stdout": "",
+      "stderr": "{\"error\":\"coefficient must be an integer, not boolean/float/overflow\"}\n"
+    },
+    {
+      "name": "vector_short",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "encode-query",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/short.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/short_query.json"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.004938333004247397,
+      "stdout": "",
+      "stderr": "{\"error\":\"expected exactly 577 coefficients\"}\n"
+    },
+    {
+      "name": "vector_long",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "encode-query",
+        "--vector",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/long.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/long_query.json"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.004677584016462788,
+      "stdout": "",
+      "stderr": "{\"error\":\"expected exactly 577 coefficients\"}\n"
+    },
+    {
+      "name": "query_whitespace",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "host-infer",
+        "--acc",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/state1.ct",
+        "--query",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/query_whitespace.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/query_whitespace.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.018509457993786782,
+      "stdout": "",
+      "stderr": "{\"error\":\"query encoding is not canonical; use encode-query before commitment\"}\n"
+    },
+    {
+      "name": "query_duplicate_field",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "host-infer",
+        "--acc",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/state1.ct",
+        "--query",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/query_duplicate_field.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/query_duplicate_field.ct"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.018958917004056275,
+      "stdout": "",
+      "stderr": "{\"error\":\"query encoding is not canonical; use encode-query before commitment\"}\n"
+    },
+    {
+      "name": "host_rejects_secret_argument",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/resident-crypto",
+        "host-learn",
+        "--acc",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.zero",
+        "--fresh",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a1.ct",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/unexpected.ct",
+        "--sk",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/run_001/a.sk"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.019146708014886826,
+      "stdout": "",
+      "stderr": "{\"error\":\"unexpected argument for role\"}\n"
+    }
+  ],
+  "secret_keys_generated_for_test_only": true,
+  "runtime_and_secret_keys_gitignored": true,
+  "scope": "Public test vectors; OS-random keys/coins; raw full-key helper only a trusted oracle. Exact expiry test is the arithmetic atom, not a W32 scheduler test. Key labels require separate authenticated issuer provenance."
+}

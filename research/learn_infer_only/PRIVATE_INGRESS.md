@@ -1,5 +1,39 @@
 # Private observation ingress: the two-input seam
 
+[DERIVED reviewed successor, 2026-09-07] The exact parent-bound candidate now has
+a sharper source-application obstruction. With an observation encryption key
+exposed, the source's arbitrary-replacement test can submit one valid left-parent
+packet against both challenged states: the observable guard accepts one and
+rejects the other, giving gap1. No state-slot key or forged proof is needed for
+that compatibility finding. It rejects the natural FE hybrid, not private ingress
+as a field. See [provenance review](experiments/private_ingress/provenance_review/REVIEW.md).
+
+[DERIVED correction] That review also corrects the augmented provenance
+candidate's fixed-ciphertext event: fresh coins *inside the encrypted payload*
+must be guessed too, giving the lower bound `2^(-rho-lambda_next)`. The earlier
+`2^(-lambda_next)` bound does not apply to that augmented payload. A stated
+fixed-width premise still yields an equal-parameter epsilon obstruction.
+The simpler original deterministic-payload candidate below is separately scoped.
+The reviewed candidate additionally needs an internal check of its supplied
+history witness before extending it. Proposed dual-mode repairs remain open.
+
+[DERIVED further parameter correction] The source's `s` counts the current
+underlying PKE input ciphertext. It does not bound function description,
+randomness, output or next-ciphertext width. [PARAMETER_CLOSURE.md](experiments/private_ingress/provenance_review/PARAMETER_CLOSURE.md)
+therefore withdraws an all-parameter circuit-size objection: fixed-H polynomial
+enlargement can evade the particular support lower bounds. A short effective
+random seed remains an obstruction, including deterministic PRG stretching.
+The source's lambda/ellR shorthand and the derived width-complete reading are
+stated separately. Independent review is in progress; none of these sizing
+controls establishes a quantitative joint future-package compatibility bound.
+
+[DERIVED same-parent repair boundary] [DUAL_MODE.md](experiments/private_ingress/provenance_review/DUAL_MODE.md)
+shows how an equivocal hiding commitment can keep one current parent valid on
+both challenge projections. That repairs the named opening guard in that mode.
+It does not establish the joint future-output hybrid, honest history extension
+or tiny source epsilon. The source-backed commitment equations and mode ordering
+are explicit; this is not a completed private-ingress construction.
+
 [DERIVED decision; 2026-09-06] The inspected randomized-MIFE construction has
 the required **two-input syntax with independent writer keys**, and its public
 encryption interface needs no online raw master secret. That is a real

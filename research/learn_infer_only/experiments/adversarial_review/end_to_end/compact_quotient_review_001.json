@@ -1,0 +1,110 @@
+{
+  "recorded_utc": "2026-09-07T02:25:07.188571+00:00",
+  "review_script_sha256": "b17c607ff9f50aa18bee0b50bc5f755a1370aa271f090a0e6ee2ec6344497b11",
+  "reviewed_source_sha256": "05b0987c953ad88b2659e348b357b8e97f3738f0c5143c3dc4e9154343058b84",
+  "reviewed_note_sha256": "d50c841a8e5c12681cf80fc4bb1efaf4aea053a05311b395958fd1efe71590ce",
+  "independent_method": "Backward partition refinement by output/successor signatures; does not import compiler.py, catalog, histories or author's oracle.",
+  "horizons": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "class_counts": [
+    1,
+    4,
+    16,
+    36,
+    64,
+    100,
+    144,
+    196,
+    256,
+    289,
+    289,
+    289,
+    289
+  ],
+  "raw_states": 289,
+  "local_runtime_checks": 20808,
+  "external_commands": [
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/compact.py",
+      "initialize",
+      "--horizon",
+      "4",
+      "--output",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/compact_review_001/resident_0.json"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/compact.py",
+      "run",
+      "--resident",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/compact_review_001/resident_0.json",
+      "--commands",
+      "infer_1,learn_1_positive,learn_1_positive,infer_1"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/compact.py",
+      "initialize",
+      "--horizon",
+      "4",
+      "--output",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/compact_review_001/resident_1.json"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/compact.py",
+      "run",
+      "--resident",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/end_to_end/runtime/compact_review_001/resident_1.json",
+      "--commands",
+      "infer_1,learn_1_positive,learn_1_positive,infer_1"
+    ]
+  ],
+  "external_outputs": [
+    {
+      "outputs": [
+        0,
+        "ack",
+        "ack",
+        1
+      ],
+      "remaining": 0
+    },
+    {
+      "outputs": [
+        0,
+        "ack",
+        "ack",
+        1
+      ],
+      "remaining": 0
+    }
+  ],
+  "admissible_pair_resident_bytes_identical": true,
+  "visible_representative_tamper_changes_answer": true,
+  "classification": "EXECUTED finite quotient equivalence and real subprocess functionality",
+  "scope": "Plaintext functionality-specific bounded quotient, honest private initialization and erasure assumed. No encryption, live hidden raw state, fresh private ingress, integrity or unbounded extension is proved.",
+  "passed": true
+}

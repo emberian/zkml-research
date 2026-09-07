@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "model_records": 4,
+  "independent_exact_integer_agreements": 2308,
+  "original_sources_unchanged": true,
+  "all_private_input_output_modes": "0600",
+  "script_sha256": "45445e734812ce091c02d5734b0c51fae79141312729b443e64842a0facd94c3",
+  "live_report_sha256": "e0d3a7998d58335bbada534198d8bd4a83badac5b2bec3e6ae72cc8689f05e92",
+  "scope": "Four specified texts; equality of quantized vectors, not all-text or all-batch numerical equivalence"
+}

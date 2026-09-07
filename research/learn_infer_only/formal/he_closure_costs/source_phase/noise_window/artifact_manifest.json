@@ -1,0 +1,46 @@
+{
+  "experiments/he_closure_costs/source_phase/lean_BfvNoiseSource_07.json": {
+    "sha256": "f0b3175a417d4d8f0b79486c02a1fd67334832132b64bf251997bb2525ab26b0",
+    "bytes": 1922
+  },
+  "experiments/he_closure_costs/source_phase/lean_ResidentBfvSourceWindow_06.json": {
+    "sha256": "fa1182560259147c8ae9364c50c62162886eec33d962f5bea187d8aa6f9109c3",
+    "bytes": 1946
+  },
+  "formal/he_closure_costs/source_phase/Assurance/ResidentBfvSourceWindow.lean": {
+    "sha256": "6fec6378aba6acd3062313c6171a79a794099306032777a0a7b632cd4f3303e0",
+    "bytes": 17360
+  },
+  "formal/he_closure_costs/source_phase/Theory/BfvNoiseSource.lean": {
+    "sha256": "d3a51f747bce5377c8b2303f6d51bdc7920abe815edef4b04a3d882252714f42",
+    "bytes": 11142
+  },
+  "formal/he_closure_costs/source_phase/noise_window/REPORT.md": {
+    "sha256": "b477834624356a52ce23e2b0de050bcbe4b966a7e9fc809b453a3f341e7d86d9",
+    "bytes": 9781
+  },
+  "formal/he_closure_costs/source_phase/noise_window/boundary_sources.json": {
+    "sha256": "aa4d9180b27f0f3d3321860cbcde634bd05b743255a48d43673198387b5b2615",
+    "bytes": 36259
+  },
+  "formal/he_closure_costs/source_phase/noise_window/minidregg-bfv-source-window.patch": {
+    "sha256": "bc55d32d84affc77a33b7a585f86599039569ac5a3655f7bd153f45dc7a740fe",
+    "bytes": 40607
+  },
+  "formal/he_closure_costs/source_phase/noise_window/package.py": {
+    "sha256": "03369b5ea0386268ad55ddc628b6443f4fdb243a143310cd16914edf36825bb8",
+    "bytes": 7260
+  },
+  "formal/he_closure_costs/source_phase/noise_window/pin_axioms.py": {
+    "sha256": "0009df835d3ae1e062923637585bba6d712dc3c36ae3128ccbe37f54ce0641f5",
+    "bytes": 1372
+  },
+  "formal/he_closure_costs/source_phase/noise_window/source_register.json": {
+    "sha256": "011bbb1d99d1e7fb74baf375cdfe2ea35ccaf7707b0973bc36a08a33b96e19d5",
+    "bytes": 13928
+  },
+  "formal/he_closure_costs/source_phase/noise_window/validation.json": {
+    "sha256": "b7666ffcb8ecc42d35b9e755e4febdb95d5eb9bc40da8d90fc7753383e401a55",
+    "bytes": 8339
+  }
+}

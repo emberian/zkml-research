@@ -1,0 +1,109 @@
+{
+  "label": "EXECUTED",
+  "scope": "source provenance and finite scalar controls only",
+  "note_sha256": "2cc1d2dc58d8cde8e6a3c3badba602357f9de2d11e008b6d421177eea3dd01d3",
+  "local_note_links_checked": 5,
+  "sources": [
+    {
+      "paper": "2023/265",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/265.pdf",
+      "pdf_sha256": "18dce0afa750386cdf530c6ce4f4cc6aa6be29703e9782ee1e152e527e0afeb9",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_interface/extracts/2023-265.txt",
+      "extract_sha256": "c32ddb9192daef02d452ea5159540ecc8219a23e5c0b620e6f1ebfad6ca18a3b",
+      "locator_pdf_pages": {
+        "A non-uniform quantum polynomial-time": [
+          19
+        ],
+        "Definition 4.3 (Indistinguishability obfuscation)": [
+          20
+        ],
+        "Definition 4.6 (Differing Inputs Circuits)": [
+          21
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/265.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_interface/extracts/2023-265.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/265.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Title:           \nSubject:         \nKeywords:        \nAuthor:          \nCreator:         LaTeX with hyperref\nProducer:        pdfTeX-1.40.24\nCreationDate:    Fri Mar  1 11:43:53 2024 EST\nModDate:         Fri Mar  1 11:43:53 2024 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           96\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       813168 bytes\nOptimized:       yes\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "paper": "2025/2215",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf",
+      "pdf_sha256": "5ffbaabd34120b58c46b3c6763d6e665be7a535118566c709ad007ea0fa99866",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_interface/extracts/2025-2215.txt",
+      "extract_sha256": "97c34540bef4e890cfec6797ce0aafb7e5098eddc268ce2e1b1522936781f0e4",
+      "locator_pdf_pages": {
+        "Theorem 2.": [
+          3
+        ],
+        "Definition 3 (Indistinguishability obfuscation": [
+          10
+        ],
+        "Definition 6 (Pseudorandom Obfuscation)": [
+          16
+        ]
+      },
+      "commands": [
+        {
+          "command": [
+            "pdftotext",
+            "-layout",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf",
+            "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_interface/extracts/2025-2215.txt"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pdfinfo",
+            "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/2215.pdf"
+          ],
+          "returncode": 0,
+          "stdout": "Title:           Obfuscating Pseudorandom Functions is Post-Quantum Complete\nSubject:         \nKeywords:        \nAuthor:          Pedro Branco, Bocconi University ; Abhishek Jain, NTT and JHU ; Akshayaram Srinivasan , University of Toronto \nCreator:         LaTeX with hyperref\nProducer:        pdfTeX-1.40.26\nCreationDate:    Mon Dec  8 12:04:41 2025 EST\nModDate:         Mon Dec  8 12:04:41 2025 EST\nCustom Metadata: yes\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           28\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       536474 bytes\nOptimized:       yes\nPDF version:     1.5\n",
+          "stderr": ""
+        }
+      ]
+    }
+  ],
+  "averaging_bound_cases": 10000,
+  "unqualified_cancellation_countermodel": {
+    "common_good_probability": "1/2",
+    "unqualified_gap": "0",
+    "qualified_gap": "1/2",
+    "scope": "refutes inference from one unqualified mixed experiment; not a separation of complete iO definitions"
+  },
+  "moving_index_control": {
+    "tested_lambdas": 32,
+    "supremum_gap_at_each": 1,
+    "scope": "illustrates the distinction between fixed labels and arbitrary lambda-indexed sequences"
+  },
+  "queries": {
+    "SQL": 0,
+    "schema": 0,
+    "web_search": 3,
+    "web_HTML_open": 1,
+    "Kagi": 0
+  },
+  "network_pdf_downloads": 0,
+  "script_sha256": "e4263e3fb5318bd79c023388177bfcd9e6ce2abe4b061a8846757f1fc36c4848"
+}

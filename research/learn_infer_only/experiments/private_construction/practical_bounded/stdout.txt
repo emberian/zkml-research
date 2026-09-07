@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "horizon": 4,
+  "states": 289,
+  "behavioral_classes": 64,
+  "direct_oracle_edge_comparisons": 449106,
+  "actual_resident_bytes": 1,
+  "public_catalog_bytes": 133001,
+  "controls": {
+    "private_raw_initial_pair_same_deployment_bytes": true,
+    "horizon_extension_separates_pair_at_8_steps": true,
+    "initially_equal_labels_separate_after_learning": true,
+    "noncommuting_observation_order": true,
+    "all_forks_reconstruct_class": true,
+    "snapshot_node_reveals_public_observation_history": true,
+    "fifth_command_refused_by_honest_runtime": true,
+    "raw_states_keys_not_fields_of_deployment": true
+  }
+}

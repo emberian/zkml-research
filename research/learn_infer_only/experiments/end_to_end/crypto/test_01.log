@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/test_cli.py", line 140, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/test_cli.py", line 108, in main
+    call('host-learn','--acc',acc,'--fresh',fresh,'--out',public/'rejected','--sk',sk,expected=2)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/crypto/test_cli.py", line 30, in call
+    assert '--sk' not in argv and '--vector' not in argv
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

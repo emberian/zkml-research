@@ -1,0 +1,70 @@
+{
+  "passed_execution": true,
+  "useful_successor": false,
+  "acceptance": {
+    "final_mean_at_least_60pct": false,
+    "paired_gain_at_least_5points": false,
+    "paired_descriptive_lower_bound_positive": false,
+    "nonlinear_gain_at_least_10points": false
+  },
+  "selected_quadratic": "quadratic8",
+  "selected_linear_control": "linear16",
+  "paired_quadratic_minus_original": {
+    "mean": -0.029052734375,
+    "n_histories": 64,
+    "sd": 0.09313277253887339,
+    "normal95_half_width": 0.02281752927202398,
+    "min": -0.3046875,
+    "max": 0.140625
+  },
+  "joint_stratum_paired_gains": {
+    "linear/linear": {
+      "mean": -0.08913352272727272,
+      "n_histories": 22,
+      "sd": 0.08196156659438984,
+      "normal95_half_width": 0.03424955883464189,
+      "min": -0.3046875,
+      "max": 0.0625
+    },
+    "linear/nonlinear": {
+      "mean": 0.022879464285714284,
+      "n_histories": 14,
+      "sd": 0.045188437352535346,
+      "normal95_half_width": 0.023671151058363954,
+      "min": -0.0546875,
+      "max": 0.1015625
+    },
+    "nonlinear/linear": {
+      "mean": -0.046875,
+      "n_histories": 15,
+      "sd": 0.1015625,
+      "normal95_half_width": 0.05139771649029426,
+      "min": -0.2109375,
+      "max": 0.0859375
+    },
+    "nonlinear/nonlinear": {
+      "mean": 0.037259615384615384,
+      "n_histories": 13,
+      "sd": 0.06789491365987153,
+      "normal95_half_width": 0.03690809549122921,
+      "min": -0.125,
+      "max": 0.140625
+    }
+  },
+  "nonlinear_gain": 0.03664772727272725,
+  "reset_accuracy": 0.5,
+  "route_state_retention_equalities": 512,
+  "final_selected_bigint_scores": 8192,
+  "selected_checkpoint_vectors": 384,
+  "selection_sha256": "f3bee099dde0fd3bc4a6b13a82ad9d2a8a1f12984d74277e65fde46c8e89f85e",
+  "histories_sha256": "cf593ee66184c160be54428374ccdfae58a2b210a4b4e0e3d5da8ad2889f0b2e",
+  "preregistration_sha256": "b3e02f740d43458c23ccc47799242220b29823d031db89bcaca9b9955f4d9c71",
+  "script_sha256": "3832b961631075545fddde72c749527f4b991d5b1c583d6df043309daa16ea71",
+  "cost": {
+    "wall_seconds": 5.441266166017158,
+    "cpu_seconds": 1.6910120000000002,
+    "process_high_water_rss_bytes_macos": 47366144
+  },
+  "model_executed": false,
+  "text_surfaces_reused": true
+}

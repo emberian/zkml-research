@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "research/learn_infer_only/experiments/adversarial_review/end_to_end/crypto_boundary_review.py",
+    "--binary",
+    "research/learn_infer_only/experiments/end_to_end/crypto/target/release/resident-crypto",
+    "--source",
+    "research/learn_infer_only/experiments/end_to_end/crypto/src/main.rs"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 0.7429771660245024,
+  "stdout": "{\n  \"run\": 1,\n  \"commands\": 36,\n  \"checks\": {\n    \"binary_source_identity\": true,\n    \"OS_random_repeated_encryption_bytes_differ\": true,\n    \"exact_original_expiry_algebra\": true,\n    \"actual_signed_score\": 587,\n    \"strict_ciphertext_mutations_refused\": [\n      \"wrong_magic\",\n      \"wrong_kind\",\n      \"wrong_params\",\n      \"trailing_byte\",\n      \"truncated\",\n      \"over_cap\",\n      \"extra_component\",\n      \"wrong_level\",\n      \"unknown_proto_field\",\n      \"representation_1\",\n      \"representation_3\"\n    ],\n    \"relabelled_foreign_payload_passes_syntax_only\": true,\n    \"strict_query_and_role_argument_refusals\": true\n  }\n}\n",
+  "stderr": "",
+  "source_sha256_before": "500f66817e30feb059c4233de3912d1b1e8824d5a2643c7e1bb917cd77b7b8e7",
+  "source_sha256_after": "500f66817e30feb059c4233de3912d1b1e8824d5a2643c7e1bb917cd77b7b8e7"
+}

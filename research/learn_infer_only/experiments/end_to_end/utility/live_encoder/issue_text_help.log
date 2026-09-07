@@ -1,0 +1,25 @@
+usage: issue_text.py [-h] --input INPUT --issuer-config ISSUER_CONFIG
+                     --head HEAD --private-workdir PRIVATE_WORKDIR --out OUT
+                     --request-id REQUEST_ID --nonce NONCE
+                     --record-id RECORD_ID
+                     [--expect-record-id EXPECT_RECORD_ID]
+
+Trusted issuer frontend: private text -> live vector -> encrypted signed
+Learn. The encoder's four-record numerical test is retained in
+results/run_001. This wrapper composes that encoder with the existing journal
+issuer CLI. It does not submit a host proposal or bypass authority
+verification/finality.
+
+options:
+  -h, --help            show this help message and exit
+  --input INPUT
+  --issuer-config ISSUER_CONFIG
+  --head HEAD
+  --private-workdir PRIVATE_WORKDIR
+  --out OUT
+  --request-id REQUEST_ID
+  --nonce NONCE
+  --record-id RECORD_ID
+  --expect-record-id EXPECT_RECORD_ID
+                        Optional exact cached-record comparison; omit for a
+                        new text

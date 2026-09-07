@@ -40,9 +40,9 @@ it is not represented as a second accepted finality certificate.
 
 [SOURCE: frozen run005 implementation] `run005_protocol.py:107` starts
 `BEGIN IMMEDIATE` before journal lookup or fresh preflight. The fresh transaction
-updates state and all ten resource lanes (`:124`), inserts the transaction,
+updates state and all ten resource lanes (`:123`), inserts the transaction,
 nonce and packet journal (`:132`), then commits (`:135`). The normal publication
-RPC is later (`:144`) and uses that stored row. The journal has separate UNIQUE
+RPC is later (`:143`) and uses that stored row. The journal has separate UNIQUE
 constraints on transaction id and nonce (`:22`). Thus the intended normal path
 has installed-before-published ordering at the local SQLite transaction boundary.
 This is a source-level derivation plus the following process observations.
@@ -110,7 +110,7 @@ length check (`run005_protocol.py:61`); the only approved prior is empty. No
 claim about arbitrary history contents or mixed-operation framing follows.
 
 [SOURCE + EXECUTED] Recipient `BEGIN IMMEDIATE` records its first nonce→packet
-row and every attempt before responding (`run005_protocol.py:83`). Subsequent
+row and every attempt before responding (`run005_protocol.py:84`). Subsequent
 identical txid/packet attempts are `duplicateSamePacket`; conflicting envelopes
 are `conflictingPacket`. The focused run checks each directly after its eight
 retry attempts; the original delivery and authority state remain unchanged.
@@ -134,7 +134,7 @@ state violates the intended authority-continuity premise; recipient dedup alone
 does not reconstruct the lost authority history.
 
 [SOURCE: response semantics] An `accepted`/`replayed` response can carry
-`publication=conflictingPacket` (`run005_protocol.py:147`); status alone means
+`publication=conflictingPacket` (`run005_protocol.py:146`); status alone means
 installed/replayed, not successfully delivered. There is no background outbox
 worker. After a committed-install crash, publication progress needs a client
 retry and an available recipient. These are availability boundaries, not new

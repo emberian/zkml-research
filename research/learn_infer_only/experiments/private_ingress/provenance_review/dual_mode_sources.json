@@ -1,0 +1,54 @@
+{
+  "classification": "EXECUTED primary source pin and frozen-negative-review verification",
+  "source": {
+    "id": "2007/155",
+    "title": "Efficient Non-interactive Proof Systems for Bilinear Groups",
+    "local_version_titlepage_date": "April 7, 2016",
+    "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/155.pdf",
+    "pdf_sha256": "45358698cdd4007dddbabf74f7e32e7762d963637c8e3bfae5be2235df64868e",
+    "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_sources/2007-155.txt",
+    "extract_sha256": "0c4b2fc7fa3d22f1e85277cb8b2189052be1d69d966c465efaa46be25ac9d2f5",
+    "access": "Definitions 4-5 pp9-10; section9 scalar commitment and CRS pp24-25; Theorem15 p28; section11 Theorem18 and section11.1 pp34-36; targeted surrounding proof reading",
+    "extraction_command": [
+      "pdftotext",
+      "-layout",
+      "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/155.pdf",
+      "-"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "anchor_PDF_pages_1_based": {
+      "Definition 4 (Composable": [
+        9
+      ],
+      "Definition 5 (Composable": [
+        9
+      ],
+      "9     Instantiation": [
+        24
+      ],
+      "Theorem 18": [
+        35
+      ]
+    }
+  },
+  "frozen_review_files_unchanged": 8,
+  "accounting": {
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "web_search_queries": 2,
+    "web_HTML_opens": 1,
+    "PDF_downloads": 0
+  },
+  "web_queries": [
+    "Groth Sahai commitments perfectly binding perfectly hiding equivocation CRS eprint 2007 155",
+    "dual mode commitments indistinguishable CRS equivocation opening distribution theorem functional encryption"
+  ],
+  "web_HTML_only": [
+    "https://eprint.iacr.org/2007/155"
+  ],
+  "observed_not_read": [
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2009/599.pdf"
+  ]
+}

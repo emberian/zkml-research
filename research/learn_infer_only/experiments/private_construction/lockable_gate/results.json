@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "model": "finite source-premise controls, not encryption/obfuscation",
+  "known_unlock_prediction_cases": 65536,
+  "known_unlock_prediction_probability": "1",
+  "max_target_support_given_full_function_and_unlock": 1,
+  "fixed_input_before_independent_lock_acceptance_probability": "1/256",
+  "masked_function_description_predictors": 512,
+  "joint_future_auxiliary_predictors": 4096,
+  "single_fixed_message_mismatches": {
+    "0": 1,
+    "1": 1
+  },
+  "unbound_arbitrary_predicate_full_byte_recoveries": 256,
+  "ideal_binding_predicate_substitution_rejections": 2048,
+  "public_bit_branch_target_prediction_probability": "1",
+  "source_manifest": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2017/276.pdf",
+      "url": "https://eprint.iacr.org/2017/276",
+      "pdf_sha256": "71a2c94dbc3728b2f1da3c46c1c1461f68d8ba8edefdddbbeac596269016e485",
+      "extracted_text_sha256": "7100b9da28b616c620766d8e5be9330bbca7bb68ffba6a38c6d9b81c7e5addde",
+      "title": "Obfuscating Compute-and-Compare Programs under LWE",
+      "access": "full local text; games, constructions 5.3/5.7, theorem statements/proofs 5.4/5.8 and applications inspected; core matrix reduction not reverified",
+      "pages": [
+        2,
+        3,
+        9,
+        10,
+        12,
+        13,
+        14,
+        23,
+        24,
+        25,
+        26,
+        27,
+        29
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2017/274.pdf",
+      "url": "https://eprint.iacr.org/2017/274",
+      "pdf_sha256": "b31da6c34acd436cf8bd21e79e20f11b4fca9cfca6b31a6b101ae475d7a01dba",
+      "extracted_text_sha256": "4f7f2219753f0205ca363d4493176fc52798ee7c560773cf8d90de734a11b82f",
+      "title": "Lockable Obfuscation",
+      "access": "full local text; Def3.1-3.4, main construction syntax/parameters, one-sided PE application and Appendix D introduction inspected; matrix reduction not reverified",
+      "pages": [
+        2,
+        3,
+        15,
+        16,
+        17,
+        18,
+        67
+      ]
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/1010.pdf",
+      "url": "https://eprint.iacr.org/2019/1010",
+      "pdf_sha256": "3803ef0cc5d2aae5929721796ddb8da2a00dc8eb381b24a7ae40c1b756418818",
+      "extracted_text_sha256": "513abd7180a156135eb9992eefe55dd5fce088c97f68a48c7647b4d9d7ded59d",
+      "title": "On Perfect Correctness in (Lockable) Obfuscation",
+      "access": "local September9,2019 version; abstract/introduction and \u00a72.6 Def2.1-2.2 inspected; construction/reduction not audited",
+      "pages": [
+        1,
+        2,
+        13,
+        14
+      ]
+    }
+  ],
+  "script_sha256": "14fbb7658c0c79f9f18e74f153aabf837eccaf9682e3135fa0517c0a19cb5c81",
+  "searches_this_tranche": {
+    "scry_sql": 2,
+    "schema": 0,
+    "web_search_queries": 2,
+    "kagi": 0,
+    "scry_records": [
+      {
+        "file": "scry_discovery.json",
+        "record_id": "c89c234c-fc9b-43be-833f-86815f38a565",
+        "rows": 12,
+        "spend_nanodollars": 0
+      },
+      {
+        "file": "scry_refined.json",
+        "record_id": "20e97c28-b15f-46df-b97f-b506c537433f",
+        "rows": 7,
+        "spend_nanodollars": 0
+      }
+    ]
+  },
+  "cumulative_lane_search_count": {
+    "scry_sql": 10,
+    "schema": 1,
+    "web": 30,
+    "kagi": 0
+  }
+}

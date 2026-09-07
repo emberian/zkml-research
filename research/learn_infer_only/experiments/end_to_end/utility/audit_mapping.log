@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "all_event_vectors_reconstructed_from_cached_model_features": 480,
+  "model_executed": false,
+  "teaching_vectors": 384,
+  "public_query_events": 96,
+  "public_index_exact_field_allowlist": true,
+  "source_and_output_hashes_checked": true,
+  "script_sha256": "28444808cf994d5854c64ea4f631c952b97d85a670bbbd68314c309c75a740d8",
+  "encoder_policy_sha256": "de2e7356049a76bba16a09d1ac38ee8de622004f28df0c7e3aa70d7b5d347ce3"
+}

@@ -1,0 +1,14 @@
+{
+  "stage": "prepare",
+  "passed": true,
+  "pca_fit": {
+    "wall_seconds": 0.02304437500424683,
+    "cpu_seconds": 0.009848999999999997,
+    "process_high_water_rss_bytes_macos": 55361536
+  },
+  "total": {
+    "wall_seconds": 0.13037420800537802,
+    "cpu_seconds": 0.07706500000000002,
+    "process_high_water_rss_bytes_macos": 66830336
+  }
+}

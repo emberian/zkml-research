@@ -1,0 +1,5 @@
+{"checkpoint_learns": 10, "verified_revision": 11, "private_oracle_match": true}
+{"checkpoint_learns": 20, "verified_revision": 22, "private_oracle_match": true}
+{"checkpoint_learns": 33, "verified_revision": 36, "private_oracle_match": true}
+{"checkpoint_learns": 40, "verified_revision": 44, "private_oracle_match": true}
+{"ok": true, "main_learns": 40, "main_infers": 4, "expiries": 8, "refusal_controls": 19, "report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/reports/run_001/report.json"}

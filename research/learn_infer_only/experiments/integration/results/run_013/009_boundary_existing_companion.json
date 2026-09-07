@@ -1,0 +1,12 @@
+{
+  "label": "boundary_existing_companion",
+  "command": [
+    "bash",
+    "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+  ],
+  "cwd": "/Users/ember/dev/minidregg",
+  "exit_code": 0,
+  "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+  "stderr": "",
+  "elapsed_seconds": 0.08826266700634733
+}

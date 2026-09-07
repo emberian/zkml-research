@@ -1,0 +1,1 @@
+{"caller_seed_byte":37,"conclusion":"public caller seed regenerates full secret credential despite nonreproducible public key bytes","public_keys_equal":false,"raw_secret_key_bytes":4099,"raw_secret_keys_equal":true,"regenerated_secret_cross_decrypts":true,"scope":"public-seed oracle only; no secret bytes printed"}

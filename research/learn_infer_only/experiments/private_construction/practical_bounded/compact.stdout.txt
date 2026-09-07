@@ -1,0 +1,66 @@
+{
+  "status": "PASS",
+  "local_transition_commutation_cases": 20808,
+  "horizons_checked": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "initial_states": 289,
+  "ordered_H4_pair_equivalence_checks": 83521,
+  "H4_direct_oracle_runtime_edges": 449106,
+  "full_runtime_edge_audit_ns": 6824453959,
+  "H4_classes": 64,
+  "minimum_fixed_initial_class_bits": 6,
+  "actual_json_resident_bytes": 87,
+  "public_runtime_source_bytes": 7840,
+  "resident": {
+    "format": "bounded-mistake-learner-compact-quotient-v1",
+    "remaining": 4,
+    "scores": [
+      -4,
+      -2
+    ]
+  },
+  "outside_H4_legitimate_H8_pair_outputs": [
+    0,
+    1
+  ],
+  "naive_H4_to_H8_counter_extension_wrong_output": 1,
+  "initializer_command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-I",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/compact.py",
+    "initialize",
+    "--horizon",
+    "4",
+    "--output",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/results/compact_resident.json"
+  ],
+  "evaluator_command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-I",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/compact.py",
+    "run",
+    "--resident",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/results/compact_resident.json",
+    "--commands",
+    "infer_1,learn_1_positive,learn_1_positive,infer_1"
+  ],
+  "evaluator_stdout": "{\"outputs\": [0, \"ack\", \"ack\", 1], \"remaining\": 0}\n",
+  "source_sha256": "05b0987c953ad88b2659e348b357b8e97f3738f0c5143c3dc4e9154343058b84",
+  "erasure_verified": false,
+  "no_encryption_or_hidden_original_scores": true,
+  "search_queries": 0
+}

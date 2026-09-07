@@ -1,0 +1,31 @@
+{
+  "label": "EXECUTED",
+  "role": "author-side provenance verification and replay; not a second independent review",
+  "frozen_sha256": "78b5140be6fd2b2cd7d15706eabad4ee2da476b437ef310f1feb77ec5d3dbd66",
+  "current_sha256": "e36e7a17bfd1660d6ac41b6050b9217adc3e441a8fb86288d7a2ab35b2242d10",
+  "current_difference": "one OPEN closeout paragraph; remainder byte-identical to reviewed target",
+  "completion_note_sha256": "13f7227ed86907a5b7e5ea80b6d814305c0328b13ad189118d0195b1084d670b",
+  "completion_local_links_checked": 10,
+  "reviewer_controls_sha256": "c870df3f7ea756f30b841a5dfb5f4b736076a2da3021309e1c645a33000172a7",
+  "reviewer_results_sha256": "2db8670e4dc156205bf407fd55b32d315b795e291d6078d2d9606e4e757fc8f5",
+  "reviewer_stdout_matches_results": true,
+  "reviewer_primary_pdf_hash_matches": true,
+  "pure_control_groups_replayed": [
+    "qualified_QIO",
+    "joint_quantum_advice",
+    "delayed_signature",
+    "bad_history"
+  ],
+  "replay_matches_saved_results": true,
+  "qualified_rational_cases": 3125,
+  "frozen_note_and_reviewer_artifacts_written": false,
+  "queries": {
+    "SQL": 0,
+    "schema": 0,
+    "web": 0,
+    "Kagi": 0
+  },
+  "network_pdf_downloads": 0,
+  "script_sha256": "bde00df1103b551771956de2370e2aa621124175749a9e932ed5b3a629337124",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]"
+}

@@ -1,0 +1,11 @@
+{
+  "target_sha256": "2cc1d2dc58d8cde8e6a3c3badba602357f9de2d11e008b6d421177eea3dd01d3",
+  "files": {
+    "stdout.txt": "07be73cc75b70940f79c854e39e133a6cba5d752c7fde1afc7ba0bce15d76f2e",
+    "REPORT.md": "7d433eb57eec66d9050886a75f6c709e9c42a7092bda3286c489678c88c653bc",
+    "results.json": "07be73cc75b70940f79c854e39e133a6cba5d752c7fde1afc7ba0bce15d76f2e",
+    "review.py": "4bbf9601a8501ff5d53cc476df1c20dba2882344e417ffc11270639460a3df8a",
+    ".gitignore": "bb2a35cd680e22de04f94c5df2c3596a0090ef6927d66ea8309075e6b2f3da55"
+  },
+  "status": "accepted conditional interface; concrete model qualification recorded; no instantiation"
+}

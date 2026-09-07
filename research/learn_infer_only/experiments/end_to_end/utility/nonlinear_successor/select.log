@@ -1,0 +1,22 @@
+{
+  "stage": "selection",
+  "chosen_k": {
+    "linear": 16,
+    "quadratic": 8
+  },
+  "selection_means": {
+    "original577": 0.58984375,
+    "linear8": 0.5400390625,
+    "linear16": 0.56103515625,
+    "linear32": 0.51806640625,
+    "quadratic8": 0.54052734375,
+    "quadratic16": 0.53564453125,
+    "quadratic32": 0.5244140625,
+    "attribute8": 1.0
+  },
+  "cost": {
+    "wall_seconds": 0.21683704102179036,
+    "cpu_seconds": 0.201511,
+    "process_high_water_rss_bytes_macos": 42418176
+  }
+}

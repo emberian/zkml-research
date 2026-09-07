@@ -1,0 +1,442 @@
+--- /dev/null
++++ b/Assurance/CiphertextWindowFrame.lean
+@@ -0,0 +1,209 @@
++/- [DERIVED target] Mixed durable histories with a per-window admission projection.
++The frozen exclusive window44 relation remains unchanged. Actual journal entries
++are classified under an explicit dispatch premise; a non-admission must preserve
++the selected window and genesis canonical bytes. A routing label alone does not
++prove admission/source validity, framing, cryptographic authorization or noise.
++-/
++import Assurance.CiphertextWindowCell
++
++namespace Minidregg.Assurance.CiphertextWindowFrame
++open Minidregg.Theory
++open Minidregg.Theory.TypedAuthorization (Digest)
++open Minidregg.Theory.CiphertextWindow
++open Minidregg.Assurance.CiphertextWindowCell
++open Minidregg.Assurance.ResidentDurableIntegration (Selection WalIntent)
++open Minidregg.Compiler.Tower256ConcreteBackend (StreamCodec)
++open Minidregg.Kernel.DurableCommitProtocol (Snapshot)
++open Minidregg.Kernel.DurableDataIntent
++set_option autoImplicit false
++
++/-- A projection of actual recorded semantic intents, in journal order.
++This is not an independently mutable learning counter. -/
++def admissionProjection (classify : WalIntent → Bool) {hash : List UInt8 → Digest}
++    (data : DataSnapshot hash) : List WalIntent :=
++  (data.model.journal.map Prod.snd).filter classify
++
++def admissionCount (classify : WalIntent → Bool) {hash : List UInt8 → Digest}
++    (data : DataSnapshot hash) : Nat := (admissionProjection classify data).length
++
++theorem projection_install {hash : List UInt8 → Digest} (classify : WalIntent → Bool)
++    (before : DataSnapshot hash) (intent : DataIntent hash) :
++    admissionProjection classify (DataSnapshot.install before intent)=
++      if classify intent.erase then intent.erase::admissionProjection classify before
++      else admissionProjection classify before := by
++  cases h : classify intent.erase <;> simp [admissionProjection,DataSnapshot.install,Snapshot.install,h]
++
++theorem count_admission {hash : List UInt8 → Digest} (classify : WalIntent → Bool)
++    (before : DataSnapshot hash) (intent : DataIntent hash) (h : classify intent.erase=true) :
++    admissionCount classify (DataSnapshot.install before intent)=admissionCount classify before+1 := by
++  simp [admissionCount,projection_install,h]
++
++theorem count_frame {hash : List UInt8 → Digest} (classify : WalIntent → Bool)
++    (before : DataSnapshot hash) (intent : DataIntent hash) (h : classify intent.erase=false) :
++    admissionCount classify (DataSnapshot.install before intent)=admissionCount classify before := by
++  simp [admissionCount,projection_install,h]
++
++/-- Inspect the existing write lookup, including no-op writes to this cell.
++A colliding root never suffices: the proposed canonical bytes must be equal. -/
++def frameCheck {hash : List UInt8 → Digest} (cellId : Digest)
++    (before : DataSnapshot hash) (intent : DataIntent hash) : Bool :=
++  match DataSnapshot.lookupPostBytes cellId intent.writes with
++  | none => true
++  | some bytes => decide (bytes=before.canonicalBytes cellId)
++
++theorem frameCheck_iff {hash : List UInt8 → Digest} (cellId : Digest)
++    (before : DataSnapshot hash) (intent : DataIntent hash) :
++    frameCheck cellId before intent=true ↔
++      (DataSnapshot.install before intent).canonicalBytes cellId=before.canonicalBytes cellId := by
++  unfold frameCheck
++  change (match DataSnapshot.lookupPostBytes cellId intent.writes with
++    | none => true | some bytes => decide (bytes=before.canonicalBytes cellId))=true ↔
++    (DataSnapshot.lookupPostBytes cellId intent.writes).getD (before.canonicalBytes cellId)=before.canonicalBytes cellId
++  cases DataSnapshot.lookupPostBytes cellId intent.writes <;> simp
++
++def framesSelected {hash : List UInt8 → Digest} (selected : Selection)
++    (before : DataSnapshot hash) (intent : DataIntent hash) : Bool :=
++  frameCheck selected.stateId before intent && frameCheck selected.genesisId before intent
++
++theorem framesSelected_iff {hash : List UInt8 → Digest} (selected : Selection)
++    (before : DataSnapshot hash) (intent : DataIntent hash) :
++    framesSelected selected before intent=true ↔
++      (DataSnapshot.install before intent).canonicalBytes selected.stateId=before.canonicalBytes selected.stateId ∧
++      (DataSnapshot.install before intent).canonicalBytes selected.genesisId=before.canonicalBytes selected.genesisId := by
++  simp only [framesSelected,Bool.and_eq_true,frameCheck_iff]
++
++theorem changed_window_refused {hash : List UInt8 → Digest} (selected : Selection)
++    (before : DataSnapshot hash) (intent : DataIntent hash)
++    (changed : (DataSnapshot.install before intent).canonicalBytes selected.stateId≠before.canonicalBytes selected.stateId) :
++    framesSelected selected before intent=false := by
++  apply Bool.eq_false_iff.mpr
++  intro h
++  exact changed ((framesSelected_iff selected before intent).mp h).1
++
++/-- Concrete routing discriminator over the ACTUAL journal replay envelope:
++versioned resident event, a write to this window cell, selected genesis, and
++program2/version1 in the existing canonical context encoding. Its tag is not
++an authentication assertion; the history also needs checked admission or frame.
++Malformed or noncanonical context bytes are outside the admission class. -/
++def windowAdmission (selected : Selection) (intent : WalIntent) : Bool :=
++  let event:=intent.event.event
++  decide (event.codecVersion=1 ∧ event.domain=⟨102⟩) &&
++  intent.event.writes.any (fun write=>decide (write.cellId=selected.stateId)) &&
++  match (StreamCodec.list StreamCodec.nat).toLawful.decode event.canonicalBytes with
++  | some words => decide (words.length=11 ∧ words[0]?.getD 0=selected.genesisId.value ∧
++      words[2]?.getD 0=2 ∧ words[3]?.getD 0=1 ∧
++      (StreamCodec.list StreamCodec.nat).encode words=event.canonicalBytes)
++  | none => false
++
++
++/-- Permissive decoding does not silently assign a canonical admission tag. -/
++theorem noncanonical_tag_refused (selected : Selection) (intent : WalIntent) (words : List Nat)
++    (decoded : (StreamCodec.list StreamCodec.nat).toLawful.decode intent.event.event.canonicalBytes=some words)
++    (different : (StreamCodec.list StreamCodec.nat).encode words≠intent.event.event.canonicalBytes) :
++    windowAdmission selected intent=false := by
++  simp [windowAdmission,decoded,different]
++
++variable {Ct : Type} [AddCommGroup Ct]
++
++/-- Each edge is an actual fresh, preflight-ready DataIntent install. Learn
++edges refine the window transition; other edges must frame selected bytes.
++Classification is fixed across the history and read from recorded intents. -/
++inductive MixedHistory (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) (selected : Selection)
++    (classify : WalIntent → Bool) (initialData : DataSnapshot hash) :
++    DataSnapshot hash → State Ct → Prop
++  | start (empty : initialData.model.journal=[])
++      (opened : initialData.canonicalBytes selected.stateId=(stateStream ct).encode initial)
++      (genesis : initialData.canonicalBytes selected.genesisId=selected.genesisBytes) :
++      MixedHistory ct hash admit W selected classify initialData initialData initial
++  | learn {before : DataSnapshot hash} {logical : State Ct}
++      (past : MixedHistory ct hash admit W selected classify initialData before logical)
++      (p : WindowPlan ct hash W) (current : p.beforeState=logical)
++      (opened : p.plan.opens selected before=true)
++      (checked : check ct.toLawful admit W p.beforeState p.command=true)
++      (tagged : classify p.plan.intent.erase=true)
++      (ready : p.plan.intent.preflight before=.ok ())
++      (fresh : Snapshot.lookupRecorded p.plan.transactionId before.model.journal=none) :
++      MixedHistory ct hash admit W selected classify initialData
++        (DataSnapshot.install before p.plan.intent) (advance W p.beforeState p.command)
++  | frame {before : DataSnapshot hash} {logical : State Ct}
++      (past : MixedHistory ct hash admit W selected classify initialData before logical)
++      (intent : DataIntent hash) (tagged : classify intent.erase=false)
++      (framed : framesSelected selected before intent=true)
++      (ready : intent.preflight before=.ok ())
++      (fresh : Snapshot.lookupRecorded intent.transactionId before.model.journal=none) :
++      MixedHistory ct hash admit W selected classify initialData
++        (DataSnapshot.install before intent) logical
++
++/-- Statement-first apex: arbitrary valid interleavings preserve the exact
++window algebra and provenance, while only admission-projected entries count
++as learning steps. The total authority journal may have additional entries. -/
++def MixedInvariant (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) (selected : Selection)
++    (classify : WalIntent → Bool) : Prop :=
++  ∀ initialData data logical,MixedHistory ct hash admit W selected classify initialData data logical →
++    data.canonicalBytes selected.stateId=(stateStream ct).encode logical ∧
++    data.canonicalBytes selected.genesisId=selected.genesisBytes ∧
++    logical.nextId=admissionCount classify data ∧ Reachable ct.toLawful admit W logical ∧
++    SumBound W logical ∧ Provenance ct.toLawful admit logical
++
++theorem mixed_invariant (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) (selected : Selection)
++    (classify : WalIntent → Bool) : MixedInvariant ct hash admit W selected classify := by
++  intro initialData data logical h
++  induction h with
++  | start empty opened genesis =>
++    refine ⟨opened,genesis,?_,.start,?_,?_⟩
++    · simp [initial,admissionCount,admissionProjection,empty]
++    · simp [initial,SumBound,queueSum]
++    · simp [initial,Provenance]
++  | @learn before logical past p current opened checked tagged ready fresh ih =>
++    have hop := (p.plan.opens_iff selected before).mp opened
++    have reached : Reachable ct.toLawful admit W (advance W p.beforeState p.command) :=
++      .next (by simpa only [current] using ih.2.2.2.1) p.command checked
++    have inv := window_invariant ct.toLawful admit W _ reached
++    refine ⟨?_,?_,?_,reached,inv.1,inv.2⟩
++    · rw [←hop.2.1]
++      exact (p.plan.installed_exact before).1.trans p.postOpening
++    · have kept : (DataSnapshot.install before p.plan.intent).canonicalBytes p.plan.genesisId=
++          before.canonicalBytes p.plan.genesisId := p.plan.installed_genesis before
++      simpa only [hop.1] using kept.trans (by simpa only [hop.1] using ih.2.1)
++    · rw [checked_next_id ct.toLawful admit W p.beforeState p.command checked,current,
++        ih.2.2.1,count_admission classify before p.plan.intent tagged]
++  | @frame before logical past intent tagged framed ready fresh ih =>
++    have kept := (framesSelected_iff selected before intent).mp framed
++    refine ⟨kept.1.trans ih.1,kept.2.trans ih.2.1,?_,ih.2.2.2.1,ih.2.2.2.2.1,ih.2.2.2.2.2⟩
++    rw [count_frame classify before intent tagged]
++    exact ih.2.2.1
++
++theorem mixed_queue_sum (ct : StreamCodec Ct) (hash : List UInt8 → Digest)
++    (admit : Nat → List UInt8 → Bool) (W : Nat) (selected : Selection)
++    (classify : WalIntent → Bool) (initialData data : DataSnapshot hash) (logical : State Ct)
++    (h : MixedHistory ct hash admit W selected classify initialData data logical) :
++    logical.accumulator=(logical.queue.map Entry.ciphertext).sum ∧ logical.queue.length≤W ∧
++    logical.nextId=admissionCount classify data := by
++  have inv := mixed_invariant ct hash admit W selected classify initialData data logical h
++  exact ⟨inv.2.2.2.2.1.1,inv.2.2.2.2.1.2,inv.2.2.1⟩
++
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.projection_install' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms projection_install
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.count_admission' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms count_admission
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.count_frame' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in #print axioms count_frame
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.frameCheck_iff' depends on axioms: [propext] -/
++#guard_msgs in #print axioms frameCheck_iff
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.framesSelected_iff' depends on axioms: [propext] -/
++#guard_msgs in #print axioms framesSelected_iff
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.changed_window_refused' depends on axioms: [propext] -/
++#guard_msgs in #print axioms changed_window_refused
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.noncanonical_tag_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms noncanonical_tag_refused
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.mixed_invariant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms mixed_invariant
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrame.mixed_queue_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms mixed_queue_sum
++
++end Minidregg.Assurance.CiphertextWindowFrame
+--- /dev/null
++++ b/Assurance/CiphertextWindowFrameWitness.lean
+@@ -0,0 +1,218 @@
++/- [DERIVED target] Nonzero materialized mixed-history witness and falsifiers.
++Three existing checked public window admissions, an actual same-window no-op
++with an infer-style event tag, and an unrelated cell commit. The no-op tag is
++not a cryptographic inference/output theorem. Constant roots keep canonical
++bytes and checked effects load-bearing. Frozen window44 files are reused.
++-/
++import Assurance.CiphertextWindowFrame
++import Assurance.CiphertextWindowWitness
++
++namespace Minidregg.Assurance.CiphertextWindowFrameWitness
++open Minidregg.Theory
++open Minidregg.Theory.TypedAuthorization (Digest)
++open Minidregg.Theory.CiphertextWindow
++open Minidregg.Assurance.CiphertextWindowCell
++open Minidregg.Assurance.CiphertextWindowFrame
++open Minidregg.Assurance.CiphertextWindowWitness
++open Minidregg.Assurance.ResidentReleaseContext (Context contextWords)
++open Minidregg.Compiler.Tower256ConcreteBackend (StreamCodec)
++open Minidregg.Kernel.DurableCommitProtocol (Snapshot)
++open Minidregg.Kernel.DurableDataIntent
++set_option autoImplicit false
++set_option maxRecDepth 10000
++set_option maxHeartbeats 2000000
++
++def classifier := windowAdmission selected
++
++def frameContext : Context := ⟨7,0,3,1,0,19,23,0,0,0,0⟩
++
++def frameIntent (tx : Nat) (target : Digest) (bytes : List UInt8) : DataIntent hash where
++  transactionId:=⟨tx⟩
++  writes:=[⟨target,⟨0⟩,⟨0⟩,bytes⟩]
++  readGuards:=[]
++  nullifiers:=[⟨1,⟨201⟩,⟨tx⟩,(StreamCodec.list StreamCodec.nat).encode [tx]⟩]
++  exactCharge:=fun _=>1
++  event:=⟨1,⟨102⟩,⟨tx⟩,(StreamCodec.list StreamCodec.nat).encode (contextWords frameContext)⟩
++  postRootsBound:=by
++    intro write h;simp only [List.mem_singleton] at h;subst write;rfl
++  guardsReadOnly:=by intro guard h;cases h
++
++/-- The installed window itself is written back byte-for-byte, so this is
++not merely a disjoint-cell special case. It spends a separate nonce/charge. -/
++def inferNoop := frameIntent 501 selected.stateId (data1.canonicalBytes selected.stateId)
++def afterInfer := DataSnapshot.install data1 inferNoop
++/-- `planFor` reads the FULL actual journal prefix, including framed entries;
++its continuation token is not synthesized from the smaller admission count. -/
++def learn1 := planFor 502 afterInfer s1 cmd1
++def afterLearn1 := DataSnapshot.install afterInfer learn1.plan.intent
++
++def unrelated := frameIntent 503 ⟨23⟩ (afterLearn1.canonicalBytes ⟨23⟩)
++def afterUnrelated := DataSnapshot.install afterLearn1 unrelated
++def learn2 := planFor 504 afterUnrelated s2 cmd2
++def finalData := DataSnapshot.install afterUnrelated learn2.plan.intent
++
++theorem classifications : classifier p0.plan.intent.erase=true ∧
++    classifier inferNoop.erase=false ∧ classifier learn1.plan.intent.erase=true ∧
++    classifier unrelated.erase=false ∧ classifier learn2.plan.intent.erase=true := by decide +kernel
++
++theorem actual_frames : framesSelected selected data1 inferNoop=true ∧
++    framesSelected selected afterLearn1 unrelated=true := by decide +kernel
++
++theorem all_ready : p0.plan.intent.preflight data0=.ok () ∧
++    inferNoop.preflight data1=.ok () ∧ learn1.plan.intent.preflight afterInfer=.ok () ∧
++    unrelated.preflight afterLearn1=.ok () ∧ learn2.plan.intent.preflight afterUnrelated=.ok () := by decide +kernel
++
++theorem actual_openings : p0.plan.opens selected data0=true ∧
++    learn1.plan.opens selected afterInfer=true ∧ learn2.plan.opens selected afterUnrelated=true := by decide +kernel
++
++theorem mixed_subject_history : MixedHistory ct hash admit 2 selected classifier data0 finalData s3 := by
++  have h0 : MixedHistory ct hash admit 2 selected classifier data0 data1 s1 :=
++    .learn (.start rfl rfl rfl) p0 rfl actual_openings.1 checked0 classifications.1 all_ready.1 rfl
++  have hf : MixedHistory ct hash admit 2 selected classifier data0 afterInfer s1 :=
++    .frame h0 inferNoop classifications.2.1 actual_frames.1 all_ready.2.1 (by decide +kernel)
++  have h1 : MixedHistory ct hash admit 2 selected classifier data0 afterLearn1 s2 :=
++    .learn hf learn1 rfl actual_openings.2.1 checked1 classifications.2.2.1 all_ready.2.2.1 (by decide +kernel)
++  have hg : MixedHistory ct hash admit 2 selected classifier data0 afterUnrelated s2 :=
++    .frame h1 unrelated classifications.2.2.2.1 actual_frames.2 all_ready.2.2.2.1 (by decide +kernel)
++  exact .learn hg learn2 rfl actual_openings.2.2 checked2 classifications.2.2.2.2
++    all_ready.2.2.2.2 (by decide +kernel)
++
++/-- The same physical journal has five commits but only three admissions,
++with expiry retaining exactly ids1,2 and the existing nonzero group sum. -/
++theorem mixed_subject :
++    finalData.canonicalBytes selected.stateId=(stateStream ct).encode s3 ∧
++    finalData.canonicalBytes selected.genesisId=selected.genesisBytes ∧
++    s3.nextId=admissionCount classifier finalData ∧
++    admissionCount classifier finalData=3 ∧ finalData.model.journal.length=5 ∧
++    SumBound 2 s3 ∧ Provenance ct.toLawful admit s3 ∧
++    s3.queue.map Entry.admissionId=[1,2] ∧ s3.accumulator=b+c := by
++  have inv := mixed_invariant ct hash admit 2 selected classifier data0 finalData s3 mixed_subject_history
++  exact ⟨inv.1,inv.2.1,inv.2.2.1,by decide +kernel,rfl,inv.2.2.2.2.1,inv.2.2.2.2.2,rfl,
++    honest_nonzero_add_and_expiry.2.2.1⟩
++
++/-- Every edge is the existing full preflight/fresh execute, including the
++same-cell no-op and unrelated cell. No blind installer or independent counter. -/
++theorem actual_five_executes :
++    execute .complete data0 p0.plan.intent=.accepted data1 ∧
++    execute .complete data1 inferNoop=.accepted afterInfer ∧
++    execute .complete afterInfer learn1.plan.intent=.accepted afterLearn1 ∧
++    execute .complete afterLearn1 unrelated=.accepted afterUnrelated ∧
++    execute .complete afterUnrelated learn2.plan.intent=.accepted finalData := by
++  exact ⟨execute_complete_ready data0 p0.plan.intent rfl all_ready.1,
++    execute_complete_ready data1 inferNoop (by decide +kernel) all_ready.2.1,
++    execute_complete_ready afterInfer learn1.plan.intent (by decide +kernel) all_ready.2.2.1,
++    execute_complete_ready afterLearn1 unrelated (by decide +kernel) all_ready.2.2.2.1,
++    execute_complete_ready afterUnrelated learn2.plan.intent (by decide +kernel) all_ready.2.2.2.2⟩
++
++theorem projection_is_actual_entries :
++    (admissionProjection classifier finalData).map (fun entry=>entry.transactionId.value)=[504,502,401] ∧
++    finalData.model.journal.map (fun entry=>entry.1.value)=[504,503,502,501,401] := by decide +kernel
++
++theorem frame_advances_only_authority_revision :
++    afterInfer.canonicalBytes selected.stateId=data1.canonicalBytes selected.stateId ∧
++    admissionCount classifier afterInfer=admissionCount classifier data1 ∧
++    afterInfer.model.journal.length=data1.model.journal.length+1 ∧
++    afterInfer.model.available .feeDebit=data1.model.available .feeDebit-1 ∧
++    inferNoop.nullifiers.head?.isSome=true := by
++  exact ⟨((framesSelected_iff selected data1 inferNoop).mp actual_frames.1).1,
++    count_frame classifier data1 inferNoop classifications.2.1,rfl,rfl,rfl⟩
++
++theorem exact_retry_after_interleaved_expiry :
++    execute .complete finalData learn2.plan.intent=.replayed learn2.plan.intent.erase :=
++  learn2.plan.exact_retry .complete afterUnrelated
++
++/-- Same colliding root, same infer-style tag and a genuine preflight-ready
++DataIntent, but it changes canonical window bytes: framing must reject it. -/
++def dishonestFrame := frameIntent 505 selected.stateId ((stateStream ct).encode s2)
++
++theorem false_frame_refused :
++    dishonestFrame.preflight data1=.ok () ∧ classifier dishonestFrame.erase=false ∧
++    framesSelected selected data1 dishonestFrame=false ∧
++    (DataSnapshot.install data1 dishonestFrame).model.roots selected.stateId=data1.model.roots selected.stateId ∧
++    (DataSnapshot.install data1 dishonestFrame).canonicalBytes selected.stateId≠data1.canonicalBytes selected.stateId := by decide +kernel
++
++theorem false_frame_cannot_preserve_current_logical_state :
++    ¬MixedHistory ct hash admit 2 selected classifier data0
++      (DataSnapshot.install data1 dishonestFrame) s1 := by
++  intro h
++  have inv := mixed_invariant ct hash admit 2 selected classifier data0 _ s1 h
++  have bad : (DataSnapshot.install data1 dishonestFrame).canonicalBytes selected.stateId≠(stateStream ct).encode s1 := by decide +kernel
++  exact bad inv.1
++
++/-- Writing the selected genesis under a colliding digest is not a frame,
++even when the actual window bytes are unchanged. -/
++def falseGenesisFrame := frameIntent 506 selected.genesisId []
++
++theorem false_genesis_frame_refused :
++    falseGenesisFrame.preflight data1=.ok () ∧ classifier falseGenesisFrame.erase=false ∧
++    frameCheck selected.stateId data1 falseGenesisFrame=true ∧
++    framesSelected selected data1 falseGenesisFrame=false := by decide +kernel
++
++/-- Base255 natural decoding accepts a redundant high zero in the list-length
++prefix; the concrete journal classifier additionally enforces re-encoding. -/
++def aliasedTag : Minidregg.Assurance.ResidentDurableIntegration.WalIntent :=
++  { p0.plan.intent.erase with
++    event:={ p0.plan.intent.erase.event with
++      event:={ p0.plan.packet with canonicalBytes:=11::0::255::p0.plan.packet.canonicalBytes.drop 2 } } }
++
++theorem noncanonical_context_tag_refused :
++    (StreamCodec.list StreamCodec.nat).toLawful.decode aliasedTag.event.event.canonicalBytes=
++      some (contextWords p0.plan.context) ∧
++    classifier p0.plan.intent.erase=true ∧ classifier aliasedTag=false := by decide +kernel
++
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.classifications' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms classifications
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.actual_frames' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms actual_frames
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.all_ready' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in #print axioms all_ready
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.actual_openings' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms actual_openings
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.mixed_subject_history' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms mixed_subject_history
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.mixed_subject' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms mixed_subject
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.actual_five_executes' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms actual_five_executes
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.projection_is_actual_entries' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms projection_is_actual_entries
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.frame_advances_only_authority_revision' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms frame_advances_only_authority_revision
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.exact_retry_after_interleaved_expiry' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms exact_retry_after_interleaved_expiry
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.false_frame_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms false_frame_refused
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.false_frame_cannot_preserve_current_logical_state' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms false_frame_cannot_preserve_current_logical_state
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.false_genesis_frame_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms false_genesis_frame_refused
++/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.noncanonical_context_tag_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in #print axioms noncanonical_context_tag_refused
++
++end Minidregg.Assurance.CiphertextWindowFrameWitness
+--- a/Assurance.lean
++++ b/Assurance.lean
+@@ -126,3 +126,6 @@
+ import Assurance.SpartanR1CS  -- SPARTAN, composed out of engines we already had. The suspicion this file tests and confirms: Spartan is not three things to build but three things to COMPOSE. (1) The ZEROCHECK is Selvage.eqMle_fold (identity) plus Selvage.mle_zero_uniform_bound (multilinear Schwartz-Zippel) -- both LANDED, so AirSumcheckQuadratic's docblock residual (ii), still reading "not yet vocabulary", is STALE and not a gap. (2) The OUTER sumcheck is the degree-3 rung at head eqHead tau and body A-hat*B-hat - C-hat: literally the COMPOSITION of cubicForm_fraction_layer's vocabulary and cubicForm_hadamard, so it costs no realizer. spartan_outer_sound: an UNSATISFIED R1CS survives with probability at most s/|F| + s*3/|F| over the joint draw of the zerocheck point and the s challenges -- two events, two causes, added, and the flattering half never quoted alone. (3) The INNER sumcheck is not the hard part it is usually called: its three claims are literally three Selvage.LinearConstraint values ON THE WITNESS WORD (innerClaim, innerClaim_satisfied_iff), so batch_survives_prob_le retires a wrong triple at 2/|F| with nothing new proved, and the batched summand wt_gamma * z is a prodDiff with C = 0, i.e. the landed degree-2 engine with the FACTORED terminal wt-tilde(r_y) * z-tilde(r_y). mle_matVec is the identity that makes phase 2 exist, obtained as mle2_contraction at nu = 0 (matVec_is_contraction_at_nu_zero exhibits the instance, so there is ONE object and not a twin). THE HAND-OFF IS A THEOREM, not prose: spartanTerminal_eq_honest says the verifier's own terminal expression eq(tau,r_x)*(vA*vB - vC) equals the honest chain's final value exactly when the three v's are the three true row openings -- so phase 2's obligation is exactly three values, no more and no fewer, and the eq factor is NOT one of them. TWO NAMED OBLIGATIONS, neither discharged: [SPARTAN-pcs] SpartanOpeningProtocol over the landed Selvage.MleEvalClaim (the opening PROTOCOL is BaseFold's braided reduction, or Ligerito in the BinarySpartan shape; binding itself is proved here as spartanOpeningsBound), and [SPARTAN-sparse] SpartanSparseEvalOracle -- which is a COST obligation and NOT a soundness one: everything here is sound against a DENSE commitment to the matrices, and Spartan's SPARK layer (sparse multilinear commitment by offline memory checking) is what buys SUBLINEARITY. That layer does not exist in this tree at all -- zero timestamp vectors, zero multiset check -- and sparseEvalOracle_refutable proves the Prop is refutable rather than free. NO CHARACTERISTIC HYPOTHESIS anywhere, and nothing downstream of Proximity's FoldingData (whose two_ne is uninhabitable in char 2): what char-2 costs is the USEFULNESS of a k/|F| bound, not its proof, which is why ring-switching is load-bearing rather than an optimization. ZMod 7 teeth on the SQUARING gate w*w = v -- deliberately not a C = 0 instance the zero witness would satisfy for free: goodZ_sat and badZ_unsat are two live witnesses on one instance, badZ_survives_at_one exhibits a NONEMPTY s/|F| event while badZ_caught_at_three separates elsewhere, the inner claim predicate fires BOTH ways, and terminal_fires computes the hand-off to a specific nonzero element. AND THEN THE COMPOSITION (spartan_sound): the two phases over ONE joint draw ((tau,r_x),(gamma,r_y)), bounded by s/|F| + s*3/|F| + 2/|F| + t*2/|F|, with ADAPTIVE provers (outer sees tau, inner sees (tau,r_x,gamma), the claimed values are functions of (tau,r_x)) -- and, the point of it, against the DEPLOYED verifier. SpartanOuterRealAccepts contains NO honest side: Selvage's SumcheckAccepts renders the terminal oracle check as 'the folded claim equals the HONEST side's final value', which a real verifier cannot evaluate, and left unstated every bound here would have been about an idealized verifier -- the exact shape of a vacuity that survives a green build and passes its axiom pins. outerReal_iff_sumcheckAccepts discharges it: the deployed and idealized predicates coincide EXACTLY when the three claims are true. The case split IS the content -- either the prover told the truth about the three row openings and phase 1 must carry the lie and cannot, or it lied and phase 2 must carry it and cannot. WHAT THE COMPOSITION DID NOT DO, said next to the theorem and not in a footnote: it moved the idealization from phase 1 to phase 2, it did not remove it from the stack; phase 2's terminal is still a comparison against an honest chain, which is [SPARTAN-pcs]. Two elaboration findings paid for in build failures: the product splits must be done ONCE at opaque types (uniformProb_mid_le/_last_le -- inlining them at the concrete event types is a whnf HEARTBEAT TIMEOUT, because spartanBatch unfolds through batchConstraint into three rowPartials into mle's Finset.sum), and naming the events (spartanBatchAt, SpartanInnerAccepts, SpartanInnerFalse) is what made the proof elaborate at all. Final tooth, which is the ring-switching argument in one line: composed_bound_is_vacuous_at_f7 proves 1 < 1/7 + 3/7 + 2/7 + 2/7 = 8/7, so the composed bound at toy parameters is a TRUE statement that constrains nothing -- every term is k/|F|, the proofs are characteristic-free but the USEFULNESS is not, and that is a parameter fact rather than a proof obstruction
+ import Assurance.TwistMemoryFingerprintJoin  -- ⭐ the OFFLINE MEMORY CHECK, both poles priced: Compiler.TwistMultisetInvariant (Nebula Lemma 2 over the sparse typed carriers -- TwistContinuity IFF the IS+WS = RS+FS multiset invariant under the positional stamp discipline, BOTH directions, free absorbed by Option-valued cells with no case split) joined to Selvage.MultisetFingerprint (Corollary 1): a NON-continuous committed bus passes the fingerprinted check on at most (|dom|+|rows|)*(k+1)/|F| of challenge pairs for ANY prover stamps (nonContinuous_fingerprint_accept_le -- the adversarial direction of the bridge's named residual, discharged to the named floor), and every accepted execution's exact bus is accepted at EVERY challenge (exactBusClaim_fingerprint_accepted). Residual [TWIST-FP-BIND] names what is NOT discharged: commitment binding over the committed row/stamp columns, the roots-before-gamma schedule (AcceptedLogupRun), range checks realizing Set.InjOn vec, row-shape checks realizing DisciplineRowValid, and the pre/post audit against the exact state roots. NOTE: this is also the timestamp-vector + multiset-check engine SpartanR1CS's [SPARTAN-sparse] entry records as absent from the tree -- the SPARK sparse-commitment layer now has its combinatorial core, not yet its sparse-matrix instantiation
+ import Assurance.ReleaseGateRouting -- the release-gate routing lemma and its binding control, the handoff's §6B as theorems, joined to the tree at both ends. Routing: an unbound gate that reveals the designated bit of ANY submitted predicate determines the private state (determines_iff_separates; routing_of_projections / routing_of_accept_all; hostReconstruct_exact is the "put secret bit 37 in the output slot" attack, by rfl), and a gate accepting at most one predicate reveals at most one bit (single_predicate_not_determining, pigeonhole; both poles pinned on one carrier). Binding: BindingGate R stateOf outOf gate — acceptance implies the released output stands in the authorized relation to the state — gives routing_refused (an output that is not the authorized function of the public half is refused whatever the private half or proof string) and binding_release_public_only, the gate-level twin of privateTurn_public_indistinguishable; TwoBit instance decided. The tree at both ends: Kernel/PrivateEscrowSettlement's Settlement is a BindingGate BY TYPE (settlement_is_binding_gate, settlement_release_public_only, acceptable_pins_named_relation); and at Stage 0 the relation is y = rt ∧ descriptorHolds evmAddDescriptor (traceOf y) (Iff.rfl), the descriptor FORCES Z = (X + Y) mod 2^256 (stage0_released_output_forced via evmAddDescriptor_means_semantics + fragment_run_eq_iff), the ideal gate refuses every routed Z (stage0_forged_z_refused at Z = 4) while the honest candidate is accepted at the ideal AND the deployed gate (fsProve_complete), and stage0Receipt_is_bound_evidence = fsCheck_ok_fiatShamir ∧ stage0Receipt_price. What the receipt binds: the descriptor and the FULL word, public prefix included, up to the FS price under the ROM. What it does not: hide — the whole word IS the FS statement (stage0_statement_carries_word, rfl); Stage 0 has no private half. Residuals: [RELEASE-hiding], [RELEASE-continuity] (a bound gate does not refuse a replayed stale-but-valid state; the kernel's nullifier/freshness objects are named).
++
++import Assurance.CiphertextWindowFrame
++import Assurance.CiphertextWindowFrameWitness

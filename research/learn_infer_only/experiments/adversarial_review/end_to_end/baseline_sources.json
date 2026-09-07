@@ -1,0 +1,16 @@
+{
+  "classification": "SOURCE local implementation and retained run evidence inspected; no new E2E execution yet",
+  "recorded_utc": "2026-09-07T01:54:12.832500+00:00",
+  "files": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/README.md": "d45c9d2af8b98059bbbec6abba456e0894b6188756beac6c98fd463b1e63609b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/probe/src/main.rs": "911fb36831d9d04b983ecd782c9f69b9b97ec0596147079177a681b9c09c5112",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/fixture.txt": "41978a10b974a3e8b7f30d5f9c66f7d396fdf7df83b723b3f14dc00359cdb4c0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/encrypted_window/results.json": "ee7f465648dfe494622f1908d51ce4e5989796f342275dd304e167bba20c448a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/README.md": "c5b6af8226fddf99dd0488d56f7fddc200d6b6b1d9bc7602156a52dca1e25198",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/protocol.py": "014eaffa1210b70881efe5e49672653bf0373f33df980001b4272baa2ecc5b80",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/durable_integration/persistent_journal/results/run_005/report.json": "25d65944fcd981a4c669d9f70614f13dfdfee3555c322ae023bdca384f3974a6"
+  },
+  "metered_queries": 0,
+  "companion_writes": 0,
+  "prior_distinct_ideal_window_task_resumed": false
+}

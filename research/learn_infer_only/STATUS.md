@@ -7,17 +7,63 @@ read authority kept as a separate, decisive construction obligation. See the
 [acceptance contract](experiments/end_to_end/CONTRACT.md). The previous run's
 results and interruption history follow unchanged below.
 
-[OPEN current work] Real BFV role/serialization CLI and mixed durable journal
-integration are in progress, with independent adversarial review. Separate
-bounded lanes review the finite masterless implementation, parent-bound private
-ingress and the saved conditional QIND_pre lift. No new integration result is
-claimed before its recorded execution.
+[EXECUTED current result] Actual OS-random BFV issuance, encrypted window
+learning, signed mixed journal, independent public recomputation and selected
+full-key reader delivery now run together. The hardened baseline reproduces all
+96 integer scores over384 Learn/96 Infer/256 expiries; a fresh private smoke run
+passes40 Learn/four Infer/eight expiries. A live plaintext issuer encoder also
+completes one Learn/two Infer from new text. These are local role-separated
+processes, not OS isolation or no-master-read. See
+[journal evidence](experiments/end_to_end/journal/README.md).
+
+[EXECUTED stronger reader] The reader-side verifier independently recomputes and
+persists every admitted ciphertext transition before releasing an answer.
+Its fresh private40/four/eight run passes all scalar comparisons,23 refusal
+controls, actual reader SIGKILL recovery and copied-authority rollback refusal.
+Source and execution are pinned in [run004](experiments/end_to_end/verified_reader/reports/README.md).
+The full reader key, trusted input issuer/query policy and reader persistence
+remain explicit boundaries. A complete384/96 useful-fixture run through this
+stronger reader is in progress.
+
+[EXECUTED utility limit] The original fixed integration histories have final
+accuracy18/32 (56.25%); the broader earlier held-out window estimate is63.16%.
+These are distinct measurements. The preregistered quadratic-feature successor
+failed all four acceptance conditions and is not promoted. Four real encoder
+runs reproduce all2,308 cached integers. Public fixture encryption does not
+create an unknown learned lifetime; fresh private synthetic observations have
+no utility claim. See [utility artifacts](experiments/end_to_end/utility/README.md).
+
+[DERIVED construction work] A compact finite learner has a public87-byte
+behavioral quotient and exhaustive equivalence controls; it is not an encrypted
+raw model. The parent-bound private-input hybrid's guard failure is now reviewed,
+and fixed-coin parameter objections have been narrowed: independently longer
+functional coins and next ciphertexts evade those particular lower bounds.
+An actual tiny quantitative joint future-package bound and provenance repair
+remain open. A fixed-query-span FE construction audit is in progress.
 
 [DERIVED reviewed successor] The saved eleven-hybrid conditional QIND_pre lift
 now has a completed independent review with no blocking error found under its
 explicit primitive games. The exact quantum auxiliary-state iO/NIWI/PKE/etc.
-suite remains uninstantiated. See [review completion](experiments/pq_composition/qind_pre/REVIEW_COMPLETION.md);
+suite remains uninstantiated. Its qualified iO interface follows from a standard
+worst-case quantum-advice iO assumption, with the explicit resource model;
+see [interface lemma](experiments/pq_composition/qio_interface/QIO_INTERFACE.md)
+and [review completion](experiments/pq_composition/qind_pre/REVIEW_COMPLETION.md);
 this does not establish a PQ resident or a PQ-from-LWE construction.
+
+[EXECUTED new proof integration] Run014 passes **53 modules / 708 exact theorem
+pins**, adding mixed-journal window framing23 and source-noise/window34 to the
+prior651 set. All four
+umbrellas, patch application/content and import boundaries pass with unchanged
+companion sources. Existing dependency oleans are reused. Run012's imported-name
+census false positive is retained and corrected with regression controls. See
+[integration report](experiments/integration/REPORT.md).
+
+[EXECUTED interruption] An additional journal adversarial output-routing check
+was stopped by automatic safety review with a possible-cybersecurity-risk
+message. It is not being resumed. No theorem or runtime conclusion follows
+from that interruption; normal functional integration continues separately.
+
+## Historical first-run closeout
 
 [EXECUTED timing] The requested deadline was **2026-09-06 10am EDT / 14:00 UTC**. The swarm hit its usage limit before that cutoff. Replenishment arrived at 17:25 EDT, after the deadline; the parent then collected and checked saved work without starting new research lanes. This is not a claim that the swarm worked continuously until 10am.
 

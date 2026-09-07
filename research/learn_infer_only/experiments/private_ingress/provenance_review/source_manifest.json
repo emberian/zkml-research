@@ -1,0 +1,147 @@
+{
+  "classification": "EXECUTED local source reproduction and predecessor-hash checks",
+  "sources": [
+    {
+      "id": "2025/330",
+      "url": "https://eprint.iacr.org/2025/330",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+      "pdf_sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+      "matches_frozen_pdf_hash": true,
+      "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/sources/2025-330.txt",
+      "extract_sha256": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54",
+      "fresh_extract_matches_retained": true,
+      "access": "Definitions 3.8,4.1-4.4; Construction 2; section 6.1; Theorem 6.1 and early proof hybrids",
+      "location": "printed/PDF 18,21-23,48-51",
+      "anchor_PDF_pages_1_based": {
+        "Definition 3.8": [
+          18
+        ],
+        "Definition 4.3": [
+          22
+        ],
+        "Theorem 6.1.": [
+          50
+        ]
+      },
+      "extraction_command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "id": "2020/137",
+      "url": "https://eprint.iacr.org/2020/137",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/137.pdf",
+      "pdf_sha256": "9b242f41700fafd6e6574b13b15f34814c3cbe7e1000067c779f68e01a968f1d",
+      "matches_frozen_pdf_hash": true,
+      "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/sources/2020-137.txt",
+      "extract_sha256": "c893dd30362b5aeec49e1de40cc9e0628812bdbead6ab1803a6540493a06e11f",
+      "fresh_extract_matches_retained": true,
+      "access": "Figures 14-15; Theorem 6.2; Lemmas 6.3-6.4; base-key return and privacy switch",
+      "location": "printed 28-32; PDF 30-34",
+      "anchor_PDF_pages_1_based": {
+        "Theorem 6.2.": [
+          33
+        ],
+        "Lemma 6.3": [
+          33
+        ],
+        "Lemma 6.4": [
+          33,
+          34
+        ]
+      },
+      "extraction_command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/137.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "id": "2016/629",
+      "url": "https://eprint.iacr.org/2016/629",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/629.pdf",
+      "pdf_sha256": "03efd333f5d439d75d7d52c37c1409933ee8a0fc80a65d898719c84600b6c369",
+      "matches_frozen_pdf_hash": true,
+      "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/sources/2016-629.txt",
+      "extract_sha256": "152963e56cdd4a6f06221dab1db7e84f7c1f1631b1ad6df272a05b3b09b6465e",
+      "fresh_extract_matches_retained": true,
+      "access": "Appendix D Definitions 12-14; Appendix G Definition 15 and Theorem 8",
+      "location": "printed/PDF 35-37,53-56",
+      "anchor_PDF_pages_1_based": {
+        "Definition 13.": [
+          37
+        ],
+        "Definition 15.": [
+          54
+        ],
+        "Theorem 8.": [
+          56
+        ]
+      },
+      "extraction_command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/629.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "id": "2013/729",
+      "url": "https://eprint.iacr.org/2013/729",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf",
+      "pdf_sha256": "58bb2eb72bc8e5c3eaf3193fefd6c72754ff428265231fb459b0de6c8db32e30",
+      "matches_frozen_pdf_hash": true,
+      "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/sources/2013-729.txt",
+      "extract_sha256": "8245de128df900e95815cf7f978dfdd3b08a0a19b18639675701c22a580326ec",
+      "fresh_extract_matches_retained": true,
+      "access": "Definition 2.4; Remark 2.5; Lemma 2.9; Theorem 4.1; source theorem assumed, not full reduction reproof",
+      "location": "printed/PDF 7-9,14",
+      "anchor_PDF_pages_1_based": {
+        "Definition 2.4": [
+          8,
+          9,
+          25
+        ],
+        "Lemma 2.9.": [
+          9
+        ],
+        "Theorem 4.1.": [
+          14
+        ]
+      },
+      "extraction_command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/729.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    }
+  ],
+  "accounting": {
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "web_search_queries": 0,
+    "web_HTML_opens": 4,
+    "PDF_downloads": 0
+  },
+  "web_HTML_only": [
+    "https://eprint.iacr.org/2025/330",
+    "https://eprint.iacr.org/2020/137",
+    "https://eprint.iacr.org/2016/629",
+    "https://eprint.iacr.org/2013/729"
+  ],
+  "frozen_predecessor_files": 12
+}

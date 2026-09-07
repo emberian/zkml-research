@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "module_count": 53,
+  "theorem_pins": 708,
+  "axiom_sets": {
+    "Classical.choice,Quot.sound,propext": 561,
+    "(none)": 48,
+    "propext": 41,
+    "Quot.sound,propext": 54,
+    "Quot.sound": 4
+  },
+  "elapsed_seconds": 472.95165254201856,
+  "snapshot": "research/learn_infer_only/formal/integration/minidregg-combined-resident-708.patch",
+  "snapshot_sha256": "a290120197d9679d9d59060121b7a7b7dc17dc3ccbbef263ac8eac057d77f2c2",
+  "companion_head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "all_selected_and_companion_hashes_unchanged": true,
+  "companion_status_unchanged": true,
+  "baseline674_patch_and_manifest_unchanged": true,
+  "all_lean_compile_output_empty": true,
+  "no_clean_full_build_claim": true,
+  "owner_patch_sha256": "bc55d32d84affc77a33b7a585f86599039569ac5a3655f7bd153f45dc7a740fe"
+}

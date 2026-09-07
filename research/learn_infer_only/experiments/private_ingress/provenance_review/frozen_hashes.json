@@ -1,0 +1,53 @@
+{
+  "classification": "EXECUTED read-only snapshot of frozen predecessors",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/PRIVATE_INGRESS.md",
+      "sha256": "26540711cc0cddabcebf8a0cfbb543c2f2ba2649b25aedb131c926aaa34d9215"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/.gitignore",
+      "sha256": "e19dac7924ef30926ee1ccfcfaac61d6fb2009313cf2afa8335ddbb13bd7f247"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/ingress_audit.py",
+      "sha256": "1c662eaa64b61cfb640267b3a44681a0391012a60152f4647b0add267e9de2e3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/ingress_audit.stdout.txt",
+      "sha256": "0026b7876783d08a860145c68d0f7089bc7ae18be4223e90709113508f66174a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/.gitignore",
+      "sha256": "d7738c40c963c96504fe425b2cd8a92d82a900f19d48f86d42c4dc772404628c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/PROVENANCE.md",
+      "sha256": "0868164a235780917ab1c7d08e810078c5bfa73ef68bb862e729396c5ba0e437"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/provenance_audit.py",
+      "sha256": "3c37054f28724196f77e2a64f7627009b77bc6f6b63a1b5f8f5b80dc40d99770"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/provenance_audit.stdout.txt",
+      "sha256": "b3e55b9e68f642c1db3bda02f09a4c6919b1beff92a2a2d2bb1c4600c5db84a9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/results.json",
+      "sha256": "a38ce0929dc741a087a3c497c59f04b58409f641d05720068c149eda317e9650"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance/source_manifest.json",
+      "sha256": "dabf12c0191318edbbed6172ae739c7a0694b7e18b43510340526e73a17c2f7f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/results.json",
+      "sha256": "2232c699fe016fdcd587fd8279c56b9380da5a6d816470b1e2ea8f3d26ffe9b6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/source_manifest.json",
+      "sha256": "ff5052a8d52e9f337514a424728afeadcc0eaadc2dda3ffe0e04fc623201dc60"
+    }
+  ]
+}

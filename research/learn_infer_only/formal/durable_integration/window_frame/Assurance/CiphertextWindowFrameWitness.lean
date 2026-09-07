@@ -160,4 +160,59 @@ theorem noncanonical_context_tag_refused :
       some (contextWords p0.plan.context) ∧
     classifier p0.plan.intent.erase=true ∧ classifier aliasedTag=false := by decide +kernel
 
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.classifications' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms classifications
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.actual_frames' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms actual_frames
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.all_ready' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in #print axioms all_ready
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.actual_openings' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms actual_openings
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.mixed_subject_history' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms mixed_subject_history
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.mixed_subject' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms mixed_subject
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.actual_five_executes' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms actual_five_executes
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.projection_is_actual_entries' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms projection_is_actual_entries
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.frame_advances_only_authority_revision' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms frame_advances_only_authority_revision
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.exact_retry_after_interleaved_expiry' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms exact_retry_after_interleaved_expiry
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.false_frame_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms false_frame_refused
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.false_frame_cannot_preserve_current_logical_state' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms false_frame_cannot_preserve_current_logical_state
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.false_genesis_frame_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms false_genesis_frame_refused
+/-- info: 'Minidregg.Assurance.CiphertextWindowFrameWitness.noncanonical_context_tag_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in #print axioms noncanonical_context_tag_refused
+
 end Minidregg.Assurance.CiphertextWindowFrameWitness

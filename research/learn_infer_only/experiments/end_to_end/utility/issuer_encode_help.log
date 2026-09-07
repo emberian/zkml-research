@@ -1,0 +1,15 @@
+usage: issuer_encode_prepared.py [-h] --input INPUT --output OUTPUT
+                                 [--expect-record-id EXPECT_RECORD_ID]
+
+PREPARED, not yet executed: one private text -> signed int8 issuer vector.
+Uses only pinned local assets and public teacher calibration. Actual execution
+and single-prompt/batched quantization agreement must be recorded before
+claiming this encoder has been integrated. This command neither encrypts nor
+signs.
+
+options:
+  -h, --help            show this help message and exit
+  --input INPUT         Issuer-only JSON: text, route, label (+1/-1)
+  --output OUTPUT       Issuer-only vector JSON; mode0600
+  --expect-record-id EXPECT_RECORD_ID
+                        Optional exact quantized cached-vector comparison

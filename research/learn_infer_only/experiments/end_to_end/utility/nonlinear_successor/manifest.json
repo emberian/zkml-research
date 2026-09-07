@@ -1,0 +1,27 @@
+{
+  "completed": true,
+  "useful_successor": false,
+  "files_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/select.log": "ea3e50c97426344dfe2f209d099dc56787ae3c89873f6efa9a19f920b9e42134",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/preparation.json": "075eff018f73aa0cb8b98ffe3ec18f660f8435d4c4fb321b2823bfbf4463b042",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/PREREGISTRATION.md": "b3e02f740d43458c23ccc47799242220b29823d031db89bcaca9b9955f4d9c71",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/run.py": "3832b961631075545fddde72c749527f4b991d5b1c583d6df043309daa16ea71",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/audit.json": "a8e27fb90ccb7021a53bed90d1ef57af92a911c58945e73e196078cfd44f9ce6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/audit.py": "918d76b3167ec1bbd46c49b59ccbd5085b14d572429b6288a1e25a74a84011bf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/REPORT.md": "c155d01e24286216b64eb55c8f9f3bdede261d6bd8178378c29084f4dd23c274",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/results.json": "251b3440a9ebcecd7b47a1c24e546224401a8998899f52f287007d1354ee40de",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/audit.log": "a8e27fb90ccb7021a53bed90d1ef57af92a911c58945e73e196078cfd44f9ce6",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/evaluate.log": "50debe7141de175ed266edba701ad8ca96628a9afc205d009104658350a9f2f8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/costs.csv": "084c84d75595ce91df45f73ac6ade095b1d19c03724aebbbb4e82a06c1e69612",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/.gitignore": "c1784b5bfd7edfcdd9f57dec6fd9a5b381b3f52f3ed8f3e8d5f1c935c57ec45c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/selection.json": "f3bee099dde0fd3bc4a6b13a82ad9d2a8a1f12984d74277e65fde46c8e89f85e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/prepare.log": "9f2ff099407e99da4906b2eb3ff292a9139ef3168ec87148532cc875c7f40c22",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/nonlinear_successor/histories.json": "cf593ee66184c160be54428374ccdfae58a2b210a4b4e0e3d5da8ad2889f0b2e"
+  },
+  "command_exit_codes": {
+    "prepare": 0,
+    "select": 0,
+    "evaluate": 0,
+    "audit": 0
+  }
+}

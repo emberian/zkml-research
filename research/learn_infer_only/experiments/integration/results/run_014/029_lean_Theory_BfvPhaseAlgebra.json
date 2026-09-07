@@ -1,0 +1,18 @@
+{
+  "label": "lean_Theory_BfvPhaseAlgebra",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_014/olean/Theory/BfvPhaseAlgebra.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_014/source/Theory/BfvPhaseAlgebra.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_014/source",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsed_seconds": 7.814933917019516,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_014/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_014/source/Theory/BfvPhaseAlgebra.lean",
+  "source_sha256_before": "a88ac6b76142ece2bb67079d0ba6744a391b3018aca4fcc0a97918f3d5f18f03",
+  "source_sha256_after": "a88ac6b76142ece2bb67079d0ba6744a391b3018aca4fcc0a97918f3d5f18f03"
+}

@@ -1,5 +1,22 @@
 # Combined proposal patch
 
+[EXECUTED current proposal, 2026-09-07] Use
+`minidregg-combined-resident-708.patch` for the current finished selection:
+**53 modules / 708 pins**, checked together in run014 with all four umbrellas,
+patch application/content comparison and import-boundary checks. SHA256
+`a290120197d9679d9d59060121b7a7b7dc17dc3ccbbef263ac8eac057d77f2c2`.
+The unnumbered current patch has identical bytes; the explicit manifest is
+`../../experiments/integration/modules_with_source_window.json`.
+
+[DERIVED scope] This adds mixed-journal window framing23 and the source-noise
+window successor34 to the saved651 set.
+Read `../../experiments/integration/REPORT.md` for the exact checks and retained
+census-only run012 failure. Existing dependency oleans are reused. No companion
+source is edited, no clean build is claimed, and no Rust refinement is inferred.
+The descriptions below record historical checkpoints, not the current selection.
+
+## Historical selections
+
 [DERIVED: artifact scope] `minidregg-combined-resident.patch` combines the finished
 proposed modules selected by the most recent integration manifest and their four
 umbrella additions. `../../experiments/integration/modules.json` selects the
@@ -9,7 +26,7 @@ and 265 pins. The baseline is preserved separately in
 `minidregg-combined-resident-265.patch`. Both runs passed; their summary is
 `../../experiments/integration/REPORT.md`.
 
-[EXECUTED] The current combined proposal is the passed 371-pin, 27-module batch,
+[EXECUTED] The earlier combined proposal is the passed 371-pin, 27-module batch,
 also preserved as `minidregg-combined-resident-371.patch`. It adds the generic
 contextual EMA proof, distributional budget, simplifier and exact BFV source
 certificate modules. The intermediate 307-pin pass is preserved separately.

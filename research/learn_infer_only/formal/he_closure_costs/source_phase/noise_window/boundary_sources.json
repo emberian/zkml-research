@@ -1,0 +1,886 @@
+[
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/ZkmlMatmulSum.lean",
+    "sha256": "9f793164641d01ccafdfd2238bdc05e211e35ee4667109978a70f71a667e2f73"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/AcceptedCellEffect.lean",
+    "sha256": "5f192d265e9444ae7246b7c9ee845cfadd7e6e8ebe354fb2978f85c86b58b305"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/StoreFiniteSupport.lean",
+    "sha256": "6146eeb75bd7db063ec6d8e0e5d207efbb55210b87a20f07f8f01d2af15e0cb5"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CredentialAuthorityFamily.lean",
+    "sha256": "af3fe3a6ee87b0c058a68bdeb51efd1812a01f177d3de342e9cd3cd4bea032dd"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/BinaryTowerFanPaar.lean",
+    "sha256": "6b079c16a3a9fb1d3e13478aed049898fb2daee7979524e7321107325e3b4abe"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/ViewMerge.lean",
+    "sha256": "feadd0a8d22ca41eaeee83f3d0a1f3751ef80eb23d3ff66ed35aee55a8b67966"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/GuardedAdvice.lean",
+    "sha256": "c8c2bef55be9f9aab47e967d864b53277e4d3608007c0d1d0296e3997f4ce468"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/StableRanges.lean",
+    "sha256": "5212e0c2344d58bb7cee0accbcce7572b01ead3877736a4f91f78aa876b182ef"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/PrivateComputationDeclaration.lean",
+    "sha256": "4185d5bd83d9993b642bedf51efc2d22e24bf1c966b418da85be7ce30d202e1f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CanonicalTransition.lean",
+    "sha256": "3f9d0879b44c2e55a7fcd04d6a20a534adfdfb7db2bb258bbdbdc7bdd853018a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/AcceptedCellEffectRequestBinding.lean",
+    "sha256": "d32cdd55ff38549d71892e9317f52ef4894f658359507fe5c3f62a02481f6da3"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/DeployedTotalCarrierAudit.lean",
+    "sha256": "032006a8cbcbdc1f6e4baa37eb22c4aca45b2a01a548ce7cfe4ef78a028654c5"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/IndexedProgram.lean",
+    "sha256": "a578ee063520787481e9acc09718d5ebe9fb9675e72a2992260e7631aa826156"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/SparseLogicalState.lean",
+    "sha256": "0d9a30d350fdf78cfbcb52885dce23c2992843805bbcc531cf6ee425984a249f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/BinaryTower.lean",
+    "sha256": "b74e70fddca6ee4a35ae757e6c5d0c131dc4bb3b15abb358ec8773ac38a2ad02"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/AdditiveNTT.lean",
+    "sha256": "3a6aff02c144022d2e7f0cf7d9a75cec4a8b1a8ff80bc3c0250bf807b5993551"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/BinaryTowerFanPaarCodec.lean",
+    "sha256": "53f7d2ff5fbcc38cd7fa2b682200291b1ca23e7c2f11f5dcf655650ea69d4860"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/BinaryTowerTrace.lean",
+    "sha256": "b6d6fddbe54bc62d873f4788bcab175c85ca707dd1ff69461b91e5ab0f3db07b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/Confluence.lean",
+    "sha256": "477007c1902889114592163f8b9386e05f01788f1537a31bebae615ea39becbc"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/HyperdocumentOperationIntent.lean",
+    "sha256": "d4c5479909395f9982feeac1052633b4f6d77bb1d9c29bb233ca472ee2404554"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/ExtensionBasis.lean",
+    "sha256": "e6cfee112ad04163dfe70a1e14f14373c981d7d4ce45f7a4d4a0ec3c4bf0fd10"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/Knowledge.lean",
+    "sha256": "8b68c8425776e3de7ea7a89e57763321ae9a26dd74670ebbd0e5eb014f5aa4f6"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/TypedAuthorization.lean",
+    "sha256": "a0acb6d4d1059b46c96de70ead9bc5aa61c2313b02da50934f6fca74bc9cad3b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/IntegerFingerprint.lean",
+    "sha256": "76ce74fb772f2b7fad0b205848fc587067fd7e7bdc2f5591bd0df62f45035b2d"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/EffectDeclaration.lean",
+    "sha256": "4286c09fcd25d9da040fa354ea618749a79811149eb8d70b6686861f521099cb"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/DeployedMaterializerWitness.lean",
+    "sha256": "b5abbb0742faa786097cedb6845f75789d013fb6a411d6ab5ca6f6322501e4f6"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/DisclosureDeclaration.lean",
+    "sha256": "d39f71377de62399161efc312e8c184e657bb030cc97ba1fae74ab4b57ee73e2"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/PrivacyProfile.lean",
+    "sha256": "339b47d6ea0a97568a02158e5a61c6c6ba2ed42c49b0e577893096497d33ca54"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CellStateWitness.lean",
+    "sha256": "aaa71980c542400a4d914f4c230e5ee5128e17fd214273c8af4b09269da01c52"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/Finality.lean",
+    "sha256": "21cfec3387ecb9dcf309aeae30c51223a28721a2af420d6f96af06c52f05bc4b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CanonicalReactiveView.lean",
+    "sha256": "12dfae931861f7bc59358ad001926c89cc9849248e7e8b6c7445d43d2b0a1bff"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/ResourceCost.lean",
+    "sha256": "9463d64ae56055a422a41eb8be88e0fc96558201ac449549f96c77c95f1b1852"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/BinaryTowerCodec.lean",
+    "sha256": "370882bdbd878b7a40854306d0094a9338febe0055ef55572061c4bd49a6f053"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/MaterializerCardinality.lean",
+    "sha256": "6bc2693e38ecce45e0a22e60095fefacff0f662debeb970ca7cf20ef222716ec"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/HyperdocumentCausalFamily.lean",
+    "sha256": "0da8dc16d018a441dd527ed4aec72f00fe2c791d5c9a7cb1a1cc670b68ab5dda"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/PrivateTrace.lean",
+    "sha256": "ed563890a95461eb046091b12b53c32a80b78c89554258ef7b221ce3c1244d89"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/AcceptedCellEffectWitness.lean",
+    "sha256": "6b3de1819bdc94b5bd50a8b73abcde61a95410b475f9c54bbdbea63d263194ad"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CellSlot.lean",
+    "sha256": "7173fae506e845f6691e4220422720097ae6dc6fa1044e0263a085dc3946fda4"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CyclotomicExceptionalSet.lean",
+    "sha256": "810dabc8985f7fa4d1e27a1a5204107887c9a3ee9e53b43dd32195dcb18cf4cd"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CausalVersionDag.lean",
+    "sha256": "b74fa235dd1f96a1195fd022098a587396ffba7e29285aa9e2229b06e4f39767"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CyclotomicInertia.lean",
+    "sha256": "be3bd4ce6c712fa1cf24c2357480743c442ee78d4563a8eca75ed6e91a386eb4"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/TypedAuthorizationWitness.lean",
+    "sha256": "08dab6e4812adea3051c7c5e96e0e335166b94cb8b7d0667a63c64a664d1c4e4"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/TurnTransition.lean",
+    "sha256": "c393c9722dd82267e5d77c93f6585b9f7f1377e5ec8ea63ac0f0bc0b9e4df5e2"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CanonicalResourceKernel.lean",
+    "sha256": "eb5db479aa2ad8e9ed62925ea81c3685816abaee4d4976d0baec268e4f5883e5"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/Bignum.lean",
+    "sha256": "fc44e6a9bed5c8275881c9e03e969b913cf55a25e8f8b1bb9e85d67b1d88e275"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/HyperdocumentOperations.lean",
+    "sha256": "df3cb6182bdd74a7e0f9525ac82c1368ec3e7430b084d66ce98d269bd4f3f6a9"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CanonicalTransitionWitness.lean",
+    "sha256": "90137ae37b09245dcb0ca2de0559b1fd97c43de869a78698c3ae2050259b6b4d"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/AdditiveNTTTransform.lean",
+    "sha256": "7c55914d6d25cc246e07c2956cd94edb52357b359356932650cba8f9cc5a46eb"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CredentialAuthorityEffects.lean",
+    "sha256": "b0197b55eef77f93df85142451a17e11cebb7af77459520d18f9428d535e90b0"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/EpistemicConsensus.lean",
+    "sha256": "57f261184fef3b109f6941b44a30e26e2f243dfe06b45ef447a0a016d48364b1"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/Hyperdocument.lean",
+    "sha256": "8e94c089e021bcb36f10922025e85b0364937d10cc0170da932e310a80ebd2da"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/EvmFragment.lean",
+    "sha256": "97fef0e125db51efd9d265238a4c44431cd85661bd5538e8aa2632ef9befcef2"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CredentialAuthorityState.lean",
+    "sha256": "33df71e0933dbfaba5fd9869f2710dc5a2e090fe62bc5de8f27f6185738ec8df"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CausalVersionAncestry.lean",
+    "sha256": "045d30cb6f21d46b4e0b3a7b6848421957abc1247a695ddee67fd0357cd46a37"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CrossModulus.lean",
+    "sha256": "4f09d0dfbe48dcd9970d08d6808d401ec43524486cd1a5d342e14bb80d11ab99"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/DeclaredActionLowering.lean",
+    "sha256": "a16058ae663c3c44c9d6dd7540568deabf063412983d7999b22b4b98e15f4c5f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/AuthorizationDeclaration.lean",
+    "sha256": "51de523b6c216b15dfe19b4c9ec7a63f15d70a1fe13dfe116b93bf85adcdf369"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/EvmResidual.lean",
+    "sha256": "f3002939dd42172f1b3e14fe4e60ffd21736e39c4faf3e5d9bd34f4c779e873f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CompressedLinearEquation.lean",
+    "sha256": "0ce71c3f22d20d2770f751998c377fc210e4088e4cff003205adb59ad3d1cd05"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CanonicalAuthorityProjection.lean",
+    "sha256": "edf57a90127659293e20eca22f7db4048cc780286836c46f702a095d6984272c"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/ReactiveReceipt.lean",
+    "sha256": "2b9e7ce7ef0d320ffee5285ffa004ed943f697813bcceef0f577876d33178e3b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/HyperdocumentInterface.lean",
+    "sha256": "e7f1886fbbfdc6d9802c141936a9fffe2bd1613b06c0c4aa0ec9bb1cc9677b8a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/RevocationConsensus.lean",
+    "sha256": "ed892c6bab2486731f04a85c0627678641a2cb5c846ddcec159f711651f398db"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/ReactiveController.lean",
+    "sha256": "9ca1906673892af3a02c14c1b3d231c365347351cd1a48d56d8f291e5e242132"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/ExceptionalSetLocalRing.lean",
+    "sha256": "fb6bda0a2b174388bc67eea697320072e07757b1ec8d4fd5012c6cff7069f1fe"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/LaceMerge.lean",
+    "sha256": "4ccd4e4c309a4f67bf2840db7fa5dc35eace710ddda7de9c2bc7a4311aadf9e8"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/CellState.lean",
+    "sha256": "5e6c082065443a49a682c7c560f27c1b8e60bb8b20e70d4ec3a86d207ca90719"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/ReactiveCellTransition.lean",
+    "sha256": "ad69d26d14d12836ad26d165a9e8107e84ec61f739d0b2318b080aad055d7c06"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/ZkmlTensorOps.lean",
+    "sha256": "c189f9e264f5cd20dc5475881ca41f0d690170e3ad84943300ef6695dc44b22d"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Theory/DeclaredTurn.lean",
+    "sha256": "dcd747d853633fef1758097a72c3fcd230473ad9ab30a358908cb2571906bee3"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SumcheckRbr.lean",
+    "sha256": "ff2d46c9b4c111102c119d929713c17d543913c550f741f23a45a555f48493e3"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/MultilinearZeroTest.lean",
+    "sha256": "d239ef5aff0774a86a92ce9f45a4603e2e1dee0ebe3f3542ce04074ef563e14b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffLazyConstruction.lean",
+    "sha256": "4448da64d5aa539d8c71d936edd5aec7a23a127126840d64a705cc141d1a8d5a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/CorrelatedAgreement.lean",
+    "sha256": "1f93c645e77154fdd969855f17d153b9ffb9e2c147f997dbb704dce71876b70e"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldRawCommittedIor.lean",
+    "sha256": "b50e32fa90c3feca06d5917631657fc3c25f8a93318da2af967bfe0417ccb882"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HeteroComposition.lean",
+    "sha256": "7a424da0c6d31ead9fde3e9a1b14ec2a1613b1128497ff7ad80b42d4ebc151d2"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffWorkBudget.lean",
+    "sha256": "209047e19e734d57217d6050f045f393428e8b6e0d8f7bde3d54946dee844fbc"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinkedSubUd.lean",
+    "sha256": "68f070712a8cc37b51a0ce6a6eb5fd2d65466466a48ba99296bec7f32a23eb03"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/LightClientSound.lean",
+    "sha256": "3ed381ce17096727810c89aa3d429f2ed516f8660b81688a6cf71ac8f94f340c"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/LogupStar.lean",
+    "sha256": "eaa4fabb2c1caca9b588a1ec31d4a172c072a53f0bb5264a926b8625893b8d6b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AdditiveFriTower.lean",
+    "sha256": "4e947ae99e3f1bccd12cdb04fb39698ba98d675d5e7310cf162011c09ee1823f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffDeferredWork.lean",
+    "sha256": "99f98e4d43777295d9103526c92e971600aca20dd0022a0e5f483d71bb461aad"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ProximityGapUDTight.lean",
+    "sha256": "221b624d93003e7a9c2d842598e562c3668c482ed1b0fc8ea492c792c2d73dd6"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsQuerySamplingJoint.lean",
+    "sha256": "4eae82435ae00caaec2c458de1766e1cff96d4556919d97ab0d1b2c3759f0bbd"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffPrefixWalk.lean",
+    "sha256": "fe3972505238c874ffb08689bed99b4407a30999ccb807acb9f401762b6157a7"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ConstrainedMaskMulti.lean",
+    "sha256": "733831832dd628a3d0431314b9c231fe3b5fefbdeda8c39cfa607fbd57205f77"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffProgrammedAgreement.lean",
+    "sha256": "d79418208b677ba8e31bb74ffd6d2bed4cdd2ce89e06a2383531aab0233435f1"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/DecomposableTable.lean",
+    "sha256": "a9151853e8227a43534f4a9ae5449f3c9967b6731ce1d15c5c3067d2b4159c81"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsCrossings.lean",
+    "sha256": "66ea9c90f4d452fc3fdc49d3d0f95efa401e007b786bbccb79c5c2f3fdc56997"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/CollisionResistanceROM.lean",
+    "sha256": "79464910d31f244ae9ba3f4af7cf3589ddc97b9c401d0d31de47e087fe349957"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhase.lean",
+    "sha256": "4062133b3fda0c518d8e9aa3f85450c302a9e327673e5dfcdad124ee9bdcb5c0"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffAdaptiveSchedule.lean",
+    "sha256": "9cbb2ee96448844c368e957bf0502119c54b2a1f50d5222e52628619ca6b3d99"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffCapacityBudget.lean",
+    "sha256": "b7bfb8a3d18d1c8ab880162711542da5fe475b721dfc70f4de62419fef8a76f0"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldCompleteness.lean",
+    "sha256": "a7ffcaa7fbef03bfecc141a1c8a94f9bb6b95588f46f5899056b4a204ca224e6"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogExtraction.lean",
+    "sha256": "bc6f99709e7c6caf6353023f985ec4b5496192eb9bad38f8af1f7d0616e8b6d4"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Depth.lean",
+    "sha256": "65d0c2ca25ddd2a9f13deadc20c4f72c59ceb255103520a9a603751d760d6d2b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZkExtraction.lean",
+    "sha256": "80ab89f008540632dd11480fc5a2abee248ec6e2df17728b6097dacaafa96a9a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccRbrBcsShifted.lean",
+    "sha256": "e79674512c1a55aa0f72f952d3f7822e586dab67eaddef723aa7bc029c85e048"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HeteroCompositionSuccinct.lean",
+    "sha256": "96cfb755a7b48ba5f69ef0c2290ec8f77236d35ebe550b3e73cd1e40bcb53da6"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Rbr.lean",
+    "sha256": "9ecc85f4449a1430e3f0efcc6863d731fd70bd00d1d5ab640af0f17e55d83d63"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/JohnsonMcaBridge.lean",
+    "sha256": "cd2304861276112fc0cd4d0632eb96fc34b12cb6d8f47fbc70b0d4c16da91e60"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BinaryMerkle.lean",
+    "sha256": "55e3a1a0053102b52e62aab393e1fe91743bcd6c8091c2843f5c85eef66c7137"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ReedSolomon.lean",
+    "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTower.lean",
+    "sha256": "ac97c5f6450f927c7b48deaa883c5737309a0cede63d8a905e900e31d2f9dc64"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTableDescent.lean",
+    "sha256": "7ed71ef5ab43c00c882496826778bf4fa08ff503ddac6dc62eae66fbf6f5eda5"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean",
+    "sha256": "9dbb34989ea4af684802075717f8b3fe5602bc5d128b796b851a5efa9d28e432"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinkedAttributed.lean",
+    "sha256": "9b4c9136fbd04c464ad1923ab9759274e5ea81570243cf74691c9acdcf84c81a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/MultiplicativeMleTerminal.lean",
+    "sha256": "5d758ba3a8c4c6b20c0de6bfabafdbc8b906e463e12c34bb05dd72a392dfa69d"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZkTriangular.lean",
+    "sha256": "439c2ec37afb19707cefda115f5dbedd811a5addd6b2dc7e804311b2f8c6d426"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinked.lean",
+    "sha256": "2842110772be7bf824c594bbd4d10a896fb91dbb5356bbb4e110484de40a4f42"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/LightClientFS.lean",
+    "sha256": "7526a2a9c4e873a3a936ff2d8cd31b618c8c221856dd4d559227b8d7ea23332c"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ConstrainedMask.lean",
+    "sha256": "c3278cd7c3c0fce46eabaa55410bc1b604b3e47821a1a501b19c7273ea0a6f72"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldRbrTable.lean",
+    "sha256": "f673d9d90ab646d252ff1705ed52a5412f100872295fc2f2651e1c5de4679cf4"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HashRelationInverse.lean",
+    "sha256": "9b2c2b0273351b33dd1529e0e3945fcd1b49b5d9363ac62e2697d5a2b2067957"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccSoundRbr.lean",
+    "sha256": "c1c3c5e8df1e87666de7d33b7787f9e73a31e6e347122b890371748ceaced2f6"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffOffBadRun.lean",
+    "sha256": "7e515fb0075745f6072abf19814ed541428707a532c534edd5dc2376f70555bc"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffRunInvariant.lean",
+    "sha256": "27fb6202de75e4886c384af771b182f3e18d2b4ae7ff36589d815f419c3b3e49"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/QuadraticSumcheck.lean",
+    "sha256": "f3cd7ebdc61df6be7ba1650c4b368324061fdeaac1d63ea323f92849266b67b1"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ExtensionChallengeBridge.lean",
+    "sha256": "faae2bff6134ebda08d980a62b6ee21dcc20d93de363c72aad9d83cb6bfb4d52"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdRegime.lean",
+    "sha256": "6eb08782ca3494dc07d633698f118fdd177062f4834460f5c6ca73f948d254c8"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/RbrZeroKnowledge.lean",
+    "sha256": "79311bff1697c4937c9aa3813d2fbeebe1acb736393dceb0c7908ce00b49b412"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffPrefixHybrid.lean",
+    "sha256": "cc05b9153646b8a37fe0453799e6eee7a9ec06abd9476848deca21204c391d7d"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BinaryLookup.lean",
+    "sha256": "04cc95ec2034959c18c8e5fae51659fb710d83457ee70abbde5ae61da11558ac"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/JohnsonRegime.lean",
+    "sha256": "ad0d57012c60138902608c40026e144a6bb89df8b4a1cae154e33ecf569df3d8"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccSound.lean",
+    "sha256": "c71915ae76bdca9df2e8c1fecd20701d2f05f3eedd28293788b44df77d2c8976"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZkRbrGame.lean",
+    "sha256": "e77676d9dcf2fa5bf1fd00da8044cc9a04ae43baf2999da759e7fdea0a172500"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffOracleReordering.lean",
+    "sha256": "4a4a49e9bd4da449d0aee2a55aaf415e6cd59fbb0a1402dbedd2252194b03ce9"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AdditiveOodOpening.lean",
+    "sha256": "b3d5559f3e8aa450dd243e72f374d6681bdd0992c5446e8d24fc5a2a5409eb1a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/MultilinearExtension.lean",
+    "sha256": "6ec256da0c14da681496d910cdfa356509dd5d7953bfd57c62002be2428ab64a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Rank1GradientCheck.lean",
+    "sha256": "0c5956f19bb73edb017ef90ab4524e3670e05eb8cb06eb8b5894ab4f7b6fc8c3"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhaseGame.lean",
+    "sha256": "22233e1d4232d9c8046102b69d5c72da65b338f02fb1df2a8e8b6d472ea7c83e"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffPrefixConflict.lean",
+    "sha256": "5b21d50828ccc30714a9d7c48f1bac768b6530848cabb81736ff1d803292e0b7"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZkmlPoseidon2Data.lean",
+    "sha256": "9ca189ee925d24388968832e5e690890556517802b02248ddf4eed93159f4256"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffPrefixFresh.lean",
+    "sha256": "cbfccbb380472b4a87724e6e23801d4a0e6537b9473c8c8fc4f89ac333b159a9"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/RingSwitching.lean",
+    "sha256": "2b2c428ffe1d1a4d3212b6b06fceb206053bc852966fb29a326e908ed8ae445d"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTarget.lean",
+    "sha256": "eaa668b8a1091369e5e8c95160068e56197873cf81b517ce6b58669efbe8fda9"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/LightClientGrinding.lean",
+    "sha256": "a709bcc424332eca9a619b877ac7ca3317ea1c6543449bc9fcf8f72d5a90dd74"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Statements.lean",
+    "sha256": "900e85edb57977b365aee08d7cf726f4253cde36d4065e971ada5ecdc6a86e0b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogSatisfiable.lean",
+    "sha256": "6dfb6ddd9a1b565245d7d3b9ce9ab278811b90d443e8b258945f95bd02ebf85a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SumcheckReduction.lean",
+    "sha256": "a03c37b36a19b2fe2473d26d7fbbf25d5892882c125c9c022aa61578b26548f8"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ProximityGapUD.lean",
+    "sha256": "a43f8c847d9a22173aeb6e82d6f1c12b9490089cf7d58e07c8153f0a89e51b5b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Erasure.lean",
+    "sha256": "780a552f45c1d3ddac2c4814edb02eae4e4c32ad244ba1d93eb5c9216651a072"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/RateRegimeSelector.lean",
+    "sha256": "f56e992af96ab3ef3c34b9b16e038c5e0e9acfc6a8cfb0a897cf2c2617b8de66"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/LigeritoInterleaved.lean",
+    "sha256": "b295e73a08d1464f4e7bf6b998f60bf48d0f0c3815ec743907ce5d791a63972a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBraid.lean",
+    "sha256": "d663a84a7fbf35de6027938d83673afc6238632fb4b419c0dd791cda5a66ffcf"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Sumcheck.lean",
+    "sha256": "fb62103bbe093ba866ebef01e001eba3398d2bce707c7b71420a33185d3aa0a0"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OutOfDomain.lean",
+    "sha256": "1f3b07980b67bcc361add709b638fad414900ff6ae7b957b606ef703d72a6275"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AdaptiveFiniteSampling.lean",
+    "sha256": "75fc2108388e816e9fb6faf2a7b86a9f4a7adf00349e316ed58fef0744410d1f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Proximity.lean",
+    "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZK.lean",
+    "sha256": "a6b567b6b372ebd65799eb2b8f7773a48b9d7e2fcb841a9728c354b8acb2712b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffAdaptiveCoupling.lean",
+    "sha256": "c3068aaa1ded23b214e82ac0e4b7b181f100e48b7645153266f0a84b5c6b13cb"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SmallField.lean",
+    "sha256": "ef7ead8eba967827eb080135256e947e44924f862adaf5111fda009e1b69483c"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean",
+    "sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/LightClientKnowledge.lean",
+    "sha256": "1c6b0c025dd689e2ada8762c0c72526e1653dd5781219f8f8b413c2197533696"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldPoseidon2Rom.lean",
+    "sha256": "69e3e9f0072db18886491a4340d031f45e7cd05952c817c9da0ec140c16944e3"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/LightClient.lean",
+    "sha256": "c7d290c7c06a11e81d06f737a26fc48c3b09eb89eb1f359a535d34379bc90717"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean",
+    "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/MultisetFingerprint.lean",
+    "sha256": "3f127351a60da83b22f1a8ac58cac0c63c0491f93ae5057eece1ea4a1114df0a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinkedAssembly.lean",
+    "sha256": "0ad79042b4b807e79b341d00dfd742a170f81cd37263a8f8445c6fff2a791ae0"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinkedOpenedSampling.lean",
+    "sha256": "c082fd9bf95b641855de8b46361c692f1849e79472ee0a5c682720cc81e7cc36"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SubUdSeam.lean",
+    "sha256": "c2ac021958d56a1fecaf3fec9af9be42ba817ba245f01ceac5b42001ee1c6097"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/EqPolynomial.lean",
+    "sha256": "8882688685dd6068acb87af7458481dc5b1a5b037db81c695f66cf4b0c7bd555"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsFiatShamir.lean",
+    "sha256": "ed83af3a80e00f910c929c27adb4cebfa1bec0efea8c968ec00d0f759debb89b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhaseHorns.lean",
+    "sha256": "4b5404a6ea0507aa9217c8089a501a01634f3f530110e6193c48ff742dd3420c"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Decider.lean",
+    "sha256": "8975fdf4afff2a10511de6154420f233893b668be2023ff161921574244e8e2a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/MultilinearCommitment.lean",
+    "sha256": "0180bc30d16cc6dbecedcca69cd0c97bac962a1a1d806c1a9f2932e4da09026b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiff.lean",
+    "sha256": "c25fe2d6ae78686b6f8cef11f465258609d042cc5ddecb0cb8ffd9330ebf17d0"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogLinkedTwoPhaseSoundness.lean",
+    "sha256": "3c73ecb6a7b6a6fdf0f7c29a49c547e95dcd18485f3081f59b18f90f80c3a02f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AdditiveBaseFold.lean",
+    "sha256": "bbb0b812ee954699d6c3e2a993c2ad800ac8f3b9307007a5ba1433c82b4d2846"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsByteCodec.lean",
+    "sha256": "a6a51db80b9ba7173da438142d34d21929727657412a1382232ac2289fb5a2e5"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsPadding.lean",
+    "sha256": "e05674759b4d29bee6ef5b82c6075ba523bc83b0c606912d5f325d74d2c5482b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffLazyHybrid.lean",
+    "sha256": "4f8f0d06a79f36d962d828e238b8668122de98a420f4fb31dc02006b82362c2c"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HashRelation.lean",
+    "sha256": "2a10e11133b8fc6cf7eae1086f3e7f67fe66d94de8eaec604b7f892a26d1be20"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccRbrFoldExtract.lean",
+    "sha256": "28274f69d19a1598784f202fda115517c9fb0c7a3264449528cd112d761fea6c"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccExtract.lean",
+    "sha256": "80f0ce153b510586f2413384de73c203636a3bad093870cfd6bccd01005c3141"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsSpongeGame.lean",
+    "sha256": "ab43a477ef2a26e7e79a06c5bd17b8c206cc01a19e779a7a8067ea529ef48575"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccRbrInstance.lean",
+    "sha256": "85229d93fad1d801d3bf793034e5b75addadf414f0624e08cf5286a759aaa124"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/LogupIndexLink.lean",
+    "sha256": "c265375c8a39b5b8d186f956db1e88783b058b79c31efd78b8dce29918e9fba5"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsStrictRomLedger.lean",
+    "sha256": "5a67bc8b7a9a8b431efa69324abb85fae8f563d5be9c05cab18e8e64b67c7c6f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/CosetNovelTransform.lean",
+    "sha256": "8d02984bac6d9ccb0615251d423beb0039aadb0fceb69ae92a057b3df3be9c8a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AdditiveFriQuery.lean",
+    "sha256": "cbebae03a31338a83fec9ec664e3ec68a0fb74e0771ff8e2158f5eb3a0cd75d5"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AdditiveBasisBinding.lean",
+    "sha256": "b006bc6071d10dca51ad29fd09b2aa0a5c7aaf49abafe1b824e1b1583c0e1b80"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/CharTwoWall.lean",
+    "sha256": "20d41e05068894f0d5fe444d568b4d8937c71f8d8aca5d44248611b19419c1b8"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBinaryMerkle.lean",
+    "sha256": "fa70b1c645015f14a3dc97ea026f85795d3c2648719cb1a00b41031a4d75bef5"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldCommittedIor.lean",
+    "sha256": "32cca1adae5087888fd62d45c37eb14cfbd84b76a7fc6e85bedcd16555947038"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsDeferredIdeal.lean",
+    "sha256": "574f25c9cd4fd941bf10c65e01fbcd5e4fc1a8da0a6da3cf7c110f546b2ea774"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsReceiptCodec.lean",
+    "sha256": "c962b205937d533727f6261073d450458fb0d225aa3fe9c476b8aa150bb8d134"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AuditSampling.lean",
+    "sha256": "e4a487464308b8cdeaf367692390d25f7c30229b2840f038b825de3a7306362a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccRbrBcsShiftedTransport.lean",
+    "sha256": "a55f45e5a6d62f518569f8192128ccfc1ea62103733ae6e32333f531cef7e8e2"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsCapacityEvent.lean",
+    "sha256": "729297ff0390fb3a66204190e7b99d736aa5ee80bf34e84abf6253684afb1d8e"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZKHiding.lean",
+    "sha256": "2dbcae3d7f1fb82a399438b5591168e565b23d2385114f4d1ff08cea494c93fb"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldPoseidon2.lean",
+    "sha256": "b6415ee9876cfa1f805303dfd815b604dc8856f8269bb724aaad664a3470b399"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/DeciderProximity.lean",
+    "sha256": "446ee6016ccfeef67984263bed41bf3bdc00db0c224ccc4523397ae51a3fce97"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZkmlSuiteRegistry.lean",
+    "sha256": "c903747418ffd120aac38c9877ad224f4a8165158e7383c0c997907a60ed1476"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/OracleLogProgram.lean",
+    "sha256": "ba2d01e792bc2bacd3b3ba6f542e3e8fa7f35db4fa1fe21b3e90d8bdd7d313ed"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccRbrFold.lean",
+    "sha256": "a79921fb3aebe33e460a7d0c660ff56600eac0b8fa0c3ec1d90a4fb5a080200f"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Commitment.lean",
+    "sha256": "be5b6088d0a367be6effee618cb502d724bedcfe30cb00cbfb2d69de6c6a059a"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccRbrBcs.lean",
+    "sha256": "18eb80accb2b3a814b929999edce96c35adc1c3651ccb0b9b109cdf675b8ad4b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ProximityGapUDSharp.lean",
+    "sha256": "36669e363915cd1c292402741f2db783bb6e5b3d1e1b350b0776b061b96235dd"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccExtractChain.lean",
+    "sha256": "e2a6989b15125f732146a8a49e2e0d83730d362ec08c542dc81c97ca1f702ae4"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffPrefixProgramming.lean",
+    "sha256": "512b1aacec5bd121f9bff59fa7892134e798467c49126368d22331e79abcaded"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ConstrainedCode.lean",
+    "sha256": "0aa4b77f54c13ec29838112b7537270217ced31a32c2d03e828e47e5f7f6de37"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffUniformCoupling.lean",
+    "sha256": "2178989f446caa276e9af1bb634b36dc9d917b4c4b974e45a32906fa1ec45922"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffWorkStream.lean",
+    "sha256": "ada3283d61dba7e31ba0403b9bb4f1db0ee983f7a30dfbb7e4c9ca5a1412cb62"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZkArgument.lean",
+    "sha256": "e92505c9c7088045a20404e292b24d14c7b8bc883189db7ef5460f846fa4ef03"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldIor.lean",
+    "sha256": "039206b6777bf35c0c79ac7c4765901b9fa03e600841a711d44d7e3674763736"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffPrefixFailure.lean",
+    "sha256": "d7c530aeb4ad97ae7ffb2e25524085d10f702a284242621c6479fcb963409610"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsRunSchedule.lean",
+    "sha256": "1bb0e3a00f818aa647bf192b25125cda4775a547b06caa4c4c423cf77f09ea12"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccRbrBcsRaw.lean",
+    "sha256": "f2a65e0b87518936eaa52d2174ab674a35e396475340e8f7626fa2f1e1c41fb4"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/FiatShamir.lean",
+    "sha256": "00c79a6cf33f270551b6c4a95ee9e6b0e93caa43af0d84146e803ef18d242587"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HashFamily.lean",
+    "sha256": "731d23dc639897ec4cdb20a00a8eb9841b8b8c3918e91b3703b86c388cbc08be"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFri.lean",
+    "sha256": "82a829919ce580e6e6f168feb7437d03409e3ccdb1d1a8f22b56607dc65f2918"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldRbr.lean",
+    "sha256": "f0407f5076c2506faf778d815c3c88745cb7b61d75cb67985ccd35f52a817e0c"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/SpongeIndiffPrefixOutput.lean",
+    "sha256": "2d2318329d9bcce571df88370336616f86a793a62a5f603efffdbbdb1c96d42d"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HeteroCompositionErrorBound.lean",
+    "sha256": "bc5fd37d71c9a58454c105b33d834e6a9d2792d334d4604a1f06565ba8832c36"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/Accumulator.lean",
+    "sha256": "ac7a711e2c2d240f2a1c416625fa3d07921061eb8b4f21b7be6b25f1b55df746"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BabyBearExt4.lean",
+    "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/AdditiveProximity.lean",
+    "sha256": "560216d2bd908d7d99b8afc7a9312a6a1e3ec6beae4e0635807f664e9658a8b4"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/BaseFoldBcsQuerySampling.lean",
+    "sha256": "57afe8ee918307e8f9670ead8562a0bdee8bc528f1343c6a43ddac94f8cdc5e6"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/source_phase/Theory/BfvPhaseAlgebra.lean",
+    "sha256": "a88ac6b76142ece2bb67079d0ba6744a391b3018aca4fcc0a97918f3d5f18f03"
+  },
+  {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/he_closure_costs/Theory/IntegerWindowNoise.lean",
+    "sha256": "b3d49c23cf627f4598d5c81ed36ba93541f8e0463fe54da8629f2ee7d924bd98"
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "recorded_utc": "2026-09-07T02:28:02.037928+00:00",
+  "classification": "EXECUTED scheduled interleaving counterexample to atomic journal/head export",
+  "review_script_sha256": "3a145a2d17f0912791130cf726f8f63051e55f7093106d81f427e5049fee39a5",
+  "snapshot_manifest": {
+    "common.py": "698311b47cc9b8c8809b668a21f1749cb186bd57b192f358c418fd27686a4209",
+    "model.py": "6f52483bc80e928f0268962553a10dbe8365fa7613fa57fd35a4632324393323",
+    "roles.py": "a42bf9dc15320587e60a47332556dddc2d345eed7099c8f573f13f8697d3b2f0",
+    "authority.py": "99f59445b4048ae9e87a4201829e3e686090d6141002f05bdde7f7e2380890fa",
+    "reader.py": "3710fe1a811f269d994a863164f6a971486f015c31629a839399b4f8f5d06fa1",
+    "run.py": "f92029a85b3f87003d7d2ea3f851ee8c29f5411998d3222cfabf37ff149e5286",
+    "client.py": "489c23061e8e8724773d6c7f8f1c1aafe66cc6524e31a5b9b2c3d6d680d4f7d0",
+    "crypto/src/main.rs": "22f0cbe304772263094c228f6598eb4cbfa00432902ba9e5de0993f6735e1b7c"
+  },
+  "schedule": [
+    "export reads journal at revision1",
+    "export enters delayed head method",
+    "real separate authority process accepts and commits revision2",
+    "export executes original head read"
+  ],
+  "exported_journal_revisions": [
+    1
+  ],
+  "exported_head_revision": 2,
+  "quiescent_full_public_replay": {
+    "ok": true,
+    "revision": 2,
+    "state_digest": "4ff16bf324d81cf3772604cf02947a101187d5b8a5ffc4dae9639f8cc5ab6ddb",
+    "admissions": {
+      "0": 2,
+      "1": 0
+    },
+    "queue_lengths": {
+      "0": 2,
+      "1": 0
+    },
+    "public_recomputation": true
+  },
+  "counterexample_observed": true,
+  "scope": "No bad transition or signature is accepted. Concurrent export is an inconsistent snapshot; quiescent replay remains valid. Only an audit-owned instance's head method is delayed, without changing any read/result logic or author-owned files."
+}

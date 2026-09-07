@@ -1,0 +1,1773 @@
+{
+  "status": "PASS",
+  "format": "bounded-mistake-learner-quotient-v1",
+  "horizon": 4,
+  "states": 289,
+  "behavioral_classes": 64,
+  "edges_per_state": 1554,
+  "direct_oracle_edge_comparisons": 449106,
+  "deployed_runtime_edges_checked": 99456,
+  "same_class_additional_states": 225,
+  "minimum_fixed_class_bits": 6,
+  "actual_resident_bytes": 1,
+  "public_catalog_bytes": 133001,
+  "plaintext_single_profile_bytes": 1554,
+  "class_sizes": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    6,
+    25,
+    30,
+    30,
+    36
+  ],
+  "groups": {
+    "0": [
+      [
+        -8,
+        -8
+      ],
+      [
+        -8,
+        -7
+      ],
+      [
+        -8,
+        -6
+      ],
+      [
+        -8,
+        -5
+      ],
+      [
+        -8,
+        -4
+      ],
+      [
+        -7,
+        -8
+      ],
+      [
+        -7,
+        -7
+      ],
+      [
+        -7,
+        -6
+      ],
+      [
+        -7,
+        -5
+      ],
+      [
+        -7,
+        -4
+      ],
+      [
+        -6,
+        -8
+      ],
+      [
+        -6,
+        -7
+      ],
+      [
+        -6,
+        -6
+      ],
+      [
+        -6,
+        -5
+      ],
+      [
+        -6,
+        -4
+      ],
+      [
+        -5,
+        -8
+      ],
+      [
+        -5,
+        -7
+      ],
+      [
+        -5,
+        -6
+      ],
+      [
+        -5,
+        -5
+      ],
+      [
+        -5,
+        -4
+      ],
+      [
+        -4,
+        -8
+      ],
+      [
+        -4,
+        -7
+      ],
+      [
+        -4,
+        -6
+      ],
+      [
+        -4,
+        -5
+      ],
+      [
+        -4,
+        -4
+      ]
+    ],
+    "1": [
+      [
+        -8,
+        -3
+      ],
+      [
+        -7,
+        -3
+      ],
+      [
+        -6,
+        -3
+      ],
+      [
+        -5,
+        -3
+      ],
+      [
+        -4,
+        -3
+      ]
+    ],
+    "4": [
+      [
+        -8,
+        -2
+      ],
+      [
+        -7,
+        -2
+      ],
+      [
+        -6,
+        -2
+      ],
+      [
+        -5,
+        -2
+      ],
+      [
+        -4,
+        -2
+      ]
+    ],
+    "9": [
+      [
+        -8,
+        -1
+      ],
+      [
+        -7,
+        -1
+      ],
+      [
+        -6,
+        -1
+      ],
+      [
+        -5,
+        -1
+      ],
+      [
+        -4,
+        -1
+      ]
+    ],
+    "16": [
+      [
+        -8,
+        0
+      ],
+      [
+        -7,
+        0
+      ],
+      [
+        -6,
+        0
+      ],
+      [
+        -5,
+        0
+      ],
+      [
+        -4,
+        0
+      ]
+    ],
+    "19": [
+      [
+        -8,
+        1
+      ],
+      [
+        -7,
+        1
+      ],
+      [
+        -6,
+        1
+      ],
+      [
+        -5,
+        1
+      ],
+      [
+        -4,
+        1
+      ]
+    ],
+    "21": [
+      [
+        -8,
+        2
+      ],
+      [
+        -7,
+        2
+      ],
+      [
+        -6,
+        2
+      ],
+      [
+        -5,
+        2
+      ],
+      [
+        -4,
+        2
+      ]
+    ],
+    "22": [
+      [
+        -8,
+        3
+      ],
+      [
+        -8,
+        4
+      ],
+      [
+        -8,
+        5
+      ],
+      [
+        -8,
+        6
+      ],
+      [
+        -8,
+        7
+      ],
+      [
+        -8,
+        8
+      ],
+      [
+        -7,
+        3
+      ],
+      [
+        -7,
+        4
+      ],
+      [
+        -7,
+        5
+      ],
+      [
+        -7,
+        6
+      ],
+      [
+        -7,
+        7
+      ],
+      [
+        -7,
+        8
+      ],
+      [
+        -6,
+        3
+      ],
+      [
+        -6,
+        4
+      ],
+      [
+        -6,
+        5
+      ],
+      [
+        -6,
+        6
+      ],
+      [
+        -6,
+        7
+      ],
+      [
+        -6,
+        8
+      ],
+      [
+        -5,
+        3
+      ],
+      [
+        -5,
+        4
+      ],
+      [
+        -5,
+        5
+      ],
+      [
+        -5,
+        6
+      ],
+      [
+        -5,
+        7
+      ],
+      [
+        -5,
+        8
+      ],
+      [
+        -4,
+        3
+      ],
+      [
+        -4,
+        4
+      ],
+      [
+        -4,
+        5
+      ],
+      [
+        -4,
+        6
+      ],
+      [
+        -4,
+        7
+      ],
+      [
+        -4,
+        8
+      ]
+    ],
+    "2": [
+      [
+        -3,
+        -8
+      ],
+      [
+        -3,
+        -7
+      ],
+      [
+        -3,
+        -6
+      ],
+      [
+        -3,
+        -5
+      ],
+      [
+        -3,
+        -4
+      ]
+    ],
+    "3": [
+      [
+        -3,
+        -3
+      ]
+    ],
+    "5": [
+      [
+        -3,
+        -2
+      ]
+    ],
+    "10": [
+      [
+        -3,
+        -1
+      ]
+    ],
+    "17": [
+      [
+        -3,
+        0
+      ]
+    ],
+    "20": [
+      [
+        -3,
+        1
+      ]
+    ],
+    "23": [
+      [
+        -3,
+        2
+      ]
+    ],
+    "24": [
+      [
+        -3,
+        3
+      ],
+      [
+        -3,
+        4
+      ],
+      [
+        -3,
+        5
+      ],
+      [
+        -3,
+        6
+      ],
+      [
+        -3,
+        7
+      ],
+      [
+        -3,
+        8
+      ]
+    ],
+    "6": [
+      [
+        -2,
+        -8
+      ],
+      [
+        -2,
+        -7
+      ],
+      [
+        -2,
+        -6
+      ],
+      [
+        -2,
+        -5
+      ],
+      [
+        -2,
+        -4
+      ]
+    ],
+    "7": [
+      [
+        -2,
+        -3
+      ]
+    ],
+    "8": [
+      [
+        -2,
+        -2
+      ]
+    ],
+    "11": [
+      [
+        -2,
+        -1
+      ]
+    ],
+    "18": [
+      [
+        -2,
+        0
+      ]
+    ],
+    "25": [
+      [
+        -2,
+        1
+      ]
+    ],
+    "26": [
+      [
+        -2,
+        2
+      ]
+    ],
+    "27": [
+      [
+        -2,
+        3
+      ],
+      [
+        -2,
+        4
+      ],
+      [
+        -2,
+        5
+      ],
+      [
+        -2,
+        6
+      ],
+      [
+        -2,
+        7
+      ],
+      [
+        -2,
+        8
+      ]
+    ],
+    "12": [
+      [
+        -1,
+        -8
+      ],
+      [
+        -1,
+        -7
+      ],
+      [
+        -1,
+        -6
+      ],
+      [
+        -1,
+        -5
+      ],
+      [
+        -1,
+        -4
+      ]
+    ],
+    "13": [
+      [
+        -1,
+        -3
+      ]
+    ],
+    "14": [
+      [
+        -1,
+        -2
+      ]
+    ],
+    "15": [
+      [
+        -1,
+        -1
+      ]
+    ],
+    "28": [
+      [
+        -1,
+        0
+      ]
+    ],
+    "29": [
+      [
+        -1,
+        1
+      ]
+    ],
+    "30": [
+      [
+        -1,
+        2
+      ]
+    ],
+    "31": [
+      [
+        -1,
+        3
+      ],
+      [
+        -1,
+        4
+      ],
+      [
+        -1,
+        5
+      ],
+      [
+        -1,
+        6
+      ],
+      [
+        -1,
+        7
+      ],
+      [
+        -1,
+        8
+      ]
+    ],
+    "32": [
+      [
+        0,
+        -8
+      ],
+      [
+        0,
+        -7
+      ],
+      [
+        0,
+        -6
+      ],
+      [
+        0,
+        -5
+      ],
+      [
+        0,
+        -4
+      ]
+    ],
+    "33": [
+      [
+        0,
+        -3
+      ]
+    ],
+    "34": [
+      [
+        0,
+        -2
+      ]
+    ],
+    "35": [
+      [
+        0,
+        -1
+      ]
+    ],
+    "48": [
+      [
+        0,
+        0
+      ]
+    ],
+    "49": [
+      [
+        0,
+        1
+      ]
+    ],
+    "50": [
+      [
+        0,
+        2
+      ]
+    ],
+    "51": [
+      [
+        0,
+        3
+      ],
+      [
+        0,
+        4
+      ],
+      [
+        0,
+        5
+      ],
+      [
+        0,
+        6
+      ],
+      [
+        0,
+        7
+      ],
+      [
+        0,
+        8
+      ]
+    ],
+    "36": [
+      [
+        1,
+        -8
+      ],
+      [
+        1,
+        -7
+      ],
+      [
+        1,
+        -6
+      ],
+      [
+        1,
+        -5
+      ],
+      [
+        1,
+        -4
+      ]
+    ],
+    "37": [
+      [
+        1,
+        -3
+      ]
+    ],
+    "38": [
+      [
+        1,
+        -2
+      ]
+    ],
+    "45": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "52": [
+      [
+        1,
+        0
+      ]
+    ],
+    "55": [
+      [
+        1,
+        1
+      ]
+    ],
+    "56": [
+      [
+        1,
+        2
+      ]
+    ],
+    "57": [
+      [
+        1,
+        3
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        1,
+        5
+      ],
+      [
+        1,
+        6
+      ],
+      [
+        1,
+        7
+      ],
+      [
+        1,
+        8
+      ]
+    ],
+    "39": [
+      [
+        2,
+        -8
+      ],
+      [
+        2,
+        -7
+      ],
+      [
+        2,
+        -6
+      ],
+      [
+        2,
+        -5
+      ],
+      [
+        2,
+        -4
+      ]
+    ],
+    "40": [
+      [
+        2,
+        -3
+      ]
+    ],
+    "43": [
+      [
+        2,
+        -2
+      ]
+    ],
+    "46": [
+      [
+        2,
+        -1
+      ]
+    ],
+    "53": [
+      [
+        2,
+        0
+      ]
+    ],
+    "58": [
+      [
+        2,
+        1
+      ]
+    ],
+    "60": [
+      [
+        2,
+        2
+      ]
+    ],
+    "61": [
+      [
+        2,
+        3
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        2,
+        8
+      ]
+    ],
+    "41": [
+      [
+        3,
+        -8
+      ],
+      [
+        3,
+        -7
+      ],
+      [
+        3,
+        -6
+      ],
+      [
+        3,
+        -5
+      ],
+      [
+        3,
+        -4
+      ],
+      [
+        4,
+        -8
+      ],
+      [
+        4,
+        -7
+      ],
+      [
+        4,
+        -6
+      ],
+      [
+        4,
+        -5
+      ],
+      [
+        4,
+        -4
+      ],
+      [
+        5,
+        -8
+      ],
+      [
+        5,
+        -7
+      ],
+      [
+        5,
+        -6
+      ],
+      [
+        5,
+        -5
+      ],
+      [
+        5,
+        -4
+      ],
+      [
+        6,
+        -8
+      ],
+      [
+        6,
+        -7
+      ],
+      [
+        6,
+        -6
+      ],
+      [
+        6,
+        -5
+      ],
+      [
+        6,
+        -4
+      ],
+      [
+        7,
+        -8
+      ],
+      [
+        7,
+        -7
+      ],
+      [
+        7,
+        -6
+      ],
+      [
+        7,
+        -5
+      ],
+      [
+        7,
+        -4
+      ],
+      [
+        8,
+        -8
+      ],
+      [
+        8,
+        -7
+      ],
+      [
+        8,
+        -6
+      ],
+      [
+        8,
+        -5
+      ],
+      [
+        8,
+        -4
+      ]
+    ],
+    "42": [
+      [
+        3,
+        -3
+      ],
+      [
+        4,
+        -3
+      ],
+      [
+        5,
+        -3
+      ],
+      [
+        6,
+        -3
+      ],
+      [
+        7,
+        -3
+      ],
+      [
+        8,
+        -3
+      ]
+    ],
+    "44": [
+      [
+        3,
+        -2
+      ],
+      [
+        4,
+        -2
+      ],
+      [
+        5,
+        -2
+      ],
+      [
+        6,
+        -2
+      ],
+      [
+        7,
+        -2
+      ],
+      [
+        8,
+        -2
+      ]
+    ],
+    "47": [
+      [
+        3,
+        -1
+      ],
+      [
+        4,
+        -1
+      ],
+      [
+        5,
+        -1
+      ],
+      [
+        6,
+        -1
+      ],
+      [
+        7,
+        -1
+      ],
+      [
+        8,
+        -1
+      ]
+    ],
+    "54": [
+      [
+        3,
+        0
+      ],
+      [
+        4,
+        0
+      ],
+      [
+        5,
+        0
+      ],
+      [
+        6,
+        0
+      ],
+      [
+        7,
+        0
+      ],
+      [
+        8,
+        0
+      ]
+    ],
+    "59": [
+      [
+        3,
+        1
+      ],
+      [
+        4,
+        1
+      ],
+      [
+        5,
+        1
+      ],
+      [
+        6,
+        1
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        8,
+        1
+      ]
+    ],
+    "62": [
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        8,
+        2
+      ]
+    ],
+    "63": [
+      [
+        3,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        6,
+        5
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        7,
+        5
+      ],
+      [
+        7,
+        6
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        8,
+        5
+      ],
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        7
+      ],
+      [
+        8,
+        8
+      ]
+    ]
+  },
+  "lifecycle": {
+    "initializer_command_without_initial_scores": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/compiler.py",
+      "initialize",
+      "--catalog",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/results/public_catalog.json",
+      "--output",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/results/synthetic_deployment"
+    ],
+    "initializer_stdout": "{\"files\": [\"program.json\", \"resident.bin\", \"runtime.py\"], \"horizon\": 4, \"resident_bytes\": 1}\n",
+    "initializer_completed_before_evaluator_started": true,
+    "evaluator_command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-I",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/results/synthetic_deployment/runtime.py",
+      "--package",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/practical_bounded/results/synthetic_deployment",
+      "--commands",
+      "infer_0,learn_0_positive,infer_0"
+    ],
+    "evaluator_stdout": "{\"node\": 197, \"outputs\": [0, \"ack\", 1]}\n",
+    "deployed_inventory": {
+      "resident.bin": {
+        "bytes": 1,
+        "sha256": "9652595f37edd08c51dfa26567e6cd76e6fa2709c3e578478ca398d316837a7a"
+      },
+      "program.json": {
+        "bytes": 133001,
+        "sha256": "efb31a803902f8f6b0d7ba1d88f7474465b4757e1659ddbd3b5f3b3996b36cfc"
+      },
+      "runtime.py": {
+        "bytes": 2671,
+        "sha256": "3e104e09cfad48787b33a01ea32bec2e4742ad3b12594d8efcba9e8086dde674"
+      }
+    },
+    "erasure_verified": false,
+    "synthetic_test_initial_state_is_public": true
+  },
+  "evaluator_three_step_mean_ns_10000_runs": 799.3792,
+  "controls": {
+    "private_raw_initial_pair_same_deployment_bytes": true,
+    "horizon_extension_separates_pair_at_8_steps": true,
+    "initially_equal_labels_separate_after_learning": true,
+    "noncommuting_observation_order": true,
+    "all_forks_reconstruct_class": true,
+    "snapshot_node_reveals_public_observation_history": true,
+    "fifth_command_refused_by_honest_runtime": true,
+    "raw_states_keys_not_fields_of_deployment": true
+  },
+  "integrity_negative": {
+    "changing_resident_label_changes_inference": [
+      [
+        0
+      ],
+      [
+        1
+      ]
+    ],
+    "integrity_or_authentication_claim": false
+  },
+  "measurements": [
+    {
+      "kind": "table",
+      "horizon": 1,
+      "branching": 6,
+      "edges": 6,
+      "serialized_bytes": 6,
+      "setup_ns_samples": [
+        16375,
+        12916,
+        5167,
+        4333,
+        3750
+      ],
+      "setup_ns_median": 5167,
+      "python_traced_peak_bytes_separate_run": 775,
+      "process_rss_highwater_before_bytes": 29556736,
+      "process_rss_highwater_after_bytes": 29573120,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "table",
+      "horizon": 2,
+      "branching": 6,
+      "edges": 42,
+      "serialized_bytes": 42,
+      "setup_ns_samples": [
+        29250,
+        15334,
+        13208,
+        12791,
+        13083
+      ],
+      "setup_ns_median": 13208,
+      "python_traced_peak_bytes_separate_run": 3025,
+      "process_rss_highwater_before_bytes": 29523968,
+      "process_rss_highwater_after_bytes": 29523968,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "table",
+      "horizon": 3,
+      "branching": 6,
+      "edges": 258,
+      "serialized_bytes": 258,
+      "setup_ns_samples": [
+        75041,
+        65041,
+        62667,
+        72542,
+        64667
+      ],
+      "setup_ns_median": 65041,
+      "python_traced_peak_bytes_separate_run": 15753,
+      "process_rss_highwater_before_bytes": 29376512,
+      "process_rss_highwater_after_bytes": 29409280,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "table",
+      "horizon": 4,
+      "branching": 6,
+      "edges": 1554,
+      "serialized_bytes": 1554,
+      "setup_ns_samples": [
+        375500,
+        399333,
+        380958,
+        359209,
+        380292
+      ],
+      "setup_ns_median": 380292,
+      "python_traced_peak_bytes_separate_run": 69476,
+      "process_rss_highwater_before_bytes": 29638656,
+      "process_rss_highwater_after_bytes": 29868032,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "table",
+      "horizon": 5,
+      "branching": 6,
+      "edges": 9330,
+      "serialized_bytes": 9330,
+      "setup_ns_samples": [
+        2236833,
+        3239416,
+        2725750,
+        2362416,
+        2467042
+      ],
+      "setup_ns_median": 2467042,
+      "python_traced_peak_bytes_separate_run": 386421,
+      "process_rss_highwater_before_bytes": 29687808,
+      "process_rss_highwater_after_bytes": 30670848,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "table",
+      "horizon": 6,
+      "branching": 6,
+      "edges": 55986,
+      "serialized_bytes": 55986,
+      "setup_ns_samples": [
+        14304292,
+        13494958,
+        15746833,
+        16404750,
+        13886292
+      ],
+      "setup_ns_median": 14304292,
+      "python_traced_peak_bytes_separate_run": 2301481,
+      "process_rss_highwater_before_bytes": 29802496,
+      "process_rss_highwater_after_bytes": 37289984,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "catalog",
+      "horizon": 1,
+      "branching": 6,
+      "edges": 6,
+      "serialized_bytes": 245,
+      "setup_ns_samples": [
+        2149542,
+        1380500,
+        1382750,
+        2293292,
+        1456500
+      ],
+      "setup_ns_median": 1456500,
+      "python_traced_peak_bytes_separate_run": 40467,
+      "process_rss_highwater_before_bytes": 29720576,
+      "process_rss_highwater_after_bytes": 29786112,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "catalog",
+      "horizon": 2,
+      "branching": 6,
+      "edges": 42,
+      "serialized_bytes": 1145,
+      "setup_ns_samples": [
+        5461000,
+        3790000,
+        4033250,
+        4504208,
+        4044459
+      ],
+      "setup_ns_median": 4044459,
+      "python_traced_peak_bytes_separate_run": 53947,
+      "process_rss_highwater_before_bytes": 29655040,
+      "process_rss_highwater_after_bytes": 29786112,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "catalog",
+      "horizon": 3,
+      "branching": 6,
+      "edges": 258,
+      "serialized_bytes": 12693,
+      "setup_ns_samples": [
+        21408750,
+        19829417,
+        19485750,
+        19373542,
+        19162833
+      ],
+      "setup_ns_median": 19485750,
+      "python_traced_peak_bytes_separate_run": 136415,
+      "process_rss_highwater_before_bytes": 29736960,
+      "process_rss_highwater_after_bytes": 30064640,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "catalog",
+      "horizon": 4,
+      "branching": 6,
+      "edges": 1554,
+      "serialized_bytes": 133001,
+      "setup_ns_samples": [
+        114174625,
+        117046042,
+        121103417,
+        115626458,
+        112636541
+      ],
+      "setup_ns_median": 115626458,
+      "python_traced_peak_bytes_separate_run": 662003,
+      "process_rss_highwater_before_bytes": 29376512,
+      "process_rss_highwater_after_bytes": 30932992,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "catalog",
+      "horizon": 5,
+      "branching": 6,
+      "edges": 9330,
+      "serialized_bytes": 1244501,
+      "setup_ns_samples": [
+        798875917,
+        886968084,
+        678412583,
+        628909542,
+        747768792
+      ],
+      "setup_ns_median": 747768792,
+      "python_traced_peak_bytes_separate_run": 4119983,
+      "process_rss_highwater_before_bytes": 29605888,
+      "process_rss_highwater_after_bytes": 38436864,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "aes",
+      "horizon": 2,
+      "branching": 3,
+      "edges": 12,
+      "serialized_bytes": 1030,
+      "setup_ns_samples": [
+        5035500,
+        287250,
+        104542,
+        80958,
+        115042
+      ],
+      "setup_ns_median": 115042,
+      "python_traced_peak_bytes_separate_run": 5804,
+      "process_rss_highwater_before_bytes": 33062912,
+      "process_rss_highwater_after_bytes": 33685504,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "aes",
+      "horizon": 4,
+      "branching": 3,
+      "edges": 120,
+      "serialized_bytes": 8698,
+      "setup_ns_samples": [
+        1090250,
+        564959,
+        600834,
+        590625,
+        572958
+      ],
+      "setup_ns_median": 590625,
+      "python_traced_peak_bytes_separate_run": 33757,
+      "process_rss_highwater_before_bytes": 33079296,
+      "process_rss_highwater_after_bytes": 34029568,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "aes",
+      "horizon": 5,
+      "branching": 3,
+      "edges": 363,
+      "serialized_bytes": 25951,
+      "setup_ns_samples": [
+        2266042,
+        1626125,
+        1597791,
+        1966959,
+        1612791
+      ],
+      "setup_ns_median": 1626125,
+      "python_traced_peak_bytes_separate_run": 97022,
+      "process_rss_highwater_before_bytes": 33308672,
+      "process_rss_highwater_after_bytes": 34390016,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "aes",
+      "horizon": 6,
+      "branching": 3,
+      "edges": 1092,
+      "serialized_bytes": 77710,
+      "setup_ns_samples": [
+        5887875,
+        4807750,
+        4765166,
+        4917916,
+        4717458
+      ],
+      "setup_ns_median": 4807750,
+      "python_traced_peak_bytes_separate_run": 285665,
+      "process_rss_highwater_before_bytes": 32915456,
+      "process_rss_highwater_after_bytes": 34619392,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "aes",
+      "horizon": 7,
+      "branching": 3,
+      "edges": 3279,
+      "serialized_bytes": 232987,
+      "setup_ns_samples": [
+        19308334,
+        16847166,
+        15962416,
+        17674875,
+        16315750
+      ],
+      "setup_ns_median": 16847166,
+      "python_traced_peak_bytes_separate_run": 855082,
+      "process_rss_highwater_before_bytes": 33046528,
+      "process_rss_highwater_after_bytes": 36323328,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    },
+    {
+      "kind": "aes",
+      "horizon": 8,
+      "branching": 3,
+      "edges": 9840,
+      "serialized_bytes": 698818,
+      "setup_ns_samples": [
+        47456625,
+        44447125,
+        44431208,
+        44274791,
+        44655500
+      ],
+      "setup_ns_median": 44447125,
+      "python_traced_peak_bytes_separate_run": 2557733,
+      "process_rss_highwater_before_bytes": 33128448,
+      "process_rss_highwater_after_bytes": 40435712,
+      "rss_unit_source": "macOS SDK getrusage.2:94-95 (Darwin only)"
+    }
+  ],
+  "environment": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "cryptography": "50.0.1"
+  },
+  "source_hashes": {
+    "practical_bounded/compiler.py": "dcbae3129f1861d90e8334046a8c5687276f8b494cae18e895432229da12f280",
+    "practical_bounded/runtime.py": "3e104e09cfad48787b33a01ea32bec2e4742ad3b12594d8efcba9e8086dde674",
+    "practical_bounded/audit.py": "c65159656fe2b01e38b352eaf4521703aff5ffddaf56f35841d34ff9654da8bf",
+    "bounded_tree.py": "b880ee75aa11fc5e8b79aa1aa70700d06dce68c9d55dc86f15f62236f3fe04e3"
+  },
+  "rss_manual_sha256": "b4f4ed265c063282cb851254a5c903f9c1bc484f4e6bb720703c758583eff8b9",
+  "search_queries_this_tranche": {
+    "scry_sql": 0,
+    "schema": 0,
+    "web": 0,
+    "kagi": 0
+  }
+}

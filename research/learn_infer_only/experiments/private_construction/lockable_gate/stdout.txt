@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "model": "finite source-premise controls, not encryption/obfuscation",
+  "known_unlock_prediction_cases": 65536,
+  "known_unlock_prediction_probability": "1",
+  "max_target_support_given_full_function_and_unlock": 1,
+  "fixed_input_before_independent_lock_acceptance_probability": "1/256",
+  "masked_function_description_predictors": 512,
+  "joint_future_auxiliary_predictors": 4096,
+  "single_fixed_message_mismatches": {
+    "0": 1,
+    "1": 1
+  },
+  "unbound_arbitrary_predicate_full_byte_recoveries": 256,
+  "ideal_binding_predicate_substitution_rejections": 2048,
+  "public_bit_branch_target_prediction_probability": "1",
+  "script_sha256": "14fbb7658c0c79f9f18e74f153aabf837eccaf9682e3135fa0517c0a19cb5c81",
+  "cumulative_lane_search_count": {
+    "scry_sql": 10,
+    "schema": 1,
+    "web": 30,
+    "kagi": 0
+  }
+}

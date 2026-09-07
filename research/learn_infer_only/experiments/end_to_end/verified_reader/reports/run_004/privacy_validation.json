@@ -1,0 +1,21 @@
+{
+  "all_reader_decrypt_outputs_omitted": true,
+  "bfv_inner_secret_payload_scanned": true,
+  "command": [
+    "python3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/reports/validate_artifacts.py",
+    "--run",
+    "run_004"
+  ],
+  "compressed_public_artifacts_expanded_before_scan": true,
+  "current_driver_and_service_match_snapshot": true,
+  "ok": true,
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "private_runtime_gitignored": true,
+  "private_vectors_scanned_full_encodings": 40,
+  "python": "3.14.7",
+  "scope": "Whole-vector/key scan plus typed command-log omission; not an information-flow proof.",
+  "secret_files_scanned_raw_hex_base64": 4,
+  "source_and_binary_pins_match": true,
+  "validator_sha256": "be5eadd1913cee99657155ee37b65e71708da897e8e8bc82d3ff4fb6d289489c"
+}

@@ -1,51 +1,35 @@
 {
-  "checker_sha256": "27ba33f594b35df63a69e6bcc843dba63b73347de3409f63a8d25bc6d194419e",
-  "cases": [
+  "scope": "Lexical regression controls; the integration separately elaborates every exact axiom guard in Lean.",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrameWitness.lean",
+  "source_sha256": "629ef9054f66a365ee10fc54236f9b11cfba5b8fcc50127e14eceb3386f543bd",
+  "checker_sha256": "612e3cbc11ab841886229c8cc405bdeda02abc90d2f2d2697a14665b691917c0",
+  "imported_admission_identifier_accepted": true,
+  "positive_pins": 14,
+  "negative_controls": [
     {
-      "case": "lawful_typed_predicate",
-      "expected_acceptance": true,
-      "actual_acceptance": true,
-      "detail": {
-        "pins": 1,
-        "admit_identifiers": 2
-      }
+      "label": "proof placeholder tactic",
+      "refused": true,
+      "reason": "Forbidden constructs in proposed proof source: [{'token': 'by admit', 'line': 56}]"
     },
     {
-      "case": "lawful_named_definition",
-      "expected_acceptance": true,
-      "actual_acceptance": true,
-      "detail": {
-        "pins": 1,
-        "admit_identifiers": 1
-      }
+      "label": "sorry proof placeholder",
+      "refused": true,
+      "reason": "Forbidden constructs in proposed proof source: [{'token': 'sorry', 'line': 56}]"
     },
     {
-      "case": "admit_tactic",
-      "expected_acceptance": false,
-      "actual_acceptance": false,
-      "detail": "Forbidden constructs in proposed proof source: [{'token': 'admit', 'line': 1}, {'token': 'by admit', 'line': 1}]"
+      "label": "untrusted native proof shortcut",
+      "refused": true,
+      "reason": "Forbidden constructs in proposed proof source: [{'token': 'native_decide', 'line': 56}]"
     },
     {
-      "case": "hidden_admit_tactic",
-      "expected_acceptance": false,
-      "actual_acceptance": false,
-      "detail": "Forbidden constructs in proposed proof source: [{'token': 'by admit', 'line': 2}]"
+      "label": "unguarded axiom print",
+      "refused": true,
+      "reason": "Unguarded axiom print: 15 prints, 14 guards"
     },
     {
-      "case": "sorry_tactic",
-      "expected_acceptance": false,
-      "actual_acceptance": false,
-      "detail": "Forbidden constructs in proposed proof source: [{'token': 'sorry', 'line': 1}]"
-    },
-    {
-      "case": "comment_mask",
-      "expected_acceptance": true,
-      "actual_acceptance": true,
-      "detail": {
-        "pins": 1,
-        "admit_identifiers": 0
-      }
+      "label": "missing theorem axiom guard",
+      "refused": true,
+      "reason": "Axiom output comment without adjacent exact guard"
     }
-  ],
-  "scope": "Lexical regression only; actual Lean elaboration and exact axiom guards remain required."
+  ]
 }

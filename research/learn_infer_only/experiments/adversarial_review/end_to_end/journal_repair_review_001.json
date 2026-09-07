@@ -1,0 +1,137 @@
+{
+  "recorded_utc": "2026-09-07T02:36:05.650961+00:00",
+  "classification": "EXECUTED independent repaired-wrapper checks",
+  "review_script_sha256": "bc79ffe048418bde808059d85e3759ca6c81355474e22558aac1cfa1b678b1d0",
+  "sources": {
+    "common.py": "32afcec1c2db4a6e1ccf9eb475ad22780a0f0d4deceb18c39e66246b5a1b6b1e",
+    "model.py": "bcbac3baac92aaeacf2fdbbf174dd0d1c57c9e0fffed93b9d7307f2b96da28eb",
+    "roles.py": "a42bf9dc15320587e60a47332556dddc2d345eed7099c8f573f13f8697d3b2f0",
+    "authority.py": "2030998d92bf2baa92055bd8e522b0c0001ffeadd5f43100f0a33e4e6ef08039",
+    "reader.py": "d39c3538d8c0e660539d4e776627926449fec5fb1fc1c866853643d47ce76c9a",
+    "run.py": "e12ac924830544b98bbbba67f8ed8c489ee719b4d33d0307869f54f58a43c330",
+    "client.py": "489c23061e8e8724773d6c7f8f1c1aafe66cc6524e31a5b9b2c3d6d680d4f7d0"
+  },
+  "binary_sha256": "9c79c02e7d919ecdc24851c6f77e50ed6990397bd669f571a886f8e2b85058c2",
+  "negative_checks": [
+    {
+      "name": "boolean_program_version",
+      "refused": true,
+      "reason": "programVersionType"
+    },
+    {
+      "name": "float_program_version",
+      "refused": true,
+      "reason": "nonIntegerJSONNumber"
+    },
+    {
+      "name": "boolean_parent_revision",
+      "refused": true,
+      "reason": "parentRevision"
+    },
+    {
+      "name": "float_parent_revision",
+      "refused": true,
+      "reason": "nonIntegerJSONNumber"
+    },
+    {
+      "name": "boolean_route",
+      "refused": true,
+      "reason": "route"
+    },
+    {
+      "name": "float_route",
+      "refused": true,
+      "reason": "nonIntegerJSONNumber"
+    },
+    {
+      "name": "changed_recipient",
+      "refused": true,
+      "reason": "recipient"
+    },
+    {
+      "name": "changed_genesis",
+      "refused": true,
+      "reason": "identity:genesis"
+    },
+    {
+      "name": "changed_program",
+      "refused": true,
+      "reason": "identity:program_id"
+    },
+    {
+      "name": "changed_key",
+      "refused": true,
+      "reason": "identity:key_id"
+    },
+    {
+      "name": "canonical_wrong_result_real_recomputation",
+      "refused": true,
+      "reason": "recomputedProposalMismatch"
+    },
+    {
+      "name": "forged_request_signature",
+      "refused": true,
+      "reason": "invalidSignature"
+    },
+    {
+      "name": "duplicate_network_json_field",
+      "refused": true,
+      "reason": "duplicateJSONKey"
+    },
+    {
+      "name": "genuine_learn_receipt_at_reader",
+      "refused": true,
+      "reason": "readerOnlyInfer"
+    },
+    {
+      "name": "altered_finalization_signature",
+      "refused": true,
+      "reason": "invalidSignature"
+    },
+    {
+      "name": "float_signed_range_assertion",
+      "refused": true,
+      "reason": "nonIntegerJSONNumber"
+    },
+    {
+      "name": "missing_committed_candidate_blob",
+      "refused": true,
+      "reason": "missingBlob"
+    },
+    {
+      "name": "mutated_previously_inspected_blob",
+      "refused": true,
+      "reason": "blobDigestMismatch"
+    }
+  ],
+  "positive_learns": 3,
+  "positive_infers": 1,
+  "honest_public_test_vector_score": 1,
+  "historical_learn_and_infer_retry_exact": true,
+  "historical_reader_retry_deduplicated": true,
+  "concurrent_export": {
+    "traced_selects": [
+      "SELECT envelope,published FROM journal ORDER BY revision",
+      "SELECT * FROM meta"
+    ],
+    "journal_last": 3,
+    "head_revision": 3,
+    "concurrent_committed_revision": 4
+  },
+  "quiescent_full_replay": {
+    "ok": true,
+    "revision": 4,
+    "state_digest": "95b88e38682933de4afabf699b98435f037c11807a56c96822d208ec9de542c5",
+    "admissions": {
+      "0": 3,
+      "1": 0
+    },
+    "queue_lengths": {
+      "0": 3,
+      "1": 0
+    },
+    "public_recomputation": true
+  },
+  "scope": "Targeted actual BFV/Ed25519/SQLite/reader regressions, no full window rerun, confidentiality theorem or masterless claim.",
+  "passed": true
+}

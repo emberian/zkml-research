@@ -1,0 +1,58 @@
+{
+  "classification": "EXECUTED source pin, source-text checks and frozen artifact verification",
+  "source": {
+    "id": "2025/330",
+    "url": "https://eprint.iacr.org/2025/330",
+    "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+    "pdf_sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+    "retained_extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/sources/2025-330.txt",
+    "extract_sha256": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54",
+    "matches_frozen_source_manifest": true,
+    "access": "Definitions3.2-3.9 pp15-18; Definitions4.1-4.4 pp21-23; section6.1/Construction2 pp48-49; Theorem6.1 p50; hybrid index p51; functional randomness samples pp57-58; Lemmas6.4-6.8 and final sum pp64-67; literal PRF-key parameter sample p70. Full cryptographic theorem not independently re-proved.",
+    "anchor_PDF_pages_1_based": {
+      "Ciphertexts of length s on inputs": [
+        48
+      ],
+      "Here s denotes the length of the PKE ciphertexts": [
+        51
+      ],
+      "Definition 4.1": [
+        21
+      ],
+      "Definition 4.2": [
+        21
+      ],
+      "r\u2217 \u2190 {0, 1}\u03bb": [
+        57,
+        58
+      ],
+      "Lemma 6.7.": [
+        65
+      ]
+    },
+    "instrument": "retained pdftotext -layout extract read with rg/sed; SHA256 verified without new extraction"
+  },
+  "frozen_artifact_checks": [
+    {
+      "manifest": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/review_hashes.json",
+      "files_unchanged": 8
+    },
+    {
+      "manifest": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_hashes.json",
+      "files_unchanged": 6
+    }
+  ],
+  "accounting": {
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "web_search_queries": 1,
+    "web_HTML_opens": 0,
+    "new_PDF_extracts": 0,
+    "PDF_downloads": 0
+  },
+  "web_queries": [
+    "\"(Multi-Input) FE for Randomized Functionalities, Revisited\" randomness length parameters"
+  ],
+  "web_scope": "Primary publication metadata and indexed source definition; no author clarification obtained; no search-result text used for a new theorem claim."
+}

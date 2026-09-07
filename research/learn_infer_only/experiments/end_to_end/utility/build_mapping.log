@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "learn_events": 384,
+  "queries": 96,
+  "phase_combined": [
+    {
+      "phase": 1,
+      "correct": 16,
+      "count": 32,
+      "accuracy": 0.5
+    },
+    {
+      "phase": 2,
+      "correct": 18,
+      "count": 32,
+      "accuracy": 0.5625
+    },
+    {
+      "phase": 3,
+      "correct": 18,
+      "count": 32,
+      "accuracy": 0.5625
+    }
+  ],
+  "final_queries": {
+    "correct": 18,
+    "count": 32,
+    "accuracy": 0.5625
+  },
+  "output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/issuer_oracle/mapping.json"
+}

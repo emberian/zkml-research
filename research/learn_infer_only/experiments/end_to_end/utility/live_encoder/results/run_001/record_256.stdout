@@ -1,0 +1,1 @@
+{"encoded_vectors": 1, "dimension": 577, "load_seconds": 0.5627000829845201, "feature_seconds": 0.1769378750177566, "cached_quantized_comparison": true, "scope": "Issuer plaintext processing; output must enter issuer encryption before host admission"}

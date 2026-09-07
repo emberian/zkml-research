@@ -1,0 +1,36 @@
+{
+  "classification": "EXECUTED algebra/ideal-interface checks; no cryptography",
+  "python": "3.14.7",
+  "command": "python3 /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_ingress/provenance_review/dual_mode_audit.py",
+  "source_sha256": "8e8a3079c3d7a1a3e7cd27d43ade2e3893c8f761f50694fe85593711bcf65c20",
+  "toy_prime": 257,
+  "binding_domain_size": 66049,
+  "distinct_binding_commitments": 66049,
+  "hiding_support_size_each_message": 257,
+  "equivocation_and_uniform_marginal_checks": 66049,
+  "all_observation_replacement_guard_checks": 132098,
+  "all_state_replacement_guard_checks": 131584,
+  "same_parent_accepted_state_count": {
+    "bind": 1,
+    "hide": 256
+  },
+  "honest_fresh_observation_pair": [
+    0,
+    1
+  ],
+  "honest_state": 0,
+  "honest_terminal_answers": [
+    0,
+    0
+  ],
+  "separating_true_history_states": {
+    "bind": [],
+    "hide": [
+      127,
+      255
+    ]
+  },
+  "joint_future_terminal_key_required_for_separation": true,
+  "two_distinct_openings_recover_t": true,
+  "no_claim_of_CRS_indistinguishability_in_this_toy": true
+}

@@ -1,0 +1,54 @@
+{
+  "all_four_PDF_hashes_match_frozen_manifests": true,
+  "all_four_reproduced_extracts_match": true,
+  "frozen_predecessor_files_unchanged": 12,
+  "anchors": {
+    "2025/330": {
+      "Definition 3.8": [
+        18
+      ],
+      "Definition 4.3": [
+        22
+      ],
+      "Theorem 6.1.": [
+        50
+      ]
+    },
+    "2020/137": {
+      "Theorem 6.2.": [
+        33
+      ],
+      "Lemma 6.3": [
+        33
+      ],
+      "Lemma 6.4": [
+        33,
+        34
+      ]
+    },
+    "2016/629": {
+      "Definition 13.": [
+        37
+      ],
+      "Definition 15.": [
+        54
+      ],
+      "Theorem 8.": [
+        56
+      ]
+    },
+    "2013/729": {
+      "Definition 2.4": [
+        8,
+        9,
+        25
+      ],
+      "Lemma 2.9.": [
+        9
+      ],
+      "Theorem 4.1.": [
+        14
+      ]
+    }
+  }
+}
