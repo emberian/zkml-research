@@ -1,0 +1,284 @@
+{
+  "claim_label": "EXECUTED provenance; SOURCE primary reading; DERIVED comparisons in PRIOR_ART.md",
+  "created_utc": "2026-09-07T05:25:17.223467+00:00",
+  "started_utc": "2026-09-07T05:15:18Z",
+  "owner": "/root/private_ingress",
+  "owned_directory": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources",
+  "scope": "Bounded prior-art comparison only; separate independent reviewer owns mathematical acceptance. No novelty or arbitrary malicious-setup claim.",
+  "input_proposal": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/PROPOSAL.md",
+    "sha256": "4d30d6013642666081ebecfbcc4dbb0446afeda1e58d94f294202507a20f71c9",
+    "bytes": 7414
+  },
+  "input_proposal_unchanged_since_pin": true,
+  "sources": [
+    {
+      "claim_label": "SOURCE",
+      "id": "2017/989",
+      "title": "Decentralized Multi-Client Functional Encryption for Inner Product",
+      "authors": [
+        "Jérémy Chotard",
+        "Edouard Dufour Sans",
+        "Romain Gay",
+        "Duong Hieu Phan",
+        "David Pointcheval"
+      ],
+      "venue": "ASIACRYPT 2018",
+      "doi": "10.1007/978-3-030-03329-3_24",
+      "url": "https://eprint.iacr.org/2017/989",
+      "access": "primary PDF read locally using pdftotext -layout; algorithms/game/reduction sections as listed, not an abstract-only classification",
+      "pdf": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2017/989.pdf",
+        "sha256": "71b45538a55b7d2075ff5457b8943f2eccdd13116d28174bbcbc00443d462394",
+        "bytes": 723061
+      },
+      "extract": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2017-989.txt",
+        "sha256": "55393d832124a37e54850f4b829075d7ed7db6c0ad0d34ed5f2c704812523b0a",
+        "bytes": 99874
+      },
+      "pdf_pages": 23,
+      "locations": [
+        "Definitions 4–5, PDF pp.9–10: DMCFE syntax and game",
+        "§5.1, PDF p.15: setup and algorithms",
+        "Theorem 9, PDF p.16: static-corruption SXDH/ROM theorem",
+        "§1 construction discussion, PDF p.5: public-key versus private encryption"
+      ],
+      "read_scope": "selective listed passages, not an assertion that every proof/page was reviewed"
+    },
+    {
+      "claim_label": "SOURCE",
+      "id": "2019/020",
+      "title": "Decentralizing Inner-Product Functional Encryption",
+      "authors": [
+        "Michel Abdalla",
+        "Fabrice Benhamouda",
+        "Markulf Kohlweiss",
+        "Hendrik Waldner"
+      ],
+      "venue": "PKC 2019",
+      "doi": "10.1007/978-3-030-17259-6_5",
+      "url": "https://eprint.iacr.org/2019/020",
+      "access": "primary PDF read locally using pdftotext -layout; algorithms/game/reduction sections as listed, not an abstract-only classification",
+      "pdf": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/020.pdf",
+        "sha256": "e3096fbad45053a61cb45f6659fa71fe8c4cba76f0a1257860f7b5fe225cbf3f",
+        "bytes": 762977
+      },
+      "extract": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2019-020.txt",
+        "sha256": "99aa076065088a1dbd18e6ef8be305ca30bce3be46ee155d9113caf0b84152c4",
+        "bytes": 132188
+      },
+      "pdf_pages": 44,
+      "locations": [
+        "Definitions 2.3–2.5, PDF pp.10–12: MCFE/DMCFE security and setup syntax",
+        "Definition 3.1, PDF p.14: special key derivation",
+        "Fig.3 and Theorem 3.2, PDF p.15: compiler and preservation theorem",
+        "Proof sketch, PDF p.16: full linear-key-share simulation",
+        "Appendix A.1, PDF pp.33–38 selectively read: linear games and corruption simulation"
+      ],
+      "read_scope": "selective listed passages, not an assertion that every proof/page was reviewed"
+    },
+    {
+      "claim_label": "SOURCE",
+      "id": "2018/250",
+      "title": "Making Public Key Functional Encryption Function Private, Distributively",
+      "authors": [
+        "Xiong Fan",
+        "Qiang Tang"
+      ],
+      "venue": "PKC 2018",
+      "doi": "10.1007/978-3-319-76581-5_8",
+      "url": "https://eprint.iacr.org/2018/250",
+      "access": "primary PDF read locally using pdftotext -layout; algorithms/game/reduction sections as listed, not an abstract-only classification",
+      "pdf": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2018/250.pdf",
+        "sha256": "acbb02fc553eb3ac4aae6bebf4de1e6fcd10ce0aee8416457dee5e9bdbbd6018",
+        "bytes": 250311
+      },
+      "extract": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2018-250.txt",
+        "sha256": "3b550d02767f3d5c27757f671851b25e69328fbd930d5e2162ab7019a7acee9a",
+        "bytes": 82706
+      },
+      "pdf_pages": 25,
+      "locations": [
+        "Introduction, PDF p.3: distinction from decentralizing master setup",
+        "§3.1, PDF pp.8–11: syntax, correctness, privacy games",
+        "§3.3, PDF p.14: DFE.Setup returns underlying FE.msk",
+        "Theorem 3.11, PDF p.16: data privacy reduction"
+      ],
+      "read_scope": "selective listed passages, not an assertion that every proof/page was reviewed"
+    },
+    {
+      "claim_label": "SOURCE",
+      "id": "2009/340",
+      "title": "Efficient Indifferentiable Hashing into Ordinary Elliptic Curves",
+      "authors": [
+        "Eric Brier",
+        "Jean-Sébastien Coron",
+        "Thomas Icart",
+        "David Madore",
+        "Hugues Randriam",
+        "Mehdi Tibouchi"
+      ],
+      "venue": "CRYPTO 2010 full version",
+      "doi": "10.1007/978-3-642-14623-7_13",
+      "url": "https://eprint.iacr.org/2009/340",
+      "access": "primary PDF read locally using pdftotext -layout; algorithms/game/reduction sections as listed, not an abstract-only classification",
+      "pdf": {
+        "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2009/340.pdf",
+        "sha256": "24b0c2f944eb369311616bedfbe64255e405ccc84fa38e3ca163ba5c3d652e7b",
+        "bytes": 372167
+      },
+      "extract": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2009-340.txt",
+        "sha256": "08a0d6591439f45900a751d52b3c92b421e698ab68bfd6de81bf1e58af0e7e95",
+        "bytes": 105051
+      },
+      "pdf_pages": 31,
+      "locations": [
+        "Introduction, PDF p.3: known-log scalar-hash distinction",
+        "Definition 1, PDF p.4: recalled Boneh–Franklin regular preimage-samplable encoding",
+        "Definitions 2 and 4, PDF pp.5–6: joint indifferentiability and generalized admissibility",
+        "Theorem 1 and simulator proof, PDF pp.7–8: joint output/preimage simulation",
+        "Lemma 13, PDF p.25: cofactor-map admissibility; inspected as related example"
+      ],
+      "read_scope": "selective listed passages, not an assertion that every proof/page was reviewed"
+    }
+  ],
+  "search": {
+    "scry_sql_calls_this_tranche": 2,
+    "scry_schema_calls_this_tranche": 0,
+    "scry_limit_authorized": 3,
+    "queries": [
+      {
+        "sql": "SELECT id,title,doi,publication_year,primary_location.landing_page_url AS url FROM openalex.works WHERE hasAllTokens(search_text_lc,['inner','product','functional']) AND (hasToken(search_text_lc,'decentralized') OR hasToken(search_text_lc,'decentralizing')) ORDER BY cited_by_count DESC LIMIT 20",
+        "result": {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/scry_decentralized_ipfe.jsonl",
+          "sha256": "3afd2fc092d92b42531378439de4df37069420ff8ecf5228e7c83fefaad45629",
+          "bytes": 3147
+        },
+        "record_id": "cad74715-8d30-43a3-af2a-94ae654d8cba",
+        "rows": 10,
+        "truncated": false,
+        "duration_ms": 1576,
+        "read_bytes": 12468230,
+        "spend_nanodollars": 0,
+        "coverage": [
+          {
+            "extent": {
+              "basis": "scan",
+              "column": "publication_date",
+              "computed_at": "2026-09-07T05:03:35Z",
+              "max": "2026-09-07",
+              "min": "1900-01-01",
+              "newest_event_at": "2026-09-07T00:00:00Z",
+              "observed_gaps": null
+            },
+            "freshness_blocker": "bounded snapshot load; freshness advances when a new OpenAlex snapshot batch lands, not on a continuous schedule",
+            "freshness_lag_seconds": 6326147,
+            "known_holes": [],
+            "relation": "openalex.works"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,title,doi,publication_year,primary_location.landing_page_url AS url FROM openalex.works WHERE hasAllTokens(search_text_lc,['functional','private','distributively']) ORDER BY cited_by_count DESC LIMIT 10",
+        "result": {
+          "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/scry_distributed_public_ipfe.jsonl",
+          "sha256": "6bf2ceff8aa9346614b6792e30f8a9c8e2729592d77d64759ddae5d35a7c8ace",
+          "bytes": 1341
+        },
+        "record_id": "87c0f711-ecf1-407c-aa8c-fa3c043110e8",
+        "rows": 1,
+        "truncated": false,
+        "duration_ms": 331,
+        "read_bytes": 181552,
+        "spend_nanodollars": 0,
+        "coverage": [
+          {
+            "extent": {
+              "basis": "scan",
+              "column": "publication_date",
+              "computed_at": "2026-09-07T05:03:35Z",
+              "max": "2026-09-07",
+              "min": "1900-01-01",
+              "newest_event_at": "2026-09-07T00:00:00Z",
+              "observed_gaps": null
+            },
+            "freshness_blocker": "bounded snapshot load; freshness advances when a new OpenAlex snapshot batch lands, not on a continuous schedule",
+            "freshness_lag_seconds": 6326338,
+            "known_holes": [],
+            "relation": "openalex.works"
+          }
+        ]
+      }
+    ],
+    "web_search_count_this_tranche": 5,
+    "web_queries": [
+      "\"Decentralizing Inner-Product Functional Encryption\" eprint",
+      "\"Decentralized Multi-Client Functional Encryption for Inner Product\" eprint",
+      "\"Hashing to Elliptic Curves\" Brier Coron Icart eprint",
+      "\"unknown discrete logarithm\" \"random\" group sampling eprint",
+      "\"Making public key functional encryption function private, distributively\" eprint"
+    ],
+    "web_use": "Discovery and primary metadata only; technical claims re-read in local PDFs.",
+    "web_metadata_opens": [
+      "https://www.di.ens.fr/~rgay/publis.html",
+      "https://eprint.iacr.org/2019/020",
+      "https://eprint.iacr.org/2009/340",
+      "https://eprint.iacr.org/2017/989",
+      "https://eprint.iacr.org/2018/250"
+    ],
+    "author_metadata_html": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/rgay_publis.html",
+      "sha256": "1dbad7e7114455721b5ec4e76dac82140d56eafc2b22c1a449f2dbf90a1232ac",
+      "bytes": 9747
+    },
+    "scry_credentials": "Existing helper reads ~/.scry-key; key not printed or written into artifacts.",
+    "absence_scope": "Four selectively read local primary PDFs; two bounded OpenAlex token queries; five metadata searches. Not exhaustive prior art.",
+    "prior_designated_span_sources_tranche_excluded_from_counts": {
+      "scry_sql": 2,
+      "scry_schema": 0,
+      "web_queries": 13,
+      "parent_prior_web_queries": 2
+    }
+  },
+  "operations": {
+    "eprint_pdf_downloads": 0,
+    "other_pdf_downloads": 0,
+    "local_pdf_extractions": 4,
+    "cryptographic_runtimes": 0,
+    "attack_experiments": 0,
+    "commits": 0,
+    "companion_edits": 0,
+    "shared_ledger_edits": 0,
+    "recursive_agents": 0
+  },
+  "reproduction_commands": [
+    "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2017/989.pdf /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2017-989.txt",
+    "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2019/020.pdf /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2019-020.txt",
+    "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2018/250.pdf /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2018-250.txt",
+    "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2009/340.pdf /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/extracts/2009-340.txt"
+  ],
+  "extraction_result": "All four pdftotext commands executed successfully, exit status 0. PDF/extract hashes above identify the inspected local versions.",
+  "artifacts": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/PRIOR_ART.md",
+      "sha256": "1b4751e2d1b3c0e441cd53e26ed2039345b4573cd12656cd31c13345e1c01f64",
+      "bytes": 10376
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/.gitignore",
+      "sha256": "44019fccf82df96c05ceaa4a4f75cf2c7f5df164c3b9e176aec336d37cf81fa8",
+      "bytes": 37
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/input_identity.json",
+      "sha256": "2f87f5139173197fb027692e8c10241c7d8dad9ba9de3652995b2ec0a512bdd6",
+      "bytes": 249
+    }
+  ]
+}

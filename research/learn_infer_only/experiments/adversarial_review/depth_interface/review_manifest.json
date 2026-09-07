@@ -1,0 +1,76 @@
+{
+  "label": "EXECUTED",
+  "reviewer": "/root/entropy_composition",
+  "author": "/root/he_closure_costs",
+  "decision": "Accept scoped source/parameter audit. Affirmed Boolean theorem remains positive; literal splitting/GVW overhead retains M. AJ compact TMRE is an additional conditional closing primitive. Four source/proof normalizations are explicit.",
+  "artifacts": {
+    "REPORT.md": "8ccd373cbb5584ce81a31e5c958875b1a54a8a4efe16a52a01a23ab26d8a05f5",
+    "review.py": "ce867da71d6e5d04d9426767685ed4d79ac2fa9c34f55d28c508c32f5b02a378",
+    "results.json": "7c67325d6074fce46bb887f099a95e888b3723674ff3e8a2cd9b2734a2d66541",
+    "stdout.txt": "7c67325d6074fce46bb887f099a95e888b3723674ff3e8a2cd9b2734a2d66541",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "author_replay.stdout.txt": "d3b0fc64572b4f69b67eb3671ff378fc1394e2e14638adecab52fec8da4911f5",
+    "author_replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".gitignore": "7e5d03ac08c7ef247f3b0e05fc7c4edefc89f7e293d17aec792fc3be124262ed"
+  },
+  "source_inputs_rechecked": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/source_spans.json": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf": "3574f296f030d424c8cf3f818b947ff8e1a0a39c42f86737ec53cc346b3e7896",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_917.txt": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/148.pdf": "9c4776ff48ce2b1b50b0b043c1ba92fc93ecae2c573ac3b7e807ad262d10cf92",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_148.txt": "1717ee97af18c99d344dd24b997b99a910dec0cb598c3a9945210c425da7ef76",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/364.pdf": "1654075582d66a25bf817dd62b815711eecb2b255584925640663e1aa2d000f9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_364.txt": "5be6e730ae317e989cd5ac089260e7198a188383da7d02fbc2b157b807c5a953",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/521.pdf": "104a5b9400c3fe147abfc10c37d3a960ce8ec6f74b97d93bffed995bbbf16779",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_521.txt": "0c18113bb1e62d6c2621a2c7eb77a2485091172883c5ef6d12cdf93717a855d8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/.gitignore": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/DEPTH_INTERFACE.md": "f7a380764376f5292a65e8b0a0ebe9917f90594fc4f5e99875f28a4f080b088a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/inputs.json": "ae4b007437d7a0da3ce049977ca90c331d1ae9517e0d484d7ddf1a425bc884c2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/arity_substitution.py": "6fd669b522306d31bfc4ad637a7fed1e25d8a4350cca907686cd74d339cf93f7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/arity_substitution.json": "9861e869b467c0c608ff496afa772193b023f1b7b96c1350197c773b3600c78f",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/validate.py": "4a6143010219ab5666c7e4ba49499749630bec9162ff9d6850d1bf85af5fec19",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/validation.json": "f3347c1790260cd11484ce97fbfd420d57b7d9d5f15f4dc711e25e3f855240c9",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/artifact_hashes.json": "1a1d6242e72eafaef0f19a860f59e38478572d2d86080f247efc1a74e10c0a3a"
+  },
+  "source_input_count": 31,
+  "local_links_valid": true,
+  "stdout_matches_results": true,
+  "stderr_empty": true,
+  "author_confirmed_normalizations": [
+    "AJ real instances are separately addressed with PRF-correlated tapes, not statistically independent.",
+    "Same-machine RE comparison uses a clocked fixed-output universal interpreter with equal actual runtime, not merely a common upper bound.",
+    "ABSV alternate-branch challenge uses zero inactive x/KP fields.",
+    "AJ displayed success-probability typo is interpreted as standard indistinguishability advantage."
+  ],
+  "commands": [
+    {
+      "cmd": "python3 research/learn_infer_only/experiments/adversarial_review/depth_interface/review.py > research/learn_infer_only/experiments/adversarial_review/depth_interface/stdout.txt 2> research/learn_infer_only/experiments/adversarial_review/depth_interface/stderr.txt",
+      "exit_code": 0
+    }
+  ],
+  "additional_read_only_source_spot_commands": [
+    "pdftotext -f 46 -l 46 -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf -",
+    "pdftotext -f 45 -l 45 -raw /Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf -"
+  ],
+  "additional_web_queries": 0,
+  "additional_scry_queries": 0,
+  "additional_kagi_queries": 0,
+  "PDF_downloads": 0,
+  "cryptographic_runs": 0,
+  "no_shared_or_companion_writes": true,
+  "no_commits": true
+}

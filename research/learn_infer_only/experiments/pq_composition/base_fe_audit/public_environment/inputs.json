@@ -1,0 +1,82 @@
+{
+  "schema": "public-environment-inputs-v1",
+  "inputs": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md",
+      "sha256": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+      "scope": "frozen base-FE source audit"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md",
+      "sha256": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+      "scope": "frozen B/P/G/X bridge"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/base_fe/REPORT.md",
+      "sha256": "0d14b9e394528d7aba9fecf40e17d4cbf59103c128cfa235246b424487a4dad4",
+      "scope": "independent base audit and public-environment suggestion"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/POINTWISE_CORRECTNESS.md",
+      "sha256": "c63e299a31a33617888814d5b4f371cf0f1e25541b4ebaa061e9bc84340d81f2",
+      "scope": "fresh-error supplement; read in full"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json",
+      "sha256": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+      "scope": "inherited local source provenance"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/source_spans.json",
+      "sha256": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+      "scope": "inherited primary source read scope"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+      "sha256": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+      "scope": "local primary source; inherited extraction, no download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt",
+      "sha256": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+      "scope": "locally extracted primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "sha256": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+      "scope": "local primary source; inherited extraction, no download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt",
+      "sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+      "scope": "locally extracted primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+      "scope": "local primary source; inherited extraction, no download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt",
+      "sha256": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+      "scope": "locally extracted primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf",
+      "sha256": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+      "scope": "local primary source; inherited extraction, no download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt",
+      "sha256": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+      "scope": "locally extracted primary text"
+    }
+  ],
+  "new_queries": {
+    "web": 0,
+    "scry": 0,
+    "kagi": 0
+  },
+  "new_pdf_downloads": 0,
+  "source_scope": "Uses the frozen source audit and its existing local extracts; new work is a mathematical construction and finite ordinary-circuit witness."
+}

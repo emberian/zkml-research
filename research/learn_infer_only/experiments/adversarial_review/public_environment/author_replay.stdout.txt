@@ -1,0 +1,1 @@
+{"exhaustive_equalities": 32768, "nonzero_output_cases": 28672, "retained_key_bits": 4, "closure_examples": 8}

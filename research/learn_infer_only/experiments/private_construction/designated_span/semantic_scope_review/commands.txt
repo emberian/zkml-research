@@ -1,0 +1,7 @@
+[EXECUTED] Read-only inspection used cat, nl -ba and sed -n on the sources and line scopes listed in review_manifest.json. No construction or mathematical test program was executed.
+
+[EXECUTED] Final artifact identity command, run from /Users/ember/dev/zkml-research; stdout retained in hashes.stdout.txt:
+shasum -a 256 research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope/SCOPE.md research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope/LINEAR_CONTINUATION.md research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope/sources.json research/learn_infer_only/experiments/private_construction/designated_span/CONTRACT.md research/learn_infer_only/experiments/private_construction/designated_span/crypto/README.md research/learn_infer_only/experiments/private_construction/designated_span/review/REVIEW.md research/learn_infer_only/experiments/private_construction/fixed_span/scaling/GENERAL_FIXED_SPAN.md research/learn_infer_only/experiments/adversarial_review/fixed_span_scaling/REPORT.md research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope_review/REPORT.md > research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope_review/hashes.stdout.txt
+
+[EXECUTED] Read the retained identity output:
+cat research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope_review/hashes.stdout.txt

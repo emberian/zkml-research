@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized/audit.py"
+  ],
+  "returncode": 0,
+  "wall_seconds": 0.42847658300888725,
+  "timeout_seconds": 300
+}

@@ -1,0 +1,1 @@
+{"role":"host","operation":"learn","read_ns":153527417,"evaluate_ns":8938103041,"serialize_write_ns":349666,"work_ns":9091980458,"output_bits":32,"serialized_bytes":108441,"gate_api_calls":{"and":180,"xor":264,"not":46,"mux":32,"trivial_encrypt":20},"bootstrap_count_instrumented":false,"client_key_read":false}

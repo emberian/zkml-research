@@ -1,0 +1,472 @@
+{
+  "full_acceptance": {
+    "descriptive_paired_lower_endpoint_positive": true,
+    "each_task_final_accuracy_at_least_75pct": true,
+    "every_populated_joint_rule_stratum_at_least_65pct": true,
+    "every_task_attribute_stratum_at_least_65pct": true,
+    "final_accuracy_at_least_75pct": true,
+    "fresh_factual_bits_at_least_90pct": true,
+    "fresh_factual_each_task_at_least_85pct": true,
+    "nonlinear_gain_over_original_at_least_10pp": true,
+    "paired_gain_over_original_at_least_10pp": true,
+    "simple_regression_no_worse_than_5pp": true,
+    "untouched_route_state_and_output_retention_exact": true
+  },
+  "full_denominators": {
+    "checkpoints": 3,
+    "final_queries_per_method": 8192,
+    "methods": 3,
+    "new_factual_bits": 256,
+    "new_histories": 64,
+    "reset_accuracy": 0.5,
+    "scores": 73728,
+    "teacher_factual_bits_reused": 256,
+    "unique_new_texts": 128
+  },
+  "full_factual_results": {
+    "axes": {
+      "letter.a": {
+        "bit_accuracy": 1.0,
+        "bits": 64,
+        "correct_bits": 64,
+        "correct_pairs": 0,
+        "mean_alternative_probability_mass": 0.6858727782964706,
+        "pairs": 0,
+        "ties": 0
+      },
+      "letter.b": {
+        "bit_accuracy": 1.0,
+        "bits": 64,
+        "correct_bits": 64,
+        "correct_pairs": 0,
+        "mean_alternative_probability_mass": 0.6557377763092518,
+        "pairs": 0,
+        "ties": 0
+      },
+      "plant.a": {
+        "bit_accuracy": 1.0,
+        "bits": 64,
+        "correct_bits": 64,
+        "correct_pairs": 0,
+        "mean_alternative_probability_mass": 0.43722944566980004,
+        "pairs": 0,
+        "ties": 0
+      },
+      "plant.b": {
+        "bit_accuracy": 0.765625,
+        "bits": 64,
+        "correct_bits": 49,
+        "correct_pairs": 0,
+        "mean_alternative_probability_mass": 0.6133991507813334,
+        "pairs": 0,
+        "ties": 0
+      }
+    },
+    "errors": [
+      {
+        "axis": "b",
+        "entity": "Achillea",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.734375,
+          28.96875
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 256,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Achillea: the specimen has leaf blades that bend readily. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          0,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Campanula",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.6875,
+          28.9375
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 258,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Campanula: the specimen has leaf blades that bend readily. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          0,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Cleome",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.609375,
+          28.9375
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 260,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Cleome: the specimen has leaf blades that bend readily. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          0,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Dianthus",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.59375,
+          28.96875
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 262,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Dianthus: the specimen has leaf blades that bend readily. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          0,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Gazania",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.65625,
+          28.890625
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 264,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Gazania: the specimen has leaf blades that bend readily. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          0,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Nigella",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.703125,
+          29.015625
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 268,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Nigella: the specimen has leaf blades that bend readily. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          0,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Scabiosa",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.703125,
+          28.921875
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 270,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Scabiosa: the specimen has leaf blades that bend readily. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          0,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Achillea",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.734375,
+          29.0
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 288,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Achillea: the specimen has leaf blades that stay rigid when bent. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          1,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Campanula",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.71875,
+          28.984375
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 290,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Campanula: the specimen has leaf blades that stay rigid when bent. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          1,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Cleome",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.625,
+          29.015625
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 292,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Cleome: the specimen has leaf blades that stay rigid when bent. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          1,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Dianthus",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.546875,
+          29.046875
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 294,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Dianthus: the specimen has leaf blades that stay rigid when bent. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          1,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Gazania",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.6875,
+          28.96875
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 296,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Gazania: the specimen has leaf blades that stay rigid when bent. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          1,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Liatris",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.84375,
+          28.890625
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 298,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Liatris: the specimen has leaf blades that stay rigid when bent. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          1,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Nigella",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.71875,
+          29.046875
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 300,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Nigella: the specimen has leaf blades that stay rigid when bent. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          1,
+          0
+        ]
+      },
+      {
+        "axis": "b",
+        "entity": "Scabiosa",
+        "exact_tie": false,
+        "logits_in_bit_order": [
+          28.703125,
+          28.953125
+        ],
+        "oracle_bit": 0,
+        "predicted_bit": 1,
+        "record_id": 302,
+        "task": "plant",
+        "template": 0,
+        "text": "Botanical intake for Scabiosa: the specimen has leaf blades that stay rigid when bent. Below the surface there is root soil holding a large amount of water. Decide the care label:",
+        "true_pair": [
+          1,
+          0
+        ]
+      }
+    ],
+    "joint_attributes": {
+      "letter.00": {
+        "bit_accuracy": 1.0,
+        "bits": 32,
+        "correct_bits": 32,
+        "correct_pairs": 16,
+        "mean_alternative_probability_mass": 0.6474528536200523,
+        "pairs": 16,
+        "ties": 0
+      },
+      "letter.01": {
+        "bit_accuracy": 1.0,
+        "bits": 32,
+        "correct_bits": 32,
+        "correct_pairs": 16,
+        "mean_alternative_probability_mass": 0.6456919778138399,
+        "pairs": 16,
+        "ties": 0
+      },
+      "letter.10": {
+        "bit_accuracy": 1.0,
+        "bits": 32,
+        "correct_bits": 32,
+        "correct_pairs": 16,
+        "mean_alternative_probability_mass": 0.6805285383015871,
+        "pairs": 16,
+        "ties": 0
+      },
+      "letter.11": {
+        "bit_accuracy": 1.0,
+        "bits": 32,
+        "correct_bits": 32,
+        "correct_pairs": 16,
+        "mean_alternative_probability_mass": 0.7095477394759655,
+        "pairs": 16,
+        "ties": 0
+      },
+      "plant.00": {
+        "bit_accuracy": 0.78125,
+        "bits": 32,
+        "correct_bits": 25,
+        "correct_pairs": 9,
+        "mean_alternative_probability_mass": 0.4594964124262333,
+        "pairs": 16,
+        "ties": 0
+      },
+      "plant.01": {
+        "bit_accuracy": 1.0,
+        "bits": 32,
+        "correct_bits": 32,
+        "correct_pairs": 16,
+        "mean_alternative_probability_mass": 0.5493386322632432,
+        "pairs": 16,
+        "ties": 0
+      },
+      "plant.10": {
+        "bit_accuracy": 0.75,
+        "bits": 32,
+        "correct_bits": 24,
+        "correct_pairs": 8,
+        "mean_alternative_probability_mass": 0.5058699361979961,
+        "pairs": 16,
+        "ties": 0
+      },
+      "plant.11": {
+        "bit_accuracy": 1.0,
+        "bits": 32,
+        "correct_bits": 32,
+        "correct_pairs": 16,
+        "mean_alternative_probability_mass": 0.5865522120147943,
+        "pairs": 16,
+        "ties": 0
+      }
+    },
+    "overall": {
+      "bit_accuracy": 0.94140625,
+      "bits": 256,
+      "correct_bits": 241,
+      "correct_pairs": 113,
+      "mean_alternative_probability_mass": 0.598059787764214,
+      "pairs": 128,
+      "ties": 0
+    },
+    "tasks": {
+      "letter": {
+        "bit_accuracy": 1.0,
+        "bits": 128,
+        "correct_bits": 128,
+        "correct_pairs": 64,
+        "mean_alternative_probability_mass": 0.6708052773028612,
+        "pairs": 64,
+        "ties": 0
+      },
+      "plant": {
+        "bit_accuracy": 0.8828125,
+        "bits": 128,
+        "correct_bits": 113,
+        "correct_pairs": 49,
+        "mean_alternative_probability_mass": 0.5253142982255667,
+        "pairs": 64,
+        "ties": 0
+      }
+    }
+  },
+  "full_final_counts": {
+    "attribute8": {
+      "correct": 8192,
+      "total": 8192
+    },
+    "original577": {
+      "correct": 4178,
+      "total": 8192
+    },
+    "semantic577": {
+      "correct": 7462,
+      "total": 8192
+    }
+  },
+  "parent_results_sha256": "322b58077896ad2afb874481bb613069f45c7ca647b776064c438c8328e65746",
+  "subset_accuracy_estimate_emitted": false
+}

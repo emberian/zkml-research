@@ -1,0 +1,9 @@
+{
+  "prepared": true,
+  "freeze_sha256": "c9c74521b14dd9cb60743ccbf34a91c5e300fa33f03e187aba4117915cda31da",
+  "teacher_predictions_sha256": "01e9581a03776d3fa4746f5d73b82800f557b83baf77d3cb0ffde5cae2abf165",
+  "test_texts": 128,
+  "source_examples": 256,
+  "new_histories": 64,
+  "nonpadding_tokens": 45312
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "semantic-successor-public-scope-review-v1",
+  "passed": true,
+  "script_sha256": "23fcac6c7cd309626cb70a508e8de9c7c8fca341a7d8e7eaec9965de7ea99ca5",
+  "source_surface_hash": "d72cde56d0e94a6d62a9a815287e50fd6b328ac68c41e2c916cdf37a544ebe43",
+  "exact_string_disjointness": [
+    {
+      "task": 0,
+      "new_names": 8,
+      "new_full_templates": 2,
+      "new_full_cues": 8,
+      "prior_name_count": 64,
+      "prior_template_count": 16,
+      "prior_cue_count": 40,
+      "exact_string_overlaps": 0
+    },
+    {
+      "task": 1,
+      "new_names": 8,
+      "new_full_templates": 2,
+      "new_full_cues": 8,
+      "prior_name_count": 64,
+      "prior_template_count": 16,
+      "prior_cue_count": 40,
+      "exact_string_overlaps": 0
+    }
+  ],
+  "new_record_template_and_oracle_equalities": 128,
+  "backend_tokenizer_prompt_id_checks": 256,
+  "backend_single_token_suffix_checks": 512,
+  "tokenizer_sha256": "7b6a500b662a34eb3f0374db856ba4ad7de4c81040571d78dc0d357238930005",
+  "tokenizers_version": "0.22.2",
+  "source_batches": 32,
+  "source_axis_examples": 256,
+  "source_real_padded_tokens": [
+    45312,
+    46304
+  ],
+  "baseline_batches": 8,
+  "baseline_texts": 128,
+  "baseline_real_padded_tokens": [
+    4376,
+    4704
+  ],
+  "replayed_model_forwards": 0,
+  "crypto_or_privacy_experiments": 0,
+  "scope": "Exact string novelty within the named source corpus; known meanings/ordinary words are shared. Tokenization only, no model loading or inference."
+}

@@ -1,0 +1,138 @@
+{
+  "schema": "depth-interface-inputs-v1",
+  "inputs": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md",
+      "sha256": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d",
+      "scope": "frozen source audit"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md",
+      "sha256": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8",
+      "scope": "frozen environment variant"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/access.json",
+      "sha256": "bbca8376c0ba935ecd2502124853e677c5c4728c0a66c0f80c28360c0cffebaf",
+      "scope": "inherited nine-source access register"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/source_spans.json",
+      "sha256": "f0bba7d0b84d0d9af4c50bfa7b8cdd0d167141e3f436433c99d4d30c5b7d1e1d",
+      "scope": "inherited source scope"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md",
+      "sha256": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792",
+      "scope": "frozen B/P/G/X bridge"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/720.pdf",
+      "sha256": "00542fa45b6ee70bb9fba31cfdb80116913384c30396111909b2c09a70170d16",
+      "scope": "local primary PDF; no new extraction/download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_720.txt",
+      "sha256": "4a5a32b76235b51f94f1db8cbc5025f7d2c390627b6f319b8bd435ed98e26713",
+      "scope": "existing local primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "sha256": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e",
+      "scope": "local primary PDF; no new extraction/download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt",
+      "sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576",
+      "scope": "existing local primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97",
+      "scope": "local primary PDF; no new extraction/download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_733.txt",
+      "sha256": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+      "scope": "existing local primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf",
+      "sha256": "3574f296f030d424c8cf3f818b947ff8e1a0a39c42f86737ec53cc346b3e7896",
+      "scope": "local primary PDF; no new extraction/download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_917.txt",
+      "sha256": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa",
+      "scope": "existing local primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+      "sha256": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325",
+      "scope": "local primary PDF; no new extraction/download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt",
+      "sha256": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197",
+      "scope": "existing local primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/148.pdf",
+      "sha256": "9c4776ff48ce2b1b50b0b043c1ba92fc93ecae2c573ac3b7e807ad262d10cf92",
+      "scope": "local primary PDF; no new extraction/download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2014_148.txt",
+      "sha256": "1717ee97af18c99d344dd24b997b99a910dec0cb598c3a9945210c425da7ef76",
+      "scope": "existing local primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf",
+      "sha256": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4",
+      "scope": "local primary PDF; no new extraction/download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_337.txt",
+      "sha256": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+      "scope": "existing local primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/364.pdf",
+      "sha256": "1654075582d66a25bf817dd62b815711eecb2b255584925640663e1aa2d000f9",
+      "scope": "local primary PDF; no new extraction/download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2013_364.txt",
+      "sha256": "5be6e730ae317e989cd5ac089260e7198a188383da7d02fbc2b157b807c5a953",
+      "scope": "existing local primary text"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/521.pdf",
+      "sha256": "104a5b9400c3fe147abfc10c37d3a960ce8ec6f74b97d93bffed995bbbf16779",
+      "scope": "local primary PDF; no new extraction/download"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2012_521.txt",
+      "sha256": "0c18113bb1e62d6c2621a2c7eb77a2485091172883c5ef6d12cdf93717a855d8",
+      "scope": "existing local primary text"
+    }
+  ],
+  "new_queries": {
+    "web": 0,
+    "scry": 0,
+    "kagi": 0
+  },
+  "new_pdf_downloads": 0,
+  "new_pdf_extractions": 0,
+  "focused_read_scope": {
+    "2016/006": "Introduction pp2\u20133; Definitions3\u20135/Theorems3\u20134 pp5\u20136; own XiO multi-output step located relative to these claims",
+    "2015/720": "Definitions10\u201313/Theorems6\u20137 pp10\u201311; Theorem8 pp12\u201313",
+    "2015/173": "Definitions2\u20134 pp10\u201312; Section8 pp44\u201347 incl uniform-polynomial sentence and Theorem9; AppendixB pp53\u201356; AppendixC pp56\u201357",
+    "2014/917": "Introduction pp4\u20135; primitive definitions and FE syntax pp6\u20137; Section4 pp12\u201314",
+    "2014/148": "AppendixD pp34\u201339, specifically footnote15, TheoremD.3 and D.3 efficiency",
+    "2012/733": "Theorem3.1/Corollaries3.4\u20133.5/Remarks3.6\u20133.7/Construction3.1 pp20\u201324",
+    "2012/521": "Section5 constructor, parameters and security pp16\u201322",
+    "2013/364": "Earlier frozen audit standard-model CIJ interface; no new theorem inferred",
+    "2013/337": "Earlier frozen ABE constructor/rates scope; not an FE many-key upgrade"
+  }
+}

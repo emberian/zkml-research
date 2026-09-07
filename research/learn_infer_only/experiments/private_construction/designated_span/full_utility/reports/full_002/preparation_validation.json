@@ -1,0 +1,14 @@
+{
+  "classification": "EXECUTED preparation validation only, no crypto/service runtime",
+  "prepared_source_files": 24,
+  "known_public_fixture_files": 400,
+  "signature_dependency_files": 0,
+  "cryptography_version": "50.0.1",
+  "source_native_interpreter_fixture_signature_pins_pass": true,
+  "crypto_commands_executed": 0,
+  "services_launched": 0,
+  "small_report_gate_not_invoked": true,
+  "driver_sha256": "1e71e26866390076b92ee4c91ad78ddf3c93a19bf5cd7e52d5b391496753e573",
+  "oracle_sha256": "c2a7841e3148b78b43430907ba32e235d86cfef6f8d5688315e9d3c8d736345c",
+  "preparation_sha256": "90c3879e4cf44776ad52a9c5c8b7d7dee75d07a7bf920267afe98eac4b3cbb3d"
+}

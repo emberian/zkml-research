@@ -1,0 +1,47 @@
+{
+  "public": {
+    "auth-init": {
+      "calls": 1,
+      "elapsed_ns": 77181583
+    },
+    "recipient-init": {
+      "calls": 16,
+      "elapsed_ns": 1285810209
+    },
+    "public-build": {
+      "calls": 1,
+      "elapsed_ns": 18690432375
+    },
+    "verify-public": {
+      "calls": 1,
+      "elapsed_ns": 17174269125
+    },
+    "validate-context": {
+      "calls": 1,
+      "elapsed_ns": 3832190542
+    },
+    "recipient-finalize": {
+      "calls": 16,
+      "elapsed_ns": 1512487750
+    },
+    "issuer-encrypt": {
+      "calls": 33,
+      "elapsed_ns": 38846207912
+    },
+    "host-learn": {
+      "calls": 33,
+      "elapsed_ns": 79862218208
+    },
+    "encode-query": {
+      "calls": 4,
+      "elapsed_ns": 389179917
+    },
+    "host-infer": {
+      "calls": 4,
+      "elapsed_ns": 6322871126
+    }
+  },
+  "private_decode_calls": 4,
+  "private_decode_elapsed_ns_total": 700106208,
+  "scope": "Research measurement on a known public fixture, outside the accepted-value security transcript"
+}

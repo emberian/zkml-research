@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/validate.py"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "exit_code": 0,
+  "stdout": "{\n  \"frozen_inputs\": 15,\n  \"source_anchors\": 23,\n  \"local_pdf_extractions\": 3,\n  \"wrapper_rows\": 6,\n  \"adjacent_single_index_steps\": 748,\n  \"out_of_range_falsifier\": \"passed\",\n  \"ignore_rules\": \"passed\",\n  \"python_compile\": \"passed\",\n  \"cryptographic_runtime_executed\": false\n}\n",
+  "stderr": "",
+  "checks": {
+    "frozen_inputs": 15,
+    "source_anchors": 23,
+    "local_pdf_extractions": 3,
+    "wrapper_rows": 6,
+    "adjacent_single_index_steps": 748,
+    "out_of_range_falsifier": "passed",
+    "ignore_rules": "passed",
+    "python_compile": "passed",
+    "cryptographic_runtime_executed": false
+  },
+  "ignore_command_stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/__pycache__/dummy.pyc\n",
+  "scope": "Not a proof of source cryptography or of a quantum lift of KLW"
+}

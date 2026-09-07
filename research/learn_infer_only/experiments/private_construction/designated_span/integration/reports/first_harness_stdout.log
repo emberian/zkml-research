@@ -1,0 +1,16 @@
+{"stage": "setup_complete", "public_elapsed_ns": 84690807083, "genesis": "3b073b0d05f0db225040ca23d05c99015aa05438fbf856f37af37c28089a6683", "recipient_key_count": 16}
+{"stage": "public_events", "public_elapsed_ns": 355545173833, "learns": 10, "infers": 1, "expiries": 0, "revision": 11}
+{"stage": "public_events", "public_elapsed_ns": 762295719583, "learns": 20, "infers": 2, "expiries": 0, "revision": 22}
+{"stage": "public_events", "public_elapsed_ns": 1361707447542, "learns": 30, "infers": 3, "expiries": 0, "revision": 33}
+{"stage": "public_events", "public_elapsed_ns": 2020574594500, "learns": 40, "infers": 4, "expiries": 8, "revision": 44}
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/integration/normal_flow.py", line 88, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/integration/normal_flow.py", line 75, in main
+    data=path.read_text();require('reader-decrypt' not in data and 'signed_score' not in data and 'decode_elapsed_ns' not in data,'publicLogOmitsPrivateDecode:'+path.name)
+                          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/integration/source/journal/common.py", line 10, in require
+    if not condition:raise Refusal(reason)
+                     ^^^^^^^^^^^^^^^^^^^^^
+common.Refusal: publicLogOmitsPrivateDecode:commands.jsonl

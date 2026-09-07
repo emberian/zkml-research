@@ -1,0 +1,36 @@
+{
+  "artifacts": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/.gitignore",
+      "sha256": "caa3d07d1605371cefc16c6121c993460a247fbc3073566e609b48ea8b8c0fc5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/COMPACT_TMRE.md",
+      "sha256": "af5e6acb0feb544b739c08838dcc8c88dff63244d33c16e18792d992e662a445"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/access.json",
+      "sha256": "14fddd08726b24281bf08c6ec1afa51e33123aa8639ae65623c88245d87a75e7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/inputs.json",
+      "sha256": "ce759df1c3bf95a03f63d7e650658730977fde5d2a63d0a8b7f36e2cd154b7ba"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/source_spans.json",
+      "sha256": "6ae0042f324fd90654e0fa972c0119d919d57d8e57be93a94eb6cee7e2a0ed0b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/validate.py",
+      "sha256": "7603e201bd196634b5bd2ef0b158c1444f6e483104440da8a26e21be972aa216"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/wrapper_ledger.json",
+      "sha256": "2dbd8a101c2eb919f5af66228d351fc1688fd2c90975f498f10f25c39fc5a5d1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/validation.json",
+      "sha256": "11e104214da40c1b1df2cc5375de2221810226609fabcc0e90fe8e7e2ddde097"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "independent-semantic-axis-successor-review-v1",
+  "completed_utc": "2026-09-07T05:19:49.982754+00:00",
+  "disposition": "Accepted for narrow trusted plaintext semantic issuer / four-bin W32 utility evidence; no blocker found.",
+  "author_report_sha256": "f803be9d75fe503cd56f9925906882965e66aadaf80c1787e8782b810f1da8b1",
+  "author_manifest_sha256": "2c2a64be129fd3afcc705c62eb37b02e4b8bee2912a00a242c47d86c3141944d",
+  "prior_selection_manifest_sha256": "1abd672a0fc000d1d76d34ef503ffcf46d0567f7ec81e7dc8ec05e8b10c4d53a",
+  "final_author_and_prior_rehash_passed": true,
+  "author_files_unchanged": true,
+  "reviewer_model_calls": 0,
+  "reviewer_crypto_calls": 0,
+  "metered_queries": 0,
+  "files": {
+    "REVIEW.md": {
+      "sha256": "61b1c78bf3b7c6208cd62701f4726842a1f7f8244820ba35a9713721c1f7e056",
+      "bytes": 14418
+    },
+    "check_provenance.py": {
+      "sha256": "d4e5ffd322c4c48c839b0a55fb19b9b6592466d88fd3e87fb058f8d77771ab2f",
+      "bytes": 3431
+    },
+    "check_recorded.py": {
+      "sha256": "c28a108d1baca361728ab9731db9fb3af6ffcdbd1c2b5996a74fc1f19871e059",
+      "bytes": 15729
+    },
+    "check_scope.py": {
+      "sha256": "e0765511014635ef3b737533206f53f6a48c21484838f13e4669595c174fc141",
+      "bytes": 5698
+    },
+    "packet_inventory.json": {
+      "sha256": "8bfcfb9cbc14ab786d026f90598dc3b1812c8bf4e006743ea19b53c9ff0ce343",
+      "bytes": 8329
+    },
+    "provenance_check.log": {
+      "sha256": "13937e95f50cb9124196f9274ec11c82afa243189980efcdf3a2745f67fceb91",
+      "bytes": 534
+    },
+    "provenance_details.json": {
+      "sha256": "246fc66ed3af9cd9af147154a8bcc08d5a252cdfa6b255a1718d42ceab38a602",
+      "bytes": 15095
+    },
+    "recorded_check.log": {
+      "sha256": "4254ba9b2d34bce6984c18afee8dee54f4183d4a9b2d5b5f93c96f361a776e81",
+      "bytes": 4473
+    },
+    "recorded_results.json": {
+      "sha256": "4254ba9b2d34bce6984c18afee8dee54f4183d4a9b2d5b5f93c96f361a776e81",
+      "bytes": 4473
+    },
+    "scope_check.log": {
+      "sha256": "c7bbb63179e94d44a6a2852d1c0163af88c395dc921d61e345fa390ba78fe5f2",
+      "bytes": 1483
+    },
+    "scope_check_002.log": {
+      "sha256": "7a1f6590ce25402a810ea5d3dea3cf3be01ce8b424b79f4c28deca4c5cf604cf",
+      "bytes": 1555
+    },
+    "scope_results.json": {
+      "sha256": "7a1f6590ce25402a810ea5d3dea3cf3be01ce8b424b79f4c28deca4c5cf604cf",
+      "bytes": 1555
+    }
+  }
+}

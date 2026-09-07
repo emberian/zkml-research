@@ -1,0 +1,11 @@
+[package]
+name = "resident-private-ema"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+tfhe = { version = "=1.6.3", default-features = false, features = ["boolean"] }
+bincode = "=1.3.3"

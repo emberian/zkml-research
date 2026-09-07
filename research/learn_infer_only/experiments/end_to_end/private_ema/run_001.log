@@ -1,0 +1,19 @@
+{"completed": "setup", "exit_code": 0, "wall_seconds": 0.877016458}
+{"completed": "issuer_init", "exit_code": 0, "wall_seconds": 0.245401333}
+{"completed": "reader_state_000", "exit_code": 0, "wall_seconds": 0.009084958}
+{"completed": "issuer_query", "exit_code": 0, "wall_seconds": 0.057052625}
+{"completed": "issuer_learn_001", "exit_code": 0, "wall_seconds": 0.103231959}
+{"completed": "host_learn_001", "exit_code": 0, "wall_seconds": 9.458611541}
+{"completed": "replay_learn_001", "exit_code": 0, "wall_seconds": 9.1040455}
+{"completed": "reader_state_001", "exit_code": 0, "wall_seconds": 0.0078615}
+{"completed": "host_infer_001", "exit_code": 0, "wall_seconds": 0.289345542}
+{"completed": "replay_infer_001", "exit_code": 0, "wall_seconds": 0.300797125}
+{"completed": "reader_output_001", "exit_code": 0, "wall_seconds": 0.008477875}
+{"completed": "issuer_learn_002", "exit_code": 0, "wall_seconds": 0.100046875}
+{"completed": "host_learn_002", "exit_code": 0, "wall_seconds": 10.003680708}
+{"completed": "replay_learn_002", "exit_code": 0, "wall_seconds": 9.828866834}
+{"completed": "reader_state_002", "exit_code": 0, "wall_seconds": 0.008436459}
+{"completed": "host_infer_002", "exit_code": 0, "wall_seconds": 0.291001083}
+{"completed": "replay_infer_002", "exit_code": 0, "wall_seconds": 0.293279209}
+{"completed": "reader_output_002", "exit_code": 0, "wall_seconds": 0.008098875}
+{"finished": true, "logical_learns": 2, "correctness": true, "byte_replay": true}

@@ -18,8 +18,20 @@ uniform short-key/depth-compactness interfaces or quantitative quantum
 primitive rates needed by that bootstrap. [Independent review](experiments/adversarial_review/base_fe/REPORT.md)
 accepts the conditional lift, clarifies direct all-block LWE loss accounting,
 and proves a scoped obstruction for the literal full-key recursive payload:
-raw GKP/GVW public-key width is at least four times its message bound. An
-environment-specialized representation is being investigated separately.
+raw GKP/GVW public-key width is at least four times its message bound. The
+[public-environment representation](experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md)
+now passed [independent review](experiments/adversarial_review/public_environment/REPORT.md):
+future public keys can move into a correctly charged circuit environment, with
+a simultaneous polynomial size bound under explicit compact encryption
+circuit/output/randomness premises. This is a representation repair, not a
+new primitive instantiation. The [depth-interface audit](experiments/pq_composition/base_fe_audit/depth_interface/DEPTH_INTERFACE.md)
+affirms the source's Boolean compactness theorem, counts the literal bitwise
+Q*M key substitution, and identifies a full-output constructor conditional on
+compact Turing-machine randomized encoding. Its [independent review](experiments/adversarial_review/depth_interface/REPORT.md)
+accepts the scoped result with explicit normalizations: PRF-correlated real
+instances, clocked equal runtimes, zero inactive fields, and the standard
+advantage interpretation of a printed probability typo. The extra primitive
+and the complete quantum parameter chain remain open.
 In particular,
 quantum external advice does not by itself require quantum-valued aviO KeySamp.
 Earlier first-pass wording below about that requirement is superseded here.

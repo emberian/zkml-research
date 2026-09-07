@@ -1,0 +1,66 @@
+{
+  "web_queries": [
+    {
+      "q": "\"Succinct Randomized Encodings and their Applications\" eprint",
+      "domain": "eprint.iacr.org",
+      "purpose": "metadata only; identified2015/356; no PDF open/download"
+    },
+    {
+      "q": "\"Indistinguishability Obfuscation\" \"Iterated Circuits\" \"Unbounded Memory\" eprint",
+      "domain": "eprint.iacr.org",
+      "purpose": "metadata; no result; no PDF open/download"
+    }
+  ],
+  "scry_queries": 0,
+  "kagi_queries": 0,
+  "pdf_downloads": 0,
+  "local_reads": [
+    {
+      "id": "2015/356",
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/356.pdf",
+      "pdf_sha256": "44062b699622cc5304c1e5e012627d195bcdfec4a7c4f42960619b5d3eec3ea5",
+      "text": "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+      "text_sha256": "cb26f4b9590c252f8e1759532d40953f168f43a37ba115910352600836c5b221",
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/356.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt"
+      ],
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "id": "2014/769",
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/769.pdf",
+      "pdf_sha256": "2ff48e358662e3602b8119bbf919c2af3c1700c83d184d1d27c5949ed989bba8",
+      "text": "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt",
+      "text_sha256": "f3062776daaf61f0de021879f67e25a05bb917799db1d6885c5c4025d5e9a98c",
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/769.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "metadata_source": "2016/006 references pp11\u201312, mirrored text lines605\u2013607 and683\u2013685"
+    },
+    {
+      "id": "2014/925",
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/925.pdf",
+      "pdf_sha256": "0e04d7df8867bf29bf1b014c9e1e1e64976e5af343cba85aa57ada74ca05cfc2",
+      "text": "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+      "text_sha256": "8a98e369d0b0b11bf9f512a0df4ae87210e282ffbcd12bfe22b1fd441ab80487",
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/925.pdf",
+        "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "metadata_source": "2016/006 references pp11\u201312, mirrored text lines605\u2013607 and683\u2013685"
+    }
+  ]
+}

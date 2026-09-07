@@ -1,0 +1,30 @@
+{
+  "schema": "designated-crypto-source-review-closeout-v1",
+  "time_utc": "2026-09-07T04:49:01.394096+00:00",
+  "source_manifest_sha256": "325d8f4b858b7f3116dbe21c76199013cee38e057699db040469f15d66fde692",
+  "all_25_frozen_files_unchanged": true,
+  "files": {
+    "REVIEW.md": {
+      "sha256": "bc6889933b0bca6ad5b54b983d21d4cfc10923fe1d9b2a25b3beb8ebd471fd19",
+      "bytes": 11742
+    },
+    "source_inventory.json": {
+      "sha256": "e3e2ad6c955a80d950c3ccec0b7522f3c0a6fb444d242fed2e094c8e0e85629e",
+      "bytes": 7888
+    },
+    "check_public_records.py": {
+      "sha256": "93db8d478dd7c9cf05d95afef6ea2df6a869dc32a886a76983b30a1e969a8ab6",
+      "bytes": 8581
+    },
+    "public_records.json": {
+      "sha256": "e45828d13ef31ba315753ad36dfea048f7f7a21b35c8464f6f5055a4598e4b1f",
+      "bytes": 2491
+    },
+    "public_records.log": {
+      "sha256": "e45828d13ef31ba315753ad36dfea048f7f7a21b35c8464f6f5055a4598e4b1f",
+      "bytes": 2491
+    }
+  },
+  "new_crypto_execution": false,
+  "private_content_read": false
+}

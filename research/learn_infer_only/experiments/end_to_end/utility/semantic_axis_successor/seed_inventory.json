@@ -1,0 +1,14 @@
+{
+  "command": [
+    "rg",
+    "-n",
+    "\"seed\"[[:space:]]*:[[:space:]]*670([0-5][0-9]|6[0-3])([^0-9]|$)",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only",
+    "-g",
+    "*.json"
+  ],
+  "returncode": 1,
+  "scope": "all JSON numeric seed fields in research/learn_infer_only before this fixture is written",
+  "stderr": "",
+  "stdout": ""
+}

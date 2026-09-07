@@ -1,0 +1,129 @@
+{
+  "derived_runtime_census_sha256": "1e13827ca8dc88e3f7054c9fe6ee19245ad9b2d04caee4936ba422e453b7d18b",
+  "files": {
+    ".gitignore": {
+      "bytes": 22,
+      "sha256": "429a7ff8e3befe5ac528bb832881840115d63940883b125526b582eedcdcb7a9"
+    },
+    "CONTRACT.md": {
+      "bytes": 3044,
+      "sha256": "6dad886ffe02d2f1635b4585aed96de0d645ad446bdbfe5c5830b6c72ff9fa07"
+    },
+    "README.md": {
+      "bytes": 7304,
+      "sha256": "6cb7aed6adc48d5d606534a0f625083bcdbb14228bdb91d476a8cf666f63aeef"
+    },
+    "audit.command.json": {
+      "bytes": 369,
+      "sha256": "17cd8bedc65095566d06715f87d460e94920505dc3858e83f4d59eba2bcf2743"
+    },
+    "audit.json": {
+      "bytes": 679,
+      "sha256": "5bc6a18784e13ba4cd0b9fb9bec8c0a939dcaacbc7dd99ca03fb82171b41563d"
+    },
+    "audit.py": {
+      "bytes": 6263,
+      "sha256": "9de68751a5700c919933786187e4bb0a2b26d9b9354e830bf8e7ca190a0cae35"
+    },
+    "audit.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "audit.stdout": {
+      "bytes": 679,
+      "sha256": "272da0dd149614689eb6c0561fa2b134c67d6d567cf4507a6eaf3629cd03860d"
+    },
+    "build.command.json": {
+      "bytes": 368,
+      "sha256": "2be0ff2ec650a5f17df82dfa12d1e9893f7cae70af535c73f69970853ca63bbf"
+    },
+    "build.py": {
+      "bytes": 10041,
+      "sha256": "1ba2d9cab2514343fb5cc15400f42ca1fb5e49d9f96d52d1ee502821a9bda88c"
+    },
+    "build.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build.stdout": {
+      "bytes": 1575,
+      "sha256": "6c8ec64ec266f68e2c8acff42741d683177b21ce9d6cbc904a998c611b4f1267"
+    },
+    "build_results.json": {
+      "bytes": 1575,
+      "sha256": "4582cd0cb90a6cbc1c9076b31e67805a35cc33501572b5722f97a2b2495e8c87"
+    },
+    "common.py": {
+      "bytes": 1430,
+      "sha256": "00c4efd8a7ceb8c460857dabe4b2cad311de390d5d7fda890729db82ce587271"
+    },
+    "emit_runtime.py": {
+      "bytes": 2855,
+      "sha256": "bc02c3d70a92f12ea86b161458c81f85ac9cfb591327a4eeca443d2acd8e1828"
+    },
+    "emit_runtime.stdout": {
+      "bytes": 651,
+      "sha256": "c544b9775e1e1382a135845b94bfba0e2d67fc0da3807dfe7a7138140d7b2275"
+    },
+    "finalize.py": {
+      "bytes": 1243,
+      "sha256": "de20ca8985d88ed53f09254b5ff48c6eefcfdd5ce0960e2222c9b5a1443d56d8"
+    },
+    "fixture.json": {
+      "bytes": 760241,
+      "sha256": "bcdda47d227853e546427e9fb42de489b7c227ace65b10a9099cec81f4481b11"
+    },
+    "freeze.json": {
+      "bytes": 4398,
+      "sha256": "1fe42024b756c5af49b2a27c210e35ed0b5660148d749cff8667e7989a107198"
+    },
+    "full_survey_reference.json": {
+      "bytes": 13372,
+      "sha256": "8fed2f093a468752e52de9531b18648ba38ab92ef106daf24b7eee3fddc8b51e"
+    },
+    "integer_oracle.json": {
+      "bytes": 74598,
+      "sha256": "119b66dd3e39730897948f5f3021e73a234fa163adf43c9e27189c3264dc31cd"
+    },
+    "launch.py": {
+      "bytes": 1047,
+      "sha256": "c100d985a8fdf27d88b02798a0ec6e672c1400e1a4125f12185a8b5e44441e5c"
+    },
+    "prepare.command.json": {
+      "bytes": 371,
+      "sha256": "0f8ec05807662ed10c0fa711073348ae2b3896d7c5d8690bb741dba1301d6065"
+    },
+    "prepare.py": {
+      "bytes": 1993,
+      "sha256": "4cf08cef7525be60b318a36f675ee8d8fe12d706945892084408ccfd3d10fa2e"
+    },
+    "prepare.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "prepare.stdout": {
+      "bytes": 772,
+      "sha256": "fad23af873b33d0ec89cc62993418de6ae03d0769636f296c8b87884e9825a65"
+    },
+    "public_event_index.json": {
+      "bytes": 65606,
+      "sha256": "16d175a409f12aff573c20763290377ea310ae01895599bfe83adfa00d4922cb"
+    },
+    "public_query_records.json": {
+      "bytes": 112617,
+      "sha256": "835f096aa3477f05fe2303a2bf24dab99535b5c6abf7c85a9731d1c1da5a44a9"
+    },
+    "runtime_hash_census.json": {
+      "bytes": 63402,
+      "sha256": "1e13827ca8dc88e3f7054c9fe6ee19245ad9b2d04caee4936ba422e453b7d18b"
+    },
+    "selection.json": {
+      "bytes": 590,
+      "sha256": "af2869bd2c4592a2931128d28ab150a333e5b9fe04ad2f513c8c88237b91fae9"
+    }
+  },
+  "fixture_sha256": "bcdda47d227853e546427e9fb42de489b7c227ace65b10a9099cec81f4481b11",
+  "parent_entries_preserved": 53,
+  "retained_file_count": 30,
+  "scope": "PUBLIC deterministic consistency subset; no new utility estimate or crypto/model execution"
+}

@@ -1,0 +1,3077 @@
+{
+  "exposure": "PUBLIC test oracle; not a host/authority input",
+  "queries": {
+    "h0-e0065": {
+      "correct": false,
+      "expected_scalar": 112903,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -193548,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -9236,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 112903,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 256,
+      "sign": 1,
+      "source_factual_error": true,
+      "target_label": -1
+    },
+    "h0-e0066": {
+      "correct": true,
+      "expected_scalar": -177419,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -193548,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -1798,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -177419,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 257,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0067": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -9152,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 272,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0068": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -2428,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 273,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0069": {
+      "correct": false,
+      "expected_scalar": -96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -7649,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -96774,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 288,
+      "sign": -1,
+      "source_factual_error": true,
+      "target_label": 1
+    },
+    "h0-e0070": {
+      "correct": true,
+      "expected_scalar": 96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -3460,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 289,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0071": {
+      "correct": true,
+      "expected_scalar": -96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -7267,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 304,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0072": {
+      "correct": true,
+      "expected_scalar": -96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -3715,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 305,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0073": {
+      "correct": false,
+      "expected_scalar": 0,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 320,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0074": {
+      "correct": false,
+      "expected_scalar": 0,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 321,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0075": {
+      "correct": false,
+      "expected_scalar": 0,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 336,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0076": {
+      "correct": false,
+      "expected_scalar": 0,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 337,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0077": {
+      "correct": true,
+      "expected_scalar": 0,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 352,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0078": {
+      "correct": true,
+      "expected_scalar": 0,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 353,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0079": {
+      "correct": true,
+      "expected_scalar": 0,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 368,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0080": {
+      "correct": true,
+      "expected_scalar": 0,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 369,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0145": {
+      "correct": false,
+      "expected_scalar": 112903,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -193548,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -9236,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 112903,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 256,
+      "sign": 1,
+      "source_factual_error": true,
+      "target_label": -1
+    },
+    "h0-e0146": {
+      "correct": true,
+      "expected_scalar": -177419,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -193548,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -1798,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -177419,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 257,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0147": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -9152,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 272,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0148": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -2428,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 273,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0149": {
+      "correct": false,
+      "expected_scalar": -96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -7649,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -96774,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 288,
+      "sign": -1,
+      "source_factual_error": true,
+      "target_label": 1
+    },
+    "h0-e0150": {
+      "correct": true,
+      "expected_scalar": 96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -3460,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 289,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0151": {
+      "correct": true,
+      "expected_scalar": -96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -7267,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 304,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0152": {
+      "correct": true,
+      "expected_scalar": -96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -3715,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 305,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0153": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 69975,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 320,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0154": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 17070,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 321,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0155": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 60483,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 336,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0156": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 17292,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 337,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0157": {
+      "correct": true,
+      "expected_scalar": 129032,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 68808,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 352,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0158": {
+      "correct": true,
+      "expected_scalar": 129032,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 13519,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 353,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0159": {
+      "correct": true,
+      "expected_scalar": 96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 59104,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 368,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0160": {
+      "correct": true,
+      "expected_scalar": 96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 14956,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 369,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0225": {
+      "correct": false,
+      "expected_scalar": -80645,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -29066,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -80645,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 256,
+      "sign": -1,
+      "source_factual_error": true,
+      "target_label": 1
+    },
+    "h0-e0226": {
+      "correct": true,
+      "expected_scalar": 80645,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -8602,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 80645,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 257,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0227": {
+      "correct": true,
+      "expected_scalar": -80645,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -28143,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -80645,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 272,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0228": {
+      "correct": true,
+      "expected_scalar": -80645,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -10085,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -80645,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 273,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0229": {
+      "correct": false,
+      "expected_scalar": 32258,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -161290,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -25909,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 32258,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 288,
+      "sign": 1,
+      "source_factual_error": true,
+      "target_label": -1
+    },
+    "h0-e0230": {
+      "correct": true,
+      "expected_scalar": -64516,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -161290,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -9624,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -64516,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 289,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0231": {
+      "correct": true,
+      "expected_scalar": 32258,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -24441,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 32258,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 304,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0232": {
+      "correct": true,
+      "expected_scalar": 32258,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -10516,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 32258,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 305,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0233": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 69975,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 320,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0234": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 17070,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 321,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0235": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 60483,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 336,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0236": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 17292,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 337,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h0-e0237": {
+      "correct": true,
+      "expected_scalar": 129032,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 68808,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 352,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0238": {
+      "correct": true,
+      "expected_scalar": 129032,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 13519,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 353,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0239": {
+      "correct": true,
+      "expected_scalar": 96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 59104,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 368,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h0-e0240": {
+      "correct": true,
+      "expected_scalar": 96774,
+      "history_id": 67000,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 14956,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 96774,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 369,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0065": {
+      "correct": false,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 308,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 112903,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 256,
+      "sign": 1,
+      "source_factual_error": true,
+      "target_label": -1
+    },
+    "h1-e0066": {
+      "correct": true,
+      "expected_scalar": -112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -246,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 257,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0067": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -1073,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 272,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0068": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -371,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 273,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0069": {
+      "correct": false,
+      "expected_scalar": -48387,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 161290,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -453,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -48387,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 288,
+      "sign": -1,
+      "source_factual_error": true,
+      "target_label": 1
+    },
+    "h1-e0070": {
+      "correct": true,
+      "expected_scalar": 80645,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 161290,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 1040,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 80645,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 289,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0071": {
+      "correct": true,
+      "expected_scalar": -48387,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -129032,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -2274,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -48387,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 304,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0072": {
+      "correct": true,
+      "expected_scalar": -48387,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -129032,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 785,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -48387,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": false,
+      "record_id": 305,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0073": {
+      "correct": true,
+      "expected_scalar": 0,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 320,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0074": {
+      "correct": true,
+      "expected_scalar": 0,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 321,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0075": {
+      "correct": false,
+      "expected_scalar": 0,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 336,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0076": {
+      "correct": false,
+      "expected_scalar": 0,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 337,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0077": {
+      "correct": false,
+      "expected_scalar": 0,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 352,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0078": {
+      "correct": false,
+      "expected_scalar": 0,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 0,
+          "target": -1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 353,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0079": {
+      "correct": true,
+      "expected_scalar": 0,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 368,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0080": {
+      "correct": true,
+      "expected_scalar": 0,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 0,
+          "target": 1
+        }
+      },
+      "phase": 1,
+      "public_structural_zero": true,
+      "record_id": 369,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0145": {
+      "correct": false,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 308,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 112903,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 256,
+      "sign": 1,
+      "source_factual_error": true,
+      "target_label": -1
+    },
+    "h1-e0146": {
+      "correct": true,
+      "expected_scalar": -112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -246,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 257,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0147": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -1073,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 272,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0148": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -371,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 273,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0149": {
+      "correct": false,
+      "expected_scalar": -48387,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 161290,
+          "target": 1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -453,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -48387,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 288,
+      "sign": -1,
+      "source_factual_error": true,
+      "target_label": 1
+    },
+    "h1-e0150": {
+      "correct": true,
+      "expected_scalar": 80645,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 161290,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 1040,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 80645,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 289,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0151": {
+      "correct": true,
+      "expected_scalar": -48387,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -129032,
+          "target": -1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -2274,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -48387,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 304,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0152": {
+      "correct": true,
+      "expected_scalar": -48387,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -129032,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 785,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -48387,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 305,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0153": {
+      "correct": true,
+      "expected_scalar": 129032,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 2285,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 320,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0154": {
+      "correct": true,
+      "expected_scalar": 129032,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 6903,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 321,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0155": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 197,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 336,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0156": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 5466,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 337,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0157": {
+      "correct": true,
+      "expected_scalar": -96774,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 6035,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 352,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0158": {
+      "correct": true,
+      "expected_scalar": -96774,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 6759,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 353,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0159": {
+      "correct": true,
+      "expected_scalar": 145161,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 3879,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 368,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0160": {
+      "correct": true,
+      "expected_scalar": 145161,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 5462,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        }
+      },
+      "phase": 2,
+      "public_structural_zero": false,
+      "record_id": 369,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0225": {
+      "correct": false,
+      "expected_scalar": -112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 4655,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": -1,
+          "score": -112903,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 256,
+      "sign": -1,
+      "source_factual_error": true,
+      "target_label": 1
+    },
+    "h1-e0226": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 2216,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 257,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0227": {
+      "correct": true,
+      "expected_scalar": -112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 3655,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 272,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0228": {
+      "correct": true,
+      "expected_scalar": -112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 1932,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -112903,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 273,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0229": {
+      "correct": false,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -129032,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 4548,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 112903,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 288,
+      "sign": 1,
+      "source_factual_error": true,
+      "target_label": -1
+    },
+    "h1-e0230": {
+      "correct": true,
+      "expected_scalar": -80645,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -129032,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 3240,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -80645,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 289,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0231": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 161290,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 3840,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 304,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0232": {
+      "correct": true,
+      "expected_scalar": 112903,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 161290,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 2756,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 112903,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 305,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0233": {
+      "correct": true,
+      "expected_scalar": 129032,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 2285,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 320,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0234": {
+      "correct": true,
+      "expected_scalar": 129032,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 6903,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 129032,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 321,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0235": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 197,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 336,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0236": {
+      "correct": true,
+      "expected_scalar": -145161,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 5466,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -145161,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 337,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0237": {
+      "correct": true,
+      "expected_scalar": -96774,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 6035,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 352,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0238": {
+      "correct": true,
+      "expected_scalar": -96774,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        },
+        "original577": {
+          "correct": false,
+          "prediction": 1,
+          "score": 6759,
+          "target": -1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": -1,
+          "score": -96774,
+          "target": -1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 353,
+      "sign": -1,
+      "source_factual_error": false,
+      "target_label": -1
+    },
+    "h1-e0239": {
+      "correct": true,
+      "expected_scalar": 145161,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 3879,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 368,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    },
+    "h1-e0240": {
+      "correct": true,
+      "expected_scalar": 145161,
+      "history_id": 67001,
+      "nonempty_zero_score": false,
+      "original_full_survey_selected_records": {
+        "attribute8": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        },
+        "original577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 5462,
+          "target": 1
+        },
+        "semantic577": {
+          "correct": true,
+          "prediction": 1,
+          "score": 145161,
+          "target": 1
+        }
+      },
+      "phase": 3,
+      "public_structural_zero": false,
+      "record_id": 369,
+      "sign": 1,
+      "source_factual_error": false,
+      "target_label": 1
+    }
+  }
+}

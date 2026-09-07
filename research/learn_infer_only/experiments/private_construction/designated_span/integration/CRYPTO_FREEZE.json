@@ -1,0 +1,10 @@
+{
+  "source_directory": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto",
+  "files_sha256": {
+    "crypto.py": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+    "group.py": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+    "native_pow.py": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+    "rows.json": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0"
+  },
+  "upstream_positive_report_sha256": "6c5fdf598bfcef1c199c77ba515dc39c1f8b93b7efba4791187463b4338439f5"
+}

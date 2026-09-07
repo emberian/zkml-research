@@ -1,0 +1,42 @@
+{
+  "first_harness": {
+    "command": "python3 -u normal_flow.py --root runtime/run-001",
+    "executed_source": {
+      "path": "source_original/normal_flow.before_guard_fix.py",
+      "sha256": "497a3c69212a0cb61637faa2fc13ee7a1d0a603c4dc82d257a1b44703961f478",
+      "reason": "Executed first harness preserved before exact-key log-guard repair; no crypto/journal source change"
+    },
+    "exit_code": 1,
+    "captured_output": "first_harness_stdout.log",
+    "classification": "all functional/private-comparison/replay checks completed; final raw-substring omission guard falsely matched public bounds metadata"
+  },
+  "finalizer": {
+    "command": "python3 finalize_normal_001.py --root runtime/run-001 --first-log runtime/normal-001.log",
+    "exit_code": 0,
+    "stdout_captured_from_tool": {
+      "ok": true,
+      "learns": 40,
+      "infers": 4,
+      "expiries": 8,
+      "private_integer_comparisons": 4,
+      "all_match": true,
+      "replayed_transitions": 44,
+      "guard_false_positive_corrected": true,
+      "report_sha256": "dbc7b6b41ff27a380755c210d9a1c190b3792fb1922f0a492add065312113ece"
+    }
+  },
+  "exporter": {
+    "command": "python3 export_evidence.py --root runtime/run-001 --out evidence/normal_001",
+    "exit_code": 0,
+    "stdout_captured_from_tool": {
+      "ok": true,
+      "exported_files": 32,
+      "manifest_sha256": "61d01bf761ba86b6cf71ca2b2d55463b0493405e62d028d55d7086229ce9bfe3",
+      "public_cli_calls": 1630,
+      "private_key_count": 16
+    }
+  },
+  "crypto_rerun_after_guard_failure": false,
+  "private_decode_rerun_after_guard_failure": false,
+  "no_further_tests_launched": true
+}

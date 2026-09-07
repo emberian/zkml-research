@@ -1,0 +1,45 @@
+{
+  "schema": "depth-interface-validation-v1",
+  "utc": "2026-09-07T05:06:27.212338+00:00",
+  "scope": "Unchanged source/frozen inputs and combinatorial/normalized-monomial bookkeeping. No validation of cryptographic security or a complete compact-FE implementation.",
+  "read_only_inputs_verified": 23,
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/arity_substitution.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"arity_rows\": 12,\n  \"chunk_rows\": 36,\n  \"max_underlying_boolean_keys\": 512,\n  \"scope\": \"Exact combinatorial query counts and normalized symbolic polynomial substitutions. No cryptographic implementation, security test, benchmark, or choice of hidden Theta constants.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "py_compile",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/arity_substitution.py",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/validate.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "check-ignore",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/__pycache__/validate.cpython-314.pyc"
+      ],
+      "exit_code": 0,
+      "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/__pycache__/validate.cpython-314.pyc\n",
+      "stderr": ""
+    }
+  ],
+  "new_queries": {
+    "web": 0,
+    "scry": 0,
+    "kagi": 0
+  },
+  "new_pdf_downloads": 0
+}

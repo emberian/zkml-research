@@ -1,0 +1,39 @@
+{
+  "actual_crypto_log_matches_meter": true,
+  "cache_canonical_json_bytes": 249641,
+  "cache_scope": "Public inspection metadata grows with distinct ciphertexts; no eviction. Lifetime is one full history. JSON size is not heap/RSS.",
+  "every_get_fully_rehashed": true,
+  "inspection_cache_entries": 395,
+  "lifetime_including_idle_pipeline_and_shutdown_ns": 115430416292,
+  "ok": true,
+  "proposal_caller_plus_startup_ns": 21534420707,
+  "proposal_caller_total_ns": 21450571665,
+  "proposal_inside_function_total_ns": 21342737636,
+  "requests": 240,
+  "startup_ns": 83849042,
+  "stats": {
+    "cas_get_calls": 25536,
+    "crypto_calls": {
+      "host-infer": 48,
+      "host-learn": 192,
+      "inspect": 395
+    },
+    "full_blob_sha256_bytes": 2165144064,
+    "full_blob_sha256_calls": 25536,
+    "requests": 240
+  },
+  "stdio_request_bytes": 134064,
+  "stdio_response_bytes": 162781,
+  "trust_scope": "Same SHA256/full reads, pinned binary checks, validators and public authority/verifier recomputation; no new credential or OS isolation.",
+  "worker_argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/runtime/e2e/host_runtime/host.py",
+    "serve",
+    "--config",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/runtime/history_0/host_config.json",
+    "--cas",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/runtime/history_0/host_cas"
+  ],
+  "worker_pid": 29203,
+  "worker_processes": 1
+}

@@ -1,0 +1,133 @@
+--- frozen_original_utility_driver.py
+
++++ semantic_utility_driver.py
+
+@@ -31,75 +31,6 @@
+
+ 
+ def dump(path, value):
+     Path(path).write_text(json.dumps(value, sort_keys=True, separators=(',', ':')) + '\n')
+-
+-
+-def stage(args):
+-    runtime, reports = Path(args.runtime).resolve(), Path(args.reports).resolve()
+-    runtime.mkdir(parents=True, exist_ok=False)
+-    os.chmod(runtime, 0o700)
+-    reports.mkdir(parents=True, exist_ok=False)
+-    e2e = runtime / 'e2e'
+-    for name in ['journal', 'verified_reader', 'utility/issuer_oracle', 'utility/public_queries']:
+-        (e2e / name).mkdir(parents=True)
+-    os.chmod(e2e / 'utility/issuer_oracle', 0o700)
+-    pins = {}
+-    for name in MODULES:
+-        raw = (HERE.parent / 'journal' / name).read_bytes()
+-        (e2e / 'journal' / name).write_bytes(raw)
+-        pins['journal/' + name] = sha(raw)
+-    for name in ['service.py', 'utility_driver.py']:
+-        raw = (HERE / name).read_bytes()
+-        (e2e / 'verified_reader' / name).write_bytes(raw)
+-        pins['verified_reader/' + name] = sha(raw)
+-    binary = e2e / 'resident-crypto'
+-    shutil.copyfile(Path(args.binary).resolve(), binary)
+-    os.chmod(binary, 0o755)
+-    pins['resident-crypto'] = sha(binary.read_bytes())
+-    utility = HERE.parent / 'utility'
+-    manifest = json.loads((utility / 'materialized_inputs_manifest.json').read_bytes())
+-    index_path = utility / 'issuer_oracle/input_index.json'
+-    oracle_path = utility / 'issuer_oracle/expected_scalars.json'
+-    assert sha(index_path.read_bytes()) == manifest['private_index_sha256']
+-    assert sha(oracle_path.read_bytes()) == manifest['oracle_sha256']
+-    index = json.loads(index_path.read_bytes())
+-    assert len(index['events']) == 480
+-    frozen_files = {}
+-    for event in index['events']:
+-        field = 'issuer_vector_path' if event['kind'] == 'Learn' else 'public_query_vector_path'
+-        path = Path(event[field])
+-        raw = path.read_bytes()
+-        assert sha(raw) == manifest['files_sha256'][str(path)]
+-        dest = e2e / 'utility' / ('issuer_oracle' if event['kind'] == 'Learn' else 'public_queries') / path.name
+-        dest.write_bytes(raw)
+-        os.chmod(dest, 0o600 if event['kind'] == 'Learn' else 0o644)
+-        event[field] = str(dest)
+-        frozen_files[str(dest.relative_to(e2e))] = sha(raw)
+-    dump(e2e / 'utility/issuer_oracle/input_index.json', index)
+-    os.chmod(e2e / 'utility/issuer_oracle/input_index.json', 0o600)
+-    (e2e / 'utility/issuer_oracle/expected_scalars.json').write_bytes(oracle_path.read_bytes())
+-    os.chmod(e2e / 'utility/issuer_oracle/expected_scalars.json', 0o600)
+-    provenance = {'materialized_inputs_manifest_sha256': sha((utility / 'materialized_inputs_manifest.json').read_bytes()),
+-        'original_index_sha256': manifest['private_index_sha256'], 'oracle_sha256': manifest['oracle_sha256'],
+-        'copied_index_sha256': sha((e2e / 'utility/issuer_oracle/input_index.json').read_bytes()),
+-        'mapping_sha256': manifest['mapping_sha256'], 'frozen_vector_files': frozen_files,
+-        'source_utility_report_sha256': sha((HERE.parent / 'journal/results/utility_002/report.json').read_bytes()),
+-        'source_live_text_report_sha256': sha((HERE.parent / 'journal/results/live_text_002/report.json').read_bytes()),
+-        'issuer_vectors': 384, 'public_queries': 16, 'expected_outputs': 96,
+-        'exposure': 'Previously public frozen utility fixture; copied issuer/oracle data is never a host/authority input.'}
+-    dump(reports / 'source_pins.json', pins)
+-    dump(reports / 'fixture_pins.json', provenance)
+-    with tarfile.open(reports / 'source_snapshot.tar.gz', 'w:gz') as archive:
+-        for name in sorted(pins):
+-            if name != 'resident-crypto':
+-                archive.add(e2e / name, arcname=name)
+-    command = [sys.executable, str(e2e / 'verified_reader/utility_driver.py'), '--worker',
+-               '--runtime', str(runtime), '--reports', str(reports), '--binary', str(binary)]
+-    dump(reports / 'command.json', {'argv': command})
+-    with (reports / 'execution.log').open('wb') as log:
+-        result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
+-    print(json.dumps({'ok': result.returncode == 0, 'exit_code': result.returncode,
+-                      'report': str(reports / 'report.json')}))
+-    raise SystemExit(result.returncode)
+ 
+ 
+ def worker(args):
+@@ -344,36 +275,34 @@
+
+         'histories': histories, 'events': 480, 'learns': 384, 'infers': 96, 'expiries': 256,
+         'oracle_comparisons': 96, 'all_oracle_matches': True, 'known_empty_outputs': 16,
+         'nonempty_outputs': 80, 'verified_decrypt_calls': 96, 'baseline_decrypt_calls': 0,
+-        'utility_counts': {'all_checkpoints_correct': correct, 'all_checkpoints_total': 96,
++        'fixture_label_checks': {'all_checkpoints_correct': correct, 'all_checkpoints_total': 96,
+             'nonempty_correct': nonempty_correct, 'nonempty_total': 80,
+             'final_checkpoint_correct': sum(t['correct'] for h in histories for k, t in h['phase_route_counts'].items() if k.startswith('phase_3')),
+             'final_checkpoint_total': 32},
+         'source_pins': read_json(reports / 'source_pins.json'),
+         'fixture_pins_sha256': sha((reports / 'fixture_pins.json').read_bytes()),
+         'elapsed_ns': time.perf_counter_ns() - total_start,
+-        'scope': ['Both complete predeclared public fixture histories; no new model runs/training/downloads or utility reselection.',
++        'scope': ['Both complete semantic integration-fixture histories; this subset is not a new accuracy sample and no model ran.',
+                   'Actual BFV, trusted plaintext issuer, public queries, independent public recomputation and finalized release.',
+                   'Benchmark R: trusted full-key reader; no restricted-decryption or no-master-read construction.',
+-                  'Public fixture is known-state utility evidence, not private-ingress confidentiality evidence.',
++                  'Public semantic fixture is known-state consistency evidence. Effective rank4 per route/rank8 total; spanning exact-score recipients determine each aggregate.',
+                   'Classical Ed25519 authorization; no end-to-end post-quantum claim.',
+                   'Issuer provenance, independent command policy, reader persistence and process/file separation remain assumptions; no OS isolation.',
+                   'No adversarial controls executed by this honest-workload driver.']}
+-    require(correct == 52 and nonempty_correct == 44, 'sameFrozenUtilityDenominator')
+-    require(report['utility_counts']['final_checkpoint_correct'] == 18, 'sameFrozenFinalSubset')
++    expected = read_json(utility / 'fixture_expectations.json')
++    require(correct == expected['all_correct'] and nonempty_correct == expected['nonempty_correct'], 'sameSemanticFixtureLabels')
++    require(report['fixture_label_checks']['final_checkpoint_correct'] == expected['final_correct'], 'sameSemanticFinalSubset')
+     write_json(reports / 'report.json', report)
+     print(json.dumps({'ok': True, 'events': 480, 'verified_outputs': 96,
+                       'all_oracle_matches': True, 'report': str(reports / 'report.json')}), flush=True)
+ 
+-
+ def main():
+-    parser = argparse.ArgumentParser()
++    parser=argparse.ArgumentParser()
+     parser.add_argument('--worker', action='store_true')
+-    parser.add_argument('--runtime', default=str(HERE / 'runtime/utility_001'))
+-    parser.add_argument('--reports', default=str(HERE / 'reports/utility_001'))
+-    parser.add_argument('--binary', default=str(HERE.parent / 'crypto/target/release/resident-crypto'))
+-    args = parser.parse_args()
+-    worker(args) if args.worker else stage(args)
+-
+-
+-if __name__ == '__main__':
+-    main()
++    parser.add_argument('--runtime', required=True)
++    parser.add_argument('--reports', required=True)
++    parser.add_argument('--binary', required=True)
++    args=parser.parse_args()
++    assert args.worker, 'Only the frozen normal worker entry point is staged'
++    worker(args)
++if __name__=='__main__':main()

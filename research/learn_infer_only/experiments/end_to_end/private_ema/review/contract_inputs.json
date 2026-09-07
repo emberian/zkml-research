@@ -1,0 +1,23 @@
+{
+  "label": "SOURCE/DERIVED",
+  "review_stage": "Contract and preserved earlier probe only; author implementation not yet frozen",
+  "reviewer": "/root/entropy_composition",
+  "author": "/root/bfv_lift_refinement",
+  "source_inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/CONTRACT.md": "d83c6c39259ae4418c8ac7b3e8b9ccbb365f47804adc1d9c8c1a102db2c13c3a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/tfhe_ema_probe/src/main.rs": "f3592b4025eb4bffecf1ffb157c63f056d7c52084042a22058f2e2d6ae76fad7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/tfhe_ema_probe/Cargo.toml": "524ad499e2da2d12267497bdedd3b814ecd36a62dcd6e39f8e41d8701f150000",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/tfhe_ema_probe/Cargo.lock": "d929e593d51ce896e157d9b003bde62d7282b8a4311f5dc680ed6eea19245543",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/tfhe_ema_run.log": "78cc791838ed15019b4fa9f11bf5881337e1b1a9bd16998dfb1182480bcea452",
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/server_key/mod.rs": "bf88871068b974a5496f861c076d8ef9714ef193742d57dba96c42f7d0e9f82a",
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs": "645ca26eab47b80d16c3088b1ab776966462d4bf2b3516567559d3b4234141f5",
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/ciphertext/mod.rs": "d2650d683cc9a23de5e8d2f700180c68e793ae038fc6376522f4f1c6e8e5b48a",
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/parameters/params.rs": "3ac1db249c48c031b144f1e2300531af228196d089bedad810655922ccbb8d69"
+  },
+  "report_sha256": "38bb9920b01b759dd8d1e964dbe1a45a24eace694cc9468f2f118af3b42c11d1",
+  "cryptographic_runs": 0,
+  "new_tests": 0,
+  "private_artifact_reads": 0,
+  "queries": 0,
+  "source_writes": 0
+}

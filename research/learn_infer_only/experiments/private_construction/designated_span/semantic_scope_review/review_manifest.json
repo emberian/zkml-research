@@ -1,0 +1,124 @@
+{
+  "schema": "resident-designated-semantic-scope-independent-review-v1",
+  "as_of_date_utc": "2026-09-07",
+  "reviewer_role": "pq_composition: independently assigned reviewer, not author of the two targets",
+  "verdict_claim_kind": "DERIVED",
+  "verdict": "Accepted conditional written mathematical construction and classical DDH reduction; no blocking proof error found. Preserve explicit enumerable-family, continuation-permission, group-output and decoder-resource qualifications.",
+  "review_report": {
+    "path": "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope_review/REPORT.md",
+    "sha256": "7a6e4ab0eca3ed24a2ef76f5ee3ddedb2ba984ba43abfbdcba3bfbf631f01333"
+  },
+  "identity_evidence": {
+    "claim_kind": "EXECUTED",
+    "instrument": "shasum -a 256",
+    "commands_file": "commands.txt",
+    "stdout_file": "hashes.stdout.txt",
+    "exit_code": 0,
+    "all_seven_author_pinned_hashes_match": true,
+    "additional_source_manifest_hash_unchanged": true
+  },
+  "activity": {
+    "construction_tests": 0,
+    "mathematical_test_programs": 0,
+    "runtime_tests": 0,
+    "disclosure_tests": 0,
+    "routing_tests": 0,
+    "extraction_tests": 0,
+    "malformed_input_tests": 0,
+    "new_executable_artifacts": 0,
+    "new_formal_theorems": 0,
+    "literature_queries": 0,
+    "web_queries": 0,
+    "scry_queries": 0,
+    "sql_queries": 0,
+    "schema_queries": 0,
+    "pdf_downloads": 0,
+    "companion_edits": 0,
+    "shared_ledger_edits": 0,
+    "author_input_edits": 0,
+    "commits": 0
+  },
+  "inputs": [
+    {
+      "claim_kind": "SOURCE",
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope/SCOPE.md",
+      "sha256": "97669d67bbf114ee46d6cd04752e36de2dfff6f07e686ec782a480ca482be70c",
+      "role": "Frozen primary review target",
+      "access": "Complete document read with cat and nl -ba; exact hash checked before and after review",
+      "locations": "Lines 54-104 credential/selected-trace distinction; 106-158 aggregate/FIFO quotient; 160-216 functionality limits"
+    },
+    {
+      "claim_kind": "SOURCE",
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope/LINEAR_CONTINUATION.md",
+      "sha256": "d52086249ebdc317c0e333096df7da3779a3ded4d24748963f5a71e73a14d172",
+      "role": "Frozen primary review target",
+      "access": "Complete document read with cat and nl -ba; exact hash checked before and after review",
+      "locations": "18-78 observable closure; 80-201 encryption and FIFO; 203-253 privacy reduction; 255-331 proper closure, decoding, swap witness and limits"
+    },
+    {
+      "claim_kind": "SOURCE",
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/semantic_scope/sources.json",
+      "sha256": "3d159bbc55494a68f37d34b8dde0d674560ed287b589ecdf897628f882fb7014",
+      "role": "Author source pins and scope",
+      "access": "Complete JSON read with cat; exact hash checked before and after review",
+      "locations": "Source identities, activity counts and remaining obligations"
+    },
+    {
+      "claim_kind": "SOURCE",
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/CONTRACT.md",
+      "sha256": "465d3a0f4eb20f9ce762bf49200e03bb2e918efd5cdd9c563405fe91d6b6c674",
+      "role": "Parent functionality specification; implementation claims not rerun",
+      "access": "Complete document read with cat; exact hash matches author pin",
+      "locations": "Privacy scope and behavioral limit, lines 53-76; continuity limit, 104-113"
+    },
+    {
+      "claim_kind": "SOURCE",
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/crypto/README.md",
+      "sha256": "b9b9de07b103c33ddaccaad38904516307917ec50dc73df72f6133ec702573a9",
+      "role": "Backend specification boundary only; no implementation-source or runtime audit",
+      "access": "Complete document read with cat; exact hash matches author pin",
+      "locations": "Setup roles, 57-72; rows/decoder, 85-116; privacy/implementation scope, 118-138"
+    },
+    {
+      "claim_kind": "SOURCE",
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/review/REVIEW.md",
+      "sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840",
+      "role": "Prior independent-mask coalition-view theorem and DDH-game extension",
+      "access": "Complete document read with cat; exact hash matches author pin",
+      "locations": "Sections 1-3 setup/equations/joint view; section 4 adaptive messages and sampling; section 5 correlated keys and full-coalition limit"
+    },
+    {
+      "claim_kind": "SOURCE",
+      "path": "research/learn_infer_only/experiments/private_construction/fixed_span/scaling/GENERAL_FIXED_SPAN.md",
+      "sha256": "5d99740f9f329e0a45f9c45bcd0db684b49f66660db567d81bfc169dbca4edb9",
+      "role": "Underlying derived fixed-key adaptive-message DDH lemma",
+      "access": "Complete document read with cat; exact hash matches author pin",
+      "locations": "Lines 22-62 game/basis; 92-145 hybrid and sampling bound; lifecycle and nonvacuity section"
+    },
+    {
+      "claim_kind": "SOURCE",
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_span_scaling/REPORT.md",
+      "sha256": "36e724058ab5643dd4c0d176854891aabf1bbec9064ca54f5e7d0e0959dfb147",
+      "role": "Independent acceptance and precise scope of the underlying lemma",
+      "access": "Sections 1-3 (lines 1-145) reread separately with sed; additional excerpts through line 210 seen; not claimed complete-document reading; controls not rerun",
+      "locations": "Basis distribution, shared-mask/adaptive hybrids, padded signed gap and sampler budget"
+    }
+  ],
+  "accepted_with_qualifications": [
+    "Exact FIFO quotient requires the stated zero admissions, observations and sufficient permitted horizon.",
+    "Full raw credentials reveal group-encoded recordwise projections; integer recovery and leakage simulation are separate claims.",
+    "Polynomial closure computation requires a polynomial-size enumerable matrix family or an equivalent effective span-image routine.",
+    "The swap future-relevance witness is not an admissible full-bundle privacy pair; a separate third-coordinate kernel pair supplies ambient privacy nonvacuity.",
+    "Frame normalization is online and preserves each fresh input randomizer exactly; no additional hybrid loss is introduced.",
+    "Host-only and partial-basis games retain their distinct leakage and invariance contracts.",
+    "Bounded integer readout requires a preserved range, injective interval modulo q and an affordable decoder."
+  ],
+  "not_established": [
+    "Selected-trace-only release against holders of raw basis scalars",
+    "Real/ideal or UC composition of journal, recipient, signatures and setup",
+    "Implementation or machine-checked correctness/security",
+    "Erasure mechanism or unrestricted additional secret advice",
+    "Actual text-encoder-image nonvacuity",
+    "Nonlinear or post-quantum protected learner"
+  ]
+}

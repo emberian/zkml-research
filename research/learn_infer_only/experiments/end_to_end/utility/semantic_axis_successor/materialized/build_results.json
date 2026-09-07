@@ -1,0 +1,64 @@
+{
+  "build_wall_seconds": 0.6012227920000441,
+  "counts": {
+    "empty_route_queries": 16,
+    "events": 480,
+    "expiries": 256,
+    "learn": 384,
+    "public_query_records": 16,
+    "queries": 96
+  },
+  "crypto_executions": 0,
+  "duplicate_query_records": 8,
+  "effective_aggregate_rank_per_route": 4,
+  "encoder_executions": 0,
+  "fixture_sha256": "bcdda47d227853e546427e9fb42de489b7c227ace65b10a9099cec81f4481b11",
+  "freeze_sha256": "1fe42024b756c5af49b2a27c210e35ed0b5660148d749cff8667e7989a107198",
+  "frozen_full_run_score_comparisons": 96,
+  "frozen_full_run_state_vector_comparisons": 12,
+  "global_query_row_rank": 8,
+  "integer_oracle_sha256": "119b66dd3e39730897948f5f3021e73a234fa163adf43c9e27189c3264dc31cd",
+  "nonempty_queries": 80,
+  "nonempty_zero_queries": 0,
+  "parent_entries_unchanged": 53,
+  "prepared": true,
+  "recipient_coalition_aggregate_privacy_claim": false,
+  "row_rank_by_route": {
+    "0": {
+      "active_coordinates": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "basis_record_ids": {
+        "0": 257,
+        "1": 256,
+        "2": 289,
+        "3": 288
+      },
+      "exact_row_rank": 4,
+      "row_records": 8,
+      "unique_rows": 4
+    },
+    "1": {
+      "active_coordinates": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "basis_record_ids": {
+        "4": 320,
+        "5": 336,
+        "6": 352,
+        "7": 368
+      },
+      "exact_row_rank": 4,
+      "row_records": 8,
+      "unique_rows": 4
+    }
+  },
+  "source_vectors_from_model_predictions_only": true,
+  "subset_utility_estimate": false
+}

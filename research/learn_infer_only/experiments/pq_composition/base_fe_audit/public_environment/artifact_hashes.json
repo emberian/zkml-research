@@ -1,0 +1,40 @@
+{
+  "schema": "public-environment-artifacts-v1",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a",
+      "bytes": 14
+    },
+    {
+      "path": "PUBLIC_ENVIRONMENT.md",
+      "sha256": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8",
+      "bytes": 17870
+    },
+    {
+      "path": "inputs.json",
+      "sha256": "6de6d072d6afc9249208f3f66ff8da7d8412508795a9e6f4d8fe9427767dd6c0",
+      "bytes": 4138
+    },
+    {
+      "path": "circuit_dependency.py",
+      "sha256": "79ca4109ef926c4323ac63d6dac3f4ef2fe1ea2bc896de50f1f7e2da6d294608",
+      "bytes": 4415
+    },
+    {
+      "path": "circuit_dependency.json",
+      "sha256": "85620be6ba7d6dc9a2b73e077d4babe1b93c6a0a267627b56861f61c747d06b9",
+      "bytes": 2780
+    },
+    {
+      "path": "validate.py",
+      "sha256": "a8a181f7347a4683a9f458925a1177f4d858fe2bddfb5472b4885ca065944c77",
+      "bytes": 2836
+    },
+    {
+      "path": "validation.json",
+      "sha256": "d1b26aa2c1f1403057fa6f718e36a7c3432ae41934769abbf981fdb6bdb904e8",
+      "bytes": 1784
+    }
+  ]
+}

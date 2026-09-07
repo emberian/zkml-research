@@ -1,0 +1,8 @@
+{"stage": "all_recipient_announcements_before_public_coins", "elapsed_ns": 1422949333, "recipient_count": 16}
+{"stage": "setup_complete", "elapsed_ns": 42710180458, "context_id": "708316c774c287151c677b6e78d9934f5cb5818a6f3d4fdbd6781e40afd79b58", "setup_elapsed_ns": 42710028458}
+{"stage": "normal_closure", "elapsed_ns": 73962228333, "learns": 8, "infers": 1, "expiries": 0}
+{"stage": "normal_closure", "elapsed_ns": 106201595625, "learns": 16, "infers": 2, "expiries": 0}
+{"stage": "normal_closure", "elapsed_ns": 136152662083, "learns": 24, "infers": 2, "expiries": 0}
+{"stage": "normal_closure", "elapsed_ns": 167263047458, "learns": 32, "infers": 3, "expiries": 0}
+{"stage": "normal_closure", "elapsed_ns": 174623212458, "learns": 33, "infers": 4, "expiries": 1}
+{"ok": true, "report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/runtime/positive-001/report.json", "learns": 33, "infers": 4, "expiry": 1, "all_match": true, "seconds": 174.625837167}

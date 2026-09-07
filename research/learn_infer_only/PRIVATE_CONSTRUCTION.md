@@ -1,5 +1,33 @@
 # Restricted private continuation: positive controls and their limits
 
+[EXECUTED designated durable successor, 2026-09-07] The recipient-only backend
+now completes40 Learn/four Infer/eight exact expiries, independently replays
+all44 transitions and matches four private integer answers. Orderly reopen,
+historical authorized exact retries and idempotent private drain pass.
+Public ciphertext acceptance is independent of later private decoding. The
+original final substring guard failed on a public parameter name; a separately
+retained parsed-key finalizer passed against the same completed data without
+rerunning backend group arithmetic or private decoding; it reverified all44
+Ed25519 envelope signatures. See the [integration record](experiments/private_construction/designated_span/integration/README.md).
+Its full original384/96 workload is now running with a persistent public host.
+The private initializer's erasure remains an assumption in these executions.
+The fixture/oracle knows all observations and can replay the complete lifetime;
+that role is excluded from host-only confidentiality.
+
+[DERIVED reviewed continuation] The [moving-linear-frame lemma](experiments/private_construction/designated_span/semantic_scope/LINEAR_CONTINUATION.md)
+and [independent review](experiments/private_construction/designated_span/semantic_scope_review/REPORT.md)
+permit public invertible state changes with a fixed observable-closure basis.
+The recipient bundle exposes that whole closure in advance. This makes later
+answers depend on coordinates that an individual current row did not observe,
+but supplies no selected-trace-only privacy against the full bundle.
+
+[HYPOTHESIS setup successor] A separate [public-coin proposal](experiments/private_construction/designated_span/public_coin_setup/PROPOSAL.md)
+is under independent review. It completes public group elements against
+recipient-owned keys and full-rank fixed rows, sampling no scalar master.
+Honest public field sampling and independent honest registration are explicit;
+public consistency checks alone do not prove those assumptions. No actual
+successor implementation or unrestricted malicious-setup claim is made yet.
+
 [EXECUTED / DERIVED successor, 2026-09-07] The actual DDH fixed-span control now
 has a complete encrypted W4 window and process checkpoint continuation: two
 12-input histories, 48 fixed projections and 16 expiries pass. All three input
@@ -31,8 +59,8 @@ to ordinary public encryption; a fixed recipient coalition has exactly its
 ordinary fixed-span key view. Correlated/derived recipient keys, all-per-input
 span leakage, honest setup/erasure and lack of cryptographic finality remain
 explicit. [The construction contract](experiments/private_construction/designated_span/CONTRACT.md)
-starts a separate actual journal integration; no completed integration is
-claimed here yet. This does not make the hidden kernel affect useful behavior.
+specifies the separate actual journal integration, completed above for the
+small normal workload. This does not make the hidden kernel affect useful behavior.
 
 [EXECUTED finite abstraction] The finite mistake-driven learner additionally
 has an exact compact public quotient: an 87-byte resident with exhaustive

@@ -1,0 +1,24 @@
+--- ../integration/source_original/normal_flow.before_guard_fix.py	2026-09-07 00:31:09
++++ ../integration/normal_flow.py	2026-09-07 01:11:26
+@@ -5,6 +5,7 @@
+ HERE=Path(__file__).resolve().parent
+ sys.path.insert(0,str(HERE/'source/journal'))
+ from run import Run
++from public_log_audit import check_public_logs
+ from common import canonical,read_json,write_json,require,sha,digest,rpc
+ 
+ def main():
+@@ -68,11 +69,8 @@
+   replay=run.replay(True)
+   with sqlite3.connect(root/'.private/reader/answers.sqlite3') as db:
+    require(db.execute('SELECT count(*),sum(decode_count) FROM private_decodes').fetchone()==(4,4),'privateExactlyOnceStored')
+-  # Public log omission check: no primitive reader-decrypt invocation or scalar
+-  # field appears in the public command/role/event/server logs.
+-  logs=[p for p in root.glob('*.jsonl') if p.is_file()]
+-  for path in logs:
+-   data=path.read_text();require('reader-decrypt' not in data and 'signed_score' not in data and 'decode_elapsed_ns' not in data,'publicLogOmitsPrivateDecode:'+path.name)
++  # Exact parsed fields distinguish private scalar output from public bounds.
++  audit=check_public_logs(root);write_json(root/'public_log_audit.json',audit)
+   report={'schema':'designated-span-normal-integration-v1','ok':True,'genesis':digest(run.g),'context_id':run.g['context_id'],
+    'learns':40,'infers':4,'exact_original_expiries':expiries,'recipient_key_count':16,'selected_rows':[0,1,2,3],
+    'private_integer_comparisons':comparison['private_integer_comparisons'],'all_private_integer_comparisons_match':True,

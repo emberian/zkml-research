@@ -1,0 +1,1 @@
+{"role":"host","operation":"infer","read_ns":154893084,"evaluate_ns":126332750,"serialize_write_ns":270292,"work_ns":281496208,"output_bits":1,"serialized_bytes":3413,"gate_api_calls":{"and":0,"xor":0,"not":0,"mux":3,"trivial_encrypt":0},"bootstrap_count_instrumented":false,"client_key_read":false}

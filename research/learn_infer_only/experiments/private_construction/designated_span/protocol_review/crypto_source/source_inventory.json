@@ -1,0 +1,160 @@
+{
+  "schema": "designated-crypto-independent-readonly-inventory-v1",
+  "time_utc": "2026-09-07T04:41:38.885739+00:00",
+  "source_manifest_sha256": "325d8f4b858b7f3116dbe21c76199013cee38e057699db040469f15d66fde692",
+  "all_declared_hashes_match": true,
+  "file_count": 25,
+  "files": [
+    {
+      "category": "runtime_sources",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/crypto.py",
+      "sha256": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+      "bytes": 23037
+    },
+    {
+      "category": "runtime_sources",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/group.py",
+      "sha256": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+      "bytes": 745
+    },
+    {
+      "category": "runtime_sources",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/native_pow.py",
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+      "bytes": 2996
+    },
+    {
+      "category": "runtime_sources",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/rows.json",
+      "sha256": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0",
+      "bytes": 24189
+    },
+    {
+      "category": "support_sources",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/positive_driver.py",
+      "sha256": "9032e432b747dc3c0a1d67c9761abb7a8617196ea64f9da46c51f8ea2cebbbd7",
+      "bytes": 10553
+    },
+    {
+      "category": "support_sources",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/validate_positive.py",
+      "sha256": "a83a30d8cc902bb5952a6cba081ddb9c2afa0e52823723b046dca98cefbaef95",
+      "bytes": 6020
+    },
+    {
+      "category": "support_sources",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/README.md",
+      "sha256": "b9b9de07b103c33ddaccaad38904516307917ec50dc73df72f6133ec702573a9",
+      "bytes": 8755
+    },
+    {
+      "category": "support_sources",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/.gitignore",
+      "sha256": "a91801b60dcdf71dc87735d1c12175c1b46cbaed5a68fd062e9a3c6d67da6ca1",
+      "bytes": 24
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/RESULTS.md",
+      "sha256": "d0760730aa8a3c35e9b6884e25e27f60705029091db07d15e21d7d3cf1573070",
+      "bytes": 7081
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/first_full_validation.json",
+      "sha256": "3e0cb629759a90936df8434da8112976b8a7e5a01642947482fba0d420887221",
+      "bytes": 19378
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/crypto.py",
+      "sha256": "6455474e1af495fcd4097acc214e11ea667b4113712bbe2c3822290e8c50e14d",
+      "bytes": 21666
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/group.py",
+      "sha256": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+      "bytes": 745
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/manifest.json",
+      "sha256": "c49b31605f749e528d8d98433e18492a1dc485a5e9dc8705a9036ef9e85412b7",
+      "bytes": 338
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/native_pow.py",
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+      "bytes": 2996
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/full_validation_source/rows.json",
+      "sha256": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0",
+      "bytes": 24189
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/positive_001/commands.jsonl",
+      "sha256": "e2e9dfc35739303576aead2e26ac650589f02bb8eaf9d4137c3e6db7ac1772fa",
+      "bytes": 149460
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/positive_001/predeclared.json",
+      "sha256": "24a863890908bc97eec25dd142bf099d9599fcb2c9f75ffab2305dac1f42836f",
+      "bytes": 821
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/positive_001/report.json",
+      "sha256": "6c5fdf598bfcef1c199c77ba515dc39c1f8b93b7efba4791187463b4338439f5",
+      "bytes": 3865
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/positive_001/validated_context.json",
+      "sha256": "1cc4ac18326bb77137e78139a22acfc9324f1e5217ac546a4083601dc759f685",
+      "bytes": 909
+    },
+    {
+      "category": "evidence",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/reports/positive_001/validation.json",
+      "sha256": "b1a0ea09e8ca067c6c7d93159c44fcbe3e21d3f62879f192e660238fe492595e",
+      "bytes": 1601
+    },
+    {
+      "category": "copied_source_provenance",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/additive_ipfe.py",
+      "sha256": "bc16cd4a834784b71c8e25f75716c53dd4d0c144948a2f23f8ccb816febc36c5",
+      "bytes": 10583
+    },
+    {
+      "category": "copied_source_provenance",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/scaling/native_pow.py",
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+      "bytes": 2996
+    },
+    {
+      "category": "copied_source_provenance",
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/review/REVIEW.md",
+      "sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840",
+      "bytes": 20435
+    },
+    {
+      "category": "execution_dependency",
+      "path": "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib",
+      "sha256": "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c",
+      "bytes": 4872736
+    },
+    {
+      "category": "execution_dependency",
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "87d4df53fd91304be5bac391fb204643c36b7df2023c04a0953bcbc7d4fdf634",
+      "bytes": 34640
+    }
+  ],
+  "cryptographic_execution": false
+}

@@ -1,0 +1,140 @@
+[
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt",
+    "anchor": "IV. Compact FE from Randomized Encodings for Turing Machines.",
+    "line": 175,
+    "pdf_page": 4
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt",
+    "anchor": "8.1    Randomized Encoding for TMs",
+    "line": 2500,
+    "pdf_page": 44
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt",
+    "anchor": "Theorem 9. If RET",
+    "line": 2644,
+    "pdf_page": 47
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt",
+    "anchor": "[CHJV14]",
+    "line": 472,
+    "pdf_page": 10
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt",
+    "anchor": "[KLW14]",
+    "line": 472,
+    "pdf_page": 10
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+    "anchor": "Theorem 1 (Main Theorem",
+    "line": 147,
+    "pdf_page": 4
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+    "anchor": "Definition 2 (Security",
+    "line": 766,
+    "pdf_page": 16
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+    "anchor": "Definition 3 (Different",
+    "line": 815,
+    "pdf_page": 17
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+    "anchor": "Theorem 5. Assuming",
+    "line": 1065,
+    "pdf_page": 21
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+    "anchor": "Our Succinct Garbling Scheme.",
+    "line": 1450,
+    "pdf_page": 28
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+    "anchor": "The hybrid simulation algorithm HSim",
+    "line": 1273,
+    "pdf_page": 25
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+    "anchor": "A corollary: output-independence.",
+    "line": 2339,
+    "pdf_page": 43
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt",
+    "anchor": "6.4.1   Definition",
+    "line": 1932,
+    "pdf_page": 37
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt",
+    "anchor": "Algorithm 18: Garble",
+    "line": 1973,
+    "pdf_page": 38
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt",
+    "anchor": "Theorem 6. (Garble, Eval)",
+    "line": 2039,
+    "pdf_page": 39
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt",
+    "anchor": "Theorem 7. Let S",
+    "line": 2389,
+    "pdf_page": 45
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+    "anchor": "2.3     Obfuscation",
+    "line": 366,
+    "pdf_page": 8
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+    "anchor": "4.1    Construction",
+    "line": 698,
+    "pdf_page": 14
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+    "anchor": "5.1     Construction",
+    "line": 1075,
+    "pdf_page": 22
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+    "anchor": "7     Machine Hiding Encodings",
+    "line": 1890,
+    "pdf_page": 36
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+    "anchor": "Theorem 7.1.",
+    "line": 2011,
+    "pdf_page": 39
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+    "anchor": "Lemma 7.3.",
+    "line": 2186,
+    "pdf_page": 41
+  },
+  {
+    "text": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+    "anchor": "7.3    Extensions and Variations",
+    "line": 2202,
+    "pdf_page": 42
+  }
+]
