@@ -1,0 +1,40 @@
+{
+  "recorded_at": "2026-09-07T01:59:17.529425+00:00",
+  "deadline_utc": "2026-09-07T14:00:00Z",
+  "prior_checkpoint": "6c56170",
+  "scope": "Read-only companion baseline at start of second authorized run; pre-existing dirty files remain untouched.",
+  "companions": {
+    "minidregg": {
+      "path": "/Users/ember/dev/minidregg",
+      "head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+      "status": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n"
+    },
+    "breadstuffs": {
+      "path": "/Users/ember/dev/breadstuffs",
+      "head": "3e51def6a5a95424e54fbe7432539b06088de5c3",
+      "status": "MM circuit-prove/tests/leaf_vs_recursion_sweep.rs\nMM fhegg-fhe/src/bin/ntt_four_step_bench.rs\nMM fhegg-fhe/tests/kpz_encoding_depth.rs\n?? armor_audit.md\n?? before-full.png\n?? dp-paper-b64.txt\n?? eprint2152.json\n?? friday_preregister.md\n?? gloss-full.png\n?? iac_listen_guide.md\n?? iac_notes_aug20.md\n?? metatheory/wip/Measure19d.lean\n?? rack-after-unblock.yml\n"
+    }
+  },
+  "initial_sources": {
+    "experiments/end_to_end/CONTRACT.md": {
+      "sha256": "b7d28754f43391a25a6011c6ad4283511ed6ea553c064008c0a0052ad7a48f64",
+      "bytes": 8596
+    },
+    "experiments/adaptation_utility/encrypted_window/fixture.txt": {
+      "sha256": "41978a10b974a3e8b7f30d5f9c66f7d396fdf7df83b723b3f14dc00359cdb4c0",
+      "bytes": 721807
+    },
+    "experiments/adaptation_utility/encrypted_window/probe/src/main.rs": {
+      "sha256": "911fb36831d9d04b983ecd782c9f69b9b97ec0596147079177a681b9c09c5112",
+      "bytes": 11232
+    },
+    "experiments/durable_integration/persistent_journal/protocol.py": {
+      "sha256": "014eaffa1210b70881efe5e49672653bf0373f33df980001b4272baa2ecc5b80",
+      "bytes": 11577
+    },
+    "experiments/integration/modules_with_window_frame.json": {
+      "sha256": "f7995e9fb7438ed79e42e550bc9a9bca79f58ccb8d2a35cd3cb95768295e9895",
+      "bytes": 6152
+    }
+  }
+}
