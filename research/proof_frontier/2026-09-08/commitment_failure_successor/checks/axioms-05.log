@@ -1,0 +1,7 @@
+'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.failure_probability' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.sound_call_budget' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

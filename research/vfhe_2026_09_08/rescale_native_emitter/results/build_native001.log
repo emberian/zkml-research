@@ -1,0 +1,15 @@
+Recorded native build output:
+     Locking 15 packages to latest compatible versions
+      Adding num-bigint v0.4.6 (available: v0.4.8)
+      Adding num-integer v0.1.46 (available: v0.1.47)
+   Compiling autocfg v1.5.1
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.23
+   Compiling serde_json v1.0.151
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling num-traits v0.2.19
+   Compiling num-integer v0.1.46
+   Compiling num-bigint v0.4.6
+   Compiling lean-bigint-witness v0.1.0
+    Finished release profile [optimized] target(s) in 2.54s

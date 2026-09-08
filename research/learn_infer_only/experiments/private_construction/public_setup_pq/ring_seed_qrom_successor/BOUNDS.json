@@ -1,0 +1,68 @@
+{
+  "scope": "[EXECUTED] Public exact arithmetic only; no quantum, Gaussian, crypto or estimator execution",
+  "status": "PASS",
+  "source_query_budget_each_pre_stage": "18446744073709551616",
+  "RLWE_multiplier": 768,
+  "base_worst_coalition": 0,
+  "base_non_RLWE_loss_including_caps_below_2_minus_168": true,
+  "seed_length_corollaries": [
+    {
+      "seed_bytes_each": 32,
+      "lambda_each": 256,
+      "encoding_status": "actual frozen transport",
+      "two_world_programming_exact_upper": "2^-94 + 2^-191",
+      "programming_upper_decimal_display_only": 5.048709793414476e-29,
+      "base_statistical_upper": "2^-168",
+      "full_non_RLWE_upper_below_2_minus_168": false
+    },
+    {
+      "seed_bytes_each": 48,
+      "lambda_each": 384,
+      "encoding_status": "future unsupported seed/format",
+      "two_world_programming_exact_upper": "2^-158 + 2^-319",
+      "programming_upper_decimal_display_only": 2.7369110631344083e-48,
+      "base_statistical_upper": "2^-168",
+      "full_non_RLWE_upper_below_2_minus_168": false
+    },
+    {
+      "seed_bytes_each": 64,
+      "lambda_each": 512,
+      "encoding_status": "future transport; expander alone accepts length",
+      "two_world_programming_exact_upper": "2^-222 + 2^-447",
+      "programming_upper_decimal_display_only": 1.4836824602749686e-67,
+      "base_statistical_upper": "2^-168",
+      "full_non_RLWE_upper_below_2_minus_168": true
+    }
+  ],
+  "simulation_resources": {
+    "source_only_block_oracles": {
+      "A_output_bytes": 193986560,
+      "A_output_bits": 1551892480,
+      "missing_output_bytes": 1700413440,
+      "missing_output_bits": 13603307520,
+      "queries_to_target_family_per_adversarial_query": 1,
+      "honest_A_reads_counted_against_missing_oracle": 0
+    },
+    "ordinary_domain_wrapper": {
+      "table_chunk_entries": 50000,
+      "table_bytes": 1894400000,
+      "table_bits": 15155200000,
+      "fallback_queries_per_adversarial_query": 1,
+      "finite_independence_degree_parameter_k": "max(1,2Q)",
+      "example_input_cap_bytes": 466,
+      "example_address_width_bits": 3737,
+      "example_max_output_bits": 303104,
+      "example_field_degree_m": 4096,
+      "example_output_lanes": 74,
+      "at_Q_2_pow_64_independent_field_coefficient_bits": "11182563831435319866032128",
+      "at_Q_2_pow_64_compute_uncompute_lane_polynomial_evaluations": "2730118122909013639168",
+      "at_Q_2_pow_64_Horner_field_step_upper_scale": "100723580608597785185158883799803390590976",
+      "at_Q_2_pow_64_schoolbook_bit_work_scale_without_gate_constant": "1689861268163856499173010587828202241477172002816",
+      "no_QRAM_overlay_scan_bit_work_scale_per_query_without_gate_constant": 15342050000,
+      "example_limits": "Larger input/output registers require corresponding n,ell,m; field modulus must be public/certified; scales are not exact gate counts"
+    }
+  },
+  "input_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_security_successor/CHECKS.json": "522726e96e83115ee65f7642ca7d00933ea8f7f9f48739fc28aae7f358868152"
+  }
+}

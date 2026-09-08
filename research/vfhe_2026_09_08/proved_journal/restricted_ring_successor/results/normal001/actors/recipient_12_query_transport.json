@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "role_command": "query",
+  "pid": 26471,
+  "elapsed_seconds": 1.8822895840276033,
+  "peak_rss_bytes_macos": 269025280,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/private/recipient_12/key.ring",
+      "kind": "key",
+      "private": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/public/accepted_model_000006.json",
+      "kind": "class_snapshot_map",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/7fd81294823a16283efa38f55f8c762df469431459bfbf5ab19a7f34e514bc76",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/1543d3c0f3d81fe4e38bb279619398c6eaff6f20d7195eed07c07b1a71e731e9",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [],
+  "result": {
+    "recipient_coordinate": 12,
+    "registered_query_text": "Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.",
+    "private_rows_read": 1,
+    "query_results": [
+      {
+        "revision": 6,
+        "scores": {
+          "card_arrival": 405317,
+          "cash_withdrawal_charge": 475191
+        },
+        "prediction": "cash_withdrawal_charge"
+      }
+    ],
+    "output_scope": "Explicit public benchmark scores from this recipient only"
+  },
+  "error": null
+}

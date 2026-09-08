@@ -1,0 +1,43 @@
+Compiler/ProfiledExhibits.lean:10:94: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat (Fin tiny.groups) 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Fin tiny.groups
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/ProfiledExhibits.lean:15:96: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat (Fin tiny.groups) 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Fin tiny.groups
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/ProfiledExhibits.lean:19:20: error: Tactic `decide` failed for proposition
+  ∀ (i : Fin tiny.rows) (j : Fin tiny.scalars),
+    digitCoefficient tiny (leftCoefficient (tinyRows i)) j < tiny.base ^ tinyProfile.width i ∧
+      digitCoefficient tiny (rightCoefficient (tinyRows i)) j < tiny.base ^ tinyProfile.width i
+because its `Decidable` instance
+  Nat.decidableForallFin fun i =>
+    ∀ (j : Fin tiny.scalars),
+      digitCoefficient tiny (leftCoefficient (tinyRows i)) j < tiny.base ^ tinyProfile.width i ∧
+        digitCoefficient tiny (rightCoefficient (tinyRows i)) j < tiny.base ^ tinyProfile.width i
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `decidable_of_decidable_of_iff`, `decidable_of_iff`, `instDecidableAnd`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqNat`, `Bool.decEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `Nat.decidableBallLT`, and `Nat.decidableForallFin`, reduction got stuck at the `Decidable` instance
+  match
+    (digitCoefficient tiny (leftCoefficient (tinyRows ⟨0, ⋯⟩)) ⟨0, ⋯⟩).succ.ble (tiny.base ^ tinyProfile.width ⟨0, ⋯⟩),
+    true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+Compiler/ProfiledExhibits.lean:21:4: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Compiler/ProfiledExhibits.lean:35:28: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat (Fin tiny.rows) 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  Fin tiny.rows
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.

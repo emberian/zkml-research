@@ -1,0 +1,4 @@
+/build/
+/native/target/
+
+/results/full001/trace.leu32

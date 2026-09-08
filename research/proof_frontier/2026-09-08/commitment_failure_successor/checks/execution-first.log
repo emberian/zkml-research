@@ -1,0 +1,27 @@
+Selvage/CommitmentExecutionWitness.lean:18:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.one_fresh`:
+  [NeZero N]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [NeZero N] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/CommitmentExecutionWitness.lean:26:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.all_origin`:
+  [NeZero N]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [NeZero N] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/CommitmentExecutionWitness.lean:43:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.empty_row_log`:
+  [NeZero N]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [NeZero N] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/CommitmentExecutionWitness.lean:51:4: warning: This simp argument is unused:
+  List.flatMap_append
+
+Hint: Omit it from the simp argument list.
+  simp [̵r̵o̵w̵R̵u̵n̵,̵s̵o̵u̵r̵c̵e̵R̵u̵n̵s̵,̵e̵m̵p̵t̵y̵R̵o̵w̵,̵p̵o̵i̵n̵t̵R̵u̵n̵,̵o̵p̵e̵n̵i̵n̵g̵R̵u̵n̵_̵e̵q̵,̵E̵f̵f̵i̵c̵i̵e̵n̵t̵R̵o̵o̵t̵O̵p̵e̵n̵i̵n̵g̵.̵o̵p̵e̵n̵i̵n̵g̵L̵o̵g̵,̵p̵a̵t̵h̵L̵o̵g̵_̵n̵i̵l̵,̵
+  ̵ ̵ ̵ ̵ ̵L̵i̵s̵t̵.̵f̵l̵a̵t̵M̵a̵p̵_̵a̵p̵p̵e̵n̵d̵]̵[̲r̲o̲w̲R̲u̲n̲,̲ ̲s̲o̲u̲r̲c̲e̲R̲u̲n̲s̲,̲ ̲e̲m̲p̲t̲y̲R̲o̲w̲,̲ ̲p̲o̲i̲n̲t̲R̲u̲n̲,̲ ̲o̲p̲e̲n̲i̲n̲g̲R̲u̲n̲_̲e̲q̲,̲ ̲E̲f̲f̲i̲c̲i̲e̲n̲t̲R̲o̲o̲t̲O̲p̲e̲n̲i̲n̲g̲.̲o̲p̲e̲n̲i̲n̲g̲L̲o̲g̲,̲
+  ̲ ̲ ̲ ̲ ̲p̲a̲t̲h̲L̲o̲g̲_̲n̲i̲l̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

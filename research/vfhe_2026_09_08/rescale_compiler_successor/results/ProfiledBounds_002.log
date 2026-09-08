@@ -1,0 +1,8 @@
+Compiler/ProfiledBounds.lean:19:70: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+where
+ a := ↑(p.base ^ p.digits - 1) * ↑(∑ g, matrix g)
+ b := ↑(∑ i, matrix i) * ↑(p.base ^ p.digits - 1)

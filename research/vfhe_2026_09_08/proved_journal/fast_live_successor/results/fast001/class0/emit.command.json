@@ -1,0 +1,14 @@
+{
+  "name": "emit",
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/emit.py",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof0/generated",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/queries/new-two-class-query/proof0/case/public_rows.json"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter",
+  "started_utc": "2026-09-08T22:13:09.522494+00:00",
+  "returncode": 0,
+  "elapsed_seconds": 0.5951702079619281,
+  "finished_utc": "2026-09-08T22:13:10.117685+00:00"
+}

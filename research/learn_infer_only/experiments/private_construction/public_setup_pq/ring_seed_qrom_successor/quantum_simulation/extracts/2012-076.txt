@@ -1,0 +1,1436 @@
+Secure Identity-Based Encryption in the Quantum Random Oracle
+                             Model
+                                          Mark Zhandry
+                                      Stanford University, USA
+                                      mzhandry@stanford.edu
+
+
+                                                 Abstract
+         We give the first proof of security for an identity-based encryption scheme in the quantum
+     random oracle model. This is the first proof of security for any scheme in this model that requires
+     no additional assumptions. Our techniques are quite general and we use them to obtain security
+     proofs for two random oracle hierarchical identity-based encryption schemes and a random
+     oracle signature scheme, all of which have previously resisted quantum security proofs, even
+     using additional assumptions. We also explain how to remove the extra assumptions from prior
+     quantum random oracle model proofs. We accomplish these results by developing new tools for
+     arguing that quantum algorithms cannot distinguish between two oracle distributions. Using a
+     particular class of oracle distributions, so called semi-constant distributions, we argue that the
+     aforementioned cryptosystems are secure against quantum adversaries.
+
+     Keywords: Quantum, Random Oracle, IBE, Signatures
+
+
+1    Introduction
+While quantum computation is not yet viable, Shor [Sho97] showed that when fully realized, quantum
+computers will break most of the cryptosystems used today, namely those based on the difficulty
+factoring and the discrete log problem. This has sparked the field of post-quantum cryptography,
+the search for classical systems secure against quantum adversaries. To be secure in this setting,
+a system must have an underlying difficult problem for quantum computers, as well as a security
+reduction showing how to solve this problem using a quantum adversary that breaks the system.
+Problems based on lattices have so far resisted quantum attacks, and there is a considerable amount
+of literature on lattice-based cryptosystems. However, random oracle security proofs for these
+constructions typically only consider classical adversaries, thus failing to show security in the
+quantum world.
+    The random oracle model [BR93] is one area where many classical proofs lack quantum equivalents.
+This model is of interest because random oracle schemes tend to be more efficient than their standard
+model counterparts. Consequently, the most efficient lattice-based schemes are often constructed in
+the random oracle model. For example, Gentry, Peikert, and Vaikuntanathan [GPV08] show how to
+construct signatures and identity-based encryption (IBE). Cash et al. [CHKP10] and Agrawal, Boneh,
+and Boyen [ABB10] give hierarchical IBE schemes both in the standard model and the random
+oracle model, with the random oracle constructions being more efficient than the corresponding
+standard model schemes. Gordon, Katz, and Vaikuntanathan [GKV10] give a group signature
+
+
+                                                     1
+scheme, while Boneh and Freeman [BF11] demonstrate a homomorphic signature scheme, all in the
+random oracle model.
+    All of these papers prove security against adversaries with classical access to the random oracle.
+However, when the scheme is instantiated, the random oracle is replaced with a hash function H,
+which a quantum adversary may evaluate on a quantum superposition of inputs. To model this
+ability, it is necessary to allow a quantum adversary to make quantum queries to the random oracle.
+We call this model the quantum random oracle model.
+    Proving security in the quantum random oracle model presents many challenges. Among them is
+the difficulty of efficiently simulating the random oracle. In the classical case, the random oracle is
+simulated on the fly, only generating randomness as needed. In the quantum setting, the adversary
+can query the oracle on an exponential superposition of inputs. Therefore, to make even the first
+query look random to the adversary, it would seem that we would need exponential randomness.
+    In addition to this difficulty, there are classical random oracle techniques that do not make
+sense if the adversary has quantum access to the random oracle. One such technique is that of
+Bellare and Rogaway [BR93] for proving the security of the Full Domain Hash signature scheme.
+In this technique, the reduction algorithm is given a challenge c to solve, and randomly guesses
+which oracle query the adversary will use to break the scheme. The algorithm embeds c into the
+response for this query, and if both the guess is correct and the adversary breaks the scheme, then
+the algorithm will be able to solve c.
+    In the quantum setting, this argument no longer applies because each oracle query might be over
+a superposition of exponentially many inputs. We could choose a random query and plug c into all
+outputs for that query, but this will not look like a random oracle to the adversary. Alternatively,
+we could choose one oracle input and plug c into the corresponding output for all queries. However,
+our chance of guessing correctly will then be exponentially small.
+
+1.1   Our Contributions
+We resolve some of the issues outlined above by giving a quantum analog of the technique of Bellare
+and Rogaway [BR93] and demonstrating how to simulate a random oracle without any additional
+computational assumptions. Specifically, we:
+   • Describe new ways to argue that quantum algorithms cannot distinguish between two distri-
+     butions of oracles.
+   • Apply these techniques to a new type of distribution of oracles, which we call semi-constant
+     distributions, showing that they cannot be distinguished from random oracles.
+   • Use our results on semi-constant distributions to prove that the random oracle IBE scheme
+     of Gentry et al. [GPV08] is secure against quantum adversaries. The basic idea is to plug
+     the challenge c into a small fraction of inputs to the oracle, making the oracle seen by the
+     adversary a semi-constant distribution. The adversary thus behaves as though the oracle is
+     random. If the adversary happens to use any of the inputs in this fraction, we are able to
+     solve c.
+   • Show that this technique is general by applying it to the random oracle hierarchical IBE
+     schemes of Cash et al. [CHKP10] and Agrawal et al. [ABB10].
+   • Prove that the generic Full Domain Hash signature scheme [BR93] is secure against quantum
+     adversaries, though this remains a theoretical result until a trapdoor permutation is found
+     that is secure against quantum adversaries.
+
+                                                  2
+    • Use our techniques and k-wise independent functions to solve the problem of simulating
+      quantum random oracles, thus making the above results unconditional.
+
+1.2   Related Work
+Quantum random oracles have been used in several prior works. For example, Bennett et
+al. [BBBV97] prove several quantum complexity results, including a proof that quantum com-
+puters cannot solve all of NP, relative to a random oracle. In a cryptographic setting, quantum
+random oracles have been used by Aaronson [Aar09] to construct quantum money and by Brassard
+and Salvail [BS08] and Brassard et al. [BHK+ 11] to construct quantum analogs of Merkle’s Puzzles.
+    Boneh et al. [BDF+ 11] give a random oracle scheme that is secure against quantum adversaries
+with classical access to the oracle, but is insecure once the adversary has quantum access to the
+oracle. Despite this result, they show that there are circumstances in which a classical random
+oracle security reduction can also be used in the quantum setting. However, their proof techniques
+do not apply to the schemes analyzed in this paper. Additionally, their proof simulates the random
+oracle using a pseudorandom function (PRF) that is secure against quantum adversaries, hence
+making their results conditional on the existence of a so-called quantum-secure PRF. We note that
+Zhandry [Zha12] shows that such PRFs can be built from quantum-secure pseudorandom generators,
+which can, in turn, be built from lattices.
+    There has also been progress toward converting classical security proofs into quantum proofs
+outside of the random oracle model. For instance, Unruh[Unr10] shows that classical statistical
+security in Canetti’s universal composabitily (UC) model implies quantum statistical security.
+Hallgren, Smith, and Song [HSS11] give a two-party protocol that is quantum computationally
+secure in the UC.
+
+
+2     Preliminaries
+A function (n) is negligible if it is non-negative and smaller than any inverse polynomial. That is,
+for any polynomial p(n), (n) < 1/p(n) for all sufficiently large n.
+    A probabilistic polynomial time (PPT) algorithm is a classical randomized algorithm that runs
+in time polynomial in the size of its input. We also call such algorithms efficient.
+
+2.1   Weight Assignments
+A weight assignment on a set X is a function D : X → R such that x∈X D(x) = 1. We sometimes
+                                                                          P
+
+write PrD [event] to represent the sum of the weights of all outcomes consistent with that event. A
+distribution on X is a weight-assignment D such that D(x) ≥ 0 for all x ∈ X . If D is a distribution,
+way that x occurs with probability D(x). Let UX denote the uniform distribution over X . That is,
+UX (x) = 1/|X |. When the set X is clear, we may omit the subscript.
+    We define the distance between two weight assignments D1 and D2 over a set X as
+                                                X
+                                 |D1 − D2 | =         |D1 (x) − D2 (x)|
+                                                x∈X
+
+    If |D1 − D2 | ≤ , we say that D1 and D2 are -close.
+
+
+
+                                                  3
+   Given a set of weight assignments Dy over X , indexed by y ∈ Y, and a weight assignment D
+over Y, we can define a weight assignment D0 over X where
+
+                                     D0 (x) =
+                                                X
+                                                        D(y)Dy (x)
+                                                y∈Y
+
+    We write D0 = y∈Y D(y)Dy . Say each of the Dy s are actually distributions. Given two weight
+                  P
+
+assignments D1 and D2 over Y, define D10 = y∈Y D1 (y)Dy and D20 = y∈Y D2 (y)Dy . Then:
+                                          P                          P
+
+
+
+                         D10 − D20
+                                         X X
+                                     =              (D1 (y) − D2 (y))Dy (x)
+                                         x∈X y∈Y
+                                           X
+                                     ≤              |(D1 (y) − D2 (y))Dy (x)|
+                                         x∈X ,y∈Y
+                                           X
+                                     =              |D1 (y) − D2 (y)|Dy (x)
+                                         x∈X ,y∈Y
+                                         X
+                                     =         |D1 (y) − D2 (y)| = |D1 − D2 |
+                                         y∈Y
+
+    Consider the set of functions H : X → Y for sets X and Y, denoted by HX ,Y . Consider a weight
+assignment D on HX ,Y . Let W ⊆ X . We define the marginal weight assignment DW of D on HW,Y
+where the weight of a function HW : W → Y is equal to the sum of the weights of all H ∈ HX ,Y
+that agree with HW on W. In other words,
+
+                            DW (HW ) = Pr[H(w) = HW (w)∀w ∈ W]
+                                          D
+
+    We call two weight assignments D1 and D2 on HX ,Y k-wise equivalent if for all W ⊆ X of size
+k, the marginal weight assignments D1,W and D2,W (of D1 and D2 ) over HW,Y are identical.
+
+2.2   Quantum Computation
+A quantum algorithm is an algorithm executed on a quantum computer that produces a classical
+output. Most of the background in quantum computation needed to understand this paper is for the
+proof of Theorem 3.1. Since this proof appears in Appendix B, we present the necessary background
+there. In the meantime, we recall a couple basic facts about quantum computation, and refer the
+reader to [NC00] for a more thorough discussion.
+
+Fact 1. Any classical computation can be implemented on a quantum computer.
+
+Fact 2. Any function that has an efficient classical algorithm computing it can be implemented
+efficiently as a quantum-accessible oracle.
+
+Fact 3. Given a quantum algorithm A with oracle access to an oracle O, each oracle O defines a
+probability distribution of the outputs of A. Hence, any weight assignment of oracles leads to a
+weight assignment of outputs of A, and if two weight assignments D1 and D2 are a distance  apart,
+the weight assignment of the outputs of A under these distributions are a distance at most  apart.
+
+
+
+
+                                                    4
+2.3   Cryptographic Primitives
+Here we briefly outline a few cryptographic primitives, and refer to Appendix A for details. All
+primitives depend on a security parameter n.
+     An encryption scheme E is a triple of PPT algorithms (E.Gen, E.Enc, E.Dec), where E.Gen(1n )
+generates secret/public keys (sk, pk), E.Encpk encrypts a message, and E.Decsk decrypts a ciphertext.
+We use the indistinguishability under chosen plaintext attack (IND-CPA) notion of security [GM84].
+     An identity-based encryption (IBE) scheme IBE = (IBE.Gen, IBE.Extract, IBE.Enc, IBE.Dec) is
+a 4-tuple of PPT algorithms where IBE.Gen(1n ) generates master secret/public keys (msk, mpk),
+IBE.Extractmsk generates secret keys for given identities, IBE.Encmpk encrypts a message to an identity,
+and IBE.Dec decrypts a ciphertext sent to an identity by using the corresponding secret key. We
+use the indistinguishability under chosen plaintext attack (IND-ID-CPA) notion of security [BF01].
+     A signature scheme S = (S.Gen, S.Sign, S.Ver) is a triple of PPT algorithms where S.Gen(1n )
+generates secret/public keys (sk, pk), S.Signsk signs a message, and S.Verpk verifies a signature. We use
+the existential unforgeablility under chosen message attack (UF-CMA) notion of security [GMR88].
+     A pre-image sampleable function (PSF) is a quadruple of algorithms F = (F.Gen, F.Sample, f, f −1 )
+where F.Gen generates private/public keys (sk, pk), fpk is a function, F.Sample samples x from a
+                                                      −1
+distribution D such that fpk (x) is uniform, and fsk     (y) samples from D conditioned on fpk (x) = y.
+For security, we use the notion of one-wayness.
+     A trapdoor permutation (TDP) is a special case of a PSF where f is bijective and F.Sample
+simply returns a random element in the domain of fpk . Since F.Sample is already defined, we omit
+it from the specification.
+
+2.4   Random Oracle Model
+In the Random Oracle Model, we assume the existence of a random function H, and give all parties
+oracle access to this function. If A makes queries to an oracle H, we denote this as AH . If a system
+S uses a random oracle in its specification, we denote this as S H . The algorithms comprising any
+cryptographic protocol can use H, as can the adversary. Thus we modify the security games for all
+cryptographic systems to allow the adversary to make random oracle queries.
+    When a random oracle scheme is implemented, some suitable hash function H is included in
+the specification. Any algorithm (adversary included) now replaces oracle queries with evaluations
+of this hash function. In the quantum setting, because a quantum algorithm can evaluate H on
+an arbitrary superposition, we must allow the quantum adversary to make quantum queries to the
+random oracle. We call this the quantum random oracle model.
+
+
+3     Distinguishing Oracles With Quantum Queries
+In this section, we give some tools for arguing that quantum algorithms cannot distinguish between
+two distributions of oracles. The trivial way to bound the ability of any quantum algorithm
+to distinguish two oracle distributions D1 and D2 is to bound the distance between D1 and D2
+themselves. However, in many cases, the distributions we are interested in are in fact very far
+apart, so we need some new techniques for arguing indistinguishability. First, we show that k-
+wise equivalent distributions are indistinguishable, using techniques similar to that of Meyer and
+Pommersheim [MP11]:
+
+
+
+                                                   5
+Theorem 3.1. Let A be a quantum algorithm making q quantum queries to an oracle H : X → Y.
+If we draw H from some weight assignment D, then for every z, the quantity PrH←D [AH () = z] is
+a linear combination of the quantities PrH←D [H(xi ) = ri ∀i ∈ {1, ..., 2q}] for all possible settings of
+the xi and ri .
+   This is proved in Appendix B, and immediately implies two important facts:
+   • If two weight assignments on oracles, D1 and D2 , are 2q-wise equivalent, then any q query
+     quantum algorithm behaves the same under both weight assignments, since for all 2q pairs
+     (xi , ri ), PrH←D1 [H(xi ) = ri ∀i ∈ {1, ..., 2q}] = PrH←D2 [H(xi ) = ri ∀i ∈ {1, ..., 2q}].
+   • If the quantities PrH←D [H(xi ) = ri ∀i ∈ {1, ..., 2q}] are low-degree polynomials in some param-
+     eter λ, then so is PrH←D [AH () = z], since it is a linear combination of the PrH←D [H(xi ) =
+     ri ∀i ∈ {1, ..., 2q}]. Moreover, PrH←D [AH () ∈ S] for any set S is also a low-degree polynomial.
+   We use the second fact to prove the following theorem:
+Theorem 3.2. Fix q, and let Dλ be a family of distributions on HX ,Y indexed by λ ∈ [0, 1].
+Suppose there are integers d and ∆ such that for every 2q pairs (xi , ri ) ∈ X × Y, the function
+p(λ) = PrH←Dλ [H(xi ) = ri ∀i ∈ {1, ..., 2q}] satisfies:
+   • p is a polynomial in λ of degree at most d.
+   • p(i) (0), the ith derivative of p at 0, is 0 for each i ∈ {1, ..., ∆ − 1}.
+Then any quantum algorithm A making q quantum queries can only distinguish Dλ from D0 with
+                     4∆
+probability at most (2∆)! λ∆ d2∆ .
+Proof. By the assumptions of the theorem, for any 2q pairs (xi , ri ), the quantity PrH←Dλ [H(xi ) =
+ri ∀i ∈ {1, ..., 2q}] is a polynomial of degree d in λ with the first ∆ − 1 derivatives at 0 being 0. By
+Theorem 3.1, for a q-query quantum algorithm A, PrH←Dλ [AH () = z] is a linear combination of
+these values. Thus, for any z, PrH←Dλ [AH () = z] is also a polynomial in λ of degree d with the
+first ∆ − 1 derivatives at 0 being 0.
+     Now, suppose that A distinguishes Dλ from D0 with probability (λ). That is
+                          X
+                                 Pr [AH () = z] − Pr [AH () = z] = (λ) .
+                               H←Dλ                 H←D0
+                           z
+
+   Let Zλ be the set of z such that z is a more likely output under Dλ than D0 . That is,
+PrH←Dλ [AH () = z] > PrH←D0 [AH () = z]. It is not difficult to show that
+                            Pr [AH () ∈ Zλ ] − Pr [AH () ∈ Zλ ] = (λ)/2 .
+                          H←Dλ                   H←D0
+
+   Fix λ0 , and consider the quantity
+                                                           X
+                       pλ0 (λ) ≡    Pr [AH () ∈ Zλ0 ] =            Pr [AH () = z] .
+                                   H←Dλ                           H←Dλ
+                                                          z∈Zλ0
+
+Then pλ (λ) − pλ (0) = (λ)/2. Further, for each λ0 , pλ0 is a degree-d polynomial in λ such that
+ (i)
+pλ0 (0) = 0 for i ∈ {1, ..., ∆ − 1}. It also lies in the range [0, 1] for all λ ∈ [0, 1], so we can use an
+inequality by the Markov brothers [DS41] to bound the ∆-th derivative for all λ ∈ [0, 1]:
+
+                                           (∆)           4∆ ∆! 2∆
+                                          pλ0 (λ) ≤            d
+                                                        2(2∆)!
+
+                                                    6
+                                           4   ∆
+   Thus we can bound pλ0 (λ) ≤ pλ0 (0) + 2(2∆)! λ∆ d2∆ . Setting λ0 = λ, we get
+
+                                                             4∆ ∆ 2∆
+                              (λ) = 2(pλ (λ) − pλ (0)) ≤         λ d .
+                                                            (2∆)!
+
+
+    We conclude this section with another general approach toward arguing that no quantum
+algorithm can distinguish between two oracle distributions D1 and D2 : construct a weight assignment
+D1,2 which is 2q-wise equivalent to D1 (so that the behaviors of A under D1 and D1,2 are the same)
+and that is a distance at most  from D2 (so that the behaviors of A under D1,2 and D2 are -close).
+Then the behaviors of A under D1 and D2 are also -close. We formalize this latter idea with a new
+pseudometric on oracle distributions:
+Definition 3.3. Let D1 and D2 be two weight assignments on oracles. Fix k. Then define the
+pseudometric |D1 − D2 |(k) as the minimum of |D1,2 − D2 | over all weight assignments D1,2 that are
+k-wise equivalent D1 .
+Theorem 3.4. The minimum D1,2 in Definition 3.3 exists, and |D1 − D2 |(k) defines a pseudometric
+on weight assignments on oracles.
+Proof. If D is k-wise equivalent to D1 and a distance  from D2 , we say that D is a witness to
+|D1 − D2 |(k) ≤ . If  = |D1 − D2 |(k) , we call D an optimal witness.
+    First, we argue that an optimal witness exists: We see that D1 itself is a witness to |D1 − D2 |(k) ≤
+|D1 − D2 |. Thus to find D1,2 , we are minimizing |D1,2 − D2 | (a continuous function in D1,2 ) over
+the set of assignments D1,2 that are k-wise similar to D1 (a closed set) and at most |D1 − D2 | away
+from D2 (a compact set). Thus we are minimizing over a compact set, so the minimum is actually
+obtained.
+    We now show that |D1 − D2 |(k) satisfies the properties of a pseudometric:
+   • |D1 − D1 |(k) = 0, since D1 is a witness to |D1 − D1 |(k) ≤ 0, and |D1 − D2 |(k) is non-negative
+     for all weight assignments D1 and D2 .
+   • |D1 − D2 |(k) = |D2 − D1 |(k) . Let D1,2 be an optimal witness for |D1 − D2 |(k) . Then define
+     D2,1 = D1 − D1,2 + D2 . The sums of all weights add to 1, so this is a weight assignment.
+     Further, it is easy to see that |D2,1 − D1 | = |D2 − D1,2 | = |D1 − D2 |(k) . Further, since D1 is
+     k-wise equivalent to D1,2 , when looking at the marginal weight assignment over any k inputs,
+     D1 and D1,2 cancel, leaving D2,1 to be k-wise equivalent to D2 . Thus, D2,1 is a witness to
+     |D2 − D1 |(k) ≤ |D1 − D2 |(k) . We can perform the same argument in reverse to get the other
+     inequality.
+   • |D1 − D3 |(k) ≤ |D1 − D2 |(k) + |D2 − D3 |(k) . Let D1,2 and D2,3 be the optimal witnesses for
+     |D1 − D2 |(k) and |D2 − D3 |(k) . Define D1,3 = D1,2 − D2 + D2,3 . It is easy to see that D3 is a
+     weight assignment and that |D1,3 − D3 | ≤ |D1,2 − D2 | + |D2,3 − D3 |. It is also not difficult
+     to show that, since D2,3 is k-wise equivalent to D2 , D1,3 must be k-wise equivalent to D1,2 ,
+     which is k-wise equivalent to D1 . Hence D1,3 is a witness for the identity in question.
+    Observe that |D1 − D2 |(k) = 0 if and only if D1 is k-wise equivalent to D2 . Thus, we can
+rephrase Theorem 3.1 as follows: if |D1 − D2 |(2q) = 0, then no quantum algorithm making q
+quantum queries can distinguish the oracle weight assignments D1 and D2 . We now generalize this
+to |D1 − D2 |(2q) 6= 0:
+
+                                                   7
+Corollary 3.5. Let D1 and D2 be two oracle distributions. Then the output weight assignment of
+any q-query quantum algorithm A under D1 and D2 are |D1 − D2 |(2q) -close.
+
+Proof. Let D1,2 be an optimal witness for |D1 − D2 |(2q) . D1,2 is 2q-wise equivalent to D1 , so by
+Theorem 3.1, the behaviors of the A under D1 and D1,2 are identical. The behavior of A under D2
+is |D1,2 − D2 | = |D1 − D2 |(2q) -close to that under D1,2 , and hence D1 .
+
+   We note that a slightly weaker version of Theorem 3.2 can also be proved using the above ideas.
+Roughly, we pick some constants λi and find functions ai (λ) such that
+                                                    
+                                           d−∆
+                                           X                     d−∆
+                                                                 X
+                            p(λ) = 1 −          ai (λ)p(0) +         ai (λ)p(λi )
+                                           i=0                   i=0
+
+
+for any polynomial p of degree d such that p(i) (0) = 0 for i ∈ {1, ..., ∆ − 1}. The ai (λ) are basically
+modified Lagrange interpolating polynomials. Next, we define a new weight assignment
+                                                    
+                                          d−∆                  d−∆
+                             Dλ0 = 1 −
+                                          X                    X
+                                                 ai (λ)D0 +         ai (λ)Dλi .
+                                           i=0                 i=0
+
+By defining Dλ0 in this way, Dλ0 turns out to be 2q-wise equivalent to Dλ . Because Dλi are
+all distributions, the distance between Dλ0 and D0 is at most 2 d−∆    i=0 |ai (λ)|, thus showing that
+                                                                    P
+
+|Dλ − D0 |(2q) also satisfies this bound. By picking the right values for λi , we can get this bound to
+be small. We can then use Corollary 3.5 to bound the distance between the output distributions of
+the q-query quantum algorithm A.
+
+
+4    Semi-Constant Distributions
+In this section, we define a class of distributions on oracles in HX ,Y called semi-constant distributions.
+Our motivation for these distributions is to support quantum Full Domain Hash-type arguments,
+where a random value is inserted into a small but significant fraction of oracle inputs. The following
+definition captures the essence of the this idea:
+
+Definition 4.1. Define SCλ , the semi-constant distribution, as the distribution over HX ,Y resulting
+from the following process:
+
+    • First, pick a random element y from Y.
+    • For each x ∈ X , do one of the following:
+
+         – With probability λ, set H(x) = y. We call x a distinguished input to H.
+         – Otherwise, set H(x) to be a random element in Y.
+
+   First, notice that SC0 is the uniform distribution, since in this case, the probability that an
+input is distinguished is 0. We bound the ability of a quantum algorithm to distinguish between
+SCλ and SC0 = U using the ideas of Section 3.
+
+Lemma 4.2. Fix k. For each k pairs (xi , ri ), the probability PrH←SCλ [H(xi ) = ri ∀i ∈ {1, ..., k}] is
+a degree-k polynomial in λ whose first derivative is 0 at λ = 0.
+
+                                                     8
+   This, proved in Appendix C, shows that for any qH , we can set d = k = 2qH and ∆ = 2 in the
+assumptions of Theorem 3.2. We immediately get:
+
+Corollary 4.3. The distribution of outputs of a quantum algorithm making qH queries to an oracle
+drawn from SCλ is at most a distance 83 qH
+                                         4 λ2 away from the case when the oracle is drawn from the
+
+uniform distribution.
+
+    We note that using standard quantum query results, it is possible to prove this corollary for
+a bound that is first-order in λ. However, we will see in Section 5 that we need a bound that is
+second-order in λ for our security results.
+    We do not know if this bound is tight. In Appendix C, we adapt the collision search algorithm
+                                                                                 3 λ2 ).
+of Brassard et al. [BHT97] to SCλ , obtaining a distinguishing probability of Ω(qH
+
+
+5     Quantum Security Arguments
+In this section, we explore the random oracle proof technique of Bellare and Rogaway [BR93]. In this
+technique, we plug a challenge c into a randomly chosen hash query, and hope that the adversary
+uses c to break the system. If so, we can use the adversary to solve the underlying problem.
+    In the quantum setting, the straight-forward application of this technique breaks down. The
+adversary can now query the hash function on a superposition of exponentially many inputs. If we
+plug c to one of those inputs, the probability that the adversary uses c is exponentially small.
+    We instead plug c into some small but significant fraction of the inputs, so that the oracle is
+distributed according to SCλ . As we have shown, a quantum algorithm cannot detect that this
+oracle is not random, but now the adversary uses c with significant probability.
+
+5.1    Identity-Based Encryption from Lattices
+Here we prove the security of the IBE scheme from Gentry et al. [GPV08]. Their scheme is
+constructed from an encryption scheme E = (E.Gen, E.Enc, E.Dec), for which there exists a trapdoor
+allowing the computation of secret keys from public keys.
+    More specifically, let F = (F.Gen, F.Sample, f, f −1 ) be a pre-image sampleable function (PSF).
+Suppose E.Gen(1n ) works as follows: generate (msk, mpk) ← F.Gen(1n ). Then, sample sk ←
+F.Sample(1n ), and compute pk = fmpk (sk). Output (sk, (pk, mpk)).
+    Gentry et al. give such an encryption scheme based on the hardness of lattice problems. Their se-
+curity reduction treats the adversary as a black box, so their proof holds in the quantum setting. They
+then prove the security of the IBE scheme IBE = (IBE.Gen = F.Gen, IBE.ExtractH , IBE.EncH , IBE.Dec)
+where H maps identities to public keys of E and:
+                              −1
+    • IBE.Extractmsk (id)H = fmsk (H(id))
+    • IBE.Encmpk (id, m)H = E.EncH(id) (m)
+    • IBE.Decskid (c) = E.Decskid (c)
+
+Theorem 5.1. Let E and F be as above, and suppose that E is quantum IND-CPA-secure. If we
+model H as a random oracle, then IBE is quantum IND-ID-CPA-secure.
+
+Proof. Let A be a quantum adversary making qH hash queries, qE extract queries queries, that
+breaks IBE with advantage .
+
+                                                  9
+    Let Game0 be the standard attack game for IBE: the challenger generates (msk, mpk) from
+IBE.Gen, and sends mpk to the adversary. The adversary can make (classical) extraction queries
+on identities idi , to which the challenger responds with IBE.ExtractH  msk (idi ), and (quantum) hash
+queries to the random oracle H. A then produces an identity id∗ , along with messages m0 and m1 .
+The challenger chooses a random bit b, and responds with IBE.Encmpk (id, mb ). A is allowed to make
+more extraction and hash queries, and produces a bit b0 . A wins if b0 = b and for all i, idi 6= id∗ . By
+definition, this happens with probability 21 + .
+    Assume without loss of generality that A never asks for the secret key corresponding to id∗ .
+Let A0 be the following algorithm that makes quantum queries to an oracle H, and simulates the
+interaction between A and the challenger: generate (msk, mpk) from IBE.Gen, send mpk to A. Run
+A, forwarding all hash queries to H, and answering extraction queries using IBE.ExtractH . Similarly,
+answer the challenge query by choosing a random b and encrypting mb to the identity id generated
+by A. The output of A0 is (c, id∗ , Q) where c = b ⊕ b0 and Q is the list of extraction queries made
+by A. We can now think of Game0 as follows: run A0 with a random oracle H to obtain (c, id∗ , Q).
+Report that the game is won if and only if c = 0. The number of queries to H made by A0 is qH for
+direct queries, qE for queries through the extract algorithm, and 1 for the encryption of mb , for a
+total of qH + qE + 1 queries.
+    Let λ ∈ (0, 1) to be chosen later. Let M be the identity space. Define Game1 as follows: first,
+pick a subset X of M where each id ∈ M is put in X with independent probability λ. Run A0
+as before to obtain (c, id∗ , Q). However, now we decide if the game is won as follows: if id∗ ∈ X
+and Q X = ∅, then the game is won if c = 0. Otherwise, flip a random coin to decide if the
+        T
+
+game is won. By our assumption that A never asks for a secret key for the challenge identity,
+we must have that id∗ ∈   / Q. Therefore, every identity in Q, as well as id∗ , has an independent
+probability λ of being in X . Thus, the conditions to not flip a coin are met with probability at least
+λ(1 − λqE ), independent of the probability that c = 0. Thus, Game1 is won with probability at least
+1                     1           2
+2 + λ(1 − λqE ) ≥ 2 + λ − qE λ .
+    Let Game2 be Game1 , except that we choose a random pk in the public key space of E, and set
+H(x) = pk for all x in X , and choose H(x) randomly for all other x. H is now distributed according
+to SCλ .
+Claim 1. There exists a polynomial `(·, ·) such that A0 wins Game2 with probability at least
+
+                                        1        `(qH , qE ) 2
+                                          + λ −            λ .
+                                        2            4
+    We defer the precise proof to Appendix D, and instead give an informal justification: by Corollary
+4.3, the output distribution of A0 in Game2 is at most a distance 83 (qH +qE +1)
+                                                                             
+                                                                                 4 λ2 from that of Game .
+                                                                                                      1
+Thus, we would expect A0 to win Game2 with probability at least 12 + λ − qE + 38 (qH + qE + 1)4 λ2 ,
+which has the desired form. Of course, deciding if A0 wins Game2 depends on the set of distinguished
+inputs X , so a more careful analysis is required to justify the claim.
+    Let us now restate Game2 in terms of A: pick X and H as above, and perform the standard
+attack game for IBE using H as the random oracle. When A produces b0 , first check that no
+extraction queries were in X and that the identity id∗ produced by A is in X . If so, A wins if and
+only if b = b0 . Otherwise, if the check fails, flip a coin to decide if A wins. We can now make the
+following observation: once an extraction query in X is made or the challenge query with id∗ ∈/ X is
+made, we can abort running A, since we no longer need A to determine if the game is won.
+
+
+                                                   10
+   Now we describe an adversary B that breaks E. Assume B has quantum access to two random
+oracles O1 and O2 . O1 maps identities to randomness used by Sample. O2 maps identities to bits,
+outputting 1 with probability is λ. In Section 6, we will show how to efficiently simulate these
+oracles. On input (mpk, pk), B works as follows:
+
+   • Send mpk to A and simulate A, playing the role of challenger to A.
+   • Construct a (quantum) oracle H such that
+                                       (
+                                         pk                           if O2 (id) = 1
+                             H(id) =
+                                         fmpk (Sample(; O1 (id)))    otherwise
+
+      where Sample(; r) means run Sample with randomness r.
+   • When A asks for the secret key for idi , compute O2 (idi ). If the result is 1, output a random
+     bit and abort. Otherwise, respond with ski = Sample(; O1 (idi )).
+   • When A produces the challenge query (id∗ , m0 , m1 ), check if O2 (id∗ ) = 1. If so, send (m0 , m1 )
+     to B’s challenger. Otherwise, output a random bit and abort.
+   • When the challenger responds with a ciphertext, send it to A.
+   • When A outputs a bit b0 , output the same bit.
+
+    Let X be the set of identities id such that O2 (id) = 1. We can then see that the abort conditions
+are equivalent to Game2 . For each extract query idi that succeeds, we have that O2 (idi ) = 0, so
+
+                             fmpk (ski ) = fmpk (Sample(; O1 (idi ))) = H(idi )
+
+Thus ski is a correct secret key for idi , and it is distributed correctly (since it is a random pre-image
+of H(idi )). If B does not abort on the challenge query, it means O2 (id∗ ) = 1, so H(id∗ ) = pk. Also,
+we can see that H is distributed according to SCλ . Therefore, if B aborts, we win with probability
+1
+2 , and if we do not abort, we win if and only if A wins. Thus, the view of A as a subroutine of B is
+the same as in Game2 , and B wins with the same probability that A does. Therefore, B wins with
+probability at least 12 + λ − `(qH4,qE ) λ2 .
+     The advantage of B is at least λ − `(qH , qE )λ2 /4. We can now choose λ: the maximum
+advantage occurs when λ = 2/`(qH , qE ), which gives
+
+                                                        2
+                                           AdvB ≥
+                                                     `(qH , qE )
+Thus, if A had non-negligible advantage, so does B.
+
+5.2   Hierarchical IBE from Lattices
+In this section, we show the general idea behind adapting the techniques above to proving the
+security of the hierarchical identity-based encryption (HIBE) schemes of Agrawal et al. [ABB10]
+and Cash et al. [CHKP10].
+    In a HIBE scheme, identities are structured as a tree, with the identity of any node containing
+the identity of its parent as a proper prefix. Any node on the tree can produce private keys for
+any nodes in the subtree rooted at that node. We allow an adversary to adaptively take control of
+an arbitrary number of nodes in the tree (and thus the subtrees rooted there). An HIBE scheme
+
+                                                    11
+is secure if the adversary cannot decrypt messages encrypted to an identity id∗ of the adversaries
+choice but not under its control.
+    In [ABB10], the random oracle scheme has an oracle H that maps identities to some random
+quantities. The reduction has the following high-level structure:
+
+   • Guess which level w of the tree contains the identity id∗
+   • For each level i, generate some random quantities Ri .
+   • For each level i, simulate a separate random oracle for identities at that level. For i, guess
+     which query number qi will contain the hash of the level-i parent of id∗ .
+   • Answer the jth random oracle query at level i on idi,j as follows: if j = qi , output Ri .
+     Otherwise, output a random value.
+   • Answer secret key queries on id in some special way, but fail if for all prefixes idi of id,
+     idi = idi,qi . That is, fail if H(idi ) = Ri .
+   • When the adversary generates the identity id∗ , we succeed if both the adversary succeeds and
+     if id∗ is at level w and all prefixes id∗i of id∗ satisfy id∗i = idi,qi .
+
+    We now show how to prove security by repeatedly applying the arguments of Theorem 5.1.
+Basically, we iterate over levels i, and insert Ri into a λi fraction of identities at that level. In
+iteration i, we say the adversary wins if it won in the previous iteration, the level-i prefix of the
+chosen identity id∗ is in the λi fraction of distinguished identities (that is, H(id∗i ) = Ri ), and no
+signature query is. Let ` = `(qH , qE ), where `(·, ·) is the polynomial from Theorem 5.1. If the
+iteration i advantage is i , then using the same techniques as in Theorem 5.1, we can set λi so that
+
+                                                     2i−1
+                                              i ≥
+                                                        `
+   We will say that in iteration 0, the adversary wins if it normally would win and we guessed
+which level id∗ belonged to correctly. That is, 0 = /d, where  is the adversary’s advantage in the
+standard game. This gives us a total advantage after iteration d of at least
+                                               d              d
+                                        (/d)2          2
+                                                        
+                                                 = `
+                                        `(2d −1)      d`
+    Notice that the dependence on d in doubly-exponential, whereas in the classical proof it was
+singly exponential. Thus, for the same security parameters, this proof only works for much smaller
+depth than the classical proof.
+    These techniques apply as well to the random oracle HIBE of Cash et al. [CHKP10], though
+their reduction is a bit more complicated, as there is a second random oracle G which needs to be
+handled in a similar way.
+
+5.3   Signatures from Trapdoor Permutations
+Here we discuss the security of the Full Domain Hash (FDH) signature scheme:
+
+Definition 5.2 (FDH Signatures). Let F = (F.Gen, f, f −1 ) be a trapdoor permutation, and a hash
+function H that maps messages to images of f , let SH = (S.Gen = F.Gen, S.SignH , S.VerH ) where:
+                     −1
+   • S.SignH
+           sk (m) = fsk (H(m))
+
+
+                                                   12
+                         (
+                             accept   if fpk (σ) = H(m)
+    • S.VerH
+           pk (m, σ) =
+                             reject   ortherwise
+    We now state the main theorem of this section:
+Theorem 5.3. Let F be a quantum one-way trapdoor permutation. If we model H as a random
+oracle, then S is quantum UF-CMA-secure
+    The proof of this theorem is very similar to that of Theorem 5.1, and appears in Appendix E.
+
+
+6    Simulating Random Oracles
+In this last section, we explain how to efficiently simulate random oracles. All quantum random
+oracle proofs to date require the reduction algorithm to have quantum access to a random oracle,
+but a truly random oracle requires exponentially many bits of randomness to construct. We show
+that this is not a problem:
+Theorem 6.1. Any quantum algorithm A making quantum queries to random oracles Oi can be
+efficiently simulated by a quantum algorithm B, which has the same output distribution, but makes
+no queries.
+Proof. We construct an algorithm B which simulates A, and answers queries to oracle Oi with
+evaluations of efficient functions fi . Boneh et al. [BDF+ 11] use pseudorandom functions (PRF) for
+the fi . At first glance, this seems like the only option, as we need a function fi that cannot be
+distinguished from random.
+    Notice, however, that fi need not be secure against all adversaries, just the adversary we are
+simulating. We know that our adversary makes qi queries to oracle Oi , so it suffices to have fi be
+PRFs secure for up to qi quantum queries. In the classical setting, qi -wise independent functions
+(functions that are qi -wise equivalent to a random function) serve as perfectly secure PRFs for up
+to qi classical queries. We could hope that something similar holds in the quantum world: indeed,
+according to Theorem 3.1, if fi is 2qi -wise equivalent to a random function, then the behavior of
+our adversary is the same when the oracle is random and when it is fi . Thus if the fi are 2qi -wise
+independent, algorithm A, as a subroutine of B, behaves identically to the case where A is given
+truly random oracles. Hence, the output distribution of B is identical to that of A.
+    Efficient constructions of k-wise independent functions have been known for some time [Jof74,
+KM94], and they have been used extensively in the derandomization literature [Lub85, ABI86, KM93].
+One common approach to construct a k-wise independent function f from X to Y is to assume
+that N = |Y| is a prime power and interpret Y as the field FN . Then define a matrix C with the
+following properties:
+    • The entries are elements in FN .
+    • There are |X | rows and some small number r of columns.
+    • Each subset of k rows is linearly independent.
+One such example is the Vandermonde matrix, which is used by Alon et al.[ABI86]. To define the
+function f , we then pick a random vector v in FrN . f (x) is then the xth element of of the vector Cv.
+Since any k rows of C are linearly independent, any k elements of Cv are independent, and hence f
+is k-wise independent. The key to making this efficient is that to compute f (x), we only need the
+xth row of C, which we can compute on the fly.
+
+                                                    13
+    Hence, we can simulate O1 from Theorem 5.1. To simulate O2 , which outputs a bit such that
+O2 (x) = 1 with probability λ, approximate λ by some rational number a/b where b is a prime power,
+and construct a k-wise independent function f 0 with range Y = {1, ..., b}. Then set
+                                               (
+                                               1    if f 0 (x) ≤ a
+                                     f (x) =
+                                               0    otherwise
+
+
+
+7    Conclusion
+We have shown how to adapt certain classical random oracle arguments to the quantum random oracle
+model. Specifically, we gave quantum security proofs for the IBE scheme of Gentry et al. [GPV08]
+and the Full Domain Hash signature scheme. We achieved this by defining a distribution of oracles,
+called semi-constant distributions, and showing that such oracles cannot be distinguished from a
+random oracle by a quantum adversary. We also show how these techniques can be applied to the
+random oracle HIBE schemes of Cash et al. [CHKP10] and Agrawal et al. [ABB10]. Lastly, we have
+shown how to remove the need for quantum-secure pseudorandom functions from prior work.
+     Although we have made progress toward converting classical random oracle proofs into quantum
+proofs, there is still much work to be done. First, reductions using our technique result in an
+algorithm whose advantage is the square of the advantage of the underlying adversary, divided by
+some other factors. While improving the reduction to first-order in the adversary’s advantage would
+still be of interest for the IBE scheme and Full Domain Hash, it would not affect the qualitative
+security statements. However, for the HIBE schemes, this second-order behavior results in an
+exponential weakening of the security relative to the classical reduction for deep identity trees.
+Therefore, to get the same qualitative security statements as in the classical world, our technique
+needs to be refined to make the reduction first-order in .
+     Further work lies in proving the security of other Random Oracle Model schemes. For example,
+the construction of signatures from identification protocols by Fiat and Shamir [FS87], though
+similar to the proofs in this paper, still needs a quantum proof. The difficulty in the Fiat-Shamir
+reduction is that the plugging step initiates the underlying identification protocol, and there is
+no obvious quantum analog for this strategy. Also, different types of security arguments, such as
+Fujisaki and Okamoto’s generic conversion of weakly secure encryption schemes into a CCA-secure
+encryption scheme [FO99], still lack a quantum proof of security.
+
+
+Acknowledgments
+We would like to thank Dan Boneh for his guidance and many insightful discussions. This work
+was supported by NSF and DARPA. Any opinions, findings, and conclusions or recommendations
+expressed in this material are those of the author(s) and do not necessarily reflect the views of the
+Department of Defense or the U.S. Government.
+
+
+References
+[Aar09]    Scott Aaronson. Quantum Copy-Protection and Quantum Money. Proceedings of the
+           24th Annual IEEE Conference on Computaitonal Complexity (CCC), 2009.
+
+                                                   14
+[ABB10]   Shweta Agrawal, Dan Boneh, and Xavier Boyen. Lattice Basis Delegation in Fixed
+          Dimension and Shorter-Ciphertext Hierarchical IBE. Advances in Cryptology - CRYPTO
+          2010, pages 98–115, 2010.
+[ABI86]   Noga Alon, László Babai, and Alon Itai. A Fast and Simple Randomized Parallel
+          Algorithm for the Maximal Independent Set Problem. Journal of algorithms, 7(4):567–
+          583, 1986.
+[BBBV97] Charles H. Bennett, Ethan Bernstein, Gilles Brassard, and Umesh Vazirani. Strengths
+         and Weaknesses of Quantum Computing. SIAM Journal on Computing, 26:1510–1523,
+         1997.
+[BDF+ 11] Dan Boneh, Ozgur Dagdelen, Marc Fischlin, Anja Lehmann, Christian Schaffner, and
+          Mark Zhandry. Random Oracles in a Quantum World. In Advances in Cryptology -
+          ASIACRYPT 2011, 2011.
+[BF01]    Dan Boneh and Matthew Franklin. Identity-Based Encryption from the Weil Pairing.
+          Advances in Cryptology - CRYPTO 2001, 32(3):586–615, 2001.
+[BF11]    Dan Boneh and David Freeman. Homomorphic Signatures for Polynomial Functions.
+          Advances in Cryptology - EUROCRYPT 2011, 6632:149–168, 2011.
+[BHK+ 11] Gilles Brassard, Peter Høyer, Kassem Kalach, Marc Kaplan, Sophie Laplante, and Louis
+          Salvail. Merkle Puzzles in a Quantum World. Advances in Cryptology - CRYPTO 2011,
+          pages 391–410, 2011.
+[BHT97]   Gilles Brassard, Peter Høyer, and Alain Tapp. Quantum Algorithm for the Collision
+          Problem. ACM SIGACT News (Cryptology Column), 28:14–19, 1997.
+[BR93]    Mihir Bellare and Philip Rogaway. Random Oracles are Practical: A Paradigm for
+          Designing Efficient Protocols. In Proceedings of the 1st ACM Conference on Computer
+          and Communications Security (CCS), number November 1993, pages 62–73. ACM, 1993.
+[BS08]    Gilles Brassard and Louis Salvail. Quantum Merkle Puzzles. Second International
+          Conference on Quantum, Nano and Micro Technologies (ICQNM 2008), pages 76–79,
+          February 2008.
+[CHKP10] David Cash, Dennis Hofheinz, Eike Kiltz, and Chris Peikert. Bonsai Trees, or How to
+         Delegate a Lattice Basis. Advances in Cryptology - EUROCRYPT 2010, pages 523–552,
+         2010.
+[DS41]    R J Duffin and A C Schaffer. A Refinement of an Inequality of the Brothers Markoff.
+          Trans. Amer. Math. Soc, 44(3):289–297, 1941.
+[FO99]    Eiichiro Fujisaki and Tatsuaki Okamoto. Secure Integration of Asymmetric and Sym-
+          metric Encryption Schemes. In Advances in Cryptology - CRYPTO 1999, pages 79–79.
+          Springer, 1999.
+[FS87]    Amos Fiat and Adi Shamir. How to Prove Yourself: Practical Solutions to Identification
+          and Signature Problems. In Advances in Cryptology - CRYPTO 1986, pages 186–194.
+          Springer, 1987.
+
+                                              15
+[GKV10]   S. Dov Gordon, Jonathan Katz, and Vinod Vaikuntanathan. A Group Signature Scheme
+          from Lattice Assumptions. Advances in Cryptology - ASIACRYPT 2010, pages 395–412,
+          2010.
+[GM84]     Shafi Goldwasser and Silvio Micali. Probabilistic Encryption. Journal of computer and
+           system sciences, pages 270–299, 1984.
+[GMR88] Shafi Goldwasser, Silvio Micali, and Ronald L. Rivest. A Digital Signature Scheme Secure
+        Against Adaptive Chosen-Message Attacks. SIAM Journal on Computing, 17(2):281–308,
+        1988.
+[GPV08]    Craig Gentry, Chris Peikert, and Vinod Vaikuntanathan. Trapdoors for Hard Lattices
+           and New Cryptographic Constructions. Proceedings of the 40th Annual ACM symposium
+           on Theory of computing (STOC), page 197, 2008.
+[Gro96]   Lov K. Grover. A Fast Quantum Mechanical Algorithm for Database Search. Proceedings
+          of the 28th Annual ACM Symposium on Theory of Computing (STOC), pages 212–219,
+          1996.
+[HSS11]    Sean Hallgren, Adam Smith, and Fang Song. Classical Cryptographic Protocols in a
+           Quantum World. Advances in Cryptology - CRYPTO 2011, pages 411–428, 2011.
+[Jof74]   A. Joffe. On a Set of Almost Deterministic k-Independent Random Variables. The
+          Annals of Probability, 2(1):161–162, 1974.
+[KM93]    Daphne Koller and Nimrod Megiddo. Constructing Small Sample Spaces Satisfying
+          Given Constraints. In Proceedings of the 25th Annual ACM Symposium on Theory of
+          Computing (STOC), pages 268–277. ACM, 1993.
+[KM94]    Howard Karloff and Yishay Mansour. On Construction of k -Wise Independent Random
+          Variables. Proceedings of the 26th Annual ACM Symposium on Theory of Computing
+          (STOC), 17:564–573, 1994.
+[Lub85]    Michael Luby. A Simple Parallel Algorithm for the Maximal Independent Set Problem.
+           In Proceedings of the 17th Annual ACM symposium on Theory of computing (STOC),
+           pages 1–10. ACM, 1985.
+[MP11]    David Meyer and James Pommersheim. On the Uselessness of Quantum Queries.
+          Theoretical Computer Science, (March):1–12, 2011.
+[NC00]    Michael A. Nielsen and Isaac Chuang. Quantum Computation and Quantum Information.
+          American Journal of Physics, 70(5):558, 2000.
+[Sho97]   Peter W. Shor. Polynomial-Time Algorithms for Prime Factorization and Discrete
+          Logarithms on a Quantum Computer. SIAM Journal on Computing, 26(5):1484–1509,
+          1997.
+[Unr10]    Dominique Unruh. Universally Composable Quantum Multi-Party Computation. Ad-
+           vances in Cryptology - EUROCRYPT 2010, pages 486–505, 2010.
+[Zha12]    Mark Zhandry. How to Construct Quantum Random Functions, April 2012. Full version
+           available at the Cryptology ePrint Archives: http://eprint.iacr.org/2012/182/.
+
+                                              16
+A     Cryptographic Primitives
+Definition A.1 (Encryption Scheme). A public key encryption scheme E is a triple of PPT
+algorithms (E.Gen, E.Enc, E.Dec) where
+
+    • E.Gen(1n ) generates a secret/public key pair (sk, pk).
+    • E.Encpk (m) computes a ciphertext c.
+    • E.Decsk (c) computes the plaintext m, such that E.Decsk (E.Encpk (m)) = m.
+
+    We use the standard chosen plaintest attack (CPA) game [GM84] to model security:
+
+    • The challenger generates (sk, pk) ← E.Gen(1n ), and sends pk to the adversary A.
+    • A generates the challenge plaintext (m0 , m1 ).
+    • The challenger chooses a bit b, and responds with the challenge ciphertext c = E.Encpk (mb ).
+    • A makes a guess b0 for b.
+
+    The advantage of A is , where 12 +  is the probability that b = b0 . We say that E is (quantum)
+IND-CPA-secure if all efficient (quantum) algorithms have only negligible advantage (in n).
+    An identity-based encryption (IBE) scheme IBE is an encryption scheme where identities serve
+as public keys, and a trusted authority hands out the corresponding secret keys. In particular:
+
+Definition A.2 (IBE Scheme). An identity-based encryption (IBE) scheme IBE is a quadruple of
+PPT algorithms (IBE.Gen, IBE.Extract, IBE.Enc, IBE.Dec) where
+
+    • IBE.Gen(1n ) generates a master secret/public key pair (msk, mpk).
+    • The trusted authority uses IBE.Extractmsk (id) to compute a secret key skid corresponding to the
+      identity id.
+    • IBE.Encmpk (id, m) encrypts m to identity id.
+    • IBE.Decskid (c) decrypts c, such that
+
+                              IBE.DecIBE.Extractmsk (id) (IBE.Encmpk (id, m)) = m
+
+   We use the standard CPA attack game for IBE schemes, where the adversary can choose the
+identity id for which it will attempt to decrypt, and can get the secret keys corresponding to any
+other identities [BF01]. Specifically,
+
+    • The challenger generates (msk, mpk) ← IBE.Gen(1n ), and sends mpk to the adversary A.
+    • The adversary can make extraction queries on identities idi , to which the challenger responds
+      with IBE.Extractmsk (idi ).
+    • The adversary generates an identity id, and two messages (m0 , m1 ).
+    • The challenger chooses a random bit b, and responds with IBE.Encid (mb ).
+    • A makes a guess b0 for b.
+
+   The advantage of A is , where 12 +  is the probability that id 6= idi for any i and b = b0 . We say
+that IBE is (quantum) IND-ID-CPA-secure if all efficient (quantum) algorithms have only negligible
+advantage (in n).
+
+                                                   17
+Definition A.3 (Signature Scheme). A signature scheme S is a triple of PPT algorithms
+(S.Gen, S.Sign, S.Ver) where
+
+    • S.Gen(1n ) generates a secret/public key pair (sk, pk).
+    • S.Signsk (m) computes a signature σ on the message m.
+    • S.Verpk (m, σ) outputs accept or reject, such that S.Verpk (m, S.Signsk (m)) = accept.
+
+    We will use the standard chosen message attack (CMA) game to define security [GMR88]:
+
+    • The challenger generates (sk, pk) ← S.Gen(1n ), and sends pk to the adversary A.
+    • A can make signature queries on messages mi , to which the challenger responds with
+      S.Signsk (mi ).
+    • A produces a forgery candidate (m, σ).
+
+    The advantage of A is the probability that m 6= mi for any i and Verpk (m, σ) = accept. We say
+that S is (quantum) UF-CMA-secure if all efficient (quantum) adversaries have negligible advantage
+(in n).
+
+Definition A.4 (PSF). A pre-image sampleable function (PSF) is a quadruple of algorithms
+F = (F.Gen, F.Sample, f, f −1 ) where:
+
+    • F.Gen(1n ) generates a secret/public key pair (sk, pk).
+    • fpk is a function.
+    • F.Sample samples x from a distribution D such that fpk (x) is uniform.
+       −1
+    • fsk (y) samples from D conditioned on fpk (x) = y.
+
+    We model security with the following game:
+
+    • The challenger generates (sk, pk) ← F.Gen(1n ), and sends pk to the adversary A. It also sends
+      y = fpk (F.Sample()) to A.
+    • A makes a guess x.
+
+     The advantage of A is the probability that fpk (x) = y. We say that F is (quantum) one-way if
+all efficient (quantum) algorithms have negligible advantage.
+     A trapdoor permutation (TDP) is a special case of a PSF where f is bijective and F.Sample
+simply returns a random element in the domain of fpk . Since F.Sample is already defined, we omit
+it from the specification.
+
+
+B     Quantum Computation
+We give some background on quantum computation. For a more thorough discussion, please see
+[NC00]. We also prove Theorem 3.1, which states that the output distribution of a quantum
+algorithm making qH queries to a quantum oracle drawn from some distribution D depends only on
+the marginal distributions of D on all subsets of 2q inputs.
+    Let H be a Hilbert space with an inner product h·|·i, and let B = {|xi} be an orthonormal basis
+for H, index by a parameter x ∈ X . The state of a quantum system on H is specified by a vector
+|φi ∈ H of norm 1.
+
+                                                  18
+Quantum Measurement Given a state |φi, we can measure |φi in the basis B, obtaining the
+value x ∈ X with probability |hx|φi|2 . Thus, to each |φi, we associate a distribution Dφ where
+Dφ (x) = |hx|φi|2 . The normalization constant and the fact that B is an orthonormal basis ensure
+that this is in fact a valid distribution. After measurement, the system is in state |xi.
+    If B = {|x, yi} for x ∈ X and y ∈ Y, then we can also perform a partial measurement over X .
+The distribution over X is the marginal distribution of Dφ when restricted to X . That is, we obtain
+the value x with probability y∈Y |hx, y|φi|2 . The resulting state is the result of projecting |φi to
+                                P
+
+the space spanned by {|x, yi} for y ∈ Y, and renormalizing so that the norm is 1.
+
+Quantum Algorithms A quantum algorithm A over a Hilbert space H with an orthonormal
+basis B is specified by unitary transformation U . The input to A is an element x0 ∈ X. The
+system is initialized to the basis state |x0 i, and U is applied to the system, obtaining the final state
+|φi = U |x0 i. Then the state is sampled according to the distribution Dφ .
+    Let X and Y be sets such that Y is a commutative group with addition operation ⊕. For
+notational convenience, we assume that every element has order at most 2 (y ⊕ y is the identity
+for all y ∈ Y). Given a function H : X → Y and third set Z, define the orthonormal basis B as
+the set {|x, y, zi} for x ∈ X , y ∈ Y, and z ∈ Z. Define the unitary transformation Htrans over the
+Hilbert space spanned by B as the transformation that takes |x, y, zi into |x, y ⊕ H(x), zi. Htrans
+is unitary, it’s own inverse, and Hermitian. As an abuse of notation, we will frequently use Htrans
+and H interchangeably.
+    A quantum algorithm A making q quantum queries to H is then specified by a sequence of
+unitary transformations U0 , ..., Uq . The evaluation of A then consists of alternately applying Ui and
+H to the initial state |xi. We call
+                                            Ui−1 H...U1 HU0 |xi
+the state of A before the ith query, and
+
+                                         HUi−1 H...U1 HU0 |xi
+
+the state after the ith query. The final state of the algorithm is
+
+                                           Uq H...U1 HU0 |xi
+
+   We say that a quantum algorithm is efficient if q is a polynomial, and all the Ui are composed of
+a polynomial number of universal basis gates (the Hadamard, CNOT, and phase shift gates are
+commonly used).
+   Classical queries to an oracle are made by partial sampling over X before performing the query.
+
+Density Matrix Suppose we have quantum states |φw i for w ∈ W, and we have a weight
+assignment D on W. Then we define the density matrix
+                                             X
+                                        ρ=         D(x)|φw ihφw |
+                                             w∈W
+
+    The weight of an outcome y from measurement is given by hy|ρ|yi. If D is a distribution, then
+this weight assignment is also a distribution, and the weight corresponds to the probability of
+obtaining y if we first pick w with probability D(w), and then sample |φw i. In this case, the density
+matrix ρ summarizes the statistical behavior of the quantum system.
+
+                                                    19
+    Suppose we have two weight assignments D1 and D2 on W. Let D10 and D20 be the corresponding
+weight assignments of outcomes of measurement. Since the weight assignment induced by each |φw i
+is in fact a distribution, |D10 − D20 | ≤ |D1 − D2 |.
+    For this paper, we will focus on the case where W is the set of oracles H from X → Y, and |φH i
+is the final state of some quantum algorithm A that makes q queries to the oracle H.
+
+B.1      Proof of Theorem 3.1
+
+Proof of Theorem 3.1.
+   Let A be some quantum oracle algorithm. Suppose right before the first query, the state of
+the system is |φ0 i = xyz αxyz |xyzi (which is independent of the oracle). Assume for notational
+                       P
+
+convenience that all the transition matrices Ui are identical and equal to U (the proof in the general
+case is essentially identical). Let |φq,H i be the state of A after q queries to oracle H. That is,
+
+                                                              |φq,H i = U HU....U H|φ0 i
+
+     Let ρq be the density matrix for A after q queries when the oracle H is drawn from a distribution
+D:
+                                                                                  Pr[H]U HU...U H|φ0 ihφ0 |HU ∗ ...U ∗ HU ∗
+                           X                                             X
+                   ρq =          Pr[H]|φq,H ihφq,H | =
+                                     D                                            D
+                           H                                                H
+
+     Observe that
+
+                           (U H)xyzx0 y0 z 0             = hxyz|U H x0 y 0 z 0
+                                                         = hxyz|U x0 y 0 ⊕ H(x0 )z 0 = Uxyz,x0 y0 ⊕H(x0 )z 0
+
+     We can now evaluate ρq component-wise:
+
+
+                                     Pr[H](U HU...U H|φ0 ihφ0 |HU ∗ ...U ∗ HU ∗ )xyz,x0 y0 z 0
+                            X
+  (ρq )xyz,x0 y0 z 0   =
+                                         D
+                                 H
+                                     Pr[H]((U H)(U H)...(U H)|φ0 ihφ0 |(U H)∗ ...(U H)∗ (U H)∗ )xyz,x0 y0 z 0
+                            X
+                       =
+                                         D
+                                 H
+                            X                      X         X
+                       =             Pr[H]
+                                         D
+                                 H               xq yq zq x0q yq0 zq0
+
+                                         Uxyzxq yq ⊕H(xq )zq ((U H)...(U H)|φ0 ihφ0 |(U H)∗ ...(U H)∗ )Ux∗0 y0 z 0 x0q yq0 ⊕H(x0q )zq0
+                            ..
+                             .
+                            X                      X         X                  X           X
+                       =             Pr[H]                              ···
+                                         D
+                                 H               xq yq zq x0q yq0 zq0         x1 y1 z 1 x0 y 0 z 0
+                                                                                            1 1 1
+
+                                         Uxyzxq yq ⊕H(xq )zq Uxq yq zq xq−1 yq−1 ⊕H(xq−1 )zq−1 ...Ux2 y2 z2 ,x1 y1 ⊕H(x1 )z1 αx1 y1 z1
+                                         αx∗ 0 y0 z 0 Ux∗0 y0 z 0 ,x0 y0 ⊕H(x0 )z 0 ...Ux∗0q yq0 zq0 x0         0       0     0     Ux∗0 y0 z 0 x0q yq0 ⊕H(x0q )zq0
+                                             1 1 1       2 2 2     1 1             1    1                  q−1 yq−1 ⊕H(xq−1 )zq−1
+
+
+     Now we can rearrange the order of summation as
+                                                       X         X                  X         X X
+                                                                            ···                            Pr[H]
+                                                                                                            D
+                                                     xq yq zq x0q yq0 zq0         x1 y1 z 1 x0 y 0 z 0 H
+                                                                                             1 1 1
+
+
+
+                                                                                       20
+Next, notice that the summand only depends on H(xi ), H(x0i ) for i ∈ {1, ..., q}. This means, in the
+H sum, we can sum out all the inputs x for which x 6= xi , x0i . Letting ri = H(xi ), ri0 = H(x0i ), we
+have that the summation over H simplifies to
+
+                                                       Pr[H(xi ) = ri , H(x0i ) = ri0 ∀i ∈ {1, ..., q}]
+                                       X
+                                                       D
+                                r1 ...rq ,r10 ...rq0
+
+    Putting it back together,
+                                   X           X                X         X              X
+       (ρq )xyz,x0 y0 z 0   =                           ···
+                                 xq yq zq x0q yq0 zq0         x1 y1 z1 x0 y 0 z 0 r1 ...rq ,r0 ...rq0
+                                                                          1 1 1              1
+
+                                          Pr[H(xi ) = ri , H(x0i ) = ri0 ∀i ∈ {1, ..., q}]
+                                          D
+                                          Uxyzxq yq ⊕rq zq Uxq yq zq xq−1 yq−1 ⊕rq−1 zq−1 ...Ux2 y2 z2 ,x1 y1 ⊕r1 z1 αx1 y1 z1
+                                          αx∗ 0 y0 z 0 Ux∗0 y0 z 0 ,x0 y0 ⊕r0 z 0 ...Ux∗0q yq0 zq0 x0        0     0    0     Ux∗0 y0 z 0 x0q yq0 ⊕rq0 zq0
+                                               1 1 1        2 2 2      1 1      1 1                     q−1 yq−1 ⊕rq−1 zq−1
+
+
+     Thus, the density matrix ρq , which contains all the statistical information about the algorithm A,
+is a linear combination of the quantities PrD [H(xi ) = ri , H(x0i ) = ri0 ∀i ∈ {1, ..., q}]. In particular, the
+probability of any particular output is on the diagonal of ρq , and is thus a linear combination. Since
+the probabilities are real, we can take the coefficients of PrD [H(xi ) = ri , H(x0i ) = ri0 ∀i ∈ {1, ..., q}]
+to be real as well.
+
+
+C     More on Semi-Constant Distributions
+In this section, we prove Lemma 4.2, which states that the marginal distributions for any k inputs
+of oracles drawn from SCλ specified by polynomials of degree k for which the λ1 coefficient is 0. We
+also describe a quantum algorithm for finding collisions in SCλ using O(λ−2/3 ) oracle queries.
+
+C.1     Proof of Lemma 4.2
+
+Proof of Lemma 4.2. Recall that SCλ is defined as follows:
+
+    • Pick y at random from Y.
+    • For each x ∈ X , with probability 1 − λ, set H(x) to be a random element of Y. With
+      probability λ, set H(x) = y.
+
+    Suppose Y contains N elements. Let α((xj ), (rj )) = Pr[H(xi ) = rj ∀i ∈ {1, ..., k}], the probability
+that xj maps to rj for k values of xj and rj . Suppose there are ` distinct rj , denoted tm , and let km
+be the number of rj equal to tm (note that `m=1 km = k). Let F be the set {1, ..., `, ⊥}. For each
+                                              P
+
+f ∈ F, if f =⊥, f is associated with the event that tm 6= y for all m, and otherwise, f is associated
+with the event that tf = y.
+    Let eqf,m be 1 if f = m, 0 otherwise. The probability that O(xj ) = tm is 1/N if we are choosing
+the output at random, and otherwise, it is 1 if tm = y and 0 otherwise. In other words, this
+probability is
+                                    1               1                1
+                                                                       
+                           (1 − λ) + λeqf,m =          + λ eqf,m −         .
+                                   N               N                 N
+
+
+                                                                              21
+Since there are km copies of each tm among the rj ,
+                                                              `                                   km
+                                                                  1                            1
+                                                              Y                  
+                 Pr[H(xi ) = rj ∀i ∈ {1, ..., k}|f ] =                     + λ eqf,m −                     .
+                                                              i=m
+                                                                       N                       N
+
+Summing over all f gives
+                                                       `                                  km
+                                                           1                           1
+                                          X            Y                 
+                      α((xi ), (rj )) =       Pr[f ]                 + λ eqf,m −                     .
+                                          f            i=m
+                                                                 N                     N
+                                                                             P
+   This is a polynomial in λ. It is a sum of products of km = k monomials in λ, so its total
+degree is at most k. Now, we shall approximate this to first order in λ, and show that the first-order
+coefficient is 0:
+
+                                              `                                   km
+                                                  1                            1
+                               X              Y               
+           α((xi ), (rj )) =        Pr[f ]               + λ eqf,m −
+                                f            m=1
+                                                     N                         N
+                                              `
+                                              Y      1         1              1
+                               X                                                                   
+                          =         Pr[f ]             k
+                                                          + km km −1 λ eqf,m −                           + O(λ2 )
+                                f            m=1
+                                                     N  m     N                N
+                                                            ` 
+                                    1                                                          1
+                                              X             Y                                      
+                          =         P              Pr[f ]            1 + km N λ eqf,m −                  + O(λ2 )
+                               N      k
+                                     m m
+                                              f             m=1
+                                                                                               N
+                                                    `                                      !
+                                1 X                               1
+                                                   X                       
+                          =      k
+                                    Pr[f ] 1 + N λ     km eqf,m −                                  + O(λ2 )
+                               N f                 m=1
+                                                                  N
+                                                                                          
+                                            `
+                                1      λ X         X               1
+                          =      k
+                                   +   k−1
+                                               km    Pr[f ]eqf,m −  + O(λ2 )
+                               N     N     m=1      f
+                                                                   N
+                 P
+   Notice that f Pr[f ]eqf,m is the probability that tm = y, which is equal to 1/N . Thus, all
+the terms in the first-order coefficient cancel out, so the λ1 coefficient is 0. This completes the
+lemma.
+
+
+C.2    Finding Collisions in Semi-Constant Distributions
+Here we explore the problem of finding a collision in an oracle drawn from a semi-constant distribution
+SCλ over HX ,Y . Our motivation for studying the collision problem is as follows: a classical algorithm
+making qH queries can only distinguish SCλ from random with probability O(λ2 qH        2 ), since it can
+
+only distinguish the two cases if it happens to query two distinguished points. Further, querying
+random points, and outputting 1 if a collision is found achieves this bound. Thus, a collision search
+is the best way to distinguish SCλ from random in the classical setting, and the same may also be
+true in the quantum setting
+    Let N = |Y| be the number of elements in Y, and assume that λ >> N1 so that finding a collision
+requires (with high probability) finding a collision in the distinguished inputs.
+    Let c be the minimum constant such that SCλ is indistinguishable from uniform with except
+with probability O(q c λ2 ). Corollary 4.3 shows us that c ≤ 4. We will now show that c ≥ 3, using
+
+                                                            22
+the following algorithm. The algorithm is basically the algorithm of Brassard et al. [BHT97], but
+modified for our purposes. It operates as follows:
+    • Let p = (q − 1)/2). Select a subset W ⊆ X of size p. For each x ∈ W, store the pair (x, H(x))
+      in a table, sorted by the second coordinate. Check if there is a collision in W. If so, output
+      this collision.
+    • Construct the oracle O(x) which is 1 if and only if x ∈
+                                                            / W and H(x) = H(x0 ) for some x0 ∈ W.
+      Since the entries to W are sorted by the second coordinate, this test can be performed
+      efficiently.
+    • Run Grover’s algorithm on this oracle for p queries, looking for an x ∈
+                                                                            / W such that H(x) =
+      H(x0 ) for some x0 ∈ W.
+    • Output (x, x0 ).
+   The first step uses p queries. If the algorithm is given an oracle from SCλ , the probability that
+we find a distinguished input in the first step is
+
+                                      1 − (1 − λ)|W| = 1 − (1 − λ)p ≥ pλ
+
+    Grover’s algorithm [Gro96] finds an x such that O(x) = 1 with probability Ω(p2 f ) using p
+queries, where f is the fraction of inputs to O that map to 1. Thus, f is the fraction of x such that
+x∈ / W (which is most of them) and H(x) = H(x0 ) for some x0 ∈ W. If we found a distinguished
+input, this fraction is (in expectation) at least λ.
+    If we found a distinguished input in the first step (which happens with probability at least pλ),
+Grover’s algorithm will find an x such that O(x) = 1 with probability Ω(p2 λ) using p queries. Thus,
+out algorithm uses 2p queries, and finds a collision with probability Ω(p3 λ2 ).
+    If this algorithm is given a random oracle instead, the probability that we find a collision is
+negligible. By adding an extra check that the output of the algorithm is indeed a collision (requiring
+1 extra query since H(x0 ) has already been recorded), we get an algorithm using 2p + 1 = q quantum
+queries that distinguishes SCλ from random with probability Ω(p3 λ2 ) = Ω(q 3 λ2 ), showing that
+c ≥ 3.
+
+
+D     Proof of Claim 1
+Here we complete the proof of Theorem 5.1 by proving Claim 1.
+Proof of Claim 1. Recall the setup: A0 makes q ≡ qH + qS + 1 queries to an oracle H drawn
+from SCλ , and outputs (c, id∗ , Q). Let X be the set of distinguished inputs to H. If id∗ ∈ X and
+Q X = ∅, A0 wins if c = 0. Otherwise, we flip a coin to decide if A0 wins. Let p(λ) be the
+   T
+
+probability that A0 wins. We want to show that p(λ) ≥ 12 + λ − `(qH4,qS ) λ2 for some polynomial
+`(·, ·), where  is the probability that c = 0 when A0 is given a truly random oracle, minus f rac12.
+We assume without loss of generality that A0 never outputs id∗ ∈ Q.
+     By Theorem 3.1,
+
+    Pr [A0H () = (c, id∗ , Q)] =                              β(c, id∗ , Q, (xi ), (ri )) Pr [H(xi ) = ri ∀i ∈ {1, ..., 2q}]
+                                            X
+  H←D                                                                                 H←D
+                                   x1 ,...,x2q ,r1 ,...,r2q
+
+
+
+
+                                                                  23
+for some coefficients β(c, id∗ , Q, (xi ), (ri )). Then notice that
+            1
+                                                 β(0, id∗ , Q, (xi ), (ri )) Pr[H(xi ) = ri ∀i ∈ {1, ..., 2q}]
+                   X             X
+              +=
+            2       ∗
+                  id ,Q x1 ,...,x2q ,r1 ,...,r2q
+                                                                             H
+
+
+where H is a random oracle.
+   Call (id∗ , Q) good if id∗ ∈ X and Q X = ∅, and bad otherwise. For each c, let γc be the
+                                            T
+
+probability of obtaining (c, id∗ , Q) such that (id∗ , Q) is good. The probability A0 wins is then:
+                                                                1 1
+                                      p(λ) = γ0 + (1 − γ0 − γ1 ) = (1 + γ0 − γ1 ) .
+                                                                2 2
+    Fix a set X , and let SCX be the distribution on oracles H where a y is chosen at random, and
+for each x ∈ X , H(x) = y, and for each x ∈/ X , H(x) is chosen at random.
+    We can now compute γc :
+                                                                                    Pr [AH () = (c, id∗ , Q)]
+                                      X                  X          X
+                            γc =            Pr[X ]
+                                                                                 H←SCX
+                                       X               id∗ ∈X Q:Q
+                                                                     T
+                                                                         X =∅
+
+where Pr[X ] is the probability that X is chosen as the set of distinguished inputs, and Q ranges
+over sets of size qS . We can rewrite γc as
+                                                                                                           
+              X X                                                                                          
+                                                                     Pr [AH () = (c, id∗ , Q)]
+                                        X
+     γc =                                                Pr[X ]
+                                                                                                           
+                  
+               ∗
+                                                                 H←SCX                                     
+               id    Q:                    X:
+                     ∗            ∗
+                                              T
+                       ∈Q
+                    id /      id ∈X ,Q            X =∅
+                                                                                                                                   
+              X X                                                                                                                  
+                                                                                β(c, id∗ , Q, (xi ), (ri ))
+                                        X                            X
+          =                                              Pr[X ]                                                   Pr [H(xi ) = ri ∀i]
+                                                                                                                                   
+                  
+               ∗
+                                                                 x1 ,...,x2q
+                                                                                                                 H←SCX              
+               id    Q:                    X:
+                    id∗ /         ∗                               r1 ,...,r2q
+                                              T
+                       ∈Q     id ∈X ,Q            X =∅
+                                                                                                                                   
+              X X                                                                                                                  
+                            β(c, id∗ , Q, (xi ), (ri ))
+                   X                                                                   X
+          =                                                                                             Pr[X ]    Pr [H(xi ) = ri ∀i]
+                                                                                                                                    
+                  
+               ∗
+                  x ,...,x                                                                                      H←SCX              
+               id    Q:          1      2q                                              X:
+                    id∗ /       r1 ,...,r2q                                      id∗ ∈X ,Q
+                                                                                             T
+                       ∈Q                                                                        X =∅
+
+    We now look at the quantity
+                                      X
+                                                       Pr[X ]     Pr [H(xi ) = ri ∀i ∈ {1, ..., 2q}] .                               (D.1)
+                                                                H←SCX
+                                       X:
+                            id∗ ∈X ,Q
+                                           T
+                                                X =∅
+
+    Since PrX ←SCX [H(xi ) = ri ∀i ∈ {1, ..., 2q}] only depends on the inputs xi , and each x is put in
+X with independent probability λ, we can sum out all x other than id∗ , xi , or those in Q. Therefore,
+we only consider X drawn as a subset of {xi : i ∈ {1, ..., 2q}} Q {id∗ }.
+                                                                  S S
+
+                                                                    / Q, xi 6= id∗ } where each element is
+    Let X 0 be drawn from the subsets of {xi : i ∈ {1, ..., 2q}, xi ∈
+in X 0 with independent probability λ. We can then rewrite Pr[X ] as the probability that id∗ ∈ X
+(which is λ) times the probability that Q is disjoint from X (which is (1 − λ)qS ) times the probability
+of drawing X 0 , where X 0 = X \ {id∗ }. Thus, (D.1) becomes
+                                                   Pr[X 0 ]
+                                              X
+                       λ(1 − λ)qS                                    Pr            [H(xi ) = ri ∀i ∈ {1, ..., 2q}]                   (D.2)
+                                                              H←SCX 0 ∪{id∗ }
+                                              X0
+
+
+                                                                          24
+   Now, each Pr[X 0 ] has the form λc (1 − λ)d , where c is the number of elements in X 0 , and d is the
+number of elements left out. Thus c + d ≤ 2q, so Pr[X 0 ] is a polynomial of degree at most 2q in λ.
+Thus, (D.2) is a polynomial of degree at most 2q + qS + 1. Moreover, if we let λ → 0, Pr[X 0 ] → 0,
+and thus (D.2) becomes
+                               λ    Pr [H(xi ) = ri ∀i ∈ {1, ..., 2q}]
+                                                H←SC{id∗ }
+
+   Notice that SC{id∗ } is drawn as follows: pick a random y, and set H(id∗ ) = y, for all other x,
+choose H(x) randomly. This is identical to a truly random oracle, so (D.2) is equal to
+
+                                      λ Pr[H(xi ) = ri ∀i ∈ {1, ..., 2q}] + O(λ2 ) .
+                                            H
+
+   Plugging this into our expression for γc , we get that γc is a polynomial of degree at most
+2q + qS + 1, and that it is equal to
+                                                                                                   
+
+                                            β(c, id∗ , Q, (xi ), (ri )) Pr[H(xi ) = ri ∀i ∈ {1, ..., q}]
+               X X  X
+                                                                                                                2
+                                                                                                    
+        γc =       
+                                                                                                        λ + O(λ )
+                                                                     H
+               id∗    Q:      x1 ,...,x2q
+                      ∗
+                        ∈Q
+                     id /     r1 ,...,r2q
+
+
+   Notice that the first-order coefficient is the probability that the first bit of the output of A0 is c
+when given a truly random oracle. Thus:
+                                                            1
+                                                                     
+                                                   γ0   =     +  λ + O(λ2 )
+                                                            2
+                                                            1
+                                                                
+                                                   γ1   =     −  λ + O(λ2 )
+                                                            2
+
+   Thus, the probability A0 wins is
+                                             1                1
+                                       p(λ) = (1 + γ0 − γ1 ) = + λ + O(λ2 )
+                                             2                2
+and is specified by a polynomial of degree at most 2q + qS + 1. Since this probability is always
+between 0 and 1 for all λ ∈ [0, 1], we can use the Markov brother’s inequality [DS41] to bound the
+magnitude of the second derivative to at most |p00 (λ)| ≤ 23 (2q + qS + 1)4 . Integrating, we can bound
+the first derivative to
+                                            2                      2
+                           p0 (λ) ≥ p0 (0) − (2q + qS + 1)4 λ =  − (2q + qS + 1)4 λ .
+                                            3                      3
+   Performing the integration once more, we get that
+
+                                         1                 1       `(qH , qH ) 2
+                       p(λ) ≥ p(0) + λ − (2q + qS + 1)λ2 = + λ −            λ
+                                         3                 2           4
+where `(qH , qS ) = 34 (2qH + 3qS + 2)4 .
+
+
+
+
+                                                                 25
+E     Proof of Theorem 5.3
+We prove Theorem 5.3, which states that the FDH signature scheme is secure in the quantum
+random oracle model if the underlying trapdoor permutation is secure against quantum adversaries.
+Proof of Theorem 5.3. Suppose towards contradiction that there is a quantum adversary A
+making qH hash queries, qS signature queries, that breaks S with probability . Assume without loss
+of generality that A never tries to forge a signature on a message it already received a secret key for.
+    Let Game0 be the standard attack game for S: the challenger generates (sk, pk) from S.Gen, and
+sends pk to the adversary. The adversary can make (classical) signature queries on messages mi , to
+which the challenger responds with S.SignH  sk (mi ), and (quantum) hash queries to the random oracle H.
+A wins if it can produce a pair (m∗ , σ ∗ ) such that m∗ 6= mi for any i, and S.VerH         ∗   ∗
+                                                                                      pk (m , σ ) = accept.
+The success probability in Game0 is .
+    Assume without loss of generality that A never asks for a signature on m∗ . Let A0 be the following
+algorithm that makes quantum queries to an oracle H, and simulates the interaction between A and
+the challenger: generate (sk, pk) from S.Gen, send pk to A. Run A, forwarding all hash queries to
+H, and answering extraction queries using S.SignH . The output of A0 is (S.VerH            ∗   ∗   ∗  ∗
+                                                                                   pk (m , σ ), m , σ , Q)
+where Q is the list of signature queries made by A. We can now think of Game0 as follows: run
+A0 with a random oracle H to obtain (m∗ , σ ∗ , Q). Report that the game is won if and only if
+S.VerH     ∗   ∗                                                          0
+      pk (m , σ ) = accept. The number of queries to H made by A is qH for direct queries, qS
+for queries through the signature algorithm, and 1 for the check S.VerH             ∗     ∗
+                                                                              pk (m , σ ), for a total of
+qH + qS + 1 queries.
+    Let λ ∈ (0, 1) to be chosen later. Let M be the message space. Let Game1 be Game0 , except
+that we choose a subset X of M as follows: for each m ∈ M, we put m in X with probability
+λ. If A asks for a signature on a message in X , abort and A loses. If the message A attempts to
+forge is not in X , also abort and A loses. Otherwise, follow the criteria in Game0 to decide if A
+wins. The message A tries to forge must be distinct from the messages it received signatures for,
+so the probabilities that each of these messages are in X is independent. Therefore, the no-abort
+conditions are met with probability at least λ(1 − λqS ). Thus, A wins in Game1 with probability at
+least λ(1 − λqS ) ≥ λ − qS λ2 .
+    Let Game2 be Game1 , except that we choose a random y in the public key space of S, and set
+H(x) = y for all x in X . H is now distributed according to SCλ , and by the same arguments as
+in the proof of Theorem 5.1, the probability A wins in Game2 is at least λ − `(qH4,qS ) λ2 for some
+polynomial `(·, ·).
+    Let us now restate Game2 in terms of A: pick X and H as above, and perform the standard
+attack game for S using H as the random oracle. When A produces (m∗ , σ ∗ ), first check that no
+signature queries were in X and that the message m∗ produced by A is in X . If so, A wins if
+and only if S.VerH     ∗   ∗
+                  pk (m , σ ) = accept. Otherwise, if the check fails, A loses. We can now make the
+following observation: once an extraction query in X is made, we can abort running A, since we no
+longer need A to determine if the game is won.
+    Now we are ready to define an algorithm B what inverts f . Give B access to two random oracles
+O1 and O2 . O1 maps messages to inputs to f . O2 maps messages to bits, where the probability of
+outputting 1 is λ. On input (pk, y), B works as follows:
+
+    • Send pk to A, and simulate A, playing the role of challenger to A.
+
+
+
+                                                    26
+• Construct the (quantum) oracle H such that
+                                       (
+                                           y              if O2 (m) = 1
+                              H(m) =
+                                           fpk (O1 (m))   otherwise
+
+• When A makes a signature query on a message mi , compute O2 (mi ). If the result is 1, abort.
+  Otherwise, return σi = O1 (mi ).
+• When A returns a forgery candidate (m, σ), test if O2 (m) = 1 and fpk (σ) = y. If so, output σ.
+  Otherwise, abort.
+
+Using an analysis similar to that of Theorem 5.1, we get that the advantage of B is at least
+
+                                               2
+                                            `(qH , qS )
+
+when we set λ = 2/`(qH , qS ).
+
+
+
+
+                                                27
+

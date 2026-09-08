@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-commitment-failure-successor-20260908/.lake/build/lib/lean/Selvage/CommitmentTraceWitnesses.olean",
+    "Selvage/CommitmentTraceWitnesses.lean"
+  ],
+  "cwd": "/tmp/minidregg-commitment-failure-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "02332f118e0223af3e5d0d1f9e6b2c5639357d248a7b9dffa0830e386e067fcc",
+  "source_unchanged": true,
+  "elapsed_s": 4.138708114624023,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/checks/witnesses-second.log"
+}

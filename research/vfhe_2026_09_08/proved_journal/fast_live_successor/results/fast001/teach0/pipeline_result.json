@@ -1,0 +1,127 @@
+{
+  "claim": "EXECUTED public-only learner-update proof pipeline",
+  "started_utc": "2026-09-08T22:13:03.465236+00:00",
+  "status": "verified",
+  "steps": [
+    {
+      "label": "export",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "export-update-ntt",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/case"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T22:13:03.470089+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 0.037788291985634714
+    },
+    {
+      "label": "emit",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_native_emitter/emit.py",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/emitted",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/case/public_ntt_rows.json"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T22:13:03.508919+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 0.29313545901095495
+    },
+    {
+      "label": "prove",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "prove-update",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/emitted/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/case",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/emitted/trace.leu32",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/proof"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T22:13:03.803322+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 1.9908012500382029
+    },
+    {
+      "label": "verify",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "verify-update",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/emitted/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/case",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/runtime/fast001/model/proposals/teach0/proved/proof/proof.bin"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T22:13:05.794948+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 0.13128575001610443
+    }
+  ],
+  "operation": "acc + fresh - old",
+  "approved_template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+  "runtime_sha256": "dd41ec2eac52bf35ff8a9c6e736fa4dcb7cb4ae41cec6bace5cf593a3cf87cc6",
+  "emitter_wrapper_sha256": "e85174ef4d67bcca6cda4186e85286f905743cbad6b50e1f545dabf9f45d5cd9",
+  "compiler_plan_source_sha256": "a0b6afeaa153fcdab8dc41ca262b0f065268a4aa0465fe2e3dd0cb766b025d3d",
+  "witness_plan_sha256": "328544d069866f9b23571e8b2338ea21c01bdec404dc0ba08df9afd2f09dd88e",
+  "witness_generation": "Lean-emitted plan executed by unchanged native witness consumer",
+  "inputs": {
+    "acc.ct": {
+      "sha256": "66121ba0ace7cbeebaf5d1f70d1aa662cd35b95ec131a312c7beece588edf1d7",
+      "bytes": 85103
+    },
+    "fresh.ct": {
+      "sha256": "e36c2748096178b7630a165f5e22ed6e6292a7fa08b1bc3dc81d7d3caf12286b",
+      "bytes": 85103
+    },
+    "old.ct": {
+      "sha256": "66121ba0ace7cbeebaf5d1f70d1aa662cd35b95ec131a312c7beece588edf1d7",
+      "bytes": 85103
+    },
+    "out.ct": {
+      "sha256": "e36c2748096178b7630a165f5e22ed6e6292a7fa08b1bc3dc81d7d3caf12286b",
+      "bytes": 85103
+    }
+  },
+  "scope": "Selected exact ciphertext coefficient relation; no encoder, FIFO authorization, key membership or confidentiality claim.",
+  "source_event_sha256": "dcbca5ac6d0decaff0a71547f7364c0025ccb3524ed32d8caafa7640404cc829",
+  "source_event_scope": "Carried application metadata; not authenticated or proved by this pipeline.",
+  "verified": true,
+  "verification": {
+    "changed_output_claim_rejected": false,
+    "claim": "EXECUTED fresh-process verification",
+    "proof_bytes": 504119,
+    "proof_sha256": "fc932e932b3ca5de2acd79c481e7748f0a444d127446896bb9fe83de0ed16cfd",
+    "verified": true,
+    "verify_ns": 89248791
+  },
+  "proof": {
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "claim": "EXECUTED proof over Lean-derived BFV relation",
+    "proof_bytes": 504119,
+    "proof_sha256": "fc932e932b3ca5de2acd79c481e7748f0a444d127446896bb9fe83de0ed16cfd",
+    "prove_ns": 1822489916,
+    "public_rows_bound": 8192,
+    "public_tuple_width": 57,
+    "rows": 8192,
+    "self_verify_ns": 84191500,
+    "template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+    "trace_width": 1017,
+    "verified": true
+  },
+  "public_rows_sha256": "2dff7ab7e82b77804bfd7694f8bca30876e0b5cd0002d207ad19523866fd9971",
+  "emission": {
+    "crypto_run": false,
+    "execute_and_write_ns": 180091166,
+    "instructions": 2993,
+    "producer": "Lean-generated witness instructions; native untrusted executor",
+    "registers": 2993,
+    "rows": 8192,
+    "setup_ns": 10125917,
+    "total_ns": 190221500,
+    "trace_bytes": 33325056,
+    "trace_width": 1017
+  },
+  "finished_utc": "2026-09-08T22:13:05.928606+00:00",
+  "elapsed_seconds": 2.4605095830047503
+}

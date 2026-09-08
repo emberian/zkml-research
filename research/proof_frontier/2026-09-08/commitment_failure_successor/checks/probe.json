@@ -1,0 +1,13 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/probe.lean"
+  ],
+  "cwd": "/tmp/minidregg-commitment-failure-successor-20260908",
+  "exit_code": 0,
+  "elapsed_s": 16.49013090133667,
+  "source_sha256": "9be3ffa47f53ccb474de3fc348ea051543ce656e399b55f234855ebb66fae543",
+  "output": "true\ntrue\n(true, false, 44)\n"
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "build/Compiler/RescaleWitnessPlan.olean",
+    "Compiler/RescaleWitnessPlan.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter",
+  "exit": 0,
+  "seconds_observed": 4.248725891113281,
+  "log": "results/RescaleWitnessPlan_002.log",
+  "source": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/Compiler/RescaleWitnessPlan.lean",
+    "bytes": 6774,
+    "sha256": "c21ef1d935a7f3ddfbaf4c0dbebf6c4ad0847939a53b47ff8668c088d255a97d"
+  },
+  "dependency_scope": "owned overlay reuses checked frozen rescale/query dependency oleans; no full build"
+}

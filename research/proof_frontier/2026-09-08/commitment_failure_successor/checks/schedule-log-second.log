@@ -1,0 +1,10 @@
+Selvage/SuppliedScheduleTrace.lean:120:4: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 1
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 0
+where
+ a := ↑(∑ j, q * (8 * (20 - 3 * ↑j + 1) + 2 * (20 - 3 * (↑j + 1) + 1)))
+ b := ↑(List.length (verificationLog H firstFifteen st q ⋯ r seed o))
+ c := ↑q

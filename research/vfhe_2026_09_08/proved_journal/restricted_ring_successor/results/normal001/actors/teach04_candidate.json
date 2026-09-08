@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "role_command": "window",
+  "pid": 25614,
+  "elapsed_seconds": 2.435366375022568,
+  "peak_rss_bytes_macos": 405520384,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach04/fresh.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/9ea4ee19f0819fe1cdcb580fd0cae8332ace24c81c502284e637060c0c6a4774",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/9ea4ee19f0819fe1cdcb580fd0cae8332ace24c81c502284e637060c0c6a4774",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach04/fresh.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach04/candidate.ring",
+      "kind": "ciphertext",
+      "bytes": 37901536,
+      "payload_bytes": 37900653,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "f835b111d619dfdb9c9a843bc6e0382fb429405d80c233ed771fbbc9ddd05af8"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/9ea4ee19f0819fe1cdcb580fd0cae8332ace24c81c502284e637060c0c6a4774",
+        "coefficient": 1
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach04/fresh.ring",
+        "coefficient": 1
+      }
+    ],
+    "live_fresh_ciphertexts": 2,
+    "live_L1_weight": 2,
+    "private_rows_read": 0
+  },
+  "error": null
+}

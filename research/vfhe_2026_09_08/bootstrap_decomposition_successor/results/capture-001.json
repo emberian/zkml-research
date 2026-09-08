@@ -1,0 +1,22 @@
+{
+  "command": [
+    "target/release/tfhe-bootstrap-decomposition-proof",
+    "prepare",
+    "../bootstrap_rotation_successor",
+    "fixtures/normal_001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor",
+  "timeout_seconds": 180,
+  "exit": 0,
+  "seconds": 0.08504854195052758,
+  "stdout": {
+    "path": "results/capture-001.stdout",
+    "bytes": 2541,
+    "sha256": "a454fcdd906b965b8421b195c995e8704d84e7d76da745655d41dbec08eb7f2d"
+  },
+  "stderr": {
+    "path": "results/capture-001.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

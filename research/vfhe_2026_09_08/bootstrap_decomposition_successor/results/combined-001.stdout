@@ -1,0 +1,182 @@
+Compiler/TfheCmuxDecomposition.lean:27:22: error: don't know how to synthesize implicit argument `F`
+  @vr (?m.9 k) W (rot (TfheInitialRotation.value k))
+context:
+k : Fin 12
+⊢ Type
+Compiler/TfheCmuxDecomposition.lean:27:4: error(lean.inferDefTypeFailed): Failed to infer type of definition `r`
+Compiler/TfheCmuxDecomposition.lean:28:22: error: don't know how to synthesize implicit argument `F`
+  @vr (?m.9 k) W (dec (TfheSignedDecomposition.value k))
+context:
+k : Fin 22
+⊢ Type
+Compiler/TfheCmuxDecomposition.lean:28:4: error(lean.inferDefTypeFailed): Failed to infer type of definition `d`
+Compiler/TfheCmuxDecomposition.lean:36:54: error: Application type mismatch: The argument
+  v 0
+has type
+  Term (AirSig BabyBear W)
+but is expected to have type
+  Term (AirSig BabyBear TfheSignedDecomposition.W)
+in the application
+  add' (v 0)
+Compiler/TfheCmuxDecomposition.lean:36:61: error(lean.unknownIdentifier): Unknown identifier `r`
+Compiler/TfheCmuxDecomposition.lean:36:84: error: Application type mismatch: The argument
+  v 5
+has type
+  Term (AirSig BabyBear W)
+but is expected to have type
+  Term (AirSig BabyBear TfheSignedDecomposition.W)
+in the application
+  mul' (cst 1024) (v 5)
+Compiler/TfheCmuxDecomposition.lean:37:49: error(lean.unknownIdentifier): Unknown identifier `d`
+Compiler/TfheCmuxDecomposition.lean:38:9: error(lean.unknownIdentifier): Unknown identifier `r`
+Compiler/TfheCmuxDecomposition.lean:38:32: error: Application type mismatch: The argument
+  v 3
+has type
+  Term (AirSig BabyBear W)
+but is expected to have type
+  Term (AirSig BabyBear TfheSignedDecomposition.W)
+in the application
+  mul' (cst 65536) (v 3)
+Compiler/TfheCmuxDecomposition.lean:39:55: error(lean.unknownIdentifier): Unknown identifier `d`
+Compiler/TfheCmuxDecomposition.lean:40:9: error(lean.unknownIdentifier): Unknown identifier `r`
+Compiler/TfheCmuxDecomposition.lean:40:32: error: Application type mismatch: The argument
+  v 4
+has type
+  Term (AirSig BabyBear W)
+but is expected to have type
+  Term (AirSig BabyBear TfheSignedDecomposition.W)
+in the application
+  mul' (cst 65536) (v 4)
+Compiler/TfheCmuxDecomposition.lean:41:14: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  HAppend (ConstraintSystem BabyBear W) (List (Term (AirSig BabyBear TfheSignedDecomposition.W))) ?m.8
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/TfheCmuxDecomposition.lean:43:90: error(lean.unknownIdentifier): Unknown identifier `extras`
+Compiler/TfheCmuxDecomposition.lean:63:69: error: Application type mismatch: The argument
+  exponentTerm
+has type
+  Term (AirSig BabyBear TfheSignedDecomposition.W)
+but is expected to have type
+  Term (AirSig BabyBear W)
+in the application
+  List.cons exponentTerm
+Compiler/TfheCmuxDecomposition.lean:63:82: error: Application type mismatch: The argument
+  loTerm
+has type
+  Term (AirSig BabyBear TfheSignedDecomposition.W)
+but is expected to have type
+  Term (AirSig BabyBear W)
+in the application
+  List.cons loTerm
+Compiler/TfheCmuxDecomposition.lean:63:89: error: Application type mismatch: The argument
+  hiTerm
+has type
+  Term (AirSig BabyBear TfheSignedDecomposition.W)
+but is expected to have type
+  Term (AirSig BabyBear W)
+in the application
+  List.cons hiTerm
+Compiler/TfheCmuxDecomposition.lean:68:34: error(lean.unknownIdentifier): Unknown identifier `r`
+Compiler/TfheCmuxDecomposition.lean:68:36: error(lean.unknownIdentifier): Unknown identifier `d`
+Compiler/TfheCmuxDecomposition.lean:71:4: error: ring failed, ring expressions not equal
+asg : W → BabyBear
+h1 : eval asg sorry = 0
+h2 : eval asg sorry = 0
+h3 : eval asg sorry = 0
+⊢ asg (value 0) + asg (rot (TfheInitialRotation.value 2)) - asg (value 5) * 1024 - eval asg sorry = 0
+Compiler/TfheCmuxDecomposition.lean:72:4: error: ring failed, ring expressions not equal
+asg : W → BabyBear
+h1 : eval asg sorry = 0
+h2 : eval asg sorry = 0
+h3 : eval asg sorry = 0
+⊢ asg (dec (TfheSignedDecomposition.value 0)) + asg (value 1) - asg (rot (TfheInitialRotation.value 3)) -
+        asg (value 3) * 65536 -
+      eval asg sorry =
+    0
+Compiler/TfheCmuxDecomposition.lean:73:4: error: ring failed, ring expressions not equal
+asg : W → BabyBear
+h1 : eval asg sorry = 0
+h2 : eval asg sorry = 0
+h3 : eval asg sorry = 0
+⊢ asg (dec (TfheSignedDecomposition.value 1)) + asg (value 2) + asg (value 3) -
+          asg (rot (TfheInitialRotation.value 4)) -
+        asg (value 4) * 65536 -
+      eval asg sorry =
+    0
+Compiler/TfheCmuxDecomposition.lean:67:67: warning: declaration uses `sorry`
+Compiler/TfheCmuxDecomposition.lean:67:80: warning: declaration uses `sorry`
+Compiler/TfheCmuxDecomposition.lean:67:87: warning: declaration uses `sorry`
+Compiler/TfheCmuxDecomposition.lean:67:67: warning: This simp argument is unused:
+  exponentTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [systemAccepts_cons, ̲systemAccepts_nil, ̲and_true, ̲accepts,e̵x̵p̵o̵n̵e̵n̵t̵T̵e̵r̵m̵,̵ ̲loTerm, ̲hiTerm,
+      TfheSignedDecomposition.sub, ̲v, ̲r, ̲d, ̲eval_add', ̲eval_mul', ̲eval_vr, ̲eval_cst] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/TfheCmuxDecomposition.lean:67:80: warning: This simp argument is unused:
+  loTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [systemAccepts_cons, ̲systemAccepts_nil, ̲and_true, ̲accepts, ̲exponentTerm,l̵o̵T̵e̵r̵m̵,̵ ̲hiTerm,
+      TfheSignedDecomposition.sub, ̲v, ̲r, ̲d, ̲eval_add', ̲eval_mul', ̲eval_vr, ̲eval_cst] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/TfheCmuxDecomposition.lean:67:87: warning: This simp argument is unused:
+  hiTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [systemAccepts_cons, ̲systemAccepts_nil, ̲and_true, ̲accepts, ̲exponentTerm, ̲loTerm,h̵i̵T̵e̵r̵m̵,̵
+      TfheSignedDecomposition.sub, ̲v, ̲r, ̲d, ̲eval_add', ̲eval_mul', ̲eval_vr, ̲eval_cst] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/TfheCmuxDecomposition.lean:68:4: warning: This simp argument is unused:
+  TfheSignedDecomposition.sub
+
+Hint: Omit it from the simp argument list.
+  simp only [̵s̵y̵s̵t̵e̵m̵A̵c̵c̵e̵p̵t̵s̵_̵c̵o̵n̵s̵,̵s̵y̵s̵t̵e̵m̵A̵c̵c̵e̵p̵t̵s̵_̵n̵i̵l̵,̵a̵n̵d̵_̵t̵r̵u̵e̵,̵a̵c̵c̵e̵p̵t̵s̵,̵e̵x̵p̵o̵n̵e̵n̵t̵T̵e̵r̵m̵,̵l̵o̵T̵e̵r̵m̵,̵h̵i̵T̵e̵r̵m̵,̵
+  ̵ ̵ ̵ ̵ ̵T̵f̵h̵e̵S̵i̵g̵n̵e̵d̵D̵e̵c̵o̵m̵p̵o̵s̵i̵t̵i̵o̵n̵.̵s̵u̵b̵,̵v̵,̵r̵,̵d̵,̵e̵v̵a̵l̵_̵a̵d̵d̵'̵,̵e̵v̵a̵l̵_̵m̵u̵l̵'̵,̵e̵v̵a̵l̵_̵v̵r̵,̵e̵v̵a̵l̵_̵c̵s̵t̵]̵[̲s̲y̲s̲t̲e̲m̲A̲c̲c̲e̲p̲t̲s̲_̲c̲o̲n̲s̲,̲ ̲s̲y̲s̲t̲e̲m̲A̲c̲c̲e̲p̲t̲s̲_̲n̲i̲l̲,̲ ̲a̲n̲d̲_̲t̲r̲u̲e̲,̲ ̲a̲c̲c̲e̲p̲t̲s̲,̲ ̲e̲x̲p̲o̲n̲e̲n̲t̲T̲e̲r̲m̲,̲ ̲l̲o̲T̲e̲r̲m̲,̲ ̲h̲i̲T̲e̲r̲m̲,̲
+  ̲ ̲ ̲ ̲ ̲v̲,̲ ̲r̲,̲ ̲d̲,̲ ̲e̲v̲a̲l̲_̲a̲d̲d̲'̲,̲ ̲e̲v̲a̲l̲_̲m̲u̲l̲'̲,̲ ̲e̲v̲a̲l̲_̲v̲r̲,̲ ̲e̲v̲a̲l̲_̲c̲s̲t̲]̲ at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/TfheCmuxDecomposition.lean:68:32: warning: This simp argument is unused:
+  v
+
+Hint: Omit it from the simp argument list.
+  simp only [systemAccepts_cons, ̲systemAccepts_nil, ̲and_true, ̲accepts, ̲exponentTerm, ̲loTerm, ̲hiTerm,
+      TfheSignedDecomposition.sub,v̵,̵ ̲r, ̲d, ̲eval_add', ̲eval_mul', ̲eval_vr, ̲eval_cst] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/TfheCmuxDecomposition.lean:68:38: warning: This simp argument is unused:
+  eval_add'
+
+Hint: Omit it from the simp argument list.
+  simp only [systemAccepts_cons, ̲systemAccepts_nil, ̲and_true, ̲accepts, ̲exponentTerm, ̲loTerm, ̲hiTerm,
+      TfheSignedDecomposition.sub, ̲v, ̲r, ̲d, ̲eval_a̵d̵d̵'̵,̵e̵v̵a̵l̵_̵mul', ̲eval_vr, ̲eval_cst] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/TfheCmuxDecomposition.lean:68:48: warning: This simp argument is unused:
+  eval_mul'
+
+Hint: Omit it from the simp argument list.
+  simp only [systemAccepts_cons, ̲systemAccepts_nil, ̲and_true, ̲accepts, ̲exponentTerm, ̲loTerm, ̲hiTerm,
+      TfheSignedDecomposition.sub, ̲v, ̲r, ̲d, ̲eval_a̵d̵d̵a̲d̲d̲', ̲eval_m̵u̵l̵'̵,̵e̵va̵l̵_̵v̵r, ̲eval_cst] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/TfheCmuxDecomposition.lean:68:58: warning: This simp argument is unused:
+  eval_vr
+
+Hint: Omit it from the simp argument list.
+  simp only [systemAccepts_cons, ̲systemAccepts_nil, ̲and_true, ̲accepts, ̲exponentTerm, ̲loTerm, ̲hiTerm,
+      TfheSignedDecomposition.sub, ̲v, ̲r, ̲d, ̲eval_add', ̲eval_mul', ̲eval_v̵r̵,̵e̵v̵a̵l̵_̵cst] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/TfheCmuxDecomposition.lean:68:66: warning: This simp argument is unused:
+  eval_cst
+
+Hint: Omit it from the simp argument list.
+  simp only [systemAccepts_cons, ̲systemAccepts_nil, ̲and_true, ̲accepts, ̲exponentTerm, ̲loTerm, ̲hiTerm,
+      TfheSignedDecomposition.sub, ̲v, ̲r, ̲d, ̲eval_add', ̲eval_mul', ̲eval_vr,̵e̵v̵a̵l̵_̵c̵s̵t̵] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/TfheCmuxDecomposition.lean:77:48: error(lean.unknownIdentifier): Unknown identifier `extras`

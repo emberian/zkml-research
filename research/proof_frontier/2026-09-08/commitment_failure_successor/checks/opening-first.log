@@ -1,0 +1,422 @@
+Selvage/SuppliedOpeningTrace.lean:98:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.SuppliedOpeningTrace.pointRun_result`:
+  [Field F]
+  [DecidableEq F]
+  [DecidableEq Digest]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Field F] [DecidableEq F] [DecidableEq Digest] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/SuppliedOpeningTrace.lean:102:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.SuppliedOpeningTrace.pointRun_log`:
+  [Field F]
+  [DecidableEq F]
+  [DecidableEq Digest]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Field F] [DecidableEq F] [DecidableEq Digest] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/SuppliedOpeningTrace.lean:141:105: error: Tactic `tauto` failed
+
+case refine_1.false.false.false
+Digest F : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+k₀ k₁ k₂ k₃ : ℕ
+dom₀ : Fin (2 ^ k₀) ↪ F
+dom₁ : Fin (2 ^ k₁) ↪ F
+dom₂ : Fin (2 ^ k₂) ↪ F
+dom₃ : Fin (2 ^ k₃) ↪ F
+H : BinaryMerkle.HashSuite F Digest
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+rs rg rn : Digest
+β : F
+i : Fin (2 ^ k₃)
+o : RowOpening F Digest
+e : EfficientRootOpening.Query F Digest × Digest
+he :
+  e ∈
+    EfficientRootOpening.openingLog H (o.source false false false).value
+      (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false false false)) (o.source false false false).path
+⊢ (e ∈
+        List.flatMap Prod.snd
+          ([pointRun H (rowPoint D₀ D₁ D₂ i false false false) (o.source false false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false false true) (o.source false false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i false true false) (o.source false true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false true true) (o.source false true true)] ++
+            ([pointRun H (rowPoint D₀ D₁ D₂ i true false false) (o.source true false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true false true) (o.source true false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i true true false) (o.source true true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true true true) (o.source true true true)])) ∨
+      e ∈ EfficientRootOpening.openingLog H o.injected.value (binaryAddressBits k₃ i) o.injected.path) ∨
+    e ∈ EfficientRootOpening.openingLog H o.next.value (binaryAddressBits k₃ i) o.next.path
+Selvage/SuppliedOpeningTrace.lean:141:105: error: Tactic `tauto` failed
+
+case refine_1.false.false.true
+Digest F : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+k₀ k₁ k₂ k₃ : ℕ
+dom₀ : Fin (2 ^ k₀) ↪ F
+dom₁ : Fin (2 ^ k₁) ↪ F
+dom₂ : Fin (2 ^ k₂) ↪ F
+dom₃ : Fin (2 ^ k₃) ↪ F
+H : BinaryMerkle.HashSuite F Digest
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+rs rg rn : Digest
+β : F
+i : Fin (2 ^ k₃)
+o : RowOpening F Digest
+e : EfficientRootOpening.Query F Digest × Digest
+he :
+  e ∈
+    EfficientRootOpening.openingLog H (o.source false false true).value
+      (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false false true)) (o.source false false true).path
+⊢ (e ∈
+        List.flatMap Prod.snd
+          ([pointRun H (rowPoint D₀ D₁ D₂ i false false false) (o.source false false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false false true) (o.source false false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i false true false) (o.source false true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false true true) (o.source false true true)] ++
+            ([pointRun H (rowPoint D₀ D₁ D₂ i true false false) (o.source true false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true false true) (o.source true false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i true true false) (o.source true true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true true true) (o.source true true true)])) ∨
+      e ∈ EfficientRootOpening.openingLog H o.injected.value (binaryAddressBits k₃ i) o.injected.path) ∨
+    e ∈ EfficientRootOpening.openingLog H o.next.value (binaryAddressBits k₃ i) o.next.path
+Selvage/SuppliedOpeningTrace.lean:141:105: error: Tactic `tauto` failed
+
+case refine_1.false.true.false
+Digest F : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+k₀ k₁ k₂ k₃ : ℕ
+dom₀ : Fin (2 ^ k₀) ↪ F
+dom₁ : Fin (2 ^ k₁) ↪ F
+dom₂ : Fin (2 ^ k₂) ↪ F
+dom₃ : Fin (2 ^ k₃) ↪ F
+H : BinaryMerkle.HashSuite F Digest
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+rs rg rn : Digest
+β : F
+i : Fin (2 ^ k₃)
+o : RowOpening F Digest
+e : EfficientRootOpening.Query F Digest × Digest
+he :
+  e ∈
+    EfficientRootOpening.openingLog H (o.source false true false).value
+      (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false true false)) (o.source false true false).path
+⊢ (e ∈
+        List.flatMap Prod.snd
+          ([pointRun H (rowPoint D₀ D₁ D₂ i false false false) (o.source false false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false false true) (o.source false false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i false true false) (o.source false true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false true true) (o.source false true true)] ++
+            ([pointRun H (rowPoint D₀ D₁ D₂ i true false false) (o.source true false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true false true) (o.source true false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i true true false) (o.source true true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true true true) (o.source true true true)])) ∨
+      e ∈ EfficientRootOpening.openingLog H o.injected.value (binaryAddressBits k₃ i) o.injected.path) ∨
+    e ∈ EfficientRootOpening.openingLog H o.next.value (binaryAddressBits k₃ i) o.next.path
+Selvage/SuppliedOpeningTrace.lean:141:105: error: Tactic `tauto` failed
+
+case refine_1.false.true.true
+Digest F : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+k₀ k₁ k₂ k₃ : ℕ
+dom₀ : Fin (2 ^ k₀) ↪ F
+dom₁ : Fin (2 ^ k₁) ↪ F
+dom₂ : Fin (2 ^ k₂) ↪ F
+dom₃ : Fin (2 ^ k₃) ↪ F
+H : BinaryMerkle.HashSuite F Digest
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+rs rg rn : Digest
+β : F
+i : Fin (2 ^ k₃)
+o : RowOpening F Digest
+e : EfficientRootOpening.Query F Digest × Digest
+he :
+  e ∈
+    EfficientRootOpening.openingLog H (o.source false true true).value
+      (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false true true)) (o.source false true true).path
+⊢ (e ∈
+        List.flatMap Prod.snd
+          ([pointRun H (rowPoint D₀ D₁ D₂ i false false false) (o.source false false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false false true) (o.source false false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i false true false) (o.source false true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false true true) (o.source false true true)] ++
+            ([pointRun H (rowPoint D₀ D₁ D₂ i true false false) (o.source true false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true false true) (o.source true false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i true true false) (o.source true true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true true true) (o.source true true true)])) ∨
+      e ∈ EfficientRootOpening.openingLog H o.injected.value (binaryAddressBits k₃ i) o.injected.path) ∨
+    e ∈ EfficientRootOpening.openingLog H o.next.value (binaryAddressBits k₃ i) o.next.path
+Selvage/SuppliedOpeningTrace.lean:141:105: error: Tactic `tauto` failed
+
+case refine_1.true.false.false
+Digest F : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+k₀ k₁ k₂ k₃ : ℕ
+dom₀ : Fin (2 ^ k₀) ↪ F
+dom₁ : Fin (2 ^ k₁) ↪ F
+dom₂ : Fin (2 ^ k₂) ↪ F
+dom₃ : Fin (2 ^ k₃) ↪ F
+H : BinaryMerkle.HashSuite F Digest
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+rs rg rn : Digest
+β : F
+i : Fin (2 ^ k₃)
+o : RowOpening F Digest
+e : EfficientRootOpening.Query F Digest × Digest
+he :
+  e ∈
+    EfficientRootOpening.openingLog H (o.source true false false).value
+      (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true false false)) (o.source true false false).path
+⊢ (e ∈
+        List.flatMap Prod.snd
+          ([pointRun H (rowPoint D₀ D₁ D₂ i false false false) (o.source false false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false false true) (o.source false false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i false true false) (o.source false true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false true true) (o.source false true true)] ++
+            ([pointRun H (rowPoint D₀ D₁ D₂ i true false false) (o.source true false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true false true) (o.source true false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i true true false) (o.source true true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true true true) (o.source true true true)])) ∨
+      e ∈ EfficientRootOpening.openingLog H o.injected.value (binaryAddressBits k₃ i) o.injected.path) ∨
+    e ∈ EfficientRootOpening.openingLog H o.next.value (binaryAddressBits k₃ i) o.next.path
+Selvage/SuppliedOpeningTrace.lean:141:105: error: Tactic `tauto` failed
+
+case refine_1.true.false.true
+Digest F : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+k₀ k₁ k₂ k₃ : ℕ
+dom₀ : Fin (2 ^ k₀) ↪ F
+dom₁ : Fin (2 ^ k₁) ↪ F
+dom₂ : Fin (2 ^ k₂) ↪ F
+dom₃ : Fin (2 ^ k₃) ↪ F
+H : BinaryMerkle.HashSuite F Digest
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+rs rg rn : Digest
+β : F
+i : Fin (2 ^ k₃)
+o : RowOpening F Digest
+e : EfficientRootOpening.Query F Digest × Digest
+he :
+  e ∈
+    EfficientRootOpening.openingLog H (o.source true false true).value
+      (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true false true)) (o.source true false true).path
+⊢ (e ∈
+        List.flatMap Prod.snd
+          ([pointRun H (rowPoint D₀ D₁ D₂ i false false false) (o.source false false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false false true) (o.source false false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i false true false) (o.source false true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false true true) (o.source false true true)] ++
+            ([pointRun H (rowPoint D₀ D₁ D₂ i true false false) (o.source true false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true false true) (o.source true false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i true true false) (o.source true true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true true true) (o.source true true true)])) ∨
+      e ∈ EfficientRootOpening.openingLog H o.injected.value (binaryAddressBits k₃ i) o.injected.path) ∨
+    e ∈ EfficientRootOpening.openingLog H o.next.value (binaryAddressBits k₃ i) o.next.path
+Selvage/SuppliedOpeningTrace.lean:141:105: error: Tactic `tauto` failed
+
+case refine_1.true.true.false
+Digest F : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+k₀ k₁ k₂ k₃ : ℕ
+dom₀ : Fin (2 ^ k₀) ↪ F
+dom₁ : Fin (2 ^ k₁) ↪ F
+dom₂ : Fin (2 ^ k₂) ↪ F
+dom₃ : Fin (2 ^ k₃) ↪ F
+H : BinaryMerkle.HashSuite F Digest
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+rs rg rn : Digest
+β : F
+i : Fin (2 ^ k₃)
+o : RowOpening F Digest
+e : EfficientRootOpening.Query F Digest × Digest
+he :
+  e ∈
+    EfficientRootOpening.openingLog H (o.source true true false).value
+      (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true true false)) (o.source true true false).path
+⊢ (e ∈
+        List.flatMap Prod.snd
+          ([pointRun H (rowPoint D₀ D₁ D₂ i false false false) (o.source false false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false false true) (o.source false false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i false true false) (o.source false true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false true true) (o.source false true true)] ++
+            ([pointRun H (rowPoint D₀ D₁ D₂ i true false false) (o.source true false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true false true) (o.source true false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i true true false) (o.source true true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true true true) (o.source true true true)])) ∨
+      e ∈ EfficientRootOpening.openingLog H o.injected.value (binaryAddressBits k₃ i) o.injected.path) ∨
+    e ∈ EfficientRootOpening.openingLog H o.next.value (binaryAddressBits k₃ i) o.next.path
+Selvage/SuppliedOpeningTrace.lean:141:105: error: Tactic `tauto` failed
+
+case refine_1.true.true.true
+Digest F : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+k₀ k₁ k₂ k₃ : ℕ
+dom₀ : Fin (2 ^ k₀) ↪ F
+dom₁ : Fin (2 ^ k₁) ↪ F
+dom₂ : Fin (2 ^ k₂) ↪ F
+dom₃ : Fin (2 ^ k₃) ↪ F
+H : BinaryMerkle.HashSuite F Digest
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+rs rg rn : Digest
+β : F
+i : Fin (2 ^ k₃)
+o : RowOpening F Digest
+e : EfficientRootOpening.Query F Digest × Digest
+he :
+  e ∈
+    EfficientRootOpening.openingLog H (o.source true true true).value
+      (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true true true)) (o.source true true true).path
+⊢ (e ∈
+        List.flatMap Prod.snd
+          ([pointRun H (rowPoint D₀ D₁ D₂ i false false false) (o.source false false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false false true) (o.source false false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i false true false) (o.source false true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i false true true) (o.source false true true)] ++
+            ([pointRun H (rowPoint D₀ D₁ D₂ i true false false) (o.source true false false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true false true) (o.source true false true)] ++
+              [pointRun H (rowPoint D₀ D₁ D₂ i true true false) (o.source true true false),
+                pointRun H (rowPoint D₀ D₁ D₂ i true true true) (o.source true true true)])) ∨
+      e ∈ EfficientRootOpening.openingLog H o.injected.value (binaryAddressBits k₃ i) o.injected.path) ∨
+    e ∈ EfficientRootOpening.openingLog H o.next.value (binaryAddressBits k₃ i) o.next.path
+Selvage/SuppliedOpeningTrace.lean:141:8: warning: This simp argument is unused:
+  List.nil_append
+
+Hint: Omit it from the simp argument list.
+  s̵i̵m̵p̵ ̵o̵n̵l̵y̵ ̵[̵r̵o̵w̵R̵u̵n̵,̵s̵o̵u̵r̵c̵e̵R̵u̵n̵s̵,̵L̵i̵s̵t̵.̵f̵l̵a̵t̵M̵a̵p̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵f̵l̵a̵t̵M̵a̵p̵_̵n̵i̵l̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵n̵i̵l̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵L̵i̵s̵t̵.̵n̵i̵l̵_̵a̵p̵p̵e̵n̵d̵,̵L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵n̵i̵l̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵a̵p̵p̵e̵n̵d̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵n̵o̵t̵_̵m̵e̵m̵_̵n̵i̵l̵,̵p̵o̵i̵n̵t̵R̵u̵n̵_̵l̵o̵g̵]̵s̲i̲m̲p̲ ̲o̲n̲l̲y̲ ̲[̲r̲o̲w̲R̲u̲n̲,̲ ̲s̲o̲u̲r̲c̲e̲R̲u̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲f̲l̲a̲t̲M̲a̲p̲_̲c̲o̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲f̲l̲a̲t̲M̲a̲p̲_̲n̲i̲l̲,̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲c̲o̲n̲s̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲n̲i̲l̲,̲ ̲L̲i̲s̲t̲.̲a̲p̲p̲e̲n̲d̲_̲n̲i̲l̲,̲ ̲L̲i̲s̲t̲.̲m̲e̲m̲_̲a̲p̲p̲e̲n̲d̲,̲ ̲L̲i̲s̲t̲.̲m̲e̲m̲_̲c̲o̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲n̲o̲t̲_̲m̲e̲m̲_̲n̲i̲l̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲p̲o̲i̲n̲t̲R̲u̲n̲_̲l̲o̲g̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/SuppliedOpeningTrace.lean:141:56: warning: This simp argument is unused:
+  List.mem_cons
+
+Hint: Omit it from the simp argument list.
+  s̵i̵m̵p̵ ̵o̵n̵l̵y̵ ̵[̵r̵o̵w̵R̵u̵n̵,̵s̵o̵u̵r̵c̵e̵R̵u̵n̵s̵,̵L̵i̵s̵t̵.̵f̵l̵a̵t̵M̵a̵p̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵f̵l̵a̵t̵M̵a̵p̵_̵n̵i̵l̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵n̵i̵l̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵L̵i̵s̵t̵.̵n̵i̵l̵_̵a̵p̵p̵e̵n̵d̵,̵L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵n̵i̵l̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵a̵p̵p̵e̵n̵d̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵n̵o̵t̵_̵m̵e̵m̵_̵n̵i̵l̵,̵p̵o̵i̵n̵t̵R̵u̵n̵_̵l̵o̵g̵]̵s̲i̲m̲p̲ ̲o̲n̲l̲y̲ ̲[̲r̲o̲w̲R̲u̲n̲,̲ ̲s̲o̲u̲r̲c̲e̲R̲u̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲f̲l̲a̲t̲M̲a̲p̲_̲c̲o̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲f̲l̲a̲t̲M̲a̲p̲_̲n̲i̲l̲,̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲c̲o̲n̲s̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲n̲i̲l̲,̲ ̲L̲i̲s̲t̲.̲n̲i̲l̲_̲a̲p̲p̲e̲n̲d̲,̲ ̲L̲i̲s̲t̲.̲a̲p̲p̲e̲n̲d̲_̲n̲i̲l̲,̲ ̲L̲i̲s̲t̲.̲m̲e̲m̲_̲a̲p̲p̲e̲n̲d̲,̲ ̲L̲i̲s̲t̲.̲n̲o̲t̲_̲m̲e̲m̲_̲n̲i̲l̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲p̲o̲i̲n̲t̲R̲u̲n̲_̲l̲o̲g̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/SuppliedOpeningTrace.lean:141:70: warning: This simp argument is unused:
+  List.not_mem_nil
+
+Hint: Omit it from the simp argument list.
+  s̵i̵m̵p̵ ̵o̵n̵l̵y̵ ̵[̵r̵o̵w̵R̵u̵n̵,̵s̵o̵u̵r̵c̵e̵R̵u̵n̵s̵,̵L̵i̵s̵t̵.̵f̵l̵a̵t̵M̵a̵p̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵f̵l̵a̵t̵M̵a̵p̵_̵n̵i̵l̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵m̵a̵p̵_̵n̵i̵l̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵ ̵L̵i̵s̵t̵.̵n̵i̵l̵_̵a̵p̵p̵e̵n̵d̵,̵L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_̵n̵i̵l̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵a̵p̵p̵e̵n̵d̵,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵n̵o̵t̵_̵m̵e̵m̵_̵n̵i̵l̵,̵p̵o̵i̵n̵t̵R̵u̵n̵_̵l̵o̵g̵]̵s̲i̲m̲p̲ ̲o̲n̲l̲y̲ ̲[̲r̲o̲w̲R̲u̲n̲,̲ ̲s̲o̲u̲r̲c̲e̲R̲u̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲f̲l̲a̲t̲M̲a̲p̲_̲c̲o̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲f̲l̲a̲t̲M̲a̲p̲_̲n̲i̲l̲,̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲c̲o̲n̲s̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲L̲i̲s̲t̲.̲m̲a̲p̲_̲n̲i̲l̲,̲ ̲L̲i̲s̲t̲.̲n̲i̲l̲_̲a̲p̲p̲e̲n̲d̲,̲ ̲L̲i̲s̲t̲.̲a̲p̲p̲e̲n̲d̲_̲n̲i̲l̲,̲ ̲L̲i̲s̲t̲.̲m̲e̲m̲_̲a̲p̲p̲e̲n̲d̲,̲ ̲L̲i̲s̲t̲.̲m̲e̲m̲_̲c̲o̲n̲s̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲p̲o̲i̲n̲t̲R̲u̲n̲_̲l̲o̲g̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/SuppliedOpeningTrace.lean:168:2: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  n ≥ 0
+  m ≥ 0
+  l ≥ 0
+  k ≥ 0
+  j ≥ 0
+  h ≥ 0
+  g ≥ 0
+  f ≥ 0
+  e ≥ 0
+  d ≥ 0
+  d - e ≥ -1
+  d - f ≥ -1
+  d - g ≥ -1
+  d - h ≥ -1
+  d - j ≥ -1
+  d - k ≥ -1
+  d - l ≥ -1
+  d - m ≥ -1
+  c ≥ 0
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ -1
+  a - c ≥ -1
+  2*a - b - c + 8*d - n ≤ -11
+where
+ a := ↑k₃
+ b := ↑(List.length (openingRun H o.injected.value (binaryAddressBits k₃ i) o.injected.path).2)
+ c := ↑(List.length (openingRun H o.next.value (binaryAddressBits k₃ i) o.next.path).2)
+ d := ↑k₀
+ e := ↑(List.length
+    (openingRun H (o.source false false false).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false false false))
+        (o.source false false false).path).2)
+ f := ↑(List.length
+    (openingRun H (o.source false false true).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false false true))
+        (o.source false false true).path).2)
+ g := ↑(List.length
+    (openingRun H (o.source false true false).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false true false))
+        (o.source false true false).path).2)
+ h := ↑(List.length
+    (openingRun H (o.source false true true).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false true true))
+        (o.source false true true).path).2)
+ j := ↑(List.length
+    (openingRun H (o.source true false false).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true false false))
+        (o.source true false false).path).2)
+ k := ↑(List.length
+    (openingRun H (o.source true false true).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true false true))
+        (o.source true false true).path).2)
+ l := ↑(List.length
+    (openingRun H (o.source true true false).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true true false))
+        (o.source true true false).path).2)
+ m := ↑(List.length
+    (openingRun H (o.source true true true).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true true true))
+        (o.source true true true).path).2)
+ n := ↑(List.flatMap Prod.snd
+      ([openingRun H (o.source false false false).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false false false))
+              (o.source false false false).path,
+            openingRun H (o.source false false true).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false false true))
+              (o.source false false true).path] ++
+          [openingRun H (o.source false true false).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false true false))
+              (o.source false true false).path,
+            openingRun H (o.source false true true).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i false true true))
+              (o.source false true true).path] ++
+        ([openingRun H (o.source true false false).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true false false))
+              (o.source true false false).path,
+            openingRun H (o.source true false true).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true false true))
+              (o.source true false true).path] ++
+          [openingRun H (o.source true true false).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true true false))
+              (o.source true true false).path,
+            openingRun H (o.source true true true).value (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i true true true))
+              (o.source true true true).path]))).length
+Selvage/SuppliedOpeningTrace.lean:167:4: warning: This simp argument is unused:
+  List.nil_append
+
+Hint: Omit it from the simp argument list.
+  simp only [rowRun, ̲sourceRuns, ̲List.flatMap_cons, ̲List.flatMap_nil, ̲List.map_cons, ̲List.map_nil,
+      List.n̵i̵l̵_̵append,̵L̵i̵s̵t̵.̵a̵p̵p̵e̵n̵d̵_nil, ̲List.length_append, ̲pointRun]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

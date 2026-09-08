@@ -1,0 +1,9 @@
+{
+  "command": [
+    "bash",
+    "scripts/check-import-boundary.sh"
+  ],
+  "cwd": "/Users/ember/dev/minidregg",
+  "exit": 0,
+  "scope": "read-only companion boundary; only new Compiler module and standalone exporter proposed"
+}

@@ -1,0 +1,90 @@
+{
+  "Selvage.CommitmentFreshTrace": [
+    "Minidregg.Selvage.CommitmentFreshTrace.oracle_answers",
+    "Minidregg.Selvage.CommitmentFreshTrace.oracleLog_eq_entries",
+    "Minidregg.Selvage.CommitmentFreshTrace.mem_prefixLog_iff",
+    "Minidregg.Selvage.CommitmentFreshTrace.mem_entries_iff",
+    "Minidregg.Selvage.CommitmentFreshTrace.children_length_le",
+    "Minidregg.Selvage.CommitmentFreshTrace.children_log_length_le",
+    "Minidregg.Selvage.CommitmentFreshTrace.targets_length_le",
+    "Minidregg.Selvage.CommitmentFreshTrace.answerOf_of_mem_unique",
+    "Minidregg.Selvage.CommitmentFreshTrace.evaluate_cachedSuite",
+    "Minidregg.Selvage.CommitmentFreshTrace.cachedSuite_entry",
+    "Minidregg.Selvage.CommitmentFreshTrace.fresh_count_le_calls",
+    "Minidregg.Selvage.CommitmentFreshTrace.uniform_prefix_event_le",
+    "Minidregg.Selvage.CommitmentFreshTrace.target_hit_le",
+    "Minidregg.Selvage.CommitmentFreshTrace.target_sum",
+    "Minidregg.Selvage.CommitmentFreshTrace.bad_probability"
+  ],
+  "Selvage.CommitmentFailureReduction": [
+    "Minidregg.Selvage.CommitmentFreshTrace.covered_cached_valid",
+    "Minidregg.Selvage.CommitmentFreshTrace.response_collision_cover",
+    "Minidregg.Selvage.CommitmentFreshTrace.late_target_cover",
+    "Minidregg.Selvage.CommitmentFreshTrace.checkpoint_bad_cover",
+    "Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_sound",
+    "Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_none_iff",
+    "Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_typed",
+    "Minidregg.Selvage.CommitmentFreshTrace.covered_collision_typed",
+    "Minidregg.Selvage.CommitmentFreshTrace.collision_candidates",
+    "Minidregg.Selvage.CommitmentFreshTrace.lateWitness_sound",
+    "Minidregg.Selvage.CommitmentFreshTrace.lateWitness_none_iff",
+    "Minidregg.Selvage.CommitmentFreshTrace.schedule_failure_cover",
+    "Minidregg.Selvage.CommitmentFreshTrace.schedule_failure_probability",
+    "Minidregg.Selvage.CommitmentFreshTrace.oracle_schedule_failure_probability"
+  ],
+  "Selvage.SuppliedOpeningTrace": [
+    "Minidregg.Selvage.SuppliedOpeningTrace.recomputeLogged_eq",
+    "Minidregg.Selvage.SuppliedOpeningTrace.openingRun_eq",
+    "Minidregg.Selvage.SuppliedOpeningTrace.pathLog_length_le",
+    "Minidregg.Selvage.SuppliedOpeningTrace.openingRun_length_le",
+    "Minidregg.Selvage.SuppliedOpeningTrace.pointRun_result",
+    "Minidregg.Selvage.SuppliedOpeningTrace.pointRun_log",
+    "Minidregg.Selvage.SuppliedOpeningTrace.rowRun_check",
+    "Minidregg.Selvage.SuppliedOpeningTrace.rowRun_logged",
+    "Minidregg.Selvage.SuppliedOpeningTrace.rowRun_length_le"
+  ],
+  "Selvage.SuppliedScheduleTrace": [
+    "Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_contains",
+    "Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_logged",
+    "Minidregg.Selvage.SuppliedOpeningTrace.flatten_ofFn_length_le",
+    "Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_length_le",
+    "Minidregg.Selvage.SuppliedOpeningTrace.checkpointRoots_length",
+    "Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_append_logged",
+    "Minidregg.Selvage.SuppliedOpeningTrace.checkpointsLogged_append",
+    "Minidregg.Selvage.SuppliedOpeningTrace.BabyBear.verificationLog_length_le",
+    "Minidregg.Selvage.SuppliedOpeningTrace.BabyBear.fresh_count_le_total"
+  ],
+  "Selvage.CommitmentFailureSoundness": [
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.failure_probability",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.sound",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.sound_call_budget"
+  ],
+  "Selvage.CommitmentTraceWitnesses": [
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_fresh",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_really_uses_answer",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.good_no_bad",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.late_observed",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_observed",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.empty_origin",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.late_extracted",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_extracted",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_typed",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_probability",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.future_root_hit",
+    "Minidregg.Selvage.CommitmentFreshTrace.Witnesses.future_root_origin_false",
+    "Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_accepts",
+    "Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_rejects",
+    "Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_inhabited",
+    "Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_record_count"
+  ],
+  "Selvage.CommitmentExecutionWitness": [
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.one_fresh",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.all_origin",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.pathLog_nil",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.empty_row_log",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.leaf_answer",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.verification_covered",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.execution_call_premises",
+    "Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.execution_rejects"
+  ]
+}

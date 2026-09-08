@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/program/witness_plan.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/artifacts/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale_generic/results/case001/public_rows.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/results/compat001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "seconds": 0.08955025672912598,
+  "exit": 1
+}

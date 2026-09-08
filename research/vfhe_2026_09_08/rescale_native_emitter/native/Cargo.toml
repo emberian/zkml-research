@@ -1,0 +1,10 @@
+[package]
+name = "lean-bigint-witness"
+version = "0.1.0"
+edition = "2021"
+[workspace]
+[dependencies]
+serde_json = "=1.0.151"
+num-bigint = "=0.4.6"
+num-integer = "=0.1.46"
+num-traits = "=0.2.19"

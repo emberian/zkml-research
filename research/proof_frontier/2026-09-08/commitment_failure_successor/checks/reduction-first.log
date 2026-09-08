@@ -1,0 +1,83 @@
+Selvage/CommitmentFailureReduction.lean:14:5: error: unexpected token '('; expected ',' or binderPred
+Selvage/CommitmentFailureReduction.lean:38:8: warning: declaration uses `sorry`
+Selvage/CommitmentFailureReduction.lean:40:5: warning: unused variable `hP`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Selvage/CommitmentFailureReduction.lean:40:40: warning: unused variable `hL`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Selvage/CommitmentFailureReduction.lean:41:5: warning: unused variable `hb`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Selvage/CommitmentFailureReduction.lean:44:2: warning: 'obtain ⟨e, he, hnot, htarget⟩ := hb' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/CommitmentFailureReduction.lean:45:2: warning: 'obtain ⟨t, ht⟩ := (mem_entries_iff A c e).mp (hL e he)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/CommitmentFailureReduction.lean:46:2: warning: 'have hkt : k ≤ t.val := by
+  by_contra h
+  apply hnot
+  apply (hmem e).mpr
+  exact (mem_prefixLog_iff A c k hk e).mpr ⟨t, by omega, ht⟩' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/CommitmentFailureReduction.lean:51:2: warning: 'refine ⟨t, ?_⟩' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/CommitmentFailureReduction.lean:52:2: warning: 'rcases htarget with hr | ⟨ep, hep, hchild⟩' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/CommitmentFailureReduction.lean:53:2: warning: '·
+  have hh := hroot t hkt
+  have hc : c t = root := by simpa only [← ht, entry] using hr
+  simp only [targets, List.mem_append]
+  exact Or.inr (hc ▸ hh)' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/CommitmentFailureReduction.lean:57:2: warning: '·
+  obtain ⟨s, hs, hse⟩ := (mem_prefixLog_iff A c k hk ep).mp ((hmem ep).mp hep)
+  have hp : ep ∈ prefixLog A t (by omega) (friPrefix c t (by omega)) :=
+    (mem_prefixLog_iff A c t (by omega) ep).mpr ⟨s, by omega, hse⟩
+  have hc : c t ∈ EfficientRootOpening.children ep.1 := by simpa only [← ht, entry] using hchild
+  simp only [targets, List.mem_append]
+  exact Or.inl (Or.inl (List.mem_flatMap.mpr ⟨ep, hp, hc⟩))' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/CommitmentFailureReduction.lean:44:2: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/CommitmentFailureReduction.lean:45:2: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/CommitmentFailureReduction.lean:46:2: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/CommitmentFailureReduction.lean:51:2: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/CommitmentFailureReduction.lean:52:2: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/CommitmentFailureReduction.lean:53:2: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/CommitmentFailureReduction.lean:57:2: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/CommitmentFailureReduction.lean:112:48: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (?l₁ ×ˢ ?l₂).length
+in the target expression
+  (List.product L L).length = List.length L ^ 2
+
+Value : Type
+N : ℕ
+L : EfficientRootOpening.Log Value (Fin N)
+⊢ (List.product L L).length = List.length L ^ 2
+Selvage/CommitmentFailureReduction.lean:146:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.CommitmentFreshTrace.schedule_failure_cover`:
+  [Field F]
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Field F] [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`

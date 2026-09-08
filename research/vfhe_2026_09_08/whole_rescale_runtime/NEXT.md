@@ -1,0 +1,1 @@
+Completed package is ready for parent integration. No more execution is needed. Preserve all callable inputs and proof records. Future work can bind basis extension/convolution and ciphertext provenance to this complete rescale proof; that is separate from this result. Compressed witnesses remain local under ignored work/.

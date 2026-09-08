@@ -1,0 +1,47 @@
+{
+  "program/witness_plan.json": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/program/witness_plan.json",
+    "bytes": 2482819,
+    "sha256": "ab9843174cf20e163393b728846a82c7136eaffb7db95e2fae7981d0c07ee31a"
+  },
+  "native/target/release/lean-bigint-witness": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/target/release/lean-bigint-witness",
+    "bytes": 665328,
+    "sha256": "f73ba9e4c6e6504ff5ed3ccfcc6b9bef2036037d445b0cc68e4d242da7cd74ff"
+  },
+  "Compiler/RescaleWitnessPlan.lean": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/Compiler/RescaleWitnessPlan.lean",
+    "bytes": 6774,
+    "sha256": "c21ef1d935a7f3ddfbaf4c0dbebf6c4ad0847939a53b47ff8668c088d255a97d"
+  },
+  "EmitRescaleWitnessPlan.lean": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/EmitRescaleWitnessPlan.lean",
+    "bytes": 390,
+    "sha256": "d99cadaf7d5fcc7beb729c0a9c87353503e9bd596eff28b8b84086f4d113036d"
+  },
+  "native/src/main.rs": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/src/main.rs",
+    "bytes": 7021,
+    "sha256": "c55464a62f7988aa936b9665199a958cf53d5935022ac75c1a2761e4a47227e6"
+  },
+  "native/Cargo.toml": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/Cargo.toml",
+    "bytes": 194,
+    "sha256": "53b7ad954f78db717a9a9b97d0f6851e81e17ef69847d7d0a70921b24e437f3c"
+  },
+  "native/Cargo.lock": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/native/Cargo.lock",
+    "bytes": 3586,
+    "sha256": "ebf256afaeb1605c15758f2a692ec2ba9e230a99b58b9fbb389029d0c7a9106a"
+  },
+  "results/compatibility.json": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/results/compatibility.json",
+    "bytes": 355,
+    "sha256": "171ff3c307e64d8fb13191923925c3b3b27ba489118451f784a226bd17ce0daf"
+  },
+  "template": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/artifacts/template_ir2.json",
+    "bytes": 7197288,
+    "sha256": "37a02768080e1ca8284fab4bc186b2e5981ad0b97a4af7965472953cdfe4df5a"
+  }
+}

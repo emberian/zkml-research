@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "--run",
+    "EmitProfiledRns.lean",
+    "artifacts",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale_generic/results/case001/public_rows.json"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor"
+}

@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/target/release/vfhe-whole-rescale-runtime",
+    "prove",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/artifacts/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/results/case001",
+    "3",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/work/run001/chunk003/trace.leu32",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/results/run001/chunk003"
+  ],
+  "started_utc": "2026-09-08T22:16:59.915914+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime",
+  "timeout_seconds": 1800,
+  "pid": 76124,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-08T22:17:16.617766+00:00",
+  "elapsed_seconds": 16.701762542012148,
+  "user_seconds": 58.251693,
+  "system_seconds": 1.688829,
+  "max_rss_bytes": 9497198592
+}

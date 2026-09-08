@@ -1,0 +1,15 @@
+{"trace_width": 301,
+ "trace_bytes": 2465792,
+ "source_constraints": 318,
+ "rows": 2048,
+ "rounding_tie_boundaries": 17,
+ "out_of_range_limb_refused": true,
+ "ir2_arithmetic_constraints": 318,
+ "exact_public_tables": 3,
+ "complete_relation_checked_by_actual_proof": "pending",
+ "claim":
+ "EXECUTED compiler-generated complete native CMUX input and exact signed decomposition",
+ "changed_signed_digit_refused": true,
+ "changed_output_refused": true,
+ "all_native_rows_source_checked": true,
+ "all_native_rows_exported": true}

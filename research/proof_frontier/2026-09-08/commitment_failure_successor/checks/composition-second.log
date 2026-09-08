@@ -1,0 +1,74 @@
+Selvage/CommitmentFailureSoundness.lean:58:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  uniformProb (Coins Q N × External q) fun a =>
+    Failure (E.checkpoints ((Equiv.prodComm (Coins Q N) (External q)) a).2)
+      (executionLog E.strategy E.checkpoints E.proverLog E.openings ((Equiv.prodComm (Coins Q N) (External q)) a).2
+        ((Equiv.prodComm (Coins Q N) (External q)) a).1)
+      ((Equiv.prodComm (Coins Q N) (External q)) a).1.1
+in the target expression
+  (uniformProb (Coins Q N × External q) fun y =>
+      Failure (E.checkpoints y.1) (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) y.2.1) ≤
+    ((3 * ↑Q ^ 2 + ↑Q) / 2 + 11 * ↑Q) / ↑N
+
+Q N q : ℕ
+inst✝ : NeZero N
+E : Execution Q N q
+h :
+  (uniformProb (Coins Q N × External q) fun a =>
+      Failure (E.checkpoints ((Equiv.prodComm (Coins Q N) (External q)) a).2)
+        (executionLog E.strategy E.checkpoints E.proverLog E.openings ((Equiv.prodComm (Coins Q N) (External q)) a).2
+          ((Equiv.prodComm (Coins Q N) (External q)) a).1)
+        ((Equiv.prodComm (Coins Q N) (External q)) a).1.1) =
+    uniformProb (External q × Coins Q N) fun y =>
+      Failure (E.checkpoints y.2) (executionLog E.strategy E.checkpoints E.proverLog E.openings y.2 y.1) y.1.1
+⊢ (uniformProb (Coins Q N × External q) fun y =>
+      Failure (E.checkpoints y.1) (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) y.2.1) ≤
+    ((3 * ↑Q ^ 2 + ↑Q) / 2 + 11 * ↑Q) / ↑N
+Selvage/CommitmentFailureSoundness.lean:85:57: error: Application type mismatch: The argument
+  h
+has type
+  (uniformProb ((Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1)) fun x =>
+      ArityEight.Schedule.Accepts firstFifteen (extracted (E.checkpoints c) default) degree q ⋯ x.1 x.2) ≤
+    1198336 / ↑modulus ^ 4 + (24 / 25) ^ q
+but is expected to have type
+  (uniformProb (External q) fun x =>
+      ArityEight.Schedule.Accepts firstFifteen (extracted (E.checkpoints (c, x).1) default) degree q ⋯ (c, x).2.1
+        (c, x).2.2) ≤
+    1198336 / ↑(modulus ^ 4) + (24 / 25) ^ q
+in the application
+  le_trans (uniformProb_mono fun x hx => hx.right) h
+Selvage/CommitmentFailureSoundness.lean:95:7: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (800000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/CommitmentFailureSoundness.lean:66:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (800000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/CommitmentFailureSoundness.lean:116:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_le_add_left`
+  ?b + ?a ≤ ?c + ?a
+with the goal
+  1198336 / ↑(modulus ^ 4) + (24 / 25) ^ q + ((3 * ↑Q ^ 2 + ↑Q) / 2 + 11 * ↑Q) / ↑N ≤
+    1198336 / ↑(modulus ^ 4) + (24 / 25) ^ q +
+      ((3 * ↑(B + 720 * q) ^ 2 + ↑(B + 720 * q)) / 2 + 11 * ↑(B + 720 * q)) / ↑N
+
+Note: The full type of `@add_le_add_left` is
+  ∀ {α : Type ?u.13497.374} [inst : Add α] [inst_1 : LE α] [i : AddRightMono α] {b c : α},
+    b ≤ c → ∀ (a : α), b + a ≤ c + a
+
+Q N q : ℕ
+inst✝ : NeZero N
+E : Execution Q N q
+default : Ext4
+B : ℕ
+hP : ∀ (c : Coins Q N) (x : External q), List.length (E.proverLog c x) ≤ B
+hcache :
+  ∀ (c : Fin Q → Fin N) (x : External q),
+    ∀ e ∈ entries (E.strategy x) c, e ∈ executionLog E.strategy E.checkpoints E.proverLog E.openings c x
+c : Coins Q N := ⋯
+x : External q := ⋯
+hQ : Q ≤ B + 720 * q
+⊢ 1198336 / ↑(modulus ^ 4) + (24 / 25) ^ q + ((3 * ↑Q ^ 2 + ↑Q) / 2 + 11 * ↑Q) / ↑N ≤
+    1198336 / ↑(modulus ^ 4) + (24 / 25) ^ q +
+      ((3 * ↑(B + 720 * q) ^ 2 + ↑(B + 720 * q)) / 2 + 11 * ↑(B + 720 * q)) / ↑N

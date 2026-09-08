@@ -1,0 +1,20 @@
+{
+  "command": [
+    "env",
+    "RAYON_NUM_THREADS=4",
+    "../proved_rescale_generic/target/release/vfhe-proved-rescale-generic",
+    "verify-changed-output",
+    "../rescale_compiler_successor/artifacts/template_ir2.json",
+    "../proved_rescale_generic/results/case001",
+    "results/proof001/proof.bin"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_cost_runtime",
+  "started_utc": "2026-09-08T18:15:39.298827+00:00",
+  "pid": 22282,
+  "returncode": 0,
+  "elapsed_seconds": 0.22731229098280892,
+  "finished_utc": "2026-09-08T18:15:39.526551+00:00",
+  "user_seconds": 0.211273,
+  "system_seconds": 0.015893,
+  "max_rss_bytes": 108658688
+}

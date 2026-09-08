@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/node",
+    "web/verify-recorded-query.mjs"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_browser_verifier/fast_successor",
+  "timeout_seconds": 180,
+  "source_pins_sha256": "b51ecdf743a4cd25705671b4931abcc622673ae4cddd582e1ea03e6a6713cf73",
+  "start_utc": "2026-09-08T22:22:44.255332+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 3.097213124972768,
+  "end_utc": "2026-09-08T22:22:47.353438+00:00",
+  "inputs_unchanged": true,
+  "stdout_sha256": "0d59f1b59a07d3f67b00a67c21a6f7f5322123f5a7ac7c5455e5c0ac2d285952",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

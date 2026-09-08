@@ -1,0 +1,8 @@
+{"phase": "new-proved-teach", "class": "card_arrival"}
+{"encoder_batch": 0, "texts": 1, "seconds": 0.5198869589949027}
+{"phase": "new-proved-teach", "class": "cash_withdrawal_charge"}
+{"encoder_batch": 0, "texts": 1, "seconds": 0.03108612500363961}
+{"encoder_batch": 0, "texts": 1, "seconds": 0.028057124989572912}
+{"phase": "prove-query-class", "class": "card_arrival", "active_classes": 2}
+{"phase": "prove-query-class", "class": "cash_withdrawal_charge", "active_classes": 2}
+{"phase": "all-active-proofs-accepted", "private_receive_calls": 0}

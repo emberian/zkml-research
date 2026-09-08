@@ -1,0 +1,9 @@
+{
+  "byte_equal": true,
+  "bytes": 3145600,
+  "native_sha256": "92ceb5ab11ffa4ff2b3032d1658ad0f13a4e70c28bc6d409bedbbcff86c9e591",
+  "baseline_sha256": "92ceb5ab11ffa4ff2b3032d1658ad0f13a4e70c28bc6d409bedbbcff86c9e591",
+  "rows": 32,
+  "columns": 24575,
+  "comparison_scope": "original unchanged32 actual-position witness bytes only; no baseline rerun"
+}

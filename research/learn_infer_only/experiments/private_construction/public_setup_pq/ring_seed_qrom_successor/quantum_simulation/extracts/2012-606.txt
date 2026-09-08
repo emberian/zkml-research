@@ -1,0 +1,1455 @@
+              Quantum-Secure Message Authentication Codes
+
+                               Dan Boneh                Mark Zhandry
+
+                                      Stanford University
+                               {dabo,zhandry}@cs.stanford.edu
+
+
+                                                Abstract
+         We construct the first Message Authentication Codes (MACs) that are existentially unforge-
+     able against a quantum chosen message attack. These chosen message attacks model a quantum
+     adversary’s ability to obtain the MAC on a superposition of messages of its choice. We begin by
+     showing that a quantum secure PRF is sufficient for constructing a quantum secure MAC, a fact
+     that is considerably harder to prove than its classical analogue. Next, we show that a variant of
+     Carter-Wegman MACs can be proven to be quantum secure. Unlike the classical settings, we
+     present an attack showing that a pair-wise independent hash family is insufficient to construct a
+     quantum secure one-time MAC, but we prove that a four-wise independent family is sufficient
+     for one-time security.
+
+     Keywords: Quantum computing, MAC, chosen message attacks, quantum security
+
+
+1    Introduction
+Message Authentication Codes (MACs) are an important building block in cryptography used to
+ensure data integrity. A MAC system is said to be secure if an efficient attacker capable of mounting
+a chosen message attack cannot produce an existential MAC forgery (see Section 2.2).
+    With the advent of quantum computing there is a strong interest in post-quantum cryptography,
+that is systems that remain secure even when the adversary has access to a quantum computer.
+There are two natural approaches to defining security of a MAC system against a quantum adversary.
+One approach is to restrict the adversary to issue classical chosen message queries, but then allow
+the adversary to perform quantum computations between queries. Security in this model can be
+achieved by basing the MAC construction on a quantum intractable problem.
+    The other more conservative approach to defining quantum MAC security is to model the entire
+security game as a quantum experiment and allow the adversary to issue quantum chosen message
+queries. That is, the adversary can submit a superposition of messages from the message space and
+in response receive a superposition of MAC tags on those messages. Informally, a quantum chosen
+message query performs the following transformation on a given superposition of messages:
+                              X                      X
+                                   ψm m       −→            ψm m, S(k, m)
+                               m                        m
+
+where S(k, m) is a tag on the message m with secret key k.
+   To define security, let q be the number of queries that the adversary issues by the end of the
+game. Clearly it can now produce q classical message-tag pairs by sampling the q superpositions
+
+                                                    1
+it received from the MAC signing oracle. We say that the MAC system is quantum secure if the
+adversary cannot produce q + 1 valid message-tag pairs. This captures the fact that the adversary
+cannot do any better than trivially sampling the responses from its MAC signing oracle and is the
+quantum analogue of a classical existential forgery.
+
+1.1   Our results
+In this paper we construct the first quantum secure MAC systems. We begin with a definition
+of quantum secure MACs and give an example of a MAC system that is secure against quantum
+adversaries capable of classical chosen message queries, but is insecure when the adversary can issue
+quantum chosen message queries. We then present a number of quantum secure MAC systems.
+
+Quantum secure MACs. In the classical settings many MAC systems are based on the observa-
+tion that a secure pseudorandom function gives rise to a secure MAC [BKR00, BCK96]. We begin
+by studying the same question in the quantum settings. Very recently Zhandry [Zha12b] defined
+the concept of a quantum secure pseudorandom function (PRF) which is a PRF that remains
+indistinguishable from a random function even when the adversary can issue quantum queries to
+the PRF. He showed that the classic GGM construction [GGM86] remains secure under quantum
+queries assuming the underlying pseudorandom generator is quantum secure.
+    The first question we study is whether a quantum secure PRF gives rise to a quantum secure
+MAC, as in the classical settings. To the MAC adversary a quantum secure PRF is indistinguishable
+from a random function. Therefore proving that the MAC is secure amounts to proving that with q
+quantum queries to a random oracle H no adversary can produce q + 1 input-output pairs of H
+with non-negligible probability. In the classical settings where the adversary can only issue classical
+queries to H this is trivial: given q evaluations of a random function, the adversary learns nothing
+about the value of the function at other points. Unfortunately, this argument fails under quantum
+queries because the response to a single quantum query to H : X → Y contains information about all
+of H. In fact, with a single quantum query the adversary can produce two input-output pairs of H
+with probability about 2/|Y| (with classical queries the best possible is 1/|Y|). As a result, proving
+that q quantum queries are insufficient to produce q + 1 input-output pairs is quite challenging. We
+prove tight upper and lower bounds on this question by proving the following theorem:
+
+Theorem 1.1 (informal). Let H : X → Y be a random oracle. Then an adversary making at
+most q < |X | quantum queries to H will produce q + 1 input-output pairs of H with probability at
+most (q + 1)/|Y|. Furthermore, when q  |Y| there is an algorithm that with q quantum queries
+to H will produce q + 1 input-output pairs of H with probability 1 − (1 − 1/|Y|)q+1 ≈ (q + 1)/|Y|.
+
+    The first part of the theorem is the crucial fact needed to build quantum secure MACs and is the
+harder part to prove. It shows that when |Y| is large any algorithm has only a negligible chance in
+producing q + 1 input-output pairs of H from q quantum queries. To prove this bound we introduce
+a new lower-bound technique we call the rank method for bounding the success probability of
+algorithms that succeed with only small probability. Existing quantum lower bound techniques such
+as the polynomial method [BBC+ 01] and the adversary method [Amb00, Aar02, Amb06, ASdW09]
+do not give the result we need. One difficulty with existing lower bound techniques is that they
+generally prove asymptotic bounds on the number of queries required to solve a problem with high
+probability. However, such asymptotic query complexity results are insufficient for our purposes —
+Theorem 1.1 shows that the problem of outputting q + 1 points when given q queries is intractable,
+
+                                                  2
+whereas allowing even a single additional query makes the problem easy. The rank method for
+proving quantum lower bounds overcomes these difficulties and is a general tool that can be used in
+other quantum security proofs. We note that Velema [Vel13] has since reproved Theorem 1.1 using
+a generalization of the polynomial method, showing that the above difficulties can also be overcome
+using that method.
+    The second part of Theorem 1.1 shows that the lower bound presented in the first part of the
+theorem is tight. A related algorithm was previously presented by van Dam [vD98], but only for
+oracles outputting one bit, namely when Y = {0, 1}. For such a small range only about |X |/2
+quantum queries are needed to learn the oracle at all |X | points. A special case where Y = X = {0, 1}
+and q = 1 was developed independently by Kerenidis and de Wolf [KdW03]. Our algorithm is a
+generalization of van Dam’s result to multi-bit oracles.
+
+Quantum secure Carter-Wegman     
+                                      MACs. A Carter-Wegman MAC [WC81] signs a message m
+by computing r, h(m) ⊕ F (k, r) where h is a secret hash function chosen from an xor-universal
+hash family, F is a secure PRF with secret key k, and r is a short random nonce. The attractive
+feature of Carter-Wegman MACs is that the long message m is hashed by a fast xor-universal hash h.
+We show that a slightly modified Carter-Wegman MAC is quantum secure assuming the underlying
+PRF is quantum secure in the sense of Zhandry [Zha12b].
+
+One-time quantum secure MACs. A one-time MAC is existentially unforgeable when the
+adversary can make only a single chosen message query. Classically, one-time MACs are constructed
+from pair-wise independent hash functions [WC81]. These MACs are one-time secure since the value
+of a pair-wise independent hash at one point gives no information about its value at another point.
+Therefore, a single classical chosen-message query tells the adversary nothing about the MAC tag of
+another message.
+    In the quantum settings things are more complicated. Unlike the classical settings, we show
+that pair-wise independence does not imply existential unforgeability under a one-time quantum
+chosen message attack. For example, consider the simple pair-wise independent hash family
+H = {h(x) = ax + b}a,b∈Fp with domain and range Fp . We show that a quantum adversary presented
+with an oracle for a random function h ∈ H can find both a and b with a single quantum query
+to h. Consequently, the classical one-time MAC constructed from H is completely insecure in the
+quantum settings. More generally we prove the following theorem:
+
+Theorem 1.2 (informal). There is a polynomial time quantum algorithm that when presented with
+an oracle for h(x) = a0 + a1 x + . . . + ad xd for random a0 , . . . , ad in Fp can recover a0 , . . . , ad using
+only d quantum queries to the oracle with probability 1 − O(d/n).
+
+    The h(x) = ax + b attack discussed above is a special case of this theorem with d = 1. With
+classical queries finding a0 , . . . , ad requires d + 1 queries, but with quantum queries the theorem
+shows that d queries are sufficient.
+    Theorem 1.2 is a quantum polynomial interpolation algorithm: given oracle access to the
+polynomial, the algorithm reconstructs its coefficients. This problem was studied previously by
+Kane and Kutin [KK11] who prove that d/2 quantum queries are insufficient to interpolate the
+polynomial. Interestingly, they conjecture that quantum interpolation requires d + 1 quantum
+queries as in the classical case, but Theorem 1.2 refutes that conjecture. Theorem 1.2 also applies
+to a quantum version of secret sharing where the shares themselves are superpositions. It shows
+
+
+                                                       3
+that the classical Shamir secret sharing scheme [Sha79] is insecure if the shares are allowed to be
+quantum states obtained by evaluating the secret sharing polynomial on quantum superpositions.
+More generally, the security of secret sharing schemes in the quantum settings was analyzed by
+Damård et al. [DFNS11].
+    As for one-time secure MACs, while pair-wise independence is insufficient for quantum one-time
+security, we show that four-wise independence is sufficient. That is, a four-way independent hash
+family gives rise to an existentially unforgeable MAC under a one-time quantum chosen message
+attack. It is still an open problem whether three-way independence is sufficient. More generally,
+we show that (q + 1)-way independence is insufficient for a q-time quantum secure MAC, but
+(3q + 1)-way independence is sufficient.
+
+Motivation. Allowing the adversary to issue quantum chosen message queries is a natural and
+conservative security model and is therefore an interesting one to study. Showing that classical
+MAC constructions remain secure in this model gives confidence in case end-user computing devices
+eventually become quantum. Nevertheless, one might imagine that even in a future where computers
+are quantum, the last step in a MAC signing procedure is to sample the resulting quantum state so
+that the generated MAC is always classical. The quantum chosen message query model ensures
+that even if the attacker can bypass this last “classicalization” step, the MAC remains secure.
+    As further motivation we note that the results in this paper are the tip of a large emerging
+area of research with many open questions. Consider for example signature schemes. Can one
+design schemes that remain secure when the adversary can issue quantum chosen message queries?
+Similarly, can one design encryption systems that remain secure when the the adversary can issue
+quantum chosen ciphertext queries? More generally, for any cryptographic primitive modeled as an
+interactive game, one can ask how to design primitives that remain secure when the interaction
+between the adversary and its given oracles is quantum.
+
+Other related work. Several recent works study the security of cryptographic primitives when
+the adversary can issue quantum queries [BDF+ 11, Zha12a, Zha12b]. So far these have focused on
+proving security of signatures, encryption, and identity-based encryption in the quantum random
+oracle model where the adversary can query the random oracle on superpositions of inputs. These
+works show that many, but not all, random oracle constructions remain secure in the quantum
+random oracle model. The quantum random oracle model has also been used to prove security of
+Merkle’s Puzzles in the quantum settings [BS08, BHK+ 11]. Meanwhile, Damård et al. [DFNS11]
+examine secret sharing and multiparty computation in a model where an adversary may corrupt a
+superposition of subsets of players, and build zero knowledge protocols that are secure, even when a
+dishonest verifier can issue challenges on superpositions.
+    Some progress toward identifying sufficient conditions under which classical protocols are also
+quantum immune has been made by Unruh [Unr10] and Hallgren et al. [HSS11]. Unruh shows that
+any scheme that is statistically secure in Cannetti’s universal composition (UC) framework [Can01]
+against classical adversaries is also statistically secure against quantum adversaries. Hallgren et al.
+show that for many schemes this is also true in the computational setting. These results, however,
+do not apply to MACs.
+
+
+
+
+                                                  4
+2     Preliminaries: Definitions and Notation
+Let [n] be the set {1, ..., n}. For a prime power n, let Fn be the finite field on n elements. For any
+positive integer n, let Zn be the ring of integers modulo n.
+     Functions will be denoted by capitol letters (such as F ), and sets by capitol script letters
+(such as X ). We denote vectors with bold lower-case letters (such as v), and the components of a
+vector v ∈ An by vi , i ∈ [n]. We denote matrices with bold capital letters (such as M), and the
+components of a matrix M ∈ Am×n by Mi,j , i ∈ [m], j ∈ [n]. Given a function F : X → Y and a
+vector v ∈ X n , let F (v) denote the vector (F (v1 ), F (v2 ), ..., F (vk )). Let F ([n]) denote the vector
+(F (1), F (2), ..., F (n)).
+     Given a vector space V, let dim V be the dimension of V, or the number of vectors in any basis for
+V. Given a set of vectors {v1 , ..., vk }, let span{v1 , ..., vk } denote the space of all linear combinations
+of vectors in {v1 , ..., vk }. Given a subspace S of an inner-product space V , and a vector v ∈ V ,
+define projS v as the orthogonal projection of v onto S, that is, the vector w ∈ S such that |v − w|
+is minimized.
+     Given a matrix M, we define the rank, denoted rank(M), to be the size of the largest subset of
+rows (equivalently, columns) of M that are linearly independent.
+     Given a function F : X → Y and a subset S ⊆ X , the restriction of F to S is the function
+FS : S → Y where FS (x) = F (x) for all x ∈ S. A distribution D on the set of functions F from
+X to Y induces a distribution DS on the set of functions from S to Y, where we sample from DS
+by first sampling a function F from D, and outputting FS . We say that D is k-wise independent
+if, for each set S of size at most k, each of the distributions DS are truly random distributions on
+functions from S to Y. A set F of functions from X to Y is k-wise independent if the uniform
+distribution on F is k-wise independent.
+
+2.1    Quantum Computation
+The quantum system A is a complex Hilbert space H with inner product h·|·i. The state of a
+quantum system is given by a vector |ψi of unit norm (hψ|ψi = 1). Given quantum systems H1
+and H2 , the joint quantum system is given by the tensor product H1 ⊗ H2 . Given |ψ1 i ∈ H1 and
+|ψ2 i ∈ H2 , the product state is given by |ψ1 i|ψ2 i ∈ H1 ⊗ H2 . Given a quantum state |ψi and an
+orthonormal basis B = {|b0 i, ..., |bd−1 i} for H, a measurement of |ψi in the basis B results in a
+value bi with probability |hbi |ψi|2 , and the state |ψi is collapsed to the state |bi i. We let bi ← |ψi
+denote the distribution on bi obtained by sampling |ψi.
+    A unitary transformation over a d-dimensional Hilbert space H is a d × d matrix U such that
+UU† = Id , where U† represents the conjugate transpose. A quantum algorithm operates on a
+product space Hin ⊗ Hout ⊗ Hwork and consists of n unitary transformations U1 , ..., Un in this space.
+Hin represents the input to the algorithm, Hout the output, and Hwork the work space. A classical
+input x to the quantum algorithm is converted to the quantum state |x, 0, 0i. Then, the unitary
+transformations are applied one-by-one, resulting in the final state
+
+                                         |ψx i = Un ...U1 |x, 0, 0i .
+
+    The final state is measured, obtaining (a, b, c) with probability |ha, b, c|ψx i|2 . The output of the
+algorithm is b.
+
+
+
+                                                      5
+Quantum-accessible Oracles. We will implement an oracle O : X → Y by a unitary transfor-
+mation O where
+                            O|x, y, zi = |x, y + O(x), zi
+where + : X × X → X is some group operation on X . Suppose we have a quantum algorithm that
+makes quantum queries to oracles O1 , ..., Oq . Let |ψ0 i be the state of the algorithm before any
+queries, and let U1 , ..., Uq be the unitary transformations applied between queries. The final state
+of the algorithm will be
+                                           Uq Oq ...U1 O1 |ψ0 i
+    We can also have an algorithm make classical queries to Oi . In this case, the input to the oracle
+is measured before applying the transformation Oi .
+    Fix an oracle O : X → Y. Let O(q) : X q → Y q be the oracle that maps x into O(x) =
+(O(x1 ), O(x2 ), ..., O(xq )). Observe that any quantum query to O(q) can be implemented using q
+quantum queries to O, where the unitary transformations between queries just permute the registers.
+We say that an algorithm that makes a single query to O(q) makes q non-adaptive queries to O.
+
+The Density Matrix. Suppose the state of a quantum system depends on some hidden random
+variable z ∈ Z, which is distributed according to a distribution D. That is, if the hidden variable is
+z, the state of the system is |ψz i. We can then define the density matrix of the quantum system as
+                                                X
+                                          ρ=             Pr[z]|ψz ihψz |
+                                                          D
+                                                z∈Z
+
+Applying a unitary matrix U to the quantum state corresponds to the transformation
+
+                                                    ρ → UρU†
+
+A partial measurement on some registers has the effect of zeroing out the terms in ρ where those
+registers are not equal. For example, if we have two registers x and y, and we measure the x register,
+then the new density matrix is
+                                                    (
+                                                        ρx,y,x0 ,y0   if x = x0
+                                   ρ0x,y,x0 ,y0 =
+                                                        0             otherwise
+
+2.2    Quantum secure MACs
+A MAC system comprises two algorithms: a (possibly) randomized MAC signing algorithm S(k, m)
+and a MAC verification algorithm V (k, m, t). Here k denotes the secret key chosen at random from
+the key space, m denotes a message in the message space, and t denotes the MAC tag in the tag
+space on the message m. These algorithms and spaces are parameterized by a security parameter λ.
+    Classically, a MAC system is said to be secure if no attacker can win the following game: a
+random key k is chosen from the key space and the attacker is presented with a signing oracle
+S(k, ·). Queries to the signing oracle are called chosen message queries. Let {(mi , ti )}qi=1 be the set
+of message-tag pairs that the attacker obtains by interacting with the signing oracle. The attacker
+wins the game if it can produce an existential forgery, namely a valid message-tag pair (m∗ , t∗ )
+satisfying (m∗ , t∗ ) 6∈ {(mi , ti )}qi=1 . The MAC system is said to be secure if no “efficient” adversary
+can win this game with non-negligible probability in λ.
+
+                                                            6
+Quantum chosen message queries. In the quantum settings we allow the adversary to maintain
+                                                                           P
+its own quantum state and issue quantum queries to the signing oracle. Let m,x,y ψm,x,y m, x, y
+be the adversary’s state just prior to issuing a signing query. The MAC signing oracle transforms
+this state as follows:
+    1. it chooses a random string r that will be used by the MAC signing algorithm,
+    2. it signs each “slot” in the given superposition by running S(k, m; r), that is running algorithm
+       S with randomness r. More precisely, the signing oracle performs the following transformation:
+                      X                                X
+                             ψm,x,y m, x, y   −→               ψm,x,y m, x ⊕ S(k, m; r), y
+                     m,x,y                             m,x,y
+
+When the signing algorithm is deterministic there is no need to choose an r. However, for randomized
+signing algorithms the same randomness is used to compute the tag for all slots in the superposition.
+Alternatively, we could have required fresh randomness in every slot, but this would make it harder
+to implement the MAC system on a quantum device. Allowing the same randomness in every slot
+is more conservative and frees the signer from this concern. At any rate, the two models are very
+close — if need be, the random string r can be used as a key for a quantum-secure PRF [Zha12b]
+which is used to generate a fresh pseudorandom value for every slot.
+
+Existential forgery. After issuing q quantum chosen message queries the adversary wins the
+game if it can generate q + 1 valid classical message-tag pairs.
+
+Definition 2.1. A MAC system is existentially unforgeable under a quantum chosen message attack
+(EUF-qCMA) if no adversary can with the quantum MAC game with non-negligible advantage in λ.
+
+   Zhandry [Zha12b] gives an example of a classically secure PRF that is insecure under quantum
+queries. This PRF gives an example MAC that is classically secure, but insecure under quantum
+queries. Our goal for the remainder of the paper is to construct EUF-qCMA secure MACs.
+
+
+3     The Rank Method
+In this section we introduce the rank method which is a general approach to proving lower bounds
+on quantum algorithms. The setup is as follows: we give a quantum algorithm A access to some
+quantity H ∈ H. By access, we mean that the final state of the algorithm is some fixed function
+of H. In this paper, H will be a set of functions, and A will be given oracle access to H ∈ H by
+allowing A to make q quantum oracle queries to H, for some q. For now, we will treat H abstractly,
+and return to the specific case where H is a set of functions later.
+    The idea behind the rank method is that, if we treat the final states of the algorithm on
+different H as vectors, the space spanned by these vectors will be some subspace of the overall
+Hilbert space. If the dimension of this subspace is small enough, the subspace (and hence all of
+the vectors in it) must be reasonably far from most of the vectors in the measurement basis. This
+allows us to bound the ability of such an algorithm to achieve some goal.
+    For H ∈ H, let |ψH i be the final state of the quantum algorithm A, before measurement, when
+given access to H. Suppose the different |ψH i vectors all lie in a space of dimension d. Let ΨA,H be
+the the |H| × d matrix whose rows are the various vectors |ψH i.
+
+
+
+                                                   7
+Definition 3.1. For a quantum algorithm A given access to some value H ∈ H, we define the rank,
+denoted rank(A, H), as the rank of the matrix ΨA,H .
+
+    The rank of an algorithm A seemingly contains very little information: it gives the dimension of
+the subspace spanned by the |ψH i vectors, but gives no indication of the orientation of this subspace
+or the positions of the |ψH i vectors in the subspace. Nonetheless, we demonstrate how the success
+probability of an algorithm can be bounded from above knowing only the rank of ΨA,H .
+
+Theorem 3.2. Let A be a quantum algorithm that has access to some value H ∈ H drawn from
+some distribution D and produces some output w ∈ W. Let R : H × W → {True, False} be a binary
+relation. Then the probability that A outputs some w such that R(H, w) = True is at most
+                                                                 
+                                       max Pr [R(H, w)] × rank(A, H) .
+                                       w∈W H←D
+
+In other words, the probability that A succeeds in producing w ∈ W for which R(H, w) is true is
+at most rank(A, H) times the best probability of success of any algorithm that ignores H and just
+outputs some fixed w.
+
+Proof. The probability that A outputs a w such that R(H, w) = True is
+
+                                                              |hw|ψH i|2 =                      Pr[H]|hw|ψH i|2
+                                   X                X                             X       X
+             Pr     [R(H, w)] =         Pr[H]
+            H←D                          D                                                      D
+                                    H             w:R(H,w)                        w H:R(H,w)
+          w←|ψH i
+
+
+    Now, |hw|ψH i| is just the magnitude of the projection of |wi onto the space spanned by the
+vector |ψH i, that is, projspan|ψ i (|wi). This is at most the magnitude of the projection of |wi onto
+                                   H
+the space spanned by all of the |ψH 0 i for H 0 ∈ H, or projspan{|ψ i} (|wi). Thus,
+                                                                   H0
+
+                                                                         
+                                              X           X                                             2
+                         Pr   [R(z, w)] ≤                        Pr[H] projspan{|ψ i} (|wi)
+                      H←D                                         D                 H0
+                                              w     H:R(H,w)
+                    w←|ψH i
+
+
+  Now, we can perform the sum over H, which gives PrH←D [R(H, w)]. We can bound this by the
+maximum it attains over all w, giving us
+                                                                         X                                2
+                    Pr    [R(H, w)] ≤ max Pr [R(H, w)]                            projspan{|ψ i} (|wi)
+                   H←D                        w    H←D                                       H0
+                                                                              w
+                  w←|ψH i
+
+
+   Now, let |bi i be an orthonormal basis for span{|ψH 0 i}. Then
+                                                                  2
+                                                                              |hbi |wi|2
+                                                                          X
+                                       projspan{|ψ i} (|wi)           =
+                                                  H0
+                                                                          i
+
+   Summing over all w gives
+                                                      2
+                                                                      |hbi |wi|2 =             |hbi |wi|2
+                     X                                        XX                      XX
+                            projspan{|ψ i} (|wi)          =
+                                       H0
+                     w                                        w   i                   i    w
+
+
+
+                                                              8
+    Since the w are the possible results of measurement, the vectors |wi form an orthonormal basis
+for the whole space, meaning w |hbi |wi|2 = | |bi i |2 = 1. Hence, the sum just becomes the number
+                                P
+
+of |bi i, which is just the dimension of the space spanned by the |ψH 0 i. Thus,
+                                                                     
+                     Pr      [R(H, w)] ≤ max Pr [R(H, w)] (dim span{|ψH 0 i}) .
+                    H←D                     w∈W H←D
+                   w←|ψH i
+
+   But dim span{|ψH 0 i} is exactly rank(ΨA,H ) = rank(A, H), which finishes the proof of the
+theorem.
+
+   We now move to the specific case of oracle access. H is now some set of functions from X to
+Y, and our algorithm A makes q quantum oracle queries to a function H ∈ H. Concretely, A is
+specified by q + 1 unitary matrices Ui , and the final state of A on input H is the state
+
+                                       Uq HUq−1 · · · U1 HU0 |0i
+
+where H is the unitary transformation mapping |x, y, zi into |x, y + H(x), zi, representing an oracle
+query to the function H. To use the rank method (Theorem 3.2) for our purposes, we need to
+bound the rank of such an algorithm. First, we define the following quantity:
+                                                  q             !
+                                                  X k
+                                      Ck,q,n ≡                  (n − 1)r .
+                                                  r=0
+                                                            r
+
+Theorem 3.3. Let X and Y be sets of size m and n and let H0 be some function from X to Y. Let
+S be a subset of X of size k and let H be some set of functions from X to Y that are equal to H0
+except possibly on points in S. If A is a quantum algorithm making q queries to an oracle drawn
+from H, then
+                                       rank(A, H) ≤ Ck,q,n .
+               q
+Proof. Let |ψH   i be the final state of a quantum algorithm after q quantum oracle calls to an oracle
+                                                                                    q
+H ∈ H. We wish to bound the dimension of the space spanned by the vectors |ψH         i for all H ∈ H.
+                                                                                           q
+We accomplish this by exhibiting a spanning set for this space. Our basis consists of ψH     0  vectors
+         0
+where H only differs from H0 at a maximum of q points in S. We need to show that two things:
+that our basis consists of Ck,q,n vectors, and that our basis does in fact span the whole space.
+    We firstcount the number of basis vectors by counting the number of H 0 oracles. For each r,
+there are kr ways of picking the subset T of size r from S where H 0 will differ from H0 . For each
+subset T , there are nr possible functions H 0 . However, if any value x ∈ T satisfies F (x) = H0 (x),
+then this is equivalent to a case where we remove x from T , and we would have already counted
+this case for a smaller value of r. Thus, we can assume H 0 (x) 6= H0 (x) for all x in T . There are
+(n − 1)r such functions. Summing over all r, we get that the number of distinct H 0 oracles is
+                                      q       !
+                                      X      k
+                                               (n − 1)r = Ck,q,n .
+                                      r=0
+                                             r
+                                       q                                      q
+    Next, we need to show that the ψH    0 vectors span the entire space of |ψH i vectors. We first
+introduce some notation: let ψ 0 be the state of a quantum algorithm before any quantum queries.
+      q
+Let |ψH i be the state after q quantum oracle calls to the oracle H. Let
+
+                                     MqH = Uq HUq−1 H · · · U1 H .
+
+                                                        9
+            q
+    Then |ψH  i = MqH ψ 0 .
+    We note that since ψ 0 is fixed for any algorithm, it is sufficient to prove that the MqH matrices
+are spanned by the MqH 0 .
+    For any subset T of S, and a function F : T → Y, let JT ,F be the oracle such that
+                                                  (
+                                                      F (x) if x ∈ T
+                                    JT ,F (x) =                        .
+                                                      H0 (x) otherwise
+
+    Let MqT ,H denote MqJT ,H . In other words, MT ,H is the transformation matrix corresponding to
+the oracle that is equal to H on the set T , and equal to H0 elsewhere. We claim that any MqH for
+H ∈ HS is a linear combination of the matrices MqT ,H for subsets T of S of size at most q. We will
+fix a particular H, and for convenience of notation, we will let JT = JT ,H . That is, JT is the oracle
+that is equal to H on the set T and H0 otherwise. We will also let MqT = MqT ,H and Mq = MqH .
+That is, Mq is the transition matrix corresponding to the oracle H, and MT is the transition matrix
+corresponding to using the oracle JT . For the singleton set {x}, we will also let Jx = J{x} .
+    We make the following observations:
+                                                        !
+                                              X
+                                      H=            Jx − (k − 1)H0                                           (3.1)
+                                              x∈S
+                                                        !
+                                              X
+                                     JT =             Jx − (|T | − 1)H0                                      (3.2)
+                                              x∈T
+
+   These identities can be seen by applying each side to the different inputs. Next, we take MqH
+and MqT and expand out the H and JT terms using Equations 3.1 and 3.2:
+                                !                 !                                  !            !
+                         X                                                 X
+           Mq = Uq            Jx − (k − 1)H0 Uq−1 · · · U1                       Jx − (k − 1)H0              (3.3)
+                        x∈S                                                x∈S
+                                !                      !                                 !               !
+           MqT = Uq
+                         X                                                     X
+                              Jx − (|T | − 1)H0 Uq−1 · · · U1                        Jx − (|T | − 1)H0       (3.4)
+                        x∈T                                                    x∈T
+
+   Let J⊥ = H0 . For a vector r ∈ (S ∪ {⊥})q , let
+
+                                     Pr = Uq Jrq Uq−1 · · · Jr2 U1 Jr1
+
+     For a particular r, we wish to expand the Mq and MqT matrices in terms of the Pr matrices. If
+d of the components of r are ⊥, then the coefficient of Pr in the expansion of Mq is (−1)d (k − 1)d .
+If, in addition, all of the other components of r lie in T , then the coefficient in the expansion of
+MqT is (−1)d (|T | − 1)d (if any of the components of r lie outside of T , the coefficient is 0).
+     Now, we claim that, for some values a` , we have
+                                               q
+                                                                         MqT
+                                               X              X
+                                          q
+                                       M =            a`
+                                               `=0         T ⊆S:|T |=`
+
+    To accomplish this, we look for the coefficient of Pr in the expansion of the right hand side
+of this equation. Fix an `. Let d be the number of components of r equal to ⊥, and let p be the
+
+                                                        10
+number of distinct component values other than ⊥. Notice that p + d ≤ q. Then there are k−p
+                                                                                                          
+                                                                                                     `−p
+different sets T of size ` for which all of the values of the components lie in T . Thus, the coefficient
+of Pr is
+                                        q            !
+                                      X        k−p
+                                           a`         (−1)i (` − 1)d
+                                      `=p
+                                               ` − p
+
+   Therefore, we need values a` such that
+                                     q                 !
+                                     X          k−p
+                                           a`       (` − 1)d = (k − 1)d                               (3.5)
+                                     `=p
+                                                `−p
+
+for all d, p. Notice that we can instead phrase this problem as a polynomial interpolation problem.
+The right hand side of Equation 3.5 is a polynomial P of degree d ≤ q − p, evaluated at k − 1. We
+can interpolate this polynomial using the points ` = p, ..., q, obtaining
+                                                 q                  q
+                                                 X                  Y       k−j
+                                P (k − 1) =            P (` − 1)                .
+                                                 `=p               j=p,j6=`
+                                                                            `−j
+
+   The numerator of the product evaluates to
+
+                                                     (k − p)!
+                                                (k − `)(k − q − 1)!
+
+while to evaluate the bottom, we split it into two parts: j = p, ..., ` − 1 and j − ` + 1, ..., q. The first
+part evaluates to (` − p)!, and the second part evaluates to (−1)q−` (q − `)!. With a little algebraic
+manipulation, we have that
+                                     q                                !        !          !
+                                     X                     k−`−1                    k−p
+                       P (k − 1) =         P (` − 1)             (−1)q−`
+                                     `=p
+                                                           k−q−1                    `−p
+
+   for all polynomials P (x) of degree at most q − p. Setting P (x) = xd for d = 0, ..., q − `, we see
+that Equation 3.5 is satisfied if                  !
+                                           k−1−`
+                                    a` =             (−1)q−` .
+                                          k−1−q
+
+
+
+3.1    An Example
+Suppose our task is to, given one quantum query to an oracle H : X → Y, produce two distinct
+pairs (x0 , y0 ) and (x1 , y1 ) such that H(x0 ) = y0 and H(x1 ) = y1 . Suppose further that H is drawn
+from a pairwise independent set H. We will now see that the rank method leads to a bound on the
+success probability of any quantum algorithm A.
+
+Corollary 3.4. No quantum algorithm A, making a single query to a function H : X → Y drawn
+from a pairwise independent set H, can produce two distinct input/output pairs of H, except with
+probability at most |X |/|Y|.
+
+
+                                                           11
+Proof. Let m = |X | and n = |Y|. Since no outputs of H are fixed, we will set S = X in Theorem 3.3,
+showing that the rank of the algorithm A is bounded by Cm,1,n = 1 + m(n − 1) < mn. If an
+algorithm makes no queries to H, the best it can do at outputting two distinct input/output pairs
+is to just pick two arbitrary distinct pairs, and output those. The probability that this zero-query
+algorithm succeeds is at most 1/n2 . Then Theorem 3.2 tells us that A succeeds with probability at
+most rank(A, H) times this amount, which equates to m    n.
+
+   For m > n, this bound is trivial. However, for m smaller than n, this gives a non-trivial bound,
+and for m exponentially smaller than n, this bound is negligible.
+
+
+4    Outputting Values of a Random Oracle
+In this section, we will prove Theorem 1.1. We consider the following problem: given q quantum
+queries to a random oracle H : X → Y, produce k > q distinct pairs (xi , yi ) such that yi = H(xi ).
+Let n = |Y| be the size of the range. Motivated by our application to quantum-accessible MACs,
+we are interested in the case where the range Y of the oracle is large, and we want to show that
+to produce even one extra input/output pair (k = q + 1) is impossible, except with negligible
+probability. We are also interested in the case where the range of the oracle, though large, is far
+smaller than the domain. Thus, the bound we obtained in the previous section (Corollary 3.4) is
+not sufficient for our purposes, since it is only non-trivial if the range is larger than the domain.
+     In the classical setting, when k ≤ q, this problem is easy, since we can just pick an arbitrary
+set of k different xi values, and query the oracle on each value. For k > q, no adversary of even
+unbounded complexity can solve this problem, except with probability 1/nk−q , since for any set
+of k inputs, at least k − q of the corresponding outputs are completely unknown to the adversary.
+Therefore, for large n, we have have a sharp threshold: for k ≤ q, this problem can be solved
+efficiently with probability 1, and for even k = q + 1, this problem cannot be solved, even inefficiently,
+except with negligible probability.
+     In the quantum setting, the k ≤ q case is the same as before, since we can still query the
+oracle classically. However, for k > q, the quantum setting is more challenging. The adversary can
+potentially query the random oracle on a superposition of all inputs, so he “sees” the output of the
+oracle on all points. Proving that it is still impossible to produce k input/output pairs is thus more
+complicated, and existing methods fail to prove that this problem is difficult. Therefore, it is not
+immediately clear that we have the same sharp threshold as before.
+     In Section 4.1 we use the rank method to bound the probability that any (even computationally
+unbounded) quantum adversary succeeds. Then in Section 4.2 we show that our bound is tight by
+giving an efficient algorithm for this problem that achieves the lower bound. In particular, for an
+oracle H : X → Y we consider two cases:
+
+    • Exponentially-large range Y and polynomial k, q. In this case, we will see that the success
+      probability even when k = q + 1 is negligible. That is, to produce even one additional
+      input/output pair is hard. Thus, we get the same sharp threshold as in the classical case
+
+    • Constant size range Y and polynomial k, q. We show that even when q is a constant fraction
+      of k we can still produce k input/output pairs with overwhelming probability using only q
+      quantum queries. This is in contrast to the classical case, where the success probability for
+      q = ck, c < 1, is negligible in k.
+
+
+                                                   12
+4.1   A Tight Upper Bound
+Theorem 4.1. Let A be a quantum algorithm making q queries to a random oracle H : X → Y
+whose range has size n, and produces k > q pairs (xi , yi ) ∈ X × Y. The probability that the xi values
+are distinct and yi = H(xi ) for all i ∈ [k] is at most n1k Ck,q,n .
+
+Proof. Before giving the complete proof, we sketch the special case where k is equal to the size of
+the domain. In this case, any quantum algorithm that outputs k distinct input/output pairs must
+output all input/output pairs. Similar to the proof of Corollary 3.4, we will set S = X , and use
+Theorem 3.3 to bound the rank of A at Ck,q,n . Now, any algorithm making zero queries succeeds
+with probability at most 1/nk . Theorem 3.2 then bounds the success probability of any q query
+algorithm as
+                                              1
+                                                 Ck,q,n .
+                                              nk
+    Now for the general proof: first, we will assume that the probability A outputs any particular
+sequence of xi values is independent of the oracle H. We will show how to remove this assumption
+later. We can thus write
+                                         q
+                                               X
+                                       |ψH i=     αx |xi|φH,x i
+                                                          x
+
+where αX are complex numbers whose square magnitudes sum to one, and |xi|φH,x i is the normalized
+                q
+projection of |ψH i onto the space spanned by |x, wi for all w. The probability that A succeeds is
+equal to
+                                         q 2
+                                                              |αx |2 |hH(x)|φH,x i|2 .
+                 X        X                     X         X
+                    Pr[H]     |hx, H(x)|ψH i| =    Pr[H]
+                  H         x                                 H     x
+
+   First, we reorder the sums so the outer sum is the sum over x. Now, we write H = (H0 , H1 )
+where H0 is the oracle restricted to the components of x, and H1 is the oracle restricted to all other
+inputs. Thus, our probability is:
+                                 1 X                                   2
+                                     |αx |2
+                                             X
+                                 m
+                                                 hH0 (x)|φ(H0 ,H1 ),x i .
+                                n x         H ,H      0   1
+
+
+   Using the same trick as we did before, we can replace |hH(x)|φH,x i| with the quantity
+
+                                         projspan|φ(H ,H ),x i |H0 (X )i ,
+                                                          0   1
+
+
+
+which is bounded by projspan{|φ(H 0 ,H ),x i} |H0 (x)i as we vary H00 over oracles whose domain is the
+                                     0    1
+components of x. The probability of success is then bounded by
+                                                                               2
+                           1 X       2
+                                        X
+                               |α x |       projspan{|φ(H 0 ,H ),x i} |H0 (x)i   .
+                          nm x         H ,H              0 1
+                                              0   1
+
+
+   We now perform the sum over H0 . Like in the proof of Corollary 3.4, the sum evaluates to
+                                                                                    q
+dim span{|φ(H00 ,H1 ),x i}. Since the |φ(H00 ,H1 ),x i vectors are projections of |ψH i, this dimension is
+                                 E
+                        q
+bounded by dim span{ ψ(H  0       }. Let H be the set of oracles (H00 , H1 ) as we vary H00 , and consider
+                          0 ,H1 )
+A acting on oracles in H. Fix some oracle H0∗ from among the H00 oracles, and let S be the set of
+
+
+                                                              13
+components of x. Then (H00 , H1 ) differs from (H0∗ , H1 ) only on the elements of S. Since |S| ≤ k,
+Theorem 3.2 tells us that rank(A, H) ≤ Ck,q,n . But
+                                                                      E
+                                                          q
+                                  rank(A, H) = dim span{ ψ(H 0 ,H ) }
+                                                                 1
+                                                                0
+
+
+Therefore, we can bound the success probability by
+                                         1 X
+                                             |αx |2
+                                                    X
+                                         m
+                                                      Ck,q,n .
+                                        n x         H   1
+
+
+Summing over all nm−k different H1 values and all x values gives a bound of
+                                                1
+                                                   Ck,q,n
+                                                nk
+as desired.
+    So far, we have assume that A produces x with probability independent of H. Now, suppose
+our algorithm A does not produce x with probability independent of the oracle. We construct a
+new algorithm B with access to H that does the following: pick a random oracle O with the same
+domain and range as H, and give A the oracle H + O that maps x into H(x) + O(x). When A
+produces k input/output pairs (xi , yi ), output the pairs (xi , yi − O(xi )). (xi , yi ) are input/output
+pairs of H + O if and only if (xi , yi − O(xi )) are input/output pairs of H. Further, A still sees a
+random oracle, so it succeeds with the same probability as before. Moreover, the oracle A sees is
+now independent of H, so B outputs x with probability independent of H. Thus, applying the
+above analysis to B shows that B, and hence A, produce k input/output pairs with probability at
+most
+                                                 1
+                                                   Ck,q,n
+                                                nk
+
+
+   For this paper, we are interested in the case where n = |Y| is exponentially large, and we are
+only allowed a polynomial number of queries. Suppose k = q + 1, the easiest non-trivial case for the
+adversary. Then, the probability of success is
+                             q          !                           q+1
+                         1     q+1                              1              q+1
+                             X                              
+                                          (n − 1)r = 1 − 1 −               ≤       .                (4.1)
+                       nq+1 r=0     r                           n               n
+
+   Therefore, to produce even one extra input/output pair is impossible, except with exponentially
+small probability, just like in the classical case. This proves the first part of Theorem 1.1.
+
+4.2   The Optimal Attack
+In this section, we present a quantum algorithm for the problem of computing H(xi ) for k different
+xi values, given only q < k queries:
+
+Theorem 4.2. Let X and Y be sets, and fix integers q < k, and k distinct values x1 , ..., xk ∈ X .
+There exists a quantum algorithm A that makes q non-adaptive quantum queries to any function
+H : X → Y, and produces H(x1 ), ..., H(xk ) with probability Ck,q,n /nk , where n = |Y|.
+
+
+                                                   14
+    The algorithm is similar to the algorithm of [vD98], though generalized to handle arbitrary range
+sizes. This algorithm has the same success probability as in Theorem 4.1, showing that both our
+attack and lower bound of Theorem 4.1 are optimal. This proves the second part of Theorem 1.1.
+
+Proof. Assume that Y = {0, ..., n − 1}. For a vector y ∈ Y k , let ∆(y) be the number of coordinates
+of y that do not equal 0. Also, assume that xi = i.
+    Initially, prepare the state that is a uniform superposition of all vectors y ∈ Y k such that
+∆(y) ≤ q:
+                                                1     X
+                                       |ψ1 i = √            |yi
+                                                 V y:∆(y)≤q
+   Notice that the number of vectors of length k with at most q non-zero coordinates is exactly
+                                      q         !
+                                      X k
+                                                 (n − 1)r = Ck,q,n .
+                                      r=0
+                                            r
+
+   We can prepare the state efficiently as follows: Let Setupk,q,n : [Ck,q,n ] → [n]k be the following
+function: on input ` ∈ [Ck,q,n ],
+
+   • Check if ` ≤ Ck−1,q,n . If so, compute the vector y0 = Setupk−1,q,n (n), and output the vector
+     y = (0, y0 ).
+
+   • Otherwise, let `0 = ` − Ck−1,q,n . It is easy to verify that `0 ∈ [(n − 1)Ck−1,q−1,n ].
+
+   • Let `00 ∈ Ck−1,q−1,n and y0 ∈ [n]\{0} be the unique such integers such that `0 = (n−1)`00 +y0 −n.
+
+   • Let y0 = Setupk−1,q−1,n (`00 ), and output the vector y = (y0 , y0 ).
+
+   The algorithm relies on the observation that a vector y of length k with at most q non-zero
+coordinates falls into one of either two categories:
+
+   • The first coordinate is 0, and the remaining k − 1 coordinates form a vector with at most q
+     non-zero coordinates
+
+   • The first coordinate is non-zero, and the remaining k − 1 coordinates form a vector with at
+     most q − 1 non-zero coordinates.
+
+    There are Ck−1,q,n vectors of the first type, and Ck−1,q−1,n vectors of the second type for each
+possible setting of the first coordinate to something other than 0. Therefore, we divide [Ak,q,n ] into
+two parts: the first Ck−1,q,n integers map to the first type, and the remaining (n − 1)Ck−1,q−1,n
+integers map to vectors of the second type.
+    We note that Setup is efficiently computable, invertible, and its inverse is also efficiently
+computable. Therefore, we can prepare |ψ1 i by first preparing the state
+                                                 1        X
+                                            p                       |`i
+                                                Ck,q,n `∈[C
+                                                          k,q,n ]
+
+
+and reversibly converting this state into |φ1 i using Setupk,q,n .
+    Next, let F : Y k → [k]q be the function that outputs the indexes i such that yi 6= 0, in order of
+increasing i. If there are fewer than q such indexes, the function fills in the remaining spaces the
+
+                                                     15
+first indexes such that yi = 0 If there are more than q indexes, the function truncates to the first q.
+F is realizable by a simple classical algorithm, so it can be implemented as a quantum algorithm.
+Apply this algorithm to |ψ1 i, obtaining the state
+                                                       1        X
+                                   |ψ2 i = p                          |y, F (y)i
+                                                      Ck,q,n y:∆(y)≤q
+
+    Next, let G : Y k → Yq be the function that takes in vector y, computes x = F (y), and outputs
+the vector (yx1 , yx2 , ..., yxq ). In other words, it outputs the vector of the non-zero components of y,
+padding with zeros if needed. This function is also efficiently computable by a classical algorithm,
+so we can apply if to each part of the superposition:
+                                                1       X
+                                     |ψ3 i = p                |y, F (y), G(y)i
+                                              Ck,q,n y:∆(y)≤q
+
+Now we apply the Fourier transform to the G(y) part, obtaining
+                                   1                              2π
+                                                               e−i n hz,G(y)i |zi
+                                            X                X
+                         |ψ4 i = p                |y, F (y)i
+                                  Ck,q,n y:∆(y)≤q            z
+
+   Now we can apply H to the F (y) part using q non-adaptive queries, adding the answer to the z
+part. The result is the state
+                              1                             2π
+                                                         e−i n hz,G(y)i |z + H(F (y))i
+                                      X                X
+                  |ψ5 i = p                 |y, F (y)i
+                            Ck,q,n y:∆(y)≤q            z
+
+   We can rewrite this last state as follows:
+                         1                2π                                 2π
+                                        ei n hH(F (y)),G(y)i |y, F (y)i   e−i n hz,G(y)i |zi
+                                  X                                     X
+             |ψ5 i = p
+                        Ck,q,n y:∆(y)≤q                                 z
+
+   Now, notice that H(F (y)) is the vector of H applied to the indexes where y is non-zero, and
+that G(y) is the vector of values of y that those points. Thus the inner product is
+                                            X                               k
+                                                                            X
+                   hH(F (y), G(y)i =                  H(i) × yi =                 H(i)yi = hH([k]), yi .
+                                           i:yi 6=0                         i=0
+
+   The next step is to uncompute the z and F (y) registers, obtaining
+                                          1                2π
+                                                         ei n hH([k]),yi |yi
+                                                   X
+                                |ψ6 i = p
+                                         Ck,q,n y:∆(y)≤q
+
+   Lastly, we perform a Fourier transform the remaining space, obtaining
+                                                                                                
+                                       1              X         X
+                                                                             i 2π hH([k])−z,yi   |zi
+                         |ψ7 i = q                                         e  n
+
+                                  Ck,q,n nk            z   y:∆(y)≤q
+
+   Now measure. The probability we obtain H([k]) is
+                                                                        2
+                                            1              X                      Ck,q,n
+                                                                    1       =
+                                     Ck,q,n nk y:∆(y)≤q                            nk
+
+as desired.
+
+                                                               16
+   As we have already seen, for exponentially-large Y, this attack has negligible advantage for any
+k > q. However, if n = |Y| is constant, we can do better. The error probability is
+
+                   k
+                              !      r  k−r       k−q−1       !  
+                                                                      s             k−s
+                   X      k       1      1             X      k     1           1
+                               1−                 =                        1−              .
+                  r=q+1
+                          r       n      n             s=0
+                                                              s     n           n
+
+   This is the probability that k consecutive coin flips, where each coin is heads with probability
+1/n, yields fewer than k − q heads. Using the Chernoff bound, if q > k(1 − 1/n), this probability is
+at most
+                                           n              2
+                                        e− 2k (q−k(1−1/n)) .
+   For a constant n, let c be any constant with 1 − 1/n < c < 1. If we use q = ck queries, the error
+probability is less than
+                                   n              2    nk          2
+                                e− 2k (k(c+1/n−1)) = e− 2 (c+1/n−1) ,
+which is exponentially small in k. Thus, for constant n, and any constant c with 1 − 1/n < c < 1,
+using q = ck quantum queries, we can determine k input/output pairs with overwhelming probability.
+This is in contrast to the classical case, where with any constant fraction of k queries, we can
+only produce k input/output pairs with negligible probability. As an example, if H outputs two
+bits, it is possible to produce k input/output pairs of of H using only q = 0.8k quantum queries.
+However, with 0.8k classical queries, we can output k input/output pairs with probability at most
+4−0.2k < 0.76k .
+
+
+5    Quantum-Accessible MACs
+Using Theorem 4.1 we can now show that a quantum secure pseudorandom function [Zha12b] gives
+rise to the quantum-secure MAC, namely S(k, m) = PRF(k, m). We prove that this mac is secure.
+
+Theorem 5.1. If PRF : K × X → Y is a quantum-secure pseudorandom function and 1/|Y| is
+negligible, then S(k, m) = PRF(k, m) is a EUF-qCMA-secure MAC.
+
+Proof. Let A be a polynomial time adversary that makes q quantum queries to S(k, ·) and produces
+q + 1 valid input/output pairs with probability . Let Game 0 be the standard quantum MAC
+attack game, where A makes q quantum queries to M ACk . By definition, A’s success probability in
+this game is .
+    Let Game 1 be the same as Game 0, except that S(k, ·) is replaced with a truly random function
+O : X → Y, and define A’s success probability as the probability that A outputs q + 1 input/output
+pairs of O. Since PRF is a quantum-secure PRF, A’s advantage in distinguishing Game 0 from
+Game 1 is negligible.
+    Now, in Game 1, A makes q quantum queries to a random oracle, and tries to produce q + 1
+input/output pairs. However, by Theorem 4.1 and Eq. (4.1) we know that A’s success probability is
+bounded by (q + 1)/|Y| which is negligible. It now follows that  is negligible and therefore, S is a
+EUF-qCMA-secure MAC.
+
+
+
+
+                                                  17
+5.1   Carter-Wegman MACs
+In this section, we show how to modify the Carter-Wegman MAC so that it is secure in the quantum
+setting presented in Section 2.2. Recall that H is an XOR-universal family of hash functions from
+X into Y if for any two distinct points x and y, and any constant c ∈ Y,
+                                   Pr [H(x) − H(y) = c] = 1/|Y|
+                                  h←H
+
+The Carter-Wegman construction uses a pseudorandom function family PRF with domain X and
+range Y, and an XOR-universal family of hash functions H from M to Y. The key is a pair (k, H),
+where k is a key for PRF and H is a function drawn from H. To sign a message, pick a random
+r ∈ X , and return (r, PRF(k, r) + H(m)).
+    This MAC is not, in general, secure in the quantum setting presented in Section 2.2. The reason
+is that the same randomness is used in all slots of a quantum chosen message query, that is the
+signing oracle computes:
+                          X                 X
+                               αm |mi −→         αm |m, r, PRF(k, r) + H(m)i
+                           m                 m
+
+where the same r is used for all classical states of the superposition. For example, suppose H is
+the set of functions H(x) = ax + b for random a and b. With even a single quantum query, the
+adversary will be able to obtain a and PRF(k, r) + b with high probability, using the algorithm from
+Theorem 6.2 in Section 6. Knowing both of these will allow the adversary to forge any message.
+    We show how to modify the standard Carter-Wegman MAC to make it secure in the quantum
+setting.
+Construction 1 (Quantum Carter-Wegman). The Quantum Carter-Wegman MAC (QCW-MAC)
+is built from a pseudorandom function PRF, an XOR-universal set of functions H, and a pairwise
+independent set of functions R.
+Keys: The secret key for QCW-MAC is a pair (k, H), where k is a key for PRF and H : M → Y is
+     drawn from H
+Signing: To sign a message m choose a random R ∈ R and output the pair R(m), PRF(k, R(m)) +
+      H(m) as the tag. When responding to a quantum chosen message query, the same R is used
+      in all classical states of the superposition.
+Verification: To verify that (r, s) is a valid tag for m, accept iff PRF(k, r) + H(m) = s.
+Theorem 5.2. The Quantum Carter-Wegman MAC is a EUF-qCMA secure MAC.
+Proof. We start with an adversary A that makes q tag queries, and then produces q + 1 valid
+message/tag pairs with probability . We now adapt the classical Carter-Wegman security proof to
+our MAC in the quantum setting.
+   When the adversary makes query i on the superposition
+                                         X
+                                                  (i)
+                                                 αm,y,z |m, y, zi ,
+                                        m,y,z
+
+the challenger responds with the superposition
+                                     X
+                                             (i)
+                                            αm,y,z |m, y + Si (m), zi
+                                    m,y,z
+
+
+                                                     18
+     where Si (m) = (Ri (m), PRF(k, (Ri (m)) + H(m)) for a randomly chosen Ri ∈ R, where R is a
+pairwise independent set of functions.
+     The adversary then creates q+1 triples (mj , rj , sj ) which, with probability , are valid message/tag
+tuples. That means H(mj ) + PRF(k, rj ) = sj for all j.
+     We now prove that  must be small using a sequence of games:
+     Game 0: Run the standard MAC game, responding to query i with the oracle that maps m to
+(Ri (m), PRF(k, Ri (m)) + H(m)), where Ri is a random function from R. The advantage of A in this
+game is the probability is produces q + 1 forgeries. Denote this advantage as 0 , which is equal to .
+     Game 1: Replace PRF(k, ·) with a truly random function F , and denote the advantage in this
+game as 1 . Since PRF is a quantum-secure PRF, 1 is negligibly close to 0 .
+     Game 2: Next we change the goal of the adversary. The adversary is now asked to produce
+a triple (m0 , m1 , s) where H(m0 ) − H(m1 ) = s. Given an adversary A for Game 1, we construct
+an adversary B for Game 2 as follows: run A, obtaining q + 1 forgeries (mj , rj , sj ) such that
+H(mj ) + F (rj ) = sj with probability 1 . If all rj are distinct, abort. Otherwise, assume without
+loss of generality that r0 = r1 . Then
+
+                      H(m0 ) − H(m1 ) = (s0 − F (r0 )) − (s1 − F (r1 )) = s0 − s1
+
+so output (m0 , m1 , s0 − s1 ). Let 2 be the advantage of B in this game. Let p be the probability
+that all rj are distinct and A succeeds. Then 2 ≥ 1 − p.
+    We wish to bound p. Define a new algorithm C, with oracle access to F , that first generates H,
+and then runs A, playing the role of challenger to A. When A outputs q + 1 triples (mj , rj , sj ), B
+outputs q+1 pairs (rj , sj −H(mj )). If A succeeded, then H(mj )+F (rj ) = sj , so F (rj ) = sj −H(mj ),
+meaning the pairs C outputs are all input/output pairs of F . If all the rj are distinct, then C will
+output q + 1 input/output pairs, which is impossible except with probability at most (q + 1)/|Y|.
+Therefore, p ≤ (q + 1)/|Y|. Therefore, as long as |Y| is super-polynomial in size, p is negligible,
+meaning 2 is negligibly close to 1 .
+    Game 3: Now modify the game so that we draw Ri uniformly at random from the set of all
+oracles. Notice that each Ri is queried only once, meaning pairwise-independent Ri look exactly
+like truly random Ri , so Game 3 looks exactly like Game 2 from the point of view of the adversary.
+Thus the success probability 3 is equal to 2 .
+    Game 4: For this game, we answer query i with the oracle that maps m to (Ri (m), F (Ri (m)).
+That is, we ignore H for answering MAC queries. Let 3 be the success probability in this game.
+    To prove that 4 is negligibly close to 3 , we need the following lemma:
+Lemma 5.3. Consider two distributions D1 and D2 on oracles from M into X × Y:
+
+    • D1 : generate a random oracle R : M → X and a random oracle P : M → Y, and output the
+      oracle that maps m to (R(m), P (m)).
+
+    • D2 : generate a random oracle R : M → X and a random oracle F : X → Y, and output the
+      oracle that maps m to (R(m), F (R(m))).
+
+Then the probability that any q-quantum query algorithm distinguishes D1 from D2 is at most
+O(q 2 /|X |1/3 ).
+
+Proof. Let B be a quantum algorithm making quantum queries that distinguishes with probability
+λ. We will now define a quantum algorithm C that is given r samples (si , ti ) ∈ X × Y, where si are
+
+                                                    19
+chosen randomly, and ti are either chosen randomly, or are equal to T (si ) for a randomly chosen
+function T : X → Y. C’s goal is to distinguish these two cases. Notice that as long as the si are
+distinct, these two distributions are identical. Therefore, C’s distinguishing probability is at most
+the probability of a collision, which is at most O(r2 /|X |).
+    C works as follows: generate a random oracle A : M → [r]. Let R(m) = sA(m) and P (m) = tA(m) ,
+and give B the oracle (R(m), P (m)). If ti are random, then we have the oracle that maps
+m to (sA(m) , tA(m) ). This is exactly the small-range distribution of Zhandry [Zha12b], and is
+indistinguishable from D1 except with probability O(q 3 /r).
+    Similarly, if ti = T (si ), then the oracle maps m to (sA(m) , T (sA(m) )). The oracle that maps m
+to sA(m) is also a small-range distribution, so it is indistinguishable from a random oracle except
+with probability O(q 3 /r). If we replace sA(m) with a random oracle, we get exactly the distribution
+D2 . Thus, D2 is indistinguishable from (sA(m) , T (sA(m) )) except with probability O(q 3 /r).
+    Therefore, C’s success probability at distinguishing D1 from D2 is at least λ − O(q 3 /r), and is
+at most O(r2 /|X |). This means the distinguishing probability of B is at most
+                                                       !
+                                              r2 q3
+                                            O   +
+                                              X   r
+
+   This is minimized by choosing r = O(q|X |1/3 ), which gives a distinguishing probability of at
+most O(q 2 /|X |1/3 ).
+
+
+    We show that 4 is negligibly-close to 3 using a sequence of sub-games. Game 3a is the game
+where we answer query i with the oracle that maps m to (Ri (m), Pi (m) + H(m)) where Pi is another
+random oracle. Notice that we can define oracles R(i, m) = Ri (m) and P (i, m) = Pi (m). Then R
+and P are random oracles, and using the above lemma, the success probability of B in Game 3a is
+negligibly close to that of Game 3. Notice that since Pi is random, Pi0 (m) = Pi (m) + H(m) is also
+random, so Game 3a is equivalent to the game were we answer query i with the oracle that maps
+m to (Ri (m), Pi (m)). Using the above lemma again, the success probability of B in this game is
+negligibly close to that of Game 4.
+    Now, we claim that 4 , the success probability in Game 4 is negligible. Indeed, the view of B is
+independent of H, so the probability that H(m0 ) − H(m1 ) = s is 1/|Y|. Since 4 is negligibly close
+to  = 0 , the advantage of A, A’s advantage is also negligible.
+
+
+6    q-time MACs
+In this section, we develop quantum one-time MACs, MACs that are secure when the adversary
+can issue only one quantum chosen message query. More generally, we will study quantum q-time
+MACs.
+    Classically, any pairwise independent function is a one-time MAC. In the quantum setting,
+Corollary 3.4 shows that when the range is much larger than the domain, this still holds. However,
+such MACs are not useful since we want the tag to be short. We first show that when the range is
+not larger than the domain, pairwise independence is not enough to ensure security:
+
+Theorem 6.1. For any set Y of prime-power size, and any set X with |X | ≥ |Y|, there exist
+(q + 1)-wise independent functions from X to Y that are not q-time MACs.
+
+
+                                                 20
+   To prove this theorem, we treat Y as a finite field, and assume X = Y, as our results are easy to
+generalize to larger domains. We use random degree q polynomials as our (q + 1)-wise independent
+family, and show in Theorem 6.2 below that such polynomials can be completely recovered using
+only q quantum queries. It follows that the derived MAC cannot be q-time secure since once the
+adversary has the polynomial it can easily forge tags on new messages.
+
+Theorem 6.2. For any prime power n, there is an efficient quantum algorithm that makes only
+q quantum queries to an oracle implementing a degree-q polynomial F : Fn → Fn , and completely
+determines F with probability 1 − O(qn−1 ).
+
+   The theorem shows that a (q + 1)-wise independence family is not necessarily a secure quantum q-
+time MAC since after q quantum chosen message queries the adversary extracts the entire secret key.
+The case q = 1 is particularly interesting. The following lemma will be used to prove Theorem 6.2:
+
+Lemma 6.3. For any prime power n, and any subset X ⊆ Fn of size n − k, there is an efficient
+quantum algorithm that makes a single quantum query to any degree-1 polynomial F : X → Fn , and
+completely determines F with probability 1 − O(kn−1 ).
+
+Proof. Write F (x) = ax + b for values a, b ∈ Fn , and write n = pt for some prime p and integer t.
+We design an algorithm to recover a and b.
+   Initialize the quantum registers to the state
+                                                 1    X
+                                       |ψ1 i = √          |x, 0i
+                                                n − k x∈X
+
+Next, make a single oracle query to F , obtaining
+                                              1    X
+                                    |ψ2 i = √          |x, ax + bi
+                                             n − k x∈X
+
+    Note that we can interpret elements z ∈ Fn as vectors z ∈ Ftp . Let hy, zi be the inner product of
+vectors y, z ∈ Ftp . Multiplication by a in Fn is a linear transformation over the vector space Ftp , and
+can therefore be represented by a matrix Ma ∈ Ft×t    p . Thus, we can write
+
+                                                1    X
+                                   |ψ2 i = √             |x, Ma x + bi
+                                               n − k x∈X
+
+   Note that in the case t = 1, a is a scalar in Fp , so Ma is just the scalar a.
+   Now, the algorithm applies the Fourier transform to both registers, to obtain
+                                                                              !
+                                    1
+                                                         ωphx,yi+hMa x+b,zi
+                                         X         X
+                          |ψ3 i = √                                           |y, zi
+                                 n n − k y,z       x∈X
+
+where ωp is a complex primitive pth root of unity.
+   The term in parenthesis can be written as
+                                                              !
+                                                       T
+                                               ωphx,y+Ma zi   ωphb,zi
+                                         X
+
+                                         x∈X
+
+
+
+                                                    21
+We will then do a change of variables, setting y0 = y + MTa z.
+   Therefore, we can write the state as
+                                                                    !
+                                  1                           0
+                                                        ωphx,y i      ωphb,zi |y0 − MTa z, zi
+                                       X          X
+                        |ψ3 i = √
+                               n n − k y0 ,z      x∈X
+
+
+    For z 6= 0 and y0 = 0, we will now explain how to recover a from (−MTa z, z). Notice that the
+transformation that takes a and outputs −MTa z is a linear transformation. Call this transformation
+Lz . The coefficients of Lz are easily computable, given z, by applying the transformation to each of
+the unit vectors. Notice that if t = 1, Lz is just the scalar −z. We claim that Lz is invertible if z 6= 0.
+Suppose there is some a such that Lz a = −MTa z = 0. Since z 6= 0, this means the linear operator
+−MTa is not invertible, so neither is −Ma . But −Ma is just multiplication by −a in the field Fn .
+This multiplication is only non-invertible if −a = 0, meaning a = 0, a contradiction. Therefore, the
+kernel of Lz is just 0, so the map is invertible.
+    Therefore, to compute a, compute the inverse operator L−1                                T
+                                                                  z and apply it to −Ma z, interpreting
+the result as a field element in Fn . The result is a. More specifically, for z 6= 0, apply the computation
+mapping (y, z) to (L−1                                 T
+                        z y, z), which will take (−Ma z, z) to (a, z). For z = 0, we will just apply the
+identity map, leaving both registers as is. This map is now reversible, meaning this computation
+can be implemented as a quantum computation. The result is the state
+                                                        !                                             
+                          1                   hx,y0 i
+                                                                    ωphb,zi |L−1 0            0
+                               X        X                    X
+                |ψ4 i = √                    ωp         
+                                                                              z y + a, zi + |y , 0i
+                                                                                                   
+                       n n − k y0      x∈X                   z6=0
+
+    We will now get rid of the |y0 , 0i terms by measuring whether z = 0. The probability that z = 0
+is 1/n, and in this case, we abort. Otherwise, we are left if the state
+                                                                               !
+                                  1                                       0
+                                                                    ωphx,y i   ωphb,zi |L−1 0
+                                              X              X
+                  |ψ5 i = p                                                              z y + a, zi
+                            n(n − 1)(n − k) z6=0,y0      x∈X
+
+   The algorithm then measures the first register. Recall that X has size n − k. The probability
+the outcome of the measurement is a is then (1 − k/n). In this case, we are left in the state
+                                                   1
+                                                             ωphb,zi |zi
+                                                        X
+                                      |ψ6 i = √
+                                                  n − 1 z6=0
+
+   Next, the algorithm performs the inverse Fourier transform to the second register, arriving at
+the state                                                      
+                                       1
+                                                      ωphb−w,zi |wi
+                                             X X
+                           |ψ7 i = p            
+                                    n(n − 1) w z6=0
+
+   Now the algorithm measures again, and interpret the resulting vector as a field element. The
+probability that the result is b is 1−1/n. Therefore, with probability (1−k/n)(1−1/n)2 = 1−O(k/n),
+the algorithm outputs both a and b.
+
+
+
+
+                                                        22
+   Now we use this attack to obtain an attack on degree-d polynomials, for general d:
+Proof of Theorem 6.2. We show how to recover the q + 1 different coefficients of any degree-q
+polynomial, using only q − 1 classical queries and a single quantum query.
+   Let a be the coefficient of xq , and b the coefficient of xq−1 in F (x). First, make q − 1 classical
+queries to arbitrary distinct points {x1 , ..., xq−1 }. Let Z(x) be the unique polynomial of degree q − 2
+such that r(xi ) = F (xi ), using standard interpolation techniques. Let G(x) = F (x) − Z(x). G(x) is
+a polynomial of degree q that is zero on the xi , so it factors, allowing us to write
+                                                               q−1
+                                 F (x) = Z(x) + (a0 x + b0 )
+                                                               Y
+                                                                     (x − xi )
+                                                               i=1
+
+By expanding the product, we see that a = a0 and b = b0 − a
+                                                                      P
+                                                                          xi . Therefore, we can implement an
+                          P
+oracle mapping x to a(x + xi ) + b as follows:
+   • Query F on x, obtaining F (x).
+   • Compute Z(x), and let G(x) = F (x) − Z(x).
+   • Output G(x)/      (x − xi ) = a(x +
+                     Q                     P
+                                               xi ) + b.
+    This oracle works on all inputs except the q − 1 different xi values. We run the algorithm from
+Lemma 6.3 on X = Fn \ {xi }, we will recover with probability 1 − O(q/n) both a and b + a xi
+                                                                                               P
+
+using a single quantum query, from which we can compute a and b. Along with the F (xi ) values,
+we can then reconstruct the entire polynomial.
+
+
+6.1   Sufficient Conditions for a One-Time Mac
+We show that, while pairwise independence is not enough for a one-time MAC, 4-wise independence
+is. We first generalize a theorem of Zhandry [Zha12a]:
+Lemma 6.4. Let A be any quantum algorithm that makes c classical queries and q quantum queries
+to an oracle H. If H is drawn from a (c + 2q)-wise independent function, then the output distribution
+of A is identical to the case where H is truly random.
+Proof. If q = 0, then this theorem is trivial, since the c outputs A sees are distributed randomly.
+If c = 0, then the theorem reduces to that of Zhandry [Zha12a]. By adapting the proof of the c = 0
+case to the general case, we get the lemma. Our approach is similar to the polynomial method, but
+needs to be adapted to handle classical queries correctly.
+    Our quantum algorithm makes k = c + q queries. Let Q ⊆ [k] be the set of queries that are
+quantum, and let C ⊆ [k] be the set of queries that are classical.
+    Fix an oracle H. Let δx,y be 1 if H(x) = y and 0 otherwise. Let ρ(i) be the density matrix after
+the ith query, and ρ(i−1/2) be the density matrix before the ith query. ρ(q+1/2) is the final state of
+the algorithm.
+    We now claim that ρ(i) and ρ(i+1/2) are polynomials of the δx,y of degree ki , where ki is twice
+the number of quantum queries made so far, plus the number of classical queries made so far.
+    ρ(0) and ρ(0+1/2) are independent of H, so they are not a function of the δx,y at all, meaning
+the degree is 0 = k0 .
+    We now inductively assume our claim is true for i − 1, and express ρ(i) in terms of ρ(i−1/2) .
+There are two cases:
+
+                                                      23
+   • i is a quantum query. In this case, ki = ki−1 + 2. We can write
+                                                (i)                    (i−1/2)
+                                           ρx,y,z,x0 ,y0 ,z 0 = ρx,y−H(x),z,x0 ,y0 −H(x0 ),z
+     An alternative way to write this is as
+                                          (i)                   X                              (i−1/2)
+                                        ρx,y,z,x0 ,y0 ,z 0 =           δx,y−r δx0 ,y0 −r0 ρx,r,z,x0 ,r0 ,z
+                                                                r,r0
+
+                                               (i−1/2)
+     By induction, each of the ρx,r,z,x0 ,r0 ,z are polynomials of degree ki−1 in the dx,y values, so
+       (i)
+     ρx,y,z,x0 ,y0 ,z 0 is a polynomial of degree ki−1 + 2 = ki .
+
+   • i is a classical query. This means li = ki−1 + 1. Let ρ(i−1/4) representing the state after
+     measuring the x register, but before making the actual query. This is identical to ρ(i−1/2) ,
+     except the entries where x 6= x0 are zeroed out. We can then write
+                   (i)                  X                              (i−1/4)           X                         (i−1/2)
+                 ρx,y,z,x0 ,y0 ,z 0 =          δx,y−r δx0 ,y0 −r0 ρx,r,z,x0 ,r0 ,z =            δx,y−r δx,y0 −r0 ρx,r,z,x,r0 ,z
+                                        r,r0                                             r,r0
+
+     Now, notice that δx,y−r δx,y0 −r0 is zero unless y − r = y 0 − r0 , in which case it just reduces to
+     δx,y−r . Therefore, we can simply further:
+                                           (i)                   X                 (i−1/2)
+                                         ρx,y,z,x0 ,y0 ,z 0 =           δx,y−r ρx,r,z,x,(y−y0 )+r,z
+                                                                   r
+                                           (i−1/2)
+     By induction, each of the ρx,r,z,x,(y−y0 )+r,z values are polynomials of degree ki−1 in the dx,y
+                  (i)
+     values, so ρx,y,z,x0 ,y0 ,z 0 is a polynomial of degree ki−1 + 1 = ki
+
+   Therefore, after all q queries, final matrix ρ(q+1/2) is a polynomial in the δx,y of degree at most
+k = 2q + c. We can then write the density matrix as
+                                                                                rq
+                                                                X               Y
+                                                  (q+1/2)
+                                                ρ           =          Mx,y          δxi ,yi
+                                                                x,y            t=0
+
+where x and y are vectors of length k, Mx,y are matrices, and the sum is over all possible vectors.
+   Now, fix a distribution D on oracles H. The density matrix for the final state of the algorithm,
+when the oracle is drawn from H, is given by
+                                                                                  rq              !
+                                        X                 X                       Y
+                                                Mx,y           Pr[H ← D]                δxi ,yi
+                                        x,y               H                       t=0
+
+The term in parenthesis evaluates to PrH←D [H(x) = y]. Therefore, the final density matrix can be
+expressed as                         X
+                                       Mx,y Pr [H(x) = y]
+                                                                H←D
+                                                    x,y
+
+   Since x and y are vectors of length k = 2q + c, if D is k-wise independent, PrH←D [H(x) = y]
+evaluates to the same quantity as if D was truly random. Thus the density matrices are the same.
+Since all of the statistical information about the final state of the algorithm is contained in the
+density matrix, the distributions of outputs are thus identical, completing the proof.
+
+
+                                                                   24
+Using this lemma we show that (3q + 1)-wise independence is sufficient for q-time MACs.
+
+Theorem 6.5. Any (3q + 1)-wise independent family with domain X and range Y is a quantum
+q-time secure MAC provided (q + 1)/|Y| is negligible.
+
+Proof. Let D be some (3q + 1)-wise independent function. Suppose we have an adversary A that
+makes q quantum queries to an oracle H, and attempts to produces q + 1 input/output pairs. Let
+R be the probability of success when H is a random oracle, and let D be the probability of success
+when H is drawn from D. We construct an algorithm B with access to H as follows: simulate A
+with oracle access to H. When A outputs q + 1 input/output pairs, simply make q + 1 queries to H
+to check that these are valid pairs. Output 1 if and only if all pairs are valid. Therefore, B makes
+q quantum queries and c = q + 1 classical queries to H, and outputs 1 if and only if A succeeds:
+if H is random, B outputs 1 with probability R , and if H is drawn from D, B outputs 1 with
+probability D . Now, since D is (3q + 1)-wise independent and 3q + 1 = 2q + c, Lemma 6.4 shows
+that the distributions of outputs when H is drawn from D is identical to that when H is random,
+meaning D = R .
+    Thus, when H is drawn from D, A’s succeeds with the same probability that it would if H
+was random. But we already know that if H is truly random, A’s success probability is less than
+(q + 1)/|Y|. Therefore, when H is drawn from D, A succeeds with probability less than (q + 1)/|Y|,
+which is negligible. Hence, if H is drawn from D, H is a q-time MAC.
+
+
+7    Conclusion
+We introduced the rank method as a general technique for obtaining lower bounds on quantum oracle
+algorithms and used this method to bound the probability that a quantum algorithm can evaluate
+a random oracle O : X → Y at k points using q < k queries. When the range of Y is small, say
+|Y| = 8, a quantum algorithm can recover k points of O from only 0.9k queries with high probability.
+However, we show that when the range Y is large, no algorithm can produce k input-output pairs of
+O using only k −1 queries, with non-negligible probability. We use these bounds to construct the first
+MACs secure against quantum chosen message attacks. We consider both PRF and Carter-Wegman
+constructions. For one-time MACs we showed that pair-wise independence does not ensure security,
+but four-way independence does.
+    These results suggest many directions for future work. First, can these bounds be generalized to
+signatures to obtain signatures secure against quantum chosen message attacks? Similarly, can we
+construct encryption systems secure against quantum chosen ciphertext attacks where decryption
+queries are superpositions of ciphertexts?
+
+
+Acknowledgments
+We thank Luca Trevisan and Amit Sahai for helpful conversations about this work. This work
+was supported by NSF, DARPA, IARPA, the Air Force Office of Scientific Research (AFO SR)
+under a MURI award, Samsung, and a Google Faculty Research Award. The views and conclusions
+contained herein are those of the authors and should not be interpreted as necessarily representing
+the official policies or endorsements, either expressed or implied, of DARPA, IARPA, DoI/NBC, or
+the U.S. Government.
+
+
+                                                 25
+References
+[Aar02]   Scott Aaronson. Quantum lower bound for the collision problem. In STOC, pages
+          635–642, 2002.
+[Amb00]   Andris Ambainis. Quantum lower bounds by quantum arguments. In STOC, pages
+          636–643, 2000.
+[Amb06]   Andris Ambainis. Polynomial degree vs. quantum query complexity. J. Comput. Syst.
+          Sci., 72(2):220–238, 2006.
+[ASdW09] Andris Ambainis, Robert Spalek, and Ronald de Wolf. A new quantum lower bound
+         method, with applications to direct product theorems and time-space tradeoffs. Algo-
+         rithmica, 55(3):422–461, 2009.
+[BBC+ 01] Robert Beals, Harry Buhrman, Richard Cleve, Michele Mosca, and Ronald de Wolf.
+          Quantum Lower Bounds by Polynomials. Journal of the ACM (JACM), 48(4):778–797,
+          July 2001.
+[BCK96]   Mihir Bellare, Ran Canetti, and Hugo Krawczyk. Pseudorandom functions revisited:
+          The cascade construction and its concrete security. In FOCS, pages 514–523, 1996.
+[BDF+ 11] Dan Boneh, Özgür Dagdelen, Marc Fischlin, Anja Lehmann, Christian Schaffner, and
+          Mark Zhandry. Random Oracles in a Quantum World. In Advances in Cryptology —
+          ASIACRYPT 2011, 2011.
+[BHK+ 11] Gilles Brassard, Peter Høyer, Kassem Kalach, Marc Kaplan, Sophie Laplante, and Louis
+          Salvail. Merkle Puzzles in a Quantum World. Advances in Cryptology - CRYPTO 2011,
+          pages 391–410, 2011.
+[BKR00]   Mihir Bellare, Joe Kilian, and Phillip Rogaway. The security of the cipher block chaining
+          message authentication code. J. Comput. Syst. Sci., 61(3), 2000.
+[BS08]    Gilles Brassard and Louis Salvail. Quantum Merkle Puzzles. Second International
+          Conference on Quantum, Nano and Micro Technologies (ICQNM 2008), pages 76–79,
+          February 2008.
+[Can01]   Ran Canetti. Universally composable security: A new paradigm for cryptographic
+          protocols. In Proc. of FOCS. IEEE, 2001.
+[DFNS11] Ivan Damgård, Jakob Funder, Jesper Buus Nielsen, and Louis Salvail. Superposition
+         attacks on cryptographic protocols. CoRR, abs/1108.6313, 2011.
+[GGM86] Oded Goldreich, Shafi Goldwasser, and Silvio Micali. How to Construct Random
+        Functions. Journal of the ACM (JACM), 33(4):792–807, 1986.
+[HSS11]   Sean Hallgren, Adam Smith, and Fang Song. Classical cryptographic protocols in a
+          quantum world. In Proc. of Crypto, LNCS. Springer, 2011.
+[KdW03]   Iordanis Kerenidis and Ronald de Wolf. Exponential lower bound for 2-query locally
+          decodable codes via a quantum argument. In Proceedings of the 35th Annual ACM
+          Symposium on Theory of Computing (STOC), pages 106–115, 2003.
+
+                                               26
+[KK11]     Daniel M. Kane and Samuel A. Kutin. Quantum interpolation of polynomials. Quantum
+           Information & Computation, 11(1&2):95–103, 2011. First published in 2009.
+
+[Sha79]    Adi Shamir. How to share a secret. Commun. ACM, 22(11):612–613, 1979.
+
+[Unr10]    Dominique Unruh. Universally Composable Quantum Multi-Party Computation. Ad-
+           vances in Cryptology — EUROCRYPT 2010, pages 486–505, 2010.
+
+[vD98]     Wim van Dam. Quantum oracle interrogation: Getting all information for almost half
+           the price. In FOCS, pages 362–367, 1998.
+
+[Vel13]    Maria Velema. Classical encryption and authentication under quantum attacks. Master’s
+           thesis, University of Amsterdam, 2013.
+
+[WC81]     Mark N. Wegman and Larry Carter. New hash functions and their use in authentication
+           and set equality. J. Comput. Syst. Sci., 22(3):265–279, 1981.
+
+[Zha12a]   Mark Zhandry. Secure Identity-Based Encryption in the Quantum Random Oracle
+           Model. In Advances in Cryptology — CRYPTO, 2012. Full version available at the
+           Cryptology ePrint Archives: http://eprint.iacr.org/2012/076/.
+
+[Zha12b]   Mark Zhandry. How to Construct Quantum Random Functions. In Proceedings of FOCS,
+           2012. Full version available at the Cryptology ePrint Archives: http://eprint.iacr.
+           org/2012/182/.
+
+
+
+
+                                              27
+

@@ -1,0 +1,23 @@
+'Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_contains' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.flatten_ofFn_length_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_length_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.checkpointRoots_length' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_append_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.checkpointsLogged_append' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.BabyBear.verificationLog_length_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.BabyBear.fresh_count_le_total' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

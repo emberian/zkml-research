@@ -1,0 +1,15 @@
+'Minidregg.Compiler.TfheSignedDecomposition.range_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheSignedDecomposition.field_equations' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheSignedDecomposition.zero_nat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheSignedDecomposition.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheSignedDecomposition.final_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheSignedDecomposition.zero_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheSignedDecomposition.negative_midpoint_witness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.TfheSignedDecomposition.low_digit_tie_witness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.TfheSignedDecomposition.changed_zero_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

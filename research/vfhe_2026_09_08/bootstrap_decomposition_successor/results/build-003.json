@@ -1,0 +1,24 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--manifest-path",
+    "Cargo.toml",
+    "--release",
+    "--offline"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor",
+  "timeout_seconds": 600,
+  "exit": 0,
+  "seconds": 1.228264958015643,
+  "stdout": {
+    "path": "results/build-003.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "results/build-003.stderr",
+    "bytes": 9130,
+    "sha256": "ca091f73ecb7d39007d5c3401a08d4c71acc7ecfa47b24765e6bffc9920e08d0"
+  }
+}

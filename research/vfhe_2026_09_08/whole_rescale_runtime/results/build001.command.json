@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--offline",
+    "-j2"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime",
+  "started_utc": "2026-09-08T18:24:24.837992+00:00",
+  "pid": 29927,
+  "returncode": 0,
+  "elapsed_seconds": 85.44452529202681,
+  "finished_utc": "2026-09-08T18:25:50.291486+00:00",
+  "user_seconds": 159.045788,
+  "system_seconds": 9.059521,
+  "max_rss_bytes": 1309409280
+}

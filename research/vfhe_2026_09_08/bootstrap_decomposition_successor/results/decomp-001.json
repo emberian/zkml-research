@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "build/Compiler/TfheSignedDecomposition.olean",
+    "Compiler/TfheSignedDecomposition.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor",
+  "timeout_seconds": 180,
+  "lean_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build:/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit": -6,
+  "seconds": 7.246546457987279,
+  "stdout": {
+    "path": "results/decomp-001.stdout",
+    "bytes": 870,
+    "sha256": "97239ab26066f9cb25926e59968539b72bc2ca79832cb8daaa0fcdbeb7515695"
+  },
+  "stderr": {
+    "path": "results/decomp-001.stderr",
+    "bytes": 36,
+    "sha256": "1d585ca2457f796085080a27322dcd6d72331a0c7c93241d4a9ac6067ede21bd"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "status": "PASS",
+  "role_command": "combine",
+  "pid": 25999,
+  "elapsed_seconds": 2.1524989579920657,
+  "peak_rss_bytes_macos": 403881984,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/f835b111d619dfdb9c9a843bc6e0382fb429405d80c233ed771fbbc9ddd05af8",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach06/fresh.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/c6f030a32919271426a9933594aff9153cda62c435a6b18a1e02544bf9d921c5",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach06/verification.ring",
+      "kind": "ciphertext",
+      "bytes": 37901536,
+      "payload_bytes": 37900653,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "1543d3c0f3d81fe4e38bb279619398c6eaff6f20d7195eed07c07b1a71e731e9"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/f835b111d619dfdb9c9a843bc6e0382fb429405d80c233ed771fbbc9ddd05af8",
+        "coefficient": 1
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach06/fresh.ring",
+        "coefficient": 1
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/c6f030a32919271426a9933594aff9153cda62c435a6b18a1e02544bf9d921c5",
+        "coefficient": -1
+      }
+    ],
+    "live_fresh_ciphertexts": 2,
+    "live_L1_weight": 2,
+    "private_rows_read": 0
+  },
+  "error": null
+}

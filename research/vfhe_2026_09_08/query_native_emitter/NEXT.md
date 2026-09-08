@@ -1,0 +1,1 @@
+Use the additive run.py only for a fresh explicitly selected cohort. Source relation/security knobs remain unchanged. Extend the same Lean-generated witness-plan mechanism to existing expiry/update in the separate update_native_emitter package; do not edit these frozen files. No universal native implementation-equivalence theorem is claimed.

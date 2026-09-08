@@ -1,0 +1,21 @@
+{
+  "baseline": {
+    "public_reservation": 89,
+    "scalar_digits_and_bits": 8970,
+    "result_digits_and_bits": 10350,
+    "carries_and_bits": 44436,
+    "total": 63845
+  },
+  "successor": {
+    "public_reservation": 89,
+    "scalar_digits_and_bits": 8970,
+    "result_digits_and_bits": 6220,
+    "carries_and_bits": 9296,
+    "total": 24575
+  },
+  "columns_removed": 39270,
+  "fraction_removed": 0.6150834051217793,
+  "same_selected_rows": 32,
+  "same_public_columns": 88,
+  "source": "computed from frozen baseline Layout and Lean autoLayout profile.json"
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python3",
+    "run.py",
+    "results/case001",
+    "results/run001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime",
+  "started_utc": "2026-09-08T22:15:40.543956+00:00",
+  "pid": 74764,
+  "returncode": 0,
+  "elapsed_seconds": 146.8062887910055,
+  "finished_utc": "2026-09-08T22:18:07.351607+00:00",
+  "user_seconds": 394.5168,
+  "system_seconds": 11.720991,
+  "max_rss_bytes": 9497837568
+}

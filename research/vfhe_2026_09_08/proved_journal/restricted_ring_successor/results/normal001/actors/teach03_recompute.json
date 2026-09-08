@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "role_command": "combine",
+  "pid": 25454,
+  "elapsed_seconds": 1.5537287090555765,
+  "peak_rss_bytes_macos": 315441152,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/3182a995c27146470098fcc99e3ba7ab3c8a6fb9ecae08ec198608e83134fb6f",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach03/fresh.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach03/verification.ring",
+      "kind": "ciphertext",
+      "bytes": 37901536,
+      "payload_bytes": 37900653,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "b826f093e71a40de8ec406720195e8a2634a41a10fe0b79a0a611597607e9c23"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/3182a995c27146470098fcc99e3ba7ab3c8a6fb9ecae08ec198608e83134fb6f",
+        "coefficient": 1
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach03/fresh.ring",
+        "coefficient": 1
+      }
+    ],
+    "live_fresh_ciphertexts": 2,
+    "live_L1_weight": 2,
+    "private_rows_read": 0
+  },
+  "error": null
+}

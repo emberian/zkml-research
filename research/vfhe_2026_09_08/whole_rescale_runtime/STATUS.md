@@ -1,0 +1,1 @@
+[EXECUTED complete] All six4096-row chunks proved and fresh-verified:24,576positions/98,304output residues, no padding, failures or retries. Outer146.806s; proofs34,632,537B; peak RSS9,497,837,568B. See REPORT.md, RESULT.json and results/run001/result.json. Sources/configuration and prior packages remain frozen. Complete capturedrescale scope only.

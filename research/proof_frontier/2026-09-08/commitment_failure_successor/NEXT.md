@@ -1,0 +1,5 @@
+[OPEN] Parent owns integration of commitment-failure.patch via integration_entry.json. The result is a finite classical fresh-query reduction with explicit causal execution certificates; it does not establish the certificates for arbitrary Rust execution or realize uniform FRI challenges via Fiat–Shamir.
+
+[OPEN] The next authorized proof lane should assess the actual bottleneck behind the finite schedule's one-transition (24/25)^q query tail and construct a stronger cumulative/disagreement or source-supported folding lemma. Tiny radius retuning is not the intended advance. Preserve this package, all predecessors and ErrorBudget.
+
+[DERIVED] To instantiate sound_call_budget, provide both directions of call/cache coverage: every retained prover/generated verifier record belongs to the Oracle log, and every counted fresh cache entry is charged to an actual call. Checkpoint origins additionally enforce root declaration before later fresh responses. The eleven-root inventory alone does not enforce that timing.

@@ -1,0 +1,12 @@
+{
+  "claim": "[EXECUTED] Source syntax check only, not browser or worker execution.",
+  "argv": [
+    "node",
+    "--check",
+    "research/vfhe_2026_09_08/query_browser_verifier/web/shared-query-worker.js"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "source_sha256": "984e1540d9a81654401c7aa80702ff656a99a8daec1fcc84a6c43be5dd0a0188"
+}

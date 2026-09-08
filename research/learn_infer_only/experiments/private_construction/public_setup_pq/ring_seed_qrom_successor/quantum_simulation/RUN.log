@@ -1,0 +1,7 @@
+[EXECUTED] python3 -B research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_qrom_successor/quantum_simulation/resource_counts.py
+[EXECUTED] Exit code: 0
+{"base_calls_per_exposed_query": 1, "chunk_bits": 303104, "giant_G_bits": 13603307520, "independence": "2Q+c_base", "max_honest_address_bytes": 466, "overlay_entries": 50000, "overlay_value_bytes": 1894400000}
+
+[EXECUTED] python3 -B research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_qrom_successor/quantum_simulation/symbolic_phase_checks.py
+[EXECUTED] Exit code: 0
+{"all_passed": true, "character_cases": 4096, "wrapper_cases": 5120, "wrong_mask_counterexamples": 736}

@@ -1,0 +1,33 @@
+{
+  "schema": "fast-live-total-command-v1",
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/run_demo.py",
+    "--run",
+    "fast001"
+  ],
+  "launcher_argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/fast_live_successor/run.py",
+    "--run",
+    "fast001"
+  ],
+  "started_utc": "2026-09-08T22:12:59.504365+00:00",
+  "source_pins": {
+    "run.py": "c38bcca5745022ceef2f3eb479af638bd8af734732198dd9a26b08a556ca1066",
+    "run_demo.py": "56730ea3ce0ea24527d1eca5dd517afb791ff6b041e30b3728f305956de29c70",
+    "live.py": "3bae74df53d58cb6f9a3ff988b49ae012d556e5da5b11604e745a589f7d4c30f",
+    "gate.py": "f02a290779b15defffc039d23762ea574118ac80bfe2118fe54eaf608637bf57",
+    "PIPELINES.json": "623874036e05f5d2e3f4203663d383b00699336016c644d1a7f0eb310610eabf"
+  },
+  "timeout_seconds": 900,
+  "exit_code": 0,
+  "timed_out": false,
+  "command_process_group_absent": true,
+  "elapsed_ns": 21201762291,
+  "finished_utc": "2026-09-08T22:13:20.708174+00:00",
+  "sources_unchanged": true,
+  "result_sha256": "1e933da88dd45aba9fec9d5b514e60faf779fb37420bcbe275cf76689787cace"
+}
