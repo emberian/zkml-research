@@ -79,13 +79,21 @@
     ],
     "path": "notes/README.md"
   },
-  "pq": {
-    "excerpt_sha256": "44efd6407a495ddec725e0f03e6e2794c6b0d579d182f7d22bb4c9f16e459bbb",
+  "pq_costs": {
+    "excerpt_sha256": "6bdf820701f04cd8c5d31613dc6ac68939dc2f8616da7e5e22ba5f18ec884c58",
     "lines": [
-      1,
-      37
+      179,
+      237
     ],
-    "path": "research/learn_infer_only/PQ_COMPOSITION.md"
+    "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md"
+  },
+  "pq_costs_scope": {
+    "excerpt_sha256": "0827f3ea330e6b98c530e5327288849efa87b4d40f24841b407b586715920d39",
+    "lines": [
+      267,
+      281
+    ],
+    "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md"
   },
   "pq_interfaces": {
     "excerpt_sha256": "e7ff6895cfd973d2dbee9a9dfa0d2016a4e8d27c7d3c7684ba9f8e0917f64c99",
@@ -94,6 +102,22 @@
       59
     ],
     "path": "research/learn_infer_only/PQ_COMPOSITION.md"
+  },
+  "pq_restricted": {
+    "excerpt_sha256": "70d3a08df900966594d7c8a8d55d9eecb2c4c061d2aa366d8c751fc24cae8f92",
+    "lines": [
+      1,
+      68
+    ],
+    "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md"
+  },
+  "pq_review": {
+    "excerpt_sha256": "697d7a5d6c32ae3426fdefae995c8c7afb484a9c5090da9ad07600b7db185bbe",
+    "lines": [
+      1,
+      19
+    ],
+    "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/REVIEW.md"
   },
   "semantic": {
     "excerpt_sha256": "9eee8b7d574cd178325c8a09ba60c9fb85fb5da50ee49437c11a1bac1b5ce9d6",
@@ -119,21 +143,53 @@
     ],
     "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md"
   },
-  "setup_run": {
-    "excerpt_sha256": "c3cbf9b4bc1b01dd0c2796c55c55c9aea4985fb5f26f4c6dc65cf57440fe264a",
+  "setup_journal": {
+    "excerpt_sha256": "0734b9eaa01cfdc5fb2e9dfcdfb258eaea3e66adecf408d1a3915d3134d4b2fb",
     "lines": [
       1,
-      1
+      70
     ],
-    "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/report.json"
+    "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/README.md"
   },
   "tfhe": {
-    "excerpt_sha256": "388beeebac7c42b634f7ed24e1043094655dbff4710419541dad0e71332e6757",
+    "excerpt_sha256": "0d93892526aa51874c7c2873301440727c8e91538b4332d179a77394bb95bb44",
     "lines": [
       1,
-      76
+      18
     ],
-    "path": "research/learn_infer_only/experiments/end_to_end/private_ema/REPORT.md"
+    "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md"
+  },
+  "tfhe_controls": {
+    "excerpt_sha256": "94add3f427fc3de03c277386634fbebba402d0af29c37c13432018ef9ea70a61",
+    "lines": [
+      1,
+      19
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md"
+  },
+  "tfhe_controls_scope": {
+    "excerpt_sha256": "b649dabc907bc713804c5524d48871b5c16b899c22b653914ecc912781a3b740",
+    "lines": [
+      56,
+      99
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md"
+  },
+  "tfhe_failure": {
+    "excerpt_sha256": "49c52b8a494ad6da1e7ff3ba124dc760deb740fb8665cce484ab8a9619eca0fb",
+    "lines": [
+      1,
+      15
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/REPORT.md"
+  },
+  "tfhe_scope": {
+    "excerpt_sha256": "4e8407ca49e6fd183244d073d2d0c0b05a041cf744679375e767a48fbab411bc",
+    "lines": [
+      89,
+      104
+    ],
+    "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md"
   },
   "verdicts": {
     "excerpt_sha256": "84d2618f939d71c725129e1eb61c4f21e786f16558e70932b8046f78e605e4ad",

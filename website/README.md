@@ -38,18 +38,22 @@ build stops; it never updates the lock automatically.
 2. Update the selected line range and review date in `catalog.json` as needed.
    Preserve complete paragraphs and the limiting assumptions.
 3. After that review, run `python3 website/build.py --refresh-sources` and inspect
-   the named lock changes. Commit new source evidence before production build.
+   the named lock changes. For a local draft before the source commit, add
+   `--preview`. Commit new source evidence before production build.
 4. Run `python3 website/build.py --check` and review the affected card in a browser.
 
-[EXECUTED build behavior] Source files must already be Git-tracked, not ignored,
-not symlinks, and within the explicitly permitted public evidence roots. The
+[EXECUTED build behavior] Production source files must already be Git-tracked,
+not ignored, not symlinks, and within the explicitly permitted public evidence roots. The
 builder refuses runtime/archive/stopped-task paths. It never copies source
 documents or experiment directories into the public artifact. Source links
 resolve to the last commit for that path only after its selected excerpt is
 compared with those committed bytes. The manifest records the linked complete
-blob hash, excerpt hash, revision, path and line range. `--preview` permits a
-reviewed, uncommitted excerpt locally using a branch link; the workflow never
-uses that flag.
+blob hash, excerpt hash, revision, path and line range. `--preview` permits
+explicitly allowlisted new files or reviewed uncommitted excerpts locally using
+branch links. Such references have `draft: true` in the manifest and produce a
+visible local-draft notice. All path/ignore/symlink and output exclusions still
+apply. The workflow never uses that flag, and the remote checker stops before
+network access if any source is a draft.
 
 [EXECUTED validation] The build verifies local assets, fragments, unique IDs,
 curated external URL membership, source locks and basic private/local-data

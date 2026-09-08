@@ -23,6 +23,8 @@ def check(source):
 
 if __name__ == "__main__":
     manifest = json.loads((HERE / "dist/source-manifest.json").read_text())
+    if any(source.get("draft", False) for source in manifest["sources"].values()):
+        raise SystemExit("Remote check stopped: draft evidence needs a committed production build first.")
     sources = {(s["path"], s["revision"]): s for s in manifest["sources"].values()}
     with ThreadPoolExecutor(max_workers=4) as executor:
         results = list(executor.map(check, sources.values()))

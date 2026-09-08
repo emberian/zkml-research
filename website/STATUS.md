@@ -1,4 +1,51 @@
-# Research website — published
+# Research website — published; evidence update prepared
+
+[EXECUTED root publication preparation, 2026-09-08T05:30:48.965405+00:00] Research checkpoint cf0f91f is public. Strict production build and reproducibility check pass:11 cards,25 excerpts,64 references,7 files,68,680bytes. All 19 distinct immutable GitHub source blobs return200 and match complete hashes. Root inspected the new desktop evidence and mobile PQ screenshots. Preview draft markers are absent from the production manifest. The eight reviewed website changes are ready for deployment; the earlier draft-only paragraph below is historical.
+
+[EXECUTED update preparation, 2026-09-08] A new local preview contains eleven
+cards and 25 reviewed source excerpts. The public-coin card now reports the
+completed 40 Learn / four Infer / eight expiry journal and 44 independent
+replays. The emitted nonlinear sample and older fourteenth-Learn replay failure
+have separate cards; the latter includes the five separately completed fixed-FFT
+controls without attributing the old cause or claiming plaintext correctness.
+The PQ card reports conditional packed sizing examples and no certified bits.
+The underway successor contributes no result to this page. VERDICTS and the
+checked-but-unlanded formal proposal retain their existing scope.
+
+[EXECUTED update checks] `python3 website/build.py --preview --refresh-sources`
+and `python3 website/build.py --preview --check` pass: eleven cards, 25 excerpts,
+64 HTML link/asset references, seven output files and 67,676 public bytes.
+Python syntax checks pass. The first preview command rejected an endpoint one
+line beyond the PQ report; the range was corrected to complete paragraphs before
+locking. The selected source documents are linked, never copied into the site.
+
+[EXECUTED update browser] Playwright Chromium inspected 1440×1050 desktop and
+390×844 mobile. Screenshots `qa/update-desktop.png`,
+`qa/update-desktop-evidence.png`, `qa/update-mobile.png`,
+`qa/update-mobile-failure.png` and `qa/update-mobile-pq.png` are ignored local
+review artifacts. No horizontal overflow, console error or remote page resource
+was observed. The interaction check waits for the existing 120 ms search debounce;
+an initial immediate count attempted before that debounce was corrected in the
+check, with no application change needed.
+
+```json
+{"all":11,"proof":3,"openProof":"pq-composition","fftSearch":"nonlinear-replay-boundary","restoredSearch":"FFT","restoredCount":1,"empty":true,"reset":11,"keyboardEvidence":true,"sourceLinks":3,"deepLinkReveals":true,"deepLinkResets":"all","firstFocus":"Skip to content","skipTarget":"main","noJsCards":11,"noJsFiltersHidden":true,"noJsEvidence":true,"noJsOverflow":false}
+```
+
+[EXECUTED publication boundary] Ten excerpt references currently use the explicit
+draft mode because their evidence is not committed. Strict build refuses the
+untracked source; the remote checker refuses a draft manifest before network
+access. Both leave the preview intact. Preview mode still rejects parent
+traversal, hidden repository metadata, runtime, archive and stopped-task paths.
+`qa/update-build-boundaries.json` retains these results. Source commits and the
+subsequent immutable remote-blob check belong to root's publication sequence.
+This preparation changes only `website/`; it does not commit, push or deploy.
+
+[EXECUTED historical evidence] `deployment.json` is unchanged at SHA-256
+`71f366c0998fa09babab97bd6e4bc78f3a0691644efe1e9ec0a3d57d4bc384ee`.
+The record below describes the earlier ten-card publication, not this draft.
+
+## Initial publication
 
 [EXECUTED, 2026-09-08] The site is live at
 https://emberian.github.io/zkml-research/. Root enabled GitHub Actions Pages,
