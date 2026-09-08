@@ -1,0 +1,16 @@
+{
+  "name": "export",
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/release/vfhe-query-runtime",
+    "export",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/journal/cas/3cbf4f3a75a6dda15dc7d1da1eab521d9497fde8a0a20aaeebc697ecd666322c",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/queries/new-two-class-query/query.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/queries/new-two-class-query/1.ct",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/queries/new-two-class-query/proof1/case"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime",
+  "started_utc": "2026-09-08T17:56:48.578246+00:00",
+  "returncode": 0,
+  "elapsed_seconds": 0.04877837502863258,
+  "finished_utc": "2026-09-08T17:56:48.627286+00:00"
+}

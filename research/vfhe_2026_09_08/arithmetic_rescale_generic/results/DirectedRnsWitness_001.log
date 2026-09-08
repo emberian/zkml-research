@@ -1,0 +1,1 @@
+Compiler/DirectedRnsWitness.lean:1:0: error: object file '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsInstance.olean' of module Compiler.NonlinearRnsInstance does not exist

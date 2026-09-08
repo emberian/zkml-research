@@ -1,0 +1,5 @@
+'Minidregg.Compiler.TfheModulusSwitch.balance_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheModulusSwitch.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheModulusSwitch.simplifiedSource_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheModulusSwitch.zero_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheModulusSwitch.changed_zero_refused' depends on axioms: [propext, Classical.choice, Quot.sound]

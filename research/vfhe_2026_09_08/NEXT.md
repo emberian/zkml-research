@@ -2,12 +2,13 @@
 
 [REPORTED] The user explicitly requested a fresh autonomous goal on research and minidregg after the first two constructive cycles. It is active. Continue building and joining substantive components; use focused compilation and real acceptance/refusal checks, without a new review queue.
 
-- `arithmetic_rescale/` and `proved_rescale/`: join exact deployed RNS rescale and projection into one compiler-emitted ct×ct component; do not replace directed fixed-point arithmetic with ideal nearest rounding.
-- `../learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/`: actual BFV multiplication in a useful continuing nonlinear text model.
-- `proved_journal/`: bind the actual learner-update proof to exact ciphertext bytes and a durable current-parent commit, with genesis, recipient and randomness policy in receipts.
-- `../proof_frontier/2026-09-08/multi_round_successor/`: compose actual arity-eight rounds on the existing coherent sampler.
-- `../learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/`: canonical packed transport and actual separate recipient/issuer/evaluator processes over the working ring construction.
-- `new_constructions/scaled/`: finish the larger matched real PCS proof and independently replayable serialization package.
-- Root: publish the real learner-update WASM verifier on the existing microsite, integrate completed packages, then redirect builders toward the next useful joins.
+- `query_arithmetic/` and `query_runtime/`: seal the successful complete query coefficient proof: two plaintext products and their subtraction. Its actual 8,192-row proof has passed; package the reusable interface.
+- `proved_journal/query_gate_successor/`: run two new teachings and a new query whose class outputs are proved and bound to the accepted model before private receiving. Historical live001 was queried before this proof existed; do not relabel that history.
+- `bootstrap_rotation_successor/`: seal the complete native initial LUT rotation proof joined to the prior TFHE modulus-switch output. Further blind rotation and FFT remain separate boundaries.
+- `rescale_compiler_successor/`: reduce the real nine-to-four rescale relation's cost through a proved compiler improvement, aiming toward whole-operation coverage.
+- `../proof_frontier/2026-09-08/commitment_failure_successor/`: connect the finite schedule's observed-failure term to concrete collision/extraction accounting where existing definitions support it.
+- `../learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_security_successor/`: construct the missing joint programmable-oracle simulation for the smaller seeded transport; a seed for A alone does not justify missing-row hybrids.
+- `minidregg_integration/`: assemble completed compiler modules into one applicable proposal, reusing their existing evidence and checking only new glue.
+- Root: integrate the completed restricted-query learner, nonlinear learner, generic rescale, live teaching, five-round soundness and seeded transport; update the already published microsite. The existing WASM widget verifies the earlier learner-update proof, not every later construction.
 
 [SOURCE scope] Main minidregg/breadstuffs remain read-only; deliver isolated patches. Frozen predecessor outputs and stopped signer_route/verified_route paths remain untouched. Current authority remains docs/VERDICTS.md, which this run does not edit.

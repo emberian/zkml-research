@@ -1,0 +1,12 @@
+{"trace_width": 2509,
+ "trace_bytes": 82214912,
+ "source_constraints": 4442,
+ "rows": 8192,
+ "radix64_refused": true,
+ "public_tuple_order": "rowID,acc2x7,positivePT2x7,negativePT2x7,out2x7",
+ "producer": "cached digits and column convolutions",
+ "ir2_arithmetic_constraints": 2744,
+ "constructed_cases_checked": 4,
+ "changed_output_refused": true,
+ "actual_row_constraint_check":
+ "unchanged native prover; emitter checks four constructed rows"}

@@ -1,0 +1,65 @@
+{
+  "claim": "EXECUTED accidental cargo fmt --all reached companion workspace; candidate inverse not applied because exact pre-format bytes were not retained",
+  "affected_mtime_window_utc": [
+    "2026-09-08T17:09:30Z",
+    "2026-09-08T17:09:55Z"
+  ],
+  "candidate_files": [
+    {
+      "path": "circuit-prove/src/mina_wrap_closing_fold.rs",
+      "mtime": 1788887380.1952882,
+      "current_sha256": "6dd508e19b3f7310485b038ed8d6b13f1442194766f0200e7b961b0ef7bba51e",
+      "index_sha256": "40ec1d33c30c5742851384206049652ce37e827200d1db94e3bd9bf2ad30bb93"
+    },
+    {
+      "path": "circuit-prove/tests/apex_shrink_gnark_fixture.rs",
+      "mtime": 1788887380.2913685,
+      "current_sha256": "c1440e891316e20211197007f4a30c8ac5a6a22523bd5788b8bc6277ba06a896",
+      "index_sha256": "9c02b198869fe7a31c74027e5d46bd90f8f06cf36f012da6b760258dbb9b4345"
+    },
+    {
+      "path": "circuit/tests/mina_phase1_tape_binding_proves.rs",
+      "mtime": 1788887379.5672457,
+      "current_sha256": "491b8270644b88d732e499be0111aa7b641a5a3c2708d78edb358603efb936f3",
+      "index_sha256": "0cb0ec9da853066376ae5fa74cdee933b2c37c6d2faae936ee3af6788fb29065"
+    },
+    {
+      "path": "demo/sdk-consensus/src/main.rs",
+      "mtime": 1788887380.8249776,
+      "current_sha256": "182bb525e951c43c8e3154d22cd20cdc4e5ca6c6e608269617339041f1bb91ee",
+      "index_sha256": "f8284007263d9993f647869996de26dd84ea001e5fba73eade375c6eb1c7a12c"
+    },
+    {
+      "path": "net/src/gossip.rs",
+      "mtime": 1788887384.904987,
+      "current_sha256": "3eba196d24d2f964648a15af30f212e803e3f509c200c17a6dad1817465e28b8",
+      "index_sha256": "24f99928d5172db359675f455de9efed317508cbc1769b7e49300dc26aa5ddb2"
+    },
+    {
+      "path": "redteam/tests/multinode_byzantine_chaos.rs",
+      "mtime": 1788887376.143305,
+      "current_sha256": "6a197e0e9349c8e1fb953bfc13af9e09a89685ce8ff7bd1ab7b42a790d2e7dc5",
+      "index_sha256": "63b7e56953750a22fc3114302522a9f960270b0d1850b53e6ededbf573e46cf0"
+    },
+    {
+      "path": "sdk/tests/sovereign_rotated_c1.rs",
+      "mtime": 1788887387.0293021,
+      "current_sha256": "31c071c010d7f97e14ee0ff289a6bb0f0becb1558567d0e044698b125ce39f67",
+      "index_sha256": "56c9a6686163b0ee7816081d1b9203bd1601740fad936077c7c773e838c54a46"
+    },
+    {
+      "path": "teasting/src/harness.rs",
+      "mtime": 1788887387.9347126,
+      "current_sha256": "b1876b8ea42d334bd22d0db2e39dcc128ed875f17003e54b9b08c51447221dc9",
+      "index_sha256": "5483a8e7cf7daf4b08e9f9038c1f2b0396aec42a0321f37e7634df9274e5916f"
+    }
+  ],
+  "older_unstaged_files_preserved": [
+    "circuit-prove/tests/leaf_vs_recursion_sweep.rs",
+    "fhegg-fhe/src/bin/ntt_four_step_bench.rs",
+    "fhegg-fhe/tests/kpz_encoding_depth.rs"
+  ],
+  "staged_diff_sha256": "37f91e1c4cfa7af54d6c6a7fc206b1eab7e65e2652c678507fa2ea2de841ccf0",
+  "shared_backend_sha256": "673846ca9241f8070cafd4c3be34da14b097bea3334df6c7ade480fc2ae46f15",
+  "captured_utc": "2026-09-08T17:11:52.918303+00:00"
+}

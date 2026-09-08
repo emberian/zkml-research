@@ -1,0 +1,131 @@
+{
+  "claim": "EXECUTED public-only learner-update proof pipeline",
+  "started_utc": "2026-09-08T17:54:12.377152+00:00",
+  "status": "verified",
+  "steps": [
+    {
+      "label": "export",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "export-update-ntt",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/case"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T17:54:12.383167+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 0.04678312496980652
+    },
+    {
+      "label": "emit",
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "--run",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/EmitBfvExpiryFast.lean",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/emitted",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/case/public_ntt_rows.json"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T17:54:12.430639+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 40.79752500000177
+    },
+    {
+      "label": "prove",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "prove-update",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/emitted/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/case",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/emitted/trace.leu32",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/proof"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T17:54:53.231510+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 2.151035291957669
+    },
+    {
+      "label": "verify",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "verify-update",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/emitted/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/case",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/model/proposals/teach1/proved/proof/proof.bin"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T17:54:55.384046+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 0.13592324999626726
+    }
+  ],
+  "operation": "acc + fresh - old",
+  "approved_template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+  "runtime_sha256": "dd41ec2eac52bf35ff8a9c6e736fa4dcb7cb4ae41cec6bace5cf593a3cf87cc6",
+  "compiler_source_sha256": "7ea2633e465e85fd5d1a606310d42ffbbdf3d9bce09fe0288b10065acfbb9425",
+  "checked_export": false,
+  "lean": "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+  "lean_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "inputs": {
+    "acc.ct": {
+      "sha256": "e9097d33d453a48adbe37ff2c9875086cba7f1cdb1a8cd14e2d7453b3fbfe415",
+      "bytes": 85103
+    },
+    "fresh.ct": {
+      "sha256": "3cbf4f3a75a6dda15dc7d1da1eab521d9497fde8a0a20aaeebc697ecd666322c",
+      "bytes": 85103
+    },
+    "old.ct": {
+      "sha256": "e9097d33d453a48adbe37ff2c9875086cba7f1cdb1a8cd14e2d7453b3fbfe415",
+      "bytes": 85103
+    },
+    "out.ct": {
+      "sha256": "3cbf4f3a75a6dda15dc7d1da1eab521d9497fde8a0a20aaeebc697ecd666322c",
+      "bytes": 85103
+    }
+  },
+  "scope": "Selected exact ciphertext coefficient relation; no encoder, FIFO authorization, key membership or confidentiality claim.",
+  "source_event_sha256": "8fc52622579fa8bcff1f83a8e89661631dd06f4fdb2fd83762021f179207f9c6",
+  "source_event_scope": "Carried application metadata; not authenticated or proved by this pipeline.",
+  "verified": true,
+  "verification": {
+    "changed_output_claim_rejected": false,
+    "claim": "EXECUTED fresh-process verification",
+    "proof_bytes": 504210,
+    "proof_sha256": "2d74db28680281106bcd07be960e47cfdfceb14aa8a7a19fadfef88a42896886",
+    "verified": true,
+    "verify_ns": 96283916
+  },
+  "proof": {
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "claim": "EXECUTED proof over Lean-derived BFV relation",
+    "proof_bytes": 504210,
+    "proof_sha256": "2d74db28680281106bcd07be960e47cfdfceb14aa8a7a19fadfef88a42896886",
+    "prove_ns": 1970951334,
+    "public_rows_bound": 8192,
+    "public_tuple_width": 57,
+    "rows": 8192,
+    "self_verify_ns": 100476792,
+    "template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+    "trace_width": 1017,
+    "verified": true
+  },
+  "public_rows_sha256": "df2ea7569786623404f7c3895440f5bb1e21f52f63c0a1747064ff2f7570527e",
+  "emission": {
+    "trace_width": 1017,
+    "trace_bytes": 33325056,
+    "standard_descriptor_nWires": 5925,
+    "standard_descriptor_gates": 3865,
+    "source_constraints": 1456,
+    "rows": 8192,
+    "row_constraint_check": "delegated to actual proof generation and verification",
+    "radix64_refused": true,
+    "public_tuple_order": "rowID,acc2x7,fresh2x7,old2x7,out2x7",
+    "ir2_arithmetic_constraints": 1456,
+    "constructed_cases_checked": 4,
+    "changed_output_refused": true,
+    "all_actual_source_rows_checked": false
+  },
+  "finished_utc": "2026-09-08T17:54:55.522666+00:00",
+  "elapsed_seconds": 43.142441332980525
+}

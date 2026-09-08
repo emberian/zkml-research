@@ -1,0 +1,33 @@
+{
+  "schema": "vfhe-whole-query-pipeline-v1",
+  "native": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/release/vfhe-query-runtime",
+  "template": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/artifacts/template_ir2.json",
+  "emitter": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/EmitBfvQuery.lean",
+  "arithmetic_root": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic",
+  "lean_cwd": "/Users/ember/dev/minidregg",
+  "template_sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+  "rows": 8192,
+  "trace_width": 2509,
+  "public_tuple_width": 57,
+  "rayon_threads": 4,
+  "source_pins": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/release/vfhe-query-runtime": "9566638eef8f0dce7c5d3edd351f1e29da6301164ccbe1d8451ce642874c8c2c",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/src/main.rs": "4df56d60708c10c2a486ea214909bf60e09c8d2406b7acd3506a195eb9f0cccc",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/Cargo.toml": "3a9819bf1c046f53482e18d53ca2dae344bcdbe235b67acfc68294e523c95d66",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/Cargo.lock": "722269c6185e8d4fd0e22bc82059542e45de2c2463241a6e3155dacbfd67c2df",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/Cargo.toml": "ff6d7b6a881eee5eda9b52678b71e947c97bb6142ae5acb264220cf71860f6a9",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/artifacts/template_ir2.json": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/source_pins.json": "4248163e34d24ad0f87e7d6df9f388647f47a63a786bfc69a28b4daa076d9b2d",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean": "97883be5e568cc51c369b854012e0e7edffe3f28c54051355b541a1bb54d272e",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean": "eb101cab960c6954ee7258a13cf41ea3cf9ebb285f99f410e92f1108efddaa8f",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryTeeth.lean": "68f36ac565f581c48ed54453595523cde07566a669d6858b03ac0b2244ac57a2",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryWitness.lean": "860e1a86402d9ee6c816c2725f8e4865008d988044d975308b59df8a2e7081dd",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/EmitBfvQuery.lean": "d76ab80472bdc34bab576ebc96d227a2e1766d6996fda67b635f3d76e6b505b7",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean": "e08fbc86e0829ba85bcf986f92f63b88e7cef4584ccd7eeaecfdf05ab7ce8cdf",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombination.lean": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiry.lean": "518885c19e7910b61886c8e19f00d4cf37fba5ad09a7b7cbb155c418d87d42e6",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiryLayout.lean": "90a8c1b9e665de22a0f9bad2d9b319b1432696288a47f6f12d2e876bc10665f5",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombinationLayout.lean": "e92ccd44e442a6ebcbb35864079a5c1522e4d279031705de14956c3790aefdc3"
+  }
+}

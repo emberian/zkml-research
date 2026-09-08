@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "role_command": "init",
+  "pid": 61992,
+  "uid": 501,
+  "elapsed_seconds": 0.0012717500212602317,
+  "peak_rss_bytes_macos": 37896192,
+  "artifact_reads": [],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/a.json",
+      "kind": "seeded_a",
+      "bytes": 383,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "a9ed344440e0a94af3d30314735f973f859a62d94162f9ec65ac558b671e36e9"
+    }
+  ],
+  "result": {
+    "actual_private_rows_generated": 0,
+    "A_rows_stored": 0,
+    "public_A_seed_bytes": 32
+  },
+  "error": null
+}

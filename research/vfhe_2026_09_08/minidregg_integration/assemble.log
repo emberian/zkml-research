@@ -1,0 +1,7 @@
+{
+  "files": 51,
+  "compiler_modules": 43,
+  "required_predecessors": 15,
+  "exporters": 7,
+  "patch_sha256": "7e3e625deefe311d1f7d359ca6f3fc54fc727818bc138afaf955170cc42ed265"
+}

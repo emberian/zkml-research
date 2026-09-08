@@ -1,0 +1,2816 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryTeeth.lean:89:91: error: unsolved goals
+case «0»
+⊢ ((((((if 0 = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                        carry := fun x => 0 }).xBit
+                  0 0 =
+                0 ∨
+              (if 0 = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                        carry := fun x => 0 }).xBit
+                  0 0 =
+                1) ∧
+            ((if 0 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    0 1 =
+                  0 ∨
+                (if 0 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    0 1 =
+                  1) ∧
+              ((if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      0 2 =
+                    0 ∨
+                  (if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      0 2 =
+                    1) ∧
+                ((if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        0 (Fin.succ 2) =
+                      0 ∨
+                    (if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        0 (Fin.succ 2) =
+                      1) ∧
+                  ((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ =
+                        0 ∨
+                      (if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ =
+                        1) ∧
+                    ((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ.succ =
+                        0 ∨
+                      (if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ.succ =
+                        1)) ∧
+          (if 0 = 2 then
+                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                    carry := fun x => 0 }
+                else
+                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                    carry := fun x => 0 }).x
+              0 =
+            (if 0 = 2 then
+                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                      carry := fun x => 0 }
+                  else
+                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                      carry := fun x => 0 }).xBit
+                0 0 +
+              ((if 0 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    0 1 *
+                  2 +
+                ((if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      0 2 *
+                    4 +
+                  ((if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        0 (Fin.succ 2) *
+                      8 +
+                    ((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ *
+                        16 +
+                      (if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ.succ *
+                        32))))) ∧
+        ((((if 0 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    1 0 =
+                  0 ∨
+                (if 0 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    1 0 =
+                  1) ∧
+              ((if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      1 1 =
+                    0 ∨
+                  (if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      1 1 =
+                    1) ∧
+                ((if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        1 2 =
+                      0 ∨
+                    (if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        1 2 =
+                      1) ∧
+                  ((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          1 (Fin.succ 2) =
+                        0 ∨
+                      (if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          1 (Fin.succ 2) =
+                        1) ∧
+                    ((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ =
+                          0 ∨
+                        (if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ =
+                          1) ∧
+                      ((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ.succ =
+                          0 ∨
+                        (if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ.succ =
+                          1)) ∧
+            (if 0 = 2 then
+                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                      carry := fun x => 0 }
+                  else
+                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                      carry := fun x => 0 }).x
+                1 =
+              (if 0 = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                        carry := fun x => 0 }).xBit
+                  1 0 +
+                ((if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      1 1 *
+                    2 +
+                  ((if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        1 2 *
+                      4 +
+                    ((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          1 (Fin.succ 2) *
+                        8 +
+                      ((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ *
+                          16 +
+                        (if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ.succ *
+                          32))))) ∧
+          ((((if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      2 0 =
+                    0 ∨
+                  (if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      2 0 =
+                    1) ∧
+                ((if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        2 1 =
+                      0 ∨
+                    (if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        2 1 =
+                      1) ∧
+                  ((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          2 2 =
+                        0 ∨
+                      (if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          2 2 =
+                        1) ∧
+                    ((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            2 (Fin.succ 2) =
+                          0 ∨
+                        (if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            2 (Fin.succ 2) =
+                          1) ∧
+                      ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ =
+                            0 ∨
+                          (if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ =
+                            1) ∧
+                        ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ.succ =
+                            0 ∨
+                          (if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ.succ =
+                            1)) ∧
+              (if 0 = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                        carry := fun x => 0 }).x
+                  2 =
+                (if 0 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    2 0 +
+                  ((if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        2 1 *
+                      2 +
+                    ((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          2 2 *
+                        4 +
+                      ((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            2 (Fin.succ 2) *
+                          8 +
+                        ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ *
+                            16 +
+                          (if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ.succ *
+                            32))))) ∧
+            ((((if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        (Fin.succ 2) 0 =
+                      0 ∨
+                    (if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        (Fin.succ 2) 0 =
+                      1) ∧
+                  ((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2) 1 =
+                        0 ∨
+                      (if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2) 1 =
+                        1) ∧
+                    ((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2) 2 =
+                          0 ∨
+                        (if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2) 2 =
+                          1) ∧
+                      ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2) (Fin.succ 2) =
+                            0 ∨
+                          (if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2) (Fin.succ 2) =
+                            1) ∧
+                        ((if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ =
+                              0 ∨
+                            (if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ =
+                              1) ∧
+                          ((if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ.succ =
+                              0 ∨
+                            (if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ.succ =
+                              1)) ∧
+                (if 0 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                          carry := fun x => 0 }).x
+                    (Fin.succ 2) =
+                  (if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      (Fin.succ 2) 0 +
+                    ((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2) 1 *
+                        2 +
+                      ((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2) 2 *
+                          4 +
+                        ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2) (Fin.succ 2) *
+                            8 +
+                          ((if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ *
+                              16 +
+                            (if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ.succ *
+                              32))))) ∧
+              ((((if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2).succ 0 =
+                        0 ∨
+                      (if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2).succ 0 =
+                        1) ∧
+                    ((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ 1 =
+                          0 ∨
+                        (if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ 1 =
+                          1) ∧
+                      ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ 2 =
+                            0 ∨
+                          (if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ 2 =
+                            1) ∧
+                        ((if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ (Fin.succ 2) =
+                              0 ∨
+                            (if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ (Fin.succ 2) =
+                              1) ∧
+                          ((if 0 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ =
+                                0 ∨
+                              (if 0 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ =
+                                1) ∧
+                            ((if 0 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ.succ =
+                                0 ∨
+                              (if 0 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ.succ =
+                                1)) ∧
+                  (if 0 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                            carry := fun x => 0 }).x
+                      (Fin.succ 2).succ =
+                    (if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        (Fin.succ 2).succ 0 +
+                      ((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ 1 *
+                          2 +
+                        ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ 2 *
+                            4 +
+                          ((if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ (Fin.succ 2) *
+                              8 +
+                            ((if 0 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ *
+                                16 +
+                              (if 0 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ.succ *
+                                32))))) ∧
+                ((((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ 0 =
+                          0 ∨
+                        (if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ 0 =
+                          1) ∧
+                      ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ 1 =
+                            0 ∨
+                          (if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ 1 =
+                            1) ∧
+                        ((if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ 2 =
+                              0 ∨
+                            (if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ 2 =
+                              1) ∧
+                          ((if 0 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ.succ (Fin.succ 2) =
+                                0 ∨
+                              (if 0 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ.succ (Fin.succ 2) =
+                                1) ∧
+                            ((if 0 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ =
+                                  0 ∨
+                                (if 0 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ =
+                                  1) ∧
+                              ((if 0 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ =
+                                  0 ∨
+                                (if 0 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ =
+                                  1)) ∧
+                    (if 0 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                              carry := fun x => 0 }).x
+                        (Fin.succ 2).succ.succ =
+                      (if 0 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2).succ.succ 0 +
+                        ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ 1 *
+                            2 +
+                          ((if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ 2 *
+                              4 +
+                            ((if 0 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ.succ (Fin.succ 2) *
+                                8 +
+                              ((if 0 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ *
+                                  16 +
+                                (if 0 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ *
+                                  32))))) ∧
+                  (((if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ.succ 0 =
+                          0 ∨
+                        (if 0 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ.succ 0 =
+                          1) ∧
+                      ((if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ.succ 1 =
+                            0 ∨
+                          (if 0 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ.succ 1 =
+                            1) ∧
+                        ((if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 3, y := lo 13, z := lo 16, xBit := bits 3, yBit := bits 13,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ.succ 2 =
+                              0 ∨
+                            (if 0 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else { x := lo 3, y := ⋯, z := ⋯, xBit := ⋯, yBit := ⋯, zBit := ⋯, carry := ⋯ }).xBit
+                                ⋯ ⋯ =
+                              ⋯) ∧
+                          ⋯) ∧
+                    ⋯) ∧
+      ⋯) ∧
+    ⋯
+
+case «1»
+⊢ ((((((if 1 = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                        carry := fun x => 0 }).xBit
+                  0 0 =
+                0 ∨
+              (if 1 = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                        carry := fun x => 0 }).xBit
+                  0 0 =
+                1) ∧
+            ((if 1 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    0 1 =
+                  0 ∨
+                (if 1 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    0 1 =
+                  1) ∧
+              ((if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      0 2 =
+                    0 ∨
+                  (if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      0 2 =
+                    1) ∧
+                ((if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        0 (Fin.succ 2) =
+                      0 ∨
+                    (if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        0 (Fin.succ 2) =
+                      1) ∧
+                  ((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ =
+                        0 ∨
+                      (if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ =
+                        1) ∧
+                    ((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ.succ =
+                        0 ∨
+                      (if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ.succ =
+                        1)) ∧
+          (if 1 = 2 then
+                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                    carry := fun x => 0 }
+                else
+                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                    carry := fun x => 0 }).x
+              0 =
+            (if 1 = 2 then
+                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                      carry := fun x => 0 }
+                  else
+                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                      carry := fun x => 0 }).xBit
+                0 0 +
+              ((if 1 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    0 1 *
+                  2 +
+                ((if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      0 2 *
+                    4 +
+                  ((if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        0 (Fin.succ 2) *
+                      8 +
+                    ((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ *
+                        16 +
+                      (if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ.succ *
+                        32))))) ∧
+        ((((if 1 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    1 0 =
+                  0 ∨
+                (if 1 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    1 0 =
+                  1) ∧
+              ((if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      1 1 =
+                    0 ∨
+                  (if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      1 1 =
+                    1) ∧
+                ((if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        1 2 =
+                      0 ∨
+                    (if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        1 2 =
+                      1) ∧
+                  ((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          1 (Fin.succ 2) =
+                        0 ∨
+                      (if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          1 (Fin.succ 2) =
+                        1) ∧
+                    ((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ =
+                          0 ∨
+                        (if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ =
+                          1) ∧
+                      ((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ.succ =
+                          0 ∨
+                        (if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ.succ =
+                          1)) ∧
+            (if 1 = 2 then
+                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                      carry := fun x => 0 }
+                  else
+                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                      carry := fun x => 0 }).x
+                1 =
+              (if 1 = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                        carry := fun x => 0 }).xBit
+                  1 0 +
+                ((if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      1 1 *
+                    2 +
+                  ((if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        1 2 *
+                      4 +
+                    ((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          1 (Fin.succ 2) *
+                        8 +
+                      ((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ *
+                          16 +
+                        (if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ.succ *
+                          32))))) ∧
+          ((((if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      2 0 =
+                    0 ∨
+                  (if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      2 0 =
+                    1) ∧
+                ((if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        2 1 =
+                      0 ∨
+                    (if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        2 1 =
+                      1) ∧
+                  ((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          2 2 =
+                        0 ∨
+                      (if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          2 2 =
+                        1) ∧
+                    ((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            2 (Fin.succ 2) =
+                          0 ∨
+                        (if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            2 (Fin.succ 2) =
+                          1) ∧
+                      ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ =
+                            0 ∨
+                          (if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ =
+                            1) ∧
+                        ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ.succ =
+                            0 ∨
+                          (if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ.succ =
+                            1)) ∧
+              (if 1 = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                        carry := fun x => 0 }).x
+                  2 =
+                (if 1 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    2 0 +
+                  ((if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        2 1 *
+                      2 +
+                    ((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          2 2 *
+                        4 +
+                      ((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            2 (Fin.succ 2) *
+                          8 +
+                        ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ *
+                            16 +
+                          (if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ.succ *
+                            32))))) ∧
+            ((((if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        (Fin.succ 2) 0 =
+                      0 ∨
+                    (if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        (Fin.succ 2) 0 =
+                      1) ∧
+                  ((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2) 1 =
+                        0 ∨
+                      (if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2) 1 =
+                        1) ∧
+                    ((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2) 2 =
+                          0 ∨
+                        (if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2) 2 =
+                          1) ∧
+                      ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2) (Fin.succ 2) =
+                            0 ∨
+                          (if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2) (Fin.succ 2) =
+                            1) ∧
+                        ((if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ =
+                              0 ∨
+                            (if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ =
+                              1) ∧
+                          ((if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ.succ =
+                              0 ∨
+                            (if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ.succ =
+                              1)) ∧
+                (if 1 = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                          carry := fun x => 0 }).x
+                    (Fin.succ 2) =
+                  (if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      (Fin.succ 2) 0 +
+                    ((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2) 1 *
+                        2 +
+                      ((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2) 2 *
+                          4 +
+                        ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2) (Fin.succ 2) *
+                            8 +
+                          ((if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ *
+                              16 +
+                            (if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ.succ *
+                              32))))) ∧
+              ((((if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2).succ 0 =
+                        0 ∨
+                      (if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2).succ 0 =
+                        1) ∧
+                    ((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ 1 =
+                          0 ∨
+                        (if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ 1 =
+                          1) ∧
+                      ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ 2 =
+                            0 ∨
+                          (if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ 2 =
+                            1) ∧
+                        ((if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ (Fin.succ 2) =
+                              0 ∨
+                            (if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ (Fin.succ 2) =
+                              1) ∧
+                          ((if 1 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ =
+                                0 ∨
+                              (if 1 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ =
+                                1) ∧
+                            ((if 1 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ.succ =
+                                0 ∨
+                              (if 1 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ.succ =
+                                1)) ∧
+                  (if 1 = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                            carry := fun x => 0 }).x
+                      (Fin.succ 2).succ =
+                    (if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        (Fin.succ 2).succ 0 +
+                      ((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ 1 *
+                          2 +
+                        ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ 2 *
+                            4 +
+                          ((if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ (Fin.succ 2) *
+                              8 +
+                            ((if 1 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ *
+                                16 +
+                              (if 1 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ.succ *
+                                32))))) ∧
+                ((((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ 0 =
+                          0 ∨
+                        (if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ 0 =
+                          1) ∧
+                      ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ 1 =
+                            0 ∨
+                          (if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ 1 =
+                            1) ∧
+                        ((if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ 2 =
+                              0 ∨
+                            (if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ 2 =
+                              1) ∧
+                          ((if 1 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ.succ (Fin.succ 2) =
+                                0 ∨
+                              (if 1 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ.succ (Fin.succ 2) =
+                                1) ∧
+                            ((if 1 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ =
+                                  0 ∨
+                                (if 1 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ =
+                                  1) ∧
+                              ((if 1 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ =
+                                  0 ∨
+                                (if 1 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ =
+                                  1)) ∧
+                    (if 1 = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                              carry := fun x => 0 }).x
+                        (Fin.succ 2).succ.succ =
+                      (if 1 = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2).succ.succ 0 +
+                        ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ 1 *
+                            2 +
+                          ((if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ 2 *
+                              4 +
+                            ((if 1 = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ.succ (Fin.succ 2) *
+                                8 +
+                              ((if 1 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ *
+                                  16 +
+                                (if 1 = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ *
+                                  32))))) ∧
+                  (((if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ.succ 0 =
+                          0 ∨
+                        (if 1 = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ.succ 0 =
+                          1) ∧
+                      ((if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ.succ 1 =
+                            0 ∨
+                          (if 1 = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ.succ 1 =
+                            1) ∧
+                        ((if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 5, y := lo 11, z := lo 16, xBit := bits 5, yBit := bits 11,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ.succ 2 =
+                              0 ∨
+                            (if 1 = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else { x := lo 5, y := ⋯, z := ⋯, xBit := ⋯, yBit := ⋯, zBit := ⋯, carry := ⋯ }).xBit
+                                ⋯ ⋯ =
+                              ⋯) ∧
+                          ⋯) ∧
+                    ⋯) ∧
+      ⋯) ∧
+    ⋯
+
+case «2»
+⊢ ((((((if ⟨2, ⋯⟩ = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                        carry := fun x => 0 }).xBit
+                  0 0 =
+                0 ∨
+              (if ⟨2, ⋯⟩ = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                        carry := fun x => 0 }).xBit
+                  0 0 =
+                1) ∧
+            ((if ⟨2, ⋯⟩ = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    0 1 =
+                  0 ∨
+                (if ⟨2, ⋯⟩ = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    0 1 =
+                  1) ∧
+              ((if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      0 2 =
+                    0 ∨
+                  (if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      0 2 =
+                    1) ∧
+                ((if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        0 (Fin.succ 2) =
+                      0 ∨
+                    (if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        0 (Fin.succ 2) =
+                      1) ∧
+                  ((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ =
+                        0 ∨
+                      (if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ =
+                        1) ∧
+                    ((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ.succ =
+                        0 ∨
+                      (if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ.succ =
+                        1)) ∧
+          (if ⟨2, ⋯⟩ = 2 then
+                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                    carry := fun x => 0 }
+                else
+                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                    carry := fun x => 0 }).x
+              0 =
+            (if ⟨2, ⋯⟩ = 2 then
+                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                      carry := fun x => 0 }
+                  else
+                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                      carry := fun x => 0 }).xBit
+                0 0 +
+              ((if ⟨2, ⋯⟩ = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    0 1 *
+                  2 +
+                ((if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      0 2 *
+                    4 +
+                  ((if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        0 (Fin.succ 2) *
+                      8 +
+                    ((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ *
+                        16 +
+                      (if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          0 (Fin.succ 2).succ.succ *
+                        32))))) ∧
+        ((((if ⟨2, ⋯⟩ = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    1 0 =
+                  0 ∨
+                (if ⟨2, ⋯⟩ = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    1 0 =
+                  1) ∧
+              ((if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      1 1 =
+                    0 ∨
+                  (if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      1 1 =
+                    1) ∧
+                ((if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        1 2 =
+                      0 ∨
+                    (if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        1 2 =
+                      1) ∧
+                  ((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          1 (Fin.succ 2) =
+                        0 ∨
+                      (if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          1 (Fin.succ 2) =
+                        1) ∧
+                    ((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ =
+                          0 ∨
+                        (if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ =
+                          1) ∧
+                      ((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ.succ =
+                          0 ∨
+                        (if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ.succ =
+                          1)) ∧
+            (if ⟨2, ⋯⟩ = 2 then
+                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                      carry := fun x => 0 }
+                  else
+                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                      carry := fun x => 0 }).x
+                1 =
+              (if ⟨2, ⋯⟩ = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                        carry := fun x => 0 }).xBit
+                  1 0 +
+                ((if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      1 1 *
+                    2 +
+                  ((if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        1 2 *
+                      4 +
+                    ((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          1 (Fin.succ 2) *
+                        8 +
+                      ((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ *
+                          16 +
+                        (if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            1 (Fin.succ 2).succ.succ *
+                          32))))) ∧
+          ((((if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      2 0 =
+                    0 ∨
+                  (if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      2 0 =
+                    1) ∧
+                ((if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        2 1 =
+                      0 ∨
+                    (if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        2 1 =
+                      1) ∧
+                  ((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          2 2 =
+                        0 ∨
+                      (if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          2 2 =
+                        1) ∧
+                    ((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            2 (Fin.succ 2) =
+                          0 ∨
+                        (if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            2 (Fin.succ 2) =
+                          1) ∧
+                      ((if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ =
+                            0 ∨
+                          (if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ =
+                            1) ∧
+                        ((if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ.succ =
+                            0 ∨
+                          (if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ.succ =
+                            1)) ∧
+              (if ⟨2, ⋯⟩ = 2 then
+                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                        carry := fun x => 0 }
+                    else
+                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                        carry := fun x => 0 }).x
+                  2 =
+                (if ⟨2, ⋯⟩ = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                          carry := fun x => 0 }).xBit
+                    2 0 +
+                  ((if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        2 1 *
+                      2 +
+                    ((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          2 2 *
+                        4 +
+                      ((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            2 (Fin.succ 2) *
+                          8 +
+                        ((if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ *
+                            16 +
+                          (if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              2 (Fin.succ 2).succ.succ *
+                            32))))) ∧
+            ((((if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        (Fin.succ 2) 0 =
+                      0 ∨
+                    (if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        (Fin.succ 2) 0 =
+                      1) ∧
+                  ((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2) 1 =
+                        0 ∨
+                      (if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2) 1 =
+                        1) ∧
+                    ((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2) 2 =
+                          0 ∨
+                        (if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2) 2 =
+                          1) ∧
+                      ((if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2) (Fin.succ 2) =
+                            0 ∨
+                          (if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2) (Fin.succ 2) =
+                            1) ∧
+                        ((if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ =
+                              0 ∨
+                            (if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ =
+                              1) ∧
+                          ((if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ.succ =
+                              0 ∨
+                            (if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ.succ =
+                              1)) ∧
+                (if ⟨2, ⋯⟩ = 2 then
+                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                          carry := fun x => 0 }
+                      else
+                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                          carry := fun x => 0 }).x
+                    (Fin.succ 2) =
+                  (if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).xBit
+                      (Fin.succ 2) 0 +
+                    ((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2) 1 *
+                        2 +
+                      ((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2) 2 *
+                          4 +
+                        ((if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2) (Fin.succ 2) *
+                            8 +
+                          ((if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ *
+                              16 +
+                            (if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2) (Fin.succ 2).succ.succ *
+                              32))))) ∧
+              ((((if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2).succ 0 =
+                        0 ∨
+                      (if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2).succ 0 =
+                        1) ∧
+                    ((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ 1 =
+                          0 ∨
+                        (if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ 1 =
+                          1) ∧
+                      ((if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ 2 =
+                            0 ∨
+                          (if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ 2 =
+                            1) ∧
+                        ((if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ (Fin.succ 2) =
+                              0 ∨
+                            (if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ (Fin.succ 2) =
+                              1) ∧
+                          ((if ⟨2, ⋯⟩ = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ =
+                                0 ∨
+                              (if ⟨2, ⋯⟩ = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ =
+                                1) ∧
+                            ((if ⟨2, ⋯⟩ = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ.succ =
+                                0 ∨
+                              (if ⟨2, ⋯⟩ = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ.succ =
+                                1)) ∧
+                  (if ⟨2, ⋯⟩ = 2 then
+                          { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                            carry := fun x => 0 }
+                        else
+                          { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                            carry := fun x => 0 }).x
+                      (Fin.succ 2).succ =
+                    (if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).xBit
+                        (Fin.succ 2).succ 0 +
+                      ((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ 1 *
+                          2 +
+                        ((if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ 2 *
+                            4 +
+                          ((if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ (Fin.succ 2) *
+                              8 +
+                            ((if ⟨2, ⋯⟩ = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ *
+                                16 +
+                              (if ⟨2, ⋯⟩ = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ (Fin.succ 2).succ.succ *
+                                32))))) ∧
+                ((((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ 0 =
+                          0 ∨
+                        (if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                  carry := fun x => 0 }
+                              else
+                                { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                  carry := fun x => 0 }).xBit
+                            (Fin.succ 2).succ.succ 0 =
+                          1) ∧
+                      ((if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ 1 =
+                            0 ∨
+                          (if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ 1 =
+                            1) ∧
+                        ((if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ 2 =
+                              0 ∨
+                            (if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ 2 =
+                              1) ∧
+                          ((if ⟨2, ⋯⟩ = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ.succ (Fin.succ 2) =
+                                0 ∨
+                              (if ⟨2, ⋯⟩ = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ.succ (Fin.succ 2) =
+                                1) ∧
+                            ((if ⟨2, ⋯⟩ = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ =
+                                  0 ∨
+                                (if ⟨2, ⋯⟩ = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ =
+                                  1) ∧
+                              ((if ⟨2, ⋯⟩ = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ =
+                                  0 ∨
+                                (if ⟨2, ⋯⟩ = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ =
+                                  1)) ∧
+                    (if ⟨2, ⋯⟩ = 2 then
+                            { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                              carry := fun x => 0 }
+                          else
+                            { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                              carry := fun x => 0 }).x
+                        (Fin.succ 2).succ.succ =
+                      (if ⟨2, ⋯⟩ = 2 then
+                              { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                carry := fun x => 0 }
+                            else
+                              { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                carry := fun x => 0 }).xBit
+                          (Fin.succ 2).succ.succ 0 +
+                        ((if ⟨2, ⋯⟩ = 2 then
+                                  { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2, zBit := bits 16,
+                                    carry := fun x => 0 }
+                                else
+                                  { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1, zBit := bits 16,
+                                    carry := fun x => 0 }).xBit
+                              (Fin.succ 2).succ.succ 1 *
+                            2 +
+                          ((if ⟨2, ⋯⟩ = 2 then
+                                    { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                      zBit := bits 16, carry := fun x => 0 }
+                                  else
+                                    { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                      zBit := bits 16, carry := fun x => 0 }).xBit
+                                (Fin.succ 2).succ.succ 2 *
+                              4 +
+                            ((if ⟨2, ⋯⟩ = 2 then
+                                      { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                        zBit := bits 16, carry := fun x => 0 }
+                                    else
+                                      { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                        zBit := bits 16, carry := fun x => 0 }).xBit
+                                  (Fin.succ 2).succ.succ (Fin.succ 2) *
+                                8 +
+                              ((if ⟨2, ⋯⟩ = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ *
+                                  16 +
+                                (if ⟨2, ⋯⟩ = 2 then
+                                        { x := lo 14, y := lo 2, z := lo 16, xBit := bits 14, yBit := bits 2,
+                                          zBit := bits 16, carry := fun x => 0 }
+                                      else
+                                        { x := lo 15, y := lo 1, z := lo 16, xBit := bits 15, yBit := bits 1,
+                                          zBit := bits 16, carry := fun x => 0 }).xBit
+                                    (Fin.succ 2).succ.succ (Fin.succ 2).succ.succ *
+                                  32))))) ∧
+                  (((if ⟨2, ⋯⟩ = 2 then
+                                { x := lo 14, y := lo 2, z := lo 16, xBit := ⋯, yBit := ⋯, zBit := ⋯, carry := ⋯ }
+                              else ⋯).xBit
+                            ⋯ ⋯ =
+                          ⋯ ∨
+                        ⋯) ∧
+                      ⋯) ∧
+                    ⋯) ∧
+      ⋯) ∧
+    ⋯

@@ -1,0 +1,23 @@
+{
+  "claim": "EXECUTED parsed public provenance links the proved class output to the retained accepted live model snapshot",
+  "class": "card_arrival",
+  "revision": 1,
+  "head_sha256": "cb163920f2593eea951f3e9c4a67831f3dce8094ff00a3cd1fd487a794084020",
+  "model_root": "e5b2c59da18da8ce4d43aea3c431fa8ff017df029575458a3f2abe5e9cb4ddb6",
+  "receipt_sha256": "9c81f2df21cae6b97707d4b33367a682bdd8aa41d3b5f6cab747db49bc5896cd",
+  "prior_update_proof_sha256": "db97c23396017219c22ee88487c320bba70ec6dccf172929e7900620ff68485f",
+  "acc_sha256": "34c2108957324274852397b5175e7714e8e51df16de93562cf9e25c4e7c7917c",
+  "query_sha256": "7b7d31759c0b52f3547436ed20b2a1954c41aaa3fe24c848d6f331a90007c5b1",
+  "out_sha256": "f91eb98578df7be7ed002c7d96998f9577cbd282191406caa2206a5b2a4e57fd",
+  "metadata_files": [
+    {
+      "path": "source_public_query_complete.json",
+      "sha256": "52e54960377f3dce0049336cbe01d16f041deccca252e3184bffc47190b2a9cd"
+    },
+    {
+      "path": "source_committed.json",
+      "sha256": "9a5ac2680ec1a4ff40854fb17388518acf19111dd69bcaa03ef884e85e5f5558"
+    }
+  ],
+  "scope": "Metadata/receipt authenticity is the existing service protocol TCB, outside the arithmetic proof. This new proof is produced after the earlier live run completed its historical reader phase; it does not retroactively make that query proof-gated before decryption."
+}

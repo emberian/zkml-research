@@ -1,0 +1,71 @@
+{
+  "status": "PASS",
+  "role_command": "window",
+  "pid": 62048,
+  "elapsed_seconds": 0.0027866250020451844,
+  "peak_rss_bytes_macos": 38371328,
+  "uid": 501,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/cipher_2.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/window_1.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/cipher_0.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/window_1.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/cipher_0.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/cipher_2.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/window_2.ring",
+      "kind": "ciphertext",
+      "bytes": 1637,
+      "payload_bytes": 1027,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "5ff3dd12836191a0899186d397957c2f7895c17f95975da2c19f949043aaba64"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/window_1.ring",
+        "coefficient": 1
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/cipher_0.ring",
+        "coefficient": -1
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/cipher_2.ring",
+        "coefficient": 1
+      }
+    ],
+    "live_fresh_ciphertexts": 2,
+    "live_L1_weight": 2,
+    "private_rows_read": 0
+  },
+  "error": null
+}

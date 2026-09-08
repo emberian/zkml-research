@@ -1,0 +1,97 @@
+coordinate,text,expected_label,revision,class,score,reference,prediction,correct
+0,How do I locate my card?,card_arrival,2,card_arrival,215361,215361,card_arrival,True
+0,How do I locate my card?,card_arrival,2,cash_withdrawal_charge,198734,198734,card_arrival,True
+0,How do I locate my card?,card_arrival,4,card_arrival,447965,447965,card_arrival,True
+0,How do I locate my card?,card_arrival,4,cash_withdrawal_charge,401795,401795,card_arrival,True
+0,How do I locate my card?,card_arrival,6,card_arrival,470157,470157,card_arrival,True
+0,How do I locate my card?,card_arrival,6,cash_withdrawal_charge,402003,402003,card_arrival,True
+1,"I still have not received my new card, I ordered over a week ago.",card_arrival,2,card_arrival,223775,223775,card_arrival,True
+1,"I still have not received my new card, I ordered over a week ago.",card_arrival,2,cash_withdrawal_charge,203864,203864,card_arrival,True
+1,"I still have not received my new card, I ordered over a week ago.",card_arrival,4,card_arrival,456661,456661,card_arrival,True
+1,"I still have not received my new card, I ordered over a week ago.",card_arrival,4,cash_withdrawal_charge,415708,415708,card_arrival,True
+1,"I still have not received my new card, I ordered over a week ago.",card_arrival,6,card_arrival,453187,453187,card_arrival,True
+1,"I still have not received my new card, I ordered over a week ago.",card_arrival,6,cash_withdrawal_charge,419492,419492,card_arrival,True
+2,I ordered a card but it has not arrived. Help please!,card_arrival,2,card_arrival,228957,228957,card_arrival,True
+2,I ordered a card but it has not arrived. Help please!,card_arrival,2,cash_withdrawal_charge,198190,198190,card_arrival,True
+2,I ordered a card but it has not arrived. Help please!,card_arrival,4,card_arrival,463202,463202,card_arrival,True
+2,I ordered a card but it has not arrived. Help please!,card_arrival,4,cash_withdrawal_charge,402483,402483,card_arrival,True
+2,I ordered a card but it has not arrived. Help please!,card_arrival,6,card_arrival,464320,464320,card_arrival,True
+2,I ordered a card but it has not arrived. Help please!,card_arrival,6,cash_withdrawal_charge,410460,410460,card_arrival,True
+3,Is there a way to know when my card will arrive?,card_arrival,2,card_arrival,238145,238145,card_arrival,True
+3,Is there a way to know when my card will arrive?,card_arrival,2,cash_withdrawal_charge,193263,193263,card_arrival,True
+3,Is there a way to know when my card will arrive?,card_arrival,4,card_arrival,472904,472904,card_arrival,True
+3,Is there a way to know when my card will arrive?,card_arrival,4,cash_withdrawal_charge,387129,387129,card_arrival,True
+3,Is there a way to know when my card will arrive?,card_arrival,6,card_arrival,467553,467553,card_arrival,True
+3,Is there a way to know when my card will arrive?,card_arrival,6,cash_withdrawal_charge,402882,402882,card_arrival,True
+4,My card has not arrived yet.,card_arrival,2,card_arrival,229766,229766,card_arrival,True
+4,My card has not arrived yet.,card_arrival,2,cash_withdrawal_charge,200181,200181,card_arrival,True
+4,My card has not arrived yet.,card_arrival,4,card_arrival,466943,466943,card_arrival,True
+4,My card has not arrived yet.,card_arrival,4,cash_withdrawal_charge,403481,403481,card_arrival,True
+4,My card has not arrived yet.,card_arrival,6,card_arrival,457061,457061,card_arrival,True
+4,My card has not arrived yet.,card_arrival,6,cash_withdrawal_charge,405004,405004,card_arrival,True
+5,When will I get my card?,card_arrival,2,card_arrival,232773,232773,card_arrival,True
+5,When will I get my card?,card_arrival,2,cash_withdrawal_charge,202753,202753,card_arrival,True
+5,When will I get my card?,card_arrival,4,card_arrival,474654,474654,card_arrival,True
+5,When will I get my card?,card_arrival,4,cash_withdrawal_charge,407175,407175,card_arrival,True
+5,When will I get my card?,card_arrival,6,card_arrival,469438,469438,card_arrival,True
+5,When will I get my card?,card_arrival,6,cash_withdrawal_charge,412335,412335,card_arrival,True
+6,Do you know if there is a tracking number for the new card you sent me?,card_arrival,2,card_arrival,236514,236514,card_arrival,True
+6,Do you know if there is a tracking number for the new card you sent me?,card_arrival,2,cash_withdrawal_charge,200938,200938,card_arrival,True
+6,Do you know if there is a tracking number for the new card you sent me?,card_arrival,4,card_arrival,469676,469676,card_arrival,True
+6,Do you know if there is a tracking number for the new card you sent me?,card_arrival,4,cash_withdrawal_charge,401365,401365,card_arrival,True
+6,Do you know if there is a tracking number for the new card you sent me?,card_arrival,6,card_arrival,474936,474936,card_arrival,True
+6,Do you know if there is a tracking number for the new card you sent me?,card_arrival,6,cash_withdrawal_charge,414441,414441,card_arrival,True
+7,i have not received my card,card_arrival,2,card_arrival,221098,221098,card_arrival,True
+7,i have not received my card,card_arrival,2,cash_withdrawal_charge,203134,203134,card_arrival,True
+7,i have not received my card,card_arrival,4,card_arrival,455386,455386,card_arrival,True
+7,i have not received my card,card_arrival,4,cash_withdrawal_charge,409566,409566,card_arrival,True
+7,i have not received my card,card_arrival,6,card_arrival,456467,456467,card_arrival,True
+7,i have not received my card,card_arrival,6,cash_withdrawal_charge,411356,411356,card_arrival,True
+8,I see some fees for cash withdraw.,cash_withdrawal_charge,2,card_arrival,197869,197869,cash_withdrawal_charge,True
+8,I see some fees for cash withdraw.,cash_withdrawal_charge,2,cash_withdrawal_charge,209171,209171,cash_withdrawal_charge,True
+8,I see some fees for cash withdraw.,cash_withdrawal_charge,4,card_arrival,382856,382856,cash_withdrawal_charge,True
+8,I see some fees for cash withdraw.,cash_withdrawal_charge,4,cash_withdrawal_charge,440710,440710,cash_withdrawal_charge,True
+8,I see some fees for cash withdraw.,cash_withdrawal_charge,6,card_arrival,378601,378601,cash_withdrawal_charge,True
+8,I see some fees for cash withdraw.,cash_withdrawal_charge,6,cash_withdrawal_charge,464780,464780,cash_withdrawal_charge,True
+9,How come I was charged extra when I withdrew cash?,cash_withdrawal_charge,2,card_arrival,199523,199523,cash_withdrawal_charge,True
+9,How come I was charged extra when I withdrew cash?,cash_withdrawal_charge,2,cash_withdrawal_charge,222526,222526,cash_withdrawal_charge,True
+9,How come I was charged extra when I withdrew cash?,cash_withdrawal_charge,4,card_arrival,401320,401320,cash_withdrawal_charge,True
+9,How come I was charged extra when I withdrew cash?,cash_withdrawal_charge,4,cash_withdrawal_charge,478598,478598,cash_withdrawal_charge,True
+9,How come I was charged extra when I withdrew cash?,cash_withdrawal_charge,6,card_arrival,410672,410672,cash_withdrawal_charge,True
+9,How come I was charged extra when I withdrew cash?,cash_withdrawal_charge,6,cash_withdrawal_charge,491065,491065,cash_withdrawal_charge,True
+10,Why am I being charged when I withdraw cash?,cash_withdrawal_charge,2,card_arrival,201850,201850,cash_withdrawal_charge,True
+10,Why am I being charged when I withdraw cash?,cash_withdrawal_charge,2,cash_withdrawal_charge,223176,223176,cash_withdrawal_charge,True
+10,Why am I being charged when I withdraw cash?,cash_withdrawal_charge,4,card_arrival,406893,406893,cash_withdrawal_charge,True
+10,Why am I being charged when I withdraw cash?,cash_withdrawal_charge,4,cash_withdrawal_charge,469283,469283,cash_withdrawal_charge,True
+10,Why am I being charged when I withdraw cash?,cash_withdrawal_charge,6,card_arrival,419066,419066,cash_withdrawal_charge,True
+10,Why am I being charged when I withdraw cash?,cash_withdrawal_charge,6,cash_withdrawal_charge,486890,486890,cash_withdrawal_charge,True
+11,What is this charge on my account for a cash withdrawl?,cash_withdrawal_charge,2,card_arrival,203551,203551,cash_withdrawal_charge,True
+11,What is this charge on my account for a cash withdrawl?,cash_withdrawal_charge,2,cash_withdrawal_charge,212633,212633,cash_withdrawal_charge,True
+11,What is this charge on my account for a cash withdrawl?,cash_withdrawal_charge,4,card_arrival,401078,401078,cash_withdrawal_charge,True
+11,What is this charge on my account for a cash withdrawl?,cash_withdrawal_charge,4,cash_withdrawal_charge,452558,452558,cash_withdrawal_charge,True
+11,What is this charge on my account for a cash withdrawl?,cash_withdrawal_charge,6,card_arrival,404968,404968,cash_withdrawal_charge,True
+11,What is this charge on my account for a cash withdrawl?,cash_withdrawal_charge,6,cash_withdrawal_charge,484420,484420,cash_withdrawal_charge,True
+12,Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.,cash_withdrawal_charge,2,card_arrival,202118,202118,cash_withdrawal_charge,True
+12,Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.,cash_withdrawal_charge,2,cash_withdrawal_charge,217009,217009,cash_withdrawal_charge,True
+12,Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.,cash_withdrawal_charge,4,card_arrival,404152,404152,cash_withdrawal_charge,True
+12,Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.,cash_withdrawal_charge,4,cash_withdrawal_charge,452827,452827,cash_withdrawal_charge,True
+12,Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.,cash_withdrawal_charge,6,card_arrival,405317,405317,cash_withdrawal_charge,True
+12,Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.,cash_withdrawal_charge,6,cash_withdrawal_charge,475191,475191,cash_withdrawal_charge,True
+13,"How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee",cash_withdrawal_charge,2,card_arrival,200411,200411,cash_withdrawal_charge,True
+13,"How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee",cash_withdrawal_charge,2,cash_withdrawal_charge,214013,214013,cash_withdrawal_charge,True
+13,"How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee",cash_withdrawal_charge,4,card_arrival,402076,402076,cash_withdrawal_charge,True
+13,"How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee",cash_withdrawal_charge,4,cash_withdrawal_charge,445281,445281,cash_withdrawal_charge,True
+13,"How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee",cash_withdrawal_charge,6,card_arrival,406925,406925,cash_withdrawal_charge,True
+13,"How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee",cash_withdrawal_charge,6,cash_withdrawal_charge,470033,470033,cash_withdrawal_charge,True
+14,It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?,cash_withdrawal_charge,2,card_arrival,201593,201593,cash_withdrawal_charge,True
+14,It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?,cash_withdrawal_charge,2,cash_withdrawal_charge,230594,230594,cash_withdrawal_charge,True
+14,It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?,cash_withdrawal_charge,4,card_arrival,410376,410376,cash_withdrawal_charge,True
+14,It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?,cash_withdrawal_charge,4,cash_withdrawal_charge,466576,466576,cash_withdrawal_charge,True
+14,It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?,cash_withdrawal_charge,6,card_arrival,413168,413168,cash_withdrawal_charge,True
+14,It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?,cash_withdrawal_charge,6,cash_withdrawal_charge,471709,471709,cash_withdrawal_charge,True
+15,"Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",cash_withdrawal_charge,2,card_arrival,201310,201310,cash_withdrawal_charge,True
+15,"Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",cash_withdrawal_charge,2,cash_withdrawal_charge,213374,213374,cash_withdrawal_charge,True
+15,"Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",cash_withdrawal_charge,4,card_arrival,397197,397197,cash_withdrawal_charge,True
+15,"Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",cash_withdrawal_charge,4,cash_withdrawal_charge,434303,434303,cash_withdrawal_charge,True
+15,"Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",cash_withdrawal_charge,6,card_arrival,389104,389104,cash_withdrawal_charge,True
+15,"Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",cash_withdrawal_charge,6,cash_withdrawal_charge,459714,459714,cash_withdrawal_charge,True

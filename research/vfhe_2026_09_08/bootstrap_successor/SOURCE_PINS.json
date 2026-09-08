@@ -1,0 +1,876 @@
+{
+  "schema": "bootstrap-successor-source-pins-v1",
+  "recorded_utc": "2026-09-08T17:17:33.436191+00:00",
+  "scope": "Closeout source and artifact inventory; not a claim of prelaunch build-input freezing. No additional proof or verification was performed to collect these hashes.",
+  "primary_pdf": {
+    "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/1127.pdf",
+    "bytes": 1030523,
+    "sha256": "4780b61ff7a62cf3c2323cc578769430060437afb37fcc1d4ffab7c305f81ac4"
+  },
+  "paper_extract": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/paper_2026_1127.txt",
+    "bytes": 237169,
+    "sha256": "59727e8f655e634767b7fcf4ecd2aa14bf09ddb70822902f79e769e6c396437f"
+  },
+  "online_search_counts": {
+    "web": 0,
+    "kagi": 0,
+    "scry": 0
+  },
+  "read_only_dependencies": [
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/Cargo.toml",
+      "bytes": 8434,
+      "sha256": "384820d9391ec42b1c737b4d5617554534e45dca5b3b5c7b930596fb150c6ceb"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/parameters/params.rs",
+      "bytes": 3618,
+      "sha256": "3ac1db249c48c031b144f1e2300531af228196d089bedad810655922ccbb8d69"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs",
+      "bytes": 38336,
+      "sha256": "645ca26eab47b80d16c3088b1ab776966462d4bf2b3516567559d3b4234141f5"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/bootstrapping.rs",
+      "bytes": 21651,
+      "sha256": "d330528dd580177e21843b1ddb504bd6e2f2eda45f46b780461f4a2fbd66cfd5"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/mod.rs",
+      "bytes": 4163,
+      "sha256": "6f3398468bc9159199aa688012cb47d5c78bff63d0491343471cebd879bdf1a7"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/ciphertext/mod.rs",
+      "bytes": 1537,
+      "sha256": "d2650d683cc9a23de5e8d2f700180c68e793ae038fc6376522f4f1c6e8e5b48a"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/modulus_switch.rs",
+      "bytes": 20757,
+      "sha256": "d82b6f2fbd49866762817304d80a97ee59cbdee1f77ff88607e1fa8dc7e0b12e"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/entities/modulus_switched_lwe_ciphertext.rs",
+      "bytes": 9173,
+      "sha256": "68b692b3e941b98a4a0290e67979733f82a0449e95856f7d1f821140159f562d"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/common.rs",
+      "bytes": 8211,
+      "sha256": "85e2789e9e7bb931420dea5e951468b7db35ccfc9b9b28d0fe256fb1b362ab03"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/crypto/bootstrap.rs",
+      "bytes": 25554,
+      "sha256": "4a672bb4f4de85689be5ffdbb3c2eda07a78d5e1362d10445377e9574187b885"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/crypto/ggsw.rs",
+      "bytes": 26981,
+      "sha256": "e686210f50b68719b0706cded16d46cf32556e6b9c4f25b1c23b3a6f0f866232"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs",
+      "bytes": 25896,
+      "sha256": "3157e01727300ac29dbd516ff9d01905e3de0da8b98b77eb4293439c6c5f9bcf"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/math/decomposition/decomposer.rs",
+      "bytes": 29382,
+      "sha256": "5aea64df5e3bd75d01e3dcc3ca62bd734f4c0b376850a1123900ac5ca59de7f2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/Cargo.toml",
+      "bytes": 344,
+      "sha256": "796e049026014b1b01e97ca7456ac83a9179d25b45a777072d0fcce710657740"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/Cargo.lock",
+      "bytes": 16315,
+      "sha256": "37e0e0a6a0570f06663565eb892bed9943868590943c1197375ad471dae58321"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/main.rs",
+      "bytes": 3772,
+      "sha256": "3f30f131c68d2a9199eef3c91784baee6cddefa4f5aaf3097b3db96a94b6b7dc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/ciphertext.rs",
+      "bytes": 4901,
+      "sha256": "17b46813443f47feab647cd269a3789560a9ae589ec2fd1f9b5cc7790629e9f1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/Cargo.toml",
+      "bytes": 1414,
+      "sha256": "ff6d7b6a881eee5eda9b52678b71e947c97bb6142ae5acb264220cf71860f6a9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs",
+      "bytes": 9468,
+      "sha256": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/circuit/Cargo.toml",
+      "bytes": 7043,
+      "sha256": "cd3d6c0aa0471063885ffe21521e36c52e99bd657c73c5f186d5bca5f492c655"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/circuit/src/descriptor_proof_backend.rs",
+      "bytes": 17638,
+      "sha256": "a01b35bc99ea2ba92870c0a8b01945c6ed2ebc22ab8bfc9b16b5fe56217d5e20"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs",
+      "bytes": 603828,
+      "sha256": "596a450e77a8b905626e8c8b7b68dcffadd07b9bd9bcb71a040f009e8f77fb89"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/circuit/src/field.rs",
+      "bytes": 26255,
+      "sha256": "6940235251a80a31ec019cb849e13573ad2f7fc0d2960baeea5656f2e9b98fd3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombination.lean",
+      "bytes": 9311,
+      "sha256": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombinationLayout.lean",
+      "bytes": 6699,
+      "sha256": "e92ccd44e442a6ebcbb35864079a5c1522e4d279031705de14956c3790aefdc3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/source_pins.json",
+      "bytes": 2440,
+      "sha256": "1b2a2a457f517417d5ab6754d33ca2550eeaed01074ba7e336032c81999d52d6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/results/checked_modules.json",
+      "bytes": 4506,
+      "sha256": "e7e01e4a9511d3a604f64d73a7401724cb56f2d743a6f07c061a1a223181d0bb"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Compiler/AirRange.lean",
+      "bytes": 19260,
+      "sha256": "f875cc616d22510fc89de8c8be9242511e99a3ca93bfda6caa4b20847c7861a2"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Compiler/Emit.lean",
+      "bytes": 31685,
+      "sha256": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean",
+      "bytes": 14608,
+      "sha256": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale_generic/results/shared-backend-restored.json",
+      "bytes": 392,
+      "sha256": "bbe67e8fbc1c9e82a5d6669a542967b8af34af4efda1772fc8cf89ae60111771"
+    }
+  ],
+  "reused_and_owned_oleans": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Sp800185Cshake256Core.olean",
+      "bytes": 293888,
+      "sha256": "8c7dd7cdaa95001833f8cc707c1dcda74d5443932e3f3f2d5fff7a4199e8bbf4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/PredCompile.olean",
+      "bytes": 2057360,
+      "sha256": "0f705feea01c993ca43ab7e19974c04b7795851c9f099a2f55d9e22844aed189"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256CshakeMerkleController.olean",
+      "bytes": 826088,
+      "sha256": "b4622e6eda3e20f674ad8c05a832be4a56aa1e8ba83f81196afa4306162c7b6b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/ArithmeticNativeDeployment.olean",
+      "bytes": 386608,
+      "sha256": "bdf1445e155973bf81730bf1be8ab852e6f888b6c2ab687fe94d89316b6f20f5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvExpiryLayout.olean",
+      "bytes": 766544,
+      "sha256": "3b40e2786f9dbb60ed0eb9c31ea7dbe177f1ee187280c15c861deffe1d24f4ed"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/SparseEqualityWorkProfile.olean",
+      "bytes": 265752,
+      "sha256": "17c72b3ee2ee527ba87a9ea8cb1a404801b2088139ffe75d63610e0b5e86e19b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/MerkleBindAir.olean",
+      "bytes": 800624,
+      "sha256": "3cf715ddabecb05621189cfa4db5373df157fd97703a32fc84d5896cf24c821e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvOperationWitness.olean",
+      "bytes": 324616,
+      "sha256": "678cc7d3aaada8afe7385cc1a6ad1f78367dfa112d62b8282a922fe4d2170f19"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/EvmStage0NativeDeployment.olean",
+      "bytes": 899184,
+      "sha256": "f8f189d4fa87f954e3990adfbd66ca2b9fc83d8728c218256d6b64b0b61d302b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/CommittedTerminalFactored7.olean",
+      "bytes": 1025624,
+      "sha256": "7718aecdac4b1db79755181517b8343d23c4214a91628ce940ed54851bc36b4f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AuthenticatedColumnPlan.olean",
+      "bytes": 5811272,
+      "sha256": "b814ad5dada11c2a17e13628db8bce786aef782e35b9d4d1376af41599f9a14f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Emit.olean",
+      "bytes": 1163064,
+      "sha256": "bd7831cd5e8698fdadf7b1d50d37c2c8d019ea33563050165df3bda52bffabe3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BignumKernelABI.olean",
+      "bytes": 1855040,
+      "sha256": "8e6b198f2564a72ab896b2c16e505b995e2b6f6a32d1285d616b37362c0b8d65"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AirHash.olean",
+      "bytes": 503368,
+      "sha256": "6af40009ca8a86d08b7616f73df08c24e3c854372ca96ac4eb0c74dfd1f53868"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AdditiveFriReceiptClause.olean",
+      "bytes": 1257872,
+      "sha256": "ca45d24d0d7122213354048bf4e3d9934c286d8db5816e55db6a4dec88169cfa"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/LargeIntegerCertificateEmission.olean",
+      "bytes": 3933704,
+      "sha256": "849ad3a654854d2f0875ab60dc7082fe8b850c90c2d709b74b11b855d7b4ab82"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Sp800185Cshake256.olean",
+      "bytes": 311824,
+      "sha256": "b43f38ff9c816008c9a6c6fc02500a42e5aa1ca55df09ba8868973673e3a153b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DeclaredActionAir.olean",
+      "bytes": 707704,
+      "sha256": "53eafa0d846b204db8c3db887c08e0991717d4d888802ded8b589c0e35d25a1a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/HyperdocumentCodec.olean",
+      "bytes": 948352,
+      "sha256": "d1cd05905edfa88a152c096f436e3cad35d6dcf8c7ba161541461d1fa7b2cd46"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/TranscriptController.olean",
+      "bytes": 1965992,
+      "sha256": "e004583b82ed54aac53ef5c52241e45eab87bc6b6af101abf1b9922e2a35e020"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256AdditiveFriRawController.olean",
+      "bytes": 854840,
+      "sha256": "261bacf91e74c3508d58cf328d7693dd478b2b52a6abfd12ff19837457b26f9d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/HyperdocumentContentPageMaterializer.olean",
+      "bytes": 4718584,
+      "sha256": "e50201b319cb0d0093562d471f76a4b3f3ca04cb162700dac9a223fb53b758d1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvProofController.olean",
+      "bytes": 888408,
+      "sha256": "7c6f0a16efdeca6aeb995dbc6c9ad56e558d4dd26118864e1adbb717627e5b10"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256NativeByteBoundary.olean",
+      "bytes": 368768,
+      "sha256": "9ac4838067cc602135869968cb4902a3c80ef2e635b9886b693a4536450bfa3c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/SemanticTurnReceiptDescriptor.olean",
+      "bytes": 807296,
+      "sha256": "d1f7ff6847679155f3bb79a6c8ff0634b3c8186d7624628b55622e8be1d4679b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/WideDigestAir.olean",
+      "bytes": 396304,
+      "sha256": "49e53ca0a86f3da263bd2b60f1d42c0bf65d68a1999ff1d1c4ef0f7d861bb212"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/UwueavePreoProjectionV2.olean",
+      "bytes": 74576,
+      "sha256": "7bebe4c0deb9ee25bec36ce6e5e27fa727e4262d523e5c15d35b3f5db45c04b8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/WideDigestByteDecodeAir.olean",
+      "bytes": 954592,
+      "sha256": "d54fdc4efbc565d4bbdbe687218153d03e881cf1291b9bcb4fc4128563536c51"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256ConcreteBackend.olean",
+      "bytes": 1031640,
+      "sha256": "a57190e15f9ebc5ca41afb7dc5954e9d106c8fe1e8db39e5659c7ce8d9c4750f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256LogupAcceptedRun.olean",
+      "bytes": 1609832,
+      "sha256": "2a082c0b0652640567a910ca21f68759d2632817940c7955897c1ba33398d978"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/CanonicalPolicyAdmission.olean",
+      "bytes": 1138776,
+      "sha256": "7d6b7db9765b4317dbf6e10a8ef8ee9f5862730bfad2bb22a0e6c40efc76359c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BoundedPageCellRegistry.olean",
+      "bytes": 276232,
+      "sha256": "1cf66f2c0aa786eab43fb29f53828132869619a5e9a405d163b35bd8570635dd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/NativeKernelPlan.olean",
+      "bytes": 1350816,
+      "sha256": "0e196c0b9b129b75770a4cb9f5a6b73788820cb20f811567392f6ee9ab7941f7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AirSimplify.olean",
+      "bytes": 557184,
+      "sha256": "11f9a012773e6130694a902a5c6f9e6964dd6c1d881c9429f5ea600d5fb61344"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvLinearCombinationWitnessData.olean",
+      "bytes": 712752,
+      "sha256": "3e59a22786ddfc461e2697a82cfbb32857d081ebc9692bac6aa834b0cbc4a5dd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AdmissionAir.olean",
+      "bytes": 762304,
+      "sha256": "21b6131045b538ecdc3ef688ad9925508b1cd1a9ff432d0bf7c1eecb449537e2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/NoteSpendProofController.olean",
+      "bytes": 748672,
+      "sha256": "30d1d5b07c18998e9d5f7b40b4222d6f26f65020c7f372274b74e90fb6dd8365"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/LargeIntegerCertificateEmissionChecks.olean",
+      "bytes": 382832,
+      "sha256": "b3444965d61ce02a3e965a4e75530abe0a6d4085f1fcf8c3d668c65708038437"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/CredentialAuthorityPageMaterializer.olean",
+      "bytes": 3850136,
+      "sha256": "5a3103e2a1deec00ac4143f70a160b7ea00d32a0b24fdc11fd48839bd57f655d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256AdditiveFriRawDeployment.olean",
+      "bytes": 270040,
+      "sha256": "188cd1feea669730c083822d31301e097c94c5ac97f23fc9599beee89639baf4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/FriQueryVerifierAir.olean",
+      "bytes": 559032,
+      "sha256": "cbf0f64c9eb99b92dd0a7c49c35a0593f8968a0e60484bb7e34ad505a4bfe101"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/CommittedTerminalController.olean",
+      "bytes": 1345480,
+      "sha256": "850231a939dd05f0ec2439467452770ae365b68a7a85a9b3af1e4a3da3cfc27b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/HyperdocumentEventPageMaterializer.olean",
+      "bytes": 3057576,
+      "sha256": "a9b3c1969e6a9c4039caeca666d7a389e158dc6bc12123a405b5467201510fbe"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DeclaredEffectPageRegistry.olean",
+      "bytes": 251256,
+      "sha256": "016f6da3892b5c529085b5ec055d3998644d5df3fc3d781b5ddffeb097aa977a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvAllModuliKernelCalls.olean",
+      "bytes": 129248,
+      "sha256": "e2649a57d05f91056ea79a52b2a45cc1909aebcda436bc391ba524ecfd447066"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/MinidreggV1NativeGlue.olean",
+      "bytes": 15960,
+      "sha256": "c98b03c154b8ee45b0d27d3636f56c402afd05c188c910ab957e7c03d69ad339"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/CommittedTerminalFactoredProver.olean",
+      "bytes": 1019664,
+      "sha256": "58244465744cf4710f679bca5a7bac8dae5566a70136ff88ac58a736b42e3636"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/FriConformance.olean",
+      "bytes": 1171104,
+      "sha256": "678ac342491c93efbc6be66f87c416aae16dd4c9e7098dd997935f6afd328460"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvInputValidity.olean",
+      "bytes": 622680,
+      "sha256": "70c203b54310bfa0c1f57ea554c3743f05eb2b39407128d11967e08e5a3efc97"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Placeholder.olean",
+      "bytes": 2280,
+      "sha256": "10d764784579813471f340b23b87a7ce6b58e7c51d5c89059b5870b8c5254c10"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Ext6GateProofPositiveRun.olean",
+      "bytes": 249744,
+      "sha256": "8ab5fc3b922448e10aee3ed6a89e1e669ce702566f37ea87485e77737e6696ea"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AirBignum.olean",
+      "bytes": 1016944,
+      "sha256": "2c007e649e3315bc11575a5bc23674e775f87d949274ac0f8c0d858044977bb4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DeployedCellRegistry.olean",
+      "bytes": 350376,
+      "sha256": "e2fce69c1ba861420e533cb70053efb4e5787d6ae853b418cb13a3a98cb1101a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AirModularView.olean",
+      "bytes": 2113520,
+      "sha256": "574f07158009ef63a2cdb32cef563dbe95c110de7e96cf5b057dd79fbde94d48"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvLinearCombination.olean",
+      "bytes": 837744,
+      "sha256": "062ecfc1fc7cddfe030c3266921be3b22e32e7c13d93e567bceda113a7be0a64"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/SemanticManifest.olean",
+      "bytes": 4658712,
+      "sha256": "e2d4d4aa543d25dbd8ff6b2161b36cfa10b6b9cb4962274e0d811ac9f4371690"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/HyperdocumentIndexPageMaterializer.olean",
+      "bytes": 2759952,
+      "sha256": "7ac5ec2086aeb6eb1eba9c367e916ae637825b1c8d50cc7af8a4bee058ff816a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DeclaredEffectArtifact.olean",
+      "bytes": 174128,
+      "sha256": "b716fc2ac1bd4316144dfcddf63b2da446e6d0f968110d5060f229ce54208a18"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Sp800185Cshake256Conformance.olean",
+      "bytes": 165096,
+      "sha256": "e0181f136fc4326e0207f1c50d80aae467dd22cc765fed966933c6a3b41a1981"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvSignedAccumulatorAir.olean",
+      "bytes": 975064,
+      "sha256": "07330e8006dd94ca5f297ed0a4dcdacce5a881959bd9a347ed9b8bb10617478a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AirMembership.olean",
+      "bytes": 594768,
+      "sha256": "1225dcd138fa5c9c80eacbf42fc9824876604341b17e70826d3b1f9880118977"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DialectClauseDispatch.olean",
+      "bytes": 754136,
+      "sha256": "eba6f6d8fa3df6b5dca9ca655915b130e3facf0559ddab23cfad34b1a7649057"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/GateFactoredExt6.olean",
+      "bytes": 955128,
+      "sha256": "046d4c7493b687aeab2e77f4ab35d3f734dd8e5ab57bd6e4500ccdc2d54bfaf7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/IntegerCertificateEmission.olean",
+      "bytes": 1054464,
+      "sha256": "1b3e312c1d7e910ff903112d81eea8b41bf0c5e5fcc00f5aca680e9ea303fbcb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BoundedPageSchemaUpgrade.olean",
+      "bytes": 1307968,
+      "sha256": "7f0f8bb6e9d8ad4ab954b57b7ae5ab68b5fd9622580febf099362b8a6ba1baa0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/TypedAuthorizationRequestCodec.olean",
+      "bytes": 151688,
+      "sha256": "abb21e4abe8c6cc0e7d91450748cd860d6e41159f5ea233b893052c9348e1294"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Ext6GateProofVersionedDeployment.olean",
+      "bytes": 476896,
+      "sha256": "ccde3e21fb1c2c7eea0cb8bdeffdc7f7c7449db0feb4c5352c9e62a4c7346753"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/SemanticController.olean",
+      "bytes": 1233848,
+      "sha256": "38c6fdca6d612923011fb978c8f85d161326c2302ed2d4fd190dd565eb5ca647"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvCompressedEquation.olean",
+      "bytes": 691152,
+      "sha256": "981f399f464f54864ed79507fd908f95e654877f5f69580b1bbb8611b700b293"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AirFlatten.olean",
+      "bytes": 846856,
+      "sha256": "86f01a1be1169ad0dcba8740c7eb9b9dde560a6c09b707dcf8185d5ce5b88e77"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Logup256ReceiptClause.olean",
+      "bytes": 341168,
+      "sha256": "3329f91b70d00115f5b81d963b5692e1f70deb62fb4eaed337f59e833a6200f1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/ComposableDeploymentManifest.olean",
+      "bytes": 859512,
+      "sha256": "f954b17dfa0e04e150560adfdf3911c36ec9efde7af10d1e002af80e442fd90b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256LogupExtensionDeployment.olean",
+      "bytes": 633192,
+      "sha256": "912393733119ed37106a115315ebb87d017fd483bee87ed6b000adec84142c6f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Air.olean",
+      "bytes": 242320,
+      "sha256": "e28e36d5b0daadbafc024e31398b54e27db1f64c75db9276991f4d39e4b273cd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BinaryTower256Profile.olean",
+      "bytes": 18008,
+      "sha256": "bf45bc83e0fc0c39f967c792a70357637b9af2cd083c86934120fce24742abc4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BoundedPageExtensionCatalog.olean",
+      "bytes": 1570064,
+      "sha256": "08ad9edae1e73eab7976b28be0e9c28ba6812b816f6792f6340efde830f93680"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/SumcheckConformance.olean",
+      "bytes": 403920,
+      "sha256": "f10aed10c94c4abb745f4c7975669cc2f187f68453bde30937ea50212f9cd2fa"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/SparseAuthenticatedStateLogupBridge.olean",
+      "bytes": 489048,
+      "sha256": "9e2ae5a06a9b88df7493d203028fb5372d27b4f493864e7dd6064acfbb4e57fe"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvLinearCombinationLayout.olean",
+      "bytes": 857136,
+      "sha256": "cab6ab9a682859b871f35de08a0b3dc87c69cf44823810118e683a273e3ec71d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Ext6GateProofController.olean",
+      "bytes": 918840,
+      "sha256": "2fab4315638b81eedb51fdff9310f800b4a8a4ced3cc70fa3f8fb25fb3d9586b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Signature.olean",
+      "bytes": 321048,
+      "sha256": "0445e9c5112a5915b1506f3bab2fb4ea7d50f5b06dc18dc1155217f0503af22a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256LogupClauseDispatch.olean",
+      "bytes": 674456,
+      "sha256": "7177fb68feb72aaa7ae9ed590c2ca638c93eade94294f67c604c8347532b4cc4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/MinidreggV1ArithmeticWork.olean",
+      "bytes": 371536,
+      "sha256": "dd2f0d22bbdd37046ed18b8e65e458053cd25827475cedea6b62cd0f790a6787"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/FiatShamirAir.olean",
+      "bytes": 619656,
+      "sha256": "4a9562ea15a0bbecb080c9b684f95ee4f0e4d0481ada59bab59fcd0d30248d34"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DeclaredHyperedgeArtifact.olean",
+      "bytes": 374704,
+      "sha256": "6677ac2c019d27d07afdf845685f3bfecf5efa16d3dd346c179631f8f33902bd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/ZkmlEltwiseAir.olean",
+      "bytes": 404936,
+      "sha256": "7682366e05146e75014d8b44cac4d7aef333901df45393a582f82f78423105d3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/SumcheckVerifierAir.olean",
+      "bytes": 416432,
+      "sha256": "27da9b704fdce769dd156de5b60ac809e557912914509fc44c0c69eff8757aa4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/NoteSpend.olean",
+      "bytes": 499016,
+      "sha256": "39494c3bbd364a14c5e5e3312de3e74f8affc5de86d18dd8781aad097f6f1a26"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvReceiptClause.olean",
+      "bytes": 524936,
+      "sha256": "9b83c77b988d5aae9f1e6050f321174b100ea1968efba8c38c8c9e9571d02a13"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/TwistMultisetInvariant.olean",
+      "bytes": 734280,
+      "sha256": "f82000b45ab92a22153de08deb8268acc1f6402473d1370444fd063ab2bf7f2d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/ZkmlTraceCheck.olean",
+      "bytes": 2071896,
+      "sha256": "39316cc14b84901ef7a0d587dbb451b4b01d992604a8b2a254c9e9de529b407d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/IntegerCertificateEmissionChecks.olean",
+      "bytes": 255768,
+      "sha256": "41a0b1e6169f207ecd810d6af45cd64abb324d50715415ae2786bc2fb139574c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/FramedWalRecoveryController.olean",
+      "bytes": 926896,
+      "sha256": "803cfa63ac305004921366511bfdf594ad83c8e5c86a362e2f34dcb45e7a2035"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/MinidreggV1Artifact.olean",
+      "bytes": 543400,
+      "sha256": "db86399a2bcad6e9b7c61462fa10bdc0b8523733bf8cfb529474491bee7bc776"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/GateTraceRelationExt6.olean",
+      "bytes": 255768,
+      "sha256": "724f14050c109079442d15644ddf0b23480a0d348b3d898a289d49436568eb81"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/IntegerBilinearEmission.olean",
+      "bytes": 316792,
+      "sha256": "eeb93f65fcb975dddc2c1cc5ccc3007e19a5648b9b6a0c077858f42011b590ca"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DeclaredEffectPageMaterializer.olean",
+      "bytes": 3256656,
+      "sha256": "761455bbde9cc8bda759aa990926643de77dce11b64058d38ebf125252dc5576"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DialectBundle.olean",
+      "bytes": 842176,
+      "sha256": "f3be86133826b458b2e8f9c6ce12e8cc457e3301a10883a62424cec9f8a8290e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/SemanticArtifactBundle.olean",
+      "bytes": 3236888,
+      "sha256": "d9be72a8edf1114a2dec1530a62e33282d63849256dad666ffde3310f81333df"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/CommittedTerminalCompose.olean",
+      "bytes": 392872,
+      "sha256": "a474821588fcc758d9b11ad170a9cd4d9b7a9a996f231b64361bea4cbde63db2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/EmitSerialize.olean",
+      "bytes": 9378288,
+      "sha256": "28163e2621cb5afdcb918aaca2305eb7cc5a67b47010e713be3d6e3e444a2cd4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/FiniteSparseMaterializerAudit.olean",
+      "bytes": 396048,
+      "sha256": "e0c8085223450adf5cc82232de77fafa88b49d89ecdd614c18f2efab8a5aad14"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DeclaredActionBytes.olean",
+      "bytes": 341216,
+      "sha256": "ba06ee681cf7ce8e40b78027c0d141aa6153d7063014313f2f9b6b39ed89c2cf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AirRange.olean",
+      "bytes": 444312,
+      "sha256": "fe24286a3960a927ade17a18bc90ed304584dcf70fd4abffa1fe0859408bae0f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/TfheModulusSwitch.olean",
+      "bytes": 456304,
+      "sha256": "33bf07c4a03bcde592b54a253677db3cb02c95ca4480bccb0dfa31d4f63ff954"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256AdditiveFriController.olean",
+      "bytes": 976632,
+      "sha256": "44fb2ba854976cd323ea5f5153f32a94040ddb76df52d9bb561e3b90f066f030"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/FramedWalRecoveryDeployment.olean",
+      "bytes": 801840,
+      "sha256": "1aeda4d20158ea5f656671cbdb8ab27cd91e6bf8b1dae34533923ffacebd5b33"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BoundedQuantifiedPolicyAdmission.olean",
+      "bytes": 63728,
+      "sha256": "09b799a3a29d4ead0245d15edd5e996b73bba25f1cae2f0977f4c1a839ba1f03"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/NextgenLightClientPublicInputs.olean",
+      "bytes": 1961944,
+      "sha256": "0625024b6d7f7b9aaa88da168f04e59ab88c2def878ff70b7bf6743e5e0eaf4b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DistributiveLaw.olean",
+      "bytes": 646168,
+      "sha256": "67e8fef383284cd36fd7b9efd0012a5ee52a51a2d29abfb7fe050d08c5a4a186"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Ext6Conformance.olean",
+      "bytes": 1079368,
+      "sha256": "27626280cfd5ecfbb1ee71f107128c36ae33c0e71f8b03077e970babefc36348"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/EvmAddAir.olean",
+      "bytes": 1600224,
+      "sha256": "d1346de9b109b8c10b36e04cfbb17f483742107a8b0a21b0a58843d2fd047df7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/AuthenticatedColumnLogupBridge.olean",
+      "bytes": 823560,
+      "sha256": "6c179bf563f6dc6084cb2b054d8efe7fc2300a43d710eb56f2cfe5186e4e8054"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/EmitShare.olean",
+      "bytes": 1024512,
+      "sha256": "1dcf2260a2fd25199d0e26f1573c8fb50fe3c577c9647b1631d733dc7edfb2a2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Ext6GateProofDeployment.olean",
+      "bytes": 325400,
+      "sha256": "53629fceb228a28447b14a1544b3583bddaf3d6deddc6744184b90551b266c3f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/BfvExpiry.olean",
+      "bytes": 777776,
+      "sha256": "54b2ab2e998f104d6aaffcb1142f98fc5be291f13e6f115e1be7620b7342f875"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/NativeWorkProfiles.olean",
+      "bytes": 277104,
+      "sha256": "cd0fb28dd665a3674edb47777bd7073f1eedeeed7a0e5bf9080fe8f95b8da163"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/CredentialAuthorityPolicyRegistry.olean",
+      "bytes": 893192,
+      "sha256": "fa5808a9612a69db07d8b04b8ef22eb1cdcc8ad880b7e257fa49bdeab18406f7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256LogupControllerPlan.olean",
+      "bytes": 776512,
+      "sha256": "60459cc432f7c067e78a25b0e1651f19c70cfef48a09dcbab64d8733b987682e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/CommittedTerminalFiatShamir.olean",
+      "bytes": 2041168,
+      "sha256": "aaacaf641b290dee64dbcc0bf70efc8d1dce939871673b25a4d09cf791171f67"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/CommittedTerminalRealizer.olean",
+      "bytes": 1510776,
+      "sha256": "2f0710f3a6d8e36c395166eb7ccfbce8ecda55011d390e7e46e2a1eedc9f66b8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/NativeGlueGen.olean",
+      "bytes": 923320,
+      "sha256": "e55abfc69b3149c63b37af9f6667955d9579d6038f75c0b85f25b5a4fe2e4554"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/DescriptorEval.olean",
+      "bytes": 927504,
+      "sha256": "64954e60e1d392e34e158c231c583ab72c5203d71555e60594fdb649c2e1c80c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/GateMleExt6.olean",
+      "bytes": 331952,
+      "sha256": "d31d1d28a7ee9d7f1c37011d42febf796dd9d5b6683f02efe8434a655d17c726"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/Tower256CshakeMerkleBinding.olean",
+      "bytes": 478824,
+      "sha256": "0b7f375c1b1387a073c6fc5e21c23956827446af37783ff98bfd60427ee145f3"
+    }
+  ],
+  "executables": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/native/target/release/tfhe-bootstrap-entry-fixture",
+      "bytes": 1463904,
+      "sha256": "15dbc09f4e79768fb5f2bcb789d83b90ce2db99d12e47bbb22a453dd409fe030",
+      "modified_utc": "2026-09-08T17:09:56.353220+00:00"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/proof/target/release/tfhe-bootstrap-entry-proof",
+      "bytes": 4144288,
+      "sha256": "61817f2e6d42d669578ac3ad2550cd2a7f830cdfc6fe4cdff7e2da0132bf4612",
+      "modified_utc": "2026-09-08T17:10:28.497641+00:00"
+    }
+  ],
+  "shared_backend_variants": {
+    "restored": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs",
+      "bytes": 9468,
+      "sha256": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b"
+    },
+    "transient_formatted": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/results/backend-formatted-transient.rs.txt",
+      "bytes": 11000,
+      "sha256": "673846ca9241f8070cafd4c3be34da14b097bea3334df6c7ade480fc2ae46f15"
+    },
+    "note": "Author reports formatting-only interval17:09:49\u201317:12:25UTC; proof executable finished17:10:28UTC. The binary is pinned; restored source is not labelled its build-time source. Transient bytes retained with exact author-recorded hash. Root accepted provenance note without rebuild/reproof."
+  },
+  "uncompressed_trace": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/artifacts/trace.leu32",
+    "bytes": 225280,
+    "sha256": "7be6e14b39c1e023414cede7b7f15bcdfd7ed7ebf257d5e08723a706b710f76c"
+  },
+  "build_commands": [
+    {
+      "cwd": "native",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--offline",
+        "-j2"
+      ],
+      "exit": 101,
+      "log": "results/native-build.log",
+      "reason": "owned wrapper missing polynomial helper import; no runtime executed"
+    },
+    {
+      "cwd": "native",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--offline",
+        "--locked",
+        "-j2"
+      ],
+      "exit": 0,
+      "log": "results/native-build-002.log"
+    },
+    {
+      "cwd": "proof",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--offline",
+        "-j2"
+      ],
+      "exit": 0,
+      "log": "results/proof-build.log"
+    }
+  ]
+}

@@ -1,0 +1,1028 @@
+--- /dev/null
++++ b/Compiler/DirectedRnsEmit.lean
+@@ -0,0 +1,31 @@
++/- Reusable source/projection compiler entrypoint for arbitrary modulus counts. -/
++import Compiler.DirectedRnsScaler
++namespace Minidregg.Compiler.DirectedRnsScaler
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.NativeKernelPlan
++set_option autoImplicit false
++
++def layout {L K : Nat} (p : Params L K) (digits bits width carry : Nat) : Layout :=
++  ⟨groups L K,digits,(forms p).length,bits,width,carry⟩
++def matrixRows {L K : Nat} (p : Params L K) (digits bits width carry : Nat) :
++    Fin (layout p digits bits width carry).rows → Row (layout p digits bits width carry).groups :=
++  fun i => (forms p).get i
++
++def CompiledSound : Prop := ∀ {L K : Nat} (p : Params L K) digits bits width carry,
++  Valid p → Capacity (layout p digits bits width carry) (matrixRows p digits bits width carry) →
++  ∀ asg,systemAccepts asg (SignedMatrix.system (layout p digits bits width carry) (matrixRows p digits bits width carry)) →
++  ∀ i,(decoded (layout p digits bits width carry) asg (target i 0) : Int)=
++    output p (fun j => decoded (layout p digits bits width carry) asg (residue j))%(p.targetBase i : Int)
++
++theorem compiledSound : CompiledSound := by
++  intro L K p digits bits width carry hp cap asg hs
++  apply matrixSound p hp
++  intro row hm
++  obtain ⟨i,hi⟩ := List.mem_iff_get.mp hm
++  have h := SignedMatrix.sourceSound _ _ cap asg hs i
++  simpa only [matrixRows,hi] using h
++
++end Minidregg.Compiler.DirectedRnsScaler
++
++/-- info: 'Minidregg.Compiler.DirectedRnsScaler.compiledSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.DirectedRnsScaler.compiledSound
+--- /dev/null
++++ b/Compiler/DirectedRnsExhibits.lean
+@@ -0,0 +1,45 @@
++import Compiler.DirectedRnsWitness
++
++namespace Minidregg.Compiler.DirectedRnsScaler
++open Minidregg.Compiler.SignedMatrix
++set_option autoImplicit false
++
++def small : Params 1 1 where
++  sourceBase := fun _ => 31
++  targetBase := fun _ => 31
++  Q := 31
++  thetaG := fun _ => 0
++  thetaF := fun _ => 1
++  omega := fun _ => 2
++  gamma := 0
++  dG := 1
++  dF := 2
++  wOffset := 8
++  uOffset := 8
++
++def smallValues : Fin (groups 1 1) → Nat := ![3,27,0,1,0,10,0,3,8,22,8,8,0,22]
++
++def Nonvacuous : Prop := Valid small ∧ Balanced small smallValues ∧
++  output small (fun _ => 3)=8
++
++def WrongRoundingRefused : Prop := ∀ c,¬ Accepts small (fun _ => 3) (fun _ => 7) c
++
++theorem nonvacuous : Nonvacuous := by
++  refine ⟨⟨by decide,by decide,by decide,by decide,by decide,by decide⟩,?_,by decide⟩
++  unfold Balanced
++  decide
++
++theorem wrongRoundingRefused : WrongRoundingRefused := by
++  intro c h
++  have hh := certificateSound small nonvacuous.1 _ _ c h 0
++  norm_num [output,v,w,roundDiv,small,Fin.sum_univ_succ] at hh
++
++end Minidregg.Compiler.DirectedRnsScaler
++
++/-- info: 'Minidregg.Compiler.DirectedRnsScaler.nonvacuous' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.DirectedRnsScaler.nonvacuous
++
++/-- info: 'Minidregg.Compiler.DirectedRnsScaler.wrongRoundingRefused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.DirectedRnsScaler.wrongRoundingRefused
+--- /dev/null
++++ b/Compiler/DirectedRnsScaler.lean
+@@ -0,0 +1,190 @@
++/- Exact directed fixed-point RNS downscaling, parameterized by both basis counts
++and constructor constants. This is the source algorithm, not ideal rational rounding. -/
++import Compiler.SignedMatrixEmit
++import Compiler.FheSourceCertificate
++
++namespace Minidregg.Compiler.DirectedRnsScaler
++open Minidregg.Compiler Minidregg.Compiler.SignedMatrix
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 10000
++set_option maxHeartbeats 1000000
++
++structure Params (L K : Nat) where
++  sourceBase : Fin L → Nat
++  targetBase : Fin K → Nat
++  Q : Nat
++  thetaG : Fin L → Int
++  thetaF : Fin L → Int
++  omega : Fin L → Int
++  gamma : Int
++  dG : Nat
++  dF : Nat
++  wOffset : Nat
++  uOffset : Nat
++
++structure Valid {L K : Nat} (p : Params L K) : Prop where
++  qPos : 0 < p.Q
++  gPos : 0 < p.dG
++  fPos : 0 < p.dF
++  sourcePos : ∀ i,0 < p.sourceBase i
++  targetPos : ∀ i,0 < p.targetBase i
++  targetDvd : ∀ i,p.targetBase i ∣ p.Q
++
++def roundDiv (x : Int) (d : Nat) : Int := (2*x+d)/(2*d)
++def v {L K : Nat} (p : Params L K) (r : Fin L → Int) := roundDiv (∑ i,r i*p.thetaG i) p.dG
++def w {L K : Nat} (p : Params L K) (r : Fin L → Int) := roundDiv (∑ i,r i*p.thetaF i) p.dF
++def output {L K : Nat} (p : Params L K) (r : Fin L → Int) := (∑ i,r i*p.omega i)-p.gamma*v p r+w p r
++
++structure Certificate (K : Nat) where
++  v : Int
++  w : Int
++  gRem : Int
++  fRem : Int
++  y : Int
++  u : Int
++  targetQuot : Fin K → Int
++
++def Accepts {L K : Nat} (p : Params L K) (r : Fin L → Int) (out : Fin K → Int) (c : Certificate K) : Prop :=
++  (∀ i,0 ≤ r i ∧ r i < p.sourceBase i) ∧
++  0 ≤ c.gRem ∧ c.gRem < 2*p.dG ∧ 0 ≤ c.fRem ∧ c.fRem < 2*p.dF ∧
++  0 ≤ c.y ∧ c.y < p.Q ∧
++  2*(∑ i,r i*p.thetaG i)+p.dG=2*p.dG*c.v+c.gRem ∧
++  2*(∑ i,r i*p.thetaF i)+p.dF=2*p.dF*c.w+c.fRem ∧
++  (∑ i,r i*p.omega i)-p.gamma*c.v+c.w=p.Q*c.u+c.y ∧
++  (∀ i,0 ≤ out i ∧ out i < p.targetBase i ∧ c.y=p.targetBase i*c.targetQuot i+out i)
++
++def CertificateSound : Prop := ∀ {L K} (p : Params L K),Valid p → ∀ r out c,
++  Accepts p r out c → ∀ i,out i=output p r%(p.targetBase i : Int)
++
++theorem certificateSound : CertificateSound := by
++  intro L K p hp r out c h i
++  rcases h with ⟨hr,hg0,hg1,hf0,hf1,hy0,hy1,hg,hf,hy,ht⟩
++  have hv := FheSourceCertificate.qr_forced _ _ _ _ (by exact_mod_cast (show 0<2*p.dG by omega)) hg0 hg1 hg
++  have hw := FheSourceCertificate.qr_forced _ _ _ _ (by exact_mod_cast (show 0<2*p.dF by omega)) hf0 hf1 hf
++  change c.v=v p r at hv
++  change c.w=w p r at hw
++  rw [hv,hw] at hy
++  change output p r=p.Q*c.u+c.y at hy
++  have hy' : c.y=output p r%(p.Q : Int) := by
++    rw [hy,Int.add_emod,Int.mul_emod_right,zero_add,Int.emod_eq_of_lt hy0 hy1,Int.emod_eq_of_lt hy0 hy1]
++  have hti := ht i
++  have hout : out i=c.y%(p.targetBase i : Int) := by
++    rw [hti.2.2,Int.add_emod,Int.mul_emod_right,zero_add,Int.emod_eq_of_lt hti.1 hti.2.1,Int.emod_eq_of_lt hti.1 hti.2.1]
++  rw [hout,hy',Int.emod_emod_of_dvd]
++  exact_mod_cast hp.targetDvd i
++
++def honest {L K : Nat} (p : Params L K) (r : Fin L → Int) : Certificate K where
++  v := v p r
++  w := w p r
++  gRem := (2*(∑ i,r i*p.thetaG i)+p.dG)%(2*p.dG)
++  fRem := (2*(∑ i,r i*p.thetaF i)+p.dF)%(2*p.dF)
++  y := output p r%p.Q
++  u := output p r/p.Q
++  targetQuot := fun i => (output p r%p.Q)/(p.targetBase i)
++
++theorem honest_accepts {L K : Nat} (p : Params L K) (hp : Valid p) (r : Fin L → Int)
++    (hr : ∀ i,0 ≤ r i ∧ r i < p.sourceBase i) :
++    Accepts p r (fun i => (output p r%p.Q)%(p.targetBase i)) (honest p r) := by
++  have hg : (0 : Int)<2*p.dG := by exact_mod_cast (show 0<2*p.dG by have := hp.gPos; omega)
++  have hf : (0 : Int)<2*p.dF := by exact_mod_cast (show 0<2*p.dF by have := hp.fPos; omega)
++  have hq : (0 : Int)<p.Q := by exact_mod_cast hp.qPos
++  refine ⟨hr,Int.emod_nonneg _ (ne_of_gt hg),Int.emod_lt_of_pos _ hg,
++    Int.emod_nonneg _ (ne_of_gt hf),Int.emod_lt_of_pos _ hf,
++    Int.emod_nonneg _ (ne_of_gt hq),Int.emod_lt_of_pos _ hq,?_,?_,?_,?_⟩
++  · exact (Int.mul_ediv_add_emod _ _).symm
++  · exact (Int.mul_ediv_add_emod _ _).symm
++  · exact (Int.mul_ediv_add_emod _ _).symm
++  · intro i
++    have ht : (0 : Int)<p.targetBase i := by exact_mod_cast hp.targetPos i
++    exact ⟨Int.emod_nonneg _ (ne_of_gt ht),Int.emod_lt_of_pos _ ht,(Int.mul_ediv_add_emod _ _).symm⟩
++
++-- One signed affine matrix, with shared Y and per-target canonical projections.
++def groups (L K : Nat) := 2*L+9+3*K
++def residue {L K : Nat} (i : Fin L) : Fin (groups L K) := ⟨i.val,by dsimp [groups]; omega⟩
++def inputSlack {L K : Nat} (i : Fin L) : Fin (groups L K) := ⟨L+i.val,by dsimp [groups]; omega⟩
++def extra {L K : Nat} (i : Fin 9) : Fin (groups L K) := ⟨2*L+i.val,by dsimp [groups]; omega⟩
++def target {L K : Nat} (i : Fin K) (j : Fin 3) : Fin (groups L K) := ⟨2*L+9+3*i.val+j.val,by dsimp [groups]; omega⟩
++def linear {L K : Nat} (a : Fin L → Int) : Row (groups L K) := sum (fun i => scale (a i) (var (residue i)))
++def inputRow {L K : Nat} (p : Params L K) (i : Fin L) : Row (groups L K) := sub (add (var (residue i)) (var (inputSlack i))) (SignedMatrix.cst (p.sourceBase i-1 : Int))
++def gRow {L K : Nat} (p : Params L K) : Row (groups L K) := sub (add (scale 2 (linear p.thetaG)) (SignedMatrix.cst p.dG))
++  (add (scale (2*p.dG) (var (extra 0))) (var (extra 1)))
++def gBound {L K : Nat} (p : Params L K) : Row (groups L K) := sub (add (var (extra 1)) (var (extra 2))) (SignedMatrix.cst (2*p.dG-1 : Int))
++def fRow {L K : Nat} (p : Params L K) : Row (groups L K) := sub (add (scale 2 (linear p.thetaF)) (SignedMatrix.cst p.dF))
++  (add (scale (2*p.dF) (sub (var (extra 3)) (SignedMatrix.cst p.wOffset))) (var (extra 4)))
++def fBound {L K : Nat} (p : Params L K) : Row (groups L K) := sub (add (var (extra 4)) (var (extra 5))) (SignedMatrix.cst (2*p.dF-1 : Int))
++def yRow {L K : Nat} (p : Params L K) : Row (groups L K) := sub
++  (add (sub (linear p.omega) (scale p.gamma (var (extra 0)))) (sub (var (extra 3)) (SignedMatrix.cst p.wOffset)))
++  (add (scale p.Q (sub (var (extra 8)) (SignedMatrix.cst p.uOffset))) (var (extra 6)))
++def yBound {L K : Nat} (p : Params L K) : Row (groups L K) := sub (add (var (extra 6)) (var (extra 7))) (SignedMatrix.cst (p.Q-1 : Int))
++def targetRow {L K : Nat} (p : Params L K) (i : Fin K) : Row (groups L K) := sub (var (extra 6))
++  (add (scale (p.targetBase i) (var (target i 1))) (var (target i 0)))
++def targetBound {L K : Nat} (p : Params L K) (i : Fin K) : Row (groups L K) := sub
++  (add (var (target i 0)) (var (target i 2))) (SignedMatrix.cst (p.targetBase i-1 : Int))
++def forms {L K : Nat} (p : Params L K) : List (Row (groups L K)) :=
++  (List.finRange L).map (inputRow p) ++ [gRow p,gBound p,fRow p,fBound p,yRow p,yBound p] ++
++  (List.finRange K).flatMap (fun i => [targetRow p i,targetBound p i])
++def Balanced {L K : Nat} (p : Params L K) (x : Fin (groups L K) → Nat) : Prop := ∀ row ∈ forms p,SignedMatrix.eval row x=0
++
++def readCertificate {L K : Nat} (p : Params L K) (x : Fin (groups L K) → Nat) : Certificate K where
++  v := x (extra 0)
++  w := (x (extra 3) : Int)-p.wOffset
++  gRem := x (extra 1)
++  fRem := x (extra 4)
++  y := x (extra 6)
++  u := (x (extra 8) : Int)-p.uOffset
++  targetQuot := fun i => x (target i 1)
++
++def MatrixSound : Prop := ∀ {L K} (p : Params L K),Valid p → ∀ x,Balanced p x →
++  ∀ i,(x (target i 0) : Int)=output p (fun j => x (residue j))%(p.targetBase i : Int)
++
++theorem balanced_accepts {L K : Nat} (p : Params L K) (_hp : Valid p) (x : Fin (groups L K) → Nat)
++    (h : Balanced p x) : Accepts p (fun j => x (residue j)) (fun i => x (target i 0)) (readCertificate p x) := by
++  have hinput (i : Fin L) := h (inputRow p i) (by simp [forms])
++  have hg := h (gRow p) (by simp [forms])
++  have hgb := h (gBound p) (by simp [forms])
++  have hf := h (fRow p) (by simp [forms])
++  have hfb := h (fBound p) (by simp [forms])
++  have hy := h (yRow p) (by simp [forms])
++  have hyb := h (yBound p) (by simp [forms])
++  have ht (i : Fin K) := h (targetRow p i) (by apply List.mem_append.mpr; right; exact List.mem_flatMap.mpr ⟨i,by simp,by simp⟩)
++  have htb (i : Fin K) := h (targetBound p i) (by apply List.mem_append.mpr; right; exact List.mem_flatMap.mpr ⟨i,by simp,by simp⟩)
++  simp only [inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,linear,
++    eval_sub,eval_add,eval_scale,eval_sum,eval_var,SignedMatrix.eval_cst] at hinput hg hgb hf hfb hy hyb ht htb
++  have comm (a : Fin L → Int) : (∑ i,a i*(x (residue i) : Int))=∑ i,(x (residue i) : Int)*a i := by
++    apply Finset.sum_congr rfl; intro i _; ring
++  simp only [comm] at hg hf hy
++  refine ⟨?_,by dsimp [readCertificate]; positivity,?_,by dsimp [readCertificate]; positivity,?_,
++    by dsimp [readCertificate]; positivity,?_,?_,?_,?_,?_⟩
++  · intro i; have := hinput i; dsimp only; constructor <;> omega
++  · dsimp [readCertificate]; omega
++  · dsimp [readCertificate]; omega
++  · dsimp [readCertificate]; omega
++  · dsimp [readCertificate]; linarith
++  · dsimp [readCertificate]; linarith
++  · dsimp [readCertificate]; linarith
++  · intro i; have h1 := ht i; have h2 := htb i
++    dsimp [readCertificate]
++    exact ⟨by positivity,by omega,by linarith⟩
++
++theorem matrixSound : MatrixSound := by
++  intro L K p hp x hx
++  exact certificateSound p hp _ _ _ (balanced_accepts p hp x hx)
++
++end Minidregg.Compiler.DirectedRnsScaler
++
++/-- info: 'Minidregg.Compiler.DirectedRnsScaler.certificateSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.DirectedRnsScaler.certificateSound
++
++/-- info: 'Minidregg.Compiler.DirectedRnsScaler.honest_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.DirectedRnsScaler.honest_accepts
++
++/-- info: 'Minidregg.Compiler.DirectedRnsScaler.balanced_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.DirectedRnsScaler.balanced_accepts
++
++/-- info: 'Minidregg.Compiler.DirectedRnsScaler.matrixSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.DirectedRnsScaler.matrixSound
+--- /dev/null
++++ b/Compiler/DirectedRnsWitness.lean
+@@ -0,0 +1,77 @@
++import Compiler.DirectedRnsScaler
++import Compiler.AirSimplify
++import Compiler.PredCompile
++
++namespace Minidregg.Compiler.DirectedRnsWitness
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.DirectedRnsScaler
++open Minidregg.Compiler.SignedMatrix
++set_option autoImplicit false
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def digit (base value index : Nat) := value/base^index%base
++
++def values {L K : Nat} (p : Params L K) (r : Fin L → Int) (g : Fin (groups L K)) : Nat :=
++  let c := honest p r
++  if hr : g.val<L then (r ⟨g.val,hr⟩).toNat
++  else if hs : g.val<2*L then p.sourceBase ⟨g.val-L,by omega⟩-1-(r ⟨g.val-L,by omega⟩).toNat
++  else if hx : g.val<2*L+9 then
++    (![c.v,c.gRem,2*p.dG-1-c.gRem,c.w+p.wOffset,c.fRem,2*p.dF-1-c.fRem,c.y,p.Q-1-c.y,c.u+p.uOffset]
++      ⟨g.val-2*L,by omega⟩).toNat
++  else
++    let i : Fin K := ⟨(g.val-(2*L+9))/3,by have := g.isLt; dsimp [groups] at this; omega⟩
++    let o := c.y%(p.targetBase i)
++    (![o,c.targetQuot i,p.targetBase i-1-o] ⟨(g.val-(2*L+9))%3,by omega⟩).toNat
++
++def install (a : Array BabyBear) (offset bits : Nat) (values : Array Nat) : Array BabyBear := Id.run do
++  let mut a := a
++  for i in [:values.size] do
++    a := a.set! (offset+i) (values[i]! : BabyBear)
++    for j in [:bits] do a := a.set! (offset+values.size+bits*i+j) (digit 2 values[i]! j : BabyBear)
++  return a
++
++structure SideCache where
++  constant : Nat
++  coefficients : Array Nat
++  constantDigits : Array Nat
++  columnCoefficients : Array (Array (Nat × Nat))
++  deriving Inhabited
++
++def sideCache (p : Layout) (c : Nat) (matrix : Fin p.groups → Nat) : SideCache := Id.run do
++  let cs := Array.ofFn (digitCoefficient p matrix)
++  let columns := (List.range p.width).toArray.map fun column => Id.run do
++    let mut sparse := #[]
++    for i in [:cs.size] do
++      let d := digit p.base cs[i]! column
++      if d != 0 then sparse := sparse.push (i,d)
++    return sparse
++  return ⟨c,cs,(List.range p.width).toArray.map (digit p.base c),columns⟩
++
++def caches (p : Layout) (rows : Fin p.rows → Row p.groups) : Array (SideCache × SideCache) :=
++  Array.ofFn fun i => (sideCache p (leftConstant (rows i)) (leftCoefficient (rows i)),
++    sideCache p (rightConstant (rows i)) (rightCoefficient (rows i)))
++
++def carries (base : Nat) (c : SideCache) (ds : Array Nat) : Array Nat := Id.run do
++  let mut carry := 0
++  let mut out := #[0]
++  for col in [:c.columnCoefficients.size] do
++    let mut mass := c.constantDigits[col]!+carry
++    for (i,d) in c.columnCoefficients[col]! do mass := mass+d*ds[i]!
++    carry := mass/base
++    out := out.push carry
++  return out
++
++def matrixWitness (p : Layout) (cache : Array (SideCache × SideCache)) (x : Fin p.groups → Nat) : Array BabyBear := Id.run do
++  let ds := Array.ofFn fun i : Fin p.scalars => digit p.base (x (groupDigit p|>.symm i).1) (groupDigit p|>.symm i).2.val
++  let mut a := install (Array.replicate p.nVars 0) 0 p.limbBits ds
++  for row in List.finRange p.rows do
++    let (l,r) := cache[row.val]!
++    let mut total := l.constant
++    for i in [:ds.size] do total := total+l.coefficients[i]!*ds[i]!
++    a := install a (resultStart p row) p.limbBits ((List.range p.width).toArray.map (digit p.base total))
++    a := install a (resultStart p row+p.width*(1+p.limbBits)) p.carryBits (carries p.base l ds)
++    a := install a (resultStart p row+p.width*(1+p.limbBits)+(p.width+1)*(1+p.carryBits)) p.carryBits (carries p.base r ds)
++  return a
++
++end Minidregg.Compiler.DirectedRnsWitness
+--- /dev/null
++++ b/Compiler/NonlinearRnsInstance.lean
+@@ -0,0 +1,41 @@
++/- Public native-constructor constants; generated by generate_instance.py.
++Only constants are imported. Generic signed source forms and compiler own all equations. -/
++import Compiler.DirectedRnsScaler
++namespace Minidregg.Compiler.NonlinearRnsInstance
++open Minidregg.Compiler.DirectedRnsScaler Minidregg.Compiler.SignedMatrix
++open Minidregg.Compiler.NativeKernelPlan
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 3000000
++def params : Params 9 4 where
++  sourceBase := ![1125899906826241,1125899906629633,1125899905744897,1125899905351681,4611686018427322369,4611686018427289601,4611686018426454017,4611686018426257409,4611686018425815041]
++  targetBase := ![1125899906826241,1125899906629633,1125899905744897,1125899905351681]
++  Q := 1606938040236943481429907225474247728170690725378808731729921
++  thetaG := ![6462660684668064957491172676462008040,38043273707654392047674560446914897400,3371079614592695393887029560861557126,26723388101617515340109680663106361594,23127040988547996053670349574621768549,6207497106735539164356863494087357064,31448172221565815653924205611241172935,1535584099207584990581808172289593284,33222486935879628129991633516299389736]
++  thetaF := ![-74198075517491376056437273197514845297,1915409588506924334265571633162685394,-61175016224068878113641925552676996373,-36683501307415901895873676598854949450,0,0,0,0,0]
++  omega := ![1535097889230980652050155379269610615631018586457153232186336,190912212895560237323709081460011468417886698937689408761221,618786041258804908447457396686492883899388767448874179277885,464430110441043401102762325210005366396131447824338599181938,1583879869042979040058862001724753309599103428087730154722882,1400070462753430720352396059884863926591487685693929134614351,168846812639502040874424905035226945680858012035860369649544,1438767033088100244728664879689866584553574833781248937459679,295572421022148107387365359962275765841347054642257937431270]
++  gamma := 1522356203033901467723972540862214784610026447382568305388796
++  dG := 2^125
++  dF := 2^127
++  wOffset := 2^70
++  uOffset := 2^70
++
++def profile : Layout := ⟨39,23,23,9,45,20⟩
++def rows (i : Fin profile.rows) : Row profile.groups := (forms params).get ⟨i.val,by change i.val<23; exact i.isLt⟩
++
++theorem paramsValid : Valid params := by
++  constructor
++  · decide
++  · decide
++  · decide
++  · intro i; fin_cases i <;> decide
++  · intro i; fin_cases i <;> decide
++  · intro i; fin_cases i <;> decide
++
++def source := SignedMatrix.system profile rows
++
++end Minidregg.Compiler.NonlinearRnsInstance
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.paramsValid' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.paramsValid
+--- /dev/null
++++ b/Compiler/NonlinearRnsNative.lean
+@@ -0,0 +1,104 @@
++import Compiler.NonlinearRnsInstance
++import Mathlib.Algebra.BigOperators.ModEq
++
++namespace Minidregg.Compiler.NonlinearRnsInstance
++open Minidregg.Compiler.DirectedRnsScaler
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 10000
++set_option maxHeartbeats 1000000
++
++/-- The actual nine-source constructor selects shift125. -/
++theorem wordV125_correct (T : Int) (h0 : 0 ≤ T) (h1 : T < 2^191) :
++    FheRnsScale.wordV T 125=DirectedRnsScaler.roundDiv T (2^125) := by
++  norm_num [FheRnsScale.wordV,DirectedRnsScaler.roundDiv] at *
++  omega
++
++theorem fixed_ranges :
++    (∀ i,0 ≤ params.thetaG i ∧ params.thetaG i ≤ (2^125 : Int)) ∧
++    (∀ i,|params.thetaF i| ≤ (2^126 : Int)) ∧
++    (∑ i,(params.sourceBase i : Int)) < (2^65 : Int) := by
++  refine ⟨?_,?_,?_⟩
++  · intro i; fin_cases i <;> decide
++  · intro i; fin_cases i <;> decide
++  · decide
++
++theorem accumulator_ranges (r : Fin 9 → Int) (hr : ∀ i,0 ≤ r i ∧ r i < params.sourceBase i) :
++    (0 ≤ (∑ i,r i*params.thetaG i) ∧ (∑ i,r i*params.thetaG i) < (2^191 : Int)) ∧
++    |∑ i,r i*params.thetaF i| < (2^191 : Int) := by
++  have mass : (∑ i,r i)<(2^65 : Int) := lt_of_le_of_lt (Finset.sum_le_sum fun i _ => (hr i).2.le) fixed_ranges.2.2
++  have hn : 0 ≤ ∑ i,r i*params.thetaG i := Finset.sum_nonneg fun i _ => mul_nonneg (hr i).1 (fixed_ranges.1 i).1
++  have hg := FheRnsScale.weighted_accumulator_bound r params.thetaG (2^65) (2^125)
++    (fun i => (hr i).1) (fun i => by rw [abs_of_nonneg (fixed_ranges.1 i).1]; exact (fixed_ranges.1 i).2) mass (by positivity)
++  have hf := FheRnsScale.weighted_accumulator_bound r params.thetaF (2^65) (2^126)
++    (fun i => (hr i).1) fixed_ranges.2.1 mass (by positivity)
++  rw [abs_of_nonneg hn] at hg
++  constructor
++  · exact ⟨hn,lt_trans hg (by norm_num)⟩
++  · convert hf using 1
++
++def wordOutput (r : Fin 9 → Int) := (∑ i,r i*params.omega i)-params.gamma*FheRnsScale.wordV (∑ i,r i*params.thetaG i) 125+
++  FheRnsScale.wordCorrection (∑ i,r i*params.thetaF i)
++
++def NativeWordRefinement : Prop := ∀ r : Fin 9 → Int,(∀ i,0 ≤ r i ∧ r i < params.sourceBase i) → wordOutput r=output params r
++
++theorem nativeWordRefinement : NativeWordRefinement := by
++  intro r hr
++  have hg := (accumulator_ranges r hr).1
++  have hf := abs_lt.mp (accumulator_ranges r hr).2
++  rw [wordOutput,wordV125_correct _ hg.1 hg.2,FheRnsScale.wordCorrection_correct _ hf.1 hf.2]
++  rfl
++
++-- Exact target projections captured from the native constructor's public Debug fields.
++def nativeGamma : Fin 4 → Int := ![189256259174533,269185146936170,309110484995418,1099828484501922]
++def nativeOmega : Fin 4 → Fin 9 → Int := ![![919266481151328,614432041883277,220805836114720,1061633369902838,516694701508972,174554922464147,671366408792485,665877208589722,415993693595608],![731239734295067,978931059018830,637801756007939,851448501272091,914153916222315,216634305729285,721480138310162,866146896791901,788403813245256],![656173524129678,1017057792752850,796474426644298,1066395811428167,583750121662032,242120638803145,107688184756408,35840751676568,108640405363218],![379754679710728,172030311190824,80525252502281,547526791021708,833730950704209,90219970297635,563844343593948,650832680694208,1080848958292148]]
++
++def ProjectionAgreement : Prop := ∀ i,
++  Int.ModEq (params.targetBase i) params.gamma (nativeGamma i) ∧
++  ∀ j,Int.ModEq (params.targetBase i) (params.omega j) (nativeOmega i j)
++
++theorem projectionAgreement : ProjectionAgreement := by
++  intro i
++  constructor
++  · fin_cases i <;> decide
++  · intro j; fin_cases i <;> fin_cases j <;> decide
++
++def nativeProjectedOutput (r : Fin 9 → Int) (i : Fin 4) : Int :=
++  ((∑ j,r j*nativeOmega i j)-nativeGamma i*FheRnsScale.wordV (∑ j,r j*params.thetaG j) 125+
++    FheRnsScale.wordCorrection (∑ j,r j*params.thetaF j))%(params.targetBase i : Int)
++
++theorem canonical_lift_preserves_native (r : Fin 9 → Int) (i : Fin 4) :
++    wordOutput r%(params.targetBase i : Int)=nativeProjectedOutput r i := by
++  have hs := Int.ModEq.sum (s:=Finset.univ) (fun j _ => (projectionAgreement i).2 j |>.mul_left (r j))
++  have hg := (projectionAgreement i).1.mul_right (FheRnsScale.wordV (∑ j,r j*params.thetaG j) 125)
++  exact ((hs.sub hg).add_right (FheRnsScale.wordCorrection (∑ j,r j*params.thetaF j))).eq
++
++end Minidregg.Compiler.NonlinearRnsInstance
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.wordV125_correct' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.wordV125_correct
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.fixed_ranges' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.fixed_ranges
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.accumulator_ranges' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.accumulator_ranges
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.nativeWordRefinement' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.nativeWordRefinement
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.projectionAgreement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.projectionAgreement
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.canonical_lift_preserves_native' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.canonical_lift_preserves_native
+--- /dev/null
++++ b/Compiler/NonlinearRnsPublic.lean
+@@ -0,0 +1,49 @@
++import Compiler.DirectedRnsWitness
++import Compiler.NonlinearRnsInstance
++
++namespace Minidregg.Compiler.NonlinearRnsPublic
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.DirectedRnsScaler Minidregg.Compiler.DirectedRnsWitness
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.NonlinearRnsInstance
++set_option autoImplicit false
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def nVars := 89+profile.nVars
++
++def wireMap (j : Nat) : Nat :=
++  if j < profile.scalars then
++    let g := j/23
++    let d := j%23
++    if g<9 then if d<7 then 1+7*g+d else 88
++    else if 27 ≤ g ∧ g<39 ∧ (g-27)%3=0 then
++      if d<6 then 64+6*((g-27)/3)+d else 88
++    else 89+j
++  else 89+j
++
++def system : ConstraintSystem BabyBear Nat := [vr 88] ++ renameS wireMap source
++
++def readResidues (row : Array Nat) (i : Fin 9) : Int :=
++  ((List.range 7).foldr (fun d acc => row[1+7*i.val+d]!+512*acc) 0 : Nat)
++
++def variableArray (cache : Array (SideCache × SideCache)) (row : Array Nat) : Except String (Array BabyBear) := do
++  unless row.size == 88 do throw "wrong public arity"
++  unless row[0]! < babyBearP do throw "row ID outside field"
++  for i in [1:88] do unless row[i]!<512 do throw "noncanonical radix512 digit"
++  let r := readResidues row
++  let x := values params r
++  for i in List.finRange 9 do
++    unless r i < params.sourceBase i do throw "noncanonical source residue"
++  for g in List.finRange 39 do
++    unless x g < profile.base^profile.digits do throw "scalar capacity exceeded"
++  let inner := matrixWitness profile cache x
++  let mut a := Array.replicate nVars (0 : BabyBear)
++  for i in [:88] do a := a.set! i (row[i]! : BabyBear)
++  for j in [:inner.size] do
++    let k := wireMap j
++    if k<89 then
++      unless a[k]! == inner[j]! do throw s!"public/shared alias mismatch {k}"
++    else a := a.set! k inner[j]!
++  return a
++
++end Minidregg.Compiler.NonlinearRnsPublic
+--- /dev/null
++++ b/Compiler/NonlinearRnsPublicSound.lean
+@@ -0,0 +1,128 @@
++import Compiler.NonlinearRnsPublic
++import Compiler.NonlinearRnsSound
++import Compiler.NonlinearRnsNative
++
++namespace Minidregg.Compiler.NonlinearRnsPublic
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.DirectedRnsScaler Minidregg.Compiler.SignedMatrix
++open Minidregg.Compiler.NonlinearRnsInstance Minidregg.Compiler.AirSimplify
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 200000
++
++def publicResidues (asg : Nat → BabyBear) (i : Fin 9) : Int := (∑ d : Fin 7,512^d.val*(asg (1+7*i.val+d.val)).val : Nat)
++def publicOutput (asg : Nat → BabyBear) (i : Fin 4) : Nat := ∑ d : Fin 6,512^d.val*(asg (64+6*i.val+d.val)).val
++
++def PublicRowSound : Prop := ∀ asg,systemAccepts asg system → ∀ i,
++  (publicOutput asg i : Int)=wordOutput (publicResidues asg)%(params.targetBase i : Int)
++
++theorem input_wire (i : Fin 9) (d : Fin 23) :
++    wireMap (scalarWire profile (groupDigit profile (residue (K:=4) i,d)))=
++      if d.val<7 then 1+7*i.val+d.val else 88 := by
++  change wireMap (d.val+23*i.val)=_
++  have hi := i.isLt
++  have hd := d.isLt
++  have hdiv : (d.val+23*i.val)/23=i.val := by omega
++  have hmod : (d.val+23*i.val)%23=d.val := by omega
++  simp only [wireMap,profile,Layout.scalars,hdiv,hmod,show d.val+23*i.val<39*23 by omega,if_true,hi]
++
++theorem output_wire (i : Fin 4) (d : Fin 23) :
++    wireMap (scalarWire profile (groupDigit profile (target (L:=9) i 0,d)))=
++      if d.val<6 then 64+6*i.val+d.val else 88 := by
++  change wireMap (d.val+23*(27+3*i.val+0))=_
++  rw [Nat.add_zero]
++  have hi := i.isLt
++  have hd := d.isLt
++  have hdiv : (d.val+23*(27+3*i.val))/23=27+3*i.val := by omega
++  have hmod : (d.val+23*(27+3*i.val))%23=d.val := by omega
++  simp only [wireMap,profile,Layout.scalars,hdiv,hmod,
++    show d.val+23*(27+3*i.val)<39*23 by omega,if_true,
++    show ¬27+3*i.val<9 by omega,if_false,show 27≤27+3*i.val by omega,
++    show 27+3*i.val<39 by omega,show (27+3*i.val-27)%3=0 by omega,
++    and_self,show (27+3*i.val-27)/3=i.val by omega]
++
++theorem input_public (asg : Nat → BabyBear) (hz : asg 88=0) :
++    (fun i : Fin 9 => (decoded profile (asg ∘ wireMap) (residue (K:=4) i) : Int))=publicResidues asg := by
++  funext i
++  unfold decoded publicResidues
++  simp_rw [Function.comp_apply,input_wire]
++  simp only [profile,Layout.base]
++  apply congrArg (fun n : Nat => (n : Int))
++  change (∑ d : Fin (7+16),512^d.val*(asg (if d.val<7 then 1+7*i.val+d.val else 88)).val)=_
++  rw [Fin.sum_univ_add]
++  have hh : ∀ d : Fin 16,¬(d.natAdd 7).val<7 := by intro d; simp
++  simp only [hh,if_false,hz,ZMod.val_zero,mul_zero,Finset.sum_const_zero,add_zero,Fin.val_castAdd]
++  apply Finset.sum_congr rfl
++  intro d _
++  simp only [d.isLt,if_true]
++
++theorem output_public (asg : Nat → BabyBear) (hz : asg 88=0) :
++    (fun i : Fin 4 => decoded profile (asg ∘ wireMap) (target (L:=9) i 0))=publicOutput asg := by
++  funext i
++  unfold decoded publicOutput
++  simp_rw [Function.comp_apply,output_wire]
++  simp only [profile,Layout.base]
++  change (∑ d : Fin (6+17),512^d.val*(asg (if d.val<6 then 64+6*i.val+d.val else 88)).val)=_
++  rw [Fin.sum_univ_add]
++  have hh : ∀ d : Fin 17,¬(d.natAdd 6).val<6 := by intro d; simp
++  simp only [hh,if_false,hz,ZMod.val_zero,mul_zero,Finset.sum_const_zero,add_zero,Fin.val_castAdd]
++  apply Finset.sum_congr rfl
++  intro d _
++  simp only [d.isLt,if_true]
++
++theorem publicRowSound : PublicRowSound := by
++  intro asg hs i
++  obtain ⟨hz,hs⟩ := (systemAccepts_append asg _ _).mp hs
++  have hz' : asg 88=0 := by simpa [systemAccepts_cons,systemAccepts_nil,accepts,eval_vr] using hz
++  have ha := (systemAccepts_renameS asg wireMap source).mp hs
++  have hb := source_balanced (asg ∘ wireMap) ha
++  have hc := balanced_accepts params paramsValid _ hb
++  have hw := nativeWordRefinement _ hc.1
++  have hout := NonlinearRnsInstance.sourceSound (asg ∘ wireMap) ha i
++  rw [← hw] at hout
++  rw [input_public asg hz',congrFun (output_public asg hz') i] at hout
++  exact hout
++
++theorem nativeProjectedRow_sound (asg : Nat → BabyBear) (h : systemAccepts asg system) :
++    ∀ i,(publicOutput asg i : Int)=nativeProjectedOutput (publicResidues asg) i := by
++  intro i
++  rw [publicRowSound asg h i,canonical_lift_preserves_native]
++
++theorem simplifiedSource_sound (asg : Nat → BabyBear) (h : systemAccepts asg (simplifySystem system)) :
++    ∀ i,(publicOutput asg i : Int)=wordOutput (publicResidues asg)%(params.targetBase i : Int) :=
++  publicRowSound asg ((simplifySystem_accepts_iff asg system).mp h)
++
++end Minidregg.Compiler.NonlinearRnsPublic
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsPublic.input_wire' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsPublic.input_wire
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsPublic.output_wire' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsPublic.output_wire
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsPublic.input_public' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsPublic.input_public
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsPublic.output_public' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsPublic.output_public
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsPublic.publicRowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsPublic.publicRowSound
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsPublic.nativeProjectedRow_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsPublic.nativeProjectedRow_sound
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsPublic.simplifiedSource_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsPublic.simplifiedSource_sound
+--- /dev/null
++++ b/Compiler/NonlinearRnsSound.lean
+@@ -0,0 +1,77 @@
++import Compiler.NonlinearRnsInstance
++namespace Minidregg.Compiler.NonlinearRnsInstance
++open Minidregg.Compiler.DirectedRnsScaler Minidregg.Compiler.SignedMatrix
++open Minidregg.Compiler.NativeKernelPlan
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option exponentiation.threshold 1000
++set_option maxHeartbeats 3000000
++/-- Small finite constant fact. No trace or accepted assignment is normalized. -/
++theorem parameter_capacities : ∀ row ∈ forms params,
++    leftConstant row < 2^300 ∧ rightConstant row < 2^300 ∧
++    ∀ g,leftCoefficient row g < 2^201 ∧ rightCoefficient row g < 2^201 := by
++  intro row hr
++  rcases List.mem_append.mp hr with hr|hr
++  · rcases List.mem_append.mp hr with hr|hr
++    · obtain ⟨i,_,rfl⟩ := List.mem_map.mp hr
++      fin_cases i <;> norm_num [inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,params,leftConstant,rightConstant,leftCoefficient,rightCoefficient,linear,SignedMatrix.sum,SignedMatrix.sub,SignedMatrix.add,SignedMatrix.scale,SignedMatrix.var,SignedMatrix.cst,Fin.sum_univ_succ,Minidregg.Theory.CompressedLinearEquation.posPart,Minidregg.Theory.CompressedLinearEquation.negPart,residue,inputSlack,extra,target,Fin.ext_iff]
++      all_goals intro g; fin_cases g <;> norm_num [inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,params,leftConstant,rightConstant,leftCoefficient,rightCoefficient,linear,SignedMatrix.sum,SignedMatrix.sub,SignedMatrix.add,SignedMatrix.scale,SignedMatrix.var,SignedMatrix.cst,Fin.sum_univ_succ,Minidregg.Theory.CompressedLinearEquation.posPart,Minidregg.Theory.CompressedLinearEquation.negPart,residue,inputSlack,extra,target,Fin.ext_iff]
++    · simp only [List.mem_cons,List.not_mem_nil,or_false] at hr
++      rcases hr with rfl|rfl|rfl|rfl|rfl|rfl
++      all_goals norm_num [inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,params,leftConstant,rightConstant,leftCoefficient,rightCoefficient,linear,SignedMatrix.sum,SignedMatrix.sub,SignedMatrix.add,SignedMatrix.scale,SignedMatrix.var,SignedMatrix.cst,Fin.sum_univ_succ,Minidregg.Theory.CompressedLinearEquation.posPart,Minidregg.Theory.CompressedLinearEquation.negPart,residue,inputSlack,extra,target,Fin.ext_iff]
++      all_goals intro g; fin_cases g <;> norm_num [inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,params,leftConstant,rightConstant,leftCoefficient,rightCoefficient,linear,SignedMatrix.sum,SignedMatrix.sub,SignedMatrix.add,SignedMatrix.scale,SignedMatrix.var,SignedMatrix.cst,Fin.sum_univ_succ,Minidregg.Theory.CompressedLinearEquation.posPart,Minidregg.Theory.CompressedLinearEquation.negPart,residue,inputSlack,extra,target,Fin.ext_iff]
++  · obtain ⟨i,_,hr⟩ := List.mem_flatMap.mp hr
++    simp only [List.mem_cons,List.not_mem_nil,or_false] at hr
++    rcases hr with rfl|rfl <;> fin_cases i <;> norm_num [inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,params,leftConstant,rightConstant,leftCoefficient,rightCoefficient,linear,SignedMatrix.sum,SignedMatrix.sub,SignedMatrix.add,SignedMatrix.scale,SignedMatrix.var,SignedMatrix.cst,Fin.sum_univ_succ,Minidregg.Theory.CompressedLinearEquation.posPart,Minidregg.Theory.CompressedLinearEquation.negPart,residue,inputSlack,extra,target,Fin.ext_iff]
++    all_goals intro g; fin_cases g <;> norm_num [inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,params,leftConstant,rightConstant,leftCoefficient,rightCoefficient,linear,SignedMatrix.sum,SignedMatrix.sub,SignedMatrix.add,SignedMatrix.scale,SignedMatrix.var,SignedMatrix.cst,Fin.sum_univ_succ,Minidregg.Theory.CompressedLinearEquation.posPart,Minidregg.Theory.CompressedLinearEquation.negPart,residue,inputSlack,extra,target,Fin.ext_iff]
++
++theorem capacity : Capacity profile rows := by
++  constructor
++  · decide
++  · decide
++  · decide
++  · decide
++  · intro i
++    have h := parameter_capacities (rows i) (List.get_mem _ _)
++    exact ⟨lt_trans h.1 (by decide),lt_trans h.2.1 (by decide)⟩
++  · intro i j
++    have h := (parameter_capacities (rows i) (List.get_mem _ _)).2.2 (groupDigit profile|>.symm j).1
++    have hp : profile.base^(groupDigit profile|>.symm j).2.val ≤ 512^22 :=
++      Nat.pow_le_pow_right (by decide) (by have := (groupDigit profile|>.symm j).2.isLt; change _<23 at this; omega)
++    exact ⟨lt_of_le_of_lt (Nat.mul_le_mul h.1.le hp) (by decide),
++      lt_of_le_of_lt (Nat.mul_le_mul h.2.le hp) (by decide)⟩
++
++
++def InstanceSound : Prop := ∀ asg,systemAccepts asg source → ∀ i,
++  (decoded profile asg (target (L:=9) (K:=4) i 0) : Int)=output params (fun j => decoded profile asg (residue (L:=9) (K:=4) j))%(params.targetBase i : Int)
++
++theorem source_balanced (asg : Nat → BabyBear) (hs : systemAccepts asg source) :
++    Balanced params (decoded profile asg) := by
++  intro row hm
++  obtain ⟨i,hi⟩ := List.mem_iff_get.mp hm
++  have h := SignedMatrix.sourceSound profile rows capacity asg hs ⟨i.val,by change i.val<23 at *; exact i.isLt⟩
++  simpa only [rows,hi] using h
++
++theorem sourceSound : InstanceSound := by
++  intro asg hs
++  exact matrixSound params paramsValid _ (source_balanced asg hs)
++
++end Minidregg.Compiler.NonlinearRnsInstance
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.parameter_capacities' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.parameter_capacities
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.capacity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.capacity
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.source_balanced' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.source_balanced
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsInstance.sourceSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsInstance.sourceSound
+--- /dev/null
++++ b/Compiler/SignedMatrix.lean
+@@ -0,0 +1,96 @@
++/- Reusable signed affine source rows. Positive/negative coefficient splitting
++feeds the existing natural weighted-column compiler; values remain canonical Nats. -/
++import Compiler.IntegerCertificateEmission
++
++namespace Minidregg.Compiler.SignedMatrix
++open Minidregg.Compiler
++open Minidregg.Theory.CompressedLinearEquation
++open scoped BigOperators
++set_option autoImplicit false
++
++structure Row (n : Nat) where
++  constant : Int
++  coefficient : Fin n → Int
++
++def eval {n : Nat} (r : Row n) (x : Fin n → Nat) : Int :=
++  r.constant+∑ i,r.coefficient i*(x i : Int)
++def cst {n : Nat} (c : Int) : Row n := ⟨c,fun _ => 0⟩
++def var {n : Nat} (j : Fin n) : Row n := ⟨0,fun i => if i=j then 1 else 0⟩
++def add {n : Nat} (a b : Row n) : Row n := ⟨a.constant+b.constant,fun i => a.coefficient i+b.coefficient i⟩
++def scale {n : Nat} (c : Int) (a : Row n) : Row n := ⟨c*a.constant,fun i => c*a.coefficient i⟩
++def sub {n : Nat} (a b : Row n) : Row n := add a (scale (-1) b)
++def sum {n k : Nat} (f : Fin k → Row n) : Row n := ⟨∑ i,(f i).constant,fun j => ∑ i,(f i).coefficient j⟩
++
++@[simp] theorem eval_cst {n : Nat} (c : Int) (x : Fin n → Nat) : eval (cst c) x = c := by simp [eval,cst]
++@[simp] theorem eval_var {n : Nat} (j : Fin n) (x : Fin n → Nat) : eval (var j) x = x j := by simp [eval,var]
++@[simp] theorem eval_add {n : Nat} (a b : Row n) (x : Fin n → Nat) : eval (add a b) x = eval a x+eval b x := by
++  simp only [eval,add,add_mul,Finset.sum_add_distrib]; ring
++@[simp] theorem eval_scale {n : Nat} (c : Int) (a : Row n) (x : Fin n → Nat) : eval (scale c a) x = c*eval a x := by
++  simp [eval,scale,Finset.mul_sum,mul_add,mul_assoc]
++@[simp] theorem eval_sub {n : Nat} (a b : Row n) (x : Fin n → Nat) : eval (sub a b) x = eval a x-eval b x := by
++  simp [sub]; ring
++@[simp] theorem eval_sum {n k : Nat} (f : Fin k → Row n) (x : Fin n → Nat) : eval (sum f) x = ∑ i,eval (f i) x := by
++  simp only [eval,sum,Finset.sum_add_distrib,Finset.sum_mul]
++  rw [Finset.sum_comm]
++
++def leftConstant {n : Nat} (r : Row n) : Nat := Minidregg.Theory.CompressedLinearEquation.posPart r.constant
++def rightConstant {n : Nat} (r : Row n) : Nat := Minidregg.Theory.CompressedLinearEquation.negPart r.constant
++def leftCoefficient {n : Nat} (r : Row n) (i : Fin n) : Nat := Minidregg.Theory.CompressedLinearEquation.posPart (r.coefficient i)
++def rightCoefficient {n : Nat} (r : Row n) (i : Fin n) : Nat := Minidregg.Theory.CompressedLinearEquation.negPart (r.coefficient i)
++def leftMass {n : Nat} (r : Row n) (x : Fin n → Nat) : Nat := leftConstant r+∑ i,leftCoefficient r i*x i
++def rightMass {n : Nat} (r : Row n) (x : Fin n → Nat) : Nat := rightConstant r+∑ i,rightCoefficient r i*x i
++
++def SplitSound : Prop := ∀ {n : Nat} (r : Row n) (x : Fin n → Nat),
++  leftMass r x = rightMass r x ↔ eval r x = 0
++
++theorem eval_split {n : Nat} (r : Row n) (x : Fin n → Nat) :
++    eval r x = (leftMass r x : Int)-(rightMass r x : Int) := by
++  have hc := eq_posPart_sub_negPart r.constant
++  have hs : (∑ i,r.coefficient i*(x i : Int)) =
++      ∑ i,((Minidregg.Theory.CompressedLinearEquation.posPart (r.coefficient i) : Int)-(Minidregg.Theory.CompressedLinearEquation.negPart (r.coefficient i) : Int))*(x i : Int) := by
++    apply Finset.sum_congr rfl
++    intro i _
++    rw [← eq_posPart_sub_negPart]
++  rw [eval,hs,hc]
++  simp only [sub_mul,Finset.sum_sub_distrib]
++  simp only [leftMass,rightMass,leftConstant,rightConstant,leftCoefficient,rightCoefficient,Nat.cast_add,Nat.cast_sum,Nat.cast_mul]
++  ring
++
++theorem splitSound : SplitSound := by
++  intro n r x
++  rw [eval_split]
++  exact_mod_cast (sub_eq_zero : ((leftMass r x : Int)-(rightMass r x : Int) = 0) ↔ _).symm
++
++end Minidregg.Compiler.SignedMatrix
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.eval_cst' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.eval_cst
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.eval_var' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.eval_var
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.eval_add' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.eval_add
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.eval_scale' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.eval_scale
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.eval_sub' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.eval_sub
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.eval_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.eval_sum
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.eval_split' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.eval_split
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.splitSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.splitSound
+--- /dev/null
++++ b/Compiler/SignedMatrixEmit.lean
+@@ -0,0 +1,94 @@
++import Compiler.SignedMatrix
++
++namespace Minidregg.Compiler.SignedMatrix
++open Minidregg.Compiler Minidregg.Compiler.BfvSignedAccumulatorAir
++open Minidregg.Compiler.IntegerCertificateEmission Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Theory
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 10000
++
++structure Layout where
++  groups : Nat
++  digits : Nat
++  rows : Nat
++  limbBits : Nat
++  width : Nat
++  carryBits : Nat
++
++def Layout.base (p : Layout) := 2^p.limbBits
++def Layout.scalars (p : Layout) := p.groups*p.digits
++def Layout.rowVars (p : Layout) := p.width*(1+p.limbBits)+2*(p.width+1)*(1+p.carryBits)
++def Layout.nVars (p : Layout) := p.scalars*(1+p.limbBits)+p.rows*p.rowVars
++def groupDigit (p : Layout) : Fin p.groups × Fin p.digits ≃ Fin p.scalars := finProdFinEquiv
++def scalarWire (p : Layout) (i : Fin p.scalars) : Nat := i.val
++def scalarBits (p : Layout) (i : Fin p.scalars) (j : Fin p.limbBits) : Nat := p.scalars+p.limbBits*i.val+j.val
++def resultStart (p : Layout) (row : Fin p.rows) := p.scalars*(1+p.limbBits)+row.val*p.rowVars
++
++def rowWires (p : Layout) (row : Fin p.rows) (right : Bool) : WeightedSumWires Nat p.width p.limbBits p.carryBits where
++  result := fun i => resultStart p row+i.val
++  resultBit := fun i j => resultStart p row+p.width+p.limbBits*i.val+j.val
++  carry := fun i => resultStart p row+p.width*(1+p.limbBits)+(if right then (p.width+1)*(1+p.carryBits) else 0)+i.val
++  carryBit := fun i j => resultStart p row+p.width*(1+p.limbBits)+(if right then (p.width+1)*(1+p.carryBits) else 0)+(p.width+1)+p.carryBits*i.val+j.val
++
++def digitCoefficient (p : Layout) (matrix : Fin p.groups → Nat) (i : Fin p.scalars) : Nat :=
++  matrix (groupDigit p|>.symm i).1*p.base^(groupDigit p|>.symm i).2.val
++
++def decoded (p : Layout) (v : Nat → BabyBear) (g : Fin p.groups) : Nat :=
++  ∑ d : Fin p.digits,p.base^d.val*(v (scalarWire p (groupDigit p (g,d)))).val
++
++def rowSystem (p : Layout) (rows : Fin p.rows → Row p.groups) (i : Fin p.rows) : ConstraintSystem BabyBear Nat :=
++  weightedSumGadget (leftConstant (rows i)) (digitCoefficient p (leftCoefficient (rows i))) (scalarWire p) (rowWires p i false) ++
++  weightedSumGadget (rightConstant (rows i)) (digitCoefficient p (rightCoefficient (rows i))) (scalarWire p) (rowWires p i true)
++
++def system (p : Layout) (rows : Fin p.rows → Row p.groups) : ConstraintSystem BabyBear Nat :=
++  AirBignum.limbRangeSystem (scalarWire p) (scalarBits p) ++ (List.finRange p.rows).flatMap (rowSystem p rows)
++
++structure Capacity (p : Layout) (rows : Fin p.rows → Row p.groups) : Prop where
++  baseField : p.base ≤ babyBearP
++  carryField : 2^p.carryBits ≤ babyBearP
++  leftBudget : p.base-1+p.scalars*(p.base-1)*(p.base-1)+(2^p.carryBits-1) < babyBearP
++  rightBudget : p.base-1+p.base*(2^p.carryBits-1) < babyBearP
++  constants : ∀ i,leftConstant (rows i) < p.base^p.width ∧ rightConstant (rows i) < p.base^p.width
++  coefficients : ∀ i j,digitCoefficient p (leftCoefficient (rows i)) j < p.base^p.width ∧
++    digitCoefficient p (rightCoefficient (rows i)) j < p.base^p.width
++
++def SourceSound : Prop := ∀ p rows,Capacity p rows → ∀ v,systemAccepts v (system p rows) →
++  ∀ i,eval (rows i) (decoded p v)=0
++
++theorem digit_linearization (p : Layout) (matrix : Fin p.groups → Nat) (v : Nat → BabyBear) :
++    (∑ i : Fin p.scalars,digitCoefficient p matrix i*(v (scalarWire p i)).val) =
++      ∑ g,matrix g*decoded p v g := by
++  rw [← (groupDigit p).sum_comp]
++  simp only [digitCoefficient,Equiv.symm_apply_apply]
++  rw [Fintype.sum_prod_type]
++  simp [decoded,Finset.mul_sum,mul_assoc]
++
++theorem sourceSound : SourceSound := by
++  intro p rows cap v hs i
++  obtain ⟨hr,hh⟩ := (systemAccepts_append v _ _).mp hs
++  have hrow : systemAccepts v (rowSystem p rows i) := by
++    intro t ht
++    exact hh t (List.mem_flatMap.mpr ⟨i,by simp,ht⟩)
++  obtain ⟨hl,hrr⟩ := (systemAccepts_append v _ _).mp hrow
++  have run (c : Nat) (matrix : Fin p.groups → Nat) (w : WeightedSumWires Nat p.width p.limbBits p.carryBits)
++      (hc : c < p.base^p.width) (hm : ∀ j,digitCoefficient p matrix j < p.base^p.width)
++      (ha : systemAccepts v (weightedSumGadget c (digitCoefficient p matrix) (scalarWire p) w)) :
++      Bignum.denoteNat p.base (AirBignum.limbVals v w.result) = c+∑ g,matrix g*decoded p v g := by
++    have h := ranged_weighted_sound cap.baseField cap.carryField cap.baseField hc
++      (digitCoefficient p matrix) hm cap.leftBudget cap.rightBudget v (scalarWire p) (scalarBits p) w hr ha
++    simpa only [digit_linearization] using h
++  have hleft := run _ _ _ (cap.constants i).1 (fun j => (cap.coefficients i j).1) hl
++  have hright := run _ _ _ (cap.constants i).2 (fun j => (cap.coefficients i j).2) hrr
++  apply (splitSound (rows i) (decoded p v)).mp
++  exact hleft.symm.trans hright
++
++end Minidregg.Compiler.SignedMatrix
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.digit_linearization' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.digit_linearization
++
++/-- info: 'Minidregg.Compiler.SignedMatrix.sourceSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.SignedMatrix.sourceSound
+--- /dev/null
++++ b/EmitNonlinearRns.lean
+@@ -0,0 +1,60 @@
++import Compiler.NonlinearRnsPublic
++import Lean.Data.Json
++open Lean (Json toJson)
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open Minidregg.Compiler.AirSimplify Minidregg.Compiler.DirectedRnsWitness
++open Minidregg.Compiler.NonlinearRnsInstance Minidregg.Compiler.NonlinearRnsPublic
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++def ir2Alg : Alg (AirSig BabyBear Nat) String := fun op => match op with
++  | .const c => fun _ => "{\"t\":\"const\",\"v\":"++toString c.val++"}"
++  | .var i => fun _ => ir2Var i
++  | .add => fun child => "{\"t\":\"add\",\"l\":"++child false++",\"r\":"++child true++"}"
++  | .mul => fun child => "{\"t\":\"mul\",\"l\":"++child false++",\"r\":"++child true++"}"
++def ir2Template (terms : ConstraintSystem BabyBear Nat) : String :=
++  let arithmetic := terms.map fun t => "{\"t\":\"gate\",\"body\":"++fold ir2Alg t++"}"
++  let lookup := "{\"t\":\"lookup\",\"table\":11,\"tuple\":["++String.intercalate "," ((List.range 88).map ir2Var)++"]}"
++  "{\"name\":\"nonlinear_exact_directed_nine_to_four_rescale\",\"ir\":2,\"trace_width\":"++toString nVars++
++    ",\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":11,\"name\":\"bfv_public_rows\",\"arity\":88,"++
++    "\"sem\":\"exact_public_rows\",\"rows\":[]}],\"constraints\":["++String.intercalate "," (lookup::arithmetic)++"],\"hash_sites\":[],\"ranges\":[]}"
++def u32Bytes (a : Array BabyBear) : ByteArray := Id.run do
++  let mut bytes := ByteArray.emptyWithCapacity (4*a.size)
++  for value in a do
++    for shift in [0,8,16,24] do bytes := bytes.push ((value.val >>> shift).toUInt8)
++  return bytes
++
++def main (args : List String) : IO UInt32 := do
++  let outDir : System.FilePath := args.headD "artifacts"
++  IO.FS.createDirAll outDir
++  IO.println "constructing parameterized directed RNS source"
++  let terms := simplifySystem system
++  IO.FS.writeFile (outDir/"template_ir2.json") (ir2Template terms++"\n")
++  IO.println s!"emitted {terms.length} arithmetic constraints, width {nVars}"
++  let cache := caches profile rows
++  let check := fun a : Array BabyBear => terms.all (fun t => eval (fun i => a[i]!) t == 0)
++  let some input := args[1]? | throw (IO.userError "expected public rows path")
++  let parsed ← IO.ofExcept (Json.parse (← IO.FS.readFile (System.FilePath.mk input)))
++  let rows ← IO.ofExcept (Lean.fromJson? parsed : Except String (Array (Array Nat)))
++  IO.FS.withFile (outDir/"trace.leu32") .write fun handle => do
++    for i in [:rows.size] do
++      let row := rows[i]!
++      unless row[0]! == i do throw (IO.userError s!"wrong row ID {i}")
++      let a ← IO.ofExcept (variableArray cache row)
++      unless check a do throw (IO.userError s!"generated source refused actual row {i}")
++      handle.write (u32Bytes a)
++      IO.println s!"produced {i+1}/{rows.size} rows"
++  let wrong := rows[0]!.set! 64 (((rows[0]!)[64]!+1)%512)
++  if let .ok a := variableArray cache wrong then
++    if check a then throw (IO.userError "changed public output accepted")
++  let bad := rows[0]!.set! 1 512
++  if let .ok _ := variableArray cache bad then throw (IO.userError "radix512 admitted")
++  let summary := Json.mkObj [("rows",toJson rows.size),("trace_width",toJson nVars),
++    ("trace_bytes",toJson (rows.size*nVars*4)),("ir2_arithmetic_constraints",toJson terms.length),
++    ("public_arity",toJson (88:Nat)),("changed_public_output_refused",toJson true),
++    ("radix512_refused",toJson true),("all_actual_source_rows_checked",toJson true),
++    ("public_tuple_order",toJson "rowID,product_extended9x7_radix512,output4x6_radix512")]
++  IO.FS.writeFile (outDir/"emission.json") (summary.pretty++"\n")
++  IO.println summary.compress
++  return 0

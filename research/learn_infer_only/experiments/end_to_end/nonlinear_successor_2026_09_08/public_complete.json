@@ -1,0 +1,10 @@
+{
+  "learns": 128,
+  "expiries": 64,
+  "queries": 48,
+  "ct_ct_multiplications": 320,
+  "rotations": 3200,
+  "private_decryptions": 0,
+  "public_elapsed_seconds": 582.2837842089939,
+  "all_public_subprocesses_returned": true
+}

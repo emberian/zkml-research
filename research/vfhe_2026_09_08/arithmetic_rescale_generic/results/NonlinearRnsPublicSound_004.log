@@ -1,0 +1,32 @@
+Compiler/NonlinearRnsPublicSound.lean:28:2: error: `simp` made no progress
+Compiler/NonlinearRnsPublicSound.lean:38:2: error: `simp` made no progress
+Compiler/NonlinearRnsPublicSound.lean:50:2: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Compiler/NonlinearRnsPublicSound.lean:58:95: error: unsolved goals
+case h
+asg : ℕ → BabyBear
+hz : asg 88 = 0
+i : Fin 4
+hl : ∀ (d : Fin 6), ↑(Fin.castAdd 17 d) < 6
+hh : ∀ (d : Fin 17), ¬↑(Fin.natAdd 6 d) < 6
+⊢ ∑ x, 512 ^ ↑x * ZMod.val (asg (if ↑x < 6 then 64 + 6 * ↑i + ↑x else 88)) =
+    ∑ d, 512 ^ ↑d * ZMod.val (asg (64 + 6 * ↑i + ↑d))
+Compiler/NonlinearRnsPublicSound.lean:67:13: warning: This simp argument is unused:
+  hl
+
+Hint: Omit it from the simp argument list.
+  simp only [hl̵,̵hh̵, ̲if_true, ̲if_false, ̲hz, ̲ZMod.val_zero, ̲mul_zero, ̲Finset.sum_const_zero, ̲add_zero,
+  ̲ ̲ ̲ ̲ ̲Fin.val_castAdd]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/NonlinearRnsPublicSound.lean:67:19: warning: This simp argument is unused:
+  if_true
+
+Hint: Omit it from the simp argument list.
+  simp only [hl, ̲hh, ̲if_t̵r̵u̵e̵,̵i̵f_̵f̵alse, ̲hz, ̲ZMod.val_zero, ̲mul_zero, ̲Finset.sum_const_zero, ̲add_zero,
+  ̲ ̲ ̲ ̲ ̲Fin.val_castAdd]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

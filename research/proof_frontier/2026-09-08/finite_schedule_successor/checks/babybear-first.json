@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-finite-schedule-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightScheduleBabyBear.olean",
+    "Selvage/ArityEightScheduleBabyBear.lean"
+  ],
+  "cwd": "/tmp/minidregg-finite-schedule-successor-20260908",
+  "exit_code": 1,
+  "source_sha256": "ec9fb9a8a3005295be02be2007e14bf3cb1677ab2af059b860178a4be310feb3",
+  "source_unchanged": true,
+  "elapsed_s": 12.586994886398315,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/finite_schedule_successor/checks/babybear-first.log"
+}

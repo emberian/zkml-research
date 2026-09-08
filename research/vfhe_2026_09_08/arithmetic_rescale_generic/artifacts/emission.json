@@ -1,0 +1,9 @@
+{"trace_width": 63845,
+ "trace_bytes": 8172160,
+ "rows": 32,
+ "radix512_refused": true,
+ "public_tuple_order": "rowID,product_extended9x7_radix512,output4x6_radix512",
+ "public_arity": 88,
+ "ir2_arithmetic_constraints": 76269,
+ "changed_public_output_refused": true,
+ "all_actual_source_rows_checked": true}

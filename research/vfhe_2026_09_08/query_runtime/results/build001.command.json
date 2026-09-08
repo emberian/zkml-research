@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--offline",
+    "-j2"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime",
+  "started_utc": "2026-09-08T17:33:16.432862+00:00",
+  "pid": 70574,
+  "returncode": 0,
+  "elapsed_seconds": 84.76081558305304,
+  "finished_utc": "2026-09-08T17:34:41.195323+00:00",
+  "user_seconds": 158.70143,
+  "system_seconds": 8.97093,
+  "max_rss_bytes": 1308672000
+}

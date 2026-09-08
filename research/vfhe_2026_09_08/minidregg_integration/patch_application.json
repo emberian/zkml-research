@@ -1,0 +1,83 @@
+{
+  "checks": [
+    {
+      "kind": "base",
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/check_base",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "base",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/minidregg-fhe-arithmetic.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/check_base",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "base",
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/minidregg-fhe-arithmetic.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/check_base",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "dirty",
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/check_dirty",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "dirty",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/minidregg-fhe-arithmetic.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/check_dirty",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "dirty",
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/minidregg-fhe-arithmetic.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/check_dirty",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_sources_exact": true,
+  "dirty_root_preserved_except_import": true,
+  "base_Compiler_sha256": "7d1de586dc1b53d2785344c5a04e505540cad58e707d07b13ccfc35bb311c358",
+  "observed_dirty_Compiler_sha256": "49406fd9d224390e37dee72163ea1635e4f74f7eaaed63e3239c1224d0eaa217",
+  "patch_sha256": "7e3e625deefe311d1f7d359ca6f3fc54fc727818bc138afaf955170cc42ed265"
+}

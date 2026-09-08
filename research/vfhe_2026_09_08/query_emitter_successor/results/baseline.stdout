@@ -1,0 +1,9 @@
+produced0/8192 rows
+produced1024/8192 rows
+produced2048/8192 rows
+produced3072/8192 rows
+produced4096/8192 rows
+produced5120/8192 rows
+produced6144/8192 rows
+produced7168/8192 rows
+{"actual_row_constraint_check":"unchanged native prover; emitter checks four constructed rows","changed_output_refused":true,"constructed_cases_checked":4,"ir2_arithmetic_constraints":2744,"public_tuple_order":"rowID,acc2x7,positivePT2x7,negativePT2x7,out2x7","radix64_refused":true,"rows":8192,"source_constraints":4442,"trace_bytes":82214912,"trace_width":2509}

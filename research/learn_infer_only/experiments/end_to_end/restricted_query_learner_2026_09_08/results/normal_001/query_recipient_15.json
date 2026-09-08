@@ -1,0 +1,85 @@
+{
+  "status": "PASS",
+  "role_command": "query",
+  "pid": 81412,
+  "elapsed_seconds": 5.01640874997247,
+  "peak_rss_bytes_macos": 270352384,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/private/recipient_15/key.ring",
+      "kind": "key",
+      "private": true
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/models.json",
+      "kind": "class_snapshot_map",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_01.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_02.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_03.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_04.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_05.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/state_06.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [],
+  "result": {
+    "recipient_coordinate": 15,
+    "registered_query_text": "Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",
+    "private_rows_read": 1,
+    "query_results": [
+      {
+        "revision": 2,
+        "scores": {
+          "card_arrival": 201310,
+          "cash_withdrawal_charge": 213374
+        },
+        "prediction": "cash_withdrawal_charge"
+      },
+      {
+        "revision": 4,
+        "scores": {
+          "card_arrival": 397197,
+          "cash_withdrawal_charge": 434303
+        },
+        "prediction": "cash_withdrawal_charge"
+      },
+      {
+        "revision": 6,
+        "scores": {
+          "card_arrival": 389104,
+          "cash_withdrawal_charge": 459714
+        },
+        "prediction": "cash_withdrawal_charge"
+      }
+    ],
+    "output_scope": "Explicit public benchmark scores from this recipient only"
+  },
+  "error": null
+}

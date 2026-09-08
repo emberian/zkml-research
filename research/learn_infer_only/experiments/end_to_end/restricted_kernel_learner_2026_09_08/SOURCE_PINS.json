@@ -1,0 +1,106 @@
+{
+  "parameters": {
+    "N": 16384,
+    "w": 64,
+    "d": 577,
+    "recipients": 16,
+    "p": 28439893,
+    "q": 497323290947860672931310292648754779192460749687510494957169639477681564739617435942913,
+    "sigma_key": 33554432,
+    "sigma_error": 1024,
+    "flood": 226156424291633194186662080095093570025917938800079226639565593765455331328,
+    "W": 32,
+    "denominator": 8204908842
+  },
+  "delta": 60612896562862346171488433051960381449958923222795080866685104784700003464050,
+  "cutoff_error_bound": 226156424291633194186662080095093570025917938800079226641871436774669025280,
+  "strict_correctness_margin": 46138885408197821743542059925874392968300175139590010361605332831121185846130,
+  "python": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+  "owned": {
+    ".gitignore": "8bf8e5cab24cd5151c0ab0135e880085070ae78178da07a6a144adb03444b818",
+    "ALGEBRA.json": "d7c4aea6fed52ca39c7c6dbbc0d540018e3501a52e5c4e3b91e7bf9bf43bf2ea",
+    "CONTRACT.md": "3703b229c6dd3f85356500158da598caaa8c4fd717095ee060fdd8879f4896c6",
+    "NEXT.md": "f8cc3c05af838299d137ff8d58f9e521e9ade502b4ad6421e4c2f676d216b0ac",
+    "PREPARATION.json": "4de9932c804dafdac128f8a9a9f8b6754d59c7ade26a6e89bc2afad93e95322b",
+    "README.md": "990a1bb9e5326cc2bdce448ba8e3deda7dbb3d2b9bdb46e4fe1a8cc380692b1a",
+    "REPORT.md": "d8b4ab9ca33ab36e0eeeabf41b3942623bf8aa00bac0d421db63e3ae661eee2e",
+    "STATUS.md": "c5e5dcdf30d90eb3bf0784b40a653141d750059a1e4ff415cbcbe454650d25e5",
+    "algebra.log": "728425290a1c58ed5f3a502559e8a8db744e77e4fdd5e658e15ffab8edd66012",
+    "algebra.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "basis.py": "16510ae61dfb1ce1f1d4e706e8d594d2ad687827355ba38db98d218e027e4b9f",
+    "check_algebra.py": "2f72605d5626211826997fcbdc6c3a567b00ec2d1c69270926fe8b34fd61aa78",
+    "codec/__init__.py": "1587cdb77469d37959f4a3f94b46282517fd1f03b423ec110d67c6f1e0ce02d7",
+    "codec/packed.py": "abcc3d76f8bc7b01c901884334df6cb4e3c5f1fb4e38c0a0d638f074df16551d",
+    "fixture.json": "f7295659b47712c2ca897331796d14064ad534e3e564c042b2a94f179f784d79",
+    "issuer.py": "a10d0f8a797a337967e385693e4aae44b93d2efe40408a0a8076e380b36c6468",
+    "kernel.py": "380767e3627d3c81d177e6091d7fe32907a52257297ca19747fb24fb552ed257",
+    "prepare.log": "50d824ea07c27a7fbcbc892296195acfcc2ff9c42eb49611ff92b6244a1403be",
+    "prepare.py": "297c1896d50f5ab88a7ad8ad1daa12d258a0ef227f05733346a6979316f4beae",
+    "prepare.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "registry.json": "180abbb4a6447bf3cf78c2abf0c8f75c60fae4ed5acf26c1b93ec639a653372e",
+    "source/fast/ring.py": "18c503120c8a2f44ade190ca9c68f5b4a6c7aca6e54c13210172788d6e54f567",
+    "source/fast/run.py": "e7632e4eccccec16354ecfbbf541a23e96d8f8f803465c7de62a63eff522f698",
+    "source/fast/sampling/__init__.py": "fc59e7cad5c5944a09e0d73efb6fb1a4d7a4fa46751d4633f16aab80119350d1",
+    "source/fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so": "f630be6ba5df516d40d838a82aff1cf175eece088648723566d772fb94ec6d5b",
+    "source/fast/sampling/proposal_screen.c": "cb295627adeedbcb62f26fdb5acc4ede4fb9de2673efd38d55c7e08601174ac4",
+    "source/fast/sampling/reference.py": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd",
+    "source/fast/sampling/sampler.py": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8",
+    "transport.py": "5eed477a600a3789c9b2a83150eed653674b59b1073e09f392b63b991d3780f6",
+    "workflow.py": "2f3eea008664072404b0ce265437f6ae25ca8c784ad6b61d7c1beaf86b2907c5"
+  },
+  "byte_identical_copied_origins": {
+    ".gitignore": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.gitignore",
+      "sha256": "8bf8e5cab24cd5151c0ab0135e880085070ae78178da07a6a144adb03444b818"
+    },
+    "basis.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/basis.py",
+      "sha256": "16510ae61dfb1ce1f1d4e706e8d594d2ad687827355ba38db98d218e027e4b9f"
+    },
+    "transport.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/transport.py",
+      "sha256": "5eed477a600a3789c9b2a83150eed653674b59b1073e09f392b63b991d3780f6"
+    },
+    "workflow.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/workflow.py",
+      "sha256": "2f3eea008664072404b0ce265437f6ae25ca8c784ad6b61d7c1beaf86b2907c5"
+    },
+    "codec/__init__.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/codec/__init__.py",
+      "sha256": "1587cdb77469d37959f4a3f94b46282517fd1f03b423ec110d67c6f1e0ce02d7"
+    },
+    "codec/packed.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/codec/packed.py",
+      "sha256": "abcc3d76f8bc7b01c901884334df6cb4e3c5f1fb4e38c0a0d638f074df16551d"
+    },
+    "source/fast/ring.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/ring.py",
+      "sha256": "18c503120c8a2f44ade190ca9c68f5b4a6c7aca6e54c13210172788d6e54f567"
+    },
+    "source/fast/run.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/run.py",
+      "sha256": "e7632e4eccccec16354ecfbbf541a23e96d8f8f803465c7de62a63eff522f698"
+    },
+    "source/fast/sampling/__init__.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/__init__.py",
+      "sha256": "fc59e7cad5c5944a09e0d73efb6fb1a4d7a4fa46751d4633f16aab80119350d1"
+    },
+    "source/fast/sampling/sampler.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/sampler.py",
+      "sha256": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8"
+    },
+    "source/fast/sampling/reference.py": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/reference.py",
+      "sha256": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd"
+    },
+    "source/fast/sampling/proposal_screen.c": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/proposal_screen.c",
+      "sha256": "cb295627adeedbcb62f26fdb5acc4ede4fb9de2673efd38d55c7e08601174ac4"
+    },
+    "source/fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/source/fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so",
+      "sha256": "f630be6ba5df516d40d838a82aff1cf175eece088648723566d772fb94ec6d5b"
+    }
+  },
+  "scope": "Pure plaintext preparation only; zero new cryptographic runs; inherited ring source/parameter identities, not a new security or execution claim"
+}

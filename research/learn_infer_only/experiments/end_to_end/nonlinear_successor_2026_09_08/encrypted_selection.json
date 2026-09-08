@@ -1,0 +1,26 @@
+{
+  "test_indices": [
+    0,
+    1,
+    280,
+    281,
+    160,
+    161,
+    40,
+    41,
+    200,
+    201,
+    240,
+    241,
+    120,
+    121,
+    80,
+    81
+  ],
+  "checkpoints": [
+    32,
+    64,
+    128
+  ],
+  "scope": "First2 original test rows per class, fixed reused-data integration slice, not a new utility estimate"
+}

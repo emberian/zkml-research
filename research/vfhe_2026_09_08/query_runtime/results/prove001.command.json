@@ -1,0 +1,21 @@
+{
+  "command": [
+    "env",
+    "RAYON_NUM_THREADS=4",
+    "target/release/vfhe-query-runtime",
+    "prove",
+    "../query_arithmetic/artifacts/template_ir2.json",
+    "results/case001",
+    "../query_arithmetic/artifacts/trace.leu32",
+    "results/proof001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime",
+  "started_utc": "2026-09-08T17:44:19.407055+00:00",
+  "pid": 82681,
+  "returncode": 0,
+  "elapsed_seconds": 4.002188334008679,
+  "finished_utc": "2026-09-08T17:44:23.409764+00:00",
+  "user_seconds": 12.967819,
+  "system_seconds": 0.556761,
+  "max_rss_bytes": 2100527104
+}

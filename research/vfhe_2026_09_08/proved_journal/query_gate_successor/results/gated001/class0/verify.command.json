@@ -1,0 +1,15 @@
+{
+  "name": "verify",
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime/target/release/vfhe-query-runtime",
+    "verify",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/artifacts/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/queries/new-two-class-query/proof0/case",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/runtime/gated001/queries/new-two-class-query/proof0/proof/proof.bin"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_runtime",
+  "started_utc": "2026-09-08T17:56:48.276890+00:00",
+  "returncode": 0,
+  "elapsed_seconds": 0.14260454196482897,
+  "finished_utc": "2026-09-08T17:56:48.419514+00:00"
+}

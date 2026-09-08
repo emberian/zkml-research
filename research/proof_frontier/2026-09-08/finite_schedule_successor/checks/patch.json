@@ -1,0 +1,25 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/finite_schedule_successor/arity-eight-finite-schedule.patch"
+  ],
+  "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/arity-eight-finite-schedule-replay-mi53n6k5",
+  "exit_code": 0,
+  "output": "",
+  "exact_target_files": [
+    "Selvage/ArityEightSchedule.lean",
+    "Selvage/ArityEightScheduleBabyBear.lean",
+    "Selvage/ArityEightScheduleLogged.lean",
+    "Selvage/ArityEightScheduleSupplied.lean",
+    "Selvage/ArityEightScheduleWitnesses.lean"
+  ],
+  "all_exact_bytes": true,
+  "file_matches": {
+    "Selvage/ArityEightSchedule.lean": true,
+    "Selvage/ArityEightScheduleSupplied.lean": true,
+    "Selvage/ArityEightScheduleBabyBear.lean": true,
+    "Selvage/ArityEightScheduleWitnesses.lean": true,
+    "Selvage/ArityEightScheduleLogged.lean": true
+  }
+}

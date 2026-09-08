@@ -1,0 +1,18 @@
+{
+  "command": [
+    "target/release/vfhe-proved-rescale-generic",
+    "import",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace",
+    "selection.json",
+    "results/case001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale_generic",
+  "started_utc": "2026-09-08T17:07:55.499312+00:00",
+  "pid": 42798,
+  "returncode": 0,
+  "elapsed_seconds": 0.15593812498264015,
+  "finished_utc": "2026-09-08T17:07:55.656133+00:00",
+  "user_seconds": 0.124649,
+  "system_seconds": 0.017863999999999998,
+  "max_rss_bytes": 50249728
+}

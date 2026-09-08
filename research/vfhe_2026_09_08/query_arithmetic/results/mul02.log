@@ -1,0 +1,78 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean:62:86: error: unsolved goals
+a : Fin 7 → ℕ
+⊢ a ⟨2, ⋯⟩ + 64 * (a ⟨3, ⋯⟩ + 64 * (a ⟨4, ⋯⟩ + 64 * (a ⟨5, ⋯⟩ + 64 * a ⟨6, ⋯⟩))) =
+    a 2 +
+      64 *
+        (a (Fin.succ 2) +
+          64 * (a (Fin.succ 2).succ + 64 * (a (Fin.succ 2).succ.succ + 64 * a (Fin.succ 2).succ.succ.succ)))
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean:74:47: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  g ≥ 0
+  f ≥ 0
+  f - g ≥ 1
+  0 ≤ e ≤ 63
+  0 ≤ d ≤ 13
+  0 ≤ c ≤ 6
+  -6 ≤ c - d ≤ 0
+where
+ c := ↑↑j
+ d := ↑↑t
+ e := ↑(a i)
+ f := ↑?m.110
+ g := ↑?m.112
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean:74:72: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  g ≥ 0
+  f ≥ 0
+  f - g ≥ 1
+  0 ≤ e ≤ 63
+  0 ≤ d ≤ 13
+  0 ≤ c ≤ 6
+  -6 ≤ c - d ≤ 0
+where
+ c := ↑↑j
+ d := ↑↑t
+ e := ↑(b j)
+ f := ↑?m.111
+ g := ↑?m.113
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean:85:16: warning: This simp argument is unused:
+  eval_vr
+
+Hint: Omit it from the simp argument list.
+  simp only [̵h̵o̵,̵e̵v̵a̵l̵_̵v̵r̵,̵e̵v̵a̵l̵_̵c̵s̵t̵]̵[̲h̲o̲,̲ ̲e̲v̲a̲l̲_̲c̲s̲t̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean:85:24: warning: This simp argument is unused:
+  eval_cst
+
+Hint: Omit it from the simp argument list.
+  simp only [̵h̵o̵,̵e̵v̵a̵l̵_̵v̵r̵,̵e̵v̵a̵l̵_̵c̵s̵t̵]̵[̲h̲o̲,̲ ̲e̲v̲a̲l̲_̲v̲r̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean:115:17: error: Application type mismatch: The argument
+  a
+has type
+  Fin 7 → ℕ
+but is expected to have type
+  Fin 7 → BabyBear
+in the application
+  convolution a
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean:115:110: error: unsolved goals
+a b : Fin 7 → ℕ
+t : Fin 14
+⊢ (∑ x, ∑ x_1, if ↑x + ↑x_1 = ↑t then sorry () x * sorry () x_1 else 0) =
+    ∑ x, ∑ x_1, if ↑x + ↑x_1 = ↑t then ↑(a x) * ↑(b x_1) else 0
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean:118:12: error: Application type mismatch: The argument
+  a
+has type
+  Fin 7 → ℕ
+but is expected to have type
+  Fin 7 → BabyBear
+in the application
+  padded a
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean:118:70: error: unsolved goals
+case isTrue
+a : Fin 7 → ℕ
+t : Fin 14
+h✝ : ↑t < 7
+⊢ sorry () ⟨↑t, h✝⟩ = ↑(a ⟨↑t, h✝⟩)

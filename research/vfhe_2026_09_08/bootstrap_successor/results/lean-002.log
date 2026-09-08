@@ -1,0 +1,59 @@
+Compiler/TfheModulusSwitch.lean:15:14: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat W 1
+numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
+  W
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/TfheModulusSwitch.lean:16:14: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat W 2
+numerals are polymorphic in Lean, but the numeral `2` cannot be used in a context where the expected type is
+  W
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/TfheModulusSwitch.lean:17:15: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat W 3
+numerals are polymorphic in Lean, but the numeral `3` cannot be used in a context where the expected type is
+  W
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/TfheModulusSwitch.lean:18:15: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat W 4
+numerals are polymorphic in Lean, but the numeral `4` cannot be used in a context where the expected type is
+  W
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/TfheModulusSwitch.lean:19:16: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat W 5
+numerals are polymorphic in Lean, but the numeral `5` cannot be used in a context where the expected type is
+  W
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/TfheModulusSwitch.lean:24:31: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat W 54
+numerals are polymorphic in Lean, but the numeral `54` cannot be used in a context where the expected type is
+  W
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/TfheModulusSwitch.lean:104:58: error: [Error pretty printing: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information]
+'Minidregg.Compiler.TfheModulusSwitch.balance_correct' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.TfheModulusSwitch.rowSound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheModulusSwitch.simplifiedSource_sound' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.TfheModulusSwitch.zero_witness' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheModulusSwitch.changed_zero_refused' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

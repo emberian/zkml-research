@@ -1,0 +1,20 @@
+{
+  "command": [
+    "native/target/release/tfhe-bootstrap-entry-fixture",
+    "fixtures/normal_001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor",
+  "timeout_seconds": 180,
+  "exit": 0,
+  "seconds": 0.25938929204130545,
+  "stdout": {
+    "path": "results/native-normal-001.stdout",
+    "bytes": 1613,
+    "sha256": "fb0f005eca9b19114d90a5db643dd50f2680bc01302d946769a3e38e710731e6"
+  },
+  "stderr": {
+    "path": "results/native-normal-001.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

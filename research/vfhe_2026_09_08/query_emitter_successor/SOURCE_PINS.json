@@ -1,0 +1,11 @@
+{
+  "sources": {
+    "Compiler/BfvQueryWitnessFast.lean": "bf23c78b1e4966e862978f73933a0ce37da6c9d69e1bcbb5dca41e2900cd9155",
+    "EmitBfvQueryFast.lean": "0304ace4b43c549ffca8ece708a078cd1f565aa14fb68bd036f6e9bdb1bda5a7",
+    "emit.py": "abb92839210e38639be7f6f99fe649701986de0a4b1f020a160ce1bd571c7d1f"
+  },
+  "patch_sha256": "5135e4fe36e5b78eea18f2468c2ce24637b957a00c8e3275257489f32971f9eb",
+  "frozen_query_sources": "../query_arithmetic/source_pins.json",
+  "new_theorems": 0,
+  "scope": "Executable producer only; no universal implementation equivalence claim; same source relation and backend."
+}

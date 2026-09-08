@@ -1,0 +1,24 @@
+[package]
+name = "kernel-crypto"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+fhe = { path = "/Users/ember/dev/breadstuffs/vendor/fhe-dregg" }
+fhe-math = "=0.1.1"
+fhe-traits = "=0.1.1"
+rand = "=0.9.2"
+serde_json = "=1.0.151"
+sha2 = "=0.10.9"
+num-bigint = "=0.4.6"
+
+[[bin]]
+name = "kernel-crypto-cached"
+path = "src/cached.rs"
+
+[[bin]]
+name = "scaler-constants"
+path = "src/scaler_constants.rs"

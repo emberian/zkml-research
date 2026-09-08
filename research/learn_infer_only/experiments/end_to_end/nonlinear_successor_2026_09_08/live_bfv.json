@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/session.py",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 32.44913537503453,
+  "stdout": "{\"ready\": true, \"backend\": \"bfv\", \"revision\": 128, \"classes\": {\"card_arrival\": 8, \"cash_withdrawal_charge\": 8, \"card_payment_not_recognised\": 8, \"lost_or_stolen_card\": 8, \"pending_card_payment\": 8, \"pending_transfer\": 8, \"transfer_not_received_by_recipient\": 8, \"wrong_amount_of_cash_received\": 8}}\n{\"ok\": true, \"op\": \"query\", \"result\": {\"label\": \"cash_withdrawal_charge\", \"ranking\": [{\"label\": \"cash_withdrawal_charge\", \"sum_kernel\": 1268308292, \"observations\": 8, \"mean_kernel\": 158538536.5}, {\"label\": \"lost_or_stolen_card\", \"sum_kernel\": 1255921819, \"observations\": 8, \"mean_kernel\": 156990227.375}, {\"label\": \"card_payment_not_recognised\", \"sum_kernel\": 1233768863, \"observations\": 8, \"mean_kernel\": 154221107.875}, {\"label\": \"card_arrival\", \"sum_kernel\": 1229220909, \"observations\": 8, \"mean_kernel\": 153652613.625}, {\"label\": \"pending_card_payment\", \"sum_kernel\": 1224386044, \"observations\": 8, \"mean_kernel\": 153048255.5}, {\"label\": \"wrong_amount_of_cash_received\", \"sum_kernel\": 1224123986, \"observations\": 8, \"mean_kernel\": 153015498.25}, {\"label\": \"transfer_not_received_by_recipient\", \"sum_kernel\": 1206127807, \"observations\": 8, \"mean_kernel\": 150765975.875}, {\"label\": \"pending_transfer\", \"sum_kernel\": 1152074708, \"observations\": 8, \"mean_kernel\": 144009338.5}], \"revision\": 128}}\n{\"ok\": true, \"op\": \"teach\", \"result\": {\"revision\": 129, \"label\": \"travel_insurance\", \"active_examples\": 1, \"replaced_lane\": 0, \"expired\": false}}\n{\"ok\": true, \"op\": \"teach\", \"result\": {\"revision\": 130, \"label\": \"travel_insurance\", \"active_examples\": 2, \"replaced_lane\": 1, \"expired\": false}}\n{\"ok\": true, \"op\": \"query\", \"result\": {\"label\": \"travel_insurance\", \"ranking\": [{\"label\": \"travel_insurance\", \"sum_kernel\": 429867610, \"observations\": 2, \"mean_kernel\": 214933805.0}, {\"label\": \"cash_withdrawal_charge\", \"sum_kernel\": 1268308292, \"observations\": 8, \"mean_kernel\": 158538536.5}, {\"label\": \"lost_or_stolen_card\", \"sum_kernel\": 1255921819, \"observations\": 8, \"mean_kernel\": 156990227.375}, {\"label\": \"card_payment_not_recognised\", \"sum_kernel\": 1233768863, \"observations\": 8, \"mean_kernel\": 154221107.875}, {\"label\": \"card_arrival\", \"sum_kernel\": 1229220909, \"observations\": 8, \"mean_kernel\": 153652613.625}, {\"label\": \"pending_card_payment\", \"sum_kernel\": 1224386044, \"observations\": 8, \"mean_kernel\": 153048255.5}, {\"label\": \"wrong_amount_of_cash_received\", \"sum_kernel\": 1224123986, \"observations\": 8, \"mean_kernel\": 153015498.25}, {\"label\": \"transfer_not_received_by_recipient\", \"sum_kernel\": 1206127807, \"observations\": 8, \"mean_kernel\": 150765975.875}, {\"label\": \"pending_transfer\", \"sum_kernel\": 1152074708, \"observations\": 8, \"mean_kernel\": 144009338.5}], \"revision\": 130}}\n{\"ok\": true, \"op\": \"status\", \"result\": {\"backend\": \"bfv\", \"revision\": 130, \"classes\": {\"card_arrival\": 8, \"cash_withdrawal_charge\": 8, \"card_payment_not_recognised\": 8, \"lost_or_stolen_card\": 8, \"pending_card_payment\": 8, \"pending_transfer\": 8, \"transfer_not_received_by_recipient\": 8, \"wrong_amount_of_cash_received\": 8, \"travel_insurance\": 2}}}\n",
+  "stderr": "",
+  "requests": [
+    {
+      "op": "query",
+      "text": "Where can I buy a policy covering medical care on my trip overseas?"
+    },
+    {
+      "op": "teach",
+      "label": "travel_insurance",
+      "text": "I need travel insurance for an overseas holiday, including hospital treatment."
+    },
+    {
+      "op": "teach",
+      "label": "travel_insurance",
+      "text": "Does your travel policy cover medical emergencies while I am abroad?"
+    },
+    {
+      "op": "query",
+      "text": "Where can I buy a policy covering medical care on my trip overseas?"
+    },
+    {
+      "op": "status"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--offline",
+    "-j2"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale_generic",
+  "started_utc": "2026-09-08T17:09:49.383396+00:00",
+  "pid": 45107,
+  "returncode": 0,
+  "elapsed_seconds": 20.394932082970627,
+  "finished_utc": "2026-09-08T17:10:09.779743+00:00",
+  "user_seconds": 24.11419,
+  "system_seconds": 0.8595189999999999,
+  "max_rss_bytes": 344522752
+}

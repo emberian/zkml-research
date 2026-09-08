@@ -1,0 +1,30 @@
+Compiler/SignedMatrix.lean:50:12: error: Ambiguous term
+  posPart
+Possible interpretations:
+  ↑(Theory.CompressedLinearEquation.posPart (r.coefficient i)) : ℤ
+  
+  (r.coefficient i)⁺ : ℤ
+Compiler/SignedMatrix.lean:50:46: error: Ambiguous term
+  negPart
+Possible interpretations:
+  ↑(Theory.CompressedLinearEquation.negPart (r.coefficient i)) : ℤ
+  
+  (r.coefficient i)⁻ : ℤ
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+Compiler/SignedMatrix.lean:47:61: error: unsolved goals
+n : ℕ
+r : Row n
+x : Fin n → ℕ
+hc :
+  r.constant =
+    ↑(Theory.CompressedLinearEquation.posPart r.constant) - ↑(Theory.CompressedLinearEquation.negPart r.constant)
+hs : ∑ i, r.coefficient i * ↑(x i) = ∑ i, (sorry - sorry) * ↑(x i)
+⊢ ↑(Theory.CompressedLinearEquation.posPart r.constant) - ↑(Theory.CompressedLinearEquation.negPart r.constant) =
+    ↑(Theory.CompressedLinearEquation.posPart r.constant) - ↑(Theory.CompressedLinearEquation.negPart r.constant) +
+        ∑ x_1, ↑(Theory.CompressedLinearEquation.posPart (r.coefficient x_1)) * ↑(x x_1) -
+      ∑ x_1, ↑(Theory.CompressedLinearEquation.negPart (r.coefficient x_1)) * ↑(x x_1)

@@ -1,0 +1,156 @@
+[
+  {
+    "module": "SignedMatrix",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/SignedMatrix.olean",
+      "Compiler/SignedMatrix.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 2.8303639888763428,
+    "exit": 0,
+    "log": "results/final_SignedMatrix.log",
+    "source_sha256": "d3f84e321bd1ee5b4deb3bdda3a4ee7cca2ae3da695d37944c283292aecef7d5"
+  },
+  {
+    "module": "SignedMatrixEmit",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/SignedMatrixEmit.olean",
+      "Compiler/SignedMatrixEmit.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 2.811699867248535,
+    "exit": 0,
+    "log": "results/final_SignedMatrixEmit.log",
+    "source_sha256": "4f165bf1e7d7ba213ac90e40fe2bb311639c061334e95fed68c002d07471ef53"
+  },
+  {
+    "module": "DirectedRnsScaler",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/DirectedRnsScaler.olean",
+      "Compiler/DirectedRnsScaler.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 3.9297902584075928,
+    "exit": 0,
+    "log": "results/final_DirectedRnsScaler.log",
+    "source_sha256": "e0afaa5e0fcdb594f8e63c34c8456db638fa07937a79784d1ceb11a0538c0b9a"
+  },
+  {
+    "module": "DirectedRnsEmit",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/DirectedRnsEmit.olean",
+      "Compiler/DirectedRnsEmit.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 2.6215219497680664,
+    "exit": 0,
+    "log": "results/final_DirectedRnsEmit.log",
+    "source_sha256": "6150b38a2ec60a6737505c25535b2a9e79459fcf9b5f79b1e0965803b6803c09"
+  },
+  {
+    "module": "NonlinearRnsInstance",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/NonlinearRnsInstance.olean",
+      "Compiler/NonlinearRnsInstance.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 2.7838940620422363,
+    "exit": 0,
+    "log": "results/final_NonlinearRnsInstance.log",
+    "source_sha256": "6ec28f0e6aac1ef29e39ab622588927a9bae593939225827ece0b2b1b2f4e277"
+  },
+  {
+    "module": "NonlinearRnsSound",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/NonlinearRnsSound.olean",
+      "Compiler/NonlinearRnsSound.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 19.555355072021484,
+    "exit": 0,
+    "log": "results/final_NonlinearRnsSound.log",
+    "source_sha256": "210e38dcf4616ffe913319ad18cf6767c6004fc0899b10c0b3513ed7e23965fb"
+  },
+  {
+    "module": "DirectedRnsWitness",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/DirectedRnsWitness.olean",
+      "Compiler/DirectedRnsWitness.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 3.7334237098693848,
+    "exit": 0,
+    "log": "results/final_DirectedRnsWitness.log",
+    "source_sha256": "a79956a8263d4643b1b5a465da3d91ef7a7e57b210e574c683d893f781cdb01d"
+  },
+  {
+    "module": "NonlinearRnsNative",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/NonlinearRnsNative.olean",
+      "Compiler/NonlinearRnsNative.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 3.181231737136841,
+    "exit": 0,
+    "log": "results/final_NonlinearRnsNative.log",
+    "source_sha256": "38fdd174fd58d8ca1df04d50d8632ec0f034cf149e7e0d5d997ec2a5b90fc569"
+  },
+  {
+    "module": "DirectedRnsExhibits",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/DirectedRnsExhibits.olean",
+      "Compiler/DirectedRnsExhibits.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 2.7859580516815186,
+    "exit": 0,
+    "log": "results/final_DirectedRnsExhibits.log",
+    "source_sha256": "c87d90e4e0ce248f56c8acd5dbbe9ce92bdc4b40941afd14e0be3689f2c75107"
+  },
+  {
+    "module": "NonlinearRnsPublic",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/NonlinearRnsPublic.olean",
+      "Compiler/NonlinearRnsPublic.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 2.7347540855407715,
+    "exit": 0,
+    "log": "results/final_NonlinearRnsPublic.log",
+    "source_sha256": "ef05bbd066689be7c1f3598bc7d3b1c02554d0c7d63a9a4a12e6e10bb75d7f34"
+  },
+  {
+    "module": "NonlinearRnsPublicSound",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/NonlinearRnsPublicSound.olean",
+      "Compiler/NonlinearRnsPublicSound.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic",
+    "seconds": 2.9336600303649902,
+    "exit": 0,
+    "log": "results/final_NonlinearRnsPublicSound.log",
+    "source_sha256": "ae51163e3889141a4aec8e09fb9eb8fdfd2a847172a56b48f7d8dca7863c4486"
+  }
+]

@@ -1,0 +1,142 @@
+[
+  {
+    "file": "Compiler/NonlinearRnsInstance.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.paramsValid"
+  },
+  {
+    "file": "Compiler/DirectedRnsEmit.lean",
+    "name": "Minidregg.Compiler.DirectedRnsScaler.compiledSound"
+  },
+  {
+    "file": "Compiler/DirectedRnsScaler.lean",
+    "name": "Minidregg.Compiler.DirectedRnsScaler.certificateSound"
+  },
+  {
+    "file": "Compiler/DirectedRnsScaler.lean",
+    "name": "Minidregg.Compiler.DirectedRnsScaler.honest_accepts"
+  },
+  {
+    "file": "Compiler/DirectedRnsScaler.lean",
+    "name": "Minidregg.Compiler.DirectedRnsScaler.balanced_accepts"
+  },
+  {
+    "file": "Compiler/DirectedRnsScaler.lean",
+    "name": "Minidregg.Compiler.DirectedRnsScaler.matrixSound"
+  },
+  {
+    "file": "Compiler/NonlinearRnsSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.parameter_capacities"
+  },
+  {
+    "file": "Compiler/NonlinearRnsSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.capacity"
+  },
+  {
+    "file": "Compiler/NonlinearRnsSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.source_balanced"
+  },
+  {
+    "file": "Compiler/NonlinearRnsSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.sourceSound"
+  },
+  {
+    "file": "Compiler/SignedMatrix.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.eval_cst"
+  },
+  {
+    "file": "Compiler/SignedMatrix.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.eval_var"
+  },
+  {
+    "file": "Compiler/SignedMatrix.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.eval_add"
+  },
+  {
+    "file": "Compiler/SignedMatrix.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.eval_scale"
+  },
+  {
+    "file": "Compiler/SignedMatrix.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.eval_sub"
+  },
+  {
+    "file": "Compiler/SignedMatrix.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.eval_sum"
+  },
+  {
+    "file": "Compiler/SignedMatrix.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.eval_split"
+  },
+  {
+    "file": "Compiler/SignedMatrix.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.splitSound"
+  },
+  {
+    "file": "Compiler/DirectedRnsExhibits.lean",
+    "name": "Minidregg.Compiler.DirectedRnsScaler.nonvacuous"
+  },
+  {
+    "file": "Compiler/DirectedRnsExhibits.lean",
+    "name": "Minidregg.Compiler.DirectedRnsScaler.wrongRoundingRefused"
+  },
+  {
+    "file": "Compiler/NonlinearRnsNative.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.wordV125_correct"
+  },
+  {
+    "file": "Compiler/NonlinearRnsNative.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.fixed_ranges"
+  },
+  {
+    "file": "Compiler/NonlinearRnsNative.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.accumulator_ranges"
+  },
+  {
+    "file": "Compiler/NonlinearRnsNative.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.nativeWordRefinement"
+  },
+  {
+    "file": "Compiler/NonlinearRnsNative.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.projectionAgreement"
+  },
+  {
+    "file": "Compiler/NonlinearRnsNative.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsInstance.canonical_lift_preserves_native"
+  },
+  {
+    "file": "Compiler/SignedMatrixEmit.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.digit_linearization"
+  },
+  {
+    "file": "Compiler/SignedMatrixEmit.lean",
+    "name": "Minidregg.Compiler.SignedMatrix.sourceSound"
+  },
+  {
+    "file": "Compiler/NonlinearRnsPublicSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsPublic.input_wire"
+  },
+  {
+    "file": "Compiler/NonlinearRnsPublicSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsPublic.output_wire"
+  },
+  {
+    "file": "Compiler/NonlinearRnsPublicSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsPublic.input_public"
+  },
+  {
+    "file": "Compiler/NonlinearRnsPublicSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsPublic.output_public"
+  },
+  {
+    "file": "Compiler/NonlinearRnsPublicSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsPublic.publicRowSound"
+  },
+  {
+    "file": "Compiler/NonlinearRnsPublicSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsPublic.nativeProjectedRow_sound"
+  },
+  {
+    "file": "Compiler/NonlinearRnsPublicSound.lean",
+    "name": "Minidregg.Compiler.NonlinearRnsPublic.simplifiedSource_sound"
+  }
+]

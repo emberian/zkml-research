@@ -1,0 +1,257 @@
+{
+  "scope": "Exact retained completed module artifacts; no dependency recompilation or new artifact audit",
+  "modules": [
+    {
+      "module": "Compiler.BfvLinearCombination",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombination.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombination.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombination.olean"
+    },
+    {
+      "module": "Compiler.BfvLinearCombinationLayout",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombinationLayout.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombinationLayout.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombinationLayout.olean"
+    },
+    {
+      "module": "Compiler.BfvExpiry",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiry.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiry.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiry.olean"
+    },
+    {
+      "module": "Compiler.BfvExpiryLayout",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiryLayout.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiryLayout.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiryLayout.olean"
+    },
+    {
+      "module": "Compiler.BfvOperationWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvOperationWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvOperationWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvOperationWitness.olean"
+    },
+    {
+      "module": "Compiler.BfvRescaleRow",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/Compiler/BfvRescaleRow.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleRow.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleRow.olean"
+    },
+    {
+      "module": "Compiler.BfvRescaleWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/Compiler/BfvRescaleWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleWitness.olean"
+    },
+    {
+      "module": "Compiler.BfvRescaleSound",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/Compiler/BfvRescaleSound.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleSound.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleSound.olean"
+    },
+    {
+      "module": "Compiler.DirectedRnsEmit",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsEmit.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsEmit.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsEmit.olean"
+    },
+    {
+      "module": "Compiler.DirectedRnsExhibits",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsExhibits.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsExhibits.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsExhibits.olean"
+    },
+    {
+      "module": "Compiler.DirectedRnsScaler",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsScaler.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsScaler.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsScaler.olean"
+    },
+    {
+      "module": "Compiler.DirectedRnsWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsWitness.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsInstance",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsInstance.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsInstance.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsInstance.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsNative",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsNative.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsNative.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsNative.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsPublic",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsPublic.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublic.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublic.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsPublicSound",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsPublicSound.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublicSound.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublicSound.olean"
+    },
+    {
+      "module": "Compiler.NonlinearRnsSound",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsSound.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsSound.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsSound.olean"
+    },
+    {
+      "module": "Compiler.SignedMatrix",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/SignedMatrix.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrix.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrix.olean"
+    },
+    {
+      "module": "Compiler.SignedMatrixEmit",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/SignedMatrixEmit.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrixEmit.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrixEmit.olean"
+    },
+    {
+      "module": "Compiler.AirAssertionShare",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/AirAssertionShare.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/AirAssertionShare.olean"
+    },
+    {
+      "module": "Compiler.BfvRescaleAssertionShare",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/BfvRescaleAssertionShare.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/BfvRescaleAssertionShare.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/build/Compiler/BfvRescaleAssertionShare.olean"
+    },
+    {
+      "module": "Compiler.TfheModulusSwitch",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/Compiler/TfheModulusSwitch.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/TfheModulusSwitch.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_successor/build/Compiler/TfheModulusSwitch.olean"
+    },
+    {
+      "module": "Compiler.TfheInitialRotation",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/Compiler/TfheInitialRotation.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/build/Compiler/TfheInitialRotation.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_rotation_successor/build/Compiler/TfheInitialRotation.olean"
+    },
+    {
+      "module": "Compiler.BfvQueryMul",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryMul.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryMul.olean"
+    },
+    {
+      "module": "Compiler.BfvQueryRow",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryRow.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryRow.olean"
+    },
+    {
+      "module": "Compiler.BfvQueryTeeth",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryTeeth.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryTeeth.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryTeeth.olean"
+    },
+    {
+      "module": "Compiler.BfvQueryWitness",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/build/Compiler/BfvQueryWitness.olean"
+    },
+    {
+      "module": "Compiler.AirSimplify",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/build/Compiler/AirSimplify.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/build/Compiler/AirSimplify.olean"
+    },
+    {
+      "module": "Compiler.IntegerCertificateEmission",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/build/Compiler/IntegerCertificateEmission.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/build/Compiler/IntegerCertificateEmission.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateEmit",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateEmit.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateEmit.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjectionEmit",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionEmit.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionEmit.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionEmit.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjectionWitness",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionWitness.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateWitness",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateWitness.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateWitness.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificate",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificate.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificate.olean"
+    },
+    {
+      "module": "Compiler.FheRnsScaleDecomposition",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/FheRnsScaleDecomposition.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/FheRnsScaleDecomposition.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateLayout",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateLayout.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateLayout.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjectionLayout",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionLayout.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionLayout.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjectionVerifier",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionVerifier.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionVerifier.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjectionVerifier.olean"
+    },
+    {
+      "module": "Compiler.BFVScaleLiftRefinement",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/Compiler/BFVScaleLiftRefinement.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BFVScaleLiftRefinement.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/.build/Compiler/BFVScaleLiftRefinement.olean"
+    },
+    {
+      "module": "Compiler.FheTargetProjection",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjection.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/.build/Compiler/FheTargetProjection.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateVerifier",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateVerifier.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateVerifier.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateVerifier.olean"
+    },
+    {
+      "module": "Compiler.FheSourceCertificateOptimized",
+      "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateOptimized.lean",
+      "retained_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateOptimized.olean",
+      "resolved_olean": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/.build/Compiler/FheSourceCertificateOptimized.olean"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+Compiler/DirectedRnsScaler.lean:141:55: warning: unused variable `hp`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

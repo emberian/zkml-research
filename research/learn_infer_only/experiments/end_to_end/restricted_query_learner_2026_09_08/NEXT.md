@@ -1,0 +1,3 @@
+[OPEN] This completed construction supports only fixed registered queries. A future fresh setup could register another independently selected policy without a universal reader; current keys must not silently be rebound. The root may join the separately completed seed-transport implementation later, preserving its conditional random-oracle scope.
+
+[OPEN] Meaningful later research includes a stronger unknown-observation application and proof-carrying public updates under this restricted-key scheme. It must preserve the coalition's whole per-input query span and cannot infer natural-language ambiguity from generic field-basis invertibility. No further run, tuning grid, extraction test or retry is needed for this completed handoff.

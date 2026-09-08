@@ -1,0 +1,20 @@
+{
+  "scope": "Deterministic probability/resource arithmetic only; no cryptographic execution",
+  "commands": [
+    {
+      "command": "python3 research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_security_successor/check_ledger.py",
+      "cwd": "/Users/ember/dev/zkml-research",
+      "exit_code": 0,
+      "stdout": {"status":"PASS","coalitions":17,"all_non_RLWE_bounds_below_2_minus_168":true,"full_cap_oracle_bytes":1894400000,"private_uniform_outputs_per_reduction":6513024}
+    },
+    {
+      "command": "python3 research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_security_successor/seal.py",
+      "attempt": 1,
+      "exit_code": 1,
+      "error": "FileNotFoundError: local primary path 2021/046.pdf; frozen SOURCES.json identifies actual mirror filename 2021/46.pdf",
+      "repair": "Corrected explicit mirror path; no download or content substitution"
+    }
+  ],
+  "child_controls": "transcript_programming/MANIFEST.json",
+  "search_counts": {"Scry_SQL":0,"web_searches":0,"web_opens":0,"PDF_downloads":0}
+}

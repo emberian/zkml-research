@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "role_command": "combine",
+  "pid": 79854,
+  "elapsed_seconds": 1.6764454579679295,
+  "peak_rss_bytes_macos": 314654720,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_03.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_05.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/rebuilt_0.ring",
+      "kind": "ciphertext",
+      "bytes": 37901536,
+      "payload_bytes": 37900653,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "00317ee3625056c0c96b8dc9cfb73702eaf84c7b6c4c88b3570e6e9887eb8713"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_03.ring",
+        "coefficient": 1
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/restricted_query_learner_2026_09_08/.runtime/normal_001/public/input_05.ring",
+        "coefficient": 1
+      }
+    ],
+    "live_fresh_ciphertexts": 2,
+    "live_L1_weight": 2,
+    "private_rows_read": 0
+  },
+  "error": null
+}

@@ -1,0 +1,72 @@
+{
+  "all_passed": true,
+  "claim_label": "EXECUTED",
+  "command": "python3 -B research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/expansion/check_expansion.py",
+  "completed_utc": "2026-09-08 17:23:18 UTC",
+  "distinct_canonical_domains": 8,
+  "distinct_chunk_addresses": true,
+  "forced_exhaustion": {
+    "N": 1,
+    "candidates_examined": 17408,
+    "chunks_generated": 17,
+    "completed": false,
+    "max_chunks": 17,
+    "q_bits": 3,
+    "row_index": 0,
+    "xof_bytes_generated": 17408
+  },
+  "forced_rejection": {
+    "N": 5,
+    "candidate_bits": 3,
+    "candidate_bytes": 1,
+    "candidates_examined": 7,
+    "chunks_generated": 1,
+    "completed": true,
+    "max_chunks": 17,
+    "q_bits": 3,
+    "rejections": 2,
+    "row_index": 0,
+    "seconds": 5.458015948534012e-06,
+    "unused_candidate_bytes": 1017,
+    "xof_bytes_generated": 1024
+  },
+  "full_public_row": {
+    "N": 16384,
+    "family": "A",
+    "index": 0,
+    "q": 497323290947860672931310292648754779192460749687510494957169639477681564739617435942913,
+    "sha256_of_37byte_le_values": "b0213896581d4d07294e4661a8c9aaa4dd03bef4a5b021f4e435aff707441090",
+    "stats": {
+      "N": 16384,
+      "candidate_bits": 289,
+      "candidate_bytes": 37,
+      "candidates_examined": 32793,
+      "chunks_generated": 33,
+      "completed": true,
+      "max_chunks": 80,
+      "q_bits": 289,
+      "rejections": 16409,
+      "row_index": 0,
+      "seconds": 0.010016417014412582,
+      "unused_candidate_bytes": 36963,
+      "xof_bytes_generated": 1250304
+    }
+  },
+  "invalid_inputs_rejected": 8,
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "power_of_two_modulus_control": true,
+  "private_artifact_reads": 0,
+  "public_test_binding_hex": "1fde546dafa8300f7c6fac3b6904e1e8772cd3f29c3b940fa5fc137de8a33dd0",
+  "public_test_seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "raw_row_files_persisted": 0,
+  "repeat_and_stream_equality": true,
+  "search_queries": 0,
+  "security_scope": "Deterministic public expansion; no hidden-seed PRG claim or seeded Ring-LWE/regularity proof.",
+  "source_sha256": {
+    "__init__.py": "3f15a40737daebb4ebeb7e469a4162e2f956319e20fba2386cbfcbb6b2f4e0a8",
+    "check_expansion.py": "08edc9469e783119d16f06edc81046817c2687a81e325363499bec94a9750461",
+    "public_expander.py": "ab175083b2a38e382776f07a52a0d8b84e8886085f40f083117de273f0d0aba4"
+  },
+  "sources_unchanged": true
+}

@@ -1,0 +1,10 @@
+{
+  "changed_exponent_rejected": false,
+  "claim": "EXECUTED fresh-process proof verification",
+  "error": null,
+  "proof_bytes": 233366,
+  "proof_sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8",
+  "verified": true,
+  "verifier_ran": true,
+  "verify_ns": 22915042
+}

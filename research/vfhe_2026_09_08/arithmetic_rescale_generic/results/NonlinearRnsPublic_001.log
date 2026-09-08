@@ -1,0 +1,9 @@
+Compiler/NonlinearRnsPublic.lean:13:3: error: unexpected token 'alias'; expected identifier
+Compiler/NonlinearRnsPublic.lean:23:46: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  HAppend (List (Term (AirSig ?m.2 ?m.4))) ((?m.8 → ?m.9) → ConstraintSystem ?m.7 ?m.8 → ConstraintSystem ?m.7 ?m.9)
+    ?m.12
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Compiler/NonlinearRnsPublic.lean:23:77: error: unexpected token 'def'; expected ':='
+Compiler/NonlinearRnsPublic.lean:42:12: error: unexpected token 'alias'; expected term
+Compiler/NonlinearRnsPublic.lean:42:20: error: unexpected token 'if'; expected ':='

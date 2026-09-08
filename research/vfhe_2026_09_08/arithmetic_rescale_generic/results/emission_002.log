@@ -1,0 +1,35 @@
+constructing parameterized directed RNS source
+emitted 76269 arithmetic constraints, width 63845
+produced 1/32 rows
+produced 2/32 rows
+produced 3/32 rows
+produced 4/32 rows
+produced 5/32 rows
+produced 6/32 rows
+produced 7/32 rows
+produced 8/32 rows
+produced 9/32 rows
+produced 10/32 rows
+produced 11/32 rows
+produced 12/32 rows
+produced 13/32 rows
+produced 14/32 rows
+produced 15/32 rows
+produced 16/32 rows
+produced 17/32 rows
+produced 18/32 rows
+produced 19/32 rows
+produced 20/32 rows
+produced 21/32 rows
+produced 22/32 rows
+produced 23/32 rows
+produced 24/32 rows
+produced 25/32 rows
+produced 26/32 rows
+produced 27/32 rows
+produced 28/32 rows
+produced 29/32 rows
+produced 30/32 rows
+produced 31/32 rows
+produced 32/32 rows
+{"all_actual_source_rows_checked":true,"changed_public_output_refused":true,"ir2_arithmetic_constraints":76269,"public_arity":88,"public_tuple_order":"rowID,product_extended9x7_radix512,output4x6_radix512","radix512_refused":true,"rows":32,"trace_bytes":8172160,"trace_width":63845}

@@ -1,0 +1,2 @@
+usage: emit.py [-h] out_dir public_rows_json
+emit.py: error: out_dir must be new; existing outputs are preserved

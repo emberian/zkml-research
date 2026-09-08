@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/check_integration.py", line 35, in <module>
+    assert present,(rel,'missing retained olean',list(map(str,options)))
+           ^^^^^^^
+AssertionError: ('Compiler/BFVScaleLiftRefinement.lean', 'missing retained olean', ['/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/build/Compiler/BFVScaleLiftRefinement.olean', '/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/.build/Compiler/BFVScaleLiftRefinement.olean'])

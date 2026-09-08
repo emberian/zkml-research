@@ -1,0 +1,706 @@
+[
+  {
+    "revision": 32,
+    "test_index": 0,
+    "prediction": "card_arrival",
+    "truth": "card_arrival",
+    "sum_scores": {
+      "card_arrival": 1610467800,
+      "card_payment_not_recognised": 1340588854,
+      "cash_withdrawal_charge": 1257291271,
+      "lost_or_stolen_card": 1582077836
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 1,
+    "prediction": "card_arrival",
+    "truth": "card_arrival",
+    "sum_scores": {
+      "card_arrival": 1565636945,
+      "card_payment_not_recognised": 1446197224,
+      "cash_withdrawal_charge": 1312854341,
+      "lost_or_stolen_card": 1517154337
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 280,
+    "prediction": "cash_withdrawal_charge",
+    "truth": "cash_withdrawal_charge",
+    "sum_scores": {
+      "card_arrival": 1160008380,
+      "card_payment_not_recognised": 1316359005,
+      "cash_withdrawal_charge": 1634162133,
+      "lost_or_stolen_card": 1209997564
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 281,
+    "prediction": "cash_withdrawal_charge",
+    "truth": "cash_withdrawal_charge",
+    "sum_scores": {
+      "card_arrival": 1301337564,
+      "card_payment_not_recognised": 1451928602,
+      "cash_withdrawal_charge": 1791412780,
+      "lost_or_stolen_card": 1410067375
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 160,
+    "prediction": "card_payment_not_recognised",
+    "truth": "card_payment_not_recognised",
+    "sum_scores": {
+      "card_arrival": 1277388588,
+      "card_payment_not_recognised": 1607785881,
+      "cash_withdrawal_charge": 1394179255,
+      "lost_or_stolen_card": 1342346536
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 161,
+    "prediction": "card_payment_not_recognised",
+    "truth": "card_payment_not_recognised",
+    "sum_scores": {
+      "card_arrival": 1494746068,
+      "card_payment_not_recognised": 1668119784,
+      "cash_withdrawal_charge": 1438310251,
+      "lost_or_stolen_card": 1551972086
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 40,
+    "prediction": "lost_or_stolen_card",
+    "truth": "lost_or_stolen_card",
+    "sum_scores": {
+      "card_arrival": 1348714251,
+      "card_payment_not_recognised": 1299767923,
+      "cash_withdrawal_charge": 1292365531,
+      "lost_or_stolen_card": 1500932099
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 41,
+    "prediction": "lost_or_stolen_card",
+    "truth": "lost_or_stolen_card",
+    "sum_scores": {
+      "card_arrival": 1449959917,
+      "card_payment_not_recognised": 1499911369,
+      "cash_withdrawal_charge": 1323535496,
+      "lost_or_stolen_card": 1742149251
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 200,
+    "prediction": "card_payment_not_recognised",
+    "truth": "pending_card_payment",
+    "sum_scores": {
+      "card_arrival": 1528899636,
+      "card_payment_not_recognised": 1539151910,
+      "cash_withdrawal_charge": 1451238442,
+      "lost_or_stolen_card": 1504883788
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 201,
+    "prediction": "card_payment_not_recognised",
+    "truth": "pending_card_payment",
+    "sum_scores": {
+      "card_arrival": 1470077968,
+      "card_payment_not_recognised": 1574287310,
+      "cash_withdrawal_charge": 1421749047,
+      "lost_or_stolen_card": 1429156129
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 240,
+    "prediction": "card_payment_not_recognised",
+    "truth": "pending_transfer",
+    "sum_scores": {
+      "card_arrival": 1285436259,
+      "card_payment_not_recognised": 1360058476,
+      "cash_withdrawal_charge": 1296470705,
+      "lost_or_stolen_card": 1273693593
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 241,
+    "prediction": "card_arrival",
+    "truth": "pending_transfer",
+    "sum_scores": {
+      "card_arrival": 1370394164,
+      "card_payment_not_recognised": 1340407709,
+      "cash_withdrawal_charge": 1345945866,
+      "lost_or_stolen_card": 1233179724
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 120,
+    "prediction": "card_payment_not_recognised",
+    "truth": "transfer_not_received_by_recipient",
+    "sum_scores": {
+      "card_arrival": 1364501996,
+      "card_payment_not_recognised": 1418215722,
+      "cash_withdrawal_charge": 1414987018,
+      "lost_or_stolen_card": 1367001476
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 121,
+    "prediction": "card_payment_not_recognised",
+    "truth": "transfer_not_received_by_recipient",
+    "sum_scores": {
+      "card_arrival": 1412087520,
+      "card_payment_not_recognised": 1618166191,
+      "cash_withdrawal_charge": 1393330284,
+      "lost_or_stolen_card": 1430596429
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 80,
+    "prediction": "cash_withdrawal_charge",
+    "truth": "wrong_amount_of_cash_received",
+    "sum_scores": {
+      "card_arrival": 1241739831,
+      "card_payment_not_recognised": 1403276085,
+      "cash_withdrawal_charge": 1451876213,
+      "lost_or_stolen_card": 1270222897
+    }
+  },
+  {
+    "revision": 32,
+    "test_index": 81,
+    "prediction": "card_payment_not_recognised",
+    "truth": "wrong_amount_of_cash_received",
+    "sum_scores": {
+      "card_arrival": 1229948304,
+      "card_payment_not_recognised": 1498902315,
+      "cash_withdrawal_charge": 1469936256,
+      "lost_or_stolen_card": 1396236913
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 0,
+    "prediction": "card_arrival",
+    "truth": "card_arrival",
+    "sum_scores": {
+      "card_arrival": 1610467800,
+      "card_payment_not_recognised": 1340588854,
+      "cash_withdrawal_charge": 1257291271,
+      "lost_or_stolen_card": 1582077836,
+      "pending_card_payment": 1351677468,
+      "pending_transfer": 1206072178,
+      "transfer_not_received_by_recipient": 1251712618,
+      "wrong_amount_of_cash_received": 1226255430
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 1,
+    "prediction": "card_arrival",
+    "truth": "card_arrival",
+    "sum_scores": {
+      "card_arrival": 1565636945,
+      "card_payment_not_recognised": 1446197224,
+      "cash_withdrawal_charge": 1312854341,
+      "lost_or_stolen_card": 1517154337,
+      "pending_card_payment": 1504637946,
+      "pending_transfer": 1408828948,
+      "transfer_not_received_by_recipient": 1406192672,
+      "wrong_amount_of_cash_received": 1401814818
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 280,
+    "prediction": "cash_withdrawal_charge",
+    "truth": "cash_withdrawal_charge",
+    "sum_scores": {
+      "card_arrival": 1160008380,
+      "card_payment_not_recognised": 1316359005,
+      "cash_withdrawal_charge": 1634162133,
+      "lost_or_stolen_card": 1209997564,
+      "pending_card_payment": 1291272016,
+      "pending_transfer": 1227270902,
+      "transfer_not_received_by_recipient": 1286268637,
+      "wrong_amount_of_cash_received": 1417123933
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 281,
+    "prediction": "cash_withdrawal_charge",
+    "truth": "cash_withdrawal_charge",
+    "sum_scores": {
+      "card_arrival": 1301337564,
+      "card_payment_not_recognised": 1451928602,
+      "cash_withdrawal_charge": 1791412780,
+      "lost_or_stolen_card": 1410067375,
+      "pending_card_payment": 1368481579,
+      "pending_transfer": 1273938135,
+      "transfer_not_received_by_recipient": 1359825780,
+      "wrong_amount_of_cash_received": 1572420592
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 160,
+    "prediction": "card_payment_not_recognised",
+    "truth": "card_payment_not_recognised",
+    "sum_scores": {
+      "card_arrival": 1277388588,
+      "card_payment_not_recognised": 1607785881,
+      "cash_withdrawal_charge": 1394179255,
+      "lost_or_stolen_card": 1342346536,
+      "pending_card_payment": 1452179320,
+      "pending_transfer": 1355465542,
+      "transfer_not_received_by_recipient": 1397283659,
+      "wrong_amount_of_cash_received": 1467212854
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 161,
+    "prediction": "card_payment_not_recognised",
+    "truth": "card_payment_not_recognised",
+    "sum_scores": {
+      "card_arrival": 1494746068,
+      "card_payment_not_recognised": 1668119784,
+      "cash_withdrawal_charge": 1438310251,
+      "lost_or_stolen_card": 1551972086,
+      "pending_card_payment": 1470490310,
+      "pending_transfer": 1355028201,
+      "transfer_not_received_by_recipient": 1373680165,
+      "wrong_amount_of_cash_received": 1393745444
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 40,
+    "prediction": "lost_or_stolen_card",
+    "truth": "lost_or_stolen_card",
+    "sum_scores": {
+      "card_arrival": 1348714251,
+      "card_payment_not_recognised": 1299767923,
+      "cash_withdrawal_charge": 1292365531,
+      "lost_or_stolen_card": 1500932099,
+      "pending_card_payment": 1339896101,
+      "pending_transfer": 1181581111,
+      "transfer_not_received_by_recipient": 1230976786,
+      "wrong_amount_of_cash_received": 1271470611
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 41,
+    "prediction": "lost_or_stolen_card",
+    "truth": "lost_or_stolen_card",
+    "sum_scores": {
+      "card_arrival": 1449959917,
+      "card_payment_not_recognised": 1499911369,
+      "cash_withdrawal_charge": 1323535496,
+      "lost_or_stolen_card": 1742149251,
+      "pending_card_payment": 1380268907,
+      "pending_transfer": 1230969840,
+      "transfer_not_received_by_recipient": 1301645260,
+      "wrong_amount_of_cash_received": 1394819409
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 200,
+    "prediction": "pending_card_payment",
+    "truth": "pending_card_payment",
+    "sum_scores": {
+      "card_arrival": 1528899636,
+      "card_payment_not_recognised": 1539151910,
+      "cash_withdrawal_charge": 1451238442,
+      "lost_or_stolen_card": 1504883788,
+      "pending_card_payment": 1691841150,
+      "pending_transfer": 1473849167,
+      "transfer_not_received_by_recipient": 1473544233,
+      "wrong_amount_of_cash_received": 1434710168
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 201,
+    "prediction": "pending_card_payment",
+    "truth": "pending_card_payment",
+    "sum_scores": {
+      "card_arrival": 1470077968,
+      "card_payment_not_recognised": 1574287310,
+      "cash_withdrawal_charge": 1421749047,
+      "lost_or_stolen_card": 1429156129,
+      "pending_card_payment": 1718166410,
+      "pending_transfer": 1504710073,
+      "transfer_not_received_by_recipient": 1493280261,
+      "wrong_amount_of_cash_received": 1429928277
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 240,
+    "prediction": "pending_transfer",
+    "truth": "pending_transfer",
+    "sum_scores": {
+      "card_arrival": 1285436259,
+      "card_payment_not_recognised": 1360058476,
+      "cash_withdrawal_charge": 1296470705,
+      "lost_or_stolen_card": 1273693593,
+      "pending_card_payment": 1477403516,
+      "pending_transfer": 1570328421,
+      "transfer_not_received_by_recipient": 1493931919,
+      "wrong_amount_of_cash_received": 1282816246
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 241,
+    "prediction": "transfer_not_received_by_recipient",
+    "truth": "pending_transfer",
+    "sum_scores": {
+      "card_arrival": 1370394164,
+      "card_payment_not_recognised": 1340407709,
+      "cash_withdrawal_charge": 1345945866,
+      "lost_or_stolen_card": 1233179724,
+      "pending_card_payment": 1452986060,
+      "pending_transfer": 1625469848,
+      "transfer_not_received_by_recipient": 1645464973,
+      "wrong_amount_of_cash_received": 1325695758
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 120,
+    "prediction": "transfer_not_received_by_recipient",
+    "truth": "transfer_not_received_by_recipient",
+    "sum_scores": {
+      "card_arrival": 1364501996,
+      "card_payment_not_recognised": 1418215722,
+      "cash_withdrawal_charge": 1414987018,
+      "lost_or_stolen_card": 1367001476,
+      "pending_card_payment": 1513286582,
+      "pending_transfer": 1518566607,
+      "transfer_not_received_by_recipient": 1541711884,
+      "wrong_amount_of_cash_received": 1436070416
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 121,
+    "prediction": "transfer_not_received_by_recipient",
+    "truth": "transfer_not_received_by_recipient",
+    "sum_scores": {
+      "card_arrival": 1412087520,
+      "card_payment_not_recognised": 1618166191,
+      "cash_withdrawal_charge": 1393330284,
+      "lost_or_stolen_card": 1430596429,
+      "pending_card_payment": 1533466933,
+      "pending_transfer": 1643282973,
+      "transfer_not_received_by_recipient": 1651558618,
+      "wrong_amount_of_cash_received": 1526360299
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 80,
+    "prediction": "wrong_amount_of_cash_received",
+    "truth": "wrong_amount_of_cash_received",
+    "sum_scores": {
+      "card_arrival": 1241739831,
+      "card_payment_not_recognised": 1403276085,
+      "cash_withdrawal_charge": 1451876213,
+      "lost_or_stolen_card": 1270222897,
+      "pending_card_payment": 1445888658,
+      "pending_transfer": 1324039133,
+      "transfer_not_received_by_recipient": 1354224965,
+      "wrong_amount_of_cash_received": 1504854133
+    }
+  },
+  {
+    "revision": 64,
+    "test_index": 81,
+    "prediction": "wrong_amount_of_cash_received",
+    "truth": "wrong_amount_of_cash_received",
+    "sum_scores": {
+      "card_arrival": 1229948304,
+      "card_payment_not_recognised": 1498902315,
+      "cash_withdrawal_charge": 1469936256,
+      "lost_or_stolen_card": 1396236913,
+      "pending_card_payment": 1366480321,
+      "pending_transfer": 1307929082,
+      "transfer_not_received_by_recipient": 1396441396,
+      "wrong_amount_of_cash_received": 1715117184
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 0,
+    "prediction": "lost_or_stolen_card",
+    "truth": "card_arrival",
+    "sum_scores": {
+      "card_arrival": 1526396583,
+      "card_payment_not_recognised": 1412929666,
+      "cash_withdrawal_charge": 1233472747,
+      "lost_or_stolen_card": 1536009813,
+      "pending_card_payment": 1368049797,
+      "pending_transfer": 1172701117,
+      "transfer_not_received_by_recipient": 1316076861,
+      "wrong_amount_of_cash_received": 1234174840
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 1,
+    "prediction": "card_arrival",
+    "truth": "card_arrival",
+    "sum_scores": {
+      "card_arrival": 1658101746,
+      "card_payment_not_recognised": 1495001681,
+      "cash_withdrawal_charge": 1322141394,
+      "lost_or_stolen_card": 1480942407,
+      "pending_card_payment": 1564922450,
+      "pending_transfer": 1385132257,
+      "transfer_not_received_by_recipient": 1432498260,
+      "wrong_amount_of_cash_received": 1389406930
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 280,
+    "prediction": "cash_withdrawal_charge",
+    "truth": "cash_withdrawal_charge",
+    "sum_scores": {
+      "card_arrival": 1189814868,
+      "card_payment_not_recognised": 1346997737,
+      "cash_withdrawal_charge": 1580253436,
+      "lost_or_stolen_card": 1233824607,
+      "pending_card_payment": 1277596168,
+      "pending_transfer": 1199223892,
+      "transfer_not_received_by_recipient": 1211694069,
+      "wrong_amount_of_cash_received": 1445339394
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 281,
+    "prediction": "cash_withdrawal_charge",
+    "truth": "cash_withdrawal_charge",
+    "sum_scores": {
+      "card_arrival": 1295531933,
+      "card_payment_not_recognised": 1473404067,
+      "cash_withdrawal_charge": 1690184901,
+      "lost_or_stolen_card": 1394511167,
+      "pending_card_payment": 1382103279,
+      "pending_transfer": 1275540188,
+      "transfer_not_received_by_recipient": 1357900853,
+      "wrong_amount_of_cash_received": 1607184121
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 160,
+    "prediction": "card_payment_not_recognised",
+    "truth": "card_payment_not_recognised",
+    "sum_scores": {
+      "card_arrival": 1270844598,
+      "card_payment_not_recognised": 1582905419,
+      "cash_withdrawal_charge": 1401919398,
+      "lost_or_stolen_card": 1310292769,
+      "pending_card_payment": 1489026712,
+      "pending_transfer": 1308975283,
+      "transfer_not_received_by_recipient": 1342437969,
+      "wrong_amount_of_cash_received": 1450772700
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 161,
+    "prediction": "card_payment_not_recognised",
+    "truth": "card_payment_not_recognised",
+    "sum_scores": {
+      "card_arrival": 1529026401,
+      "card_payment_not_recognised": 1625837361,
+      "cash_withdrawal_charge": 1438013750,
+      "lost_or_stolen_card": 1530273247,
+      "pending_card_payment": 1491941524,
+      "pending_transfer": 1278627783,
+      "transfer_not_received_by_recipient": 1422999965,
+      "wrong_amount_of_cash_received": 1384861956
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 40,
+    "prediction": "lost_or_stolen_card",
+    "truth": "lost_or_stolen_card",
+    "sum_scores": {
+      "card_arrival": 1319868171,
+      "card_payment_not_recognised": 1340173726,
+      "cash_withdrawal_charge": 1310329160,
+      "lost_or_stolen_card": 1523921455,
+      "pending_card_payment": 1309652361,
+      "pending_transfer": 1230458253,
+      "transfer_not_received_by_recipient": 1318793812,
+      "wrong_amount_of_cash_received": 1345050768
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 41,
+    "prediction": "lost_or_stolen_card",
+    "truth": "lost_or_stolen_card",
+    "sum_scores": {
+      "card_arrival": 1486961936,
+      "card_payment_not_recognised": 1518867207,
+      "cash_withdrawal_charge": 1324932928,
+      "lost_or_stolen_card": 1612708072,
+      "pending_card_payment": 1432866911,
+      "pending_transfer": 1213410419,
+      "transfer_not_received_by_recipient": 1362051108,
+      "wrong_amount_of_cash_received": 1395691672
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 200,
+    "prediction": "pending_card_payment",
+    "truth": "pending_card_payment",
+    "sum_scores": {
+      "card_arrival": 1557391828,
+      "card_payment_not_recognised": 1598672096,
+      "cash_withdrawal_charge": 1443591865,
+      "lost_or_stolen_card": 1502324874,
+      "pending_card_payment": 1742534893,
+      "pending_transfer": 1493807864,
+      "transfer_not_received_by_recipient": 1508555800,
+      "wrong_amount_of_cash_received": 1461397834
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 201,
+    "prediction": "pending_card_payment",
+    "truth": "pending_card_payment",
+    "sum_scores": {
+      "card_arrival": 1457429206,
+      "card_payment_not_recognised": 1566035609,
+      "cash_withdrawal_charge": 1383490823,
+      "lost_or_stolen_card": 1443927734,
+      "pending_card_payment": 1804571382,
+      "pending_transfer": 1529978054,
+      "transfer_not_received_by_recipient": 1503570305,
+      "wrong_amount_of_cash_received": 1431052293
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 240,
+    "prediction": "pending_card_payment",
+    "truth": "pending_transfer",
+    "sum_scores": {
+      "card_arrival": 1327332513,
+      "card_payment_not_recognised": 1342438193,
+      "cash_withdrawal_charge": 1234806296,
+      "lost_or_stolen_card": 1274074546,
+      "pending_card_payment": 1529702643,
+      "pending_transfer": 1511142672,
+      "transfer_not_received_by_recipient": 1429063838,
+      "wrong_amount_of_cash_received": 1272145112
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 241,
+    "prediction": "pending_transfer",
+    "truth": "pending_transfer",
+    "sum_scores": {
+      "card_arrival": 1375444783,
+      "card_payment_not_recognised": 1351004689,
+      "cash_withdrawal_charge": 1261306458,
+      "lost_or_stolen_card": 1282787610,
+      "pending_card_payment": 1445872318,
+      "pending_transfer": 1516423903,
+      "transfer_not_received_by_recipient": 1479537577,
+      "wrong_amount_of_cash_received": 1293741657
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 120,
+    "prediction": "pending_transfer",
+    "truth": "transfer_not_received_by_recipient",
+    "sum_scores": {
+      "card_arrival": 1383149481,
+      "card_payment_not_recognised": 1460105652,
+      "cash_withdrawal_charge": 1382563047,
+      "lost_or_stolen_card": 1370678687,
+      "pending_card_payment": 1554157085,
+      "pending_transfer": 1585276633,
+      "transfer_not_received_by_recipient": 1580505938,
+      "wrong_amount_of_cash_received": 1435082984
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 121,
+    "prediction": "transfer_not_received_by_recipient",
+    "truth": "transfer_not_received_by_recipient",
+    "sum_scores": {
+      "card_arrival": 1502200551,
+      "card_payment_not_recognised": 1556661697,
+      "cash_withdrawal_charge": 1372062863,
+      "lost_or_stolen_card": 1414028548,
+      "pending_card_payment": 1598857947,
+      "pending_transfer": 1501712350,
+      "transfer_not_received_by_recipient": 1612397304,
+      "wrong_amount_of_cash_received": 1501897857
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 80,
+    "prediction": "wrong_amount_of_cash_received",
+    "truth": "wrong_amount_of_cash_received",
+    "sum_scores": {
+      "card_arrival": 1255265015,
+      "card_payment_not_recognised": 1426908030,
+      "cash_withdrawal_charge": 1420181853,
+      "lost_or_stolen_card": 1294290555,
+      "pending_card_payment": 1400852016,
+      "pending_transfer": 1355533485,
+      "transfer_not_received_by_recipient": 1385245365,
+      "wrong_amount_of_cash_received": 1555291595
+    }
+  },
+  {
+    "revision": 128,
+    "test_index": 81,
+    "prediction": "wrong_amount_of_cash_received",
+    "truth": "wrong_amount_of_cash_received",
+    "sum_scores": {
+      "card_arrival": 1308354079,
+      "card_payment_not_recognised": 1480052289,
+      "cash_withdrawal_charge": 1449290599,
+      "lost_or_stolen_card": 1349492022,
+      "pending_card_payment": 1426058972,
+      "pending_transfer": 1252679547,
+      "transfer_not_received_by_recipient": 1373444967,
+      "wrong_amount_of_cash_received": 1616947423
+    }
+  }
+]

@@ -1,0 +1,45 @@
+{"public_revision": 32, "queries": 16, "elapsed_seconds": 127.5067300000228}
+{"public_revision": 64, "queries": 32, "elapsed_seconds": 339.5101560840267}
+{"public_revision": 128, "queries": 48, "elapsed_seconds": 582.2835246250033}
+{
+  "ok": true,
+  "learns": 128,
+  "expiries": 64,
+  "multiclass_queries": 48,
+  "ct_ct_multiplications": 320,
+  "rotations": 3200,
+  "exact_kernel_value_matches": 2560,
+  "exact_class_sum_matches": 320,
+  "prediction_matches": 48,
+  "public_elapsed_seconds": 582.2837842089939,
+  "total_elapsed_seconds": 611.9614214589819,
+  "commands": {
+    "infer": {
+      "calls": 320,
+      "seconds": 536.2794047163916,
+      "mean_seconds": 1.6758731397387236
+    },
+    "issue": {
+      "calls": 128,
+      "seconds": 34.01522050081985,
+      "mean_seconds": 0.2657439101626551
+    },
+    "keygen": {
+      "calls": 1,
+      "seconds": 0.287265041959472,
+      "mean_seconds": 0.287265041959472
+    },
+    "learn": {
+      "calls": 128,
+      "seconds": 10.528541375009809,
+      "mean_seconds": 0.08225422949226413
+    },
+    "read": {
+      "calls": 320,
+      "seconds": 29.434445040882565,
+      "mean_seconds": 0.09198264075275801
+    }
+  },
+  "public_before_private": true,
+  "scope": "Actual nonlinear BFV execution; reused-test integration slice; public label/lane/query; full reader key; new adapter"
+}

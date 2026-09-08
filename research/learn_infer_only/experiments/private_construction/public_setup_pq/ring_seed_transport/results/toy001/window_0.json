@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "role_command": "window",
+  "pid": 62037,
+  "elapsed_seconds": 0.001734166988171637,
+  "peak_rss_bytes_macos": 38207488,
+  "uid": 501,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/cipher_0.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/cipher_0.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/window_0.ring",
+      "kind": "ciphertext",
+      "bytes": 1566,
+      "payload_bytes": 1027,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "c8b4f483dae2c32500918d0cd2fc75938ec1c047596bbd47ea0e1a6b7cb3fdf8"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/.runtime/toy001/public/cipher_0.ring",
+        "coefficient": 1
+      }
+    ],
+    "live_fresh_ciphertexts": 1,
+    "live_L1_weight": 1,
+    "private_rows_read": 0
+  },
+  "error": null
+}

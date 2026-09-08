@@ -1,0 +1,203 @@
+diff --git a/circuit-prove/src/mina_wrap_closing_fold.rs b/circuit-prove/src/mina_wrap_closing_fold.rs
+index c1b22a1e2..e2f733aa7 100644
+--- a/circuit-prove/src/mina_wrap_closing_fold.rs
++++ b/circuit-prove/src/mina_wrap_closing_fold.rs
+@@ -509,7 +509,9 @@ fn field_limb(v: i64, what: &str, j: usize) -> Result<u32, String> {
+     u32::try_from(v)
+         .ok()
+         .filter(|x| *x < 0x7800_0001)
+-        .ok_or_else(|| format!("delta-absorb {what} limb {j} is {v}, not a canonical BabyBear value"))
++        .ok_or_else(|| {
++            format!("delta-absorb {what} limb {j} is {v}, not a canonical BabyBear value")
++        })
+ }
+ 
+ /// ⚑⚑⚑ **THE COVER OF `dregg-mina-wrap-closing-fs::v1`'s `delta-absorb-pis` PORT — and it
+@@ -584,12 +586,16 @@ pub fn connect_delta_absorb_pis(
+ 
+     // ── 96: the incoming sponge state IS the descriptor's declared `TR_IN`.
+     for (j, v) in pins.tr_in.iter().enumerate() {
+-        let k = cb.define_const(RecursionChallenge::from(P3BabyBear::from_u64(u64::from(*v))));
++        let k = cb.define_const(RecursionChallenge::from(P3BabyBear::from_u64(u64::from(
++            *v,
++        ))));
+         cb.connect(absorb_claim[ABSORB_PI_IN_LO + j], k);
+     }
+     // ── 64: the absorbed pair IS the chain's own `.first`-pinned addend cells.
+     for (j, v) in pins.delta.iter().enumerate() {
+-        let k = cb.define_const(RecursionChallenge::from(P3BabyBear::from_u64(u64::from(*v))));
++        let k = cb.define_const(RecursionChallenge::from(P3BabyBear::from_u64(u64::from(
++            *v,
++        ))));
+         cb.connect(absorb_claim[ABSORB_PI_ABSORBED_LO + j], k);
+     }
+     // ── 32: the published squeeze IS the absorb program's own output.
+@@ -791,7 +797,9 @@ mod tests {
+     /// zeroes one is a move of a REAL value, and every limb inside the declared 8-bit width so
+     /// nothing is refused for being out of range instead of for disagreeing.
+     fn squeeze_lanes() -> Vec<u32> {
+-        (0..ABSORB_PI_OUT_WIDTH).map(|j| 1 + (j as u32 % 251)).collect()
++        (0..ABSORB_PI_OUT_WIDTH)
++            .map(|j| 1 + (j as u32 % 251))
++            .collect()
+     }
+ 
+     /// ⚑ **THE PINS ARE READ, NOT INVENTED — and they are not all zero.** If
+@@ -799,7 +807,8 @@ mod tests {
+     /// and the suite would look identical while measuring nothing.
+     #[test]
+     fn the_cover_pins_are_recovered_from_the_descriptors_own_bytes() {
+-        let pins = delta_absorb_pins(&fs_descriptor()).expect("the `-fs` fixture declares its pins");
++        let pins =
++            delta_absorb_pins(&fs_descriptor()).expect("the `-fs` fixture declares its pins");
+         assert_eq!(pins.tr_in.len(), ABSORB_PI_IN_WIDTH);
+         assert_eq!(pins.delta.len(), ABSORB_PI_ABSORBED_WIDTH);
+         assert!(
+@@ -841,7 +850,11 @@ mod tests {
+             let (mut fs, ab) = honest_pair(&pins, &sq);
+             let before = fs[FS_PI_TROUT_LO + j];
+             fs[FS_PI_TROUT_LO + j] = before ^ 1;
+-            assert_ne!(fs[FS_PI_TROUT_LO + j], before, "the mutation must move a value");
++            assert_ne!(
++                fs[FS_PI_TROUT_LO + j],
++                before,
++                "the mutation must move a value"
++            );
+             assert!(
+                 run_cover(&fs, &ab, &pins).is_err(),
+                 "a `-fs` squeeze limb {j} the absorb child did not produce must be UNSAT"
+diff --git a/circuit-prove/tests/apex_shrink_gnark_fixture.rs b/circuit-prove/tests/apex_shrink_gnark_fixture.rs
+index d0b30e204..1dcaa9ccb 100644
+--- a/circuit-prove/tests/apex_shrink_gnark_fixture.rs
++++ b/circuit-prove/tests/apex_shrink_gnark_fixture.rs
+@@ -519,7 +519,10 @@ fn the_apex_identity_is_one_chain_length_and_every_other_length_is_refused() {
+         println!("  recursion_vk : {}", id.recursion_vk_hex);
+         println!("  apex VK core : {:?}", id.apex_preprocessed_commit);
+         println!("  root spine   : {spine:?}");
+-        println!("  governance pin: {}", if pinned { "ACCEPTS" } else { "REFUSES" });
++        println!(
++            "  governance pin: {}",
++            if pinned { "ACCEPTS" } else { "REFUSES" }
++        );
+         rows.push((
+             n,
+             id.recursion_vk_hex,
+diff --git a/circuit/tests/mina_phase1_tape_binding_proves.rs b/circuit/tests/mina_phase1_tape_binding_proves.rs
+index 4693afbe1..60ce350f3 100644
+--- a/circuit/tests/mina_phase1_tape_binding_proves.rs
++++ b/circuit/tests/mina_phase1_tape_binding_proves.rs
+@@ -518,7 +518,10 @@ fn the_53_split_by_unconditional_versus_p10_conditional() {
+     // unconditional closures. It is 3.
+     let unconditional = statement_bound + vk_digest;
+     let conditional_on_p10 = aggregate_bound + t_comm;
+-    assert_eq!(unconditional, 3, "kernel-built or fixture-derived, no floor under them");
++    assert_eq!(
++        unconditional, 3,
++        "kernel-built or fixture-derived, no floor under them"
++    );
+     assert_eq!(
+         conditional_on_p10, 50,
+         "closed only via `opening_relation_holds`, which inherits the IPA `msm == 0` floor (P10)"
+diff --git a/demo/sdk-consensus/src/main.rs b/demo/sdk-consensus/src/main.rs
+index 574588480..01cfb7580 100644
+--- a/demo/sdk-consensus/src/main.rs
++++ b/demo/sdk-consensus/src/main.rs
+@@ -121,8 +121,11 @@ fn build_ordering_blocklace(
+     // ⚑ `CreatorTips::iter`, NOT `primary()`: a flagged creator's tips entry is a
+     // pinned incomparable PAIR, and seeding from only the first half would silently
+     // drop one fork's blocks from the walk below.
+-    let mut frontier: Vec<dregg_blocklace::finality::BlockId> =
+-        finality_lace.tips().values().flat_map(|t| t.iter()).collect();
++    let mut frontier: Vec<dregg_blocklace::finality::BlockId> = finality_lace
++        .tips()
++        .values()
++        .flat_map(|t| t.iter())
++        .collect();
+     let mut seen = std::collections::HashSet::new();
+     while let Some(id) = frontier.pop() {
+         if !seen.insert(id) {
+diff --git a/net/src/gossip.rs b/net/src/gossip.rs
+index 3e62f87af..560df23cb 100644
+--- a/net/src/gossip.rs
++++ b/net/src/gossip.rs
+@@ -5681,14 +5681,22 @@ mod tests {
+         let mut topics = Vec::new();
+         let mut streams = Vec::new();
+         for (i, node) in nodes.iter().enumerate() {
+-            let g = GossipNetwork::new(node.endpoint().clone(), ids[i], sks[i].clone(), keys.clone());
++            let g = GossipNetwork::new(
++                node.endpoint().clone(),
++                ids[i],
++                sks[i].clone(),
++                keys.clone(),
++            );
+             let peer_addrs: Vec<SocketAddr> = addrs
+                 .iter()
+                 .enumerate()
+                 .filter(|(j, _)| *j != i)
+                 .map(|(_, a)| *a)
+                 .collect();
+-            let topic = g.join_topic("dregg/direct-test", &peer_addrs).await.unwrap();
++            let topic = g
++                .join_topic("dregg/direct-test", &peer_addrs)
++                .await
++                .unwrap();
+             let stream = g.subscribe(&topic).await.unwrap();
+             gossips.push(g);
+             topics.push(topic);
+diff --git a/redteam/tests/multinode_byzantine_chaos.rs b/redteam/tests/multinode_byzantine_chaos.rs
+index fba924fd2..7687cc087 100644
+--- a/redteam/tests/multinode_byzantine_chaos.rs
++++ b/redteam/tests/multinode_byzantine_chaos.rs
+@@ -676,11 +676,15 @@ fn attack_double_spend_race_no_node_finalizes_one_fork() {
+     let spender_id = Block::hybrid_id(&spender);
+     assert_eq!(
+         n1.tips().get(&spender_id),
+-        Some(&dregg_blocklace::finality::CreatorTips::One(spend_to_alice.id()))
++        Some(&dregg_blocklace::finality::CreatorTips::One(
++            spend_to_alice.id()
++        ))
+     );
+     assert_eq!(
+         n2.tips().get(&spender_id),
+-        Some(&dregg_blocklace::finality::CreatorTips::One(spend_to_bob.id()))
++        Some(&dregg_blocklace::finality::CreatorTips::One(
++            spend_to_bob.id()
++        ))
+     );
+ 
+     // Now gossip cross-delivers the conflicting spend to each node.
+diff --git a/sdk/tests/sovereign_rotated_c1.rs b/sdk/tests/sovereign_rotated_c1.rs
+index 0cd7421df..72acc7d73 100644
+--- a/sdk/tests/sovereign_rotated_c1.rs
++++ b/sdk/tests/sovereign_rotated_c1.rs
+@@ -356,7 +356,10 @@ mod record_pin_anchor {
+     #[test]
+     fn rotated_sovereign_forged_after_vk_is_rejected() {
+         let (_c, cell_id, ledger, before_cell) = setup_with_cell(1000);
+-        assert!(before_cell.verification_key.is_none(), "before cell has no VK");
++        assert!(
++            before_cell.verification_key.is_none(),
++            "before cell has no VK"
++        );
+ 
+         #[allow(deprecated)]
+         let vk_honest = dregg_cell::VerificationKey::new(b"c1-setvk-honest".to_vec());
+diff --git a/teasting/src/harness.rs b/teasting/src/harness.rs
+index 9f675bd46..0cc5d3bee 100644
+--- a/teasting/src/harness.rs
++++ b/teasting/src/harness.rs
+@@ -470,8 +470,11 @@ fn build_ordering_blocklace(finality_lace: &Blocklace) -> dregg_blocklace::Block
+     // pinned incomparable PAIR, and seeding the BFS from only the first half would
+     // silently shrink the reachable set — the equivocation evidence this harness
+     // exists to carry is exactly what would go missing.
+-    let mut frontier: Vec<dregg_blocklace::finality::BlockId> =
+-        finality_lace.tips().values().flat_map(|t| t.iter()).collect();
++    let mut frontier: Vec<dregg_blocklace::finality::BlockId> = finality_lace
++        .tips()
++        .values()
++        .flat_map(|t| t.iter())
++        .collect();
+     let mut seen = HashSet::new();
+ 
+     while let Some(id) = frontier.pop() {

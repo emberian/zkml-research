@@ -1,0 +1,8 @@
+{
+  "command": ["git", "apply", "--check", "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/minidregg_integration/minidregg-fhe-arithmetic.patch"],
+  "cwd": "/Users/ember/dev/minidregg",
+  "exit": 0,
+  "stdout": "",
+  "stderr": "",
+  "read_only": true
+}

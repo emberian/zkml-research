@@ -1,0 +1,319 @@
+{
+  "ok": true,
+  "scope": "Public-only same-input replay; no model forward, encryption, teaching or private read. Same complete ciphertext bytes, nine final live query classes.",
+  "change": "Cache the fixed public plaintext prime instead of re-running generate_prime once per residue.",
+  "ready_seconds": 0.14692216698313132,
+  "nine_class_public_seconds": 0.423378414940089,
+  "wall_seconds": 0.5876959590241313,
+  "RAYON_NUM_THREADS": "1",
+  "binary_sha256": "5503d7495df77adafa9f2f4d9c417eb4a7fd6babaca67f608edfc643de14f0f7",
+  "source_sha256": "e14ac9699747ab06347020ed6859ba5cda7855559ebb9a48a290887c4fb13420",
+  "baseline_source_sha256": "fcefe3e11749e78771bec25cfeeaf5430a1ab0799ddaf3b09eef2ae2eda0ac47",
+  "baseline_binary_sha256": "a6f378e6b25b51abcfa7ecfb73896aebbb9443b30c63a3bd306d8d5691a2b859",
+  "ready": {
+    "parameters": {
+      "N": 8192,
+      "column_rotations": [
+        8,
+        16,
+        32,
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048
+      ],
+      "dimension": 576,
+      "input_components": 2,
+      "kernel_components": 3,
+      "lanes": 8,
+      "level": 0,
+      "multiplication": "real extended-RNS tensor square, native Scaler t/Q, no relinearization or modulus switching",
+      "norm_squared_bound": 20000,
+      "q": [
+        1125899906826241,
+        1125899906629633,
+        1125899905744897,
+        1125899905351681
+      ],
+      "q_bits": [
+        50,
+        50,
+        50,
+        50
+      ],
+      "row_swap": true,
+      "scheme": "BFV",
+      "slots": "feature_index*8+memory_lane; pad to1024features",
+      "sum_kernel_bound": 3200000000,
+      "t": 4294475777,
+      "variance": 10
+    },
+    "public_only": true,
+    "ready": true
+  },
+  "results": [
+    {
+      "request": {
+        "command": "infer",
+        "arguments": {
+          "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv",
+          "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/ciphertexts/state-000121-39e891e5.ct",
+          "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/queries/d34eada675224485a047f1b55dc686c8.json",
+          "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/cached_replay_002/000.ct"
+        }
+      },
+      "result": {
+        "bytes": 614445,
+        "components": 3,
+        "ct_ct_multiplications": 1,
+        "ct_multiply_ns": 28258834,
+        "dot_ns": 12944292,
+        "elapsed_ns": 48027208,
+        "rotation_count": 10,
+        "sha256": "267c53d3f6bb01f4a59a306b0511b8e5ab59ef5d967d9c69cc126e4dca142b30"
+      },
+      "wall_seconds": 0.04815391596639529,
+      "previous_output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/answers/d34eada675224485a047f1b55dc686c8-000.ct",
+      "output_bytes_equal": true,
+      "input_hashes": {
+        "acc": "7bcbad4956508176d62216152c6d1b5a64353268c725154e08fd5f21fa30ad83",
+        "query": "35ae9f92f863af2bc66c99dd9dd9749c0acd5b3fae2da68ee9024d3866f39f0f"
+      },
+      "output_sha256": "267c53d3f6bb01f4a59a306b0511b8e5ab59ef5d967d9c69cc126e4dca142b30"
+    },
+    {
+      "request": {
+        "command": "infer",
+        "arguments": {
+          "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv",
+          "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/ciphertexts/state-000123-983f70df.ct",
+          "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/queries/d34eada675224485a047f1b55dc686c8.json",
+          "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/cached_replay_002/001.ct"
+        }
+      },
+      "result": {
+        "bytes": 614445,
+        "components": 3,
+        "ct_ct_multiplications": 1,
+        "ct_multiply_ns": 27878459,
+        "dot_ns": 13167833,
+        "elapsed_ns": 47448250,
+        "rotation_count": 10,
+        "sha256": "65ac15ccd9ea60298ca7f832d23987e7235da55f0286d6cff79667ee30e2a856"
+      },
+      "wall_seconds": 0.04753641702700406,
+      "previous_output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/answers/d34eada675224485a047f1b55dc686c8-001.ct",
+      "output_bytes_equal": true,
+      "input_hashes": {
+        "acc": "322d7fd89488b2e91b1fee727af08e63ff363a263dd810637ba0e8b7e0493c8e",
+        "query": "35ae9f92f863af2bc66c99dd9dd9749c0acd5b3fae2da68ee9024d3866f39f0f"
+      },
+      "output_sha256": "65ac15ccd9ea60298ca7f832d23987e7235da55f0286d6cff79667ee30e2a856"
+    },
+    {
+      "request": {
+        "command": "infer",
+        "arguments": {
+          "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv",
+          "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/ciphertexts/state-000122-28969ea5.ct",
+          "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/queries/d34eada675224485a047f1b55dc686c8.json",
+          "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/cached_replay_002/002.ct"
+        }
+      },
+      "result": {
+        "bytes": 614445,
+        "components": 3,
+        "ct_ct_multiplications": 1,
+        "ct_multiply_ns": 27778333,
+        "dot_ns": 12629625,
+        "elapsed_ns": 46395625,
+        "rotation_count": 10,
+        "sha256": "0fe80347dfe9fbec2247ace206b8c0bbb3e24b6180ce8e01efa9e7fec6057dbc"
+      },
+      "wall_seconds": 0.04651779099367559,
+      "previous_output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/answers/d34eada675224485a047f1b55dc686c8-002.ct",
+      "output_bytes_equal": true,
+      "input_hashes": {
+        "acc": "4cc18bb1b31a9bde91419c5d6c495ff47f2f824fbc8f9a1bfee9caf8505addde",
+        "query": "35ae9f92f863af2bc66c99dd9dd9749c0acd5b3fae2da68ee9024d3866f39f0f"
+      },
+      "output_sha256": "0fe80347dfe9fbec2247ace206b8c0bbb3e24b6180ce8e01efa9e7fec6057dbc"
+    },
+    {
+      "request": {
+        "command": "infer",
+        "arguments": {
+          "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv",
+          "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/ciphertexts/state-000124-3402e630.ct",
+          "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/queries/d34eada675224485a047f1b55dc686c8.json",
+          "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/cached_replay_002/003.ct"
+        }
+      },
+      "result": {
+        "bytes": 614445,
+        "components": 3,
+        "ct_ct_multiplications": 1,
+        "ct_multiply_ns": 28357125,
+        "dot_ns": 13088000,
+        "elapsed_ns": 47522708,
+        "rotation_count": 10,
+        "sha256": "2989b1c1f6d167373ab4cb5c708c661cff9fcab135986ff5335d702e10bc0603"
+      },
+      "wall_seconds": 0.04760720796184614,
+      "previous_output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/answers/d34eada675224485a047f1b55dc686c8-003.ct",
+      "output_bytes_equal": true,
+      "input_hashes": {
+        "acc": "f3c7ac920da64f9c6e4606322c8ea4866a13bc15baf49c291aaa19e2d878bcdf",
+        "query": "35ae9f92f863af2bc66c99dd9dd9749c0acd5b3fae2da68ee9024d3866f39f0f"
+      },
+      "output_sha256": "2989b1c1f6d167373ab4cb5c708c661cff9fcab135986ff5335d702e10bc0603"
+    },
+    {
+      "request": {
+        "command": "infer",
+        "arguments": {
+          "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv",
+          "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/ciphertexts/state-000125-52702f2b.ct",
+          "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/queries/d34eada675224485a047f1b55dc686c8.json",
+          "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/cached_replay_002/004.ct"
+        }
+      },
+      "result": {
+        "bytes": 614445,
+        "components": 3,
+        "ct_ct_multiplications": 1,
+        "ct_multiply_ns": 27479000,
+        "dot_ns": 12885458,
+        "elapsed_ns": 46451291,
+        "rotation_count": 10,
+        "sha256": "fea2756997511f32986abe11e54d974cbc5ed56efba586f01af295af47675216"
+      },
+      "wall_seconds": 0.04652833298314363,
+      "previous_output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/answers/d34eada675224485a047f1b55dc686c8-004.ct",
+      "output_bytes_equal": true,
+      "input_hashes": {
+        "acc": "48a772b6d606e9232762cc857809d123b3923ed311987dfa72bf1ecc29bfe8c0",
+        "query": "35ae9f92f863af2bc66c99dd9dd9749c0acd5b3fae2da68ee9024d3866f39f0f"
+      },
+      "output_sha256": "fea2756997511f32986abe11e54d974cbc5ed56efba586f01af295af47675216"
+    },
+    {
+      "request": {
+        "command": "infer",
+        "arguments": {
+          "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv",
+          "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/ciphertexts/state-000126-167b5ba9.ct",
+          "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/queries/d34eada675224485a047f1b55dc686c8.json",
+          "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/cached_replay_002/005.ct"
+        }
+      },
+      "result": {
+        "bytes": 614445,
+        "components": 3,
+        "ct_ct_multiplications": 1,
+        "ct_multiply_ns": 28620167,
+        "dot_ns": 12737958,
+        "elapsed_ns": 47566958,
+        "rotation_count": 10,
+        "sha256": "03523d530e0177ec7fb07e26c05d63e8131c2219aef0cbbc2405427e10b58f39"
+      },
+      "wall_seconds": 0.04765712498920038,
+      "previous_output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/answers/d34eada675224485a047f1b55dc686c8-005.ct",
+      "output_bytes_equal": true,
+      "input_hashes": {
+        "acc": "a45ac8e89d34c5f2bf1a15f85dd74de788755510ff24c4233150209136188456",
+        "query": "35ae9f92f863af2bc66c99dd9dd9749c0acd5b3fae2da68ee9024d3866f39f0f"
+      },
+      "output_sha256": "03523d530e0177ec7fb07e26c05d63e8131c2219aef0cbbc2405427e10b58f39"
+    },
+    {
+      "request": {
+        "command": "infer",
+        "arguments": {
+          "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv",
+          "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/ciphertexts/state-000127-3084e30c.ct",
+          "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/queries/d34eada675224485a047f1b55dc686c8.json",
+          "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/cached_replay_002/006.ct"
+        }
+      },
+      "result": {
+        "bytes": 614445,
+        "components": 3,
+        "ct_ct_multiplications": 1,
+        "ct_multiply_ns": 27215958,
+        "dot_ns": 12788333,
+        "elapsed_ns": 46066416,
+        "rotation_count": 10,
+        "sha256": "a6d8fc184488bfa5bb06aea78b9283819ce783432889b7d160d4ddbcfb1ecb39"
+      },
+      "wall_seconds": 0.0461595410015434,
+      "previous_output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/answers/d34eada675224485a047f1b55dc686c8-006.ct",
+      "output_bytes_equal": true,
+      "input_hashes": {
+        "acc": "7401947d7a5fa0c0404f02da0cb9ec8580ee6ed97774b76d3e33f1d26dedf614",
+        "query": "35ae9f92f863af2bc66c99dd9dd9749c0acd5b3fae2da68ee9024d3866f39f0f"
+      },
+      "output_sha256": "a6d8fc184488bfa5bb06aea78b9283819ce783432889b7d160d4ddbcfb1ecb39"
+    },
+    {
+      "request": {
+        "command": "infer",
+        "arguments": {
+          "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv",
+          "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/ciphertexts/state-000130-319b1779.ct",
+          "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/queries/d34eada675224485a047f1b55dc686c8.json",
+          "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/cached_replay_002/007.ct"
+        }
+      },
+      "result": {
+        "bytes": 614445,
+        "components": 3,
+        "ct_ct_multiplications": 1,
+        "ct_multiply_ns": 28070500,
+        "dot_ns": 12742541,
+        "elapsed_ns": 46766250,
+        "rotation_count": 10,
+        "sha256": "56a0d6bfa356ed647721a07802c89d857d3959ef568f2e6bb715831dfa618f5a"
+      },
+      "wall_seconds": 0.046850417042151093,
+      "previous_output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/answers/d34eada675224485a047f1b55dc686c8-007.ct",
+      "output_bytes_equal": true,
+      "input_hashes": {
+        "acc": "ab2c32f8b8a249dd784ad1767fc08a1748177219f0bb92b950edd15ffd0191f8",
+        "query": "35ae9f92f863af2bc66c99dd9dd9749c0acd5b3fae2da68ee9024d3866f39f0f"
+      },
+      "output_sha256": "56a0d6bfa356ed647721a07802c89d857d3959ef568f2e6bb715831dfa618f5a"
+    },
+    {
+      "request": {
+        "command": "infer",
+        "arguments": {
+          "dir": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv",
+          "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/ciphertexts/state-000128-6d92abd6.ct",
+          "query": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/queries/d34eada675224485a047f1b55dc686c8.json",
+          "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/cached_replay_002/008.ct"
+        }
+      },
+      "result": {
+        "bytes": 614445,
+        "components": 3,
+        "ct_ct_multiplications": 1,
+        "ct_multiply_ns": 27362208,
+        "dot_ns": 12905708,
+        "elapsed_ns": 46285875,
+        "rotation_count": 10,
+        "sha256": "f8a9d96f0305e82f591d53de81583c972c375ea5333fc9d890da89acaa8680f7"
+      },
+      "wall_seconds": 0.046367666975129396,
+      "previous_output": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/models/bfv/answers/d34eada675224485a047f1b55dc686c8-008.ct",
+      "output_bytes_equal": true,
+      "input_hashes": {
+        "acc": "a2587d70fab6eb84ac96b0a3ca4162a35bb9da90195a19ffe661d850ecbaa475",
+        "query": "35ae9f92f863af2bc66c99dd9dd9749c0acd5b3fae2da68ee9024d3866f39f0f"
+      },
+      "output_sha256": "f8a9d96f0305e82f591d53de81583c972c375ea5333fc9d890da89acaa8680f7"
+    }
+  ]
+}

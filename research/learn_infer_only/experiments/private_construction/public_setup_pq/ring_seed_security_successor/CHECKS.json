@@ -1,0 +1,322 @@
+{
+  "scope": "[EXECUTED] Deterministic exact rational/integer ledger; no random samples or cryptographic execution",
+  "status": "PASS",
+  "parameters": {
+    "N": 16384,
+    "w": 64,
+    "d": 577,
+    "r": 16,
+    "T": 384,
+    "q": "497323290947860672931310292648754779192460749687510494957169639477681564739617435942913",
+    "sigma_K": 33554432,
+    "sigma_e": 1024,
+    "F": "226156424291633194186662080095093570025917938800079226639565593765455331328",
+    "L": 1048576,
+    "C": 2305843009213693952
+  },
+  "query_budget": "18446744073709551616",
+  "RLWE_multiplier": 768,
+  "seed_guess_loss": {
+    "numerator": "1",
+    "denominator": "3138550867693340381917894711603833208051177722232017256448"
+  },
+  "public_expansion_cap_loss_bound": {
+    "numerator": 1250,
+    "denominator_power_of_two": 5461
+  },
+  "private_uniform_cap_loss": {
+    "numerator": "152649",
+    "denominator": "204586912993508866875824356051724947013540127877691549342705710506008362275292159680204380770369009821930417757972504438076078534117837065833032974336"
+  },
+  "one_challenge_flooding_loss": {
+    "numerator": "1330471416316301410304",
+    "denominator": "452312848583266388373324160190187140051835877600158453279131187530910662657"
+  },
+  "all_coalition_ledgers": [
+    {
+      "coalition_size": 0,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 577,
+      "gaussian_coefficient_multiplier": 466643582976,
+      "regularity_loss": {
+        "numerator": "444643",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3782721",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 1,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 576,
+      "gaussian_coefficient_multiplier": 465838276608,
+      "regularity_loss": {
+        "numerator": "443875",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3776193",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 2,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 575,
+      "gaussian_coefficient_multiplier": 465032970240,
+      "regularity_loss": {
+        "numerator": "443107",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3769665",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 3,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 574,
+      "gaussian_coefficient_multiplier": 464227663872,
+      "regularity_loss": {
+        "numerator": "442339",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3763137",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 4,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 573,
+      "gaussian_coefficient_multiplier": 463422357504,
+      "regularity_loss": {
+        "numerator": "441571",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3756609",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 5,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 572,
+      "gaussian_coefficient_multiplier": 462617051136,
+      "regularity_loss": {
+        "numerator": "440803",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3750081",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 6,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 571,
+      "gaussian_coefficient_multiplier": 461811744768,
+      "regularity_loss": {
+        "numerator": "440035",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3743553",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 7,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 570,
+      "gaussian_coefficient_multiplier": 461006438400,
+      "regularity_loss": {
+        "numerator": "439267",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3737025",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 8,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 569,
+      "gaussian_coefficient_multiplier": 460201132032,
+      "regularity_loss": {
+        "numerator": "438499",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3730497",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 9,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 568,
+      "gaussian_coefficient_multiplier": 459395825664,
+      "regularity_loss": {
+        "numerator": "437731",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3723969",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 10,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 567,
+      "gaussian_coefficient_multiplier": 458590519296,
+      "regularity_loss": {
+        "numerator": "436963",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3717441",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 11,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 566,
+      "gaussian_coefficient_multiplier": 457785212928,
+      "regularity_loss": {
+        "numerator": "436195",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3710913",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 12,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 565,
+      "gaussian_coefficient_multiplier": 456979906560,
+      "regularity_loss": {
+        "numerator": "435427",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3704385",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 13,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 564,
+      "gaussian_coefficient_multiplier": 456174600192,
+      "regularity_loss": {
+        "numerator": "434659",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3697857",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 14,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 563,
+      "gaussian_coefficient_multiplier": 455369293824,
+      "regularity_loss": {
+        "numerator": "433891",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3691329",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 15,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 562,
+      "gaussian_coefficient_multiplier": 454563987456,
+      "regularity_loss": {
+        "numerator": "433123",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3684801",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    },
+    {
+      "coalition_size": 16,
+      "missing_setup_rows": 561,
+      "augmented_replaced_rows": 561,
+      "gaussian_coefficient_multiplier": 453758681088,
+      "regularity_loss": {
+        "numerator": "432355",
+        "denominator": "3138550867693340381917894711603833208051177722232017256448"
+      },
+      "gaussian_loss": {
+        "numerator": "3678273",
+        "denominator": "13803492693581127574869511724554050904902217944340773110325048447598592"
+      },
+      "non_RLWE_loss_below_2_minus_168": true
+    }
+  ],
+  "public_oracle_resources": {
+    "distinct_rows": 625,
+    "word_bytes": 37,
+    "candidate_bits": 289,
+    "ignored_high_bits": 7,
+    "chunks_per_row": 80,
+    "candidates_per_row": 81920,
+    "full_cap_random_bytes_per_row": 3031040,
+    "full_cap_random_bytes_all_rows": 1894400000,
+    "expected_lazy_preparation_bytes_strict_upper": 781440000,
+    "cap_markov_bound_below_2_minus_5461": true
+  },
+  "strict_target_reduction_resources": {
+    "Gaussian_key_coefficients": 605028352,
+    "Gaussian_error_coefficient_allowance": 402653184,
+    "private_uniform_outputs": 6513024,
+    "Gaussian_maximum_attempts": 4127463571456,
+    "Gaussian_reserved_independent_bits": 1151588106240000,
+    "Gaussian_direct_threshold_integer_product_upper": 738815979290624,
+    "private_uniform_reserved_bits_upper": 963719135232
+  },
+  "public_inputs": {
+    "ring_candidate/hardness/GRID.json": "de246339b8321791cba308e01ef0f929a42d725e3bbdd7a8b533622a7011031a"
+  },
+  "query_meter": {
+    "Scry_SQL": 0,
+    "web_searches": 0,
+    "web_opens": 0,
+    "PDF_downloads": 0
+  }
+}

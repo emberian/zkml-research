@@ -1,0 +1,45 @@
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.word_log_subset' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.input_log_subset' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.checkpoint_valid' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.no_bad' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.extracted_word' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.word_extract' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.input_extract' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.no_failure' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.row_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.row_zero_verified' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.checkpoints_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.openings_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.extracted_far' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.supplied_zero_accepts' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.BabyBear.Witnesses.Logged.supplied_bound_fires' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

@@ -1,0 +1,10 @@
+'Minidregg.Selvage.ArityEight.Schedule.prefix_challenge_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.bad_round_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.bad_schedule_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.earliest_transition_cover' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.coherent_query_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.Schedule.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
