@@ -1,9 +1,9 @@
-# Root publication handoff
+# Published-site maintenance
 
-[OPEN] Review the local preview and the named source files, then collect them
-with a prose commit. Do not add ignored `dist/`, `qa/` or `__pycache__/` output.
-The intended publishing target is the `dev` branch of `emberian/zkml-research`,
-using GitHub Actions and the `github-pages` environment.
+[EXECUTED] The initial site is published and verified; see STATUS.md and
+deployment.json. Future pushes to dev affecting the configured paths rebuild
+and deploy through GitHub Actions. Do not add ignored dist/, qa/ or Python
+cache output to Git.
 
 [DERIVED sequence] If adding the optional root README site link, do so before
 the final source-lock review: the README is a pinned source. A content/line
@@ -11,11 +11,12 @@ change to any selected excerpt requires a deliberate catalog/lock refresh after
 checking that the card still says exactly what the evidence supports. Unchanged
 excerpts elsewhere in an edited file remain valid.
 
-[OPEN] Commit and push the reviewed named files, enable Pages from GitHub
-Actions if necessary, and verify the workflow's terminal success and the live
-`https://emberian.github.io/zkml-research/` response. Inspect the base-path
-assets and one expanded evidence card there. `README.md` in this directory
-documents the exact commands and official GitHub sources.
+[OPEN next evidence update] When the third-run results and reviews are sealed,
+consider updating the nonlinear card with the failed long replay and the
+separately completed emitted-schedule sample, and the public-setup card with
+the completed journal join if its remaining replay/review gates pass. Preserve
+failure scope and partial-run status. No general backend determinism claim
+follows from the successful small samples.
 
 [DERIVED follow-up discipline] Do not automatically import ongoing run results.
 A new result needs its own completed public evidence, visible scope and source
