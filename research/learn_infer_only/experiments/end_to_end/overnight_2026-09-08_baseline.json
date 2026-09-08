@@ -1,0 +1,128 @@
+{
+  "utc": "2026-09-08T03:56:10.427177+00:00",
+  "repositories": {
+    "zkml-research": {
+      "path": "/Users/ember/dev/zkml-research",
+      "head": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+      "status": "?? research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001.stderr.txt\n?? research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001.stdout.jsonl\n?? research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/other.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/policy.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/query.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/report.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/run/genesis.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/run/host_config.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/signer_route_001/vector.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001.stderr.txt\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001.stdout.jsonl\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/other.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/policy.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/query.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/report.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/run/genesis.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/run/host_config.json\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/run/verified-reader-server.jsonl\n?? research/learn_infer_only/experiments/end_to_end/journal/results/verified_route_001/vector.json\n?? research/learn_infer_only/experiments/end_to_end/journal/signer_route_control.py\n?? research/learn_infer_only/experiments/end_to_end/journal/verified_route_check.py\n?? research/learn_infer_only/experiments/private_construction/receipt_key_capsule/extracts/2013-727.txt\n?? swarm/OVERNIGHT-2026-09-08.md\n?? vendor/moma/\n?? vendor/morph/\n"
+    },
+    "minidregg": {
+      "path": "/Users/ember/dev/minidregg",
+      "head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+      "status": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n",
+      "preexisting_dirty_content": {
+        "Compiler.lean": {
+          "sha256": "49406fd9d224390e37dee72163ea1635e4f74f7eaaed63e3239c1224d0eaa217",
+          "bytes": 34171
+        },
+        "README.md": {
+          "sha256": "a9020764edadd5653a58fab12064919b5e64e916ec3e88ad50180020c2a81ec0",
+          "bytes": 10616
+        },
+        "native/hyperdocument-link-sqlite-store/Cargo.toml": {
+          "sha256": "f364d457f277c407a5cf9f5a2eba59d29fe5f47b6a4fca9d0c893bde37ae72b7",
+          "bytes": 382
+        },
+        "native/hyperdocument-link-store/Cargo.toml": {
+          "sha256": "63cea3f988c9e916806c9fea65abc9f1564f1a9400989227fc4e5db19e4f075c",
+          "bytes": 450
+        },
+        "prover/Cargo.toml": {
+          "sha256": "40da413907ba133610dede2268bde9b9395a0e46de057224ce385a6e86588e7b",
+          "bytes": 486
+        },
+        "prover/src/lib.rs": {
+          "sha256": "b33bbd082b9b9ad5bdd741ae6a8240a100a6b1ed3948e3edf17df6ed1e201d3c",
+          "bytes": 1552
+        },
+        "Compiler/UwueavePreoProjectionV2.lean": {
+          "sha256": "f43c0944c985495e656bd6477460edc022f8f6810c8bbec46e0ac4a4cb551c38",
+          "bytes": 5169
+        },
+        "LICENSE": {
+          "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+          "bytes": 34523
+        },
+        "LICENSING.md": {
+          "sha256": "facb83c45165bc44ade2720e50a014736b4a316c472184eeff817cf0112d4d5f",
+          "bytes": 3166
+        },
+        "NOTICE": {
+          "sha256": "8be904cf6f83f09e890fc73082d1aa955b1d3f137d7a49a7c8be3de95872c7b9",
+          "bytes": 869
+        },
+        "docs/FORMAL_STATUS_AND_NEXT_PROOFS.md": {
+          "sha256": "1161a72677916a2653b63e4d9d91e6261718e59b53ebe14feea47175e163f9dd",
+          "bytes": 16734
+        },
+        "prover/generated/uwueave_preo_projection_v2.rs": {
+          "sha256": "afe084407b418ebdf149f00c2fb30fae7bc9c2669a21f00110c5b312e8faa68a",
+          "bytes": 7543
+        },
+        "prover/tests/uwueave_preo_projection_v2.rs": {
+          "sha256": "559d43bd3ceae0f9c33ba76ef8a8820b1549f05e7f595fc415912affa8d74ca1",
+          "bytes": 4207
+        }
+      }
+    },
+    "breadstuffs": {
+      "path": "/Users/ember/dev/breadstuffs",
+      "head": "3e51def6a5a95424e54fbe7432539b06088de5c3",
+      "status": "MM circuit-prove/tests/leaf_vs_recursion_sweep.rs\nMM fhegg-fhe/src/bin/ntt_four_step_bench.rs\nMM fhegg-fhe/tests/kpz_encoding_depth.rs\n?? armor_audit.md\n?? before-full.png\n?? dp-paper-b64.txt\n?? eprint2152.json\n?? friday_preregister.md\n?? gloss-full.png\n?? iac_listen_guide.md\n?? iac_notes_aug20.md\n?? metatheory/wip/Measure19d.lean\n?? rack-after-unblock.yml\n",
+      "preexisting_dirty_content": {
+        "circuit-prove/tests/leaf_vs_recursion_sweep.rs": {
+          "sha256": "22d6cd8336df41a50f03d824f31454f5e0e15fc16552fe3e6236b524c2b81ad3",
+          "bytes": 18967
+        },
+        "fhegg-fhe/src/bin/ntt_four_step_bench.rs": {
+          "sha256": "0e98cf63df40efeee5663615cf216d471a79de348a1c9cb159cddbb45c62c670",
+          "bytes": 39816
+        },
+        "fhegg-fhe/tests/kpz_encoding_depth.rs": {
+          "sha256": "ed4ed039a76fa78d1146f6fdce3dd3d1976a8f990b467385dc0fa7960dfafc5a",
+          "bytes": 14890
+        },
+        "armor_audit.md": {
+          "sha256": "8802f0f5aea936ab9d2db722efe14e10833375987a9623b6d374959d8d3e356f",
+          "bytes": 6011
+        },
+        "before-full.png": {
+          "sha256": "b11af0b9d18952a27272942d8a0cbe277847db3fabda7403a35f6d908d39b607",
+          "bytes": 1097859
+        },
+        "dp-paper-b64.txt": {
+          "sha256": "3211d3c5f5ab7cb6ae48e2f0f66d930bbabb735abf61f0553da8cf3180be31ce",
+          "bytes": 1417842
+        },
+        "eprint2152.json": {
+          "sha256": "4701385fe0b2b6d4570089efbf4fc4091376fe8a5938633a9a77357b91e9a907",
+          "bytes": 1170363
+        },
+        "friday_preregister.md": {
+          "sha256": "15c2941c13412f95e469c8de8c7fee044c92c4f4345724fa15dd511963db79f0",
+          "bytes": 2608
+        },
+        "gloss-full.png": {
+          "sha256": "0e1c352c5a186ddc5bf3ebc8b7474e7bc26156bdc5b46cc2e21a3a04cc925a78",
+          "bytes": 1253742
+        },
+        "iac_listen_guide.md": {
+          "sha256": "5346406f35da907e903e4d09c00ecd198028765d79467c8e0d269cd5a4869ad8",
+          "bytes": 9418
+        },
+        "iac_notes_aug20.md": {
+          "sha256": "9a9c6a557aa6e12379869e87f32a2fb175dfa415fc54d55e0abba45c2cd388f2",
+          "bytes": 13012
+        },
+        "metatheory/wip/Measure19d.lean": {
+          "sha256": "e661a5440c1fc9f989c9429d0fc2ae0d0432879a83b3b57a3946f0789f4ee549",
+          "bytes": 4669
+        },
+        "rack-after-unblock.yml": {
+          "sha256": "95b7378e8a3ceebd70eed34af7cec4243f818ff066db6b5673a02d3e19943f9a",
+          "bytes": 9683
+        }
+      }
+    }
+  }
+}

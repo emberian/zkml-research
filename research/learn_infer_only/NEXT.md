@@ -1,4 +1,26 @@
-# Resume points after the second timed run
+# Third overnight run — active ownership and inherited resume points
+
+[EXECUTED authorization] Active until **2026-09-08 11am EDT /15:00 UTC**.
+Root owns shared ledgers, named commits and final integration. Read
+[the current brief](../../swarm/OVERNIGHT-2026-09-08.md). The earlier paused-goal
+paragraphs below are historical recovery records, not the current goal state.
+
+| Lane | Current bounded output |
+|---|---|
+| public_setup_journal | Seal prior public-coin positive evidence; new normal40/four/eight journal join with all public work before private drain. |
+| nonlinear_utility | Fixed EMA law on existing semantic features, no tuning/model rerun; then price a justified actual encrypted utility run. |
+| formal_runtime_bridge | Universal11-bit/two-bit-address arithmetic refinement, witness/falsifier/inhabitation and checked minidregg patch. |
+| proof_frontier | Current primary-source FRI/proximity composition delta and one concrete formalization seam. |
+| release_construction | Exact receipt/key capsule game and a targeted construction lead; mathematical/source work only. |
+| independent_review | Complete independent direct-GKP-vector and compact-TMRE proof/parameter reviews. |
+| research_site | Reproducible static GitHub Pages site, evidence links/status labels, mobile/accessibility and build checks. Root owns publication. |
+
+[OPEN root] Verify integrated source/data flow; collect proofs into an isolated
+full build when ready; maintain source-query counts and credential/cost ledgers;
+inspect the site visually and validate the deployment before publication.
+Stop launching new work at15:00 UTC and collect exact saved state.
+
+## Inherited second-run resume points
 
 [EXECUTED recovery, 2026-09-07] The10am EDT deadline has passed; the stored goal
 is paused and no research agents are alive. Root collected the saved run after
