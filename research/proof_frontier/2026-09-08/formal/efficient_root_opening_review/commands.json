@@ -1,0 +1,21 @@
+{
+  "commands": [
+    {
+      "command": "python3 research/proof_frontier/2026-09-08/formal/efficient_root_opening_review/controls.py",
+      "exit_code": 0,
+      "retained_output": "CONTROLS.json"
+    },
+    {
+      "command": "python3 research/proof_frontier/2026-09-08/formal/efficient_root_opening_review/verify_packet.py",
+      "exit_code": 0,
+      "retained_output": "VERIFICATION.json",
+      "patch_command_details": "VERIFICATION.json:patch_commands"
+    }
+  ],
+  "cwd": "repository root",
+  "new_lean_runs": 0,
+  "new_crypto_runs": 0,
+  "web_queries": 0,
+  "scry_queries": 0,
+  "kagi_queries": 0
+}

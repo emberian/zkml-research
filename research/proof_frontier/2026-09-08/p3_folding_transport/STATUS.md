@@ -1,0 +1,9 @@
+# Pinned FRI folding transport
+
+[SOURCE] Read-only inputs are the breadstuffs vendored p3 FRI at revision `82cfad73cd734d37a0d51953094f970c531817ec` plus its recorded local patch, the corresponding Cargo checkout's BabyBear/util/matrix/DFT sources, and minidregg's existing scalar fold and coherent-index interfaces. `SOURCES.json` records 22 exact source pins. The sibling `formal/babybear_folding_tower/` remains unchanged.
+
+[DERIVED] Bit-reversed p3 rows and right-shifted query indices correspond to natural-power half pairs and modulo indices by `rev_(L-a)(q >> a) = rev_L(q) mod 2^(L-a)`. A binary p3 query has formal initial pair seed `rev_19(q >> 1)` at the proposed 20-bit tower. The outer PCS coset can be interpreted by polynomial pullback along `X ↦ 31X`.
+
+[SOURCE / OPEN] Named PROD and IR2 configurations permit arity eight. An arity-`2^a` fold uses correlated binary arithmetic challenges `beta, beta^2, ...`; both prover and verifier inject `beta^(2^a)` times the next-height input. These are outside the frozen independent-binary, single-word soundness theorem. Index transport alone cannot close that semantic/probability gap.
+
+[EXECUTED] Complete: finite Ext4/index checks pass, including 54 fold cases/663 rows, all 128 queries through mixed arities 8/4/2 with injection, coset/terminal-point controls and the actual 20-bit index shape. The isolated patch adds 15 exactly pinned theorems across a Mathlib-only Theory index module and an adapter to the existing `powerTwoRoundIndex`. Both final single-module Lean checks, exact patch replay and import boundary are green. See `README.md`, `RESULTS.json` and `formal/verification.json`. No crypto runtime or external tree edits were performed. Root owns independent review/full integration; probability for higher arity remains separate.

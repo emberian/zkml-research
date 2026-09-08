@@ -1,0 +1,19 @@
+{
+  "schema": "single-reviewed-normal-attempt-command-v1",
+  "recorded_launch_utc": "2026-09-08 06:43:53 UTC",
+  "exec_session_id": 57136,
+  "exit_code": 0,
+  "argv": [
+    "python3",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/adapter/driver.py",
+    "--root",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/adapter/reports/normal_001"
+  ],
+  "stdout_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/adapter/reports/normal_001.stdout.log",
+  "stderr_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/adapter/reports/normal_001.stderr.log",
+  "overall_cap_seconds": 1200,
+  "attempts": 1,
+  "retries": 0,
+  "source_manifest_sha256": "be861661892f52e52068d88361fc1519989ae6103a4945a3c6c7e41a8ffc5fac"
+}

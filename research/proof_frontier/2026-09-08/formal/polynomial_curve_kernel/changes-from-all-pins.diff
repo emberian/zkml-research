@@ -1,0 +1,311 @@
+--- frozen-all-pins/Theory/PolynomialMatrixKernel.lean
++++ degree-M-successor/Theory/PolynomialMatrixKernel.lean
+@@ -21,6 +21,8 @@
+ Changes: standalone Mathlib-only module; unnecessary section assumptions removed;
+ universe-polymorphic interface, correctness statement and nonvacuity/falsifier
+ witnesses added; Lean 4.30 port.
++Degree-M successor: the determinant and rank proof are generalized once;
++the original degree-one theorems are preserved as specializations.
+ This is candidate-independent algebra, not a Reed–Solomon or proximity theorem.
+ -/
+ 
+@@ -46,6 +48,22 @@
+ row minors has a nonzero kernel vector whose coordinates have degree ≤ e. -/
+ def Correctness : Prop :=
+   ∀ (e : ℕ) (K : Matrix ι (Fin (e + 1)) F[X]), Premises e K → BoundedKernel e K
++
++/-- A polynomial kernel with coefficient degree at most M times the rank bound. -/
++def DegreeBoundedKernel (M e : ℕ) (K : Matrix ι (Fin (e + 1)) F[X]) : Prop :=
++  ∃ a : Fin (e + 1) → F[X],
++    a ≠ 0 ∧ (∀ t, (a t).natDegree ≤ M * e) ∧ Matrix.mulVec K a = 0
++
++/-- Entry degree and rank-shape assumptions, without a kernel conclusion. -/
++def DegreePremises (M e : ℕ) (K : Matrix ι (Fin (e + 1)) F[X]) : Prop :=
++  e + 1 ≤ Fintype.card ι ∧
++  (∀ i j, (K i j).natDegree ≤ M) ∧
++  ∀ r : Fin (e + 1) → ι, Matrix.det (K.submatrix r id) = 0
++
++/-- Statement-first degree-M generalization, including M=0 and e=0. -/
++def DegreeCorrectness : Prop :=
++  ∀ (M e : ℕ) (K : Matrix ι (Fin (e + 1)) F[X]),
++    DegreePremises M e K → DegreeBoundedKernel M e K
+ 
+ namespace Source
+ 
+@@ -138,9 +156,9 @@
+ 
+ open Polynomial in
+ open Matrix in
+-theorem RS_natDegree_det_le_of_entry_natDegree_le_one (n : ℕ) (A : Matrix (Fin n) (Fin n) F[X])
+-    (hdeg : ∀ i j, (A i j).natDegree ≤ 1) :
+-    (Matrix.det A).natDegree ≤ n := by
++theorem RS_natDegree_det_le_of_entry_natDegree_le (M n : ℕ) (A : Matrix (Fin n) (Fin n) F[X])
++    (hdeg : ∀ i j, (A i j).natDegree ≤ M) :
++    (Matrix.det A).natDegree ≤ M * n := by
+   classical
+   rw [Matrix.det_apply]
+   -- bound degree of the determinant by bounding each Leibniz summand
+@@ -155,27 +173,34 @@
+     · simp [hs]
+     · simp [hs]
+   -- bound the product by summing the bounds on the factors
+-  have hprod : (∏ i : Fin n, A (σ i) i).natDegree ≤ n := by
++  have hprod : (∏ i : Fin n, A (σ i) i).natDegree ≤ M * n := by
+     have h1 : (∏ i : Fin n, A (σ i) i).natDegree ≤ ∑ i : Fin n, (A (σ i) i).natDegree := by
+       simpa using
+         (Polynomial.natDegree_prod_le (s := (Finset.univ : Finset (Fin n)))
+           (f := fun i : Fin n => A (σ i) i))
+-    have h2 : (∑ i : Fin n, (A (σ i) i).natDegree) ≤ n := by
+-      -- each summand is ≤ 1 by hypothesis
+-      have hle1 : ∀ i : Fin n, (A (σ i) i).natDegree ≤ 1 := by
++    have h2 : (∑ i : Fin n, (A (σ i) i).natDegree) ≤ M * n := by
++      -- each summand is ≤ M by hypothesis
++      have hle1 : ∀ i : Fin n, (A (σ i) i).natDegree ≤ M := by
+         intro i
+         simpa using hdeg (σ i) i
+-      -- sum of `n` terms each ≤ 1
++      -- sum of `n` terms each ≤ M
+       have hsum' : (∑ i ∈ (Finset.univ : Finset (Fin n)), (A (σ i) i).natDegree)
+-          ≤ (Finset.univ : Finset (Fin n)).card • (1 : ℕ) := by
++          ≤ (Finset.univ : Finset (Fin n)).card • (M : ℕ) := by
+         refine Finset.sum_le_card_nsmul (s := (Finset.univ : Finset (Fin n)))
+-          (f := fun i : Fin n => (A (σ i) i).natDegree) (n := (1 : ℕ)) ?_
++          (f := fun i : Fin n => (A (σ i) i).natDegree) (n := (M : ℕ)) ?_
+         intro i hi
+         simpa using hle1 i
+       -- rewrite sums/cards
+-      simpa [Finset.card_univ, Fintype.card_fin] using hsum'
++      simpa [Finset.card_univ, Fintype.card_fin, Nat.mul_comm] using hsum'
+     exact le_trans h1 h2
+   exact le_trans hsign hprod
++
++/-- The original linear-entry determinant theorem specializes the single general proof. -/
++theorem RS_natDegree_det_le_of_entry_natDegree_le_one (n : ℕ)
++    (A : Matrix (Fin n) (Fin n) F[X])
++    (hdeg : ∀ i j, (A i j).natDegree ≤ 1) :
++    (Matrix.det A).natDegree ≤ n := by
++  simpa using RS_natDegree_det_le_of_entry_natDegree_le 1 n A hdeg
+ 
+ open Matrix in
+ theorem adjugate_updateRow_same_col {R : Type*} [CommRing R] {n : Type*} [Fintype n] [DecidableEq n]
+@@ -196,13 +221,13 @@
+ open scoped BigOperators in
+ open Polynomial in
+ open Matrix in
+-theorem RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one (e : ℕ)
++theorem RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le (M e : ℕ)
+     (K : Matrix ι (Fin (e + 1)) F[X])
+     (hcard : e + 1 ≤ Fintype.card ι)
+-    (hdeg : ∀ i j, (K i j).natDegree ≤ 1)
++    (hdeg : ∀ i j, (K i j).natDegree ≤ M)
+     (hdet : ∀ r : Fin (e + 1) → ι, Matrix.det (K.submatrix r id) = 0) :
+     ∃ a : Fin (e + 1) → F[X],
+-      a ≠ 0 ∧ (∀ t, (a t).natDegree ≤ e) ∧ Matrix.mulVec K a = 0 := by
++      a ≠ 0 ∧ (∀ t, (a t).natDegree ≤ M * e) ∧ Matrix.mulVec K a = 0 := by
+   classical
+   let n : ℕ := e + 1
+   let P : ℕ → Prop := fun r =>
+@@ -305,14 +330,14 @@
+     rw [hu_last]
+     exact mul_ne_zero hsign hdetMinor
+   -- degree bound on u
+-  have hdeg_u : ∀ t : Fin (r + 1), (u t).natDegree ≤ r := by
++  have hdeg_u : ∀ t : Fin (r + 1), (u t).natDegree ≤ M * r := by
+     intro t
+     have hu_t : u t =
+         (-1 : F[X]) ^ ((Fin.last r : ℕ) + (t : ℕ)) *
+           Matrix.det (B.submatrix Fin.castSucc t.succAbove) := by
+       simpa [u] using RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc (n := r) (B := B) (t := t)
+-    have hdeg_det : (Matrix.det (B.submatrix Fin.castSucc t.succAbove)).natDegree ≤ r := by
+-      apply RS_natDegree_det_le_of_entry_natDegree_le_one (n := r)
++    have hdeg_det : (Matrix.det (B.submatrix Fin.castSucc t.succAbove)).natDegree ≤ M * r := by
++      apply RS_natDegree_det_le_of_entry_natDegree_le (M := M) (n := r)
+         (A := B.submatrix Fin.castSucc t.succAbove)
+       intro i j
+       -- entries come from K
+@@ -329,7 +354,7 @@
+           (q := Matrix.det (B.submatrix Fin.castSucc t.succAbove)))
+     have hdeg_rhs :
+         ((-1 : F[X]) ^ ((Fin.last r : ℕ) + (t : ℕ))).natDegree +
+-            (Matrix.det (B.submatrix Fin.castSucc t.succAbove)).natDegree ≤ r := by
++            (Matrix.det (B.submatrix Fin.castSucc t.succAbove)).natDegree ≤ M * r := by
+       simpa [hdeg_sign] using hdeg_det
+     exact le_trans hmul_le hdeg_rhs
+   -- extend u to all columns
+@@ -344,11 +369,11 @@
+     have : u (Fin.last r) = 0 := by
+       simpa [ha_on (Fin.last r)] using hval
+     exact hu_last_ne this
+-  have hdeg_a : ∀ j : Fin n, (a j).natDegree ≤ e := by
++  have hdeg_a : ∀ j : Fin n, (a j).natDegree ≤ M * e := by
+     intro j
+     by_cases hj : ∃ t : Fin (r + 1), J' t = j
+     · rcases hj with ⟨t, rfl⟩
+-      exact le_trans (by simpa [ha_on t] using hdeg_u t) hrle_e
++      exact le_trans (by simpa [ha_on t] using hdeg_u t) (Nat.mul_le_mul_left M hrle_e)
+     · have haj : a j = 0 := by
+         simpa [a] using
+           (Function.extend_apply' (f := (J' : Fin (r + 1) → Fin n)) (g := u) (e' := fun _ => 0)
+@@ -416,7 +441,24 @@
+   intro t
+   simpa using hdeg_a t
+ 
++/-- The original degree-one kernel interface is a specialization of the general proof. -/
++theorem RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one (e : ℕ)
++    (K : Matrix ι (Fin (e + 1)) F[X])
++    (hcard : e + 1 ≤ Fintype.card ι)
++    (hdeg : ∀ i j, (K i j).natDegree ≤ 1)
++    (hdet : ∀ r : Fin (e + 1) → ι, Matrix.det (K.submatrix r id) = 0) :
++    ∃ a : Fin (e + 1) → F[X],
++      a ≠ 0 ∧ (∀ t, (a t).natDegree ≤ e) ∧ Matrix.mulVec K a = 0 := by
++  simpa using RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le
++    1 e K hcard hdeg hdet
++
+ end Source
++
++/-- The arbitrary entry-degree kernel contract, with M=0 permitted. -/
++theorem degree_correctness : DegreeCorrectness (F := F) (ι := ι) := by
++  intro M e K h
++  exact Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le
++    M e K h.1 h.2.1 h.2.2
+ 
+ /-- The degree-bounded kernel theorem, with all source hypotheses explicit. -/
+ theorem correctness : Correctness (F := F) (ι := ι) := by
+@@ -501,6 +543,97 @@
+   · simpa [hc0] using ha0
+   · simpa [hc1] using ha1
+ 
++
++/-- A degree-M nonzero singular matrix; M=0 also gives an inhabited instance. -/
++noncomputable def degreeWitnessMatrix (M : ℕ) : Matrix (Fin 2) (Fin 2) F[X] :=
++  fun _ => ![X ^ M, 1]
++
++/-- The explicit annihilator attains the claimed M*1 degree bound. -/
++noncomputable def degreeWitnessVector (M : ℕ) : Fin 2 → F[X] := ![1, -(X ^ M)]
++
++theorem degree_witnessMatrix_premises (M : ℕ) :
++    DegreePremises M 1 (degreeWitnessMatrix (F := F) M) := by
++  refine ⟨by simp, ?_, ?_⟩
++  · intro i j
++    fin_cases j <;> simp [degreeWitnessMatrix]
++  · intro r
++    simp [Matrix.det_fin_two, degreeWitnessMatrix]
++
++theorem degree_witnessVector_valid (M : ℕ) :
++    degreeWitnessVector (F := F) M ≠ 0 ∧
++    (∀ t, (degreeWitnessVector (F := F) M t).natDegree ≤ M) ∧
++    Matrix.mulVec (degreeWitnessMatrix (F := F) M) (degreeWitnessVector M) = 0 := by
++  refine ⟨?_, ?_, ?_⟩
++  · intro h
++    have := congrFun h 0
++    simp [degreeWitnessVector] at this
++  · intro t
++    fin_cases t <;> simp [degreeWitnessVector]
++  · ext i
++    simp [Matrix.mulVec, dotProduct, Fin.sum_univ_two,
++      degreeWitnessMatrix, degreeWitnessVector]
++
++/-- The degree-M hypotheses are inhabited by a nonzero matrix over every field. -/
++theorem degree_premises_inhabited (M : ℕ) :
++    ∃ K : Matrix (Fin 2) (Fin 2) F[X], K ≠ 0 ∧ DegreePremises M 1 K := by
++  refine ⟨degreeWitnessMatrix M, ?_, degree_witnessMatrix_premises M⟩
++  intro h
++  have := congrFun (congrFun h 0) 1
++  simp [degreeWitnessMatrix] at this
++
++/-- An actual matrix and annihilator satisfy the generalized contract for every M. -/
++theorem degree_satisfiable (M : ℕ) :
++    ∃ K : Matrix (Fin 2) (Fin 2) F[X],
++      DegreePremises M 1 K ∧ DegreeBoundedKernel M 1 K := by
++  refine ⟨degreeWitnessMatrix M, degree_witnessMatrix_premises M,
++    degreeWitnessVector M, ?_⟩
++  simpa using degree_witnessVector_valid (F := F) M
++
++/-- Vanishing maximal minors cannot be omitted, at any entry-degree bound. -/
++theorem degree_determinant_hypothesis_teeth (M e : ℕ) :
++    e + 1 ≤ Fintype.card (Fin (e + 1)) ∧
++    (∀ i j, ((1 : Matrix (Fin (e + 1)) (Fin (e + 1)) F[X]) i j).natDegree ≤ M) ∧
++    ¬ DegreeBoundedKernel M e (1 : Matrix (Fin (e + 1)) (Fin (e + 1)) F[X]) := by
++  classical
++  refine ⟨by simp, ?_, ?_⟩
++  · intro i j
++    by_cases h : i = j <;> simp [Matrix.one_apply, h]
++  · rintro ⟨a, ha, _, hmul⟩
++    exact ha (by simpa using hmul)
++
++/-- The e=1 degree bound is tight for arbitrary M; positive M excludes
++an actually weaker nonnegative coefficient-degree bound. -/
++theorem degree_strict_bound_teeth (M : ℕ) :
++    ¬ ∃ a : Fin 2 → F[X], a ≠ 0 ∧
++      (∀ t, (a t).natDegree < M) ∧
++      Matrix.mulVec (degreeWitnessMatrix (F := F) M) a = 0 := by
++  rintro ⟨a, ha, hdeg, hmul⟩
++  have heq : X ^ M * a 0 + a 1 = 0 := by
++    simpa [Matrix.mulVec, dotProduct, Fin.sum_univ_two, degreeWitnessMatrix]
++      using congrFun hmul 0
++  have ha0 : a 0 = 0 := by
++    by_contra hne
++    have hnd : (a 0).natDegree + M = (a 1).natDegree := by
++      have h := congrArg (fun p : F[X] => p.natDegree)
++        (eq_neg_of_add_eq_zero_left heq)
++      simpa [Polynomial.natDegree_X_pow_mul M hne] using h
++    have := hdeg 1
++    omega
++  have ha1 : a 1 = 0 := by simpa [ha0] using heq
++  apply ha
++  funext t
++  fin_cases t
++  · exact ha0
++  · exact ha1
++
++/-- The entry-degree assumption is needed: degree-one entries can force a
++positive-degree annihilator, contradicting the falsely substituted M=0 conclusion. -/
++theorem entry_degree_hypothesis_teeth :
++    Premises 1 (witnessMatrix (F := F)) ∧
++      ¬ DegreeBoundedKernel 0 1 (witnessMatrix (F := F)) := by
++  refine ⟨witnessMatrix_premises, ?_⟩
++  simpa [DegreeBoundedKernel] using degree_bound_teeth (F := F)
++
+ end PolynomialMatrixKernel
+ 
+ /-- info: 'PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one' depends on axioms: [propext,
+@@ -580,3 +713,39 @@
+  Quot.sound] -/
+ #guard_msgs in
+ #print axioms PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col
++
++/-! ## Degree-M successor theorem dependency reports -/
++/-- info: 'PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le
++/-- info: 'PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le
++/-- info: 'PolynomialMatrixKernel.degree_correctness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.degree_correctness
++/-- info: 'PolynomialMatrixKernel.degree_witnessMatrix_premises' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.degree_witnessMatrix_premises
++/-- info: 'PolynomialMatrixKernel.degree_witnessVector_valid' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.degree_witnessVector_valid
++/-- info: 'PolynomialMatrixKernel.degree_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.degree_premises_inhabited
++/-- info: 'PolynomialMatrixKernel.degree_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.degree_satisfiable
++/-- info: 'PolynomialMatrixKernel.degree_determinant_hypothesis_teeth' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.degree_determinant_hypothesis_teeth
++/-- info: 'PolynomialMatrixKernel.degree_strict_bound_teeth' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.degree_strict_bound_teeth
++/-- info: 'PolynomialMatrixKernel.entry_degree_hypothesis_teeth' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms PolynomialMatrixKernel.entry_degree_hypothesis_teeth

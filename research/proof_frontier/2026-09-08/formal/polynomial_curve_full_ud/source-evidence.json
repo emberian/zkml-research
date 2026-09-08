@@ -1,0 +1,20 @@
+{
+  "orientation_note": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/NOTE.md",
+    "sha256": "6bc561ca24a00d797263b106a5e63219396e0aa99a9c41db748d82587f1ad727"
+  },
+  "orientation_erratum": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/ERRATUM.md",
+    "sha256": "feba813ebf02445616c68af3a739b381eaf02d734b9bc970d858626d97cea6c5"
+  },
+  "source_pins": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/SOURCES.json",
+    "sha256": "a515acc84dd6838d7495a55f0d7a425e29263787ca93892061ac01e2f31da059"
+  },
+  "selected_kernel": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel/PolynomialMatrixKernel.lean",
+    "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91"
+  },
+  "arklib_commit": "22dbd4e836c15a21f68889afa69b7130da04abbb",
+  "license": "Apache-2.0 notices retained; LICENSES/ArkLib-Apache-2.0.txt supplied by selected kernel/core predecessors"
+}

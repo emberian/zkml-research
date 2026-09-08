@@ -1,0 +1,206 @@
+{
+  "scope": "Source/math audit; no formalization or cryptographic attack execution.",
+  "vcvio_commit": "ffd0ca198fe6e640c0dd7f0f9c599943caacbf64",
+  "p3_commit": "82cfad73cd734d37a0d51953094f970c531817ec",
+  "checked_frozen_inputs": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/manifest.json",
+      "bytes": 8496,
+      "sha256": "cf81d803dea2e2a4f53ab2cdb9816ac2634b5c720819b2994e7e3934434b066e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/source-evidence.json",
+      "bytes": 3718,
+      "sha256": "37c16af0b4b291f365f1e1e3ad85e2ac4badae8cd5d5d63eab7283123c30970e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/README.md",
+      "bytes": 7834,
+      "sha256": "f2241b62494f73458248bb4d13a46ef1dfb99967396170499a96e96a51382a60"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/full-ud-commitment-timing.patch",
+      "bytes": 40713,
+      "sha256": "449608f151061051d3c2567d86d6b505c86ecf03906f990ffb7a5238995e4756"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/OpeningResolution.lean",
+      "bytes": 11117,
+      "sha256": "1233c1c49f79e7d3581151b8151aac3aa2ae7e61f688bb316a30671e405710d4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/FriRootResolution.lean",
+      "bytes": 9412,
+      "sha256": "547338388ba7e6b8671056deaf7f75d1292034fede46e4a0f85fb8170f7218ef"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/FriRootResolutionSoundness.lean",
+      "bytes": 6259,
+      "sha256": "12d283184598a1239457fcba9ddf74b5b523e0f1d005728d14745c79aec9468b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/FriRootResolutionWitnesses.lean",
+      "bytes": 7506,
+      "sha256": "dc43a2edb8b18e281e9dd5c9f43373e2a586715d4705d048ec3350dce8c199f0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/BabyBearFriRootResolution.lean",
+      "bytes": 4664,
+      "sha256": "88c696ef983143d22ce9720b3cada9efa06d63930b343e3b99280ed4cbc5c60c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/full_ud_root_resolution/REPORT.md",
+      "bytes": 14301,
+      "sha256": "f657d2c8590f9ae53d72b57feaf45375360019f218589e38c1300da756c15698"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/full_ud_root_resolution/manifest.json",
+      "bytes": 1393,
+      "sha256": "90b852cefef76dfa6014a5c40f3c1284ac34f765c262592730bcd71ba89fea38"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/full_ud_root_resolution/source_pins.json",
+      "bytes": 1558,
+      "sha256": "e75258b3db63b918146283ac509f2e9e462adb8ba4ec6a412ee462507cde0191"
+    }
+  ],
+  "primary_sources": [
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/Commitment.lean",
+      "bytes": 26807,
+      "sha256": "be5b6088d0a367be6effee618cb502d724bedcfe30cb00cbfb2d69de6c6a059a"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean",
+      "bytes": 33271,
+      "sha256": "9dbb34989ea4af684802075717f8b3fe5602bc5d128b796b851a5efa9d28e432"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean",
+      "bytes": 23697,
+      "sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean",
+      "bytes": 14622,
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/BinaryMerkle.lean",
+      "bytes": 12750,
+      "sha256": "55e3a1a0053102b52e62aab393e1fe91743bcd6c8091c2843f5c85eef66c7137"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/Cargo.toml",
+      "bytes": 50520,
+      "sha256": "1c3572d9d73d88899c3652488b69b2e3d1e1faa2309b6c7338128c9eb3bc96a8"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs",
+      "bytes": 16892,
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs",
+      "bytes": 61677,
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/Cargo.lock",
+      "bytes": 648886,
+      "sha256": "51be5800e17dc464edc4b5c8c34abf242543b23e211a6c036c9cb5e2d1326033"
+    },
+    {
+      "path": "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/merkle-tree/src/mmcs.rs",
+      "bytes": 111801,
+      "sha256": "b329c2a8f9181bcee3171cdb622a74574f50fc500ad7ece7a81f6702144f35e6"
+    },
+    {
+      "path": "/Users/ember/src/VCV-io-2026-09/VCVio/CryptoFoundations/MerkleTree/Extractor.lean",
+      "bytes": 18277,
+      "sha256": "9ffb09d3b20e538219a95599eb07971ae7937e00d3de32140ae98d954b627a12"
+    },
+    {
+      "path": "/Users/ember/src/VCV-io-2026-09/VCVio/CryptoFoundations/MerkleTree/Inductive/Defs.lean",
+      "bytes": 8634,
+      "sha256": "fb1ca8e2756bfd10ce1a2debe35a13cad842e910a5ff1f4c3a5de0f614eb2893"
+    },
+    {
+      "path": "/Users/ember/src/VCV-io-2026-09/VCVio/CryptoFoundations/MerkleTree/MultiExtractability/Game.lean",
+      "bytes": 13288,
+      "sha256": "91d80e6329e0641d35feebfcd887453c98e2d3ca2a5087b12205fa26c5c0d5d8"
+    },
+    {
+      "path": "/Users/ember/src/VCV-io-2026-09/VCVio/CryptoFoundations/MerkleTree/MultiExtractability/Sequential.lean",
+      "bytes": 10680,
+      "sha256": "a53c3c2d3cd55f1d5292d19ff43939308ae8be7c14c03ad64fc91f520182315c"
+    },
+    {
+      "path": "/Users/ember/src/VCV-io-2026-09/VCVio/CryptoFoundations/MerkleTree/MultiExtractability/Stateful.lean",
+      "bytes": 23234,
+      "sha256": "e06a0c5728b545d61c7c7c01ef06545f3be4803ad7cd6ad6db58be3be9bdca0c"
+    },
+    {
+      "path": "/Users/ember/src/VCV-io-2026-09/VCVio/CryptoFoundations/MerkleTree/MultiExtractability/StrongBound.lean",
+      "bytes": 43233,
+      "sha256": "fb65109eb30976cb5ff56e51cb51f638a79ec905cbafa1168f716e454b8de0ab"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/116.pdf",
+      "bytes": 3809663,
+      "sha256": "a2dc9bd042665081664287281b9bcf64735be2c818ce9207cce57cc43939fa2f"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/1071.pdf",
+      "bytes": 995671,
+      "sha256": "bb7a7e87b9000c98106de99c9af9d289def2a1b91919a3507ee78bf9bfd16947"
+    }
+  ],
+  "owned_artifacts": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/.gitignore",
+      "bytes": 26,
+      "sha256": "90a6f28d9127478c4fbf13088e91133d54452b9d060496061fe4f417bf346a5e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/AUDIT.md",
+      "bytes": 20618,
+      "sha256": "98fb3d92058fee53698ff4af191f70b12ac9e243b3c09e822c774de4e4f40d44"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/NEXT.md",
+      "bytes": 711,
+      "sha256": "cd0b3e60932ec47fc424ea607608ed79b132622537b11b830706363300c0a7e9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/RESULTS.json",
+      "bytes": 1293,
+      "sha256": "dd4069f3028ef502471610f2e928744772e8bbf0ed4bda52d7483e934e6d99c6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/STATUS.md",
+      "bytes": 1822,
+      "sha256": "157679d78cb5ea1c887cf66673e829398be8568624c6d2ea3b4f03ff4d29624c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/finite_controls.log",
+      "bytes": 1293,
+      "sha256": "dd4069f3028ef502471610f2e928744772e8bbf0ed4bda52d7483e934e6d99c6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/finite_controls.py",
+      "bytes": 5619,
+      "sha256": "3e13a4ef178e03d1e4c0255295ac1a679d6b8bc92f1001b1da13a23159c7669d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/pin_artifacts.py",
+      "bytes": 2397,
+      "sha256": "d54bcc88985934ac4f3adcf11da1bdc490e8d8fd887e77af68a9aa4bd7a0a9df"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/efficient_root_binding/searches.json",
+      "bytes": 883,
+      "sha256": "3d854198bc54c703d46405992c412ee6c408b1bdcf883e62f2c7122c4a22bedd"
+    }
+  ]
+}

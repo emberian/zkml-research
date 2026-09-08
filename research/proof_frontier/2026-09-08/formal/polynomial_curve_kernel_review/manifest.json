@@ -1,0 +1,52 @@
+{
+  "schema": "polynomial_curve_kernel_review_manifest_v1",
+  "reviewed_source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+  "reviewed_author_manifest_sha256": "233f869cc51584f2be295dbe2c7076734a4bc10e3cdcee16a596ecc813f401e0",
+  "files": [
+    {
+      "path": "COMMANDS.json",
+      "sha256": "c12956e1e9a0d70bad63c13c821a7a07f9fb3e5227df89cf3e7964ddf507b630",
+      "bytes": 1558
+    },
+    {
+      "path": "NEXT.md",
+      "sha256": "1a52eaf4e87876e8078b4c86ee3954383fb6dcb40a335129d7e40482483c837c",
+      "bytes": 661
+    },
+    {
+      "path": "REPORT.md",
+      "sha256": "c53dacc2d63b6ae6a0b98d910bf34da23bf82441280efed7d36810b28ed66148",
+      "bytes": 12545
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "093119e8e5711fa7bdb84f151422d893c834720d6a576818b2ce972566c7c4d9",
+      "bytes": 1390
+    },
+    {
+      "path": "check_math.py",
+      "sha256": "0600ac01596682b9643bec0adfbd40f0f41e6de4e9fd007680d75735ef3100ea",
+      "bytes": 8175
+    },
+    {
+      "path": "check_source.py",
+      "sha256": "cd719944972a7f5f21ded69d7eb94537d8b8f1ef0b3a3aab861404b25dc98d6a",
+      "bytes": 10138
+    },
+    {
+      "path": "math_check.json",
+      "sha256": "548d5cf48bc5c21e207fc48c1ddb96136dcc2e35a9f2d70c9fd2d411cb30d10a",
+      "bytes": 30750
+    },
+    {
+      "path": "review.json",
+      "sha256": "9b50ce115a1a31cb35f22304eff46b6a562d44c1ca4339d57326f19bafcab46c",
+      "bytes": 2226
+    },
+    {
+      "path": "source_check.json",
+      "sha256": "be16ddaea460a56caea43dad7df97b7de9841623a6916a78b403c3f7dea7e2d0",
+      "bytes": 21605
+    }
+  ]
+}

@@ -1,0 +1,930 @@
+{
+  "Theory/PolynomialCurve.lean": {
+    "theorems": [
+      "eval_poly",
+      "coeff_poly",
+      "natDegree_poly"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "eval_poly",
+        "qualified_name": "Minidregg.PolynomialCurve.eval_poly",
+        "private": false,
+        "line": 14
+      },
+      {
+        "name": "coeff_poly",
+        "qualified_name": "Minidregg.PolynomialCurve.coeff_poly",
+        "private": false,
+        "line": 18
+      },
+      {
+        "name": "natDegree_poly",
+        "qualified_name": "Minidregg.PolynomialCurve.natDegree_poly",
+        "private": false,
+        "line": 22
+      }
+    ],
+    "theorem_count": 3,
+    "pin_count": 3,
+    "pins": [
+      {
+        "theorem": "Minidregg.PolynomialCurve.eval_poly",
+        "requested_name": "Minidregg.PolynomialCurve.eval_poly",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 30,
+        "expected_message": "info: 'Minidregg.PolynomialCurve.eval_poly' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.PolynomialCurve.eval_poly"
+      },
+      {
+        "theorem": "Minidregg.PolynomialCurve.coeff_poly",
+        "requested_name": "Minidregg.PolynomialCurve.coeff_poly",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 34,
+        "expected_message": "info: 'Minidregg.PolynomialCurve.coeff_poly' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.PolynomialCurve.coeff_poly"
+      },
+      {
+        "theorem": "Minidregg.PolynomialCurve.natDegree_poly",
+        "requested_name": "Minidregg.PolynomialCurve.natDegree_poly",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 38,
+        "expected_message": "info: 'Minidregg.PolynomialCurve.natDegree_poly' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.PolynomialCurve.natDegree_poly"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Theory/CurveRSInterpolationMatrix.lean": {
+    "theorems": [
+      "BW_entry_natDegree_zero",
+      "BW_entry_natDegree_le",
+      "BW_map_eval",
+      "BW_det_natDegree_le"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "BW_entry_natDegree_zero",
+        "qualified_name": "Minidregg.RSInterpolation.BW_entry_natDegree_zero",
+        "private": false,
+        "line": 19
+      },
+      {
+        "name": "BW_entry_natDegree_le",
+        "qualified_name": "Minidregg.RSInterpolation.BW_entry_natDegree_le",
+        "private": false,
+        "line": 25
+      },
+      {
+        "name": "BW_map_eval",
+        "qualified_name": "Minidregg.RSInterpolation.BW_map_eval",
+        "private": false,
+        "line": 34
+      },
+      {
+        "name": "BW_det_natDegree_le",
+        "qualified_name": "Minidregg.RSInterpolation.BW_det_natDegree_le",
+        "private": false,
+        "line": 41
+      }
+    ],
+    "theorem_count": 4,
+    "pin_count": 4,
+    "pins": [
+      {
+        "theorem": "Minidregg.RSInterpolation.BW_entry_natDegree_zero",
+        "requested_name": "Minidregg.RSInterpolation.BW_entry_natDegree_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 75,
+        "expected_message": "info: 'Minidregg.RSInterpolation.BW_entry_natDegree_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.BW_entry_natDegree_zero"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.BW_entry_natDegree_le",
+        "requested_name": "Minidregg.RSInterpolation.BW_entry_natDegree_le",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 79,
+        "expected_message": "info: 'Minidregg.RSInterpolation.BW_entry_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.BW_entry_natDegree_le"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.BW_map_eval",
+        "requested_name": "Minidregg.RSInterpolation.BW_map_eval",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 83,
+        "expected_message": "info: 'Minidregg.RSInterpolation.BW_map_eval' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.BW_map_eval"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.BW_det_natDegree_le",
+        "requested_name": "Minidregg.RSInterpolation.BW_det_natDegree_le",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 87,
+        "expected_message": "info: 'Minidregg.RSInterpolation.BW_det_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.BW_det_natDegree_le"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Theory/CurveRSInterpolationKernel.lean": {
+    "theorems": [
+      "curve_det_eq_zero_of_specializations",
+      "curve_bounded_kernel_of_specializations"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "curve_det_eq_zero_of_specializations",
+        "qualified_name": "Minidregg.RSInterpolation.curve_det_eq_zero_of_specializations",
+        "private": false,
+        "line": 28
+      },
+      {
+        "name": "curve_bounded_kernel_of_specializations",
+        "qualified_name": "Minidregg.RSInterpolation.curve_bounded_kernel_of_specializations",
+        "private": false,
+        "line": 107
+      }
+    ],
+    "theorem_count": 2,
+    "pin_count": 2,
+    "pins": [
+      {
+        "theorem": "Minidregg.RSInterpolation.curve_det_eq_zero_of_specializations",
+        "requested_name": "Minidregg.RSInterpolation.curve_det_eq_zero_of_specializations",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 339,
+        "expected_message": "info: 'Minidregg.RSInterpolation.curve_det_eq_zero_of_specializations' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.curve_det_eq_zero_of_specializations"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.curve_bounded_kernel_of_specializations",
+        "requested_name": "Minidregg.RSInterpolation.curve_bounded_kernel_of_specializations",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 343,
+        "expected_message": "info: 'Minidregg.RSInterpolation.curve_bounded_kernel_of_specializations' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.curve_bounded_kernel_of_specializations"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/CurveFullUDStatement.lean": {
+    "theorems": [
+      "zero_premise_inhabited",
+      "zero_conclusion_inhabited",
+      "impossible_radius_teeth"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "zero_premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.zero_premise_inhabited",
+        "private": false,
+        "line": 43
+      },
+      {
+        "name": "zero_conclusion_inhabited",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.zero_conclusion_inhabited",
+        "private": false,
+        "line": 56
+      },
+      {
+        "name": "impossible_radius_teeth",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.impossible_radius_teeth",
+        "private": false,
+        "line": 64
+      }
+    ],
+    "theorem_count": 3,
+    "pin_count": 3,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.zero_premise_inhabited",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.zero_premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 73,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.zero_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.zero_premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.zero_conclusion_inhabited",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.zero_conclusion_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 77,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.zero_conclusion_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.zero_conclusion_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.impossible_radius_teeth",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.impossible_radius_teeth",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 81,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.impossible_radius_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.impossible_radius_teeth"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/CurveFullUDInterpolation.lean": {
+    "theorems": [
+      "curvePolynomial_eval",
+      "curvePolynomial_coeff",
+      "curvePolynomial_natDegree",
+      "curve_bw_bounded_kernel_of_many_close"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "curvePolynomial_eval",
+        "qualified_name": "Minidregg.Selvage.curvePolynomial_eval",
+        "private": false,
+        "line": 17
+      },
+      {
+        "name": "curvePolynomial_coeff",
+        "qualified_name": "Minidregg.Selvage.curvePolynomial_coeff",
+        "private": false,
+        "line": 22
+      },
+      {
+        "name": "curvePolynomial_natDegree",
+        "qualified_name": "Minidregg.Selvage.curvePolynomial_natDegree",
+        "private": false,
+        "line": 27
+      },
+      {
+        "name": "curve_bw_bounded_kernel_of_many_close",
+        "qualified_name": "Minidregg.Selvage.curve_bw_bounded_kernel_of_many_close",
+        "private": false,
+        "line": 30
+      }
+    ],
+    "theorem_count": 4,
+    "pin_count": 4,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.curvePolynomial_eval",
+        "requested_name": "Minidregg.Selvage.curvePolynomial_eval",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 54,
+        "expected_message": "info: 'Minidregg.Selvage.curvePolynomial_eval' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curvePolynomial_eval"
+      },
+      {
+        "theorem": "Minidregg.Selvage.curvePolynomial_coeff",
+        "requested_name": "Minidregg.Selvage.curvePolynomial_coeff",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 58,
+        "expected_message": "info: 'Minidregg.Selvage.curvePolynomial_coeff' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curvePolynomial_coeff"
+      },
+      {
+        "theorem": "Minidregg.Selvage.curvePolynomial_natDegree",
+        "requested_name": "Minidregg.Selvage.curvePolynomial_natDegree",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 62,
+        "expected_message": "info: 'Minidregg.Selvage.curvePolynomial_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curvePolynomial_natDegree"
+      },
+      {
+        "theorem": "Minidregg.Selvage.curve_bw_bounded_kernel_of_many_close",
+        "requested_name": "Minidregg.Selvage.curve_bw_bounded_kernel_of_many_close",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 66,
+        "expected_message": "info: 'Minidregg.Selvage.curve_bw_bounded_kernel_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curve_bw_bounded_kernel_of_many_close"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/CurveFullUDBivariate.lean": {
+    "theorems": [
+      "curve_bw_bivariate_of_many_close"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "curve_bw_bivariate_of_many_close",
+        "qualified_name": "Minidregg.Selvage.curve_bw_bivariate_of_many_close",
+        "private": false,
+        "line": 20
+      }
+    ],
+    "theorem_count": 1,
+    "pin_count": 1,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.curve_bw_bivariate_of_many_close",
+        "requested_name": "Minidregg.Selvage.curve_bw_bivariate_of_many_close",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 202,
+        "expected_message": "info: 'Minidregg.Selvage.curve_bw_bivariate_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curve_bw_bivariate_of_many_close"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/CurveFullUDCore.lean": {
+    "theorems": [
+      "curve_rs_nearby_polynomial",
+      "curveFullUDCardCore"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "curve_rs_nearby_polynomial",
+        "qualified_name": "Minidregg.Selvage.curve_rs_nearby_polynomial",
+        "private": true,
+        "line": 21
+      },
+      {
+        "name": "curveFullUDCardCore",
+        "qualified_name": "Minidregg.Selvage.curveFullUDCardCore",
+        "private": false,
+        "line": 39
+      }
+    ],
+    "theorem_count": 2,
+    "pin_count": 2,
+    "pins": [
+      {
+        "theorem": "_private.Selvage.CurveFullUDCore.0.Minidregg.Selvage.curve_rs_nearby_polynomial",
+        "requested_name": "Minidregg.Selvage.curve_rs_nearby_polynomial",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 294,
+        "expected_message": "info: '_private.Selvage.CurveFullUDCore.0.Minidregg.Selvage.curve_rs_nearby_polynomial' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curve_rs_nearby_polynomial"
+      },
+      {
+        "theorem": "Minidregg.Selvage.curveFullUDCardCore",
+        "requested_name": "Minidregg.Selvage.curveFullUDCardCore",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 298,
+        "expected_message": "info: 'Minidregg.Selvage.curveFullUDCardCore' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curveFullUDCardCore"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/CurveProximityGapFullUD.lean": {
+    "theorems": [
+      "curve_correlatedAgreement_of_many_close",
+      "curve_bad_card_le",
+      "geometricGenerator_pr_eq",
+      "reedSolomonCode_isGeometricProximityGenerator_fullUD",
+      "hasGeometricMutualCorrelatedAgreement_fullUD"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "curve_correlatedAgreement_of_many_close",
+        "qualified_name": "Minidregg.Selvage.curve_correlatedAgreement_of_many_close",
+        "private": false,
+        "line": 23
+      },
+      {
+        "name": "curve_bad_card_le",
+        "qualified_name": "Minidregg.Selvage.curve_bad_card_le",
+        "private": false,
+        "line": 50
+      },
+      {
+        "name": "geometricGenerator_pr_eq",
+        "qualified_name": "Minidregg.Selvage.geometricGenerator_pr_eq",
+        "private": false,
+        "line": 63
+      },
+      {
+        "name": "reedSolomonCode_isGeometricProximityGenerator_fullUD",
+        "qualified_name": "Minidregg.Selvage.reedSolomonCode_isGeometricProximityGenerator_fullUD",
+        "private": false,
+        "line": 74
+      },
+      {
+        "name": "hasGeometricMutualCorrelatedAgreement_fullUD",
+        "qualified_name": "Minidregg.Selvage.hasGeometricMutualCorrelatedAgreement_fullUD",
+        "private": false,
+        "line": 93
+      }
+    ],
+    "theorem_count": 5,
+    "pin_count": 5,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.curve_correlatedAgreement_of_many_close",
+        "requested_name": "Minidregg.Selvage.curve_correlatedAgreement_of_many_close",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 115,
+        "expected_message": "info: 'Minidregg.Selvage.curve_correlatedAgreement_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curve_correlatedAgreement_of_many_close"
+      },
+      {
+        "theorem": "Minidregg.Selvage.curve_bad_card_le",
+        "requested_name": "Minidregg.Selvage.curve_bad_card_le",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 119,
+        "expected_message": "info: 'Minidregg.Selvage.curve_bad_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curve_bad_card_le"
+      },
+      {
+        "theorem": "Minidregg.Selvage.geometricGenerator_pr_eq",
+        "requested_name": "Minidregg.Selvage.geometricGenerator_pr_eq",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 123,
+        "expected_message": "info: 'Minidregg.Selvage.geometricGenerator_pr_eq' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.geometricGenerator_pr_eq"
+      },
+      {
+        "theorem": "Minidregg.Selvage.reedSolomonCode_isGeometricProximityGenerator_fullUD",
+        "requested_name": "Minidregg.Selvage.reedSolomonCode_isGeometricProximityGenerator_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 127,
+        "expected_message": "info: 'Minidregg.Selvage.reedSolomonCode_isGeometricProximityGenerator_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.reedSolomonCode_isGeometricProximityGenerator_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.hasGeometricMutualCorrelatedAgreement_fullUD",
+        "requested_name": "Minidregg.Selvage.hasGeometricMutualCorrelatedAgreement_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 131,
+        "expected_message": "info: 'Minidregg.Selvage.hasGeometricMutualCorrelatedAgreement_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.hasGeometricMutualCorrelatedAgreement_fullUD"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/CurveFriChallenge.lean": {
+    "theorems": [
+      "curveWord_snoc",
+      "correlatedAgreement_of_snoc",
+      "curve_uniform_sound",
+      "arity8_curve_sound",
+      "arity8_injected_curve_sound",
+      "arity8_injected_fixed_prefix_sound"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "curveWord_snoc",
+        "qualified_name": "Minidregg.Selvage.curveWord_snoc",
+        "private": false,
+        "line": 14
+      },
+      {
+        "name": "correlatedAgreement_of_snoc",
+        "qualified_name": "Minidregg.Selvage.correlatedAgreement_of_snoc",
+        "private": false,
+        "line": 20
+      },
+      {
+        "name": "curve_uniform_sound",
+        "qualified_name": "Minidregg.Selvage.curve_uniform_sound",
+        "private": false,
+        "line": 34
+      },
+      {
+        "name": "arity8_curve_sound",
+        "qualified_name": "Minidregg.Selvage.arity8_curve_sound",
+        "private": false,
+        "line": 50
+      },
+      {
+        "name": "arity8_injected_curve_sound",
+        "qualified_name": "Minidregg.Selvage.arity8_injected_curve_sound",
+        "private": false,
+        "line": 60
+      },
+      {
+        "name": "arity8_injected_fixed_prefix_sound",
+        "qualified_name": "Minidregg.Selvage.arity8_injected_fixed_prefix_sound",
+        "private": false,
+        "line": 75
+      }
+    ],
+    "theorem_count": 6,
+    "pin_count": 6,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.curveWord_snoc",
+        "requested_name": "Minidregg.Selvage.curveWord_snoc",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 88,
+        "expected_message": "info: 'Minidregg.Selvage.curveWord_snoc' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curveWord_snoc"
+      },
+      {
+        "theorem": "Minidregg.Selvage.correlatedAgreement_of_snoc",
+        "requested_name": "Minidregg.Selvage.correlatedAgreement_of_snoc",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 92,
+        "expected_message": "info: 'Minidregg.Selvage.correlatedAgreement_of_snoc' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.correlatedAgreement_of_snoc"
+      },
+      {
+        "theorem": "Minidregg.Selvage.curve_uniform_sound",
+        "requested_name": "Minidregg.Selvage.curve_uniform_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 96,
+        "expected_message": "info: 'Minidregg.Selvage.curve_uniform_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.curve_uniform_sound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.arity8_curve_sound",
+        "requested_name": "Minidregg.Selvage.arity8_curve_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 100,
+        "expected_message": "info: 'Minidregg.Selvage.arity8_curve_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.arity8_curve_sound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.arity8_injected_curve_sound",
+        "requested_name": "Minidregg.Selvage.arity8_injected_curve_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 104,
+        "expected_message": "info: 'Minidregg.Selvage.arity8_injected_curve_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.arity8_injected_curve_sound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.arity8_injected_fixed_prefix_sound",
+        "requested_name": "Minidregg.Selvage.arity8_injected_fixed_prefix_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 108,
+        "expected_message": "info: 'Minidregg.Selvage.arity8_injected_fixed_prefix_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.arity8_injected_fixed_prefix_sound"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/CurveFullUDTeeth.lean": {
+    "theorems": [
+      "legalWord_mem",
+      "corrupted_premise_inhabited",
+      "zero_error_premise_inhabited",
+      "zero_error_core_fires",
+      "corrupted_actual_error",
+      "corrupted_distance_one",
+      "corrupted_not_mem",
+      "curve_at_three_roots",
+      "three_good_challenges",
+      "no_correlated_agreement",
+      "strict_radius_admissible",
+      "unscaled_affine_bound_falsifier"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "legalWord_mem",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.legalWord_mem",
+        "private": false,
+        "line": 15
+      },
+      {
+        "name": "corrupted_premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_premise_inhabited",
+        "private": false,
+        "line": 22
+      },
+      {
+        "name": "zero_error_premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.zero_error_premise_inhabited",
+        "private": false,
+        "line": 41
+      },
+      {
+        "name": "zero_error_core_fires",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.zero_error_core_fires",
+        "private": false,
+        "line": 51
+      },
+      {
+        "name": "corrupted_actual_error",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_actual_error",
+        "private": false,
+        "line": 59
+      },
+      {
+        "name": "corrupted_distance_one",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_distance_one",
+        "private": false,
+        "line": 62
+      },
+      {
+        "name": "corrupted_not_mem",
+        "qualified_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_not_mem",
+        "private": false,
+        "line": 69
+      },
+      {
+        "name": "curve_at_three_roots",
+        "qualified_name": "Minidregg.Selvage.CurveDegreeTeeth.curve_at_three_roots",
+        "private": false,
+        "line": 95
+      },
+      {
+        "name": "three_good_challenges",
+        "qualified_name": "Minidregg.Selvage.CurveDegreeTeeth.three_good_challenges",
+        "private": false,
+        "line": 102
+      },
+      {
+        "name": "no_correlated_agreement",
+        "qualified_name": "Minidregg.Selvage.CurveDegreeTeeth.no_correlated_agreement",
+        "private": false,
+        "line": 110
+      },
+      {
+        "name": "strict_radius_admissible",
+        "qualified_name": "Minidregg.Selvage.CurveDegreeTeeth.strict_radius_admissible",
+        "private": false,
+        "line": 136
+      },
+      {
+        "name": "unscaled_affine_bound_falsifier",
+        "qualified_name": "Minidregg.Selvage.CurveDegreeTeeth.unscaled_affine_bound_falsifier",
+        "private": false,
+        "line": 142
+      }
+    ],
+    "theorem_count": 12,
+    "pin_count": 12,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.legalWord_mem",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.legalWord_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 151,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.legalWord_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.legalWord_mem"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.corrupted_premise_inhabited",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 155,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.corrupted_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.zero_error_premise_inhabited",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.zero_error_premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 159,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.zero_error_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.zero_error_premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.zero_error_core_fires",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.zero_error_core_fires",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 163,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.zero_error_core_fires' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.zero_error_core_fires"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.corrupted_actual_error",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_actual_error",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 167,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.corrupted_actual_error' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_actual_error"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.corrupted_distance_one",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_distance_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 171,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.corrupted_distance_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_distance_one"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveFullUDWitness.corrupted_not_mem",
+        "requested_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_not_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 175,
+        "expected_message": "info: 'Minidregg.Selvage.CurveFullUDWitness.corrupted_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveFullUDWitness.corrupted_not_mem"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveDegreeTeeth.curve_at_three_roots",
+        "requested_name": "Minidregg.Selvage.CurveDegreeTeeth.curve_at_three_roots",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 179,
+        "expected_message": "info: 'Minidregg.Selvage.CurveDegreeTeeth.curve_at_three_roots' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveDegreeTeeth.curve_at_three_roots"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveDegreeTeeth.three_good_challenges",
+        "requested_name": "Minidregg.Selvage.CurveDegreeTeeth.three_good_challenges",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 183,
+        "expected_message": "info: 'Minidregg.Selvage.CurveDegreeTeeth.three_good_challenges' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveDegreeTeeth.three_good_challenges"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveDegreeTeeth.no_correlated_agreement",
+        "requested_name": "Minidregg.Selvage.CurveDegreeTeeth.no_correlated_agreement",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 187,
+        "expected_message": "info: 'Minidregg.Selvage.CurveDegreeTeeth.no_correlated_agreement' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveDegreeTeeth.no_correlated_agreement"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveDegreeTeeth.strict_radius_admissible",
+        "requested_name": "Minidregg.Selvage.CurveDegreeTeeth.strict_radius_admissible",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 191,
+        "expected_message": "info: 'Minidregg.Selvage.CurveDegreeTeeth.strict_radius_admissible' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveDegreeTeeth.strict_radius_admissible"
+      },
+      {
+        "theorem": "Minidregg.Selvage.CurveDegreeTeeth.unscaled_affine_bound_falsifier",
+        "requested_name": "Minidregg.Selvage.CurveDegreeTeeth.unscaled_affine_bound_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 195,
+        "expected_message": "info: 'Minidregg.Selvage.CurveDegreeTeeth.unscaled_affine_bound_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.CurveDegreeTeeth.unscaled_affine_bound_falsifier"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  }
+}

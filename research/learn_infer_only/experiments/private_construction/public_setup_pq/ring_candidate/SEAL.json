@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "source_extractions": 6,
+  "frozen_notes_and_math_results": 4,
+  "artifacts": 12,
+  "visual_source_renders": 2,
+  "manifest_sha256": "703e824295a40357f44d3a8cfa073ae2f6c1411b24783a83ca1c6e4f7992fbdb"
+}

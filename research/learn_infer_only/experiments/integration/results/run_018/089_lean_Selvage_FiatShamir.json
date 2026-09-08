@@ -1,0 +1,18 @@
+{
+  "label": "lean_Selvage_FiatShamir",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FiatShamir.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/FiatShamir.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "@Oracle.respond_consistent : \u2200 {Q C : Type} (O : Oracle Q C) (q : Q) (coin coin' : C),\n  ((O.respond q coin).2.respond q coin').1 = (O.respond q coin).1\n@srFinalChal_eq_lookup : \u2200 {r : Reduction} {s t : \u2115} (P : SrProver r s) (c : Fin t \u2192 r.Chal) (d : Fin r.k \u2192 r.Chal)\n  (i : Fin r.k), srFinalChal P c d i = ((srHandlerRun P c).1.lookup ((srOut P c).query i)).getD (d i)\nMinidregg.Selvage.fsStraightline_iff_sr (r : Reduction) (Z : Set (Stmt r)) (\u03b5 : \u2115 \u2192 \u2115 \u2192 \u211d \u2192 \u211d) :\n  FsStraightlineKnowledgeSoundness r Z \u03b5 \u2194 StraightlineSrKnowledgeSoundness r Z \u03b5\nMinidregg.Selvage.fsOfRbrSound_iff_depth : FsOfRbrSound \u2194 OB2_depth_composition_nonneg\nMinidregg.Selvage.fsKeystone_proved : FsOfRbrKeystone\n",
+  "stderr": "",
+  "elapsed_seconds": 2.9679712079814635,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/FiatShamir.lean",
+  "source_sha256_before": "00c79a6cf33f270551b6c4a95ee9e6b0e93caa43af0d84146e803ef18d242587",
+  "source_sha256_after": "00c79a6cf33f270551b6c4a95ee9e6b0e93caa43af0d84146e803ef18d242587"
+}

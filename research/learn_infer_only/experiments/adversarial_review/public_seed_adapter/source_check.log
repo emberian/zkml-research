@@ -1,0 +1,44 @@
+{
+  "byte_identical_predecessors": 5,
+  "crypto_or_private_execution": 0,
+  "environment_binary_bytes_checked_without_loading": 2,
+  "environment_inventory_sha256": "c14cb6f883285e50f505d0a8997871333d72ec24d7b30605556d63ed73bcdb9c",
+  "gate_precedes_run_directory": true,
+  "independent_public_integer_pivot_determinant": -812032080,
+  "native_dependency_bytes_checked_without_loading": 1,
+  "no_later_public_call_or_public_save_in_frozen_driver_AST": true,
+  "normal_backend_allowlist": [
+    "encode-query",
+    "host-infer",
+    "host-learn",
+    "issuer-encrypt",
+    "reader-decrypt",
+    "recipient-finalize",
+    "validate-context"
+  ],
+  "ok": true,
+  "public_schedule": {
+    "expiry_step_and_original": [
+      [
+        33,
+        1
+      ]
+    ],
+    "infer_steps_and_rows": {
+      "1": 0,
+      "16": 1,
+      "32": 2,
+      "33": 3
+    },
+    "learns": 33
+  },
+  "python_ASTs_parsed": 9,
+  "rejection_record_before_completion_and_context": true,
+  "reviewed_mathematics_pins": 2,
+  "runtime_and_gate_absent_at_review": true,
+  "scope": "Source/AST and pure public integer checks, not a runtime trace, whole-program proof, concrete-hash proof or full transitive binary attestation.",
+  "source_contract_helper_pins": 12,
+  "source_first_private_decode_line": 198,
+  "source_pins_sha256": "be861661892f52e52068d88361fc1519989ae6103a4945a3c6c7e41a8ffc5fac",
+  "source_public_closure_line": 192
+}

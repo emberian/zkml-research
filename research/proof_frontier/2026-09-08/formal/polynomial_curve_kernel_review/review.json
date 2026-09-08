@@ -1,0 +1,64 @@
+{
+  "schema": "polynomial_curve_kernel_independent_review_v1",
+  "reviewer_agent": "/root/transparent_setup_seed",
+  "disposition": "accepted",
+  "author_correction_requested": false,
+  "frozen_utc": "2026-09-08T14:34:54.119684+00:00",
+  "reviewed_source": {
+    "path": "../polynomial_curve_kernel/PolynomialMatrixKernel.lean",
+    "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91"
+  },
+  "reviewed_author_manifest": {
+    "path": "../polynomial_curve_kernel/manifest.json",
+    "sha256": "233f869cc51584f2be295dbe2c7076734a4bc10e3cdcee16a596ecc813f401e0"
+  },
+  "report": {
+    "path": "REPORT.md",
+    "sha256": "c53dacc2d63b6ae6a0b98d910bf34da23bf82441280efed7d36810b28ed66148"
+  },
+  "checks": [
+    {
+      "path": "source_check.json",
+      "sha256": "be16ddaea460a56caea43dad7df97b7de9841623a6916a78b403c3f7dea7e2d0",
+      "status": "PASS"
+    },
+    {
+      "path": "math_check.json",
+      "sha256": "548d5cf48bc5c21e207fc48c1ddb96136dcc2e35a9f2d70c9fd2d411cb30d10a",
+      "status": "PASS"
+    }
+  ],
+  "independently_verified": {
+    "determinant_bound": "M*n",
+    "cofactor_bound": "M*r <= M*e",
+    "zero_cases": [
+      "M=0",
+      "e=0",
+      "r=0",
+      "determinant n=0"
+    ],
+    "standard_only_guarded_theorems": 26,
+    "preserved_old_theorem_headers_and_guard_bytes": 16,
+    "source_manifest_entries": 21,
+    "exhaustive_matrices": 16067,
+    "qualifying_matrices_with_bounded_witness": 1518,
+    "complete_new_file_patch_payloads_match": true,
+    "retained_compile_source_and_olean_match": true
+  },
+  "new_lean_invocations": 0,
+  "cryptographic_operations": 0,
+  "limits": [
+    "Actual compilation is attributed to pinned retained author evidence.",
+    "M=0 strict-degree falsifier is true because natural degree cannot be negative.",
+    "General-rank sharpness is a reviewer derivation and finite fixture family, not a new Lean theorem.",
+    "No dependent-module or full integration build, curve semantics, RS semantics, or protocol claim."
+  ],
+  "integration": "Select complete successor new-file patch instead of previous kernel lane.",
+  "source_counts": {
+    "web": 0,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "eprint_network": 0
+  }
+}

@@ -1,0 +1,1 @@
+[DERIVED] Review complete: accept author manifest `17b4f5a087248c521eb25e7ca8d44ee859f67f2a22dac7a54dfaca43602327f5` within its index/arithmetic scope. All artifact/source/axiom pins, exact patch replay, retained pure controls and additional independent arithmetic checks passed. No new Lean or crypto run. See REPORT.md and RESULTS.json.

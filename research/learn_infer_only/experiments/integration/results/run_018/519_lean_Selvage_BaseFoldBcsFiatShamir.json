@@ -1,0 +1,18 @@
+{
+  "label": "lean_Selvage_BaseFoldBcsFiatShamir",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsFiatShamir.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/BaseFoldBcsFiatShamir.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "@DrawsExact : {m queryCount : \u2115} \u2192 Statement m \u2192 Receipt m queryCount \u2192 Prop\n@challengeMessage_eq_of_samePrefix : \u2200 {m queryCount : \u2115} (statement : Statement m) (left right : Receipt m queryCount)\n  (j : Fin m),\n  List.take (\u2191j) (completedRoundFrames left) = List.take (\u2191j) (completedRoundFrames right) \u2192\n    roundFrame (\u2191j) (left.round j) = roundFrame (\u2191j) (right.round j) \u2192\n      challengeMessage statement left j = challengeMessage statement right j\n@transcriptPrimitiveWork_exact : \u2200 {m queryCount : \u2115} (statement : Statement m) (receipt : Receipt m queryCount),\n  transcriptPrimitiveWork statement receipt =\n    (List.ofFn fun j => (challengeMessage statement receipt j).length).sum +\n      (List.ofFn fun a => (queryMessage statement receipt a).length).sum\n@accepts_to_rawCommittedIor : \u2200 {ell m queryCount : \u2115} (T : FoldingTower E (PowerTwoFriLevels ell) m)\n  (st : RawFriAdaptiveTranscript fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) (hmell : m \u2264 ell)\n  (statement : Statement m) (receipt : Receipt m queryCount),\n  Accepts T st hmell statement receipt \u2192\n    BaseFoldRawCommittedIorAccepts (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) T st\n      statement.evaluationPoint statement.claimedValue (submittedProver receipt) queryCount receipt.challenge\n      (querySchedule hmell receipt)\nromTarget : Prop\n",
+  "stderr": "",
+  "elapsed_seconds": 3.781235500006005,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/BaseFoldBcsFiatShamir.lean",
+  "source_sha256_before": "ed83af3a80e00f910c929c27adb4cebfa1bec0efea8c968ec00d0f759debb89b",
+  "source_sha256_after": "ed83af3a80e00f910c929c27adb4cebfa1bec0efea8c968ec00d0f759debb89b"
+}

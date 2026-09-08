@@ -1,0 +1,55 @@
+{
+  "claim": "EXECUTED independent public review seal",
+  "disposition": "accepted within finite public execution scope; private matches attributed",
+  "files": [
+    {
+      "bytes": 9748,
+      "path": "REPORT.md",
+      "sha256": "302d8ece294586570c125ec567a443a694f98e4f95cf09b6443568dce49b9ad8"
+    },
+    {
+      "bytes": 3908,
+      "path": "SOURCES.md",
+      "sha256": "3a991509b9a79b2bd4f166abdfcb170a8bc08058c16dae809ac4e8ab6e289f5e"
+    },
+    {
+      "bytes": 629,
+      "path": "STATUS.md",
+      "sha256": "f479c4c96929488d8852a001d1124393b7b70bcb9c4ddd0c43b1c4433320fabb"
+    },
+    {
+      "bytes": 626,
+      "path": "NEXT.md",
+      "sha256": "b00c4a93b35aaeaa9918c8a4acf5371ae60bfa929e696ce77c2c81401e330c6a"
+    },
+    {
+      "bytes": 18620,
+      "path": "check_public.py",
+      "sha256": "64e68517a2208494d29e244d90882c1e59913e557da4f16107f115def15c2d06"
+    },
+    {
+      "bytes": 1518,
+      "path": "check.stdout.json",
+      "sha256": "2036d601c56c404fad77207afb9bc3635defa93f707ca2e798a2123bd77a1ab0"
+    },
+    {
+      "bytes": 0,
+      "path": "check.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 410764,
+      "path": "results.json",
+      "sha256": "bd6072e32253af08dfabe92a89451dbd06629af596ae26fbfcdf48e3472e087a"
+    },
+    {
+      "bytes": 1363,
+      "path": "seal_review.py",
+      "sha256": "2de006c5070f6deb8018540eded6f6b9afa7ff790017c0cd53e846b97422f707"
+    }
+  ],
+  "input_files_rehashed_unchanged": 1447,
+  "new_crypto_invocations": 0,
+  "private_files_read": 0,
+  "sealed_utc": "2026-09-08T14:51:40.220104+00:00"
+}

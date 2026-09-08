@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "source_freeze_files": 47,
+  "unchanged_dependency_copies": 36,
+  "runtime_source_pins": 44,
+  "signature_files": 79,
+  "Python_ASTs": 35,
+  "primitive_files_preserved": 167,
+  "completed_prelaunch_and_execution_reviews_preserved": true,
+  "runtime_exists": false,
+  "accepted_gate_exists": false,
+  "future_launch_authorization_exists": false,
+  "processes_started": 0,
+  "cryptographic_operations": 0,
+  "private_file_reads": 0,
+  "scope": "Preparation integrity only; final launcher/checker source review and future execution authorization remain pending"
+}

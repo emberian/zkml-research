@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDTeeth.olean",
+    "Selvage/CurveFullUDTeeth.lean"
+  ],
+  "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+  "exit_code": 0,
+  "source_sha256": "d0c20fa2c1785478155424fe488193196f1dfb16809dde48c59bed44111bcc96",
+  "source_unchanged": true,
+  "elapsed_s": 8.361940860748291,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-10.log"
+}

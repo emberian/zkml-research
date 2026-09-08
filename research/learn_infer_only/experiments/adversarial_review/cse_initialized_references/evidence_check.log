@@ -1,0 +1,24 @@
+{
+  "Lean_builds_by_reviewer": 0,
+  "author_manifest_files": 15,
+  "author_manifest_sha256": "1c8d73ab40a06bde6dbed4b045d78d67d7fced01c5013141047ac40dc305c5c5",
+  "companion_HEAD_status_and_umbrella_preserved": true,
+  "crypto_execution": 0,
+  "forbidden_identifiers": [],
+  "four_saved_fresh_proposal_dependency_checks_agree": true,
+  "frozen_predecessor_files_rehashed": 96,
+  "ok": true,
+  "patch_exactly_source_and_umbrella_import": true,
+  "patch_sha256": "39afffcab611adc4a3a292bd3935ea551ae5f22e264660c9d2c0523256c74c6c",
+  "reused_companion_source_hashes": {
+    "/Users/ember/dev/minidregg/Compiler/AirFlatten.lean": "504221deeb50018370b35110c60bcd01d0e0e89677a63ed0f023b80c07fe3f54",
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6",
+    "/Users/ember/dev/minidregg/Compiler/Emit.lean": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+    "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4"
+  },
+  "saved_final_Lean_result_sha256": "ceba811f8783c1c4f14705e92260e98080734d687059269606fdf6271308baa8",
+  "scope": "Independent source/census/hash and isolated patch application. Lean success and axiom guard evaluation are attributed to saved exact author output, with cached companion/external dependencies; no whole-tree rebuild.",
+  "source_sha256": "1e8037c2c4ce35727a804912560b13a89a673682a8ca7405f2d1d4504d884386",
+  "storage_model_has_no_gate_evaluator": true,
+  "theorem_count": 29
+}

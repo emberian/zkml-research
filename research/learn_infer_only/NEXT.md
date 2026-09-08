@@ -1,5 +1,18 @@
 # Third overnight run — active ownership and inherited resume points
 
+## Deadline handoff — 2026-09-08
+
+[EXECUTED] Latest successful joint proof run: run018, 952 pins / 72 proposed modules / 567 rebuilt project modules. The source-only final manifest selects 1,189 pins / 97 modules. Do not describe the latter as a combined Lean success. Read STATUS.md's final collection before the historical ownership tables below.
+
+1. [OPEN] Independently review the new cache branch in `experiments/integration/check_all_formal.py` before first use. The reviewed helper is `verified_project_cache.py`; the observed run018 export is under `experiments/adversarial_review/verified_project_cache_implementation/run018_observed_001/`. It is a post-success observed cohort, not a historical external-dependency attestation. Admission, installation and first cached build remain unexecuted. Then integrate `modules_overnight_final.json` in an isolated checkout; retain source/input stability and both boundary checks. A full source rebuild remains an alternative if the cache cannot be accepted.
+2. [OPEN] Complete the public-seed journal's final launcher/public-close/gate review before any launch. Read its HANDOFF and partial review; no gate or execution exists. Preserve its 33/4/1 contract, reopen/retry requirements and public-before-private ordering.
+3. [OPEN] The successful long TFHE run is finished and sealed; do not rerun it without a new question. Rust-interpreter refinement, useful new private observations and cryptographic restricted release remain distinct next targets. The integer-only adapter probe has no compile attempt or measured runtime.
+4. [OPEN] Compose actual arity-eight folding/query/injection with the reviewed degree-M result and supplied-opening adapter. Concrete hash probability, Fiat–Shamir/QROM and actual runtime log production are not provided by the deterministic Lean statements.
+5. [OPEN] Price an efficient implementation of the ring sampler and justify a concrete QPT reduction/parameter choice before constructing a PQ implementation. Current finite samplability and attack-cost heuristics do not certify practical security or runtime.
+6. [REPORTED user preference] Reconsider posts in `~/src/dregg-microsites` only after this day's swarm closes. No microsite file was changed. Existing GitHub Pages evidence updates are a separate authorized task.
+
+[EXECUTED protections] Do not resume the previously stopped ideal-window or signer/verified-route tasks. Main minidregg, breadstuffs and the eprint mirror remain read-only. Preserve the old failed TFHE run. No new workload is launched in the deadline closeout.
+
 [EXECUTED authorization] Active until **2026-09-08 11am EDT /15:00 UTC**.
 Root owns shared ledgers, named commits and final integration. Read
 [the current brief](../../swarm/OVERNIGHT-2026-09-08.md). The earlier paused-goal

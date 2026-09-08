@@ -1,0 +1,58 @@
+{
+  "BabyBearTwoAdic": [
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_source_value",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_half_order",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_full_order",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_primitive",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_contract",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_premise_inhabited",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.squared_generator_falsifier",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.extension_generator_primitive",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega20_source_value",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_primitive",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_ne_zero",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_square",
+    "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_half_turn"
+  ],
+  "PowerTwoRootFolding": [
+    "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_primitive",
+    "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_pow_mod",
+    "Minidregg.Selvage.PowerTwoRootFolding.size_halves",
+    "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_succ",
+    "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_half_turn",
+    "Minidregg.Selvage.PowerTwoRootFolding.negative_section",
+    "Minidregg.Selvage.PowerTwoRootFolding.tower_contract",
+    "Minidregg.Selvage.PowerTwoRootFolding.coherent_index_powers",
+    "Minidregg.Selvage.PowerTwoRootFolding.fold_pair"
+  ],
+  "BabyBearFoldingTower": [
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initialRoot_primitive",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.two_ne_zero",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.correctness",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_premise_inhabited",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.levelRoot_source",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_source",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_ne_zero",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initial_domain_zero_index",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.consecutive_domain_falsifier",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_not_mem",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_mem_successor",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_relDist",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_far",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.source_degree_falsifier",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_and_farness_inhabited",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.coherent_sound"
+  ],
+  "BabyBearFoldingWitnesses": [
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_zero",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_one",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.initial_farness",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_fold_equation",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_queries_accept",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.consumer_inhabited",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.query_one_falsifier",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_probability_positive",
+    "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_sound"
+  ]
+}

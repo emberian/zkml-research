@@ -1,0 +1,18 @@
+{
+  "label": "lean_Selvage_ExtensionChallengeBridge",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ExtensionChallengeBridge.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/ExtensionChallengeBridge.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "@dotWt_liftWord : \u2200 {\u03b9 : Type u_4} {Fq : Type u_5} {K : Type u_6} [inst : Fintype \u03b9] [inst_1 : Field Fq]\n  [inst_2 : Field K] [inst_3 : Algebra Fq K] (a f : \u03b9 \u2192 Fq),\n  dotWt (liftWord a) (liftWord f) = (algebraMap Fq K) (dotWt a f)\n@satisfies_liftConstraint_iff : \u2200 {\u03b9 : Type u_4} {Fq : Type u_5} {K : Type u_6} [inst : Fintype \u03b9] [inst_1 : Field Fq]\n  [inst_2 : Field K] [inst_3 : Algebra Fq K] (f : \u03b9 \u2192 Fq) (c : LinearConstraint \u03b9 Fq),\n  Satisfies (liftWord f) (liftConstraint c) \u2194 Satisfies f c\n@lifted_constraint_residual : \u2200 {\u03b9 : Type u_4} {Fq : Type u_5} {K : Type u_6} [inst : Fintype \u03b9] [inst_1 : Field Fq]\n  [inst_2 : Field K] [inst_3 : Algebra Fq K] (f : \u03b9 \u2192 Fq) (c : LinearConstraint \u03b9 Fq),\n  dotWt (liftConstraint c).wt (liftWord f) - (liftConstraint c).target = (algebraMap Fq K) (dotWt c.wt f - c.target)\n@card_lifted_batch_satisfying_le : \u2200 {\u03b9 : Type u_4} {Fq : Type u_5} {K : Type u_6} [inst : Fintype \u03b9]\n  [inst_1 : Field Fq] [inst_2 : Field K] [inst_3 : Algebra Fq K] [inst_4 : Fintype K] [inst_5 : DecidableEq K]\n  {f : \u03b9 \u2192 Fq} {cs : List (LinearConstraint \u03b9 Fq)},\n  (\u2203 c \u2208 cs, \u00acSatisfies f c) \u2192\n    {\u03b3 | Satisfies (liftWord f) (batchConstraint \u03b3 (List.map liftConstraint cs))}.card \u2264 cs.length - 1\n",
+  "stderr": "",
+  "elapsed_seconds": 3.608611417002976,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/ExtensionChallengeBridge.lean",
+  "source_sha256_before": "faae2bff6134ebda08d980a62b6ee21dcc20d93de363c72aad9d83cb6bfb4d52",
+  "source_sha256_after": "faae2bff6134ebda08d980a62b6ee21dcc20d93de363c72aad9d83cb6bfb4d52"
+}

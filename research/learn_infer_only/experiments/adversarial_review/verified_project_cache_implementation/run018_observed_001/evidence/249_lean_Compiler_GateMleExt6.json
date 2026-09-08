@@ -1,0 +1,18 @@
+{
+  "label": "lean_Compiler_GateMleExt6",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/GateMleExt6.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/GateMleExt6.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "@descriptorHolds_iff_residualTable_zero : \u2200 {m : \u2115} (d : ConstraintDescriptor BabyBear) (wv : \u2115 \u2192 BabyBear)\n  (enc : Fin (descriptorResiduals d wv).length \u21aa Fin m \u2192 Bool),\n  descriptorHolds d wv \u2194 \u2200 (b : Fin m \u2192 Bool), residualTable d wv enc b = 0\n@gammaResidualTable_read : \u2200 {m : \u2115} (d : ConstraintDescriptor BabyBear) (wv : \u2115 \u2192 BabyBear)\n  (enc : Fin (descriptorResiduals d wv).length \u21aa Fin m \u2192 Bool) (gamma : Ext6Q)\n  (k : Fin (descriptorResiduals d wv).length),\n  gammaResidualTable d wv enc gamma (enc k) =\n    gamma ^ \u2191k * (algebraMap BabyBear Ext6Q) ((descriptorResiduals d wv).get k)\n@honestRounds_boolean_sum : \u2200 {m : \u2115} (d : ConstraintDescriptor BabyBear) (wv : \u2115 \u2192 BabyBear)\n  (enc : Fin (descriptorResiduals d wv).length \u21aa Fin m \u2192 Bool) (gamma : Ext6Q),\n  descriptorHolds d wv \u2192\n    \u2200 (r : Fin m \u2192 Ext6Q),\n      \u2200 i < m,\n        Polynomial.eval 0 (honestRounds d wv enc gamma (chalOf r) i) +\n            Polynomial.eval 1 (honestRounds d wv enc gamma (chalOf r) i) =\n          scChain 0 (honestRounds d wv enc gamma (chalOf r)) (chalOf r) i\n@honestRounds_closes_committed : \u2200 {m : \u2115} (d : ConstraintDescriptor BabyBear) (wv : \u2115 \u2192 BabyBear)\n  (enc : Fin (descriptorResiduals d wv).length \u21aa Fin m \u2192 Bool) (gamma : Ext6Q),\n  descriptorHolds d wv \u2192\n    \u2200 (r : Fin m \u2192 Ext6Q) (opened : CommittedTerminal d wv enc gamma r),\n      scChain 0 (honestRounds d wv enc gamma (chalOf r)) (chalOf r) m = opened.value\n",
+  "stderr": "",
+  "elapsed_seconds": 7.097942791995592,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/GateMleExt6.lean",
+  "source_sha256_before": "c496e33b89b566608559c807e911e979ff7d4654215b57ce51f495b90d0fc12b",
+  "source_sha256_after": "c496e33b89b566608559c807e911e979ff7d4654215b57ce51f495b90d0fc12b"
+}

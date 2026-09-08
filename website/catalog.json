@@ -19,7 +19,7 @@
         93,
         126
       ],
-      "label": "Current verdicts · soundness accounting"
+      "label": "Current verdicts \u00b7 soundness accounting"
     },
     "notes": {
       "path": "notes/README.md",
@@ -35,7 +35,7 @@
         1,
         74
       ],
-      "label": "Semantic study · results and denominators"
+      "label": "Semantic study \u00b7 results and denominators"
     },
     "semantic_image": {
       "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md",
@@ -43,7 +43,7 @@
         144,
         169
       ],
-      "label": "Semantic study · exposed feature image"
+      "label": "Semantic study \u00b7 exposed feature image"
     },
     "bfv": {
       "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md",
@@ -51,7 +51,7 @@
         1,
         49
       ],
-      "label": "BFV integration · results and limitations"
+      "label": "BFV integration \u00b7 results and limitations"
     },
     "bfv_cost": {
       "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md",
@@ -59,7 +59,7 @@
         95,
         123
       ],
-      "label": "BFV integration · measured costs"
+      "label": "BFV integration \u00b7 measured costs"
     },
     "designated": {
       "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/report.json",
@@ -67,7 +67,7 @@
         1,
         1
       ],
-      "label": "Completed designated workload · executed JSON"
+      "label": "Completed designated workload \u00b7 executed JSON"
     },
     "designated_scope": {
       "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md",
@@ -75,7 +75,7 @@
         112,
         120
       ],
-      "label": "Designated workload · scope and assumptions"
+      "label": "Designated workload \u00b7 scope and assumptions"
     },
     "setup": {
       "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md",
@@ -83,7 +83,7 @@
         1,
         36
       ],
-      "label": "Public-coin setup · written proof review"
+      "label": "Public-coin setup \u00b7 written proof review"
     },
     "tfhe": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md",
@@ -91,7 +91,7 @@
         1,
         18
       ],
-      "label": "Lean-emitted runtime · finite plaintext and encrypted checks"
+      "label": "Lean-emitted runtime \u00b7 finite plaintext and encrypted checks"
     },
     "formal": {
       "path": "research/learn_infer_only/formal/integration/README.md",
@@ -99,7 +99,7 @@
         1,
         5
       ],
-      "label": "Checked Lean proposal · exact package and scope"
+      "label": "Checked Lean proposal \u00b7 exact package and scope"
     },
     "game": {
       "path": "research/learn_infer_only/SECURITY_GAME.md",
@@ -107,7 +107,7 @@
         14,
         44
       ],
-      "label": "Resident security game · functionality and leakage"
+      "label": "Resident security game \u00b7 functionality and leakage"
     },
     "credentials": {
       "path": "research/learn_infer_only/SECURITY_GAME.md",
@@ -115,7 +115,7 @@
         75,
         99
       ],
-      "label": "Resident security game · surviving credentials"
+      "label": "Resident security game \u00b7 surviving credentials"
     },
     "ladder": {
       "path": "research/learn_infer_only/experiments/private_construction/FINITE_LADDER.md",
@@ -123,7 +123,7 @@
         1,
         46
       ],
-      "label": "Independent-key ladder · construction and primary theorem"
+      "label": "Independent-key ladder \u00b7 construction and primary theorem"
     },
     "pq_interfaces": {
       "path": "research/learn_infer_only/PQ_COMPOSITION.md",
@@ -131,7 +131,7 @@
         43,
         59
       ],
-      "label": "Post-quantum audit · source games and receipt boundary"
+      "label": "Post-quantum audit \u00b7 source games and receipt boundary"
     },
     "setup_journal": {
       "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/README.md",
@@ -139,7 +139,7 @@
         1,
         70
       ],
-      "label": "Public-coin journal · completed run and scope"
+      "label": "Public-coin journal \u00b7 completed run and scope"
     },
     "tfhe_scope": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md",
@@ -147,7 +147,7 @@
         89,
         104
       ],
-      "label": "Lean-emitted runtime · proof and reader-key boundary"
+      "label": "Lean-emitted runtime \u00b7 proof and reader-key boundary"
     },
     "tfhe_failure": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/REPORT.md",
@@ -155,7 +155,7 @@
         1,
         15
       ],
-      "label": "Older long run · first mismatch and semantic boundary"
+      "label": "Older long run \u00b7 first mismatch and semantic boundary"
     },
     "tfhe_controls": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md",
@@ -163,7 +163,7 @@
         1,
         19
       ],
-      "label": "Fixed-FFT controls · five observed replay pairs"
+      "label": "Fixed-FFT controls \u00b7 five observed replay pairs"
     },
     "tfhe_controls_scope": {
       "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md",
@@ -171,7 +171,7 @@
         56,
         99
       ],
-      "label": "Fixed-FFT controls · separate cases and unresolved cause"
+      "label": "Fixed-FFT controls \u00b7 separate cases and unresolved cause"
     },
     "pq_costs": {
       "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md",
@@ -179,7 +179,7 @@
         179,
         237
       ],
-      "label": "Conditional PQ sizing · normalization and structural costs"
+      "label": "Conditional PQ sizing \u00b7 normalization and structural costs"
     },
     "pq_costs_scope": {
       "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md",
@@ -187,7 +187,7 @@
         267,
         281
       ],
-      "label": "Conditional PQ sizing · no certified parameter set"
+      "label": "Conditional PQ sizing \u00b7 no certified parameter set"
     },
     "pq_review": {
       "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/REVIEW.md",
@@ -195,7 +195,7 @@
         1,
         19
       ],
-      "label": "Independent review · accepted fixed-policy construction"
+      "label": "Independent review \u00b7 accepted fixed-policy construction"
     },
     "pq_restricted": {
       "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md",
@@ -203,7 +203,23 @@
         1,
         68
       ],
-      "label": "Restricted QPT argument · exact assumptions"
+      "label": "Restricted QPT argument \u00b7 exact assumptions"
+    },
+    "tfhe_long": {
+      "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/REPORT.md",
+      "lines": [
+        1,
+        19
+      ],
+      "label": "Completed nonlinear trajectory \u00b7 exact checks and denominators"
+    },
+    "tfhe_long_scope": {
+      "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/REPORT.md",
+      "lines": [
+        100,
+        109
+      ],
+      "label": "Completed nonlinear trajectory \u00b7 retained reader and scope"
     }
   },
   "paths": [
@@ -255,7 +271,7 @@
       "id": "mental-autarky",
       "number": "03",
       "title": "Mental autarky",
-      "question": "Who can still read the resident’s state?",
+      "question": "Who can still read the resident\u2019s state?",
       "description": "Here this means a private space for a continuing learner, even against its host. Begin with the declared exposure game and surviving read capabilities.",
       "steps": [
         {
@@ -336,14 +352,14 @@
       "id": "encrypted-ema",
       "status": "executed",
       "topic": "encrypted-learning",
-      "title": "A generic runtime for Lean-emitted updates",
-      "metric": "4 replay pairs",
-      "metric_label": "2 Learn + 2 Infer on encrypted state",
-      "body": "A Rust TFHE interpreter executes the Lean-emitted Boolean schedules. Both encrypted updates and sign answers match the integer oracle; all four separate-process byte comparisons pass. Independent plaintext checks cover 25,600 Learn rows and 49,152 Infer rows.",
-      "limit": "These are finite checks. The unrestricted reader key remains. The separate formal proposal does not prove Rust parsing, TFHE correctness or universal byte determinism. The older long-run failure remains part of the record.",
+      "title": "A complete nonlinear encrypted trajectory",
+      "metric": "480 replay pairs",
+      "metric_label": "384 Learn + 96 Infer; two histories",
+      "body": "The Lean-emitted schedules ran through a generic TFHE interpreter. Every independent-process byte replay matched. After public verification closed, all 484 authorized primary state and sign checks matched the frozen integer fixture.",
+      "limit": "The full reader key remains. This reused fixture is not a new utility study, universal determinism proof or unrestricted-exposure privacy demonstration. Rust/TFHE and accepted-history release remain separate.",
       "sources": [
-        "tfhe",
-        "tfhe_scope"
+        "tfhe_long",
+        "tfhe_long_scope"
       ]
     },
     {
@@ -366,10 +382,10 @@
       "status": "executed",
       "topic": "proof-systems",
       "title": "A checked collection of formal ingredients",
-      "metric": "915 pins",
-      "metric_label": "across 70 Lean modules",
-      "body": "The combined proposal passed its overlay build, four umbrellas, patch application and import boundaries. It joins signed-word arithmetic, Lean-emitted learner schedules, adaptation dynamics and full unique decoding over existing Reed–Solomon objects.",
-      "limit": "A checked proposal patch, not a landed companion change. Existing dependency oleans were reused. No clean whole-tree build or universal Rust refinement is inferred.",
+      "metric": "952 pins",
+      "metric_label": "72 proposed modules; 567 rebuilt from source",
+      "body": "The complete project import closure passed its source build, four umbrellas, patch application and import boundaries. The proposal joins learner arithmetic and emitted schedules with full unique decoding and coherent BabyBear query bounds.",
+      "limit": "A proposed companion patch. External package/toolchain artifacts were cached; project modules were rebuilt. This does not establish Rust/TFHE refinement, private release or deployed soundness.",
       "sources": [
         "formal"
       ]
@@ -381,8 +397,8 @@
       "title": "A security number needs its assumptions",
       "metric": "Name the regime",
       "metric_label": "before quoting a soundness figure",
-      "body": "The current verdict ledger distinguishes unique-decoding, idealised Johnson and legacy capacity accounting. The withdrawn capacity figure must not be presented as the system’s security level.",
-      "limit": "This is a guide to the repository’s current verdicts, not a fresh protocol audit. Query accounting and commit-phase error must not silently become a whole-system claim.",
+      "body": "The current verdict ledger distinguishes unique-decoding, idealised Johnson and legacy capacity accounting. The withdrawn capacity figure must not be presented as the system\u2019s security level.",
+      "limit": "This is a guide to the repository\u2019s current verdicts, not a fresh protocol audit. Query accounting and commit-phase error must not silently become a whole-system claim.",
       "sources": [
         "verdicts"
       ]
@@ -394,7 +410,7 @@
       "title": "Private continuation with a fixed horizon",
       "metric": "2 transitions",
       "metric_label": "a source-conditional FE ladder",
-      "body": "Independent functional-encryption instances are set up backwards, so each transition embeds an already existing future public key. The argument retains the whole future key package in the adversary’s view.",
+      "body": "Independent functional-encryption instances are set up backwards, so each transition embeds an already existing future public key. The argument retains the whole future key package in the adversary\u2019s view.",
       "limit": "A classical, selective-state construction direction under explicit primitive assumptions and honest erasure. Public commands, copying and authorized branches remain. The symbolic witness does not implement encryption.",
       "sources": [
         "ladder"

@@ -1,0 +1,1 @@
+[OPEN] Root collects the completed normal witness and this additive review into shared ledgers/checkpoints. Preserve original prelaunch bytes and all execution seals. No further crypto attempt, retry, seed search, extraction test or private inspection is required or authorized by this review.

@@ -1,0 +1,211 @@
+{
+  "p3_checkout_commit": "82cfad73cd734d37a0d51953094f970c531817ec",
+  "sources": {
+    "/Users/ember/dev/minidregg/prover/src/babybear.rs": {
+      "lines": [
+        3,
+        10,
+        13,
+        60,
+        75
+      ],
+      "seen": "modulus, 2-adicity27, source generator440564289, repeated-squaring lower roots, 31^15 unit test",
+      "sha256": "f405d7c6d3645a0535dbb40a98a2e4d528a44a5d3117773dbd2c38157dda1959",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/prover/src/mle_kernels.rs": {
+      "lines": [
+        407,
+        421,
+        425,
+        565,
+        571,
+        650
+      ],
+      "seen": "Ext6 natural-order half-pair fold, inverse-root twiddle, natural-power evaluation helper",
+      "sha256": "53a2fa85f63863cde5b0fe9ce4c8a4759c85aa6956dd8d3b339344daa2d84550",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/baby-bear/src/baby_bear.rs": {
+      "lines": [
+        42,
+        46,
+        49
+      ],
+      "seen": "active p3 two-adic root table, bits20 root0x0ba067a3, maxroot0x1a427a41",
+      "sha256": "6695e14d7adbc4549c876f1e48e342bd89fb4eef35da48338194cc4e60a7b87a",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/breadstuffs/Cargo.toml": {
+      "lines": [
+        247,
+        250,
+        320
+      ],
+      "seen": "active vendored FRI patch and p3 git revision82cfad73cd734d37a0d51953094f970c531817ec",
+      "sha256": "1c3572d9d73d88899c3652488b69b2e3d1e1faa2309b6c7338128c9eb3bc96a8",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs": {
+      "lines": [
+        230,
+        243,
+        256,
+        270,
+        276,
+        626,
+        677,
+        764
+      ],
+      "seen": "bit-reversed row roots and inverse-root twiddles; PCS evaluation coset Val::GENERATOR*H",
+      "sha256": "9060c57409d84c42a2454d0b6895960d3e4fcb8fe2f9bb855cf2a18a5fd8f5a9",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs": {
+      "lines": [
+        214,
+        238,
+        245,
+        257
+      ],
+      "seen": "bit-reversed adjacent conjugate rows; next-height beta^arity input injection; final polynomial",
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs": {
+      "lines": [
+        268,
+        313,
+        447
+      ],
+      "seen": "query bits, bit-reversed polynomial evaluation point, authenticated row/current-index shift",
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/Selvage/BabyBearExt4.lean": {
+      "lines": [
+        29,
+        43,
+        47,
+        59,
+        131
+      ],
+      "seen": "existing modulus and proved prime, squareN certified repeated squaring, actual AdjoinRoot X^4-11 carrier",
+      "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/Selvage/Proximity.lean": {
+      "lines": [
+        177,
+        337,
+        377
+      ],
+      "seen": "existing FoldingData/FoldingTower interfaces and fold_preserves_code",
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean": {
+      "lines": [
+        28,
+        50,
+        217
+      ],
+      "seen": "existing level types, modulo query indices and sampled consumer",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/Selvage/ReedSolomon.lean": {
+      "lines": [
+        122,
+        149
+      ],
+      "seen": "card_agreeSet_lt_of_ne and reedSolomonCode_minDist",
+      "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean": {
+      "lines": [
+        290,
+        333
+      ],
+      "seen": "frozen fullUDSampling_coherent_sound and fullUDSampling_babyBear_55",
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/util/src/lib.rs": {
+      "seen": "reverse_bits_len machine-word bit reversal",
+      "sha256": "6fc789ee34d157602ca97782da58e38e65d0ee901c8a2e05e978e17fe71d6fbb",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/matrix/src/bitrev.rs": {
+      "seen": "row-index bit-reversal view and involution",
+      "sha256": "6efa423482d3bfcc8de5458a123fd37d3eecf6e2fa75ad15881cdf99760a8450",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/dft/src/radix_2_dit_parallel.rs": {
+      "seen": "production DFT logical evaluation order",
+      "sha256": "f0bf090b21f083b0064402d1e3f4c29e41dff4c238effa4ffd697da1b9a3dc45",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/config.rs": {
+      "seen": "arity scheduler and folding strategy",
+      "sha256": "f56b385c3a0e6b25411687af657219749c076d8a070a90c237d7e81507b13534",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs": {
+      "seen": "named production field/DFT/FRI configuration",
+      "sha256": "cddf287418459b37cc6e529d014ff110f0d0a902edb0d53bec6e41d38d37d6d4",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs": {
+      "seen": "named IR2 FRI configuration",
+      "sha256": "596a450e77a8b905626e8c8b7b68dcffadd07b9bd9bcb71a040f009e8f77fb89",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/PowerTwoRootFolding.lean": {
+      "seen": "frozen natural-power domain, half-pair fold and coherent exponent theorem",
+      "sha256": "96b937887805230da7cda826287beefb5b8fb7836168a4e0f56db31d6ca1acaf",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingTower.lean": {
+      "seen": "frozen actual BabyBear root tower specialization",
+      "sha256": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/field/src/extension/mod.rs": {
+      "seen": "binomial field presentation and multiplication law",
+      "sha256": "ca2d186e928a67c33df88dde0807e7d3f0c75f232b3d527f041b592361d3dfad",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/field/src/extension/binomial_extension.rs": {
+      "seen": "extension coefficient array representation",
+      "sha256": "d0ca889ce5896faee03601ddab3df462b81aed2ee1769c07a6f6c29aec1cf057",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    }
+  },
+  "web_queries": 0,
+  "scry_queries": 0,
+  "crypto_runs": 0
+}

@@ -1,0 +1,11 @@
+{
+  "name": "polynomial_curve_kernel",
+  "root": "../proof_frontier/2026-09-08/formal/polynomial_curve_kernel",
+  "patch": "../proof_frontier/2026-09-08/formal/polynomial_curve_kernel/polynomial-curve-kernel.patch",
+  "expected_pins": 26,
+  "source_files": {
+    "Theory/PolynomialMatrixKernel.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_kernel/PolynomialMatrixKernel.lean"
+  },
+  "replaces_lane": "polynomial_matrix_kernel_all_pins",
+  "selection": "Use this complete new-file patch instead of any predecessor kernel patch, not after it."
+}

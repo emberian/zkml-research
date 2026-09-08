@@ -1,0 +1,4 @@
+'Minidregg.Selvage.curvePolynomial_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.curvePolynomial_coeff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.curvePolynomial_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.curve_bw_bounded_kernel_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]

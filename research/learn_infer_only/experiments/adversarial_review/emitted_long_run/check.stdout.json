@@ -1,0 +1,53 @@
+{
+  "author_files_unchanged": true,
+  "cached_primary_source_files": 4,
+  "checked_utc": "2026-09-08T14:48:37.551942+00:00",
+  "claim": "EXECUTED independent public-only audit",
+  "complete_byte_pairs_recompared": 480,
+  "cost_rows_rebuilt": 1848,
+  "fixture_events": 480,
+  "fixture_integer_transitions_recomputed": 384,
+  "gate_api_calls": {
+    "and": 151104,
+    "trivial_encrypt": 1920,
+    "xor": 263808
+  },
+  "host_invocations": 960,
+  "input_files_rehashed": 1447,
+  "issuer_invocations": 404,
+  "new_crypto_invocations": 0,
+  "new_lean_builds": 0,
+  "old_failed_runtime_files_read": 0,
+  "oracle_target_agreement": {
+    "all_checkpoints": [
+      76,
+      96
+    ],
+    "final_subset": [
+      28,
+      32
+    ]
+  },
+  "original_frozen_files": 39,
+  "package_files": 49,
+  "phase_times_utc": [
+    "2026-09-08T08:09:56.356621+00:00",
+    "2026-09-08T08:09:57.110689+00:00",
+    "2026-09-08T08:09:57.111440+00:00",
+    "2026-09-08T08:09:57.410243+00:00",
+    "2026-09-08T08:09:59.846219+00:00",
+    "2026-09-08T08:10:00.180702+00:00"
+  ],
+  "preserved_progress_reporting_inconsistency": {
+    "phase": "public_closed",
+    "public_phase_closed": false,
+    "reader_invocations": 0
+  },
+  "private_files_read_or_hashed": 0,
+  "private_plaintext_matches": "REPORTED by original drain; source and public index bindings checked only",
+  "public_ciphertext_bytes": 97500084,
+  "public_ciphertexts": 1364,
+  "public_descriptor_clear_evaluations": 480,
+  "public_reader_records_checked": 484,
+  "success": true
+}

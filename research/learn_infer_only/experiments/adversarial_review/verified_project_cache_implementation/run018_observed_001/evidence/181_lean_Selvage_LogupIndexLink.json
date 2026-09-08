@@ -1,0 +1,18 @@
+{
+  "label": "lean_Selvage_LogupIndexLink",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/LogupIndexLink.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/LogupIndexLink.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/LogupIndexLink.lean:29:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.canonicalIndexColumn_boolean`:\n  [Fintype \u03ba]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [Fintype \u03ba] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/LogupIndexLink.lean:41:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.canonicalIndexPoint_eq`:\n  [Fintype \u03ba]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [Fintype \u03ba] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/LogupIndexLink.lean:48:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.canonicalIncidence_eq_unitVector`:\n  [Fintype \u03ba]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [Fintype \u03ba] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`\n",
+  "stderr": "",
+  "elapsed_seconds": 2.8293707499979064,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/LogupIndexLink.lean",
+  "source_sha256_before": "c265375c8a39b5b8d186f956db1e88783b058b79c31efd78b8dce29918e9fba5",
+  "source_sha256_after": "c265375c8a39b5b8d186f956db1e88783b058b79c31efd78b8dce29918e9fba5"
+}

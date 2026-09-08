@@ -1,0 +1,23 @@
+{
+  "name": "polynomial_curve_full_ud",
+  "root": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud",
+  "patch": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/polynomial-curve-full-ud.patch",
+  "expected_pins": 42,
+  "source_files": {
+    "Theory/PolynomialCurve.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Theory/PolynomialCurve.lean",
+    "Theory/CurveRSInterpolationMatrix.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Theory/CurveRSInterpolationMatrix.lean",
+    "Theory/CurveRSInterpolationKernel.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Theory/CurveRSInterpolationKernel.lean",
+    "Selvage/CurveFullUDStatement.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDStatement.lean",
+    "Selvage/CurveFullUDInterpolation.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDInterpolation.lean",
+    "Selvage/CurveFullUDBivariate.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDBivariate.lean",
+    "Selvage/CurveFullUDCore.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDCore.lean",
+    "Selvage/CurveProximityGapFullUD.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveProximityGapFullUD.lean",
+    "Selvage/CurveFriChallenge.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFriChallenge.lean",
+    "Selvage/CurveFullUDTeeth.lean": "../proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDTeeth.lean"
+  },
+  "requires_selected_lane": "polynomial_curve_kernel",
+  "umbrella_imports_proposed": [
+    "Selvage.CurveFriChallenge",
+    "Selvage.CurveFullUDTeeth"
+  ]
+}

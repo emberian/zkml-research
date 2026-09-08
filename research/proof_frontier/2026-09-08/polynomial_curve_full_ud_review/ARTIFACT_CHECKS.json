@@ -1,0 +1,1075 @@
+{
+  "status": "PASS",
+  "scope": "Source/guard/manifest/dependency census and exact patch replay; no Lean build performed by reviewer.",
+  "author_manifest_sha256": "fed8141f3d1606cd7ffa25bdd85918acbbdcb1ac8037307359adf1ff05994729",
+  "patch": "polynomial-curve-full-ud.patch",
+  "patch_sha256": "3fa34548e2f1ec0f286ba04594374f3fc5aa636fda5dd5f7583bdeeca6dd7d0f",
+  "owned_modules": {
+    "Selvage/CurveFriChallenge.lean": {
+      "declarations": [
+        "curveWord_snoc",
+        "correlatedAgreement_of_snoc",
+        "curve_uniform_sound",
+        "arity8_curve_sound",
+        "arity8_injected_curve_sound",
+        "arity8_injected_fixed_prefix_sound"
+      ],
+      "pins": [
+        "Minidregg.Selvage.curveWord_snoc",
+        "Minidregg.Selvage.correlatedAgreement_of_snoc",
+        "Minidregg.Selvage.curve_uniform_sound",
+        "Minidregg.Selvage.arity8_curve_sound",
+        "Minidregg.Selvage.arity8_injected_curve_sound",
+        "Minidregg.Selvage.arity8_injected_fixed_prefix_sound"
+      ],
+      "imports": [
+        "Selvage.CurveProximityGapFullUD",
+        "Selvage.Sumcheck"
+      ],
+      "sha256": "9de6c75ee6428629e178e24d91dfcebe97e4e7169cf6e5f827ead597f0f59547"
+    },
+    "Selvage/CurveFullUDBivariate.lean": {
+      "declarations": [
+        "curve_bw_bivariate_of_many_close"
+      ],
+      "pins": [
+        "Minidregg.Selvage.curve_bw_bivariate_of_many_close"
+      ],
+      "imports": [
+        "Selvage.CurveFullUDInterpolation",
+        "Theory.PolynomialBivariate"
+      ],
+      "sha256": "8f4d163e46eac8e571769613d726a92d7240a0e32bc750b6dfa427948297b66c"
+    },
+    "Selvage/CurveFullUDCore.lean": {
+      "declarations": [
+        "curve_rs_nearby_polynomial",
+        "curveFullUDCardCore"
+      ],
+      "pins": [
+        "Minidregg.Selvage.curve_rs_nearby_polynomial",
+        "Minidregg.Selvage.curveFullUDCardCore"
+      ],
+      "imports": [
+        "Selvage.CurveFullUDBivariate",
+        "Theory.PolynomialGluing"
+      ],
+      "sha256": "fa041cb91bcb807abc2cfd450dbc68182637727bf2ecd50e665498d2f89dcb14"
+    },
+    "Selvage/CurveFullUDInterpolation.lean": {
+      "declarations": [
+        "curvePolynomial_eval",
+        "curvePolynomial_coeff",
+        "curvePolynomial_natDegree",
+        "curve_bw_bounded_kernel_of_many_close"
+      ],
+      "pins": [
+        "Minidregg.Selvage.curvePolynomial_eval",
+        "Minidregg.Selvage.curvePolynomial_coeff",
+        "Minidregg.Selvage.curvePolynomial_natDegree",
+        "Minidregg.Selvage.curve_bw_bounded_kernel_of_many_close"
+      ],
+      "imports": [
+        "Selvage.CurveFullUDStatement",
+        "Selvage.FullUDInterpolation",
+        "Theory.CurveRSInterpolationKernel"
+      ],
+      "sha256": "b5219a6f0804828366ee2551b0fd66a40310ac3a29095aff79572703631ec21e"
+    },
+    "Selvage/CurveFullUDStatement.lean": {
+      "declarations": [
+        "zero_premise_inhabited",
+        "zero_conclusion_inhabited",
+        "impossible_radius_teeth"
+      ],
+      "pins": [
+        "Minidregg.Selvage.CurveFullUDWitness.zero_premise_inhabited",
+        "Minidregg.Selvage.CurveFullUDWitness.zero_conclusion_inhabited",
+        "Minidregg.Selvage.CurveFullUDWitness.impossible_radius_teeth"
+      ],
+      "imports": [
+        "Selvage.FullUDStatement"
+      ],
+      "sha256": "870c0238d9d4a0ef5e7d4dd8a2f338add72c126e3281c7a3ec258f4dc95831c6"
+    },
+    "Selvage/CurveFullUDTeeth.lean": {
+      "declarations": [
+        "legalWord_mem",
+        "corrupted_premise_inhabited",
+        "zero_error_premise_inhabited",
+        "zero_error_core_fires",
+        "corrupted_actual_error",
+        "corrupted_distance_one",
+        "corrupted_not_mem",
+        "curve_at_three_roots",
+        "three_good_challenges",
+        "no_correlated_agreement",
+        "strict_radius_admissible",
+        "unscaled_affine_bound_falsifier"
+      ],
+      "pins": [
+        "Minidregg.Selvage.CurveFullUDWitness.legalWord_mem",
+        "Minidregg.Selvage.CurveFullUDWitness.corrupted_premise_inhabited",
+        "Minidregg.Selvage.CurveFullUDWitness.zero_error_premise_inhabited",
+        "Minidregg.Selvage.CurveFullUDWitness.zero_error_core_fires",
+        "Minidregg.Selvage.CurveFullUDWitness.corrupted_actual_error",
+        "Minidregg.Selvage.CurveFullUDWitness.corrupted_distance_one",
+        "Minidregg.Selvage.CurveFullUDWitness.corrupted_not_mem",
+        "Minidregg.Selvage.CurveDegreeTeeth.curve_at_three_roots",
+        "Minidregg.Selvage.CurveDegreeTeeth.three_good_challenges",
+        "Minidregg.Selvage.CurveDegreeTeeth.no_correlated_agreement",
+        "Minidregg.Selvage.CurveDegreeTeeth.strict_radius_admissible",
+        "Minidregg.Selvage.CurveDegreeTeeth.unscaled_affine_bound_falsifier"
+      ],
+      "imports": [
+        "Selvage.CurveProximityGapFullUD"
+      ],
+      "sha256": "d0c20fa2c1785478155424fe488193196f1dfb16809dde48c59bed44111bcc96"
+    },
+    "Selvage/CurveProximityGapFullUD.lean": {
+      "declarations": [
+        "curve_correlatedAgreement_of_many_close",
+        "curve_bad_card_le",
+        "geometricGenerator_pr_eq",
+        "reedSolomonCode_isGeometricProximityGenerator_fullUD",
+        "hasGeometricMutualCorrelatedAgreement_fullUD"
+      ],
+      "pins": [
+        "Minidregg.Selvage.curve_correlatedAgreement_of_many_close",
+        "Minidregg.Selvage.curve_bad_card_le",
+        "Minidregg.Selvage.geometricGenerator_pr_eq",
+        "Minidregg.Selvage.reedSolomonCode_isGeometricProximityGenerator_fullUD",
+        "Minidregg.Selvage.hasGeometricMutualCorrelatedAgreement_fullUD"
+      ],
+      "imports": [
+        "Selvage.CurveFullUDCore",
+        "Selvage.ProximityGapFullUD"
+      ],
+      "sha256": "f3bf7a31bbd0bd4eee896c1f122e54a9b62e5e895f43d57263e6a02a555484e5"
+    },
+    "Theory/CurveRSInterpolationKernel.lean": {
+      "declarations": [
+        "curve_det_eq_zero_of_specializations",
+        "curve_bounded_kernel_of_specializations"
+      ],
+      "pins": [
+        "Minidregg.RSInterpolation.curve_det_eq_zero_of_specializations",
+        "Minidregg.RSInterpolation.curve_bounded_kernel_of_specializations"
+      ],
+      "imports": [
+        "Theory.CurveRSInterpolationMatrix",
+        "Theory.PolynomialMatrixKernel"
+      ],
+      "sha256": "bfd73f5a0c6f6eab6bcb2fc45dc2b961d6a5d01d176e42a5ddd655aae2dbcc2c"
+    },
+    "Theory/CurveRSInterpolationMatrix.lean": {
+      "declarations": [
+        "BW_entry_natDegree_zero",
+        "BW_entry_natDegree_le",
+        "BW_map_eval",
+        "BW_det_natDegree_le"
+      ],
+      "pins": [
+        "Minidregg.RSInterpolation.BW_entry_natDegree_zero",
+        "Minidregg.RSInterpolation.BW_entry_natDegree_le",
+        "Minidregg.RSInterpolation.BW_map_eval",
+        "Minidregg.RSInterpolation.BW_det_natDegree_le"
+      ],
+      "imports": [
+        "Theory.RSInterpolationMatrix",
+        "Theory.PolynomialCurve"
+      ],
+      "sha256": "1aa837d415fc37d43f64eff620ac4b4a4817677303b1b992caf20f27ba3242fa"
+    },
+    "Theory/PolynomialCurve.lean": {
+      "declarations": [
+        "eval_poly",
+        "coeff_poly",
+        "natDegree_poly"
+      ],
+      "pins": [
+        "Minidregg.PolynomialCurve.eval_poly",
+        "Minidregg.PolynomialCurve.coeff_poly",
+        "Minidregg.PolynomialCurve.natDegree_poly"
+      ],
+      "imports": [
+        "Mathlib.Algebra.Polynomial.BigOperators",
+        "Mathlib.Algebra.Polynomial.Degree.Operations",
+        "Mathlib.Tactic"
+      ],
+      "sha256": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15"
+    }
+  },
+  "owned_declarations": 42,
+  "exact_guarded_pins": 42,
+  "reviewer_package_file_pins": [
+    {
+      "path": "NEXT.md",
+      "sha256": "3580b9fd7a90b16839aa41e5349ebe6a56501d496379a598afb2f38f90431508"
+    },
+    {
+      "path": "README.md",
+      "sha256": "ec947d4e586585cbdc236c6ccf41122006ea689dd2a5ead1f24d9ddabca00aa9"
+    },
+    {
+      "path": "SHA256.json",
+      "sha256": "25c03532bdda6ee34c2d3f07c1f6c02ccae094fa3293dede84e6426757fe6cc1"
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "8701c0d08b0ef7f8f6ccf7e63453c5e74f1966e38d184da0845344ddaa0f887e"
+    },
+    {
+      "path": "checks/axioms-01.json",
+      "sha256": "15503fc3d551adc785696d1085439c990eb3f09b2baf849f778f3993cbcb840f"
+    },
+    {
+      "path": "checks/axioms-01.log",
+      "sha256": "e93720981fbd2096c42567b911edea19bb821265dcfd71413f7bf78adc2875fb"
+    },
+    {
+      "path": "checks/axioms-02.json",
+      "sha256": "3ca3cac55f650345b854d71b9da37f0a613a5f715547927e02f8f38a18b43f34"
+    },
+    {
+      "path": "checks/axioms-02.log",
+      "sha256": "740eb5bc1cdaeaf371ed4a4a86f5a3f2dc095a24daed1a5a9938810eed6cb373"
+    },
+    {
+      "path": "checks/axioms-03.json",
+      "sha256": "0fdfc14fe40e701a4cec5411cd8a817dea5f7546a3ddd5a4d3362bb1bfd4c45f"
+    },
+    {
+      "path": "checks/axioms-03.log",
+      "sha256": "0473665cb0fdbf13f1021dd12fd345d2f73963f3fdd3b511d9cac4c7d8bce716"
+    },
+    {
+      "path": "checks/axioms-04.json",
+      "sha256": "ff20b0b7a9e9eed139f02918874109571cd06eac64822795bda46dd618e2f871"
+    },
+    {
+      "path": "checks/axioms-04.log",
+      "sha256": "7c39c3b4345958b537dd0fc93a580d052d682d9d2c16be7e7e24f7ef15541f82"
+    },
+    {
+      "path": "checks/axioms-05.json",
+      "sha256": "8f806886f02b6e066ccd065cd7f0bbf81688ff89e6e729338c82cb2c92227448"
+    },
+    {
+      "path": "checks/axioms-05.log",
+      "sha256": "616165950e20a8ce8de019d1e2327fef8c4b24390926bb8fa2070b252862e5df"
+    },
+    {
+      "path": "checks/axioms-06.json",
+      "sha256": "159bd30647119e41b14f6f2805e4f5a104953f6cb20bd26d24d92ca555bae8b8"
+    },
+    {
+      "path": "checks/axioms-06.log",
+      "sha256": "d93ab7640038dad429a22bce2fc26d6683afed98f80b78716328cd3b6826754e"
+    },
+    {
+      "path": "checks/axioms-07.json",
+      "sha256": "3f4fab604b927b09bef8b021667e313679d0bfcb9fb0a4cd92b557d273362cfa"
+    },
+    {
+      "path": "checks/axioms-07.log",
+      "sha256": "d7a7514d9bc67335c6b1245168d8d6792883d38ea61655a1aa5b8c7a5e1191d9"
+    },
+    {
+      "path": "checks/axioms-08.json",
+      "sha256": "0f8e68534de6a90480da45e91e8d27c020032b42239a97c1535c2ceddd771769"
+    },
+    {
+      "path": "checks/axioms-08.log",
+      "sha256": "6525bf2f9639003ff30d21cd3b07049a1b2d8938a5e3f132ee14b337652cef42"
+    },
+    {
+      "path": "checks/axioms-09.json",
+      "sha256": "2a33defada3b544723dcdb01d97171045f2d5f916d01627c5f0b2ee95b6df0c2"
+    },
+    {
+      "path": "checks/axioms-09.log",
+      "sha256": "125d32b2639f1f8e2584addf437f2b53c90570b7d5e38040fe4f1a37521c359d"
+    },
+    {
+      "path": "checks/axioms-10.json",
+      "sha256": "edb96b97c181a695540109d5ecd5af6fff6146e3214c52d599f0e3eae15680dd"
+    },
+    {
+      "path": "checks/axioms-10.log",
+      "sha256": "4d25d46284ad9d8c719c70e53796bd76361a37b9501c72a1f06f5511a78c6c03"
+    },
+    {
+      "path": "checks/curve-bivariate-first.json",
+      "sha256": "4dc0e9e3741658864055a8983be14f2bc5386530729bdf0a8fef318f4c9eb72c"
+    },
+    {
+      "path": "checks/curve-bivariate-first.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/curve-challenge-first.json",
+      "sha256": "266401bf0ed09e22f6ed142dec637f7278182c62ce5cef77fc151dd2e0e49b60"
+    },
+    {
+      "path": "checks/curve-challenge-first.log",
+      "sha256": "f0fd3b433c8f3726e2beb2587e59911aded632221d83f111e3679231dec91603"
+    },
+    {
+      "path": "checks/curve-core-first.json",
+      "sha256": "7c117551bdfadc9835cca4dc0610833548119d3acf305551ca439535a874b9c4"
+    },
+    {
+      "path": "checks/curve-core-first.log",
+      "sha256": "0c0f01f1e4d05b0502631994c34bb729ef4456fe7ef20ecc18f9a0f7faf0c1b0"
+    },
+    {
+      "path": "checks/curve-core-second.json",
+      "sha256": "11a9c394c4df07e528c27d6e84cc57f439f0b26d54f1656288300f9089e8a8b6"
+    },
+    {
+      "path": "checks/curve-core-second.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/curve-interpolation-first.json",
+      "sha256": "1f1bf8819ca0b17c398191ebf82b8c4abd6e07669473d2e155b92b1b610608b5"
+    },
+    {
+      "path": "checks/curve-interpolation-first.log",
+      "sha256": "f06fffbd5fd31af93c985e441aad426421e7ec123549c650bd956176500e61e9"
+    },
+    {
+      "path": "checks/curve-kernel-first.json",
+      "sha256": "408de108b1693a474b3128b8d2f4005d260ac7652a202ab2cba594bdbcd409d8"
+    },
+    {
+      "path": "checks/curve-kernel-first.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/curve-matrix-first.json",
+      "sha256": "4bb61c641e6028034952e99bb827d148306669cec5f0e1486f40776585f173ea"
+    },
+    {
+      "path": "checks/curve-matrix-first.log",
+      "sha256": "cc932cf3854bc93e7c9f54ad4152007bc5b089982e1ae0cefab39b922dd27f97"
+    },
+    {
+      "path": "checks/curve-matrix-second.json",
+      "sha256": "6bd62e8963565d7fd2f01921f8906ea9f2933612de4913923dbe927ffef3f8f9"
+    },
+    {
+      "path": "checks/curve-matrix-second.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/curve-proximity-first.json",
+      "sha256": "7325c4dd0cd0555f99647f2a3a2a0503a0329a4a2cd6bd0a5c62a90f312f7974"
+    },
+    {
+      "path": "checks/curve-proximity-first.log",
+      "sha256": "6f1ca3ca8be2ad03e5c607392c81fcf40e380fafbdc90fba6dea3d782c37bd81"
+    },
+    {
+      "path": "checks/curve-proximity-mca.json",
+      "sha256": "34be305509b106907b2b9087733bc109e0b4602d6cb9c6cbe9b26e5015768825"
+    },
+    {
+      "path": "checks/curve-proximity-mca.log",
+      "sha256": "745fa2ecf63d4294ae90cbe548a9a394ed0b3bb935f40a1b6959460993d92c8a"
+    },
+    {
+      "path": "checks/curve-proximity-second.json",
+      "sha256": "cff3cb008da151e1d3dab82896cf92cc02442e6a0ddf0052edbf2c982b97186f"
+    },
+    {
+      "path": "checks/curve-proximity-second.log",
+      "sha256": "745fa2ecf63d4294ae90cbe548a9a394ed0b3bb935f40a1b6959460993d92c8a"
+    },
+    {
+      "path": "checks/curve-teeth-fifth.json",
+      "sha256": "f2b92af9223bbf4a5112c005be0063552b21b18848b72d8955e2db3effcc13d9"
+    },
+    {
+      "path": "checks/curve-teeth-fifth.log",
+      "sha256": "56f5683061f22c8133378c980ed2c78bfc260ded78cf3a8d5516d3b3b587f1c8"
+    },
+    {
+      "path": "checks/curve-teeth-first.json",
+      "sha256": "430c795472ade41837a6084a1ffccb69e1a6adadf31a94751baf7ef8b81a10e5"
+    },
+    {
+      "path": "checks/curve-teeth-first.log",
+      "sha256": "081d8c7c62765ecc64574993a9e76df4a6018b7e312f6c88405deabeff6aa539"
+    },
+    {
+      "path": "checks/curve-teeth-fourth.json",
+      "sha256": "99f600894cab418162ab774f34b89b33b7168e2676533a4edeb43abd92b7bb91"
+    },
+    {
+      "path": "checks/curve-teeth-fourth.log",
+      "sha256": "a5b193f191e8b06669ba01c4d7c887892b9da4bf9a5549783acc12ae95c5001a"
+    },
+    {
+      "path": "checks/curve-teeth-second.json",
+      "sha256": "6278aab463053f5f992d40f4e7b636861966fe9ce94d669a929757811ee9b7d3"
+    },
+    {
+      "path": "checks/curve-teeth-second.log",
+      "sha256": "efabcfde720af251f15ce2376b11552fb7661fcae43e2acb2d4a35eaa52c00df"
+    },
+    {
+      "path": "checks/curve-teeth-seventh.json",
+      "sha256": "3ba0357cc1c7041cdf0916c967afca370f8b53f3eb6766ecd53571dd30505e63"
+    },
+    {
+      "path": "checks/curve-teeth-seventh.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/curve-teeth-sixth.json",
+      "sha256": "3011a2961bdeb9956a49db87c12ed4a1d99b5a484d000a25d3d72271b17d0c87"
+    },
+    {
+      "path": "checks/curve-teeth-sixth.log",
+      "sha256": "60ee150cf8525fd112ee5e8ff2a7c6d71b41b4e878245b267a31805e4e99207e"
+    },
+    {
+      "path": "checks/curve-teeth-third.json",
+      "sha256": "3fc6e1bc42d899838ab07403c6f8e4805e71b272999df0df04a86d06aba5f5e2"
+    },
+    {
+      "path": "checks/curve-teeth-third.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-01.json",
+      "sha256": "7f05a630a16892d329487534814f01cfcbfb75a6cbca2d206be08eb7b8ef3d1c"
+    },
+    {
+      "path": "checks/freeze-01.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-02.json",
+      "sha256": "ca5e6230726d45d106100f0f0009db85c51f053dfd28e903e05752e783f63acc"
+    },
+    {
+      "path": "checks/freeze-02.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-03.json",
+      "sha256": "fb3d2c5fb5ab3023373063f654f31362abbf9533775a4e1124d01fd12dbfc82c"
+    },
+    {
+      "path": "checks/freeze-03.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-04.json",
+      "sha256": "d2a5b3cc804203edd35a642d4362a018e635a20497379da0b9676af9d1e677a0"
+    },
+    {
+      "path": "checks/freeze-04.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-05.json",
+      "sha256": "04c63ece0074b916eec2f6847f64c414e3750dcb6f6f2072e50db96072fd512b"
+    },
+    {
+      "path": "checks/freeze-05.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-06.json",
+      "sha256": "7e8777c0531d9283bbf4b64d55e4d7c68e229b59483f4deb2bddadebbf8ccd5e"
+    },
+    {
+      "path": "checks/freeze-06.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-07.json",
+      "sha256": "4542d14344d2d87261d7a5b4e628835c60b32595631e71da2675ca5761195ae6"
+    },
+    {
+      "path": "checks/freeze-07.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-08.json",
+      "sha256": "22636d0256dc7c4287a7eead2d1ed3c5660496925e9054226afded71326de4fc"
+    },
+    {
+      "path": "checks/freeze-08.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-09.json",
+      "sha256": "a80efea843578782564f8acac53ec13f8e90894883a940c7cfc29a3c59d42671"
+    },
+    {
+      "path": "checks/freeze-09.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/freeze-10.json",
+      "sha256": "fd0b71014438cd9731dc9b4507f96a48c6274142bb7bed6f35d2e488655cf8da"
+    },
+    {
+      "path": "checks/freeze-10.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/import-boundary.log",
+      "sha256": "8ad794b7fb3c1f16f0b484345d6c90fdff74ed3bc3fdb20335aba83986ca789d"
+    },
+    {
+      "path": "checks/patch-apply.log",
+      "sha256": "7667329c48826316150eb49fd78b3a8df81a053e8c9ca9b7dc4dcfb256cec2b2"
+    },
+    {
+      "path": "checks/polynomial-curve-first.json",
+      "sha256": "36848078ddc2852839ad09d9576bc0912b03c11865950c98544f4697e29be330"
+    },
+    {
+      "path": "checks/polynomial-curve-first.log",
+      "sha256": "396b06e289dd66dfc055eac04cdbabba5302fc86dbe45e2729912b870e998d87"
+    },
+    {
+      "path": "checks/polynomial-curve-second.json",
+      "sha256": "ff89d8f539be494e6c2bfa67771d8e6438df9bf84db56ea8396763cc340e8884"
+    },
+    {
+      "path": "checks/polynomial-curve-second.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "checks/statement-first.json",
+      "sha256": "a717a41a2df6aa4c481374d3a2b88bdbc04513a6c5fe8495ebe89a44b888b17d"
+    },
+    {
+      "path": "checks/statement-first.log",
+      "sha256": "e5edb124c9772810685bee039bbaad6b25386b1dc5fe787bc43a2e621d5f4d44"
+    },
+    {
+      "path": "checks/statement-second.json",
+      "sha256": "b8e9f974c28ea7795795ff63388314229e344116626783b40b3ccd78daa112ce"
+    },
+    {
+      "path": "checks/statement-second.log",
+      "sha256": "b33cc66ce1b4f53caafb5bb7b808d020c43c1dd66372a55e7e56b1189066537c"
+    },
+    {
+      "path": "checks/statement-third.json",
+      "sha256": "79e92a7c85a8460081117c56ebf47c5d6b8318ed69d5bcdd05deb37f9a79ca56"
+    },
+    {
+      "path": "checks/statement-third.log",
+      "sha256": "600edae4c1e3e464ee0951f4b8767d155fdeb70806d633733b2cce5f558643a8"
+    },
+    {
+      "path": "declaration-names.json",
+      "sha256": "f7166a7626f72b759ba49aa335044e615948c5b6e44aedcf8c1da7a5192d0f4c"
+    },
+    {
+      "path": "draft_core.py",
+      "sha256": "3a01f009e90574e36037486c1b583c9cdd011aa176eab1e294b086359745ee11"
+    },
+    {
+      "path": "draft_kernel.py",
+      "sha256": "ae68d6cf670e077b4409927b6817e63fe1d0c18d62cfede4bbfe01053cf441e1"
+    },
+    {
+      "path": "final_checks.py",
+      "sha256": "670197f2817954d1699a1809b856f187b11a402c68f9d9f992f4ea3fc83658ce"
+    },
+    {
+      "path": "integration_census.json",
+      "sha256": "ebe7dc65b802a33ac299c6cef16a7defbe163c6f1b021b8091ca49839c36b75a"
+    },
+    {
+      "path": "integration_entry.json",
+      "sha256": "e906222d93d9c4bea0bff7bf2636357b4b6b1989c48093d5997124d5889b7759"
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "fed8141f3d1606cd7ffa25bdd85918acbbdcb1ac8037307359adf1ff05994729"
+    },
+    {
+      "path": "package.py",
+      "sha256": "a86b3f0dba37898134af92124c65546b6e0c2f0e3ac56a70825c5978c6bcc9fd"
+    },
+    {
+      "path": "pin_all.py",
+      "sha256": "7c514708d2f4c30aa5f847715bd5935bd027a9494f7f61424e87fbe12783875b"
+    },
+    {
+      "path": "polynomial-curve-full-ud.patch",
+      "sha256": "3fa34548e2f1ec0f286ba04594374f3fc5aa636fda5dd5f7583bdeeca6dd7d0f"
+    },
+    {
+      "path": "run_lean.py",
+      "sha256": "93a05f32ae18499be25f82b28f8b9feae8da3d5f65c521fd32a95f4d0f3c94d4"
+    },
+    {
+      "path": "source-evidence.json",
+      "sha256": "85378415b8f7bf43ea55430ffb846f4289bf6d56f7b5710793b4cd4e9fc10829"
+    },
+    {
+      "path": "src/Selvage/CurveFriChallenge.lean",
+      "sha256": "9de6c75ee6428629e178e24d91dfcebe97e4e7169cf6e5f827ead597f0f59547"
+    },
+    {
+      "path": "src/Selvage/CurveFullUDBivariate.lean",
+      "sha256": "8f4d163e46eac8e571769613d726a92d7240a0e32bc750b6dfa427948297b66c"
+    },
+    {
+      "path": "src/Selvage/CurveFullUDCore.lean",
+      "sha256": "fa041cb91bcb807abc2cfd450dbc68182637727bf2ecd50e665498d2f89dcb14"
+    },
+    {
+      "path": "src/Selvage/CurveFullUDInterpolation.lean",
+      "sha256": "b5219a6f0804828366ee2551b0fd66a40310ac3a29095aff79572703631ec21e"
+    },
+    {
+      "path": "src/Selvage/CurveFullUDStatement.lean",
+      "sha256": "870c0238d9d4a0ef5e7d4dd8a2f338add72c126e3281c7a3ec258f4dc95831c6"
+    },
+    {
+      "path": "src/Selvage/CurveFullUDTeeth.lean",
+      "sha256": "d0c20fa2c1785478155424fe488193196f1dfb16809dde48c59bed44111bcc96"
+    },
+    {
+      "path": "src/Selvage/CurveProximityGapFullUD.lean",
+      "sha256": "f3bf7a31bbd0bd4eee896c1f122e54a9b62e5e895f43d57263e6a02a555484e5"
+    },
+    {
+      "path": "src/Theory/CurveRSInterpolationKernel.lean",
+      "sha256": "bfd73f5a0c6f6eab6bcb2fc45dc2b961d6a5d01d176e42a5ddd655aae2dbcc2c"
+    },
+    {
+      "path": "src/Theory/CurveRSInterpolationMatrix.lean",
+      "sha256": "1aa837d415fc37d43f64eff620ac4b4a4817677303b1b992caf20f27ba3242fa"
+    },
+    {
+      "path": "src/Theory/PolynomialCurve.lean",
+      "sha256": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15"
+    }
+  ],
+  "matching_author_checks": [
+    {
+      "source": "Selvage/CurveFriChallenge.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-09.json",
+          "log": "checks/freeze-09.log",
+          "record_sha256": "a80efea843578782564f8acac53ec13f8e90894883a940c7cfc29a3c59d42671",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFriChallenge.olean",
+            "Selvage/CurveFriChallenge.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Selvage/CurveFullUDBivariate.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-06.json",
+          "log": "checks/freeze-06.log",
+          "record_sha256": "7e8777c0531d9283bbf4b64d55e4d7c68e229b59483f4deb2bddadebbf8ccd5e",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDBivariate.olean",
+            "Selvage/CurveFullUDBivariate.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Selvage/CurveFullUDCore.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-07.json",
+          "log": "checks/freeze-07.log",
+          "record_sha256": "4542d14344d2d87261d7a5b4e628835c60b32595631e71da2675ca5761195ae6",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDCore.olean",
+            "Selvage/CurveFullUDCore.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Selvage/CurveFullUDInterpolation.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-05.json",
+          "log": "checks/freeze-05.log",
+          "record_sha256": "04c63ece0074b916eec2f6847f64c414e3750dcb6f6f2072e50db96072fd512b",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDInterpolation.olean",
+            "Selvage/CurveFullUDInterpolation.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Selvage/CurveFullUDStatement.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-04.json",
+          "log": "checks/freeze-04.log",
+          "record_sha256": "d2a5b3cc804203edd35a642d4362a018e635a20497379da0b9676af9d1e677a0",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDStatement.olean",
+            "Selvage/CurveFullUDStatement.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Selvage/CurveFullUDTeeth.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-10.json",
+          "log": "checks/freeze-10.log",
+          "record_sha256": "fd0b71014438cd9731dc9b4507f96a48c6274142bb7bed6f35d2e488655cf8da",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDTeeth.olean",
+            "Selvage/CurveFullUDTeeth.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Selvage/CurveProximityGapFullUD.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-08.json",
+          "log": "checks/freeze-08.log",
+          "record_sha256": "22636d0256dc7c4287a7eead2d1ed3c5660496925e9054226afded71326de4fc",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveProximityGapFullUD.olean",
+            "Selvage/CurveProximityGapFullUD.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Theory/CurveRSInterpolationKernel.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-03.json",
+          "log": "checks/freeze-03.log",
+          "record_sha256": "fb3d2c5fb5ab3023373063f654f31362abbf9533775a4e1124d01fd12dbfc82c",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Theory/CurveRSInterpolationKernel.olean",
+            "Theory/CurveRSInterpolationKernel.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Theory/CurveRSInterpolationMatrix.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-02.json",
+          "log": "checks/freeze-02.log",
+          "record_sha256": "ca5e6230726d45d106100f0f0009db85c51f053dfd28e903e05752e783f63acc",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Theory/CurveRSInterpolationMatrix.olean",
+            "Theory/CurveRSInterpolationMatrix.lean"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Theory/PolynomialCurve.lean",
+      "matching_clean_checks": [
+        {
+          "record": "checks/freeze-01.json",
+          "log": "checks/freeze-01.log",
+          "record_sha256": "7f05a630a16892d329487534814f01cfcbfb75a6cbca2d206be08eb7b8ef3d1c",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "command": [
+            "lake",
+            "env",
+            "lean",
+            "-o",
+            "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Theory/PolynomialCurve.olean",
+            "Theory/PolynomialCurve.lean"
+          ]
+        }
+      ]
+    }
+  ],
+  "declared_dependency_pins_checked": [
+    {
+      "path": "Theory/RSInterpolationMatrix.lean",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Theory/RSInterpolationKernel.lean",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDStatement.lean",
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDTeeth.lean",
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDInterpolation.lean",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDBivariate.lean",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDCore.lean",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/ProximityGapFullUD.lean",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Theory/PolynomialMatrixKernel.lean",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+      "selected_package": "polynomial_curve_kernel",
+      "replaces_source_sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd"
+    },
+    {
+      "path": "Theory/PolynomialBivariate.lean",
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Theory/PolynomialGluingStatement.lean",
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Theory/PolynomialGluing.lean",
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+      "selected_package": "frozen full_ud closure"
+    }
+  ],
+  "theory_import_closure": {
+    "Theory/PolynomialCurve.lean": {
+      "sha256": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15",
+      "imports": [
+        "Mathlib.Algebra.Polynomial.BigOperators",
+        "Mathlib.Algebra.Polynomial.Degree.Operations",
+        "Mathlib.Tactic"
+      ]
+    },
+    "Theory/CurveRSInterpolationMatrix.lean": {
+      "sha256": "1aa837d415fc37d43f64eff620ac4b4a4817677303b1b992caf20f27ba3242fa",
+      "imports": [
+        "Theory.RSInterpolationMatrix",
+        "Theory.PolynomialCurve"
+      ]
+    },
+    "Theory/RSInterpolationMatrix.lean": {
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "imports": [
+        "Mathlib.Algebra.Polynomial.BigOperators",
+        "Mathlib.Algebra.Polynomial.RingDivision",
+        "Mathlib.Data.Fin.Tuple.Basic",
+        "Mathlib.LinearAlgebra.Vandermonde",
+        "Mathlib.LinearAlgebra.Matrix.SchurComplement",
+        "Mathlib.Tactic"
+      ]
+    },
+    "Theory/CurveRSInterpolationKernel.lean": {
+      "sha256": "bfd73f5a0c6f6eab6bcb2fc45dc2b961d6a5d01d176e42a5ddd655aae2dbcc2c",
+      "imports": [
+        "Theory.CurveRSInterpolationMatrix",
+        "Theory.PolynomialMatrixKernel"
+      ]
+    },
+    "Theory/PolynomialMatrixKernel.lean": {
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+      "imports": [
+        "Mathlib.Algebra.Polynomial.BigOperators",
+        "Mathlib.Data.Fin.Tuple.Embedding",
+        "Mathlib.Data.Fintype.EquivFin",
+        "Mathlib.Data.Nat.Find",
+        "Mathlib.LinearAlgebra.Matrix.Adjugate",
+        "Mathlib.Tactic.FinCases"
+      ]
+    }
+  },
+  "frozen_affine_modules_preserved": [
+    {
+      "path": "Theory/RSInterpolationMatrix.lean",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f"
+    },
+    {
+      "path": "Theory/RSInterpolationKernel.lean",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329"
+    },
+    {
+      "path": "Selvage/FullUDStatement.lean",
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42"
+    },
+    {
+      "path": "Selvage/FullUDTeeth.lean",
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7"
+    },
+    {
+      "path": "Selvage/FullUDInterpolation.lean",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8"
+    },
+    {
+      "path": "Selvage/FullUDBivariate.lean",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c"
+    },
+    {
+      "path": "Selvage/FullUDCore.lean",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3"
+    },
+    {
+      "path": "Selvage/ProximityGapFullUD.lean",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf"
+    },
+    {
+      "path": "Selvage/FullUDFriConsumer.lean",
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b"
+    },
+    {
+      "path": "Selvage/FullUDWitnesses.lean",
+      "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf"
+    }
+  ],
+  "kernel_source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+  "kernel_declarations_and_pins": 26,
+  "unchanged_PS_successor_sources": [
+    {
+      "path": "Theory/PolynomialBivariate.lean",
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0"
+    },
+    {
+      "path": "Theory/PolynomialGluingStatement.lean",
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0"
+    },
+    {
+      "path": "Theory/PolynomialGluing.lean",
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41"
+    }
+  ],
+  "direct_nonowned_dependencies": {
+    "Selvage/Sumcheck.lean": "fb62103bbe093ba866ebef01e001eba3398d2bce707c7b71420a33185d3aa0a0",
+    "Theory/PolynomialBivariate.lean": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+    "Theory/PolynomialGluing.lean": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+    "Selvage/FullUDInterpolation.lean": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+    "Selvage/FullUDStatement.lean": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+    "Selvage/ProximityGapFullUD.lean": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+    "Theory/PolynomialMatrixKernel.lean": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+    "Theory/RSInterpolationMatrix.lean": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f"
+  },
+  "patch_targets_replayed": [
+    {
+      "path": "Theory/PolynomialCurve.lean",
+      "sha256": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15"
+    },
+    {
+      "path": "Theory/CurveRSInterpolationMatrix.lean",
+      "sha256": "1aa837d415fc37d43f64eff620ac4b4a4817677303b1b992caf20f27ba3242fa"
+    },
+    {
+      "path": "Theory/CurveRSInterpolationKernel.lean",
+      "sha256": "bfd73f5a0c6f6eab6bcb2fc45dc2b961d6a5d01d176e42a5ddd655aae2dbcc2c"
+    },
+    {
+      "path": "Selvage/CurveFullUDStatement.lean",
+      "sha256": "870c0238d9d4a0ef5e7d4dd8a2f338add72c126e3281c7a3ec258f4dc95831c6"
+    },
+    {
+      "path": "Selvage/CurveFullUDInterpolation.lean",
+      "sha256": "b5219a6f0804828366ee2551b0fd66a40310ac3a29095aff79572703631ec21e"
+    },
+    {
+      "path": "Selvage/CurveFullUDBivariate.lean",
+      "sha256": "8f4d163e46eac8e571769613d726a92d7240a0e32bc750b6dfa427948297b66c"
+    },
+    {
+      "path": "Selvage/CurveFullUDCore.lean",
+      "sha256": "fa041cb91bcb807abc2cfd450dbc68182637727bf2ecd50e665498d2f89dcb14"
+    },
+    {
+      "path": "Selvage/CurveProximityGapFullUD.lean",
+      "sha256": "f3bf7a31bbd0bd4eee896c1f122e54a9b62e5e895f43d57263e6a02a555484e5"
+    },
+    {
+      "path": "Selvage/CurveFriChallenge.lean",
+      "sha256": "9de6c75ee6428629e178e24d91dfcebe97e4e7169cf6e5f827ead597f0f59547"
+    },
+    {
+      "path": "Selvage/CurveFullUDTeeth.lean",
+      "sha256": "d0c20fa2c1785478155424fe488193196f1dfb16809dde48c59bed44111bcc96"
+    }
+  ],
+  "script_sha256": "72f4d903a5286ea3cd07077701b4116c7545da32b7d75d323d45a3972e8a5729"
+}

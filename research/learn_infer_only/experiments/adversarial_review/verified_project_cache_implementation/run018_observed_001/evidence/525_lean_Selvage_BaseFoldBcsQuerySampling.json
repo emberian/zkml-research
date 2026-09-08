@@ -1,0 +1,18 @@
+{
+  "label": "lean_Selvage_BaseFoldBcsQuerySampling",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsQuerySampling.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/BaseFoldBcsQuerySampling.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "@babyBear_nonzero_factorization : \u2200 {ell : \u2115}, ell \u2264 28 \u2192 modulus - 1 = querySlackSize ell * queryIndexSize ell\nacceptedScalarEquiv : (ell : \u2115) \u2192 ell \u2264 28 \u2192 { x // x \u2260 0 } \u2243 Fin (querySlackSize ell) \u00d7 PowerTwoFriLevels ell 1\n@acceptedScalar_coordinate_uniform : \u2200 {ell : \u2115} (hell : ell \u2264 28) (event : PowerTwoFriLevels ell 1 \u2192 Prop),\n  (uniformProb { x // x \u2260 0 } fun x => event ((acceptedScalarEquiv ell hell) x).2) =\n    uniformProb (PowerTwoFriLevels ell 1) event\nquerySeedRejection_le : \u2200 (queryCount : \u2115),\n  uniformProb (Fin queryCount \u2192 Digest) QuerySeedRejection \u2264 \u2191queryCount / \u2191modulus\n@unbiasedAccepts_to_rawCommittedIor : \u2200 {ell m queryCount : \u2115} (T : FoldingTower E (PowerTwoFriLevels ell) m)\n  (st : RawFriAdaptiveTranscript fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) (hell : ell \u2264 28)\n  (hmell : m \u2264 ell) (statement : Statement m) (receipt : Receipt m queryCount),\n  UnbiasedAccepts T st hell hmell statement receipt \u2192\n    \u2203 (seeds : QuerySeedsAccepted receipt),\n      BaseFoldRawCommittedIorAccepts (fun n => BinaryMerkle.openingScheme hashSuite (ell - n)) T st\n        statement.evaluationPoint statement.claimedValue (submittedProver receipt) queryCount receipt.challenge\n        (unbiasedQuerySchedule hell hmell receipt seeds)\n",
+  "stderr": "",
+  "elapsed_seconds": 3.6114299580221996,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/BaseFoldBcsQuerySampling.lean",
+  "source_sha256_before": "57afe8ee918307e8f9670ead8562a0bdee8bc528f1343c6a43ddac94f8cdc5e6",
+  "source_sha256_after": "57afe8ee918307e8f9670ead8562a0bdee8bc528f1343c6a43ddac94f8cdc5e6"
+}

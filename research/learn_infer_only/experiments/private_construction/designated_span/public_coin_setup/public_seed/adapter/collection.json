@@ -1,0 +1,53 @@
+{
+  "accepted_counter_histogram": {
+    "1": 577
+  },
+  "closed_public_bytes_including_seal": 11296482,
+  "closed_public_files_including_seal": 139,
+  "command_counts": {
+    "auth-init": 1,
+    "encode-query": 4,
+    "host-infer": 4,
+    "host-learn": 33,
+    "issuer-encrypt": 33,
+    "public-build": 1,
+    "public-reference": 1,
+    "recipient-finalize": 16,
+    "recipient-init": 16,
+    "validate-context": 1,
+    "verify-public": 2
+  },
+  "complete_domain_sha256_inventory_only": "a9c2b00aa8614061c4ff9be41081c4da86f9116fa4647f2cb9309b3b5af1d76d",
+  "context_bytes": 342331,
+  "context_id": "be14f3e3f83759c33238bf62c7511a6d8df897d2646a877b4acf8ef5b33fbbb5",
+  "hash_words": 577,
+  "integer_comparisons": "four matches, attributed to saved aggregate research result; private answers unread",
+  "ok": true,
+  "public_closure_checkpoint_ns": 341002693166,
+  "public_closure_sha256": "6aa0789f106ca326dccb370483f0cec589fe218ed9ff4a5d732ef48f07e2a993",
+  "public_commands": 112,
+  "public_reference_counts": {
+    "expiries": 1,
+    "original_ciphertexts": 33,
+    "outputs": 4,
+    "states": 33
+  },
+  "public_work_timer_ns": 340932174458,
+  "recipient_output_bytes": 691,
+  "reported_native_counts_in_public_phase_logs": {
+    "context_consistency_rows": 16,
+    "full_context_validations": 1,
+    "native_modexp": 99382,
+    "pinned_context_validation_reuses": 90,
+    "subgroup_checks": 41727
+  },
+  "scope": "postrun public integrity collection; no private path traversed or crypto rerun",
+  "setup_ns": 101459136291,
+  "source_files_rechecked": 12,
+  "source_manifest_sha256": "be861661892f52e52068d88361fc1519989ae6103a4945a3c6c7e41a8ffc5fac",
+  "state_bytes": 148147,
+  "stderr_bytes": 0,
+  "total_ns": 342179553250,
+  "transcript_bytes": 724344,
+  "transcript_sha256": "04586e22ea7f18fd2282745bf2e40fbfe8d8c739e835995bad54c5974aee0e56"
+}

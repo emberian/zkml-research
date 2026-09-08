@@ -1,0 +1,28 @@
+{
+  "old_source_sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+  "new_source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+  "all_16_old_statement_headers_unchanged_modulo_whitespace": [
+    "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+    "RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+    "RS_det_submatrix_eq_zero_of_det_eq_zero",
+    "RS_mulVec_adjugate_col_eq_det",
+    "RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+    "RS_natDegree_det_le_of_entry_natDegree_le_one",
+    "adjugate_updateRow_same_col",
+    "det_updateRow_eq_sum_mul_adjugate_col",
+    "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+    "correctness",
+    "witnessMatrix_premises",
+    "witnessVector_valid",
+    "premises_inhabited",
+    "satisfiable",
+    "determinant_hypothesis_teeth",
+    "degree_bound_teeth"
+  ],
+  "all_16_old_guard_bytes_preserved": true,
+  "proof_body_changes": [
+    "degree-one determinant proof becomes M=1 wrapper",
+    "degree-one rank/kernel proof becomes M=1 wrapper"
+  ],
+  "single_general_rank_proof": true
+}

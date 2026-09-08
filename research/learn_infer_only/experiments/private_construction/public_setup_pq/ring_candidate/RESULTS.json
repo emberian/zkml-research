@@ -1,0 +1,121 @@
+{
+  "scope": "[EXECUTED] Pure public arithmetic/algebra; no key, ciphertext, Gaussian sample, estimator or attack",
+  "status": "PASS",
+  "parameters": {
+    "N": 4096,
+    "module_width": 64,
+    "d": 577,
+    "r": 16,
+    "W": 32,
+    "T": 384,
+    "p": 28439893,
+    "q": "497323290947860672931310292648754779192460749687510494957169639477681564739617435942913",
+    "q_bits": 289,
+    "sigmaK_pow2": 24,
+    "sigmae_pow2": 10,
+    "F_pow2": 244,
+    "BK_pow2": 27,
+    "BE_pow2": 13,
+    "D": 8204908842,
+    "theta": "3/64",
+    "gaussian_quotient_delta": "2^-192"
+  },
+  "exact_QPT_assumption": "Uniform-secret Ring-LWE over Z[T]/(T^4096+1), specified prime q, 64 ring samples, independent coefficient D_Z,2^10 errors",
+  "regularity": [
+    {
+      "ring_outputs": 1,
+      "rank_plus_short_below_2_minus_192": true,
+      "rank_upper": "4096*sum(q^(i-64),i=0..0)",
+      "short_upper": "2^4096/q^384",
+      "joint_h_row_upper": "(2h+1)*2^-192 for h>=1"
+    },
+    {
+      "ring_outputs": 2,
+      "rank_plus_short_below_2_minus_192": true,
+      "rank_upper": "4096*sum(q^(i-64),i=0..1)",
+      "short_upper": "2^4096/q^192",
+      "joint_h_row_upper": "(2h+1)*2^-192 for h>=1"
+    }
+  ],
+  "privacy_ledgers": {
+    "0": {
+      "LWE_advantage_multiplier": 768,
+      "all_non_LWE_privacy_terms_strictly_below": "2^-168",
+      "scope": "ideal exact scheme distributions; no computational-hardness value assigned"
+    },
+    "16": {
+      "LWE_advantage_multiplier": 768,
+      "all_non_LWE_privacy_terms_strictly_below": "2^-168",
+      "scope": "ideal exact scheme distributions; no computational-hardness value assigned"
+    }
+  },
+  "correctness_failure_bound": "<2^-203 for 384 inputs on the ideal Gaussian law",
+  "strict_decoder_separation_pass": true,
+  "CRT_test_counterexample": {
+    "q": 17,
+    "N": 4,
+    "roots": [
+      2,
+      8,
+      15,
+      9
+    ],
+    "idempotent_coefficients": [
+      13,
+      15,
+      16,
+      8
+    ],
+    "idempotent_CRT": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "a": [
+      "1",
+      "0",
+      "0"
+    ],
+    "u": [
+      "1",
+      "e",
+      "0"
+    ],
+    "both_have_unit_coordinate": true,
+    "u_is_not_ring_multiple_of_a": true,
+    "CRT_ranks": [
+      2,
+      1,
+      1,
+      1
+    ],
+    "augmented_map_is_surjective": false
+  },
+  "constant_coefficient_identity_checks": 6642,
+  "integer_shift_checks": 224,
+  "costs": {
+    "ciphertext_coefficients": 262721,
+    "ciphertext_bitpacked_bytes": 9490797,
+    "full_ring_ciphertext_coefficients_before_projection": 2625536,
+    "full_ring_ciphertext_bitpacked_bytes_before_projection": 94847488,
+    "public_A_coefficients": 262144,
+    "public_P_coefficients": 2363392,
+    "public_A_bitpacked_bytes": 9469952,
+    "public_P_bitpacked_bytes": 85377536,
+    "public_A_and_P_bitpacked_bytes": 94847488,
+    "recipient_key_coefficient_bits_on_strict_tail_event": 28,
+    "recipient_key_bitpacked_bytes_on_strict_tail_event": 917504,
+    "all_recipient_keys_bitpacked_bytes_on_strict_tail_event": 14680064,
+    "fresh_encode_full_ring_products": 64,
+    "fresh_encode_scalar_constant_product_multiplications": 2363392,
+    "fresh_encode_Gaussian_coefficients": 262144,
+    "fresh_encode_uniform_flood_integers": 577,
+    "fresh_encode_uniform_secret_coefficients": 4096,
+    "recipient_read_coefficient_multiplications": 262144,
+    "one_add_or_subtract_residue_operations": 262721,
+    "expire_and_add_residue_operations": 525442
+  },
+  "prime_certificate_sha256": "8d24375202ae3176d10fd86386753680f2f6ec44a41333d78114befb4d3735a1",
+  "sampling_and_hardness": "No sampler implementation, approximate-distribution certificate, timing or computational-hardness estimate is supplied"
+}

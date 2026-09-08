@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "tests": 31,
+  "failures": 0,
+  "errors": 0,
+  "lean_builds": 0,
+  "actual_exports": 0,
+  "overlay_installations": 0,
+  "scope": "Synthetic public file tests only; redirected object scratch owned by this review."
+}

@@ -1,0 +1,43 @@
+{
+  "claim": "EXECUTED",
+  "fixture": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/utility/materialized_fixture.json",
+    "bytes": 208728,
+    "sha256": "76d084577179f90c311549eb931fe8cd312b18099e6063cdb6a5493df4257a62"
+  },
+  "matched_original_manifest": true,
+  "counts": {
+    "Learn": 384,
+    "Infer": 96
+  },
+  "expiry": 0,
+  "histories": [
+    67000,
+    67001
+  ],
+  "fresh_initial_states": 4,
+  "initial_explanation": "two histories times two public routes; no initial replay duplication",
+  "distinct_query_ciphertexts": 16,
+  "fresh_learn_inputs": 384,
+  "host_invocations": 960,
+  "issuer_invocations": 404,
+  "public_role_invocations": 1364,
+  "replay_pairs": 480,
+  "private_opens": {
+    "initial_primary_states": 4,
+    "learn_primary_selected_route_states": 384,
+    "infer_primary_signs": 96,
+    "total": 484
+  },
+  "frozen_integer_oracle_consistent": true,
+  "selected_final_oracle_correct": 28,
+  "selected_final_oracle_queries": 32,
+  "projection_seconds_from_fixed_control_medians": 13477.840540032,
+  "projection_excludes_hashing_issuer_reader_overhead_and_contention_change": true,
+  "projection_source": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/summary.json",
+    "bytes": 3170,
+    "sha256": "25219f9c1db20d4ff026e46d621def238bf1311a58cafc915375a2c8c2b90a9b"
+  },
+  "crypto_invocations": 0
+}

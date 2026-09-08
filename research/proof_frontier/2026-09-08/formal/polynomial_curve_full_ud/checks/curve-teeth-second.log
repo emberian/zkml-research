@@ -1,0 +1,3 @@
+Selvage/CurveFullUDTeeth.lean:18:65: error: unsolved goals
+j : ℕ
+⊢ (↑j).degree < 2

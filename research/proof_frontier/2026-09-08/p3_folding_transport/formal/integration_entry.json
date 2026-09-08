@@ -1,0 +1,10 @@
+{
+  "name": "p3_folding_transport",
+  "root": "../proof_frontier/2026-09-08/p3_folding_transport/formal",
+  "patch": "../proof_frontier/2026-09-08/p3_folding_transport/formal/minidregg-p3-query-transport.patch",
+  "expected_pins": 15,
+  "source_files": {
+    "Theory/BitReverseFriTransport.lean": "../proof_frontier/2026-09-08/p3_folding_transport/formal/src/Theory/BitReverseFriTransport.lean",
+    "Selvage/P3FriQueryTransport.lean": "../proof_frontier/2026-09-08/p3_folding_transport/formal/src/Selvage/P3FriQueryTransport.lean"
+  }
+}

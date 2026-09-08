@@ -1,0 +1,56 @@
+{
+  "frozen": true,
+  "completed_utc": "2026-09-08 14:42:51 UTC",
+  "verdict": "ACCEPTED for stated source/math and exact artifact scope; root joint Lean integration remains separate",
+  "author_manifest_sha256": "fed8141f3d1606cd7ffa25bdd85918acbbdcb1ac8037307359adf1ff05994729",
+  "author_patch_sha256": "3fa34548e2f1ec0f286ba04594374f3fc5aa636fda5dd5f7583bdeeca6dd7d0f",
+  "report_sha256": "8729bb47fa550c8c0a37e16f90c8876c77fc8295a3cf70d6e618486047e8a090",
+  "reviewer_Lean_builds": 0,
+  "files": [
+    {
+      "path": "ARTIFACT_CHECKS.json",
+      "sha256": "2c6d9d49909838019d05762491d9d45e8b70a94a1bd280da90338f2e534bb91a",
+      "bytes": 38990
+    },
+    {
+      "path": "FINITE_EXECUTION.json",
+      "sha256": "61167e40684d1a42be8ec9ac3c866aae255edc255128250eeef723048af96b31",
+      "bytes": 403
+    },
+    {
+      "path": "FINITE_RESULTS.json",
+      "sha256": "629282813eaf8e09ad17dc21a065f8125f786db4d3621ca7c5b085a650e676c6",
+      "bytes": 6007
+    },
+    {
+      "path": "NEXT.md",
+      "sha256": "cd6385e73cda5b9f9ec9a2237cdf448e6d3ba0976a7f18a08f73c6fded5a4a33",
+      "bytes": 671
+    },
+    {
+      "path": "REPORT.md",
+      "sha256": "8729bb47fa550c8c0a37e16f90c8876c77fc8295a3cf70d6e618486047e8a090",
+      "bytes": 13082
+    },
+    {
+      "path": "SOURCES.json",
+      "sha256": "d11c2fedad612693bb2baf1046a345f6d538c2644777d903f4b8788c076e04ef",
+      "bytes": 2619
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "a019c60f01fbe40a3c8bb42e3901f295b1785b53375799028985fd133f204e3e",
+      "bytes": 960
+    },
+    {
+      "path": "check_artifact.py",
+      "sha256": "72f4d903a5286ea3cd07077701b4116c7545da32b7d75d323d45a3972e8a5729",
+      "bytes": 9032
+    },
+    {
+      "path": "check_finite.py",
+      "sha256": "231369e73785c0863fa592413e30ba08036610b57a06a8eb9a08190a24d5256f",
+      "bytes": 7268
+    }
+  ]
+}

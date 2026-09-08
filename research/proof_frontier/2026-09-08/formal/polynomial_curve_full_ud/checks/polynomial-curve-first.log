@@ -1,0 +1,8 @@
+Theory/PolynomialCurve.lean:11:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'commRing', which is 'noncomputable'
+Theory/PolynomialCurve.lean:26:9: error: Function expected at
+  natDegree_monomial_le ?m.29
+but this term has type
+  ((monomial ?m.30) ?m.29).natDegree ≤ ?m.30
+
+Note: Expected a function because this term is being applied to the argument
+  _

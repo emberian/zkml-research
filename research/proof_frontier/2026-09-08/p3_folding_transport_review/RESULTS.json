@@ -1,0 +1,31 @@
+{
+  "all_passed": true,
+  "manifest_entries_checked": 81,
+  "unique_artifacts_checked": 44,
+  "source_files_checked": 22,
+  "theorem_pins_checked": 15,
+  "exact_patch_replay": true,
+  "base_umbrella_pins": {
+    "Theory.lean": "8f8ffa996db7929d0146f597223ea14a97667d0741ae56e281585eb0c4321b11",
+    "Selvage.lean": "9ca29209aef767d1232ed7a18344b281c9a70167779ea2345e891149ea93db15"
+  },
+  "author_replay_matches_except_seconds": true,
+  "independent_controls": {
+    "index_cases": 4097,
+    "composition_cases": 18943,
+    "actual20_boundary_queries": 58,
+    "actual20_round_cases": 1102,
+    "full_degree_ext4_row_equalities": 84,
+    "twiddle_recurrence_cases": 127,
+    "mixed_height_queries": 64,
+    "mixed_height_rounds": 128,
+    "mixed_height_schedule": [
+      8,
+      4
+    ],
+    "all_passed": true
+  },
+  "lean_runs": 0,
+  "rust_runs": 0,
+  "crypto_protocol_runs": 0
+}

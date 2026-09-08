@@ -1,0 +1,10 @@
+--- producer_helper
++++ accepted_helper
+@@ -87,6 +87,7 @@
+ def _fresh(path):
+     path = Path(path)
+     require(path.is_absolute() and not path.exists() and not path.is_symlink(), f'Fresh absolute directory required: {path}')
++    require(path.resolve() == path, f'Canonical export path required: {path}')
+     for parent in path.parents:
+         require(not parent.is_symlink(), f'Symlink parent forbidden: {parent}')
+     return path

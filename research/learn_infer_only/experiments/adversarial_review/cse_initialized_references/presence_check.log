@@ -1,0 +1,40 @@
+{
+  "Lean_builds": 0,
+  "actual_frozen_descriptors": {
+    "infer": {
+      "allocated_slots": 46,
+      "gate_writes": 9,
+      "input_slots": 34,
+      "outputs": 1,
+      "payload_controls": [
+        "none",
+        "text",
+        "negative_integer",
+        "tuple"
+      ],
+      "sha256": "b742ed7710d2680119eceeff0c553d675e1ce187a503981fc500a6a4a683b80c",
+      "successful_reads": 19,
+      "unwritten_allocated_slots": 3
+    },
+    "learn": {
+      "allocated_slots": 11562,
+      "gate_writes": 538,
+      "input_slots": 42,
+      "outputs": 32,
+      "payload_controls": [
+        "none",
+        "text",
+        "negative_integer",
+        "tuple"
+      ],
+      "sha256": "94e8369ffc8fcdf57b8351b278d5af90dc49a26d83600d40f0bd6a0da359dde8",
+      "successful_reads": 1108,
+      "unwritten_allocated_slots": 10982
+    }
+  },
+  "crypto_execution": 0,
+  "gate_operations_evaluated": 0,
+  "hole_control": "allocated auxiliary wire0 has no input or prior producer; lookup fails",
+  "ok": true,
+  "scope": "Finite JSON presence-only controls and arbitrary payload examples. Universal Option presence is the Lean statement; JSON/serde/Rust correspondence remains TCB."
+}

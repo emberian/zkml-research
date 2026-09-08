@@ -1,0 +1,56 @@
+{
+  "expected_freeze": {
+    "manifest.json": "9b18d46259b37570d073999589ed06daee9e1cbbe57dbed232c2dc8c24a9b7ef",
+    "efficient-root-opening.patch": "c1d7aebabd8d755192d38c3628b266e1351a3703b03fa66f0dd042fef645d5b2",
+    "src/Selvage/EfficientRootOpening.lean": "defd19242e66118333d477cd14bcb1b108c4d517b1e55861dee66f35647dafe6"
+  },
+  "artifact_pins_checked": 23,
+  "dependency_pins_checked": 4,
+  "prior_audit_pins_checked": 3,
+  "root_census_script_pin_matches": true,
+  "theorem_pins": 20,
+  "exact_patch_replay": true,
+  "added_module_only": true,
+  "umbrella_import_added": false,
+  "final_guard_record_matches": true,
+  "final_guard_log_empty": true,
+  "all_checks_passed": true,
+  "new_lean_runs": 0,
+  "new_crypto_runs": 0,
+  "patch_commands": [
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening_review/patch_ik0ckbts",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening/efficient-root-opening.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening_review/patch_ik0ckbts",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening/efficient-root-opening.patch"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening_review/patch_ik0ckbts",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

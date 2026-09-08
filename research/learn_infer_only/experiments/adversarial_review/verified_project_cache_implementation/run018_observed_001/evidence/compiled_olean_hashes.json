@@ -1,0 +1,2270 @@
+{
+  "Assurance.Placeholder": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Placeholder.olean",
+    "sha256": "b9aa25ee992c8baed3efe4ea39d49cbd13a3d350d43570c31c739209f06c2f03"
+  },
+  "Assurance.TwoRegimeQueryBudget": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/TwoRegimeQueryBudget.olean",
+    "sha256": "ee66ed7243619bf7e1dae8a9d5f1527408fcedf758daaefc1650e77ec8b252be"
+  },
+  "Compiler.BFVScaleLiftRefinement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BFVScaleLiftRefinement.olean",
+    "sha256": "36a4a6d53ac2ea66f344aabc40a0d4e52bf39ce61739f1a7650dc892f280854f"
+  },
+  "Compiler.Placeholder": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Placeholder.olean",
+    "sha256": "4d7f6e225e8b29a77af332d7ac0f743c5f57af73c531fa91a75d04512806fab4"
+  },
+  "Compiler.Signature": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Signature.olean",
+    "sha256": "4da1ce29fb5769a730e4060970b0d9c2e9bcdaddf52666c65df3342589dab0f4"
+  },
+  "Compiler.Sp800185Cshake256Core": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Sp800185Cshake256Core.olean",
+    "sha256": "13c7f5a0fdcba2658bcc550a47efbe1ccdc95cf6635d7bee6a6114f2cfc16547"
+  },
+  "Compiler.TranscriptController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/TranscriptController.olean",
+    "sha256": "2191b23a419f100427d8d602cdc9de09d01e609dd58a549d00d47992f69b24cf"
+  },
+  "Compiler.UwueavePreoProjectionV2": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/UwueavePreoProjectionV2.olean",
+    "sha256": "603285265340edb9bb95458846c8cf2d85f24b0a6484b88fa82198d7189606d8"
+  },
+  "Kernel.Camera": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/Camera.olean",
+    "sha256": "33c4a197e2bd4741ecdbd8458ea5cb297c969fd90851b6c0952f427fa7ea0df1"
+  },
+  "Kernel.IrreversibleEffectSettlement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/IrreversibleEffectSettlement.olean",
+    "sha256": "ada8e1df3ce78966def62fabdfa44ba81d9c66d26979e4980c3d7cd921659b10"
+  },
+  "Kernel.Turn": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/Turn.olean",
+    "sha256": "0d4ca9bef9b19de62204da09b9e3243ae2050b1ed2a8d3c9009cdd9bc48ff153"
+  },
+  "Pred.Core": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Pred/Core.olean",
+    "sha256": "345c558a0b808497a5f77556937bf812ede79331c8f82816f203a49179e42677"
+  },
+  "Selvage.BabyBearExt4": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BabyBearExt4.olean",
+    "sha256": "0e3bffb28f157065ec68607fbe8d378da05d4423c23445eb8e92f2ad9bd7c8fc"
+  },
+  "Selvage.CorrelatedAgreement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/CorrelatedAgreement.olean",
+    "sha256": "4b355dd95748953d3e5e3c1ce1c673274a4f074fae5bad95705983b9a05df1ef"
+  },
+  "Selvage.HeteroComposition": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HeteroComposition.olean",
+    "sha256": "4a7289abcfe3271dbd85000aadf927eb29b02cc0a373fb18f7e99b216244ba92"
+  },
+  "Selvage.Rbr": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Rbr.olean",
+    "sha256": "3410cdc7ee2cb36fd21e1e7644030798b7d192e31a12b608557ef6ed17b6739f"
+  },
+  "Selvage.Statements": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Statements.olean",
+    "sha256": "dea92e687ec00907ee668d071aa9bd7a4d487041c504e58dbde6db2724c2fdcf"
+  },
+  "Selvage.ZkmlPoseidon2Data": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ZkmlPoseidon2Data.olean",
+    "sha256": "466911d9834c34401bcc66e00d6587e07525a879a146b63da9f76859f8ee343f"
+  },
+  "Selvage.ZkmlSuiteRegistry": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ZkmlSuiteRegistry.olean",
+    "sha256": "a4de910be716687e9a583983bcff91115e7e4509de972c1ff5ea44abbab08e84"
+  },
+  "Theory.Bignum": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/Bignum.olean",
+    "sha256": "6b981547ea9ff2f0ff2a3d49c9766af859b89c0ce2a2f9825a2366e3ee28dda8"
+  },
+  "Theory.BinaryTower": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/BinaryTower.olean",
+    "sha256": "b9f212a6730dce26b18680a2c9a0d20d0420eabc595f8319bf934198c58a41a8"
+  },
+  "Theory.Confluence": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/Confluence.olean",
+    "sha256": "e29691e5da44acd3b1d3f01d070b8b6949e42478d22328bcc902dabc445feee1"
+  },
+  "Theory.CyclotomicInertia": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CyclotomicInertia.olean",
+    "sha256": "044dde05aa104f3c0b8fdb535ca87c04f7ae5c8c24cfdac8d1d98e3fe776a1d5"
+  },
+  "Theory.ExceptionalSetLocalRing": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/ExceptionalSetLocalRing.olean",
+    "sha256": "3e1cd8fd8d2a28c62414fba950c39fb3b1965d81f5a28bd3fcdb030db214d644"
+  },
+  "Theory.HorizonComposition": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/HorizonComposition.olean",
+    "sha256": "7d77eae064a71ee4425cc436c93d30e6a93fad7f6a9a24bda6c6d2de1098c07a"
+  },
+  "Theory.IndexedProgram": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/IndexedProgram.olean",
+    "sha256": "e05c4ff195c0c4b1b41e50dbf3dd42a0c0772f12314ef819df852b7596b6df82"
+  },
+  "Theory.IntegerFingerprint": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/IntegerFingerprint.olean",
+    "sha256": "a85e085d441d3d0bb4798833bb2a7bd75e485a32a3adf33df423d9034b5ade92"
+  },
+  "Theory.IntegerWindowNoise": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/IntegerWindowNoise.olean",
+    "sha256": "d47f0cc045f4b127339927f11b21e7dcb96be27ec0db2e1670ae27d8c59ca390"
+  },
+  "Theory.Knowledge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/Knowledge.olean",
+    "sha256": "9de63ed3a6ea0f30ea2f0a1b9b8ad126556f87011fb09ed259e840c1202a1b91"
+  },
+  "Theory.PolynomialBivariate": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PolynomialBivariate.olean",
+    "sha256": "5e15fcae400498c6cf4c61296abb358927c90150fc9e8c5dea075076a4a5b91c"
+  },
+  "Theory.PolynomialMatrixKernel": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PolynomialMatrixKernel.olean",
+    "sha256": "8ba2ebd571a078b8621274f8b3b080bc38aa1de31aa9674b103067b5d3d25539"
+  },
+  "Theory.PrivacyProfile": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PrivacyProfile.olean",
+    "sha256": "9c0310ef7e89cdf9bfd85720a4afd68d0eb94f85fbfdae2e5706cf49c04bd74e"
+  },
+  "Theory.PrivateAddressEma": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PrivateAddressEma.olean",
+    "sha256": "993caa4b0a04593bcedefcb1b0f00b098734a113898c154d48cf74c6f6715f04"
+  },
+  "Theory.PrivateTrace": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PrivateTrace.olean",
+    "sha256": "074ea5b57c3c2c4eeee04aaad93dfd985ed3adfd77ddc7bf5115f6eeef253e63"
+  },
+  "Theory.RSInterpolationMatrix": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/RSInterpolationMatrix.olean",
+    "sha256": "b4ba79c6d47ec879aaceaa479b8727a4d27574906c9acae98c456f83334ce31d"
+  },
+  "Theory.ReactiveReceipt": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/ReactiveReceipt.olean",
+    "sha256": "c55a1441a8064c8e1b3e1c8c2a842998ea6bef65e9f074dd35e20268c541dbea"
+  },
+  "Theory.RevocationConsensus": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/RevocationConsensus.olean",
+    "sha256": "eb8b74ae535d1c070be8ae22ce54267d6167cf970e0810facf4b914eba7ce879"
+  },
+  "Theory.TypedAuthorization": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/TypedAuthorization.olean",
+    "sha256": "995d028b659994b04eff028adbc82bdcc7f4111caeb41b06be187baa0a96fd5d"
+  },
+  "Assurance.ResidentBfvWindowNoise": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentBfvWindowNoise.olean",
+    "sha256": "69ec298c6d9b57745077df57482f1e6b706226736035470c191a4a18df1edbb2"
+  },
+  "Compiler.Air": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Air.olean",
+    "sha256": "98e6115e25984472b8d46a25c6b14bb70653b2034f66bdcdc32d2be8b89241fe"
+  },
+  "Compiler.DialectBundle": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/DialectBundle.olean",
+    "sha256": "2296e0c7ebf84db32e4df674e93175b76b4712c5e0a11f46bee8e66c50703246"
+  },
+  "Compiler.FheRnsScaleDecomposition": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheRnsScaleDecomposition.olean",
+    "sha256": "2a652d43869b47f94553e9a54f7a31331a23c2fd634e9e36f16aec690a6215c8"
+  },
+  "Compiler.Sp800185Cshake256Conformance": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Sp800185Cshake256Conformance.olean",
+    "sha256": "94f44544788a37c583723073bc919883dd8a51ab9078acc9a4550f6f740ccf80"
+  },
+  "Kernel.PrivateTurn": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/PrivateTurn.olean",
+    "sha256": "cf4a342508368c732129f5a945f9c4f72965375e683af1411e5d4f6fb78dac7b"
+  },
+  "Kernel.State": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/State.olean",
+    "sha256": "e5bb58423d2c6f249d9c1e6c0ed89d88ce1656ff60ec5b6dcf656367256157e6"
+  },
+  "Kernel.TurnLimit": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/TurnLimit.olean",
+    "sha256": "8ddca0ad0b726af5ff8210e3522c3038ceecad75126c8a36ce3c6df746a3fdbf"
+  },
+  "Selvage.Depth": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Depth.olean",
+    "sha256": "c097a12255bf2528a3912dbf0250dc9864f29bf9c18ccfec0c83583eb4d79feb"
+  },
+  "Selvage.LigeritoInterleaved": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/LigeritoInterleaved.olean",
+    "sha256": "d2f21884e072064b31931c0e8057c6df4b99fe5284a348019b129c18190b884f"
+  },
+  "Selvage.ReedSolomon": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ReedSolomon.olean",
+    "sha256": "c6396c30be0d5606ef50a14c3216dbe275da09f14ca0982930fcdd8be80c476a"
+  },
+  "Theory.AuthorizationDeclaration": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/AuthorizationDeclaration.olean",
+    "sha256": "d62049cacd7955a64aa4e07417d2da5ad2c0ed558552ededb0838a3f89b851b8"
+  },
+  "Theory.BfvPhaseAlgebra": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/BfvPhaseAlgebra.olean",
+    "sha256": "2754ad31378ce3847f7e02a9b481adc9c90db899dff601cac8c0cc8015e19bdc"
+  },
+  "Theory.BinaryTowerFanPaar": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/BinaryTowerFanPaar.olean",
+    "sha256": "d2af006adb6353a534e6f9e79bd41c5f98606092d83b876027e11460c1db63fa"
+  },
+  "Theory.CausalVersionDag": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CausalVersionDag.olean",
+    "sha256": "2818bb00b8b1ac19a03551ff3de9f154965c2012c335b407f878b85cd6d4cc2f"
+  },
+  "Theory.CiphertextWindow": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CiphertextWindow.olean",
+    "sha256": "37d7489fc9b1f23ddd477c97046dd34452e43d12bedee6a9b540db87c88dd27a"
+  },
+  "Theory.CompressedLinearEquation": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CompressedLinearEquation.olean",
+    "sha256": "b3fbef2fed69eae386358ba576664f843bea42d3eb3c9efa620c8375b998daa0"
+  },
+  "Theory.CrossModulus": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CrossModulus.olean",
+    "sha256": "900e3b485eb0e90fa00408f30add10ee8bed7f784b5de43d812464aabff4fc39"
+  },
+  "Theory.CyclotomicExceptionalSet": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CyclotomicExceptionalSet.olean",
+    "sha256": "94e40d3548927a2fc61d148d67e5b0ef817211a15ead59c4483140aea8bff18c"
+  },
+  "Theory.DisclosureDeclaration": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/DisclosureDeclaration.olean",
+    "sha256": "618acf09247ea779ee28a1d2167fc0d19e506b385f2a09d03c01163e5a15c8a4"
+  },
+  "Theory.EpistemicConsensus": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/EpistemicConsensus.olean",
+    "sha256": "49391659cfe96744552dc49405ee005c8389d9b9b02a2eee527496aeff0dba53"
+  },
+  "Theory.EvmFragment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/EvmFragment.olean",
+    "sha256": "dad909a6f965e785cf41b2755f30e6cc342803e59f6e808ecb873c600d886ab7"
+  },
+  "Theory.ExtensionBasis": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/ExtensionBasis.olean",
+    "sha256": "cad65a1cfa112e50fe95815d8f9af4d8b719cd275efcc5a1d215fe52b5ad9254"
+  },
+  "Theory.Finality": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/Finality.olean",
+    "sha256": "0a319d1390e0f9bc5a64194402f010f504d559c42c0113447679af92370be188"
+  },
+  "Theory.GuardedAdvice": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/GuardedAdvice.olean",
+    "sha256": "ca1ce6dc81babd30053b252f6bbf85b822ea742024eda3db579e0a80b6a39302"
+  },
+  "Theory.HorizonCompositionWitnesses": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/HorizonCompositionWitnesses.olean",
+    "sha256": "e6e349e438823a42fb49f3dbe510b423cdbeaa5b45b19f88573694b964fb30c3"
+  },
+  "Theory.PolynomialGluingStatement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PolynomialGluingStatement.olean",
+    "sha256": "5739185f6f8e9a00acd71380c65c015d93b18320aef43cf8b74691acfea033cd"
+  },
+  "Theory.PrivateEmaDynamics": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PrivateEmaDynamics.olean",
+    "sha256": "35489e6202ceee5a0d5734cb8cf7bb90d89f0ecb7587b23ad4b5c6cacb10c248"
+  },
+  "Theory.PrivatePolicyEvolution": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PrivatePolicyEvolution.olean",
+    "sha256": "c33bfa41d74073677e86dad8c5e28decd80accb22db98a4eb8bfeb63cb8fcd23"
+  },
+  "Theory.RSInterpolationKernel": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/RSInterpolationKernel.olean",
+    "sha256": "da69a7ab3ed8474ab6a06d056740d2692d18c532283a105316cdeb6b5b629e9e"
+  },
+  "Theory.TypedAuthorizationWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/TypedAuthorizationWitness.olean",
+    "sha256": "d40f250f769370444e155de3cd2f05ab58728a062f6e12b402c63fac950a6f7b"
+  },
+  "Theory.ViewMerge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/ViewMerge.olean",
+    "sha256": "e36d9a0c0a16082c8ddc53bcef63fe9d5afa5746ab68c21eb61f7b2754db0efc"
+  },
+  "Theory.ZkmlTensorOps": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/ZkmlTensorOps.olean",
+    "sha256": "d5d7705bd6f4241ae294c297b9fe84e209e9bada358708ebf15c64796cc821ed"
+  },
+  "Assurance.ResidentBfvSourcePhase": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentBfvSourcePhase.olean",
+    "sha256": "97b11e1ffd3e33f6218f714118e2f023c49c394554a8e33f38abe99047d4ebea"
+  },
+  "Compiler.AirFlatten": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AirFlatten.olean",
+    "sha256": "7916ee4ae1d39e726fa313d5d97969cdc067329a01775ca5b56e9afecde4aa4e"
+  },
+  "Compiler.AirRange": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AirRange.olean",
+    "sha256": "a81c6094826e646e06002a4fc4d0ca30878f07f26c0e4baeb92f875994c8215f"
+  },
+  "Compiler.DisjointOraclePhases": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/DisjointOraclePhases.olean",
+    "sha256": "57cdc24303a5b692ad390978319434f0a0a38beda7f185832ca5a1a903be874d"
+  },
+  "Compiler.SemanticManifest": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/SemanticManifest.olean",
+    "sha256": "e71cb7e7c3c5514d8137fbf73ef1a27b0dfc68b88f61ab6f199f2893b15b2037"
+  },
+  "Kernel.Receipt": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/Receipt.olean",
+    "sha256": "e0b255d7e86634fd30099c274d70be5e119c24e143f43ebe19997b3130dfe30d"
+  },
+  "Kernel.TurnBalancedLimit": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/TurnBalancedLimit.olean",
+    "sha256": "ff124cb19a25f7ef8ed1ba1f71431413a74949a6106a4044ef97b6c5f051c311"
+  },
+  "Selvage.ConstrainedCode": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ConstrainedCode.olean",
+    "sha256": "290ef8dd2143d43736983fbf06ccb6f1b87d1f1ab16d4b3b7a42ebc885f7d6a6"
+  },
+  "Selvage.FiatShamir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FiatShamir.olean",
+    "sha256": "e0d09bb33d72f64d88b0d37dae275d0f228390dc33e50b77e2b5f12c6b9d6f25"
+  },
+  "Selvage.Proximity": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Proximity.olean",
+    "sha256": "b69bc7abb039f3f6f390cc0424be4505bea75f69626a6b18deb6e7c902ac70c2"
+  },
+  "Selvage.RandomnessSelection": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/RandomnessSelection.olean",
+    "sha256": "a597af8d54a238e26487847bb449933728fa375ed8ae8c0e34fd93bd2c4a262b"
+  },
+  "Selvage.Sumcheck": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Sumcheck.olean",
+    "sha256": "cae92b9926d43792a1559b1d7b938857fad17aa4d9e3946f16b5f74f837ce4e2"
+  },
+  "Theory.AdditiveNTT": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/AdditiveNTT.olean",
+    "sha256": "6d66f7f01dbcb19add3d5f0067c8a57a2eabe4d603528023586a98b4c8d49c02"
+  },
+  "Theory.BfvNoiseSource": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/BfvNoiseSource.olean",
+    "sha256": "35b9e6e5b9e757f7edfdf705634aceacb5a48d9ae3c37c0cee465a79c6e3a2cb"
+  },
+  "Theory.BinaryTowerTrace": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/BinaryTowerTrace.olean",
+    "sha256": "5edb463037112c227fab70c0ca26a6e306c81232b1aebe4c60793c0178f07917"
+  },
+  "Theory.CausalVersionAncestry": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CausalVersionAncestry.olean",
+    "sha256": "29704994efc7a2c038c8c4ae13ba4491e12537c700edb251391edf063ee72fea"
+  },
+  "Theory.CiphertextWindowNoise": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CiphertextWindowNoise.olean",
+    "sha256": "1149ed69273cc68c5ab4a37e7eafc96d00134bfa0a444f0c5dc5a885429a10af"
+  },
+  "Theory.CredentialAuthorityFamily": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CredentialAuthorityFamily.olean",
+    "sha256": "359582ce2dc50ed9a940b20f54be75b11147e3e6ba412ef46f7326d1839f0a07"
+  },
+  "Theory.EffectDeclaration": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/EffectDeclaration.olean",
+    "sha256": "e6713e7a9282d756aedea5a6ad5c0da91ea46cec1222fd63428825e6380d1857"
+  },
+  "Theory.EvmResidual": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/EvmResidual.olean",
+    "sha256": "4f772795018279392a483ab990fdb0874aaa92a29aff2e8995c193025265c1af"
+  },
+  "Theory.LaceMerge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/LaceMerge.olean",
+    "sha256": "db452d0a776899cdc57cb51be7838c7f273c3ec3e789e88937ab2d31b47ad738"
+  },
+  "Theory.PolynomialGluing": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PolynomialGluing.olean",
+    "sha256": "8cf6f9c48f90ac25de1dc63e0f2e38f7ec5735cbac0f3353afde23a486a2d6b3"
+  },
+  "Theory.PrivateComputationDeclaration": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PrivateComputationDeclaration.olean",
+    "sha256": "fa2c55e29ed14d68306874c358ad630121dbded9aa995b0af5a724cdc6839e2d"
+  },
+  "Theory.PrivateDistributionBudget": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/PrivateDistributionBudget.olean",
+    "sha256": "aa40566a9dc41b920e12404079a17334a537280f0a4dbfa0a5250bfbd466424b"
+  },
+  "Theory.ReactiveController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/ReactiveController.olean",
+    "sha256": "6796d67ecdf49726667e9300b8da6c471828f3989743904885e9b4e4cee8f1f6"
+  },
+  "Theory.ZkmlMatmulSum": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/ZkmlMatmulSum.olean",
+    "sha256": "b8e57f4b948fbb4282798823d4e7786c7ab50dc22e98e0f27d34c188c0501198"
+  },
+  "Assurance.ResidentBfvSourceWindow": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentBfvSourceWindow.olean",
+    "sha256": "565335c33e031d006b50a68778d735a52f414fbf86da2b9f7685059e7d730b1d"
+  },
+  "Compiler.AirHash": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AirHash.olean",
+    "sha256": "9f8d10b7389c8e9244d8809dc0315e46acb93c9fd2d8a97007c11fb9c5044e23"
+  },
+  "Compiler.DeclaredEffectArtifact": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/DeclaredEffectArtifact.olean",
+    "sha256": "2f50965b2efe9ca868682a694951b174e319a18f6b8f0c64973002205470472c"
+  },
+  "Compiler.PredCompile": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/PredCompile.olean",
+    "sha256": "841b05c5b5f0d9983034b025690494f2d8004bbca543a269458db45631131cf1"
+  },
+  "Kernel.Verbs": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/Verbs.olean",
+    "sha256": "7665d82232272e336c6afcb1979a7453a4d18cb104c4c496132c8e976e9100a7"
+  },
+  "Selvage.Accumulator": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Accumulator.olean",
+    "sha256": "5854b09b1b82ef0585d7ebd0ad8ee33816e1ea9c3072d6f71183fff58a0af777"
+  },
+  "Selvage.AdaptiveFiniteSampling": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AdaptiveFiniteSampling.olean",
+    "sha256": "97862c6663bb9623c460a933f51c03d51acb362eb9b4808e6cf3b6e2adfb066d"
+  },
+  "Selvage.CharTwoWall": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/CharTwoWall.olean",
+    "sha256": "b8e3df236cace5b0d557a1c8c47d6e75db734cfdf9c3bcdbf8242612c6c12fcb"
+  },
+  "Selvage.FullUDStatement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FullUDStatement.olean",
+    "sha256": "12ce7c6c3f74852973b85157dc1c8bd6d861733a308b138ca1eda7b2efda9393"
+  },
+  "Selvage.LogupStar": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/LogupStar.olean",
+    "sha256": "435954c5fa5056cd298cb00f719b7a20c277d05ee4179ec991caabd8857f5b92"
+  },
+  "Selvage.OutOfDomain": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OutOfDomain.olean",
+    "sha256": "de4da9d10fdf115f1bd334d95e2b67f94905763fc410fe558837e2f35ec68ace"
+  },
+  "Selvage.ProximityGapUD": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ProximityGapUD.olean",
+    "sha256": "7c813ffb67dd1e8c1393ed88f4b8eb5b9dd8f32606de795bda269a21c7e6d2e5"
+  },
+  "Selvage.SmallField": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SmallField.olean",
+    "sha256": "35c97503f0c4768e2ddc450065ff67fd4f2f941d8eac0690087406667b89eaf7"
+  },
+  "Selvage.SumcheckReduction": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SumcheckReduction.olean",
+    "sha256": "0445ea44a9cb75427a73bfb80f95a7d4c544c0be611094221226882990c0e883"
+  },
+  "Theory.AdditiveNTTTransform": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/AdditiveNTTTransform.olean",
+    "sha256": "ffced07362c68b1588848b461b71744cb324cc0750edd9bbfcde44874d7e1a12"
+  },
+  "Theory.BinaryTowerFanPaarCodec": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/BinaryTowerFanPaarCodec.olean",
+    "sha256": "372104144f7e615dad7b7da47ac5e573f039c27fbe3c127e3a7173144241d004"
+  },
+  "Theory.CellState": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CellState.olean",
+    "sha256": "749f838e1e7e89c1ea5339f3108038d5e17db3a5346775ebad4869d60e9968a5"
+  },
+  "Assurance.AirSumcheck": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/AirSumcheck.olean",
+    "sha256": "a9971ed82ae691855f9325c421e554684289117629d8ec23ebe0a72f09296a84"
+  },
+  "Assurance.ReceiptClaim": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ReceiptClaim.olean",
+    "sha256": "1d5cc6de8ed68b1573bbd68ac02feb5bf260e086eb04e2e39c7087dcf310f20f"
+  },
+  "Assurance.SemanticReceiptRelation": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticReceiptRelation.olean",
+    "sha256": "7ba18d8e9d9d4fd2664a81e6136be66645f4a8820282aa75f34175cdbdc288cf"
+  },
+  "Compiler.AirMembership": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AirMembership.olean",
+    "sha256": "ebaf91ee3412201050f038b5fb39eef1a4a05697f9fcfd5037db742f5887c3ee"
+  },
+  "Compiler.CanonicalPolicyAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/CanonicalPolicyAdmission.olean",
+    "sha256": "80855ceda157b2b063c9f80cfdc058e1a49ec40c6ecf884684101154a5e2cc12"
+  },
+  "Compiler.SemanticArtifactBundle": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/SemanticArtifactBundle.olean",
+    "sha256": "e4a380c09f8167f9e1a606a7aff6c87c0d5bc8a3c1a9b363a9101a0ded8703a3"
+  },
+  "Kernel.SparseAuthenticatedState": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/SparseAuthenticatedState.olean",
+    "sha256": "fc86faedcfdce77c68a7cd58f937f034ab426cbc39540b6e5c54df65aa65f119"
+  },
+  "Selvage.AccExtract": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccExtract.olean",
+    "sha256": "bfd1f0b71496f343ab370fc31f100e65d051a611226096570f5f3a502bae46b1"
+  },
+  "Selvage.AccSound": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccSound.olean",
+    "sha256": "30f9e606bd268b05909f6350eae21b24c97d0fd4f9582d9c9cfec118df4b806f"
+  },
+  "Selvage.AdditiveProximity": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AdditiveProximity.olean",
+    "sha256": "26e7394e4d0212cee9048aad93fc00acbeb0c5423e15dce27cb0372204ebf229"
+  },
+  "Selvage.Decider": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Decider.olean",
+    "sha256": "9c7655371e345aa44689c6dc14f69f205f9bb1561f68d85f7077159fca8603fd"
+  },
+  "Selvage.ExtensionChallengeBridge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ExtensionChallengeBridge.olean",
+    "sha256": "0ff75cf5d780f63fdff37accbd296795ff72213dc7553aa4b9003015f5637369"
+  },
+  "Selvage.FullUDInterpolation": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FullUDInterpolation.olean",
+    "sha256": "56a1bd7c159d194da74c98a7e0863532266057861dc16876e6ed2f2bcb5c409d"
+  },
+  "Selvage.FullUDTeeth": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FullUDTeeth.olean",
+    "sha256": "839625adf3f238d2ef8cb2ac8b6de58edbdcd5f3d76ff18079f0cdfc40964d84"
+  },
+  "Selvage.LightClient": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/LightClient.olean",
+    "sha256": "bdfca82f9188ef09256c91dfacc93f3ec85dcf7310cf8f4449e13ff84c716ed8"
+  },
+  "Selvage.MultilinearExtension": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/MultilinearExtension.olean",
+    "sha256": "774fa872149788de91a5b064c79aaf1ad9444cd60b539077030f23abb1b82195"
+  },
+  "Selvage.MultisetFingerprint": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/MultisetFingerprint.olean",
+    "sha256": "1b220dade50f898b4f13de56b0975f835038fcf7af5053be38127fdc3cfbaa0d"
+  },
+  "Selvage.ProximityGapUDSharp": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ProximityGapUDSharp.olean",
+    "sha256": "7ccfb778a9836d36d0127e976df3c736a10dddc0ebf897893635a35a2c803abe"
+  },
+  "Selvage.ProximityGapUDTight": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ProximityGapUDTight.olean",
+    "sha256": "e4716f5a964d6e46306d77cd8305059adc4060c53244adfd417d7f3b8b61dbfb"
+  },
+  "Selvage.SumcheckRbr": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SumcheckRbr.olean",
+    "sha256": "b4ec0bc41f7fc1f4f173c0ffe3f8e64005722c1c3d65de4912e50fe4f9ccb7c0"
+  },
+  "Selvage.ZK": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ZK.olean",
+    "sha256": "03c57599f5708c9168f1300cd94a4cc847f4bc4a2ac91b665b3af964a518ad24"
+  },
+  "Theory.BinaryTowerCodec": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/BinaryTowerCodec.olean",
+    "sha256": "1700f8e260fdcd5ac15db6d9b92fddca2c4b10b12db3e5d6dc697b07e5919473"
+  },
+  "Theory.DeclaredTurn": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/DeclaredTurn.olean",
+    "sha256": "0f28651a9148a4d7fa52d44b738902d19cc08a3ca1035fbbac60439750bd0a16"
+  },
+  "Theory.ReactiveCellTransition": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/ReactiveCellTransition.olean",
+    "sha256": "1967aac37d2c0e8010e3cadeda2437529d679a80b3442ce430f5c4620cfe7a05"
+  },
+  "Assurance.SemanticTurnReceipt": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticTurnReceipt.olean",
+    "sha256": "113ba71afd943455612c3feafcdb55b363c1081f6ac8963d841416f8ce1b4d82"
+  },
+  "Compiler.MinidreggV1Artifact": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/MinidreggV1Artifact.olean",
+    "sha256": "aa5633351dde058823a0207261574d50bd4d23f2478df9ca48bb3caf2d02c942"
+  },
+  "Compiler.NoteSpend": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/NoteSpend.olean",
+    "sha256": "6c844850186a013ec0cbbd2064f04ea6ace16e22d5e9bd2c29fd5f805b100228"
+  },
+  "Compiler.SparseEqualityWorkProfile": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/SparseEqualityWorkProfile.olean",
+    "sha256": "ef4284c8c858af6ba565d7d99e5617f77ce75b4245f2fcafeed14b2240bd406d"
+  },
+  "Selvage.AccSoundRbr": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccSoundRbr.olean",
+    "sha256": "83dd6a99dd41e064fb7fd902586c0bf0bcaeb34f8bab0f3e07e5f2469b558f2c"
+  },
+  "Selvage.BinaryLookup": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BinaryLookup.olean",
+    "sha256": "b5038b51636b8692d1b4dc1a9d251cfedb1105fe5d545f50e50b766805b50606"
+  },
+  "Selvage.Commitment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Commitment.olean",
+    "sha256": "815d98cc0bea40a4e4cba828d7e075bfa0df49728c6a7ac51fe296a011cb9cb3"
+  },
+  "Selvage.EqPolynomial": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/EqPolynomial.olean",
+    "sha256": "78f72ffbbca2213a7ab135f9c55e4c5324d63b99af68cab008835db6916575b5"
+  },
+  "Selvage.FullUDBivariate": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FullUDBivariate.olean",
+    "sha256": "33671b2064f56349e645f557889d05ad7d581819951fc9b7da212eef35977f9d"
+  },
+  "Selvage.LightClientSound": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/LightClientSound.olean",
+    "sha256": "1f1abba604f44a7bc2843f21ada7da53985e83221dadf001ea0af65d3d0a690f"
+  },
+  "Selvage.MultiplicativeMleTerminal": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/MultiplicativeMleTerminal.olean",
+    "sha256": "27fb7279412e6effa20ef8b6e676a7776d5094b6dd0fd9a90b5e76aa4cbaf6b4"
+  },
+  "Selvage.QuadraticSumcheck": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/QuadraticSumcheck.olean",
+    "sha256": "dbf2457a95dc73202f93720100e8d006acd42421bf5b4ae9f28b5aa530504473"
+  },
+  "Selvage.ZKHiding": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ZKHiding.olean",
+    "sha256": "adadf06d7187c9bfc05ef7c985c7f736e17282cf01f74c353e873ebd9169d1bf"
+  },
+  "Theory.CanonicalTransition": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CanonicalTransition.olean",
+    "sha256": "159c2a437b56528345fb708fbb050ac8671c9c82607a39b568e9b4278e120edb"
+  },
+  "Theory.MaterializerCardinality": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/MaterializerCardinality.olean",
+    "sha256": "191e6864a2d6f66d74715106e4d45fd205aef37e782b6cb775663d20df2dd040"
+  },
+  "Theory.TurnTransition": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/TurnTransition.olean",
+    "sha256": "e3e237ddba3399073b6825be1d0ddaef5772c654c8fe8f09bd9cca085d6439cb"
+  },
+  "Assurance.AirSumcheckQuadratic": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/AirSumcheckQuadratic.olean",
+    "sha256": "876d42f12457a5b06b1b4fbe19d056c86088f8f20b824066520104d6c2b07eba"
+  },
+  "Assurance.PrivateComputationReceiptClause": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/PrivateComputationReceiptClause.olean",
+    "sha256": "57829e6faea2da7f63da34129b6143cf5793ea842dc6a615294832f0b8cdc389"
+  },
+  "Assurance.PrivateReceipt": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/PrivateReceipt.olean",
+    "sha256": "ee4344829b9f53c7978476bbb8835ed7e772e775815e6670420362752710ccdf"
+  },
+  "Compiler.AdmissionAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AdmissionAir.olean",
+    "sha256": "d9f7c00f21456dbdd28b4fc098e1e3cb8237cbd65099d7991452c9491ec463c9"
+  },
+  "Compiler.Emit": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Emit.olean",
+    "sha256": "8323343f001e45f1173223d362e6da247eeadc541693e74700595c7c17039543"
+  },
+  "Kernel.DeclaredHyperedge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/DeclaredHyperedge.olean",
+    "sha256": "c48957426c4aefb2f380b6b1a656c788b7811b209af392b0457c502ed0b50853"
+  },
+  "Selvage.AccExtractChain": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccExtractChain.olean",
+    "sha256": "8018fc0a802f814e99c1787e414ae6946eac0c136eb3b23e3e9f9837057cdaac"
+  },
+  "Selvage.AuditSampling": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AuditSampling.olean",
+    "sha256": "2f09af4420da6a2a39f6a7ae5a00f1463efe40271e50e5e9b2a1d0b8cf8ac46e"
+  },
+  "Selvage.BaseFoldCompleteness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldCompleteness.olean",
+    "sha256": "f6e9b6f5294f086643d013ac28244128bb3e16870706e66c63c31406376c86cc"
+  },
+  "Selvage.BinaryMerkle": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BinaryMerkle.olean",
+    "sha256": "bf4def14aa88abb1bf9c88702b3a4169340cfb84edfafbf4f5cbbcb0e01890c3"
+  },
+  "Selvage.CollisionResistanceROM": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/CollisionResistanceROM.olean",
+    "sha256": "9e22d44ae817b1948f790e096bc959932f851772e65ee1d7b185263c5ae1fa0e"
+  },
+  "Selvage.ConstrainedMask": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ConstrainedMask.olean",
+    "sha256": "ff91a20d0196ae8bc6d853ca5406c9b61a6515eb3e559fcb49f8cdbd58617b17"
+  },
+  "Selvage.DeciderProximity": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/DeciderProximity.olean",
+    "sha256": "df18963485ff9ef2767177bbd4353caba6cad98db34909344acc1afaf4e86e42"
+  },
+  "Selvage.DecomposableTable": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/DecomposableTable.olean",
+    "sha256": "89a8984da6ae76e757e6de61608c1da00023580b6a8f2764f634612e0b532a5d"
+  },
+  "Selvage.Erasure": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Erasure.olean",
+    "sha256": "3c94b3baaa770e97dc069973abfb58ba61385747ad522e31e20b82b3719d1689"
+  },
+  "Selvage.FullUDCore": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FullUDCore.olean",
+    "sha256": "844c5e25b913da110dea418dfe594af52ea246d6a16036e0d6c67c1ce46710ad"
+  },
+  "Selvage.LightClientFS": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/LightClientFS.olean",
+    "sha256": "39104a6b08dde940b1600d8eb1e22e2768a65d49b061f52d65a600ad6643cea7"
+  },
+  "Selvage.LogupIndexLink": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/LogupIndexLink.olean",
+    "sha256": "e9afb82a758e764683bd1ed9284caf400ddb470066cd044752220c619d5d1020"
+  },
+  "Selvage.MultilinearZeroTest": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/MultilinearZeroTest.olean",
+    "sha256": "31a126ce1dcd352f9cc7815f25f1834631acc00b4259189d1a5c2a8751852ae3"
+  },
+  "Theory.AcceptedCellEffect": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/AcceptedCellEffect.olean",
+    "sha256": "d956bda7d3a4b75d3b47b16ece4f5b7ca3e07d8b193b994ec9740aff97f457cb"
+  },
+  "Theory.CanonicalReactiveView": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CanonicalReactiveView.olean",
+    "sha256": "b2223ed8bd53561d04980240dfa5d6ce103363f0b4b18b2fa39ef86442c00143"
+  },
+  "Theory.CanonicalResourceKernel": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CanonicalResourceKernel.olean",
+    "sha256": "e1bcd35778724b9dc1ad0aefda7b8ff1832e7c634cd6460a6733a5ff4c3dc240"
+  },
+  "Theory.CellStateWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CellStateWitness.olean",
+    "sha256": "69dbff113a44979c49c0161f03f954f3d8e146047999de7da57b066a7f3797f6"
+  },
+  "Theory.ResourceCost": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/ResourceCost.olean",
+    "sha256": "a7dd6cddcefc4dc0fee20d1c38ce98d47ca42926d1b78d6de23c93b233a53508"
+  },
+  "Theory.SparseLogicalState": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/SparseLogicalState.olean",
+    "sha256": "8e771109ffc49bf84d49dac4a1ed47bc18ce03191b46a615140b7ab7575f83c4"
+  },
+  "Assurance.AirSumcheckCubic": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/AirSumcheckCubic.olean",
+    "sha256": "35f0ccbae825bbb0072d63c4ed00ec115c1df8f020fb275b8d1e632eafe1a0c8"
+  },
+  "Assurance.NoteSpendCoreAcceptedCellEffect": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/NoteSpendCoreAcceptedCellEffect.olean",
+    "sha256": "6c780ea3011f6dd5494485b5694a37f71d0a57ddcb6c4b9cf339b9327552cae4"
+  },
+  "Assurance.PrivateTurn": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/PrivateTurn.olean",
+    "sha256": "12ebcacf6a7c01e9cb79c74816a15d0456763426e4fa624e2d67c3a738a55151"
+  },
+  "Compiler.AirBignum": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AirBignum.olean",
+    "sha256": "d2f6115e40d04ae6cf4063e674b52844863c239a67bea2130406b0f5868df491"
+  },
+  "Compiler.DeclaredHyperedgeArtifact": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/DeclaredHyperedgeArtifact.olean",
+    "sha256": "3857768cc861c647364d186ca2100190233fe48c64e1fba65b5474529e116663"
+  },
+  "Compiler.EmitSerialize": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/EmitSerialize.olean",
+    "sha256": "3f9382e5a06791ebf892eea860c0566ed470b13909b4af783b357833e80f124a"
+  },
+  "Compiler.EmitShare": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/EmitShare.olean",
+    "sha256": "1b988ebb4bf8eb8d0ce9dcd596863dc59036220e28437d2f9192f9db1be0c6a3"
+  },
+  "Compiler.Logup256ReceiptClause": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Logup256ReceiptClause.olean",
+    "sha256": "5c88239f0ddab6e8ea91b5318ee7c37bf01d65efff6f504a04b4a30e7eb3b815"
+  },
+  "Compiler.SumcheckVerifierAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/SumcheckVerifierAir.olean",
+    "sha256": "9e2b19def60579f27248638efc0c6ef5c1147b9c14082b2bf6def860bd92760b"
+  },
+  "Kernel.MultiCellHyperedge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/MultiCellHyperedge.olean",
+    "sha256": "3a1fa1309e705d0aad296b5b3216dc31137f22f5d8357b96387915931889a225"
+  },
+  "Kernel.TypedCellHyperedge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/TypedCellHyperedge.olean",
+    "sha256": "51028c7761154aee91d0f43c42745657397f7e9b82d31527ca83e244c966c526"
+  },
+  "Selvage.AdditiveBaseFold": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AdditiveBaseFold.olean",
+    "sha256": "bf04342dff2b576e045851d392c17bf0043dadb7d16d101865b30539387d2d25"
+  },
+  "Selvage.BaseFoldBraid": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBraid.olean",
+    "sha256": "e2d8544a85cc944c99c1935ec12edd1c229c12ca0b9b97d6471e73485e4824fa"
+  },
+  "Selvage.ConstrainedMaskMulti": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ConstrainedMaskMulti.olean",
+    "sha256": "3177792a5069e9312c1945dafdde76a2642a265113b45a5383ff5626dd596a9e"
+  },
+  "Selvage.LightClientGrinding": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/LightClientGrinding.olean",
+    "sha256": "b38cc34d4019779bd35ed1e02723d08e3611c2f63bc72d1fefa27f105bb571cb"
+  },
+  "Selvage.MultilinearCommitment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/MultilinearCommitment.olean",
+    "sha256": "f25a0975505b5bbf5df86a6949c8c1ed95f6f2251298d6b0083c4d62fe696a7c"
+  },
+  "Selvage.ProximityGapFullUD": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ProximityGapFullUD.olean",
+    "sha256": "c7809f0f5d9409c3255f5623d9acc5dd3879935c575c8961fc35557b17055d38"
+  },
+  "Selvage.Rank1GradientCheck": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/Rank1GradientCheck.olean",
+    "sha256": "9a443663bc99a6db7392eb2804326201475e4181a6947aa72ad0f5f117e0745f"
+  },
+  "Selvage.RingSwitching": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/RingSwitching.olean",
+    "sha256": "2f7a1fec6ac88814743150499028202c8a16dcac0b33c3865d75ae487f5c5b01"
+  },
+  "Selvage.SpongeIndiff": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiff.olean",
+    "sha256": "934b851b59c4da419820473828e572aa6ee28b8a3ea6125525c9383faacafc69"
+  },
+  "Selvage.ZkArgument": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ZkArgument.olean",
+    "sha256": "7282eac2e78bacddb8d157e76b7a4f6f452760860a70d703fc5ee8ba0e21663b"
+  },
+  "Theory.AcceptedCellEffectWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/AcceptedCellEffectWitness.olean",
+    "sha256": "0dc538eae6b69cd50d71891c03139716f1024a4d20bfccf7cfb3dac17fda718b"
+  },
+  "Theory.CanonicalTransitionWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CanonicalTransitionWitness.olean",
+    "sha256": "43b412a1ff559f5cc0cbf0d864d31a36192d027973c13d25681519ead0c2b3f4"
+  },
+  "Theory.CredentialAuthorityState": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CredentialAuthorityState.olean",
+    "sha256": "e1b5224e2ba236baaf8912e30dd29ea19c5dfac014800806f1a1644980a0d10a"
+  },
+  "Theory.DeclaredActionLowering": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/DeclaredActionLowering.olean",
+    "sha256": "2f53e107b512d48350572b1ad6fad794d6a664aaad30de69f9cfffcb9afc3024"
+  },
+  "Theory.StoreFiniteSupport": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/StoreFiniteSupport.olean",
+    "sha256": "01f39db3900e99f735ae7d6d0f17775eeae98d571e26f77a17523d8a1194808d"
+  },
+  "Assurance.ErrorBudget": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ErrorBudget.olean",
+    "sha256": "f354ae71c514c79b49093f50ccb8831f6650bee2e64454621379da092bb55a7c"
+  },
+  "Assurance.ZkmlMatmulSumcheck": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlMatmulSumcheck.olean",
+    "sha256": "8757385956fd09eb8ff529beeabacb9d6816fc2478549b10c9d1c6bf00087eee"
+  },
+  "Compiler.AirModularView": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AirModularView.olean",
+    "sha256": "cb919cd0a7fe9c0c1ab2f6b7ec1eb3823abc3b04b930b4e975ad552f3c21bf9b"
+  },
+  "Compiler.DeclaredActionBytes": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/DeclaredActionBytes.olean",
+    "sha256": "80532a6781f8481d649fa546b729a98d9d1f4d2b25b4d10edbc87ad9f8fee278"
+  },
+  "Compiler.EvmAddAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/EvmAddAir.olean",
+    "sha256": "19cd2c437d4a446f502fe609943b6ab3071913799296dc86dfa78ad628c54fbf"
+  },
+  "Compiler.Ext6Conformance": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Ext6Conformance.olean",
+    "sha256": "9e6c81cf3dae87396cab165aa9093017f818e3590909a93adba8bbd887674d19"
+  },
+  "Compiler.FriQueryVerifierAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FriQueryVerifierAir.olean",
+    "sha256": "5f038549c03d720a6491479d78904b055513e776d7a2c4976d4a366d96361da6"
+  },
+  "Compiler.NextgenLightClientPublicInputs": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/NextgenLightClientPublicInputs.olean",
+    "sha256": "84c5312e3550c8e19138024d653afa4fffabd6ddc2a8dad0f8086df9c2c79964"
+  },
+  "Compiler.SumcheckConformance": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/SumcheckConformance.olean",
+    "sha256": "0938aef1b3e36fab2a719cdeaa2b602e9c949af74704adeb12913d3c33b115b4"
+  },
+  "Compiler.WideDigestAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/WideDigestAir.olean",
+    "sha256": "fe11dc12bc24a4bc0d0cdd23cf7d488c5c5a4c4edc37a50167facd2fd6a9c61e"
+  },
+  "Compiler.ZkmlEltwiseAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/ZkmlEltwiseAir.olean",
+    "sha256": "d1a82100ffb7b3a1a0636262d7ad5ac6db7e72400ebc16f02408c5e1e8336891"
+  },
+  "Compiler.ZkmlTraceCheck": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/ZkmlTraceCheck.olean",
+    "sha256": "5a021c7e878ecb11b5aa135ce1f2b4bc9d05473c903d27b9eb793e449ddb303f"
+  },
+  "Kernel.CanonicalResourceEffect": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/CanonicalResourceEffect.olean",
+    "sha256": "fb4e7cd90c48d8088433de1918212a9ee2d971db06bac569b327f6098a6b262f"
+  },
+  "Kernel.DurableCommitProtocol": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/DurableCommitProtocol.olean",
+    "sha256": "90d48271558257ca6223f43e3ccaa14d14bc2b8c885d0f0544f40d373110c6f0"
+  },
+  "Selvage.AdditiveBasisBinding": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AdditiveBasisBinding.olean",
+    "sha256": "042b14c5c3974f797f2d76e484772809ceb40b63114b8d91480d99d6262b7322"
+  },
+  "Selvage.BabyBearFullUD": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BabyBearFullUD.olean",
+    "sha256": "31254d02d0b845df2fea20da55f07c006e1de08a8ef1e926edcb82c7a5959cb3"
+  },
+  "Selvage.BaseFoldRbr": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldRbr.olean",
+    "sha256": "13ea35160f1d909e5f48e3192dae18de599d7c4f7d2198e20851c25bb1662e79"
+  },
+  "Selvage.CosetNovelTransform": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/CosetNovelTransform.olean",
+    "sha256": "5b79dde58cbc302b8ba85fff8d2219a125a3f71ebc399f2753f84d1de7cc2ff1"
+  },
+  "Selvage.FullUDWitnesses": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FullUDWitnesses.olean",
+    "sha256": "490e89fab77f64d7f318ac6663ed159db374d973b591b36d605681c84dae5131"
+  },
+  "Selvage.RbrZeroKnowledge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/RbrZeroKnowledge.olean",
+    "sha256": "266956358927688de8e2b601dddd00b02fddecf8313117822fb077aa81033241"
+  },
+  "Selvage.SpongeIndiffRunInvariant": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffRunInvariant.olean",
+    "sha256": "1164942ef07b0ac8247a2907de53bade29c850c3e339661b253388e34e168961"
+  },
+  "Theory.CanonicalAuthorityProjection": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CanonicalAuthorityProjection.olean",
+    "sha256": "f78334c15a8b1c830222508be65579078921b7a1b05fcfd712d027670b089eef"
+  },
+  "Theory.CredentialAuthorityEffects": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CredentialAuthorityEffects.olean",
+    "sha256": "46e2173edcb5c0fb6b75d2ae73d2a0abc89a959b67ec764596d28d98ef1952a6"
+  },
+  "Theory.Hyperdocument": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/Hyperdocument.olean",
+    "sha256": "4af1f467992ee75de7027e30cf0530c9fcf5917b5358f702ecfb889e9c2cccce"
+  },
+  "Assurance.AirSumcheckCubicConformance": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/AirSumcheckCubicConformance.olean",
+    "sha256": "bf0a7d72c880ed4fa76a57d08c758f0d1df56c52e03c25ded9dcc7a7c776f3e7"
+  },
+  "Assurance.ErrorBudget120": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ErrorBudget120.olean",
+    "sha256": "31bd7c9451212ad5078cc9e590703837572f7b4c2fa5b64e20499b20a5722aea"
+  },
+  "Assurance.SemanticReceiptRuntimeCodec": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticReceiptRuntimeCodec.olean",
+    "sha256": "f6551e2e00b34dfd67ad65b5eb3ec9e44bdee3bc25b77758626c1eec827ca97d"
+  },
+  "Assurance.ZkmlLowRankUpdate": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlLowRankUpdate.olean",
+    "sha256": "86081cb328fe65b8a168de317db2706a98d77df3d56f03bb5725f1b3f15cb211"
+  },
+  "Assurance.ZkmlMatmulChecker": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlMatmulChecker.olean",
+    "sha256": "c9b1dfb4f41a9655bc478c3a936f5dbf0d20ce4b3279854fe25ceb9ceb3bb4e4"
+  },
+  "Assurance.ZkmlMatmulCommitment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlMatmulCommitment.olean",
+    "sha256": "61896faac8f1a82771a9f77ad415da13236061ba0fce568d75a6eef81d0a3f07"
+  },
+  "Assurance.ZkmlMatmulConformance": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlMatmulConformance.olean",
+    "sha256": "b86503f75ee4d48dc3659d560b63a75f45ec4f5724faeb4c5d5bb89c8afecfa7"
+  },
+  "Compiler.BfvCompressedEquation": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BfvCompressedEquation.olean",
+    "sha256": "d5543340a5c2ed41f07a9b84beb797e04bf6d27fbf9badbea406331329a18c2e"
+  },
+  "Compiler.BignumKernelABI": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BignumKernelABI.olean",
+    "sha256": "18d10615e0befe9e4dd8d6327ebe2904b04175d1f68bd5cc98833616e467546b"
+  },
+  "Compiler.FiatShamirAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FiatShamirAir.olean",
+    "sha256": "d5674c449fa7b4e60130e750e75d1e524c3197ab7e75e5446dd29ea1c7f4315c"
+  },
+  "Compiler.GateMleExt6": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/GateMleExt6.olean",
+    "sha256": "183658a4bc91e7664aba1599038bd6d953d671692d5b26e19abd06f1250986d6"
+  },
+  "Compiler.WideDigestByteDecodeAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/WideDigestByteDecodeAir.olean",
+    "sha256": "071f155cdba01274b2edf05ee420a8fb83f7b98ebb57686793223dae7bf3330c"
+  },
+  "Kernel.DurableDataIntent": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/DurableDataIntent.olean",
+    "sha256": "a1e6a05591fc453b9a0be8034d4b944af2bbf7f6643fb46f9f43843165063a46"
+  },
+  "Kernel.DurableWalHandler": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/DurableWalHandler.olean",
+    "sha256": "b8bdb47f51e3987373a311543cc9090a77b48a1649be37f0127b15df92e687b0"
+  },
+  "Kernel.HyperdocumentEventLog": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/HyperdocumentEventLog.olean",
+    "sha256": "2bcba228634277028ccf5b01fcbc9e8ec3be8c2dfeb74fafbed989f61a7b2cc2"
+  },
+  "Kernel.HyperdocumentIndexSync": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/HyperdocumentIndexSync.olean",
+    "sha256": "cdb15b96c1daf6268f4dcb2c7bef7a1a46498a94ffdd10b1ce8d801d08053039"
+  },
+  "Selvage.BaseFoldIor": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldIor.olean",
+    "sha256": "3c5dedc90dbd47b71664973880a5ba7e440f12592d5c53a52f9c7258cfecbb69"
+  },
+  "Selvage.BaseFoldRbrTable": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldRbrTable.olean",
+    "sha256": "05da30b073a1de2e7d1d29edb27cd8f2231336706e3185438498b16fb6072596"
+  },
+  "Selvage.SpongeIndiffCapacityBudget": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffCapacityBudget.olean",
+    "sha256": "99df4daa366d03bd4e1c5256a47202b7f9371080345919650b7148e55fe09d43"
+  },
+  "Selvage.ZkTriangular": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ZkTriangular.olean",
+    "sha256": "bd182349cfcd68e1fdd3891aea425dafa50b694fb5652b18cec492bda08cb4fb"
+  },
+  "Theory.CellSlot": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/CellSlot.olean",
+    "sha256": "9d6b90d1e2fa1b961f0983be5deeff816651a5c111f8dc784b8e666a6fbba026"
+  },
+  "Theory.DeployedMaterializerWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/DeployedMaterializerWitness.olean",
+    "sha256": "c41422ea38e73a7b002483f6049f5306a9ad3b9cc8c9e65073e9b47ef9c446c4"
+  },
+  "Theory.HyperdocumentOperationIntent": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/HyperdocumentOperationIntent.olean",
+    "sha256": "f147c0893147337a4bcb216becb4869a11a242083eb5c07193d02c7196c9c109"
+  },
+  "Theory.StableRanges": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/StableRanges.olean",
+    "sha256": "d71b1ac79efdd87e17a79166f87ef8ff896891d768beb36aa1234a1b502cd79e"
+  },
+  "Assurance.GrainForkSettlement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/GrainForkSettlement.olean",
+    "sha256": "5019c07a75eee4702025f92cd95ec48077474005352f715f2de6ecb060a1f3aa"
+  },
+  "Assurance.HyperdocumentFinalizedDomainCrawler": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentFinalizedDomainCrawler.olean",
+    "sha256": "48b4bd088c892c61460629ae4268b761e4dbd171cb026dbff15d931c77d2717a"
+  },
+  "Assurance.MixedFieldBudget": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/MixedFieldBudget.olean",
+    "sha256": "58b863edc1dbe5b3e01eb90544055473ddec8e11c7af547ed2562e6dc1f4404a"
+  },
+  "Assurance.MpcSealedCellExecution": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/MpcSealedCellExecution.olean",
+    "sha256": "2bfedffa376f0d5461f6df2fc1d18bd1fe9027cb783b2d4226588805d60430c6"
+  },
+  "Assurance.PowGrinding": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/PowGrinding.olean",
+    "sha256": "e5c211dfba962691cb736470ccb566108a1c5a88f550d68046207ce40ef42bdf"
+  },
+  "Assurance.SpartanR1CS": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SpartanR1CS.olean",
+    "sha256": "fe7300b013a268010df84f9a40b6f784694fb55c644e34718c31faa7e273ddfc"
+  },
+  "Assurance.ZkmlMatmulBaseFold": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlMatmulBaseFold.olean",
+    "sha256": "13046489b9ef50074369ffe9caba463f04966ead71436e9618b890b25e113d9d"
+  },
+  "Assurance.ZkmlMatmulSuiteRegistry": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlMatmulSuiteRegistry.olean",
+    "sha256": "06ca49c01c67ae550a41a0626c3a926db5200f474ec91b7af3fa80d02b960c69"
+  },
+  "Compiler.BfvAllModuliKernelCalls": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BfvAllModuliKernelCalls.olean",
+    "sha256": "6c42672ed7007ae4c506ee69057234a0c6db5574c5eeee386381c88492fcb041"
+  },
+  "Compiler.GateFactoredExt6": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/GateFactoredExt6.olean",
+    "sha256": "c6b7a6efd4a4a9c88507854b2872db60371225b70fec35563b52c2c0a45c3c9a"
+  },
+  "Compiler.MerkleBindAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/MerkleBindAir.olean",
+    "sha256": "a7dc001cc28ffbd0572fc99bc2481b0ca8ee642723f063997b4ab68cd74fc18d"
+  },
+  "Compiler.NativeKernelPlan": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/NativeKernelPlan.olean",
+    "sha256": "7df88d755bd58faf09293436c6dbe05a68dc6862ea6b3c76658ff3987edaf295"
+  },
+  "Compiler.SemanticTurnReceiptDescriptor": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/SemanticTurnReceiptDescriptor.olean",
+    "sha256": "d7ba349474796779aad54377c559d76a38a1e692d208ec94ed9c459ae209c9cc"
+  },
+  "Kernel.AdmissionPrologue": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/AdmissionPrologue.olean",
+    "sha256": "4888a489e12f10c19ba5253b7c26cd4303d79cb18b7f8eef07615749eb67781d"
+  },
+  "Kernel.CanonicalPolicyRegistry": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/CanonicalPolicyRegistry.olean",
+    "sha256": "712a0ce8dfdb8f2228fa5b6ef54d33c65d5f1c8063281a9145aa0a86436e95e6"
+  },
+  "Kernel.DeclaredHyperedgeWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/DeclaredHyperedgeWitness.olean",
+    "sha256": "ef8a8bd9050968639c0a8407faceefb0e666f09b3b06a045ee40104b6d706bda"
+  },
+  "Kernel.DeployedMaterializerWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/DeployedMaterializerWitness.olean",
+    "sha256": "dd42113d435d227f839a5aa3358e8b1b3b013695937ec9ed695e8f55dc7a4ee4"
+  },
+  "Kernel.FramedWalRefinement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/FramedWalRefinement.olean",
+    "sha256": "6c19440109d7da11eb4ab7091d26c0a4e4ab9f853665d4b1dc15e70e1f1cf876"
+  },
+  "Kernel.ReactiveTerminalCell": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/ReactiveTerminalCell.olean",
+    "sha256": "c4442a87ff9a53e2cc96ef26e2f75dd8ffb00f3053df7efbfe1ec7e290141d10"
+  },
+  "Selvage.SpongeIndiffAdaptiveSchedule": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffAdaptiveSchedule.olean",
+    "sha256": "4d89ce2f9fba2e8211539efb1b4c981629fa6bd46f1c07231e9e70cc611b586a"
+  },
+  "Selvage.ZkExtraction": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ZkExtraction.olean",
+    "sha256": "cabed0953be4e14e14b94a2f3eb1f7b759e3a949d1b056710d69f6f3d9a7b8b5"
+  },
+  "Theory.DeployedTotalCarrierAudit": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/DeployedTotalCarrierAudit.olean",
+    "sha256": "d994ba2b4dbd40c2ac79ae8e40cc73855f1e936ecf55f9e70ce910ecf4f28bae"
+  },
+  "Theory.HyperdocumentOperations": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/HyperdocumentOperations.olean",
+    "sha256": "057fe0ac9ae9b5fdfa930d199792494c4ecdd351f35791e7f1fea0e18691144e"
+  },
+  "Assurance.GrainForkScopedSettlement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/GrainForkScopedSettlement.olean",
+    "sha256": "9feecfcc9df703746034fda44e5f635efaf4e5fd71c93ff61f27c108dbe5e65d"
+  },
+  "Assurance.ScopedAcceptedCellEffectHistory": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ScopedAcceptedCellEffectHistory.olean",
+    "sha256": "5f66d7e41846d11edf3b76c94d1b580b6fe10b3d0bd1cb6753c166b2a6096307"
+  },
+  "Assurance.ZkmlMatmulAuditTurn": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlMatmulAuditTurn.olean",
+    "sha256": "c4e24d3394ee48e65751fd7c11ea4a18e2ef6b1a8ee4070b986affe7197da729"
+  },
+  "Assurance.ZkmlMatmulSuccinctChecker": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlMatmulSuccinctChecker.olean",
+    "sha256": "9c7d1484df28101ca6d97bfcf670fd544eb5e2df93e755f8733ffe71e77b2588"
+  },
+  "Compiler.AuthenticatedColumnPlan": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AuthenticatedColumnPlan.olean",
+    "sha256": "48daa17f285e03715957030e66641cf5a310a5d81361b88316862c437272c1dd"
+  },
+  "Compiler.BfvInputValidity": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BfvInputValidity.olean",
+    "sha256": "a4182cef6968716349af695cb53841f8de14f436fcc91b0063d677c4151914b6"
+  },
+  "Compiler.DeployedCellRegistry": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/DeployedCellRegistry.olean",
+    "sha256": "ed5566e527b407c37b678de787d4a80327d8c686a756f3e4118bbea0d842db0b"
+  },
+  "Compiler.DescriptorEval": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/DescriptorEval.olean",
+    "sha256": "6436ea5017cbfb654bee58281d6c236aaa3a2fa65e337503afb33429e4e70aa9"
+  },
+  "Compiler.FramedWalRecoveryController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FramedWalRecoveryController.olean",
+    "sha256": "5da58c475ae14ec6e99f3ce20ef261445651d4d64417c086c1e5aebac93b6f6c"
+  },
+  "Compiler.GateTraceRelationExt6": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/GateTraceRelationExt6.olean",
+    "sha256": "638ab558f9b75a3b5bbabf8eb32c0aa8b91932cc1ecd31dd2eaf074232485da4"
+  },
+  "Compiler.MinidreggV1ArithmeticWork": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/MinidreggV1ArithmeticWork.olean",
+    "sha256": "f3d655b4af079c907cd2d30522d3ad95c0169ff9272067b1b605fb2d3fa9145f"
+  },
+  "Compiler.SemanticController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/SemanticController.olean",
+    "sha256": "81746297ced93f4afc8d87329ba186a4bf8db7c788a873434bb26df674fff228"
+  },
+  "Kernel.AuthorizedResourceCharge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/AuthorizedResourceCharge.olean",
+    "sha256": "eda20f7698cab742498d581432f6ee136bad2b88efd58509bfe8a03f69ca7e6e"
+  },
+  "Kernel.HyperdocumentVersionEffects": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/HyperdocumentVersionEffects.olean",
+    "sha256": "250f8ccdf3c5ab837d899811a2ac34b1a854ed29555829633f0145c913467fb1"
+  },
+  "Kernel.OutboxDelivery": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/OutboxDelivery.olean",
+    "sha256": "ca6424a291aaf228eb0f1cd57d3aa05299e18e84caa866c95971bd29cc60a2e4"
+  },
+  "Kernel.ReplicatedSettlementFinality": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/ReplicatedSettlementFinality.olean",
+    "sha256": "62747e723d3e80bb0b69cbabebcbe6ab7491f43379675c932d3ac05d53249cc1"
+  },
+  "Selvage.AccRbrFold": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccRbrFold.olean",
+    "sha256": "cdedd04bbecc8f763f10592de6b6498228b32e1f0950cea82d07f08cafa51796"
+  },
+  "Selvage.LightClientKnowledge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/LightClientKnowledge.olean",
+    "sha256": "fa3497af06eb1439e91a47057a52702ef855f423034fe3942b45b6edbc7777a9"
+  },
+  "Selvage.SpongeIndiffOffBadRun": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffOffBadRun.olean",
+    "sha256": "d1c33d74870702dfce89c765c96cbeea803cc78cac272c42faed3ee495cf2c8e"
+  },
+  "Selvage.SubUdSeam": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SubUdSeam.olean",
+    "sha256": "2044d913e1d6c0bf8c38ad1cec00444ce5a6df442c81b61cdf6a171d012c978b"
+  },
+  "Selvage.ZkRbrGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/ZkRbrGame.olean",
+    "sha256": "92c14284f83f08e362368fe65791e43fab2264c621186eb35f939c03d26b2f94"
+  },
+  "Theory.AcceptedCellEffectRequestBinding": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/AcceptedCellEffectRequestBinding.olean",
+    "sha256": "78c921a07a719e4289bc502fdc2e0fd4ceccc089f5d4a815e6dc246a828555ff"
+  },
+  "Theory.HyperdocumentCausalFamily": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/HyperdocumentCausalFamily.olean",
+    "sha256": "1a53337771f95f2c527edf30fcdb099ec119797f959a9c8957c4eb541a802241"
+  },
+  "Theory.HyperdocumentInterface": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory/HyperdocumentInterface.olean",
+    "sha256": "c750cc1adce155f93e35d290abc3f55cc77593f0a363c22ddefcaa33326bda34"
+  },
+  "Assurance.SelvageV0": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SelvageV0.olean",
+    "sha256": "468d96d2fb051976b562423ea7bda58b72f1a4cc0c83cf4773e72c9b550386ce"
+  },
+  "Assurance.ZkmlMatmulFramedWal": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ZkmlMatmulFramedWal.olean",
+    "sha256": "2e9f750a83ee8e21eeb9255a3152af16000db71d6f5fcc4a1bfeb9fbba45c9ea"
+  },
+  "Compiler.AirSimplify": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AirSimplify.olean",
+    "sha256": "11f9a012773e6130694a902a5c6f9e6964dd6c1d881c9429f5ea600d5fb61344"
+  },
+  "Compiler.AuthenticatedColumnLogupBridge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AuthenticatedColumnLogupBridge.olean",
+    "sha256": "c4a361c17c79ef3594e808c9cd7a018a11fe6ec928ade2f8b6e7660896314095"
+  },
+  "Compiler.BfvSignedAccumulatorAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BfvSignedAccumulatorAir.olean",
+    "sha256": "9a6a04192c570b98da3c902110cb89700095700d14491ab597a903cd3550a92f"
+  },
+  "Compiler.CommittedTerminalRealizer": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/CommittedTerminalRealizer.olean",
+    "sha256": "f25cc16726d297fc849fa0840e68229e61cfc340dad30cbeffce34b3d2569559"
+  },
+  "Compiler.DialectClauseDispatch": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/DialectClauseDispatch.olean",
+    "sha256": "cc71f693c8002c2a4bc9eece252539397f7f532ea42203bf3d683a759ed7f3c6"
+  },
+  "Compiler.PrivateAddressEmaSchedule": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/PrivateAddressEmaSchedule.olean",
+    "sha256": "28bc897d230deea68d122960c7c6a18cc3b72a172dc12c057c925c77601e089e"
+  },
+  "Compiler.ResidentEmaCertificate": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/ResidentEmaCertificate.olean",
+    "sha256": "a5b51be686ac15f0722624a90f86b93f9d035885a06e762900814672ec382502"
+  },
+  "Compiler.Tower256CshakeMerkleController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256CshakeMerkleController.olean",
+    "sha256": "ed592921600c1455627ec65a3704eeeab8f490ce2c6371cff2dbbb96b7f0427e"
+  },
+  "Kernel.AuthenticatedSettlementFinality": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/AuthenticatedSettlementFinality.olean",
+    "sha256": "9fdd3a29e8bbc76595fda00fde7c84540f3a58bd20087510ce140f912b821d95"
+  },
+  "Kernel.CanonicalEscrowMarket": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/CanonicalEscrowMarket.olean",
+    "sha256": "93a96d0457899fad8bd2e997f0ae32b377f7eb62d4ea77cfe0563a82fa85467b"
+  },
+  "Kernel.FinalityGate": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/FinalityGate.olean",
+    "sha256": "5ebba6e3ca16e41838a1753193925d3adc322ccc22d5c89e8a231f6d39a810f1"
+  },
+  "Kernel.HyperdocumentMerge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/HyperdocumentMerge.olean",
+    "sha256": "20ddf2f046befef81558dd6e56ace4f6fed3a423a998aafd17b4a739778ec51d"
+  },
+  "Kernel.HyperdocumentPublication": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/HyperdocumentPublication.olean",
+    "sha256": "f8afa9b8752e313612bef062a4ff72c33dd585618bac49ad1800d9e6098a3aec"
+  },
+  "Kernel.ProviderExecutionLease": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/ProviderExecutionLease.olean",
+    "sha256": "a8518b00ee60eba62e47fa4b791610a9d949f652717755a465ed900aafdb81b6"
+  },
+  "Kernel.QuotaGcSettlement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/QuotaGcSettlement.olean",
+    "sha256": "1fd6abaa189f3242683da69f1708b5f107ba972db9d1febd7511da2d82e5e158"
+  },
+  "Selvage.AccRbrFoldExtract": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccRbrFoldExtract.olean",
+    "sha256": "eb1248ce431bb359e41f48715099b2bcc7e46f677a4a8b54fc116851ebfeae62"
+  },
+  "Selvage.AccRbrInstance": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccRbrInstance.olean",
+    "sha256": "20fceaa1aad139e28af58f0cd9afd85d29f1c94a215897fd2089e8510a06681c"
+  },
+  "Selvage.JohnsonRegime": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/JohnsonRegime.olean",
+    "sha256": "f46635ab0c94fcca941dfb3904f29a80cb075e764eeed7df877c7442b2471435"
+  },
+  "Selvage.SpongeIndiffProgrammedAgreement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffProgrammedAgreement.olean",
+    "sha256": "8a1b7fea2344973e31cc00f7cdac5f8d2f0288c76bd4931f001d6d412d7a0f78"
+  },
+  "Theory": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Theory.olean",
+    "sha256": "373be6d7b2501867a9c0cc9200c3e4534011da7e3cddfe04939d813d6cf4b504"
+  },
+  "Assurance.AuthenticatedSettlementFinalityWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/AuthenticatedSettlementFinalityWitness.olean",
+    "sha256": "04eeb1724a806a9d6caaecabb9391c9a70bc593739ee1aeb9c4e506fc1de7473"
+  },
+  "Assurance.DreggNetProviderConsumer": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/DreggNetProviderConsumer.olean",
+    "sha256": "a8b6d54582879da1b67464102880fd7dda1ff5e6e11cc17c1726ee09f1aab39f"
+  },
+  "Assurance.HyperdocumentLinkPublicationWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentLinkPublicationWitness.olean",
+    "sha256": "6c7d0e0ebb159ed066796523aec8ed3f0ff0895b7a6a377cce3345bee5805fd2"
+  },
+  "Assurance.QuotaGcSettlementWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/QuotaGcSettlementWitness.olean",
+    "sha256": "5116e8a960359f70aa2f0d2e94580e0f1e2127e16659a3019d4f147b10b4aae2"
+  },
+  "Assurance.SelvageV0Manifest": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SelvageV0Manifest.olean",
+    "sha256": "13fe06e3ae138599591ee66bd30ac99d8304141c0c6fd5c3c4e9c617a6fb3e1c"
+  },
+  "Assurance.SemanticHistoryAccumulator": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryAccumulator.olean",
+    "sha256": "48126fa4f8b0b478992f4a7feb5e23d6119050dccac4e795e028262ddd838ad9"
+  },
+  "Compiler.BfvReceiptClause": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BfvReceiptClause.olean",
+    "sha256": "36beb42c0f87b4fb34cc6f53afa24989578f115bb867a278fa1bc41cb1aac384"
+  },
+  "Compiler.BinaryTower256Profile": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BinaryTower256Profile.olean",
+    "sha256": "5471562626a5a803908ee068b135ef08950bf9fc43cb502c0bc6bee5a1d77659"
+  },
+  "Compiler.IntegerCertificateEmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/IntegerCertificateEmission.olean",
+    "sha256": "1b3e312c1d7e910ff903112d81eea8b41bf0c5e5fcc00f5aca680e9ea303fbcb"
+  },
+  "Compiler.Sp800185Cshake256": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Sp800185Cshake256.olean",
+    "sha256": "d1a692e0c468cc5ce4113a85863fdf4102e90a43d7c3147b7a39ba730ff8555c"
+  },
+  "Compiler.Tower256CshakeMerkleBinding": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256CshakeMerkleBinding.olean",
+    "sha256": "fd2df48a59ab54239359eb4b734bb6ffab3a6ffc89e1bcfb56b7e8f53beb2d62"
+  },
+  "Compiler.Tower256LogupControllerPlan": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256LogupControllerPlan.olean",
+    "sha256": "3567c881724e83abfb45cdfedb65791593bd3d991a2665f0467d81d0b39424fb"
+  },
+  "Kernel.GuardedDurableCommit": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/GuardedDurableCommit.olean",
+    "sha256": "b52e23d275291b2d59ab4e4d9d9c4f688811633de06abcea81d070f33887b608"
+  },
+  "Kernel.HyperdocumentMergePublication": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/HyperdocumentMergePublication.olean",
+    "sha256": "7ae5478f52612a6b4c3eb75841cee562f0b678525530a9da126035be0d50b0da"
+  },
+  "Kernel.PrivateEscrowSettlement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/PrivateEscrowSettlement.olean",
+    "sha256": "d55c3edd4c68aea0b19c486fd19696f5d55ea11494c09f2cce246b99c8496977"
+  },
+  "Selvage.AccRbrBcs": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccRbrBcs.olean",
+    "sha256": "d643cdd6d29a367f303f1559e80a05e23e6be6c7da03ca88fb0335440175a4ab"
+  },
+  "Selvage.HalfThresholdRegime": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HalfThresholdRegime.olean",
+    "sha256": "611c401e47a1f621aada462dd9eebbff1c94fe3946cfe2df27b37508247b47f8"
+  },
+  "Selvage.JohnsonMcaBridge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/JohnsonMcaBridge.olean",
+    "sha256": "4537522f1e6d6e1fadd5f7687818fcc39fab365b75a93a86d760d3dd373f2feb"
+  },
+  "Selvage.SpongeIndiffWorkBudget": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffWorkBudget.olean",
+    "sha256": "72cdfcefeab91235dc914b9102ce1a23cc10a0b67a5eceadb132263aa1ba8885"
+  },
+  "Assurance.BfvPrivateComputationJoin": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/BfvPrivateComputationJoin.olean",
+    "sha256": "691554da7b6f1543cb8d8ac952eed5d1026eda57ffd7bc25ebcf27d5a3928a05"
+  },
+  "Assurance.DeclaredHyperedgeReceipt": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/DeclaredHyperedgeReceipt.olean",
+    "sha256": "6b9d0b419cf242f4605486d786304abaa902d46b87745a1c70f90d3f8368e4af"
+  },
+  "Assurance.DeclaredTurnReceipt": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/DeclaredTurnReceipt.olean",
+    "sha256": "fafe11dab2d31171c3fed2c83565bd34c9a7ad6c3a090a27fe4affad79937859"
+  },
+  "Assurance.GrainHyperdocumentSettlementWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/GrainHyperdocumentSettlementWitness.olean",
+    "sha256": "18b99fab04d4af6aa2189b0d3b08a94678a37af41c93ef3b64549f966b4a33de"
+  },
+  "Assurance.SemanticHistoryFamily": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryFamily.olean",
+    "sha256": "9b07c87afe48405bafd46aafdf416e162529d9530c9dcbbcb56b6adfacd8442c"
+  },
+  "Compiler.FheSourceCertificate": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheSourceCertificate.olean",
+    "sha256": "74c8d2d7d3f12243233c5396edb02d18a2cdddaddeb69fbfec57cbc167bc3e61"
+  },
+  "Compiler.LargeIntegerCertificateEmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/LargeIntegerCertificateEmission.olean",
+    "sha256": "849ad3a654854d2f0875ab60dc7082fe8b850c90c2d709b74b11b855d7b4ab82"
+  },
+  "Compiler.SparseAuthenticatedStateLogupBridge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/SparseAuthenticatedStateLogupBridge.olean",
+    "sha256": "aaefdc22e3180ce82290d4ce102f1e307bd97e761e32dc29f6dc2dd7f08a01d5"
+  },
+  "Compiler.Tower256ConcreteBackend": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256ConcreteBackend.olean",
+    "sha256": "50fc65c11ad491f42d24a941b9a58dc8b96c8d5b1fbc737cf81acf2f53a01872"
+  },
+  "Compiler.Tower256LogupAcceptedRun": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256LogupAcceptedRun.olean",
+    "sha256": "b482a7424e800bc2fc6ade235960c5ff295fe207789a0bbae35377cbdc03fafc"
+  },
+  "Compiler.Tower256NativeByteBoundary": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256NativeByteBoundary.olean",
+    "sha256": "284bc31d5d96dd2542240fca452b0070a7245f47c67e38e3a7fd293a95c17d2f"
+  },
+  "Kernel.HyperdocumentMergeAncestry": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/HyperdocumentMergeAncestry.olean",
+    "sha256": "20e14be0103eaab3a84c21ba54abcc85ee5d355d936f44d67e61d19f84897f2b"
+  },
+  "Selvage.AccRbrBcsRaw": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccRbrBcsRaw.olean",
+    "sha256": "d5042caca7be49dcf5d6039ef261517de8db192880a4a35fc375564428d8f8dd"
+  },
+  "Selvage.AccRbrBcsShifted": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccRbrBcsShifted.olean",
+    "sha256": "701f8d34b168c58db3bc58124ce92546f70d13b4caf5799b4c614a8c56808b84"
+  },
+  "Selvage.HalfThresholdFri": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HalfThresholdFri.olean",
+    "sha256": "6ff55007b4bbe19c14ffb0fbfdd03cb24e3f1615bc3292093eb2b17348b79466"
+  },
+  "Selvage.HeteroCompositionSuccinct": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HeteroCompositionSuccinct.olean",
+    "sha256": "22678954085aecf0fd5f33d8f9ca367b8907fcbab05740377b10eb2a25b469c3"
+  },
+  "Selvage.SpongeIndiffLazyConstruction": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffLazyConstruction.olean",
+    "sha256": "750a22e069c408c410456a17aacb0b25507f67b82152aff430f2269cdc1adaf0"
+  },
+  "Assurance.AcceptedCellEffectHistory": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/AcceptedCellEffectHistory.olean",
+    "sha256": "a35405fdde774ccbf2b947f09a88a3ff15e1b6e5c8d553b10ad38550c1d884d2"
+  },
+  "Assurance.BfvNativeBufferAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/BfvNativeBufferAdmission.olean",
+    "sha256": "99d42f8e77b63afbeaf65011c15791d79d3dbb7bb5b548ff444d1994db2857b7"
+  },
+  "Assurance.DeclaredHyperedgeHistoryBinding": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/DeclaredHyperedgeHistoryBinding.olean",
+    "sha256": "8ca450c34346633e520338a6277bc8cec96165f04144882bc10f89b0aff1fff6"
+  },
+  "Assurance.HistoryHeadInhabitation": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HistoryHeadInhabitation.olean",
+    "sha256": "60f022027f9362b77240c3c123339559d4eefbb3dfe27040ace803e5c1155c28"
+  },
+  "Assurance.SemanticHistoryFamilyInstances": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryFamilyInstances.olean",
+    "sha256": "86df29deb43f806d60138c21e5250d5889a67db79ed0489d47f3522bcbad209f"
+  },
+  "Assurance.SemanticHistoryRecursiveAir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryRecursiveAir.olean",
+    "sha256": "42f6b3095ce3167ee762241dc12401123fba4f2b80392fc64dc8decfd85b849b"
+  },
+  "Assurance.SemanticHistoryStraightlinePcs": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryStraightlinePcs.olean",
+    "sha256": "0053c261a32f0a9a4c8c10cef665c07f2b75eb102cac0d47d153c8b612a9728a"
+  },
+  "Compiler.BfvProofController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BfvProofController.olean",
+    "sha256": "efb003e424a478b2d5e253d9f314ffb2691dc09d2cdc055719f8e8c6cd93ba52"
+  },
+  "Compiler.ComposableDeploymentManifest": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/ComposableDeploymentManifest.olean",
+    "sha256": "66d9c542bedde566918f065ce72410d15a96e551c59880b823f8ab1e4796c3e2"
+  },
+  "Compiler.Ext6GateProofController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Ext6GateProofController.olean",
+    "sha256": "ffdd8557f8b779fdbff2420d3e310aa243b5629edd2b70e7072d2a1c0d9e3479"
+  },
+  "Compiler.FheSourceCertificateLayout": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheSourceCertificateLayout.olean",
+    "sha256": "97b7f84fa370f38c26e85e4fb4dfc630f493c9817c5de38c95c462bf865c0dc2"
+  },
+  "Compiler.IntegerCertificateSimplification": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/IntegerCertificateSimplification.olean",
+    "sha256": "f63187b025934f57b9f62e6bc6faef6ae0b953c55a7eb1a135b79fc1f53e5afc"
+  },
+  "Compiler.NativeWorkProfiles": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/NativeWorkProfiles.olean",
+    "sha256": "7f03ff9ecd49ba6eb80eb9181b4f5d56f9a9073aa5e87d75ef0d21b2aa4bb596"
+  },
+  "Compiler.NoteSpendProofController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/NoteSpendProofController.olean",
+    "sha256": "878f00d1884bb8453c414dae70b45e0d32a94e3f9befbe028664308169e4767e"
+  },
+  "Compiler.Tower256LogupClauseDispatch": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256LogupClauseDispatch.olean",
+    "sha256": "55b4a1ac1d03ad5f4e4d77d7abc4d63b3d6398f2234aa8ab7fdaf08711ca3c91"
+  },
+  "Compiler.TwistMultisetInvariant": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/TwistMultisetInvariant.olean",
+    "sha256": "0e03d8e9fc7cd644987f9ac65441e703a3ed7a071e5d045a91b767b721abb3fe"
+  },
+  "Compiler.TypedAuthorizationRequestCodec": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/TypedAuthorizationRequestCodec.olean",
+    "sha256": "e6593b37976144235730ffa21cf40c204b40e35b39f19c9eb40a25584135e7e6"
+  },
+  "Kernel.CredentialSignedEnvelopeController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/CredentialSignedEnvelopeController.olean",
+    "sha256": "feecd9ac6863111029d532ff06c59c168a647476d0a37119d2a1dbda78f6008a"
+  },
+  "Kernel.HyperdocumentTwoParentWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Kernel/HyperdocumentTwoParentWitness.olean",
+    "sha256": "01da1a2d5c7bc2943ff78c3405932ea826c0e4ef85857ad253967754d8d608fc"
+  },
+  "Selvage.HalfThresholdFriTower": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HalfThresholdFriTower.olean",
+    "sha256": "3d23cb5a234fe7b3ec3d314b3ffc06dc2f9c6acd8dc5781a5242457f8a3c8e4a"
+  },
+  "Selvage.HeteroCompositionErrorBound": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HeteroCompositionErrorBound.olean",
+    "sha256": "a0b49f78872a3e6cd911681fedc8cad55aeea873274b1ea5adae5a2355801385"
+  },
+  "Selvage.OracleLogExtraction": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogExtraction.olean",
+    "sha256": "8cd084e99a31366b5f8055a8515facacbee788266885f8575bebcd494d73691c"
+  },
+  "Selvage.SpongeIndiffLazyHybrid": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffLazyHybrid.olean",
+    "sha256": "d44615745c8337cbed02e0cb4acb850526d2a9a189d673556f1a1a20f6430fd1"
+  },
+  "Assurance.BfvAcceptedCellEffect": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/BfvAcceptedCellEffect.olean",
+    "sha256": "c7a4d1af3d405cc34602e2cab5b68942419fdbd88813d2caa4b864832e1b97ea"
+  },
+  "Assurance.BfvConcreteBatchAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/BfvConcreteBatchAdmission.olean",
+    "sha256": "487434cfaddf5ef7404aba2b52ba03e52b91e89b6f3b4db0a77a3c56a7fde733"
+  },
+  "Assurance.BinaryTowerHeaderCodec": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/BinaryTowerHeaderCodec.olean",
+    "sha256": "d2a43776409671599ef0ed177738f39f7bd55448c3dfcfe32fbaac471966d33b"
+  },
+  "Assurance.HistoryProjectionCardinalityTooth": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HistoryProjectionCardinalityTooth.olean",
+    "sha256": "d4455f7c1e83a389a42a3222bcbbdda811c7d0e4065e1368126a5acc899dc945"
+  },
+  "Assurance.ReactiveLifecycleHistory": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ReactiveLifecycleHistory.olean",
+    "sha256": "fa8eba972a330bb4ba258eb2a7dcec435532c6be631e0cd1239036d8ae02e160"
+  },
+  "Assurance.TransclusionBacklinkHistory": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/TransclusionBacklinkHistory.olean",
+    "sha256": "99eebac4fe42fac3ad8d9e9bc3a2347a3a933bb92772289482c6d629438604f5"
+  },
+  "Assurance.TwistMemoryFingerprintJoin": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/TwistMemoryFingerprintJoin.olean",
+    "sha256": "0da7e8ff59ec2f8498520f4a7a01a762d9b0295d92e7cab35dd5e9e50d27170c"
+  },
+  "Compiler.CommittedTerminalFactored7": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/CommittedTerminalFactored7.olean",
+    "sha256": "9e03752b71f9a3a90127189cda73cba8e4a3bc0a1c30874f1d81e4d360036a02"
+  },
+  "Compiler.CredentialAuthorityPageMaterializer": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/CredentialAuthorityPageMaterializer.olean",
+    "sha256": "84f7352ce5902759e9f77b90d211156fe434c7f8d468b91b4daa322faad85410"
+  },
+  "Compiler.Ext6GateProofDeployment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Ext6GateProofDeployment.olean",
+    "sha256": "9d0532b621ada406b1d9b2c887ef2ed269aa5d593f6bdd8fefe549167995e877"
+  },
+  "Compiler.FheSourceCertificateEmit": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheSourceCertificateEmit.olean",
+    "sha256": "3ba8d1d2114e33f4c700f38b7d3dd1272e1ae3847be93e85537ca63a14501393"
+  },
+  "Compiler.FheSourceCertificateWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheSourceCertificateWitness.olean",
+    "sha256": "e54227c07f5db117c5b2755afcd282ddb97536cddab3d9e8627982663bb49622"
+  },
+  "Compiler.FramedWalRecoveryDeployment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FramedWalRecoveryDeployment.olean",
+    "sha256": "f482329b7c3ea0e46521ea8dbf79ba50fbfdf9b2c889ed01b3fe5e5f4ab88a2e"
+  },
+  "Compiler.HyperdocumentCodec": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/HyperdocumentCodec.olean",
+    "sha256": "53279e1e2e5455a7b8f83c29cb52a755e3bb499f081f420f5f4321e9a95d4a40"
+  },
+  "Compiler.NativeGlueGen": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/NativeGlueGen.olean",
+    "sha256": "ef5106bf0d6aa44091193483cf4a47133107c4d1b624beb4846ee5b7a214fabc"
+  },
+  "Compiler.Tower256LogupExtensionDeployment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256LogupExtensionDeployment.olean",
+    "sha256": "52ed0d2a8e235499eb5b18cb2bdda3101fe7f437fad71deca3bf4f7e5996acaa"
+  },
+  "Selvage.HalfThresholdFriTranscript": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HalfThresholdFriTranscript.olean",
+    "sha256": "8c99706783c5575318c8860c3444422dceea2f2fcfb273cd84d4e2a37ff9db24"
+  },
+  "Selvage.OracleLogProgram": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogProgram.olean",
+    "sha256": "d06e35d78d2107285baaa8145fc89e24ea1debb4176954b48b3a248a0d8d65a8"
+  },
+  "Selvage.RateRegimeSelector": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/RateRegimeSelector.olean",
+    "sha256": "b0137cb5ed517048dac8f7f98a0382c3c9ef91a6ac279af6ad61c285bccf149b"
+  },
+  "Selvage.SpongeIndiffPrefixProgramming": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffPrefixProgramming.olean",
+    "sha256": "fcb3e8d9022c5bfb6462296998da9a6df8d7031c441591ca41685775295191b8"
+  },
+  "Assurance.DeployedCredentialLifecycle": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/DeployedCredentialLifecycle.olean",
+    "sha256": "c9272b868b6bbedb88e1eaec2a795e8a94b9bb2160c770ec39daec2af44b217b"
+  },
+  "Assurance.HyperdocumentAgentOperation": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentAgentOperation.olean",
+    "sha256": "e4507e7ba309ab1982f05dc89e871d257a087fe283bf86026db8e191473265c4"
+  },
+  "Assurance.HyperdocumentHistoryAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentHistoryAdmission.olean",
+    "sha256": "2fb7580576cfba3f9d8d3c6b12749c9bcbfedc9859e6c24a94a16b3ba4f711b5"
+  },
+  "Assurance.ReactiveDurableSettlement": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ReactiveDurableSettlement.olean",
+    "sha256": "a029cf4c91adba232b46d081e9d6792bbda3dd10e998185cbcec77f8945dc13c"
+  },
+  "Compiler.ArithmeticNativeDeployment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/ArithmeticNativeDeployment.olean",
+    "sha256": "d7916a769d78a51da67a6a656d4dfacc7dcf539cc0a28c1f3864b589e0d96e8b"
+  },
+  "Compiler.CommittedTerminalCompose": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/CommittedTerminalCompose.olean",
+    "sha256": "af21c410f2fbc46eb7666b0d1a142d8c446e1b62971dd95d356b88b0ef5ea7a5"
+  },
+  "Compiler.CredentialAuthorityPolicyRegistry": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/CredentialAuthorityPolicyRegistry.olean",
+    "sha256": "5f2f1a657901c2d17d223d6371f785ba59f12a43fa31298ca871eec0393f189d"
+  },
+  "Compiler.Ext6GateProofPositiveRun": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Ext6GateProofPositiveRun.olean",
+    "sha256": "f22b19f9deb1cac140d4e990871f8f537710f9d45286c99acd04f828caa8bcf6"
+  },
+  "Compiler.FheSourceCertificateOptimized": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheSourceCertificateOptimized.olean",
+    "sha256": "8c983add2982f0f8b565e09fe64aa663307246f70ef16fbea36b4a104d4cbf39"
+  },
+  "Compiler.HyperdocumentContentPageMaterializer": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/HyperdocumentContentPageMaterializer.olean",
+    "sha256": "3410d2faebfdc2ee41105a5a4dd50dfa5ac349e5aec906a7f6c9a4d5ba021bd2"
+  },
+  "Compiler.HyperdocumentEventPageMaterializer": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/HyperdocumentEventPageMaterializer.olean",
+    "sha256": "73a9d559c0e7ea33cb4b333dea35ab84782e65addbcfafcb04a811e9ecde8948"
+  },
+  "Compiler.HyperdocumentIndexPageMaterializer": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/HyperdocumentIndexPageMaterializer.olean",
+    "sha256": "af5914294dcee810193e2d17801eba4b3bfc9476fa91880fd2314ed265a62277"
+  },
+  "Compiler.MinidreggV1NativeGlue": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/MinidreggV1NativeGlue.olean",
+    "sha256": "d1339b2655568ff971f8542bb33a688375c0f2cebf03121495ee14c16ca86a28"
+  },
+  "Selvage.FullUDFriConsumer": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FullUDFriConsumer.olean",
+    "sha256": "fd7991e1e4c537f5e05a483ea83b147351ac4d34daba292b2afeb1282000f43c"
+  },
+  "Selvage.HalfThresholdFriQuery": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HalfThresholdFriQuery.olean",
+    "sha256": "d4066d2fa7f07d692614674cda0df8ce090767a3486107ce325ca6d20490f806"
+  },
+  "Selvage.OracleLogLinked": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinked.olean",
+    "sha256": "57086949677c0f7157cce774f3f4ae74b6917b3139a9b3a575215e657bc6e398"
+  },
+  "Selvage.OracleLogSatisfiable": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogSatisfiable.olean",
+    "sha256": "ddd577fb9f2adff84d0a2926d5857739afa052d8d052a99bc7bb4f162df9730a"
+  },
+  "Selvage.SpongeIndiffPrefixHybrid": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffPrefixHybrid.olean",
+    "sha256": "4872b6f0f50d0c7123e6e29b288428653b676685abe2f57752a20d6c7433f965"
+  },
+  "Selvage.SpongeIndiffPrefixOutput": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffPrefixOutput.olean",
+    "sha256": "08387b75a42f7e0a68ef35955bf13596e4ec73fc785a5fecc2642fe635d97a7a"
+  },
+  "Assurance.CredentialSignedEnvelopeEndpoint": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/CredentialSignedEnvelopeEndpoint.olean",
+    "sha256": "27862d510fdc07f39d7d2bd6064aaa51c0a1beffe5b35b3c93ca44a6a13db908"
+  },
+  "Assurance.CredentialTokenLocalEndpoint": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/CredentialTokenLocalEndpoint.olean",
+    "sha256": "d3d1c705288f400165b61e0ea33cae388c8431e42cc75e762554fdddc9641be6"
+  },
+  "Assurance.HyperdocumentDurableInstallation": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentDurableInstallation.olean",
+    "sha256": "4380de36685f429211e364af7c0030967b3008108203fa58e3c09f1fea654fe5"
+  },
+  "Assurance.HyperdocumentGuardedDurable": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentGuardedDurable.olean",
+    "sha256": "12ceb179bb1cdc3c258a67aa642147208dd9945ba478bbc32e746c1b61dbee4a"
+  },
+  "Assurance.HyperdocumentIndexSyncEndpoint": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentIndexSyncEndpoint.olean",
+    "sha256": "b235b999321a7dbbdbabaa3751f5deb06c670c496b287e248a677f7523169c1e"
+  },
+  "Assurance.HyperdocumentLinkPageDurableWeld": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentLinkPageDurableWeld.olean",
+    "sha256": "0e654e51aadd099a53de13c799dd30fc525747cb4ee9cffa3ad3d8e3cec8b0bf"
+  },
+  "Assurance.HyperdocumentLinkReopenWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentLinkReopenWitness.olean",
+    "sha256": "8863c6fc5c814824c10c8489ce5849d0ed9c9666a53f0cef85b3b285243b82d2"
+  },
+  "Assurance.HyperdocumentReactiveCarrierWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentReactiveCarrierWitness.olean",
+    "sha256": "76dfe41e6eefc9ea463c85cbb5de590a5be6fc8afc0101967df8aa9c54217ab8"
+  },
+  "Assurance.HyperdocumentTwoParentHistoryWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentTwoParentHistoryWitness.olean",
+    "sha256": "88115266e8c3aa7abeb636476a02f5bce54b6993592287121ffb62fe5c1e38a8"
+  },
+  "Compiler.BoundedPageExtensionCatalog": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BoundedPageExtensionCatalog.olean",
+    "sha256": "9c02ef55b86f198a0f8cbeb28748614575716e9fc07af2ff7e24b7a915c93d17"
+  },
+  "Compiler.CommittedTerminalController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/CommittedTerminalController.olean",
+    "sha256": "af182cc4fd179c0e470294a27ea8c04de73b262f3b57b0380285d1458e00c620"
+  },
+  "Compiler.EvmStage0NativeDeployment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/EvmStage0NativeDeployment.olean",
+    "sha256": "25c90ca7a9b1d9503484f8100bb1a68e410da975f190f8fefca789a396dfda0b"
+  },
+  "Compiler.Ext6GateProofVersionedDeployment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Ext6GateProofVersionedDeployment.olean",
+    "sha256": "c77e7f9ba166542d07c5b41fb267e0cd0692928c08d2b127f0504ea14a5eae6e"
+  },
+  "Compiler.FheSourceCertificateVerifier": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheSourceCertificateVerifier.olean",
+    "sha256": "992dfaeeb1d7943d16537f7b1cd18f528e2f935483c7eafd05cb4712606f3251"
+  },
+  "Selvage.HalfThresholdFriCoherent": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HalfThresholdFriCoherent.olean",
+    "sha256": "eb62f91d4be77670f51418639af401d09ebc0a60d5f9552df898def4b8cebfdd"
+  },
+  "Selvage.OracleLogLinkedTarget": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinkedTarget.olean",
+    "sha256": "465d5b54ab93e166d06567c6497a11be4be00252601a148c897d5e3ed8498cc5"
+  },
+  "Selvage.SpongeIndiffPrefixWalk": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffPrefixWalk.olean",
+    "sha256": "ef93c04a6b6ae0200ca81297dcdacf6e898c37b06c8110c23a176cb133e355d7"
+  },
+  "Selvage.SpongeIndiffWorkStream": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffWorkStream.olean",
+    "sha256": "d7747b18143502d7ecf6890fed76911638115927d775d556077a9a6c4c0ab02d"
+  },
+  "Assurance.HyperdocumentLinkFramedRecovery": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentLinkFramedRecovery.olean",
+    "sha256": "b1c6bb2f282c21a266275f934164e6392b1f899e7f0a01bb9c632b12fb917ca8"
+  },
+  "Assurance.HyperdocumentMergeDurableFinalityWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentMergeDurableFinalityWitness.olean",
+    "sha256": "d732008149c108e7492c59e566b3c06baf14f56dfd4a27f9fc71dec025f7a760"
+  },
+  "Assurance.HyperdocumentQueryDeployment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentQueryDeployment.olean",
+    "sha256": "3ac66ae9825b76af91f7c33dbe693e1e5016e3f650df8c441ecc7d7679b9833d"
+  },
+  "Compiler.BoundedPageCellRegistry": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BoundedPageCellRegistry.olean",
+    "sha256": "0f39bf593fd9ef828f411760e3f44abc6afd7acd526d055af71e5f2107d5bc4b"
+  },
+  "Compiler.BoundedPageSchemaUpgrade": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BoundedPageSchemaUpgrade.olean",
+    "sha256": "45a5dd56550f0bd291034d386e3136f13c1af4297090f6133b12415058fd25f4"
+  },
+  "Compiler.CommittedTerminalFactoredProver": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/CommittedTerminalFactoredProver.olean",
+    "sha256": "69c1f30e343bba236188f18d9bdea7d944546a610e17f022ec2efdf07e6e2001"
+  },
+  "Compiler.CommittedTerminalFiatShamir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/CommittedTerminalFiatShamir.olean",
+    "sha256": "7282934b2b30cb107abb8e1710fe46c2274ceed3329d4bba770bf9ed28d4a5a7"
+  },
+  "Compiler.FheTargetProjection": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheTargetProjection.olean",
+    "sha256": "17191cb789a582b4ccad4547f2f221bf2c6c88646489e7bfa2e4136599b71684"
+  },
+  "Selvage.AdditiveFriTower": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AdditiveFriTower.olean",
+    "sha256": "0cd1df30bcb49469dcf73f57c99c0feca766df9534f708117fd87fb4e9e4cd21"
+  },
+  "Selvage.AdditiveOodOpening": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AdditiveOodOpening.olean",
+    "sha256": "447f55b2fef46af7aed0a406dc82107b7aaf4bfa728c22fc4ff0e035984fa2b4"
+  },
+  "Selvage.BaseFoldCommittedIor": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldCommittedIor.olean",
+    "sha256": "0c695ca7a2c17b55cf6f7ffd3760a4b16c1b146852ce720ebe7c3db747399eef"
+  },
+  "Selvage.FullUDSamplingBudget": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/FullUDSamplingBudget.olean",
+    "sha256": "3778b31b59abeb1657317dd610f4f68bebf3952f9435495d422058d997ac5b2a"
+  },
+  "Selvage.OracleLogLinkedAssembly": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinkedAssembly.olean",
+    "sha256": "5c6e36cd7d2820803ef521f5f331c80575f01222f6c9751cf57584cb2b3cb877"
+  },
+  "Selvage.SpongeIndiffOracleReordering": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffOracleReordering.olean",
+    "sha256": "4e9fc56b03935e8382cc0d6a1efd91d606700678b6b660e645c5f3e12dc18bd7"
+  },
+  "Selvage.SpongeIndiffPrefixConflict": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffPrefixConflict.olean",
+    "sha256": "59646343d68ef23d2c9b0bdd77fa072a7f577ae1ff7438b004035c2d6734fd2c"
+  },
+  "Selvage.SpongeIndiffPrefixFresh": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffPrefixFresh.olean",
+    "sha256": "508f9198eb6807c1909ac96c9bb6f202d9f901639bce1e5a7dfa013503521e8d"
+  },
+  "Assurance.BoundedPageSchemaUpgradeCutover": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/BoundedPageSchemaUpgradeCutover.olean",
+    "sha256": "a89287fc03572eb0340c2c289c84f49bf29a6b3c6f185c5a0fb381c8f1b8218d"
+  },
+  "Assurance.HyperdocumentLinkEndpointController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentLinkEndpointController.olean",
+    "sha256": "615c96ee52788e7f2b6d1f01b964f80a952aefb85ac70e47b1f71a675fd5485c"
+  },
+  "Assurance.ReleaseGateRouting": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ReleaseGateRouting.olean",
+    "sha256": "9cc67ee0c9b156d03d54bebaf567d5960fdd55923dddf5e57e5f4b3e4cc05a92"
+  },
+  "Compiler.ContextualGate": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/ContextualGate.olean",
+    "sha256": "a2c854ef42c5f17b12578ef281a17322ea9c1b1f5a7656f2ca8e524e7019f7af"
+  },
+  "Compiler.FheTargetProjectionLayout": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheTargetProjectionLayout.olean",
+    "sha256": "37f85fb1cc7600f4640f07d29db6607ee1932b586eddb0968f034a0dff08c6f2"
+  },
+  "Compiler.FiniteSparseMaterializerAudit": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FiniteSparseMaterializerAudit.olean",
+    "sha256": "38fef4e1a9e689886ebf29e62b943aca9b3165e2df0f55c3dd03b66ded20710c"
+  },
+  "Selvage.AccRbrBcsShiftedTransport": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AccRbrBcsShiftedTransport.olean",
+    "sha256": "af9ecce9a4d37e33637cb0e0934a5643f9ac81385ded4dfb129e5e30de0e95b3"
+  },
+  "Selvage.AdditiveFriQuery": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/AdditiveFriQuery.olean",
+    "sha256": "aa0dab93de3d690449b5e2afad88da4d13a7ad546854ad3eb55ef22f3028ae6e"
+  },
+  "Selvage.BaseFoldRawCommittedIor": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldRawCommittedIor.olean",
+    "sha256": "e3d4503d28d54c33371a55919c750fd11abd3fbe7b39410df2995217f37d462e"
+  },
+  "Selvage.BaseFoldRbrTableDescent": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldRbrTableDescent.olean",
+    "sha256": "d64ff12343b81c23bbbc55ba7af0c00b2189ea0622394770f28db12035b53c90"
+  },
+  "Selvage.OracleLogLinkedSubUd": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinkedSubUd.olean",
+    "sha256": "ce1c2bb427d697fd3c5fb09a2ed8089002eba395afb6b4be17362a8990c2af36"
+  },
+  "Selvage.SpongeIndiffPrefixFailure": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffPrefixFailure.olean",
+    "sha256": "c6384fd9993cfdf85fa91e6382b99503aab380b31934723b732e5f57b441c2c1"
+  },
+  "Selvage.SpongeIndiffUniformCoupling": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffUniformCoupling.olean",
+    "sha256": "059cbdc204c06094aac3f3350524b1ac108100316c214898d3c9400e4fb91499"
+  },
+  "Assurance.HyperdocumentLinkClientCutover": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentLinkClientCutover.olean",
+    "sha256": "268cb08c7b7331e7ede2ffcf26491baec820934e3813dfc47c2e2006e18be001"
+  },
+  "Assurance.HyperdocumentLinkLocalFileStore": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentLinkLocalFileStore.olean",
+    "sha256": "34ad80ef388295f1e7a06711bb1cf7b3ad29b795bcd3108851bb502315c9757f"
+  },
+  "Assurance.HyperdocumentTransclusionReferenceDeployment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentTransclusionReferenceDeployment.olean",
+    "sha256": "65acf3dbd6e23b499918dc775c270fd9862b1753e8e84802ec5950067f52e6d5"
+  },
+  "Assurance.ResidentReleaseContext": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentReleaseContext.olean",
+    "sha256": "c35f7c19baf546cbe46b1e08ff60fa44060a4e785ae1852bc3627c4f79ceb510"
+  },
+  "Compiler.AdditiveFriReceiptClause": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/AdditiveFriReceiptClause.olean",
+    "sha256": "5e04225b7346653bb30581129e3e888daf7835cd7e9845efa5551020a211ddfa"
+  },
+  "Compiler.FheTargetProjectionEmit": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheTargetProjectionEmit.olean",
+    "sha256": "ae56e70d6d8f4a0197d34ecf3f745e531a12db308701c2cad31452c13b68b0eb"
+  },
+  "Selvage.BaseFoldBinaryMerkle": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBinaryMerkle.olean",
+    "sha256": "522f926d9259c4586602d268c606f4fe921178e25c4adfa6b0e55f0ccb7c3487"
+  },
+  "Selvage.OracleLogLinkedAttributed": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinkedAttributed.olean",
+    "sha256": "4fa2cf7220c45a83607a8e8c7514727d3d57932b879026896156eafc346be642"
+  },
+  "Selvage.SpongeIndiffDeferredWork": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffDeferredWork.olean",
+    "sha256": "d46e156c95c03b0e6fdcc674567eacf55298e30311d081387b108c61ce2ac891"
+  },
+  "Assurance.HyperdocumentLinkClientLocalFileCutover": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentLinkClientLocalFileCutover.olean",
+    "sha256": "aa5383da3613796a4f286787132b8c9fb2f4603f0e15cc3c3c5f7a6e1e78af2c"
+  },
+  "Assurance.ResidentAdaptiveContext": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentAdaptiveContext.olean",
+    "sha256": "01d0a4b089622a2676d6342c33813fe3350f0568d2147d40328e66c436018789"
+  },
+  "Assurance.ResidentDurableIntegration": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentDurableIntegration.olean",
+    "sha256": "b7069e7c5f3af16399d3006f68af534a09d1ad078120fcc3fbede531c5fbd957"
+  },
+  "Assurance.ResidentRestoreFinality": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentRestoreFinality.olean",
+    "sha256": "fbd27f5efaf7dd11d2635970b76aacc0e092f03a4963597254eb32f70ce42a5a"
+  },
+  "Assurance.SemanticAdditiveFriCheckpoint": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticAdditiveFriCheckpoint.olean",
+    "sha256": "4e47cf4a05323304c4aa5c0f16ed1cbedf414f22de009edea214cdb8f6c6d758"
+  },
+  "Compiler.FheTargetProjectionVerifier": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheTargetProjectionVerifier.olean",
+    "sha256": "94e40f7e2b29b09fa3a8b77980dda7e1cc5bfc1b88953fbd0cf444732acb927a"
+  },
+  "Compiler.Tower256AdditiveFriController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256AdditiveFriController.olean",
+    "sha256": "101a0a93c20e3a23b1c00a4828ef2834c4ee052bdb0ac80ebfa90278541cf239"
+  },
+  "Selvage.BaseFoldPoseidon2": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldPoseidon2.olean",
+    "sha256": "dcb0c58cf01931b5329518440daeb0ea2acd0538a933f421c81766cea9632b86"
+  },
+  "Selvage.OracleLogLinkedOpenedSampling": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinkedOpenedSampling.olean",
+    "sha256": "dac019b0c9ba435890e1fb8ad68b532a68cd2806820eb5468a4e7c2241b9e707"
+  },
+  "Selvage.SpongeIndiffAdaptiveCoupling": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiffAdaptiveCoupling.olean",
+    "sha256": "6c050ac73ef41f34c640d601a6f0ea65195c9b6076a0039b02eedf7359252895"
+  },
+  "Assurance.CiphertextWindowCell": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/CiphertextWindowCell.olean",
+    "sha256": "f26b5cd6fe12299b72b376a525a191e3bc62cc381b935272cf8e9f2e57751114"
+  },
+  "Assurance.HyperdocumentAgentRuntimeScheduler": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentAgentRuntimeScheduler.olean",
+    "sha256": "8cb456189173fa2bf3b43cb1e45abeba10ef00848d71a16fa25167ba0f84f7f1"
+  },
+  "Assurance.HyperdocumentLinkSqliteTransactionalStore": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/HyperdocumentLinkSqliteTransactionalStore.olean",
+    "sha256": "d31291aa0300775783ad123b752e7d7777b5e33fe4075299b18e9ae83ba53e50"
+  },
+  "Assurance.ResidentDurableCollision": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentDurableCollision.olean",
+    "sha256": "55e7dfbdf1bc72691ee71931973194d0c9f67c5048375ca3e6296db32ae82fa0"
+  },
+  "Assurance.ResidentEmaCell": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentEmaCell.olean",
+    "sha256": "ec3462561eedddedc3a58ecf7e5049c6cbca251c0d2e664dca4c31d02776ce86"
+  },
+  "Assurance.ResidentMultiReceiptSchedule": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentMultiReceiptSchedule.olean",
+    "sha256": "f851f8c3bef1697a114211e8c38ed88010c4abc2a478c6a1db412efa810fba9a"
+  },
+  "Assurance.SemanticHistoryWARPAdditiveJoin": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryWARPAdditiveJoin.olean",
+    "sha256": "7d86944fa8db7ee886d74f1118551735991154817c9170e220d3885754aa6c55"
+  },
+  "Assurance.Tower256MerkleCardinalityCore": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256MerkleCardinalityCore.olean",
+    "sha256": "e2eb2f35ec8cc2fa197dafe63480262da44eaa0cb4ca8947cba22c4cf4d80b9e"
+  },
+  "Compiler.FheShoupWord": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheShoupWord.olean",
+    "sha256": "ea5c60ceb54a9559976436515937dc04931b6627cca61307bed8dd349ef48e72"
+  },
+  "Compiler.FheTargetProjectionWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheTargetProjectionWitness.olean",
+    "sha256": "675ec0e7cbe940112ff1aa322951852802303d5a613456f997a1d5a9352269da"
+  },
+  "Compiler.Tower256AdditiveFriRawController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256AdditiveFriRawController.olean",
+    "sha256": "c3d1d05993ad5f4647609e9b58858bbfafdecfc483d221cda36aad2e7f6212c7"
+  },
+  "Selvage.BaseFoldPoseidon2Rom": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldPoseidon2Rom.olean",
+    "sha256": "7b75fea1b34e619fa1d7b94daf9eb033c91a4b3fcb6fa62f8b12cf5c04df024a"
+  },
+  "Selvage.OracleLogLinkedTwoPhase": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinkedTwoPhase.olean",
+    "sha256": "7d9bbc56805cd1dbfd3d3d29f252dfd783893e91f1c0cbfbaa158bb05169f4ef"
+  },
+  "Assurance.AuthenticatedColumnHistoryBridge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/AuthenticatedColumnHistoryBridge.olean",
+    "sha256": "31cfd1af15a64e5182fe2bfa3657e2aa18729bf7933439007347a5b53c9df3b7"
+  },
+  "Assurance.CiphertextWindowFrame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/CiphertextWindowFrame.olean",
+    "sha256": "7961daefb5f08da06a5e38dbfba5323dd41683862f745c155c8a5d390c946c4e"
+  },
+  "Assurance.CiphertextWindowWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/CiphertextWindowWitness.olean",
+    "sha256": "557df0231e56172afd4eb3a85d1b470c2c7a311ca711fef16033397c9c093186"
+  },
+  "Assurance.ReactiveOutboxDelivery": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ReactiveOutboxDelivery.olean",
+    "sha256": "7351aa5ee899a3cdf8a8161971f90306221d7758aaaaac5ac920b9ba45bd61c6"
+  },
+  "Assurance.ResidentBfvWindowPhase": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentBfvWindowPhase.olean",
+    "sha256": "4942aa177db56e97f7506a6c1a686f5fc7cc13c2fe1e13a0c8b45f32792bedff"
+  },
+  "Assurance.ResidentEmaRelease": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentEmaRelease.olean",
+    "sha256": "20c2a6b46fe26d241b7c3572a0061eda00ab9750f626328665243205268e282a"
+  },
+  "Assurance.SemanticHistoryBcsClaimProjection": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryBcsClaimProjection.olean",
+    "sha256": "95dd89f03f7cb89bac47a5c0bc5790089ee952132c870c694613a23db6243c69"
+  },
+  "Compiler.FheBarrettWord": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheBarrettWord.olean",
+    "sha256": "fd937c683e23cbcc8bc13ae698b9e6847b5c4f0b548339ab59ab59878d0bc513"
+  },
+  "Compiler.FheRnsModularAccumulation": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheRnsModularAccumulation.olean",
+    "sha256": "e4c3cde15482a096769d48aec01bbb38dad04f2370e0de5090085cf5c4ca784c"
+  },
+  "Compiler.Tower256AdditiveFriRawDeployment": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/Tower256AdditiveFriRawDeployment.olean",
+    "sha256": "1c6e1176b5007609f816fa1c07ce4d28ef6d819ae2f53b3176dab185b9421175"
+  },
+  "Selvage.BaseFoldBcsFiatShamir": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsFiatShamir.olean",
+    "sha256": "19475bd23e8fd214d9d82b4bf01abe129ce21fa2085502a4415877eefa49cac2"
+  },
+  "Selvage.HashFamily": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HashFamily.olean",
+    "sha256": "deef8359f8ac8fa204ff7222a72ecabe96bc69e0e00efff03a520a18c2c646ed"
+  },
+  "Selvage.OracleLogLinkedTwoPhaseGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinkedTwoPhaseGame.olean",
+    "sha256": "2bbecc9b445017e5c6232dc58173bd25efab3431e5143316258384c0a78cfc10"
+  },
+  "Assurance.CiphertextWindowFrameWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/CiphertextWindowFrameWitness.olean",
+    "sha256": "9f4247440fd4ac3a4257f950056e613256183164f08a47a6ed3f55791ba85ced"
+  },
+  "Assurance.ResidentEmaWitness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentEmaWitness.olean",
+    "sha256": "69ea5dfc3ebfeff2f74f787e6539313cbda92e97391893b44e0110df6baec8e2"
+  },
+  "Compiler.FheRnsSourceWord": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/FheRnsSourceWord.olean",
+    "sha256": "6b993665fbdb9a6928f5a95f4f78bfe31b1ceffb75dd7fa025f004509660a94b"
+  },
+  "Selvage.BaseFoldBcsQuerySampling": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsQuerySampling.olean",
+    "sha256": "095f0d8d9bcf28cea5f61b8f3b6575744d676f611138fb162c3952dd7c5d29b0"
+  },
+  "Selvage.BaseFoldBcsSpongeGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsSpongeGame.olean",
+    "sha256": "07c2a6fbe7a1a2f38e5c7e774bd29f2c8a1dd90d19feb5b420da3d6d2677f0eb"
+  },
+  "Selvage.HashRelation": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HashRelation.olean",
+    "sha256": "9acde9df28e7bc49a5723e814fd674726e608420b8f25252ee88593207c7788b"
+  },
+  "Selvage.OracleLogLinkedTwoPhaseHorns": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinkedTwoPhaseHorns.olean",
+    "sha256": "09bde026a8bc3fe25965697c9bbf1c5ff49de595405f44763ed0226e4788a060"
+  },
+  "Assurance.ResidentEmaAdaptive": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentEmaAdaptive.olean",
+    "sha256": "64d5b5cd1288b88a2c14f7a7b276ebd3a25777b7c1b4087ff35f2adf8910a447"
+  },
+  "Compiler": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler.olean",
+    "sha256": "4d1df1dd8cde774ad9e99b19d65196763d680a2e22b9713d42c7fe6c111ef2b0"
+  },
+  "Selvage.BaseFoldBcsPadding": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsPadding.olean",
+    "sha256": "a89e5d17757106b731a8d6afd711a4358d379e3c2a43bbcb878aecc38044c50b"
+  },
+  "Selvage.BaseFoldBcsQuerySamplingJoint": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsQuerySamplingJoint.olean",
+    "sha256": "41300301e1f3b814be0d06ffb128e3ce0ceaad727d2c07083989bf38c7cee74a"
+  },
+  "Selvage.HashRelationInverse": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/HashRelationInverse.olean",
+    "sha256": "b3a14078b1c75cca20285e990afe1f3d590fa8ea1aee4938ebf0638cf96581a1"
+  },
+  "Selvage.OracleLogLinkedTwoPhaseSoundness": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/OracleLogLinkedTwoPhaseSoundness.olean",
+    "sha256": "f4305d3549cad45704659bce66e12af5ce0a3868d707c5ef5b0870e9874efd17"
+  },
+  "Assurance.ProofCompositionGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ProofCompositionGame.olean",
+    "sha256": "de156fe7fb6804d3409807a78b69b7326e1f2d33c167da5370e0eca096674c49"
+  },
+  "Assurance.ResidentMixedPhases": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ResidentMixedPhases.olean",
+    "sha256": "aab47a98ea20dc8f8b3c65611581048265d5ba70748e80064578bb73ce9efe60"
+  },
+  "Selvage.BaseFoldBcsByteCodec": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsByteCodec.olean",
+    "sha256": "161caa18f84fe75ded3e3d77513452eb1c76ea38e28ee93d617bb84bf7949606"
+  },
+  "Selvage.BaseFoldBcsRunSchedule": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsRunSchedule.olean",
+    "sha256": "2fd947926bcd102393b1dc5684e16f4249e3d5119a2a84d455233c43fc7939d5"
+  },
+  "Selvage.BaseFoldBcsStrictRomLedger": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsStrictRomLedger.olean",
+    "sha256": "770c1e75ae258f61bab58f72a365e2cf8c7131fe6e721ef1cb4135173ac1b372"
+  },
+  "Assurance.BfvProofControllerAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/BfvProofControllerAdmission.olean",
+    "sha256": "5caed2f37cca31524f34fe393f5e577d86e4b1e169cd3ba9a0bcb29da824216a"
+  },
+  "Assurance.Ext6GateProofControllerAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Ext6GateProofControllerAdmission.olean",
+    "sha256": "2fe4f859f169d3ab7e17c38d89e4d888b6c72596c56d52a78310137ce94cc67f"
+  },
+  "Assurance.NoteSpendProofControllerAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/NoteSpendProofControllerAdmission.olean",
+    "sha256": "69e9fde39967c5498cfa41fb13e0db204e8d63d5bcc23109a87fa05aa788aa15"
+  },
+  "Assurance.SemanticHistoryBcsGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryBcsGame.olean",
+    "sha256": "bf12fd73b6089dbe9093e4b5582fdcf474c995112bd8705ad0de7936721efe87"
+  },
+  "Assurance.Tower256AdditiveFriControllerAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256AdditiveFriControllerAdmission.olean",
+    "sha256": "3068d75197789fd768eb1ced0b142c145d8d26e5920baaf9a2128c69af42465c"
+  },
+  "Assurance.Tower256AdditiveFriRawAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256AdditiveFriRawAdmission.olean",
+    "sha256": "410b6d14b21af852cc8f24b92661d1c1a389436e9406e0e770a7027eb99ca82a"
+  },
+  "Assurance.Tower256LogupControllerAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256LogupControllerAdmission.olean",
+    "sha256": "9d7054f5bea69199fd8c1969604620ff19a64f8d01aac74af953e8d7a124129e"
+  },
+  "Selvage.BaseFoldBcsCapacityEvent": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsCapacityEvent.olean",
+    "sha256": "8b012be5609fb9bc78537b8ddb51a745f0991e0cc8a889905ed18cbf47fae820"
+  },
+  "Selvage.BaseFoldBcsReceiptCodec": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsReceiptCodec.olean",
+    "sha256": "715a1e8f9f9a10983c43482e5a6839be82ff5580a3a61b5c4abf0115a07527ff"
+  },
+  "Assurance.BfvConcreteBatchCell": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/BfvConcreteBatchCell.olean",
+    "sha256": "a49af32214d82046f1e302070439839f3f3b9f92ceb849467af3f1450feb0be2"
+  },
+  "Assurance.BfvSuiteMigrationBoundary": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/BfvSuiteMigrationBoundary.olean",
+    "sha256": "d9fec712cc5c5db72fd49b91ab2ff7c300490eda3ee9dff6166b2067da1a6df1"
+  },
+  "Assurance.ExtensibleProofCompositionGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ExtensibleProofCompositionGame.olean",
+    "sha256": "03710e884c75f67b8badce45986bda2511406767def9d1870d374802379772d8"
+  },
+  "Assurance.NoteSpendConcreteCellAdapter": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/NoteSpendConcreteCellAdapter.olean",
+    "sha256": "a7c99d5f6118944f012637c2be2e509a6405ef49202cef66a4394e68339d75f4"
+  },
+  "Assurance.RawHistoryBcsOpenings": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/RawHistoryBcsOpenings.olean",
+    "sha256": "1a88811656522fe05ee3cb106bea268cb9e42c15c3e5ee59a6b9e994180e76a9"
+  },
+  "Assurance.SemanticHistoryTower256CheckpointGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryTower256CheckpointGame.olean",
+    "sha256": "d97cfcb29ee839dd12f3d4f2bb8a0f2ea30f9756bcaf6e90c493bcbff048f398"
+  },
+  "Assurance.Tower256AdditiveFriActualReduction": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256AdditiveFriActualReduction.olean",
+    "sha256": "e395654753231122e9c651b0a4b84d43544907b7ebc5488c57e0d719cc4d56d5"
+  },
+  "Assurance.Tower256AdditiveFriCanonicalExecutionGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256AdditiveFriCanonicalExecutionGame.olean",
+    "sha256": "cb0cf2d74bc34942525b50a0854ad0ae4ab9be6342d1e290ed34d37917bb7baf"
+  },
+  "Assurance.Tower256LogupExtensionDeploymentAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256LogupExtensionDeploymentAdmission.olean",
+    "sha256": "16d7c8dbd4859544f36e00ba49a6c85a8f8a6c84a174dad7ff23a249341a1e06"
+  },
+  "Selvage.BaseFoldBcsCrossings": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsCrossings.olean",
+    "sha256": "e91620d141a971fbfbc5c8e981a700dc5dd05afe14d552c911fc1d811d1543d9"
+  },
+  "Assurance.Ext6GateProofDeploymentAdmission": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Ext6GateProofDeploymentAdmission.olean",
+    "sha256": "457e42546e4225a8698468aa2a54cd36420617d4f2a62b0b478cdac312d54e1b"
+  },
+  "Assurance.PrivateEscrowSettlementJoin": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/PrivateEscrowSettlementJoin.olean",
+    "sha256": "6f037254f731f1b690d2c101790c0f78555eb200f3f9aaa5d33fb7d7d794be59"
+  },
+  "Assurance.RawHistoryCollisionBridge": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/RawHistoryCollisionBridge.olean",
+    "sha256": "33a8b6d605dc93ea3bebcfd7297fc1a74dcfdebaeba651005aebcc1069496634"
+  },
+  "Assurance.SameCoinGameProduct": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SameCoinGameProduct.olean",
+    "sha256": "3a32e56a8f3a5748c1d0c86aacf8d39485656b5f348d8f02557d3e92c441e5e0"
+  },
+  "Assurance.SemanticHistoryTower256DeployedBcs": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryTower256DeployedBcs.olean",
+    "sha256": "80c7b67b86664bc9260037ca7f41dae46dc1a3815a043e51a34a279fd9d756ac"
+  },
+  "Assurance.Tower256MerkleBindingCardinality": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256MerkleBindingCardinality.olean",
+    "sha256": "8174d7e89ce03bcc2a8fcabb664c7b16de992eefda96b680e22d5c137b98f602"
+  },
+  "Selvage.BaseFoldBcsDeferredIdeal": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/BaseFoldBcsDeferredIdeal.olean",
+    "sha256": "603e40a909edade0bdfa4a0e9796fc883a7d69307beebea2223af4d598c9ef77"
+  },
+  "Assurance.Ext6GateProofNonzeroSuiteClosure": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Ext6GateProofNonzeroSuiteClosure.olean",
+    "sha256": "6c619f29bc30bb3ddf153d4988794b015ccf57b088ef16dac63bbec3f9bbe307"
+  },
+  "Assurance.Ext6GateProofPositiveExecution": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Ext6GateProofPositiveExecution.olean",
+    "sha256": "da32a273d19d9b6deb634cc7b79cdb4b6440e196b98212bc29d56a09ca59c88e"
+  },
+  "Assurance.RawSemanticHistoryCheckpointGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/RawSemanticHistoryCheckpointGame.olean",
+    "sha256": "59494855ba3948735187c9d91aa3891655e3219b3213f35d01222655b122d3e2"
+  },
+  "Assurance.SemanticHistoryPcsEventRealization": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/SemanticHistoryPcsEventRealization.olean",
+    "sha256": "0406b538c6515746f1bb176f379e70716e274b4bbf3d46bf1a9000a43a9990a9"
+  },
+  "Selvage": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage.olean",
+    "sha256": "c43fcd7b3d04fb9e76be660ef50d8cad908ecd8f135e455d50ea98eb376d23cf"
+  },
+  "Assurance.Tower256RawHistoryFsController": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256RawHistoryFsController.olean",
+    "sha256": "8125d37acd1d87c572ea4064debbe4bfed489746e0fef494cc2322dd744a29b4"
+  },
+  "Assurance.Tower256RawSemanticHistoryCanonicalGame": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256RawSemanticHistoryCanonicalGame.olean",
+    "sha256": "685ba7f9cd9120e1b79cba9e1199827d2fdcc87781e81fa14d10a3e36d844ea5"
+  },
+  "Assurance.RawHistorySecurityPrices": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/RawHistorySecurityPrices.olean",
+    "sha256": "dba0ab52fefa2721bfd1fe0c83135a40a3b7c3db34befa63cef2397c2261ce80"
+  },
+  "Assurance.Tower256RawHistoryFsExecution": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256RawHistoryFsExecution.olean",
+    "sha256": "03901e2b5724baf4c72a104aa64ccdc47784c1e82ebd8b8acd97db286fe9b46f"
+  },
+  "Assurance.Tower256RawHistoryCshakeTrace": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/Tower256RawHistoryCshakeTrace.olean",
+    "sha256": "8fe100aadc5990dba307cc79b8848f64b79217d6974ba62f60e0a77e674f4c3c"
+  },
+  "Assurance": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance.olean",
+    "sha256": "c5f8cf47cbf93c80022e6577efbfc8775908504f3920d2c924b193fcda1c8d7a"
+  }
+}

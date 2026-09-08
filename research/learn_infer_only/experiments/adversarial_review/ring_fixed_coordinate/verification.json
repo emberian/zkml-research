@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "command": "python3 research/learn_infer_only/experiments/adversarial_review/ring_fixed_coordinate/check.py > research/learn_infer_only/experiments/adversarial_review/ring_fixed_coordinate/check.log 2>&1",
+  "exit_code": 0,
+  "results_match_log": true,
+  "frozen_author_manifest_and_sources_unchanged": true,
+  "local_links_checked": 12,
+  "crypto_runs": 0,
+  "estimator_runs": 0,
+  "Gaussian_samples": 0,
+  "private_files_read": 0,
+  "web_queries": 0,
+  "verdict": "conditional source/math and finite statistical/cost ledger accepted; no computational-security endorsement; finite QPT sampler obligations retained"
+}

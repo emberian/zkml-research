@@ -1,0 +1,17 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    ".lake/build/lib/lean/Theory/BitReverseFriTransport.olean",
+    "Theory/BitReverseFriTransport.lean"
+  ],
+  "cwd": "/tmp/minidregg-p3-folding-transport-20260908",
+  "exit_code": 1,
+  "seconds": 8.434027375013102,
+  "source_sha256": "91fb9ce4cfe34ce4e19f851825fa7560803acc8299c20447bb1b98283cf57014",
+  "source_sha256_after": "91fb9ce4cfe34ce4e19f851825fa7560803acc8299c20447bb1b98283cf57014",
+  "stdout": "Theory/BitReverseFriTransport.lean:52:2: error: Type mismatch: After simplification, term\n  h\n has type\n  (BitVec.ofNat (bits - dropped) (index / 2 ^ dropped)).reverse.toNat =\n    (BitVec.ofNat (bits - dropped + dropped) index).reverse.toNat % 2 ^ (bits - dropped)\nbut is expected to have type\n  (BitVec.ofNat (bits - dropped) (index / 2 ^ dropped)).reverse.toNat =\n    (BitVec.ofNat bits index).reverse.toNat % 2 ^ (bits - dropped)\n",
+  "stderr": ""
+}

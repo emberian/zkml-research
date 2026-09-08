@@ -1,0 +1,418 @@
+diff --git a/Selvage/EfficientRootOpening.lean b/Selvage/EfficientRootOpening.lean
+new file mode 100644
+index 0000000..8710ac5
+--- /dev/null
++++ b/Selvage/EfficientRootOpening.lean
+@@ -0,0 +1,412 @@
++/-
++# Supplied BinaryMerkle openings and commitment-time oracle logs
++
++The carrier is the existing OracleLog. The verifier is BinaryMerkle.recompute.
++This module adds a typed reverse-query lookup and records the hash calls of a
++supplied path, without replacing the accepted opening by existential evidence.
++Only a deterministic finite-log implication is claimed; no ROM price or FS step.
++-/
++import Selvage.BinaryMerkle
++import Selvage.OracleLogExtraction
++
++namespace Minidregg.Selvage
++namespace EfficientRootOpening
++
++inductive Query (Value Digest : Type) where
++  | leaf : Value → Query Value Digest
++  | node : Digest → Digest → Query Value Digest
++  deriving DecidableEq
++
++variable {Value Digest : Type}
++
++def evaluate (H : BinaryMerkle.HashSuite Value Digest) : Query Value Digest → Digest
++  | .leaf v => H.leaf v
++  | .node a b => H.node a b
++
++def children : Query Value Digest → List Digest
++  | .leaf _ => []
++  | .node a b => [a,b]
++
++abbrev Log (Value Digest : Type) := OracleLog (Query Value Digest) Digest
++
++/-- Computable first reverse lookup on the existing OracleLog carrier. -/
++def preimage [DecidableEq Digest] (P : Log Value Digest) (d : Digest) :
++    Option (Query Value Digest) :=
++  (P.find? fun e => decide (e.2 = d)).map Prod.fst
++
++/-- Each node digest is recovered from the existing verifier's recursive result. -/
++def pathLog (H : BinaryMerkle.HashSuite Value Digest) (leaf : Digest) :
++    {k : Nat} → (Fin k → Bool) → List Digest → Log Value Digest
++  | 0, _, _ => []
++  | _ + 1, _, [] => []
++  | k + 1, address, sibling :: rest =>
++      let tail : Fin k → Bool := fun i => address i.succ
++      match BinaryMerkle.recompute H leaf tail rest with
++      | none => []
++      | some child =>
++          let q := if address 0 then Query.node sibling child else Query.node child sibling
++          pathLog H leaf tail rest ++ [(q, evaluate H q)]
++
++/-- The exact hash inputs of this supplied value and path. -/
++def openingLog (H : BinaryMerkle.HashSuite Value Digest) (v : Value)
++    {k : Nat} (address : Fin k → Bool) (path : List Digest) : Log Value Digest :=
++  (.leaf v, H.leaf v) :: pathLog H (H.leaf v) address path
++
++def extractedAt [DecidableEq Digest] (P : Log Value Digest) (default : Value) :
++    {k : Nat} → Digest → (Fin k → Bool) → Value
++  | 0, root, _ => match preimage P root with
++      | some (.leaf v) => v
++      | _ => default
++  | k + 1, root, address => match preimage P root with
++      | some (.node a b) => extractedAt P default (if address 0 then b else a)
++          (fun i : Fin k => address i.succ)
++      | _ => default
++
++def word [DecidableEq Digest] (P : Log Value Digest) (default : Value)
++    (k : Nat) (root : Digest) : Fin (2^k) → Value :=
++  fun i => extractedAt P default root (binaryAddressBits k i)
++
++/-- Farness is of the extracted checkpoint word, never a semantic choice word. -/
++def Far_E {F : Type} [Field F] [DecidableEq F] [DecidableEq Digest]
++    (radius : ℝ) (k : Nat) (C : Submodule F (Fin (2^k) → F))
++    (P : Log F Digest) (default : F) (root : Digest) : Prop :=
++  ¬ close radius C (word P default k root)
++
++/-- Only response pairs actually in the finite log are compared. -/
++def ResponseCollision (L : Log Value Digest) : Prop :=
++  ∃ e ∈ L, ∃ e' ∈ L, e.2 = e'.2 ∧ e.1 ≠ e'.1
++
++/-- Digests fixed by this commitment-time checkpoint. -/
++def Target (P : Log Value Digest) (root d : Digest) : Prop :=
++  d = root ∨ ∃ e ∈ P, d ∈ children e.1
++
++/-- An observed entry absent from the checkpoint hits a fixed root/child. -/
++def LateTarget (P L : Log Value Digest) (root : Digest) : Prop :=
++  ∃ e ∈ L, e ∉ P ∧ Target P root e.2
++
++def Bad (P L : Log Value Digest) (root : Digest) : Prop :=
++  ResponseCollision L ∨ LateTarget P L root
++
++/-- A finite executable test; only entries in P and L are enumerated. -/
++def badCheck [DecidableEq Value] [DecidableEq Digest]
++    (P L : Log Value Digest) (root : Digest) : Bool :=
++  L.any (fun e => L.any (fun e' => decide (e.2 = e'.2 ∧ e.1 ≠ e'.1))) ||
++  L.any (fun e => decide (e ∉ P) &&
++    (decide (e.2 = root) || P.any (fun p => decide (e.2 ∈ children p.1))))
++
++/-- Statement-first: a supplied accepted value/path resolves at its prefix. -/
++def SuppliedOpeningSound [DecidableEq Digest]
++    (H : BinaryMerkle.HashSuite Value Digest) : Prop :=
++  ∀ (P middle : Log Value Digest) (default : Value) (k : Nat)
++    (root : Digest) (i : Fin (2^k)) (v : Value) (path : List Digest),
++    ¬ Bad P (P ++ middle ++ openingLog H v (binaryAddressBits k i) path) root →
++    (BinaryMerkle.openingScheme H k).verifyOpen root i v path →
++    v = word P default k root i
++
++theorem preimage_of_mem [DecidableEq Digest] (P : Log Value Digest)
++    (q : Query Value Digest) (d : Digest) (hmem : (q,d) ∈ P)
++    (hunique : ∀ e ∈ P, e.2 = d → e.1 = q) :
++    preimage P d = some q := by
++  induction P with
++  | nil => simp at hmem
++  | cons e P ih =>
++      by_cases he : e.2 = d
++      · have hq := hunique e (by simp) he
++        simp [preimage, he, hq]
++      · have hm : (q,d) ∈ P := by
++          rcases List.mem_cons.mp hmem with h | h
++          · have hd : e.2 = d := (congrArg Prod.snd h).symm
++            exact False.elim (he hd)
++          · exact h
++        have ht := ih hm (fun a ha => hunique a (List.mem_cons_of_mem _ ha))
++        simpa [preimage, List.find?_cons, he] using ht
++
++/-- The new lookup is the existing first-response lookup with the cells reversed. -/
++theorem preimage_eq_answerOf [DecidableEq Digest] (P : Log Value Digest) (d : Digest) :
++    preimage P d = OracleLog.answerOf (P.map Prod.swap) d := by
++  induction P with
++  | nil => rfl
++  | cons e P ih =>
++      by_cases he : e.2 = d
++      · simp [preimage,OracleLog.answerOf,he]
++      · simpa [preimage,OracleLog.answerOf,he] using ih
++
++theorem badCheck_eq_true_iff [DecidableEq Value] [DecidableEq Digest]
++    (P L : Log Value Digest) (root : Digest) :
++    badCheck P L root = true ↔ Bad P L root := by
++  simp [badCheck,Bad,ResponseCollision,LateTarget,Target,List.any_eq_true]
++
++theorem no_bad_of_check_false [DecidableEq Value] [DecidableEq Digest]
++    (P L : Log Value Digest) (root : Digest) (h : badCheck P L root = false) :
++    ¬ Bad P L root := by
++  intro hb
++  have ht := (badCheck_eq_true_iff P L root).mpr hb
++  simp [h] at ht
++
++theorem retained_of_target (P L : Log Value Digest) (root : Digest)
++    (hgood : ¬ Bad P L root) (e : Query Value Digest × Digest)
++    (he : e ∈ L) (ht : Target P root e.2) : e ∈ P := by
++  by_contra hnot
++  exact hgood (Or.inr ⟨e,he,hnot,ht⟩)
++
++theorem preimage_of_good [DecidableEq Digest] (P L : Log Value Digest)
++    (root : Digest) (hsub : ∀ e ∈ P, e ∈ L) (hgood : ¬ Bad P L root)
++    (q : Query Value Digest) (d : Digest) (he : (q,d) ∈ P) :
++    preimage P d = some q := by
++  apply preimage_of_mem P q d he
++  intro e he' hd
++  by_contra hne
++  exact hgood (Or.inl ⟨e,hsub e he',(q,d),hsub _ he,hd,hne⟩)
++
++/-- The path is the supplied path; all its node calls occur in L. -/
++theorem extractedAt_eq_of_logged [DecidableEq Digest]
++    (H : BinaryMerkle.HashSuite Value Digest)
++    (P L : Log Value Digest) (default : Value) (root₀ : Digest)
++    (hsub : ∀ e ∈ P, e ∈ L) (hgood : ¬ Bad P L root₀)
++    (v : Value) (hleaf : (.leaf v,H.leaf v) ∈ L) :
++    ∀ (k : Nat) (root : Digest) (address : Fin k → Bool) (path : List Digest),
++    Target P root₀ root →
++    (∀ e ∈ pathLog H (H.leaf v) address path, e ∈ L) →
++    BinaryMerkle.recompute H (H.leaf v) address path = some root →
++    extractedAt P default root address = v := by
++  intro k
++  induction k with
++  | zero =>
++      intro root address path htarget hnodes hacc
++      cases path with
++      | cons a as => simp [BinaryMerkle.recompute] at hacc
++      | nil =>
++          have heq : H.leaf v = root := by simpa [BinaryMerkle.recompute] using hacc
++          have hp := retained_of_target P L root₀ hgood
++            (.leaf v,H.leaf v) hleaf (by simpa [heq] using htarget)
++          have hf := preimage_of_good P L root₀ hsub hgood (.leaf v) (H.leaf v) hp
++          simp [extractedAt, ← heq, hf]
++  | succ k ih =>
++      intro root address path htarget hnodes hacc
++      cases path with
++      | nil => simp [BinaryMerkle.recompute] at hacc
++      | cons sibling rest =>
++          obtain ⟨child,hchild,hroot⟩ :=
++            (BinaryMerkle.recompute_cons_some_iff H (H.leaf v) sibling address rest root).mp hacc
++          cases hbit : address 0 with
++          | false =>
++              have hr : H.node child sibling = root := by simpa [hbit] using hroot
++              have hm : (.node child sibling,H.node child sibling) ∈ L :=
++                hnodes _ (by simp [pathLog,hchild,hbit,evaluate])
++              have hp := retained_of_target P L root₀ hgood
++                (.node child sibling,H.node child sibling) hm (by simpa [hr] using htarget)
++              have hf := preimage_of_good P L root₀ hsub hgood
++                (.node child sibling) (H.node child sibling) hp
++              have ht : Target P root₀ child :=
++                Or.inr ⟨(.node child sibling,H.node child sibling),hp,by simp [children]⟩
++              have hn : ∀ e ∈ pathLog H (H.leaf v) (fun i => address i.succ) rest, e ∈ L := by
++                intro e he
++                exact hnodes e (by simp [pathLog,hchild,hbit,he])
++              have hi := ih child (fun i => address i.succ) rest ht hn hchild
++              simpa [extractedAt, ← hr,hf,hbit] using hi
++          | true =>
++              have hr : H.node sibling child = root := by simpa [hbit] using hroot
++              have hm : (.node sibling child,H.node sibling child) ∈ L :=
++                hnodes _ (by simp [pathLog,hchild,hbit,evaluate])
++              have hp := retained_of_target P L root₀ hgood
++                (.node sibling child,H.node sibling child) hm (by simpa [hr] using htarget)
++              have hf := preimage_of_good P L root₀ hsub hgood
++                (.node sibling child) (H.node sibling child) hp
++              have ht : Target P root₀ child :=
++                Or.inr ⟨(.node sibling child,H.node sibling child),hp,by simp [children]⟩
++              have hn : ∀ e ∈ pathLog H (H.leaf v) (fun i => address i.succ) rest, e ∈ L := by
++                intro e he
++                exact hnodes e (by simp [pathLog,hchild,hbit,he])
++              have hi := ih child (fun i => address i.succ) rest ht hn hchild
++              simpa [extractedAt, ← hr,hf,hbit] using hi
++
++theorem suppliedOpeningSound [DecidableEq Digest]
++    (H : BinaryMerkle.HashSuite Value Digest) : SuppliedOpeningSound H := by
++  intro P middle default k root i v path hgood hacc
++  have hs : ∀ e ∈ P,
++      e ∈ P ++ middle ++ openingLog H v (binaryAddressBits k i) path := by
++    intro e he
++    simp [he]
++  have hl : (.leaf v,H.leaf v) ∈
++      P ++ middle ++ openingLog H v (binaryAddressBits k i) path := by
++    simp [openingLog]
++  have hn : ∀ e ∈ pathLog H (H.leaf v) (binaryAddressBits k i) path,
++      e ∈ P ++ middle ++ openingLog H v (binaryAddressBits k i) path := by
++    intro e he
++    simp [openingLog,he]
++  exact (extractedAt_eq_of_logged H P _ default root hs hgood v hl k root
++    (binaryAddressBits k i) path (Or.inl rfl) hn hacc).symm
++
++/-- Actual accepted paths contribute exactly one node record per level. -/
++theorem pathLog_length_of_accepted (H : BinaryMerkle.HashSuite Value Digest)
++    (leaf : Digest) : ∀ (k : Nat) (root : Digest) (address : Fin k → Bool)
++    (path : List Digest), BinaryMerkle.recompute H leaf address path = some root →
++    (pathLog H leaf address path).length = k := by
++  intro k
++  induction k with
++  | zero => intros; rfl
++  | succ k ih =>
++      intro root address path ha
++      cases path with
++      | nil => simp [BinaryMerkle.recompute] at ha
++      | cons sibling rest =>
++          obtain ⟨child,hchild,_⟩ :=
++            (BinaryMerkle.recompute_cons_some_iff H leaf sibling address rest root).mp ha
++          simp [pathLog,hchild,ih child (fun i => address i.succ) rest hchild]
++
++theorem openingLog_length_of_accepted (H : BinaryMerkle.HashSuite Value Digest)
++    (k : Nat) (root : Digest) (i : Fin (2^k)) (v : Value) (path : List Digest)
++    (ha : (BinaryMerkle.openingScheme H k).verifyOpen root i v path) :
++    (openingLog H v (binaryAddressBits k i) path).length = k+1 := by
++  simp [openingLog,pathLog_length_of_accepted H (H.leaf v) k root
++    (binaryAddressBits k i) path ha]
++
++namespace Witnesses
++
++def H : BinaryMerkle.HashSuite (ZMod 5) Nat where
++  leaf v := v.val + 10
++  node a b := a * 100 + b + 1000
++
++def commitLog : Log (ZMod 5) Nat :=
++  [(.leaf 0,10),(.leaf 1,11),(.node 10 11,2011)]
++
++def verified : Log (ZMod 5) Nat :=
++  commitLog ++ [] ++ openingLog H 1 (binaryAddressBits 1 (1 : Fin 2)) [10]
++
++theorem supplied_accepts :
++    (BinaryMerkle.openingScheme H 1).verifyOpen 2011 (1 : Fin 2) 1 [10] := by rfl
++
++theorem prefix_bad_free : ¬ Bad commitLog verified 2011 :=
++  no_bad_of_check_false commitLog verified 2011 (by decide)
++
++theorem extracted_values : word commitLog (0 : ZMod 5) 1 2011 =
++    fun i => if i = 0 then 0 else 1 := by decide
++
++/-- All adapter premises and a genuinely supplied accepted opening are inhabited. -/
++theorem adapter_inhabited :
++    ¬ Bad commitLog verified 2011 ∧
++    (BinaryMerkle.openingScheme H 1).verifyOpen 2011 (1 : Fin 2) 1 [10] ∧
++    (1 : ZMod 5) = word commitLog 0 1 2011 1 := by
++  exact ⟨prefix_bad_free,supplied_accepts,
++    suppliedOpeningSound H commitLog [] 0 1 2011 1 1 [10] prefix_bad_free supplied_accepts⟩
++
++/-- Without the late-target condition, a supplied honest opening need not resolve. -/
++theorem late_root_falsifier :
++    (BinaryMerkle.openingScheme H 0).verifyOpen 11 (0 : Fin 1) 1 [] ∧
++    word ([] : Log (ZMod 5) Nat) 0 0 11 0 ≠ 1 ∧
++    LateTarget [] (openingLog H 1 (binaryAddressBits 0 (0 : Fin 1)) []) 11 := by
++  refine ⟨by rfl,by decide,?_⟩
++  exact ⟨(.leaf 1,11),by decide,by simp,Or.inl rfl⟩
++
++/-- Using the later verification log instead changes the extracted value. -/
++theorem full_log_is_not_prefix :
++    word ([] : Log (ZMod 5) Nat) 0 0 11 0 ≠
++    word (openingLog H 1 (binaryAddressBits 0 (0 : Fin 1)) []) 0 0 11 0 := by decide
++
++/-- The new farness event is inhabited together with all adapter premises. -/
++theorem far_inhabited :
++    Far_E (2/5 : ℝ) 1 (⊥ : Submodule (ZMod 5) (Fin 2 → ZMod 5))
++      commitLog 0 2011 := by
++  rintro ⟨u,hu,hd⟩
++  have hu0 : u = 0 := by simpa using hu
++  subst u
++  have hh : hammingDist (word commitLog (0 : ZMod 5) 1 2011)
++      (0 : Fin 2 → ZMod 5) = 1 := by decide
++  norm_num [relDist,hh] at hd
++
++theorem all_premises_inhabited :
++    ¬ Bad commitLog verified 2011 ∧
++    (BinaryMerkle.openingScheme H 1).verifyOpen 2011 (1 : Fin 2) 1 [10] ∧
++    Far_E (2/5 : ℝ) 1 (⊥ : Submodule (ZMod 5) (Fin 2 → ZMod 5))
++      commitLog 0 2011 :=
++  ⟨prefix_bad_free,supplied_accepts,far_inhabited⟩
++
++def collisionH : BinaryMerkle.HashSuite (ZMod 5) Nat where
++  leaf _ := 11
++  node := H.node
++
++def collisionLog : Log (ZMod 5) Nat := [(.leaf 0,11),(.leaf 1,11)]
++
++/-- Even with no late target, a recorded collision must remain excluded. -/
++theorem response_collision_falsifier :
++    let L := collisionLog ++ openingLog collisionH 1 (binaryAddressBits 0 (0 : Fin 1)) []
++    (BinaryMerkle.openingScheme collisionH 0).verifyOpen 11 (0 : Fin 1) 1 [] ∧
++    ¬ LateTarget collisionLog L 11 ∧ ResponseCollision L ∧
++    word collisionLog (0 : ZMod 5) 0 11 0 ≠ 1 := by
++  dsimp only
++  refine ⟨by rfl,?_,?_,by decide⟩
++  · rintro ⟨e,he,hnot,_⟩
++    apply hnot
++    simpa [collisionLog,openingLog,pathLog,collisionH] using he
++  · refine ⟨(.leaf 0,11),by simp [collisionLog],(.leaf 1,11),by simp [collisionLog],rfl,?_⟩
++    decide
++
++/-- A known root does not suffice: a later query can hit its checkpoint child. -/
++theorem child_target_falsifier :
++    let P : Log (ZMod 5) Nat := [(.node 10 11,2011)]
++    let L := P ++ openingLog H 1 (binaryAddressBits 1 (1 : Fin 2)) [10]
++    (BinaryMerkle.openingScheme H 1).verifyOpen 2011 (1 : Fin 2) 1 [10] ∧
++    ¬ ResponseCollision L ∧
++    (∀ e ∈ L, e.2 = 2011 → e ∈ P) ∧
++    LateTarget P L 2011 ∧ word P (0 : ZMod 5) 1 2011 1 ≠ 1 := by
++  change _ ∧ ¬ ResponseCollision
++    [(.node 10 11,2011),(.leaf 1,11),(.node 10 11,2011)] ∧ _
++  refine ⟨supplied_accepts,?_,?_,?_,by decide⟩
++  · simp [ResponseCollision]
++  · intro e he hr
++    change e ∈ [(.node 10 11,2011),(.leaf 1,11),(.node 10 11,2011)] at he
++    simp only [List.mem_cons,List.not_mem_nil,or_false] at he
++    rcases he with rfl | rfl | rfl
++    · simp
++    · contradiction
++    · simp
++  · exact ⟨(.leaf 1,11),by decide,by decide,
++      Or.inr ⟨(.node 10 11,2011),by simp,by simp [children]⟩⟩
++
++end Witnesses
++
++end EfficientRootOpening
++end Minidregg.Selvage
++
++/-! Exact theorem dependency reports. -/
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.preimage_of_mem' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.preimage_of_mem
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.preimage_eq_answerOf' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.preimage_eq_answerOf
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.badCheck_eq_true_iff' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.badCheck_eq_true_iff
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.no_bad_of_check_false' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.no_bad_of_check_false
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.retained_of_target' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.retained_of_target
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.preimage_of_good' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.preimage_of_good
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.extractedAt_eq_of_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.extractedAt_eq_of_logged
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.suppliedOpeningSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.suppliedOpeningSound
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.pathLog_length_of_accepted' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.pathLog_length_of_accepted
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.openingLog_length_of_accepted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.openingLog_length_of_accepted
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.supplied_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.supplied_accepts
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.prefix_bad_free' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.prefix_bad_free
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.extracted_values' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.extracted_values
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.adapter_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.adapter_inhabited
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.late_root_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.late_root_falsifier
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.full_log_is_not_prefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.full_log_is_not_prefix
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.far_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.far_inhabited
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.all_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.all_premises_inhabited
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.response_collision_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.response_collision_falsifier
++
++/-- info: 'Minidregg.Selvage.EfficientRootOpening.Witnesses.child_target_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.EfficientRootOpening.Witnesses.child_target_falsifier

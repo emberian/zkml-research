@@ -1,0 +1,173 @@
+{
+  "claim": "EXECUTED public-only post-completion provenance collection",
+  "collected_utc": "2026-09-08T14:33:43.672836+00:00",
+  "success": true,
+  "new_crypto_invocations": 0,
+  "private_files_read": false,
+  "old_failed_runtime_files_read": false,
+  "original_seals_modified": false,
+  "frozen_files_match": 39,
+  "public_artifacts_match": 1364,
+  "public_artifact_bytes": 97500084,
+  "public_replay_pairs_recompared_as_bytes": 480,
+  "phase_order_verified": true,
+  "phase_timestamps_utc": [
+    "2026-09-08T08:09:56.356621+00:00",
+    "2026-09-08T08:09:57.110689+00:00",
+    "2026-09-08T08:09:57.111440+00:00",
+    "2026-09-08T08:09:57.410243+00:00",
+    "2026-09-08T08:09:59.846219+00:00",
+    "2026-09-08T08:10:00.180702+00:00"
+  ],
+  "counts": {
+    "Infer": 96,
+    "Learn": 384,
+    "host_invocations": 960,
+    "issuer_invocations": 404,
+    "replay_pairs": 480
+  },
+  "authorized_primary_opens_match": 484,
+  "replay_plaintext_independent_opens": 0,
+  "public_wall_seconds": 9687.876547332999,
+  "private_drain_wall_seconds": 2.4360775419918355,
+  "final_correct": 28,
+  "final_queries": 32,
+  "all_checkpoint_correct": 76,
+  "all_checkpoint_queries": 96,
+  "xor_api_calls_all_hosts": 263808,
+  "and_api_calls_all_hosts": 151104,
+  "cost_groups": [
+    {
+      "role": "host",
+      "operation": "infer",
+      "processes": 192,
+      "wall_seconds_min": 0.2945594580087345,
+      "wall_seconds_median": 0.3192385415022727,
+      "wall_seconds_max": 0.7938255000044592,
+      "wall_seconds_sum": 72.88759399022092,
+      "maximum_recorded_rss_bytes": 550961152
+    },
+    {
+      "role": "host",
+      "operation": "learn",
+      "processes": 768,
+      "wall_seconds_min": 8.879453208006453,
+      "wall_seconds_median": 11.410983958499855,
+      "wall_seconds_max": 40.97226416700869,
+      "wall_seconds_sum": 9339.231532840204,
+      "maximum_recorded_rss_bytes": 552091648
+    },
+    {
+      "role": "issuer",
+      "operation": "init",
+      "processes": 4,
+      "wall_seconds_min": 0.2643708749965299,
+      "wall_seconds_median": 0.3035898539965274,
+      "wall_seconds_max": 0.48182691700640135,
+      "wall_seconds_sum": 1.353377499995986,
+      "maximum_recorded_rss_bytes": 189513728
+    },
+    {
+      "role": "issuer",
+      "operation": "learn",
+      "processes": 384,
+      "wall_seconds_min": 0.08273824999923818,
+      "wall_seconds_median": 0.10386422948795371,
+      "wall_seconds_max": 0.8684227499761619,
+      "wall_seconds_sum": 43.06939232876175,
+      "maximum_recorded_rss_bytes": 256425984
+    },
+    {
+      "role": "issuer",
+      "operation": "query",
+      "processes": 16,
+      "wall_seconds_min": 0.08312995798769407,
+      "wall_seconds_median": 0.11236322950571775,
+      "wall_seconds_max": 0.134566624998115,
+      "wall_seconds_sum": 1.774802086991258,
+      "maximum_recorded_rss_bytes": 256376832
+    },
+    {
+      "role": "reader",
+      "operation": "output",
+      "processes": 96,
+      "wall_seconds_min": 0.0036517499829642475,
+      "wall_seconds_median": 0.004113832997973077,
+      "wall_seconds_max": 0.005026791972341016,
+      "wall_seconds_sum": 0.4026328757463489,
+      "maximum_recorded_rss_bytes": null
+    },
+    {
+      "role": "reader",
+      "operation": "state",
+      "processes": 388,
+      "wall_seconds_min": 0.003696957981446758,
+      "wall_seconds_median": 0.0041965830023400486,
+      "wall_seconds_max": 0.00676874999771826,
+      "wall_seconds_sum": 1.6495485441409983,
+      "maximum_recorded_rss_bytes": null
+    }
+  ],
+  "records": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/freeze.json",
+      "bytes": 16134,
+      "sha256": "6cc20a07b75330c2fb7aaa19a2021c6b495096c6b477b1554eb4a2a14c7943e8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/summary.json",
+      "bytes": 2257,
+      "sha256": "581d4d9fd602f63658bd3ad46feea58845f1d021863af812bf4bec2147686e5a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/pipeline.json",
+      "bytes": 1609,
+      "sha256": "b0d5bea3d9d12fe0a5c2f48b9349374927b20491fb7781c24ee6403f8cf92ce6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/costs.csv",
+      "bytes": 190336,
+      "sha256": "282a4f6e00c5275a1ba48b6446f5d1d91fb4c8838c78f077290069d94a558c9b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/contention.json",
+      "bytes": 2880,
+      "sha256": "670f57b16ae146116cdf751b226b87962d621ff677331104445c47fae6b71bf4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/collect_public_provenance.py",
+      "bytes": 6418,
+      "sha256": "c9fefa527e5811b1b20b5c168482d9e9789f29c6de28c43397b3eece506fc3e0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/public_phase.json",
+      "bytes": 11539,
+      "sha256": "40e093403e649f3da313b6ba83dbacf4227b6a15d3ab1d06ad03e5aa326b98b5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/public_verification.json",
+      "bytes": 604,
+      "sha256": "2383fffb27f227c85001f879bcbfee3ebeb767a74ce79e8ae16f99d4861dc0eb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/public_seal.json",
+      "bytes": 1915,
+      "sha256": "b2f972552b5383d05207737939ddb2fe81e0c9ff68077104e13939f786dee566"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/public_storage.json",
+      "bytes": 385537,
+      "sha256": "eb6251d2ef1c575c3ee2816ea22bf5fe76bcd7bd37c9f31cd8b34c07ba0b744d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/private_drain.json",
+      "bytes": 63430,
+      "sha256": "3887f3c4653491356bab509e883c0afb07506313c694cede9353a44167beea98"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/reader_operations.jsonl",
+      "bytes": 645722,
+      "sha256": "83354fc7f354e481ad11538c1162585a1c4da13bea370830dc2a1d298b8ae0d1"
+    }
+  ]
+}

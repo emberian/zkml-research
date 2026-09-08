@@ -1,0 +1,33 @@
+{
+  "checkout": "/tmp/minidregg-polynomial-curve-kernel-20260908",
+  "minidregg_base": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "lean_version": "Lean 4.30.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622",
+  "mathlib_commit": "1c2b90b13009c65b090d95a83c98e248deafb6f1",
+  "arklib_commit": "22dbd4e836c15a21f68889afa69b7130da04abbb",
+  "arklib_source_path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/BWMatrix.lean",
+  "arklib_source_sha256": "845e10843bc1e84c36cafbc293365e565c9559870a682b4bde770499ad40fbfb",
+  "arklib_original_source_locations": [
+    606,
+    618,
+    630,
+    742,
+    760,
+    789,
+    937,
+    944,
+    1175
+  ],
+  "original_8_pin_source_sha256": "aa04f65f81689b1a70dd897177623f3f6f25705b36043ad5ae6d138d220cd3ac",
+  "predecessor_16_pin_source_sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+  "source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+  "patch_sha256": "d93868e566910220380cfa96d33bcb665c6deb57090a34e62beaa0fe6fd56c8c",
+  "license_sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+  "preservation": "Frozen predecessors unchanged. Same module and16 old statement signatures/guard blocks; degree-one proof bodies specialize the single generalized proofs.",
+  "scope": "Candidate-independent algebra; no RS/probability semantics added.",
+  "queries": {
+    "web": 0,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0
+  }
+}

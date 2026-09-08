@@ -1,0 +1,44 @@
+# Independent public-seed normal execution review
+
+[DERIVED verdict, 2026-09-08] **Accepted as the single scoped normal implementation witness.** The retained public evidence agrees with the frozen 33 Learn / four Infer / one exact-original-expiry contract. No discrepancy was found. All four private integer comparisons are attributed to the saved aggregate result; this reviewer read no private answers, keys, logs or timestamps and reran no cryptography, signature verification, XOF derivation or sampling.
+
+[EXECUTED preservation and identity] This is an additive execution review. Every one of the ten files in the frozen prelaunch manifest remains unchanged; that manifest remains SHA256 `e3cdb34f400ea9d67574d91e32f5249cdfc4f40039f6ec2a8d5f1e0016283709`. The adapter's 12 source/contract/helper files, five predecessor copies and originals, mathematical provenance and named native-library hash still match the accepted SOURCE_PINS SHA256 `be861661892f52e52068d88361fc1519989ae6103a4945a3c6c7e41a8ffc5fac`. Its copied review gate is byte-identical to the reviewer's gate. No source revision or second normal attempt is present in the reviewed evidence.
+
+[EXECUTED final seal] The author's [FINAL_MANIFEST.json](../../../private_construction/designated_span/public_coin_setup/public_seed/adapter/FINAL_MANIFEST.json), SHA256 `e59b5c1734dd229fd9eaf38084f0efce977f9f49319c7057c067855deeaefff8`, rehashes successfully across 167 public/source/research files and includes no private paths. The author report hash is `e7947e63a745ce1704adf7bd77676b2374a9901530a51cd8be0b67b033a6e7d4`. The separate closed public transcript has exactly 139 files and 11,296,482 bytes, including its seal; its inventory has neither missing files nor extra later public files. [Independent public results](public_results.json), [final-seal results](seal_results.json).
+
+## Public setup and exact workload
+
+[EXECUTED identity joins] The reviewer independently checked canonical JSON, registry hash, all ordered row and announcement joins, the complete domain, context/bootstrap identity, all 16 recipient and token digests, and source identities. Context SHA256 is `be14f3e3f83759c33238bf62c7511a6d8df897d2646a877b4acf8ef5b33fbbb5`; transcript SHA256 is `04586e22ea7f18fd2282745bf2e40fbfe8d8c739e835995bad54c5974aee0e56`. The fixed source path requires fresh honest registration and validates signatures; this review corroborates its retained identity records without independently certifying randomness or repeating signature/group checks.
+
+[EXECUTED retained-tape consistency] The complete domain contains the fixed 16 rows, all 16 ordered registrations/A values, 577-coordinate dimension, 32-input capacity, pivot rule and cap 128. The transcript uses the one predeclared seed and named SHAKE256 suite. All 577 tapes accepted counter one: 16 tau words use the high 2047 bits, and 561 U words use all 2048 bits. Their retained raw lengths, role/coordinate order, extracted accepted values and allowed ranges agree. No production XOF query was made by the reviewer. First acceptance in this run is not a statistical test, availability measurement or concrete-hash security proof; the prelaunch ideal-bit bound retains its original scope.
+
+[EXECUTED exact sequence] All 112 public command ordinals are contiguous, successful and in the frozen order: fresh registry; 16 recipient initializations; one public build; setup replay; uncached validation; 16 finalizations; 33 encrypt/Learn pairs with four selected query/Infer pairs; public arithmetic reference; final setup replay. The public log contains no reader-decrypt or scalar score field. Each child elapsed time is below its 300-second cap, and whole-harness time is below 1,200 seconds. COMMAND.json reports one attempt, zero retries and exit zero; stderr is empty. The named reports-directory census contains only normal_001 and no public STOPPED record. These absence claims cover this retained directory and reviewed driver, not unlogged operator activity.
+
+[EXECUTED exact public objects] The checker independently validates all 71 public ciphertext envelopes by header domain, context, row/recipient/token identity, size, field range and saved output hash. It checks every public input vector against the fixed formula and every accumulator/fresh/output path. Only Learn 33 supplies an old ciphertext, and that path is the original c01. The four query/output joins are rows 0/1/2/3 at Learn counts 1/16/32/33; they agree with the immutable drain tickets.
+
+[REPORTED replay execution; EXECUTED record binding] The separately executed public reference reports 33 original ciphertexts, 33 complete state-byte matches, four complete output-byte matches and one expiry. Its saved report equals its command result. Both successful setup-replay records bind the same full transcript/context hashes and report complete raw-tape and context matches. The uncached validation record agrees with its command result and the frozen core hashes. The reviewer verifies these source/log/hash bindings without repeating modular powers, subgroup checks or the full arithmetic replay. Their implementation scope remains the previously reviewed public reference with shared wire serialization.
+
+## Closure, private attribution and costs
+
+[EXECUTED public ordering; SOURCE/REPORTED private ordering] Public seal SHA256 is `6aa0789f106ca326dccb370483f0cec589fe218ed9ff4a5d732ef48f07e2a993`. It inventories the final replay and all preceding public evidence, records zero private decryptions and all public children exited, and still matches every closed file. Saved stdout places the closure checkpoint before final success. The unchanged reviewed driver uses synchronous child calls and sets its permanent public-close flag before any reader-decrypt call. Together these support the declared public-before-private flow. This is not an independent observation of private process timestamps or OS isolation.
+
+[REPORTED private result] [RESEARCH_RESULT.json](../../../private_construction/designated_span/public_coin_setup/public_seed/adapter/reports/normal_001/RESEARCH_RESULT.json), SHA256 `34b4efc2222fadf5489a5efec6b2f070b4e0d06e433b57c56dee7ef38ee6fd86`, reports four decoder processes and four exact integer matches after public closure. Its context, counts and timing agree with the public records. Exact private comparisons remain attributed to that report and the prelaunch-reviewed direct integer formula. Aggregate success/timing are research reporting outside the closed public cryptographic transcript.
+
+[EXECUTED recorded costs] The independent checker confirms all 15 COSTS.csv rows against their stated records. These are observations from one normal run, not comparative performance or timing-privacy evidence.
+
+| Interval or observation | Recorded value |
+| --- | ---: |
+| Setup through recipient finalization | 101.459136291 s |
+| Public-work timer, before final report/inventory writes | 340.932174458 s |
+| Public closure checkpoint | 341.002693166 s |
+| Whole harness, including private drain | 342.179553250 s |
+| Learn child-process median / maximum, 33 calls | 3.735143958 / 5.175887708 s |
+| Infer child-process median / maximum, four calls | 1.995954834 / 2.441185250 s |
+| Context / transcript | 342,331 / 724,344 bytes |
+| State / recipient output | 148,147 / 691 bytes |
+
+[DERIVED timing precision] The 0.070518708-second gap between public-work and closure timestamps covers final reporting/inventory work and the closure checkpoint. The remaining 1.176860084 seconds to the total includes private subprocesses and final comparison/reporting overhead; it is not an isolated decoder benchmark. Native modular-power and subgroup-check totals of 99,382 and 41,727 are sums of public process-reported counters, not reviewer instrumentation.
+
+[DERIVED limits] All 16 registered scalar credentials remain, retaining the full per-input row span even for expired inputs. Four selected software outputs do not restrict that capability. The inputs are deliberately public, so this is a functionality witness without selected-answer secrecy or new semantic utility. Honest independent registration, source/runtime correspondence, concrete SHAKE, classical ROM/DDH assumptions, full recipient capability and shared-account execution retain the prelaunch limits. No master-key-removal conjunction, PQ security, hidden nonlinear learning, physical erasure or OS-isolation claim follows.
+
+[EXECUTED review method] The two retained reviewer commands in EXECUTION.json exit zero. They use only standard-library file hashing, JSON/binary framing, public integer/range checks and log/cost comparisons. No backend or native library was loaded, no private directory was traversed, and no crypto, extraction, seed search, retry, web query or Scry query was performed. Root and author were told no discrepancy was found before this additive review was sealed.

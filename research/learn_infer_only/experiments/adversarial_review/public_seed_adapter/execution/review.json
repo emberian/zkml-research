@@ -1,0 +1,12 @@
+{
+  "aggregate_sha256": "34b4efc2222fadf5489a5efec6b2f070b4e0d06e433b57c56dee7ef38ee6fd86",
+  "author_manifest_sha256": "e59b5c1734dd229fd9eaf38084f0efce977f9f49319c7057c067855deeaefff8",
+  "disposition": "accepted",
+  "prelaunch_manifest_sha256": "e3cdb34f400ea9d67574d91e32f5249cdfc4f40039f6ec2a8d5f1e0016283709",
+  "private_results": "Attributed to saved aggregate; private files unread",
+  "public_closure_sha256": "6aa0789f106ca326dccb370483f0cec589fe218ed9ff4a5d732ef48f07e2a993",
+  "report_sha256": "0e54ecf9fe87cf314d38b9c1b7f7b96ccff259e9f165c6c93d54e52b75810d84",
+  "schema": "independent-public-seed-execution-review-v1",
+  "scope": "One normal33Learn/4Infer/1expiry public source/log/hash/cost review. No crypto/XOF/sampling rerun or private read.",
+  "source_pins_sha256": "be861661892f52e52068d88361fc1519989ae6103a4945a3c6c7e41a8ffc5fac"
+}

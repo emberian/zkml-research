@@ -1,0 +1,18 @@
+Selvage/CurveFullUDStatement.lean:48:2: error: unsolved goals
+case refine_2
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ Finset.univ
+⊢ hammingNorm (comb (fun j => z ^ ↑j) fun x x_1 => 0) ≤ 1
+Selvage/CurveFullUDStatement.lean:50:21: warning: This simp argument is unused:
+  comb
+
+Hint: Omit it from the simp argument list.
+  simp [curveWord,̵ ̵c̵o̵m̵b̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/CurveFullUDStatement.lean:54:8: warning: unused variable `j`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

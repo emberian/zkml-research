@@ -1,0 +1,47 @@
+{
+  "files": {
+    "EXECUTION.json": {
+      "bytes": 863,
+      "sha256": "8b21610cd216f48eac1309ac6997350bf709bd6bd7c4d1fcd98441413cc8cef0"
+    },
+    "NEXT.md": {
+      "bytes": 528,
+      "sha256": "b3efa239329b81c8e7ad7d8ba408fdf9f377e2780778328abcb6398996276896"
+    },
+    "PRELAUNCH_REVIEW.json": {
+      "bytes": 894,
+      "sha256": "5fa271c0d04082c3565ed9ddc8a0f5a0591725155fe8e186bb5c4259fa0c7fec"
+    },
+    "REPORT.md": {
+      "bytes": 9159,
+      "sha256": "c421d1088adc4c0a27fa0d674b9fa2aeaccbd2be72017f1957f7c814bc52c884"
+    },
+    "STATUS.md": {
+      "bytes": 738,
+      "sha256": "e6748a8ce17d62ea4a72f0b823d52ae947c96821890d807694bb6ff00bc0a02d"
+    },
+    "check_source.py": {
+      "bytes": 8450,
+      "sha256": "77e0f12c985c3959d97bacd773895b8e7fcd8fdafb33c223b3de42c15dcfca90"
+    },
+    "helper_results.json": {
+      "bytes": 1508,
+      "sha256": "2fc879cad52859526f97ca6655ec040b27400ee66752fb2ae7a5b62eecec42fb"
+    },
+    "helper_review.py": {
+      "bytes": 7412,
+      "sha256": "431cc8ac6d0f3ffe735dfef630365bd211c5cfe199d165dcbf41956efa6d38ae"
+    },
+    "source_check.log": {
+      "bytes": 1409,
+      "sha256": "5ce79be38eab2f76ffd58bf32c9a7b40bc36879d275af9e5984f5442e6c12b06"
+    },
+    "source_results.json": {
+      "bytes": 1409,
+      "sha256": "5ce79be38eab2f76ffd58bf32c9a7b40bc36879d275af9e5984f5442e6c12b06"
+    }
+  },
+  "schema": "independent-public-seed-adapter-prelaunch-manifest-v1",
+  "scope": "Prelaunch source and public helper review only; runtime pending",
+  "source_pins_sha256": "be861661892f52e52068d88361fc1519989ae6103a4945a3c6c7e41a8ffc5fac"
+}

@@ -1,0 +1,9 @@
+'Minidregg.Selvage.curve_correlatedAgreement_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.curve_bad_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.geometricGenerator_pr_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.reedSolomonCode_isGeometricProximityGenerator_fullUD' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.hasGeometricMutualCorrelatedAgreement_fullUD' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

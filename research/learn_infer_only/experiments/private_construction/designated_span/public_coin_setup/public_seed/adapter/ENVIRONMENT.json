@@ -1,0 +1,17 @@
+{
+  "scope": "read-only environment inventory before crypto launch; not full transitive binary provenance",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "openssl_reported_by_ssl": "OpenSSL 3.6.4 25 Aug 2026",
+  "cryptography_distribution": "50.0.1",
+  "shake_object_module": "_hashlib",
+  "binaries": [
+    {
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "87d4df53fd91304be5bac391fb204643c36b7df2023c04a0953bcbc7d4fdf634"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/_hashlib.cpython-314-darwin.so",
+      "sha256": "9ba56f3cc87814c60b43be78cd551c4c253dc6695ac13a10d651439e952a119d"
+    }
+  ]
+}

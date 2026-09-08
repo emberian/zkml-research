@@ -1,0 +1,368 @@
+f64 - Rust (https://doc.rust-lang.org/std/primitive.f64.html)
+citeturn145view0 [wordlim: 200] Crawled: today; Content type: text/html; Source: open({"ref_id":"https://doc.rust-lang.org/std/primitive.f64.html#method.mul_add","lineno":null}); Total lines: 2855
+L0: cite0†Skip to main content L1: 
+L2: ## cite1†f64 L3: 
+L4: ## cite2†std 1.98.1
+L5: 
+L6: (48a229cea 2026-09-01)
+L7: 
+L8: ## cite1†f64 L9: 
+L10: ### cite3†Associated Constants L11: 
+L12:   * cite4†BITS L13:   * cite5†DIGITS L14:   * cite6†EPSILON L15:   * cite7†EXPONENT_MASK L16:   * cite8†INFINITY L17:   * cite9†MANTISSA_DIGITS L18:   * cite10†MANTISSA_MASK L19:   * cite11†MAX L20:   * cite12†MAX_10_EXP L21:   * cite13†MAX_EXACT_INTEGER L22:   * cite14†MAX_EXP L23:   * cite15†MIN L24:   * cite16†MIN_10_EXP L25:   * cite17†MIN_EXACT_INTEGER L26:   * cite18†MIN_EXP L27:   * cite19†MIN_POSITIVE L28:   * cite20†NAN L29:   * cite21†NEG_INFINITY L30:   * cite22†RADIX L31:   * cite23†SIGN_MASK L32: ### cite3†Associated Functions L33: 
+L34:   * cite24†from_bits L35:   * cite25†from_be_bytes L36:   * cite26†from_le_bytes L37:   * cite27†from_ne_bytes L38: ### cite3†Methods L39:   * cite28†abs L40:   * cite29†abs_sub L41:   * cite30†acos L42:   * cite31†acosh L43:   * cite32†algebraic_add L44:   * cite33†algebraic_div L45:   * cite34†algebraic_mul L46:   * cite35†algebraic_rem L47:   * cite36†algebraic_sub L48:   * cite37†asin L49:   * cite38†asinh L50:   * cite39†atan L51:   * cite40†atan2 L52:   * cite41†atanh L53:   * cite42†cbrt L54:   * cite43†ceil L55:   * cite44†clamp L56:   * cite45†clamp_magnitude L57:   * cite46†classify L58:   * cite47†copysign L59:   * cite48†cos L60:   * cite49†cosh L61:   * cite50†div_euclid L62:   * cite51†erf L63:   * cite52†erfc L64:   * cite53†exp L65:   * cite54†exp2 L66:   * cite55†exp_m1 L67:   * cite56†floor L68:   * cite57†fract L69:   * cite58†gamma L70:   * cite59†hypot L71:   * cite60†is_finite L72:   * cite61†is_infinite L73:   * cite62†is_nan L74:   * cite63†is_normal L75:   * cite64†is_sign_negative L76:   * cite65†is_sign_positive L77:   * cite66†is_subnormal L78:   * cite67†ln L79:   * cite68†ln_1p L80:   * cite69†ln_gamma L81:   * cite70†log L82:   * cite71†log2 L83:   * cite72†log10 L84:   * cite73†max L85:   * cite74†maximum L86:   * cite75†midpoint L87:   * cite76†min L88:   * cite77†minimum L89:   * cite78†mul_add L90:   * cite79†next_down L91:   * cite80†next_up L92:   * cite81†powf L93:   * cite82†powi L94:   * cite83†recip L95:   * cite84†rem_euclid L96:   * cite85†round L97:   * cite86†round_ties_even L98:   * cite87†signum L99:   * cite88†sin L100:   * cite89†sin_cos L101:   * cite90†sinh L102:   * cite91†sqrt L103:   * cite92†tan L104:   * cite93†tanh L105:   * cite94†to_be_bytes L106:   * cite95†to_bits L107:   * cite96†to_degrees L108:   * cite97†to_int_unchecked L109:   * cite98†to_le_bytes L110:   * cite99†to_ne_bytes L111:   * cite100†to_radians L112:   * cite101†total_cmp L113:   * cite102†trunc L114: ### cite103†Trait Implementations L115:   * cite104†Add L116:   * cite105†Add<&f64> L117:   * cite106†Add<&f64> L118:   * cite107†Add<f64> L119:   * cite108†AddAssign L120:   * cite109†AddAssign<&f64> L121:   * cite110†Clone L122:   * cite111†Copy L123:   * cite112†Debug L124:   * cite113†Default L125:   * cite114†Display L126:   * cite115†Div L127:   * cite116†Div<&f64> L128:   * cite117†Div<&f64> L129:   * cite118†Div<f64> L130:   * cite119†DivAssign L131:   * cite120†DivAssign<&f64> L132:   * cite121†FloatToInt<i8> L133:   * cite122†FloatToInt<i16> L134:   * cite123†FloatToInt<i32> L135:   * cite124†FloatToInt<i64> L136:   * cite125†FloatToInt<i128> L137:   * cite126†FloatToInt<isize> L138:   * cite127†FloatToInt<u8> L139:   * cite128†FloatToInt<u16> L140:   * cite129†FloatToInt<u32> L141:   * cite130†FloatToInt<u64> L142:   * cite131†FloatToInt<u128> L143:   * cite132†FloatToInt<usize> L144:   * cite133†From<bool> L145:   * cite134†From<f16> L146:   * cite135†From<f32> L147:   * cite136†From<f64> L148:   * cite137†From<i8> L149:   * cite138†From<i16> L150:   * cite139†From<i32> L151:   * cite140†From<u8> L152:   * cite141†From<u16> L153:   * cite142†From<u32> L154:   * cite143†FromEndianBytes L155:   * cite144†FromStr L156:   * cite145†LowerExp L157:   * cite146†Mul L158:   * cite147†Mul<&f64> L159:   * cite148†Mul<&f64> L160:   * cite149†Mul<f64> L161:   * cite150†MulAssign L162:   * cite151†MulAssign<&f64> L163:   * cite152†Neg L164:   * cite153†Neg L165:   * cite154†PartialEq L166:   * cite155†PartialOrd L167:   * cite156†Product L168:   * cite157†Product<&'a f64> L169:   * cite158†Rem L170:   * cite159†Rem<&f64> L171:   * cite160†Rem<&f64> L172:   * cite161†Rem<f64> L173:   * cite162†RemAssign L174:   * cite163†RemAssign<&f64> L175:   * cite164†SimdCast L176:   * cite165†SimdElement L177:   * cite166†Sub L178:   * cite167†Sub<&f64> L179:   * cite168†Sub<&f64> L180:   * cite169†Sub<f64> L181:   * cite170†SubAssign L182:   * cite171†SubAssign<&f64> L183:   * cite172†Sum L184:   * cite173†Sum<&'a f64> L185:   * cite174†UpperExp L186:   * cite175†UseCloned L187:   * cite176†VaArgSafe L188: ### cite177†Auto Trait Implementations L189: 
+L190:   * cite178†Freeze L191:   * cite179†RefUnwindSafe L192:   * cite180†Send L193:   * cite181†Sync L194:   * cite182†Unpin L195:   * cite183†UnsafeUnpin L196:   * cite184†UnwindSafe L197: 
+L198: ### cite185†Blanket Implementations L199: 
+L200:   * cite186†Any L201:   * cite187†Borrow<T> L202:   * cite188†BorrowMut<T> L203:   * cite189†CloneToUninit L204:   * cite190†From<T> L205:   * cite191†Into<U> L206:   * cite192†ToOwned L207:   * cite193†ToString L208:   * cite194†TryFrom<U> L209:   * cite195†TryInto<U> L210: 
+L211: ## cite2†In crate std L212: # Primitive Type f64 [Button: Copy item path]
+L213: 
+L214: 1.0.0
+L215: 
+L216: Expand description
+L217: 
+L218: A 64-bit floating-point type (specifically, the “binary64” type defined in IEEE 754-2008).
+L219: 
+L220: This type is very similar to cite196†`f32` , but has increased precision by using twice as many bits. Please see cite196†the documentation for `f32` or cite197†Wikipedia on double-precision values†en.wikipedia.org for more information.
+L221: 
+L222: cite198†See also the `std::f64::consts` module .
+L223: 
+L224: ## Implementationscite3†§ L225: 
+L226: cite199†Source cite200†§ L227: ### impl cite201†f64 L228: 
+L229: 1.0.0 (const: 1.90.0) · cite202†Source L230: 
+L231: #### pub const fn cite56†floor (self) -> cite201†f64 L232: 
+L233: Returns the largest integer that is less than or equal to `self`.
+L234: 
+L235: This function always returns the precise result.
+L236: 
+L237: ##### cite203†§ Examples
+L238: 
+L239:     `let f = 3.7_f64;
+L240:     let g = 3.0_f64;
+L241:     let h = -3.7_f64;
+L242: 
+L243:     assert_eq!(f.floor(), 3.0);
+L244:     assert_eq!(g.floor(), 3.0);
+L245:     assert_eq!(h.floor(), -4.0);`
+L246: 
+L247: 1.0.0 (const: 1.90.0) · cite204†Source L248: #### pub const fn cite43†ceil (self) -> cite201†f64 L249: 
+L250: Returns the smallest integer that is greater than or equal to `self`.
+L251: 
+L252: This function always returns the precise result.
+L253: 
+L254: ##### cite205†§ Examples
+L255: 
+L256:     `let f = 3.01_f64;
+L257:     let g = 4.0_f64;
+L258:     let h = -3.01_f64;
+L259: 
+L260:     assert_eq!(f.ceil(), 4.0);
+L261:     assert_eq!(g.ceil(), 4.0);
+L262:     assert_eq!(h.ceil(), -3.0);`
+L263: 
+L264: 1.0.0 (const: 1.90.0) · cite206†Source L265: #### pub const fn cite85†round (self) -> cite201†f64 L266: 
+L267: Returns the nearest integer to `self`. If a value is half-way between two integers, round away from `0.0`.
+L268: 
+L269: This function always returns the precise result.
+L270: ##### cite207†§ Examples
+L271: 
+L272:     `let f = 3.3_f64;
+L273:     let g = -3.3_f64;
+L274:     let h = -3.7_f64;
+L275:     let i = 3.5_f64;
+L276:     let j = 4.5_f64;
+L277: 
+L278:     assert_eq!(f.round(), 3.0);
+L279:     assert_eq!(g.round(), -3.0);
+L280:     assert_eq!(h.round(), -4.0);
+L281:     assert_eq!(i.round(), 4.0);
+L282:     assert_eq!(j.round(), 5.0);`
+L283: 
+L284: 1.77.0 (const: 1.90.0) · cite208†Source L285: #### pub const fn cite86†round_ties_even (self) -> cite201†f64 L286: 
+L287: Returns the nearest integer to a number. Rounds half-way cases to the number with an even least significant digit.
+L288: 
+L289: This function always returns the precise result.
+L290: ##### cite209†§ Examples
+L291: 
+L292:     `let f = 3.3_f64;
+L293:     let g = -3.3_f64;
+L294:     let h = 3.5_f64;
+L295:     let i = 4.5_f64;
+L296: 
+L297:     assert_eq!(f.round_ties_even(), 3.0);
+L298:     assert_eq!(g.round_ties_even(), -3.0);
+L299:     assert_eq!(h.round_ties_even(), 4.0);
+L300:     assert_eq!(i.round_ties_even(), 4.0);`
+L301: 
+L302: 1.0.0 (const: 1.90.0) · cite210†Source L303: #### pub const fn cite102†trunc (self) -> cite201†f64 L304: 
+L305: Returns the integer part of `self`. This means that non-integer numbers are always truncated towards zero.
+L306: 
+L307: This function always returns the precise result.
+L308: 
+L309: ##### cite211†§ Examples
+L310: 
+L311:     `let f = 3.7_f64;
+L312:     let g = 3.0_f64;
+L313:     let h = -3.7_f64;
+L314: 
+L315:     assert_eq!(f.trunc(), 3.0);
+L316:     assert_eq!(g.trunc(), 3.0);
+L317:     assert_eq!(h.trunc(), -3.0);`
+L318: 
+L319: 1.0.0 (const: 1.90.0) · cite212†Source L320: #### pub const fn cite57†fract (self) -> cite201†f64 L321: 
+L322: Returns the fractional part of `self`.
+L323: 
+L324: This function always returns the precise result.
+L325: 
+L326: ##### cite213†§ Examples
+L327: 
+L328:     `let x = 3.6_f64;
+L329:     let y = -3.6_f64;
+L330:     let abs_difference_x = (x.fract() - 0.6).abs();
+L331:     let abs_difference_y = (y.fract() - (-0.6)).abs();
+L332: 
+L333:     assert!(abs_difference_x < 1e-10);
+L334:     assert!(abs_difference_y < 1e-10);`
+L335: 
+L336: 1.0.0 (const: 1.94.0) · cite214†Source L337: #### pub const fn cite78†mul_add (self, a: cite201†f64 , b: cite201†f64 ) -> cite201†f64 L338: 
+L339: Fused multiply-add. Computes `(self * a) + b` with only one rounding error, yielding a more accurate result than an unfused multiply-add.
+L340: 
+L341: Using `mul_add` may be more performant than an unfused multiply-add if the target architecture has a dedicated `fma` CPU instruction. However, this is not always true, and will be heavily dependant on designing algorithms with specific target hardware in mind.
+L342: ##### cite215†§ Precision
+L343: 
+L344: The result of this operation is guaranteed to be the rounded infinite-precision result. It is specified by IEEE 754 as `fusedMultiplyAdd` and guaranteed not to change.
+L345: ##### cite216†§ Examples
+L346: 
+L347:     `let m = 10.0_f64;
+L348:     let x = 4.0_f64;
+L349:     let b = 60.0_f64;
+L350: 
+L351:     assert_eq!(m.mul_add(x, b), 100.0);
+L352:     assert_eq!(m * x + b, 100.0);
+L353: 
+L354:     let one_plus_eps = 1.0_f64 + f64::EPSILON;
+L355:     let one_minus_eps = 1.0_f64 - f64::EPSILON;
+L356:     let minus_one = -1.0_f64;
+L357: 
+L358:     // The exact result (1 + eps) * (1 - eps) = 1 - eps * eps.
+L359:     assert_eq!(one_plus_eps.mul_add(one_minus_eps, minus_one), -f64::EPSILON * f64::EPSILON);
+L360:     // Different rounding with the non-fused multiply and add.
+L361:     assert_eq!(one_plus_eps * one_minus_eps + minus_one, 0.0);`
+L362: 1.38.0 · cite217†Source L363: #### pub fn cite50†div_euclid (self, rhs: cite201†f64 ) -> cite201†f64 L364: 
+L365: Calculates Euclidean division, the matching method for `rem_euclid`.
+L366: 
+L367: This computes the integer `n` such that `self = n * rhs + self.rem_euclid(rhs)`. In other words, the result is `self / rhs` rounded to the integer `n` such that `self >= n * rhs`.
+L368: 
+L369: ##### cite218†§ Precision
+L370: 
+L371: The result of this operation is guaranteed to be the rounded infinite-precision result.
+L372: ##### cite219†§ Examples
+L373: 
+L374:     `let a: f64 = 7.0;
+L375:     let b = 4.0;
+L376:     assert_eq!(a.div_euclid(b), 1.0); // 7.0 > 4.0 * 1.0
+L377:     assert_eq!((-a).div_euclid(b), -2.0); // -7.0 >= 4.0 * -2.0
+L378:     assert_eq!(a.div_euclid(-b), -1.0); // 7.0 >= -4.0 * -1.0
+L379:     assert_eq!((-a).div_euclid(-b), 2.0); // -7.0 >= -4.0 * 2.0`
+L380: 
+L381: 1.38.0 · cite220†Source L382: #### pub fn cite84†rem_euclid (self, rhs: cite201†f64 ) -> cite201†f64 L383: 
+L384: Calculates the least nonnegative remainder of `self` when divided by `rhs`.
+L385: In particular, the return value `r` satisfies `0.0 <= r < rhs.abs()` in most cases. However, due to a floating point round-off error it can result in `r == rhs.abs()`, violating the mathematical definition, if `self` is much smaller than `rhs.abs()` in magnitude and `self < 0.0`. This result is not an element of the function’s codomain, but it is the closest floating point number in the real numbers and thus fulfills the property `self == self.div_euclid(rhs) * rhs + self.rem_euclid(rhs)` approximately.
+L386: ##### cite221†§ Precision
+L387: 
+L388: The result of this operation is guaranteed to be the rounded infinite-precision result.
+L389: 
+L390: ##### cite222†§ Examples
+L391: 
+L392:     `let a: f64 = 7.0;
+L393:     let b = 4.0;
+L394:     assert_eq!(a.rem_euclid(b), 3.0);
+L395:     assert_eq!((-a).rem_euclid(b), 1.0);
+L396:     assert_eq!(a.rem_euclid(-b), 3.0);
+L397:     assert_eq!((-a).rem_euclid(-b), 1.0);
+L398:     // limitation due to round-off error
+L399:     assert!((-f64::EPSILON).rem_euclid(3.0) != 0.0);`
+L400: 
+L401: 1.0.0 · cite223†Source L402: #### pub fn cite82†powi (self, n: cite224†i32 ) -> cite201†f64 L403: 
+L404: Raises a number to an integer power.
+L405: 
+L406: Using this function is generally faster than using `powf`. It might have a different sequence of rounding operations than `powf`, so the results are not guaranteed to agree.
+L407: Note that this function is special in that it can return non-NaN results for NaN inputs. For example, `f64::powi(f64::NAN, 0)` returns `1.0`. However, if an input is a signaling NaN, then the result is non-deterministically either a NaN or the result that the corresponding quiet NaN would produce.
+L408: ##### cite225†§ Unspecified precision
+L409: 
+L410: The precision of this function is non-deterministic. This means it varies by platform, Rust version, and can even differ within the same execution from one invocation to the next.
+L411: 
+L412: ##### cite226†§ Examples
+L413: 
+L414:     `let x = 2.0_f64;
+L415:     let abs_difference = (x.powi(2) - (x * x)).abs();
+L416:     assert!(abs_difference <= 1e-14);
+L417: 
+L418:     assert_eq!(f64::powi(f64::NAN, 0), 1.0);
+L419:     assert_eq!(f64::powi(0.0, 0), 1.0);`
+L420: 
+L421: 1.0.0 · cite227†Source L422: #### pub fn cite81†powf (self, n: cite201†f64 ) -> cite201†f64 L423: 
+L424: Raises a number to a floating point power.
+L425: 
+L426: Note that this function is special in that it can return non-NaN results for NaN inputs. For example, `f64::powf(f64::NAN, 0.0)` returns `1.0`. However, if an input is a signaling NaN, then the result is non-deterministically either a NaN or the result that the corresponding quiet NaN would produce.
+L427: ##### cite228†§ Unspecified precision
+L428: 
+L429: The precision of this function is non-deterministic. This means it varies by platform, Rust version, and can even differ within the same execution from one invocation to the next.
+L430: ##### cite229†§ Examples
+L431: 
+L432:     `let x = 2.0_f64;
+L433:     let abs_difference = (x.powf(2.0) - (x * x)).abs();
+L434:     assert!(abs_difference <= 1e-14);
+L435: 
+L436:     assert_eq!(f64::powf(1.0, f64::NAN), 1.0);
+L437:     assert_eq!(f64::powf(f64::NAN, 0.0), 1.0);
+L438:     assert_eq!(f64::powf(0.0, 0.0), 1.0);`
+L439: 
+L440: 1.0.0 · cite230†Source L441: 
+L442: #### pub fn cite91†sqrt (self) -> cite201†f64 L443: 
+L444: Returns the square root of a number.
+L445: 
+L446: Returns NaN if `self` is a negative number other than `-0.0`.
+L447: ##### cite231†§ Precision
+L448: 
+L449: The result of this operation is guaranteed to be the rounded infinite-precision result. It is specified by IEEE 754 as `squareRoot` and guaranteed not to change.
+L450: 
+L451: ##### cite232†§ Examples
+L452: 
+L453:     `let positive = 4.0_f64;
+L454:     let negative = -4.0_f64;
+L455:     let negative_zero = -0.0_f64;
+L456: 
+L457:     assert_eq!(positive.sqrt(), 2.0);
+L458:     assert!(negative.sqrt().is_nan());
+L459:     assert!(negative_zero.sqrt() == negative_zero);`
+L460: 
+L461: 1.0.0 · cite233†Source L462: #### pub fn cite53†exp (self) -> cite201†f64 L463: 
+L464: Returns `e^(self)`, (the exponential function).
+L465: 
+L466: ##### cite234†§ Unspecified precision
+L467: 
+L468: The precision of this function is non-deterministic. This means it varies by platform, Rust version, and can even differ within the same execution from one invocation to the next.
+L469: ##### cite235†§ Examples
+L470: 
+L471:     `let one = 1.0_f64;
+L472:     // e^1
+L473:     let e = one.exp();
+L474: 
+L475:     // ln(e) - 1 == 0
+L476:     let abs_difference = (e.ln() - 1.0).abs();
+L477: 
+L478:     assert!(abs_difference < 1e-10);`
+L479: 
+L480: 1.0.0 · cite236†Source L481: 
+L482: #### pub fn cite54†exp2 (self) -> cite201†f64 L483: 
+L484: Returns `2^(self)`.
+L485: 
+L486: ##### cite237†§ Unspecified precision
+L487: 
+L488: The precision of this function is non-deterministic. This means it varies by platform, Rust version, and can even differ within the same execution from one invocation to the next.
+L489: ##### cite238†§ Examples
+L490: 
+L491:     `let f = 2.0_f64;
+L492: 
+L493:     // 2^2 - 4 == 0
+L494:     let abs_difference = (f.exp2() - 4.0).abs();
+L495: 
+L496:     assert!(abs_difference < 1e-10);`
+L497: 
+L498: 1.0.0 · cite239†Source L499: 
+L500: #### pub fn cite67†ln (self) -> cite201†f64 L501: 
+L502: Returns the natural logarithm of the number.
+L503: 
+L504: This returns NaN when the number is negative, and negative infinity when number is zero.
+L505: ##### cite240†§ Unspecified precision
+L506: 
+L507: The precision of this function is non-deterministic. This means it varies by platform, Rust version, and can even differ within the same execution from one invocation to the next.
+L508: ##### cite241†§ Examples
+L509: 
+L510:     `let one = 1.0_f64;
+L511:     // e^1
+L512:     let e = one.exp();
+L513: 
+L514:     // ln(e) - 1 == 0
+L515:     let abs_difference = (e.ln() - 1.0).abs();
+L516: 
+L517:     assert!(abs_difference < 1e-10);`
+L518: 
+L519: Non-positive values:
+L520: 
+L521:     `assert_eq!(0_f64.ln(), f64::NEG_INFINITY);
+L522:     assert!((-42_f64).ln().is_nan());`
+L523: 
+L524: 1.0.0 · cite242†Source L525: #### pub fn cite70†log (self, base: cite201†f64 ) -> cite201†f64 L526: 
+L527: Returns the logarithm of the number with respect to an arbitrary base.
+L528: 
+L529: This returns NaN when the number is negative, and negative infinity when number is zero.
+L530: 
+L531: The result might not be correctly rounded owing to implementation details; `self.log2()` can produce more accurate results for base 2, and `self.log10()` can produce more accurate results for base 10.
+L532: ##### cite243†§ Unspecified precision
+L533: 
+L534: The precision of this function is non-deterministic. This means it varies by platform, Rust version, and can even differ within the same execution from one invocation to the next.
+L535: ##### cite244†§ Examples
+L536: 
+L537:     `let twenty_five = 25.0_f64;
+L538: 
+L539:     // log5(25) - 2 == 0
+L540:     let abs_difference = (twenty_five.log(5.0) - 2.0).abs();
+L541: 
+L542:     assert!(abs_difference < 1e-10);`
+L543: 
+L544: Non-positive values:
+L545: 
+L546:     `assert_eq!(0_f64.log(10.0), f64::NEG_INFINITY);
+L547:     assert!((-42_f64).log(10.0).is_nan());`
+L548: 
+L549: 1.0.0 · cite245†Source L550: #### pub fn cite71†log2 (self) -> cite201†f64 L551: 
+L552: Returns the base 2 logarithm of the number.
+L553: 
+L554: This returns NaN when the number is negative, and negative infinity when number is zero.
+L555: 
+L556: ##### cite246†§ Unspecified precision
+L557: 
+L558: The precision of this function is non-deterministic. This means it varies by platform, Rust version, and can even differ within the same execution from one invocation to the next.
+L559: ##### cite247†§ Examples
+L560: 
+L561:     `let four = 4.0_f64;
+L562: 
+L563:     // log2(4) - 2 == 0
+L564:     let abs_difference = (four.log2() - 2.0).abs();
+L565: 
+L566:     assert!(abs_difference < 1e-10);`
+L567: 
+L568: Non-positive values:
+L569: 
+L570:     `assert_eq!(0_f64.log2(), f64::NEG_INFINITY);
+L571:     assert!((-42_f64).log2().is_nan());`
+L572: 
+L573: 1.0.0 · cite248†Source L574: 
+L575: #### pub fn cite72†log10 (self) -> cite201†f64 L576: 
+L577: Returns the base 10 logarithm of the number.
+L578: 
+L579: This returns NaN when the number is negative, and negative infinity when number is zero.
+L580: ##### cite249†§ Unspecified precision
+L581: 
+L582: The precision of this function is non-deterministic. This means it varies by platform, Rust version, and can even differ within the same execution from one invocation to the next.
+L583: ##### cite250†§ Examples
+L584: 
+L585:     `let hundred = 100.0_f64;
+L586: 
+L587:     // log10(100) - 2 == 0
+L588:     let abs_difference = (hundred.log10() - 2.0).abs();
+L589: 
+L590:     assert!(abs_difference < 1e-10);`
+L591: 
+L592: Non-positive values:
+L593: 
+L594:     `assert_eq!(0_f64.log10(), f64::NEG_INFINITY);
+L595:     assert!((-42_f64).log10().is_nan());`
+L596: 
+L597: 1.0.0 · cite251†Source L598: #### pub fn cite29†abs_sub (self, other: cite201†f64 ) -> cite201†f64 L599: 
+L600: 👎Deprecated since 1.10.0:
+L601: 
+--------------------------------------------------------------------------------
+Internal Error ()
+citeturn145view1 [wordlim: 200] Source: open({"ref_id":"https://docs.zama.ai/tfhe-rs/fhe-computation/advanced-features/parallelized-pbs","lineno":null}); Total lines: 1
+

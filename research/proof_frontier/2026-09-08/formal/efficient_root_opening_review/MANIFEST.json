@@ -1,0 +1,52 @@
+{
+  "scope": "Independent deterministic supplied-opening/log review; no new Lean or crypto runs.",
+  "author_manifest_sha256": "9b18d46259b37570d073999589ed06daee9e1cbbe57dbed232c2dc8c24a9b7ef",
+  "report_local_links_checked": 7,
+  "files": [
+    {
+      "path": "CONTROLS.json",
+      "bytes": 575,
+      "sha256": "7c87feecc319b1a783f7ae5d108f0efd1338b06648e21a3e2ec938f4854d9aa9"
+    },
+    {
+      "path": "INPUTS.json",
+      "bytes": 4478,
+      "sha256": "83baa4218c53f2143c146c23001172636e0000a1804cc2327ac092c2a4d9799d"
+    },
+    {
+      "path": "NEXT.md",
+      "bytes": 416,
+      "sha256": "511b5289a9b48658ecbedbfd029cb65195dbf78aaf1d86cf95e3804d79a99dba"
+    },
+    {
+      "path": "REPORT.md",
+      "bytes": 10324,
+      "sha256": "57e81c7ba063f2f5597c6d008ca930121b5a1a262b0277c64ca8cf5c4e040155"
+    },
+    {
+      "path": "STATUS.md",
+      "bytes": 433,
+      "sha256": "524a77d55c12e57008dbd4abebe15ad088cd6ab591dcd7ce153e2738093b3719"
+    },
+    {
+      "path": "VERIFICATION.json",
+      "bytes": 1866,
+      "sha256": "6a15a6b3e8b2ab146ec96bbb02ff91188984439cc44f93bc3d3c43ad0d9b8a75"
+    },
+    {
+      "path": "commands.json",
+      "bytes": 611,
+      "sha256": "efcb4d0fa80c099b968caf57226835bf0ae890a28dcce87d3610705ee63d59ec"
+    },
+    {
+      "path": "controls.py",
+      "bytes": 5935,
+      "sha256": "b811721ccaa97de812e41dbc09ff5e203abc84a4c459dfb3ddc56d24dcbf1b5a"
+    },
+    {
+      "path": "verify_packet.py",
+      "bytes": 5416,
+      "sha256": "df728c53c0e811fc9e9b970b0b5c80700c94db5708be9f8a9b2f93858cdb6dcb"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "scope": "Read-only public input integrity; optional web leads not independently audited",
+  "records": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/SPEC.md",
+      "sha256": "2fef91992b092f93f6023a02b0072008a2f4f46e5601ea8fd71eb8d0972e1576",
+      "scope": "Frozen author artifact"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/AUDIT.md",
+      "sha256": "7528719aab9390c1876c6e4b5361302e096a7f94f889a555173e033206da7bf0",
+      "scope": "Frozen author artifact"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/STATUS.md",
+      "sha256": "98c9cc8f63711909d697035c46f53a2db101b3fc13660d3887b8071bb8e6f5ad",
+      "scope": "Frozen author artifact"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/NEXT.md",
+      "sha256": "fd6b0805e06258017e4195475b9b3c54a710bb33d5b403ab96ad4bebc6749323",
+      "scope": "Frozen author artifact"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/check_bounds.py",
+      "sha256": "2b12ee13ec27c08becde25afeed452918c9165b0fcccc5120da75501144e5b03",
+      "scope": "Frozen author artifact"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/RESULTS.json",
+      "sha256": "659cd143775f02ada72f9bc6371ce88aa5e0a8e8129e394e3f1fa6212b620bb5",
+      "scope": "Frozen author artifact"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/SOURCES.json",
+      "sha256": "e4fc8a09c462505ae9a2baecda5c494b1cdecea8795d907d178a9c4ae4301afe",
+      "scope": "Frozen author artifact"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/seal.py",
+      "sha256": "8ea2b0b5723629000b977639e0fa769301eb2bc5492a08241e638eb7c28718ac",
+      "scope": "Frozen author artifact"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/GRID.json",
+      "sha256": "de246339b8321791cba308e01ef0f929a42d725e3bbdd7a8b533622a7011031a",
+      "scope": "Pinned public parameter/proof provenance; no estimator execution"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/REBUILT.json",
+      "sha256": "b945fd60fa17bbd002f229167b915b10b23733be7db65950fe6a119dbcbe8574",
+      "scope": "Pinned public parameter/proof provenance; no estimator execution"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/MANIFEST.json",
+      "sha256": "2f90bee88437465514066d879eddbc3918ab1af6d0c8d6592e63b0750adeef53",
+      "scope": "Pinned public parameter/proof provenance; no estimator execution"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/MODEL_AND_GRID.md",
+      "sha256": "a3b0e6db5cc15d52fb1eee75ae580045391d7d73dd1ee6ac36797486d7eef7c8",
+      "scope": "Pinned public parameter/proof provenance; no estimator execution"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/MANIFEST.json",
+      "sha256": "f3a8047121fb86d310daec4488bcbd1a311a7d269486e15f1e392a24d0c75359",
+      "scope": "Pinned public parameter/proof provenance; no estimator execution"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/AUDIT.md",
+      "sha256": "53eeea3fc4e11cd03bcc6229ae47b42ddfe98c274acb4af90145eeb085a9fe57",
+      "scope": "Pinned public parameter/proof provenance; no estimator execution"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/CANDIDATE.md",
+      "sha256": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2",
+      "scope": "Pinned public parameter/proof provenance; no estimator execution"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/SMUDGED_FIXED_COORDINATE.md",
+      "sha256": "a7f98b9f17b0e9b37537ca763697f7a9235df498364df4e0dd774f293d9b9327",
+      "scope": "Pinned public parameter/proof provenance; no estimator execution"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/MANIFEST.json",
+      "sha256": "23226a36d44899189716a63bd97378bdf114b8791fa0f80a39ed3f212b1adf4e",
+      "scope": "Frozen author manifest"
+    }
+  ],
+  "new_web_search_queries": 0,
+  "new_scry_calls": 0,
+  "pdf_downloads": 0
+}

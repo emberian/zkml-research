@@ -1,0 +1,104 @@
+{
+  "accepted_counter_histogram": {
+    "1": 577
+  },
+  "after_closure_to_total_seconds": 1.176860084,
+  "aggregate_sha256": "34b4efc2222fadf5489a5efec6b2f070b4e0d06e433b57c56dee7ef38ee6fd86",
+  "closure_overhead_seconds": 0.070518708,
+  "command_costs": {
+    "auth-init": {
+      "calls": 1,
+      "max_seconds": 0.205217709,
+      "median_seconds": 0.205217709,
+      "sum_seconds": 0.205217709
+    },
+    "encode-query": {
+      "calls": 4,
+      "max_seconds": 0.144253042,
+      "median_seconds": 0.1388558125,
+      "sum_seconds": 0.546907834
+    },
+    "host-infer": {
+      "calls": 4,
+      "max_seconds": 2.44118525,
+      "median_seconds": 1.9959548335,
+      "sum_seconds": 8.217006542
+    },
+    "host-learn": {
+      "calls": 33,
+      "max_seconds": 5.175887708,
+      "median_seconds": 3.735143958,
+      "sum_seconds": 127.376510709
+    },
+    "issuer-encrypt": {
+      "calls": 33,
+      "max_seconds": 4.38979825,
+      "median_seconds": 1.917792416,
+      "sum_seconds": 66.761651628
+    },
+    "public-build": {
+      "calls": 1,
+      "max_seconds": 44.532715625,
+      "median_seconds": 44.532715625,
+      "sum_seconds": 44.532715625
+    },
+    "public-reference": {
+      "calls": 1,
+      "max_seconds": 7.276678459,
+      "median_seconds": 7.276678459,
+      "sum_seconds": 7.276678459
+    },
+    "recipient-finalize": {
+      "calls": 16,
+      "max_seconds": 0.173065833,
+      "median_seconds": 0.157675104,
+      "sum_seconds": 2.520914124
+    },
+    "recipient-init": {
+      "calls": 16,
+      "max_seconds": 0.237731292,
+      "median_seconds": 0.1628259375,
+      "sum_seconds": 2.665351085
+    },
+    "validate-context": {
+      "calls": 1,
+      "max_seconds": 7.218144458,
+      "median_seconds": 7.218144458,
+      "sum_seconds": 7.218144458
+    },
+    "verify-public": {
+      "calls": 2,
+      "max_seconds": 43.9697285,
+      "median_seconds": 36.3467605205,
+      "sum_seconds": 72.693521041
+    }
+  },
+  "context_sha256": "be14f3e3f83759c33238bf62c7511a6d8df897d2646a877b4acf8ef5b33fbbb5",
+  "crypto_or_XOF_invocations": 0,
+  "exact_original_expiry_step": 33,
+  "full_registered_recipients": 16,
+  "normal_failure_or_retry_records_in_public_scope": 0,
+  "ok": true,
+  "ordering_basis": "unchanged reviewed synchronous source, 112 public commands, sealed public transcript, closure stdout before final aggregate; no independent private timestamp observation",
+  "prelaunch_files_unchanged": 10,
+  "private_comparison_attribution": "four matches and four decode processes reported by aggregate; no private results or timestamps read",
+  "private_file_reads": 0,
+  "public_bytes": 11296482,
+  "public_closure_checkpoint_seconds": 341.002693166,
+  "public_closure_sha256": "6aa0789f106ca326dccb370483f0cec589fe218ed9ff4a5d732ef48f07e2a993",
+  "public_command_count": 112,
+  "public_envelopes_checked": 71,
+  "public_files": 139,
+  "public_work_timer_seconds": 340.932174458,
+  "replay_results_attributed_to_frozen_public_processes": {
+    "expiries": 1,
+    "original_ciphertexts": 33,
+    "outputs": 4,
+    "states": 33
+  },
+  "scope": "Public hashes, framing/ranges and retained source/log/replay evidence only; no signature/group/XOF recomputation, private reads or sampling.",
+  "setup_seconds": 101.459136291,
+  "source_pins_sha256": "be861661892f52e52068d88361fc1519989ae6103a4945a3c6c7e41a8ffc5fac",
+  "total_seconds": 342.17955325,
+  "transcript_sha256": "04586e22ea7f18fd2282745bf2e40fbfe8d8c739e835995bad54c5974aee0e56"
+}

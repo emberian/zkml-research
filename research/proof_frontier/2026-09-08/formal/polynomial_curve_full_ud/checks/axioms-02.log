@@ -1,0 +1,4 @@
+'Minidregg.RSInterpolation.BW_entry_natDegree_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.RSInterpolation.BW_entry_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.RSInterpolation.BW_map_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.RSInterpolation.BW_det_natDegree_le' depends on axioms: [propext, Classical.choice, Quot.sound]

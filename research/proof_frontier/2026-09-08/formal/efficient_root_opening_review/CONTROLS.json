@@ -1,0 +1,23 @@
+{
+  "scope": "Pure finite tuple/log arithmetic only; no probability or implementation refinement.",
+  "counts": {
+    "cases": 1406720,
+    "accepted": 703360,
+    "good_accepted": 6400,
+    "mismatches": 351680,
+    "good_mismatches": 0
+  },
+  "arbitrary_prefixes": 157,
+  "oracle_tables": 64,
+  "child_target_falsifier": true,
+  "acceptance_premise_falsifier": true,
+  "cross_type_response_collision_falsifier": true,
+  "malformed_path_controls": 4,
+  "checkpoint_word": [
+    0,
+    1
+  ],
+  "bottom_code_distance": "1/2",
+  "radius": "2/5",
+  "all_checks_passed": true
+}

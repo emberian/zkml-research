@@ -1,0 +1,26 @@
+{
+  "finite_control": {
+    "command": "python3 research/proof_frontier/2026-09-08/efficient_root_binding_review/controls.py",
+    "cwd": "repository root",
+    "exit_code": 0,
+    "retained_machine_output": "RESULTS.json",
+    "stdout": "The script prints exactly RESULTS.json after writing it."
+  },
+  "input_validation": {
+    "command": "python3 research/proof_frontier/2026-09-08/efficient_root_binding_review/verify_inputs.py",
+    "exit_code": 0,
+    "retained_output": "INPUTS.json",
+    "stdout": {"author_manifest_entries_checked": 39, "additional_source_pins": 2, "local_links": 8, "all_match": true}
+  },
+  "primary_pdf_reads": [
+    "pdftotext -f 14 -l 16 -layout <local eprint mirror>/2016/116.pdf -",
+    "pdftotext -f 24 -l 26 -layout <local eprint mirror>/2023/1071.pdf -",
+    "pdftotext -f 25 -l 25 -layout <local eprint mirror>/2023/1071.pdf -"
+  ],
+  "other_instruments": ["rg local source discovery", "sed source-range reads", "git rev-parse HEAD for pinned public source checkouts", "Python hashlib.sha256 artifact validation"],
+  "web_queries": 0,
+  "scry_queries": 0,
+  "kagi_queries": 0,
+  "lean_builds": 0,
+  "crypto_protocol_runs": 0
+}

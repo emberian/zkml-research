@@ -1,0 +1,96 @@
+{
+  "frozen_proposal_artifacts": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/CANDIDATE.md",
+      "sha256": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/RING_REGULARITY.md",
+      "sha256": "2926555d5842bb71af7b16caec3eef512a9c7cfea99e877b862bcfea79d30e85"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/PARAMETERS.md",
+      "sha256": "c23732e366fe5966ddf971c0f69fdf51cec41bee134d0bf3e4da19367631b78d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/RESULTS.json",
+      "sha256": "e034b208095cbb82cf852abe0137aac7c1be1dd03f8df16844edc8bdb299b693"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/SOURCES.json",
+      "sha256": "37eda2385bf42cbe7bc69133c472f4a3534b78b62a6c4445099bed0c8f2554b3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/MANIFEST.json",
+      "sha256": "703e824295a40357f44d3a8cfa073ae2f6c1411b24783a83ca1c6e4f7992fbdb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/check_public_math.py",
+      "sha256": "5561907c56ea7833115740b4318914860f403cca5d2b2a09420847a9c34377d6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/searches/prime_certificate.json",
+      "sha256": "8d24375202ae3176d10fd86386753680f2f6ec44a41333d78114befb4d3735a1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/ss-lemma2-page7.png",
+      "sha256": "fb08af8d2e959f3e266d43552094d6dcfadf4e1caf39a5d0fdfa4171d9607a70"
+    }
+  ],
+  "primary_sources": [
+    {
+      "name": "MKMS2021",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2021/46.pdf",
+      "pdf_sha256": "8b5a43ee653081a0d7cf94bc7584e80ed60a6a525c41d15fdc61734ea7c6c20f",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2021-046.txt",
+      "extract_sha256": "1c041f582042c6b811ec56c66e84d734c0cee36f7a7823c333b9360ab5fdcf2c",
+      "access": "Read exact Gaussian definition, Theorem2, source algorithms in section5 and AppendixC surjectivity assertion from pinned local text."
+    },
+    {
+      "name": "SS2013",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/004.pdf",
+      "pdf_sha256": "0c361701dbc39786deeafc40a97c64b3a64ad88b48ec588ee000dcb0f62dc403",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2013-004.txt",
+      "extract_sha256": "44a98b57d8c9182d65c4b12ee10dc7dd9c144230965dd90eac2ebc6b31c2a3fe",
+      "access": "Read pi normalization and Lemmas2.1/2.4/3.2 from pinned text; independently viewed p7 render."
+    },
+    {
+      "name": "LPR2013",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/293.pdf",
+      "pdf_sha256": "6b22c0bca6f3234a3aaa769a42c106c1816b12edffef2332bf7835c78d3c21e0",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2013-293.txt",
+      "extract_sha256": "bb8e859a3184bff5870150932861b46e4c29dcd354e3cdbea4dc98fc94dc5e56",
+      "access": "Read section2.6 definitions, Theorem2.22 and discrete conversion from pinned text; no hardness theorem transferred."
+    },
+    {
+      "name": "GPV2007",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/432.pdf",
+      "pdf_sha256": "7e747881cddd16b7dcf82893682cb9b4c788d7cec5712f80aa4193f2bd30a5b3",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/2007-432.txt",
+      "extract_sha256": "7417aac227d904ba206575968120f4ab701aa75af5627f49eff17a134479d646",
+      "access": "Read Corollary2.8 from pinned text."
+    },
+    {
+      "name": "cuFE2022",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2022/482.pdf",
+      "pdf_sha256": "e16111c402946a2ca79ad346f22f117b702fcc037144c57505189d1b0364a2ff",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2022-482.txt",
+      "extract_sha256": "b3522e2f376ef5e84a03172f2072ccd986249fc55c559901d542d7c9363390bc",
+      "access": "PDF/extract integrity only; no independent performance/source theorem claim."
+    },
+    {
+      "name": "AK2023",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/721.pdf",
+      "pdf_sha256": "68ad1d2d2c8d833306c4c6b5f40ad8b100992e01539917058e83fdd01b5b224f",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/extracts/2023-721.txt",
+      "extract_sha256": "a1339ac3f48afc4e2c5a4306668fa6480d63fc01573ec575b4355507abbdf89a",
+      "access": "PDF/extract integrity only; no independent performance/source theorem claim."
+    }
+  ],
+  "scalar_reference": "Author pin integrity checked only. Interval-shift proof independently rederived; scalar regularity/hardness not imported.",
+  "queries": {
+    "web": 0,
+    "scry": 0,
+    "downloads": 0
+  }
+}

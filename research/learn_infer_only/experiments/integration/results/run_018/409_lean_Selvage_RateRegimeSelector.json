@@ -1,0 +1,18 @@
+{
+  "label": "lean_Selvage_RateRegimeSelector",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/RateRegimeSelector.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/RateRegimeSelector.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/RateRegimeSelector.lean:56:5: warning: unused variable `T`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/RateRegimeSelector.lean:171:8: warning: automatically included section variable(s) unused in theorem `_private.Selvage.RateRegimeSelector.0.Minidregg.Selvage.accept_probability_le_of_count`:\n  [DecidableEq F]\n  [(n : \u2115) \u2192 Fintype (\u03b9 n)]\n  [(n : \u2115) \u2192 DecidableEq (\u03b9 n)]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [DecidableEq F] [(n : \u2115) \u2192 Fintype (\u03b9 n)] [(n : \u2115) \u2192 DecidableEq (\u03b9 n)] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`\n",
+  "stderr": "",
+  "elapsed_seconds": 6.603726582980016,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/RateRegimeSelector.lean",
+  "source_sha256_before": "f56e992af96ab3ef3c34b9b16e038c5e0e9acfc6a8cfb0a897cf2c2617b8de66",
+  "source_sha256_after": "f56e992af96ab3ef3c34b9b16e038c5e0e9acfc6a8cfb0a897cf2c2617b8de66"
+}

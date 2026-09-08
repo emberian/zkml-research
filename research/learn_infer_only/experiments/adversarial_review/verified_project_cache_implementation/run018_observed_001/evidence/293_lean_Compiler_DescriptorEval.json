@@ -1,0 +1,18 @@
+{
+  "label": "lean_Compiler_DescriptorEval",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/DescriptorEval.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/DescriptorEval.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "v1: accepted \u2014 4131 wires, public prefix = encodeBoundary X Y Z, machine returns Z; wrote prover/testdata/evm_stage0_add_witness_v1.json\nv2: accepted \u2014 4131 wires, public prefix = encodeBoundary X Y Z, machine returns Z; wrote prover/testdata/evm_stage0_add_witness_v2.json\nv3: accepted \u2014 4131 wires, public prefix = encodeBoundary X Y Z, machine returns Z; wrote prover/testdata/evm_stage0_add_witness_v3.json\nv4: accepted \u2014 4131 wires, public prefix = encodeBoundary X Y Z, machine returns Z; wrote prover/testdata/evm_stage0_add_witness_v4.json\nv5: accepted \u2014 4131 wires, public prefix = encodeBoundary X Y Z, machine returns Z; wrote prover/testdata/evm_stage0_add_witness_v5.json\nclaimed Z = 5 on (2^256 - 1, 5): refused\nV1 wire 833 + 1: refused\nStage-0 units (recounted): 3298 gates = 1665 add + 1633 mul; 4131 wires = 833 vars (48 public + 785 witness) + 3298 aux; 850 boundary pins (849 on aux roots, 1 on variables); operands: 4915 wire, 1681 constant over 19 distinct constants; witness vars: 768 range bits + 17 carries (booleanity gates on 785 distinct variables); a check = 3298 gate evals + 850 reads\n",
+  "stderr": "",
+  "elapsed_seconds": 8.519989084015833,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/DescriptorEval.lean",
+  "source_sha256_before": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6",
+  "source_sha256_after": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6"
+}

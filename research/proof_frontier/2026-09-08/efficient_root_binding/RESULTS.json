@@ -1,0 +1,44 @@
+{
+  "scope": "Finite mathematical controls only; no cryptographic hash or attack execution.",
+  "semantic_counterexamples": [
+    {
+      "digest_cardinality": 2,
+      "function_tables": 64,
+      "fixed_index_zero_bad_tables": 56,
+      "fixed_index_zero_bad_probability": "7/8",
+      "semantic_DoubleOpening_tables": 60,
+      "semantic_DoubleOpening_probability": "15/16",
+      "observed_conflicting_pairs": 0
+    },
+    {
+      "digest_cardinality": 3,
+      "function_tables": 177147,
+      "fixed_index_zero_bad_tables": 142155,
+      "fixed_index_zero_bad_probability": "65/81",
+      "semantic_DoubleOpening_tables": 161595,
+      "semantic_DoubleOpening_probability": "665/729",
+      "observed_conflicting_pairs": 0
+    }
+  ],
+  "prefix_extraction": {
+    "accepted_opening_cases": 22016,
+    "mismatches": 10880,
+    "flagged_trace_cases": 21888,
+    "unflagged_mismatches": 0
+  },
+  "union_budget_integer_checks": 1071,
+  "nonvacuity_F5": {
+    "checkpoint_word": [
+      1,
+      4,
+      4,
+      1
+    ],
+    "checkpoint_unflagged": true,
+    "affine_codewords_checked": 25,
+    "distance": "1/2",
+    "one_query_accepted": 5,
+    "challenge_query_pairs": 10,
+    "scope": "Far initial extracted word and prefix-fixed terminal/raw openings; not all 19-round premises."
+  }
+}

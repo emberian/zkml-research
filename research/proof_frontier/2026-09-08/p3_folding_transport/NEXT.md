@@ -1,0 +1,3 @@
+# Next
+
+[OPEN] Root may integrate the exact 15-pin index patch after independent review and fresh closure validation. The sibling natural-power tower can consume `P3FriQueryTransport.existing_coherent_transport` without modifying its domain proof. The `arity_eight_soundness/` lane owns dependent-challenge/curve proximity and knows the exact `Σ_(r<8) β^r f_r + β^8 g` injection target. Remaining work includes that probability theorem, initial PCS farness, mixed-matrix row authentication, transparent terminal evaluation, actual implementation refinements, challenger/Fiat–Shamir and proof-of-work composition. No source parameter or soundness bound changes follow from this package alone.

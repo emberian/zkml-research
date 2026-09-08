@@ -1,0 +1,21 @@
+{
+  "commands": [
+    {
+      "command": "python3 -B research/learn_infer_only/experiments/adversarial_review/public_seed_adapter/execution/check_public.py > research/learn_infer_only/experiments/adversarial_review/public_seed_adapter/execution/public_check.log",
+      "exit_code": 0,
+      "stdout": "public_check.log",
+      "results": "public_results.json"
+    },
+    {
+      "command": "python3 -B research/learn_infer_only/experiments/adversarial_review/public_seed_adapter/execution/check_seal.py > research/learn_infer_only/experiments/adversarial_review/public_seed_adapter/execution/seal_check.log",
+      "exit_code": 0,
+      "stdout": "seal_check.log",
+      "results": "seal_results.json"
+    }
+  ],
+  "cryptographic_or_XOF_operations": 0,
+  "private_file_reads": 0,
+  "new_samples": 0,
+  "web_queries": 0,
+  "Scry_queries": 0
+}

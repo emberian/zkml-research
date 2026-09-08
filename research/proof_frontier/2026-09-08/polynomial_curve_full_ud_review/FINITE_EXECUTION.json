@@ -1,0 +1,7 @@
+{
+  "command": "python3 research/proof_frontier/2026-09-08/polynomial_curve_full_ud_review/check_finite.py",
+  "cwd": "/Users/ember/dev/zkml-research",
+  "exit_code": 0,
+  "stdout": "{\"degree_cases\": 187264, \"elapsed_seconds\": 2.195129208994331, \"exhaustive_families\": 118617, \"status\": \"PASS\"}\n",
+  "scope": "Public exact finite arithmetic only; no Lean, Rust prover or crypto execution."
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-babybear-folding-tower-20260908/.lake/build/lib/lean/Selvage/PowerTwoRootFolding.olean",
+    "Selvage/PowerTwoRootFolding.lean"
+  ],
+  "cwd": "/tmp/minidregg-babybear-folding-tower-20260908",
+  "exit_code": 1,
+  "source_sha256": "88c54975f4c484800dbf8489901893fddc07a353abd78fd635c053d7ff288fe0",
+  "source_unchanged": true,
+  "elapsed_s": 10.353914976119995,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/logs/tower-generic-03.log"
+}

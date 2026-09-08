@@ -1,0 +1,89 @@
+{
+  "scope": "[EXECUTED] Local-source and artifact provenance only; no crypto, estimator, Gaussian or attack execution",
+  "status": "PASS",
+  "fresh_source_extractions": [
+    {
+      "name": "MKMS2021",
+      "pdf_sha256": "8b5a43ee653081a0d7cf94bc7584e80ed60a6a525c41d15fdc61734ea7c6c20f",
+      "extract_sha256": "1c041f582042c6b811ec56c66e84d734c0cee36f7a7823c333b9360ab5fdcf2c",
+      "fresh_layout_extraction_matches": true,
+      "fresh_extraction_stderr_line_count": 0
+    },
+    {
+      "name": "SS2013",
+      "pdf_sha256": "0c361701dbc39786deeafc40a97c64b3a64ad88b48ec588ee000dcb0f62dc403",
+      "extract_sha256": "44a98b57d8c9182d65c4b12ee10dc7dd9c144230965dd90eac2ebc6b31c2a3fe",
+      "fresh_layout_extraction_matches": true,
+      "fresh_extraction_stderr_line_count": 0
+    },
+    {
+      "name": "LPR2013",
+      "pdf_sha256": "6b22c0bca6f3234a3aaa769a42c106c1816b12edffef2332bf7835c78d3c21e0",
+      "extract_sha256": "bb8e859a3184bff5870150932861b46e4c29dcd354e3cdbea4dc98fc94dc5e56",
+      "fresh_layout_extraction_matches": true,
+      "fresh_extraction_stderr_line_count": 0
+    },
+    {
+      "name": "GPV2007",
+      "pdf_sha256": "7e747881cddd16b7dcf82893682cb9b4c788d7cec5712f80aa4193f2bd30a5b3",
+      "extract_sha256": "7417aac227d904ba206575968120f4ab701aa75af5627f49eff17a134479d646",
+      "fresh_layout_extraction_matches": true,
+      "fresh_extraction_stderr_line_count": 0
+    },
+    {
+      "name": "cuFE2022",
+      "pdf_sha256": "e16111c402946a2ca79ad346f22f117b702fcc037144c57505189d1b0364a2ff",
+      "extract_sha256": "b3522e2f376ef5e84a03172f2072ccd986249fc55c559901d542d7c9363390bc",
+      "fresh_layout_extraction_matches": true,
+      "fresh_extraction_stderr_line_count": 0
+    },
+    {
+      "name": "AK2023",
+      "pdf_sha256": "68ad1d2d2c8d833306c4c6b5f40ad8b100992e01539917058e83fdd01b5b224f",
+      "extract_sha256": "a1339ac3f48afc4e2c5a4306668fa6480d63fc01573ec575b4355507abbdf89a",
+      "fresh_layout_extraction_matches": true,
+      "fresh_extraction_stderr_line_count": 0
+    }
+  ],
+  "frozen_notes_and_math_results": {
+    "CANDIDATE.md": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2",
+    "RING_REGULARITY.md": "2926555d5842bb71af7b16caec3eef512a9c7cfea99e877b862bcfea79d30e85",
+    "PARAMETERS.md": "c23732e366fe5966ddf971c0f69fdf51cec41bee134d0bf3e4da19367631b78d",
+    "RESULTS.json": "e034b208095cbb82cf852abe0137aac7c1be1dd03f8df16844edc8bdb299b693"
+  },
+  "frozen_scalar_math_reference": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/SMUDGED_FIXED_COORDINATE.md",
+    "sha256": "a7f98b9f17b0e9b37537ca763697f7a9235df498364df4e0dd774f293d9b9327",
+    "used": "exact integer interval shift inequality and scalar-window encoding only; scalar matrix regularity and hardness results excluded"
+  },
+  "artifacts": {
+    "CANDIDATE.md": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2",
+    "RING_REGULARITY.md": "2926555d5842bb71af7b16caec3eef512a9c7cfea99e877b862bcfea79d30e85",
+    "PARAMETERS.md": "c23732e366fe5966ddf971c0f69fdf51cec41bee134d0bf3e4da19367631b78d",
+    "STATUS.md": "d0598963376083b6206afd0b6d35876bab15940d936d8fc1782a389c8ae4d5a0",
+    "NEXT.md": "a842d5eb1558f26e2cf8b5519dc22b2a5ac88256f5e652b3230227814bbd124a",
+    "RESULTS.json": "e034b208095cbb82cf852abe0137aac7c1be1dd03f8df16844edc8bdb299b693",
+    "SOURCES.json": "37eda2385bf42cbe7bc69133c472f4a3534b78b62a6c4445099bed0c8f2554b3",
+    "check_public_math.py": "5561907c56ea7833115740b4318914860f403cca5d2b2a09420847a9c34377d6",
+    "seal.py": "90d87e08125e1f44d9bd9bcb9e96ca3092042240d9bb8de222f31935f058f895",
+    "searches/prime_certificate.json": "8d24375202ae3176d10fd86386753680f2f6ec44a41333d78114befb4d3735a1",
+    "searches/scry_1.json": "d94e7c5d0d578ec611a76a8b221f6c83277a8cba609a3c37910e572b6ca4b0d9",
+    "searches/scry_1_retry.json": "f350101de18971e802c4c666a30af4299ad2aee3123f72001a46101a0c0747b3"
+  },
+  "visual_source_renders": {
+    "extracts/ss-lemma2-page7.png": "fb08af8d2e959f3e266d43552094d6dcfadf4e1caf39a5d0fdfa4171d9607a70",
+    "extracts/theorem2-page15.png": "fcae37e7b5cee1dcf2e210756f1e71cdb947fdf71ca227f4d8de1ba5f091c486"
+  },
+  "query_meter": {
+    "scry_sql_calls_including_errors": 2,
+    "scry_sql_successes": 1,
+    "scry_capacity_errors": 1,
+    "scry_schema_calls": 0,
+    "primary_web_search_queries": 4,
+    "primary_page_opens": 0,
+    "pdf_downloads": 0,
+    "eprint_pdf_downloads": 0,
+    "kagi_queries": 0
+  },
+  "review_status_at_seal": "Independent source/math review assigned; proposal hashes frozen pending review"
+}

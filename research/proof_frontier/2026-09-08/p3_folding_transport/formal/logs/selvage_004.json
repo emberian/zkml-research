@@ -1,0 +1,17 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-p3-folding-transport-20260908/.lake/build/lib/lean/Selvage/P3FriQueryTransport.olean",
+    "Selvage/P3FriQueryTransport.lean"
+  ],
+  "cwd": "/tmp/minidregg-p3-folding-transport-20260908",
+  "exit_code": 0,
+  "seconds": 9.368418708007084,
+  "source_sha256": "e67923c0bd57cedf64993209e03fc3589e4e9f36fcabd255da3a3a7f792d507b",
+  "source_sha256_after": "e67923c0bd57cedf64993209e03fc3589e4e9f36fcabd255da3a3a7f792d507b",
+  "stdout": "'Minidregg.Selvage.P3FriQueryTransport.existing_coherent_transport' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Selvage.P3FriQueryTransport.actual_dimension_premises' depends on axioms: [propext]\n'Minidregg.Selvage.P3FriQueryTransport.actual_dimension_subject' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Selvage.P3FriQueryTransport.natural_untransported_index_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": ""
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-polynomial-curve-kernel-20260908/.lake/build/lib/lean/Theory/PolynomialMatrixKernel.olean",
+    "Theory/PolynomialMatrixKernel.lean"
+  ],
+  "cwd": "/tmp/minidregg-polynomial-curve-kernel-20260908",
+  "elapsed_seconds": 10.643891332991188,
+  "exit_code": 0,
+  "source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+  "source_unchanged": true,
+  "stdout": "",
+  "stderr": "",
+  "olean_sha256": "eee1d113fdb0147e056be93d12f330bf0da86d40ff9608d116a976beeb267d7a"
+}

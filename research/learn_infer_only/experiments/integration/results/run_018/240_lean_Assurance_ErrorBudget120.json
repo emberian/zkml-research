@@ -1,0 +1,18 @@
+{
+  "label": "lean_Assurance_ErrorBudget120",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/ErrorBudget120.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Assurance/ErrorBudget120.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "secureBudget120_secure : soundnessErrorPoW secureBudget120 \u2264 1 / 2 ^ 120\nsecureBudget120_secure_137 : soundnessErrorPoW secureBudget120 \u2264 1 / 2 ^ 137\nbabyBear4_fails_120 : 1 / 2 ^ 120 < soundnessErrorPoW secureBudget120BabyBear4\nnoPoW_fails_120 : 1 / 2 ^ 120 < soundnessErrorPoW secureBudget120NoPoW\n",
+  "stderr": "",
+  "elapsed_seconds": 4.339182708004955,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Assurance/ErrorBudget120.lean",
+  "source_sha256_before": "24ff52a298f36e8ee668cae0a050518993af84dc4a896f952c0f1bd26ac67e2e",
+  "source_sha256_after": "24ff52a298f36e8ee668cae0a050518993af84dc4a896f952c0f1bd26ac67e2e"
+}

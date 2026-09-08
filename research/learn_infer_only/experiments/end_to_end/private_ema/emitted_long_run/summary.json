@@ -1,0 +1,55 @@
+{
+  "all480_pairs_byte_equal": true,
+  "all960_host_plans_match": true,
+  "all_checkpoint_correct": 76,
+  "all_checkpoint_queries": 96,
+  "claim": "EXECUTED",
+  "costs": {
+    "bytes": 190336,
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/costs.csv",
+    "sha256": "282a4f6e00c5275a1ba48b6446f5d1d91fb4c8838c78f077290069d94a558c9b"
+  },
+  "counts": {
+    "Infer": 96,
+    "Learn": 384,
+    "host_invocations": 960,
+    "issuer_invocations": 404,
+    "replay_pairs": 480
+  },
+  "final_correct": 28,
+  "final_queries": 32,
+  "freeze_sha256": "6cc20a07b75330c2fb7aaa19a2021c6b495096c6b477b1554eb4a2a14c7943e8",
+  "frozen_sources_unchanged": true,
+  "full_reader_client_key_retained": true,
+  "general_determinism_claimed": false,
+  "initial_states_match": 4,
+  "old_failure_cause_claimed": false,
+  "primary_infer_signs_match": 96,
+  "primary_learn_states_match": 384,
+  "private_drain_wall_seconds": 2.4360775419918355,
+  "public_artifacts_unchanged_after_drain": true,
+  "public_seal_sha256": "b2f972552b5383d05207737939ddb2fe81e0c9ff68077104e13939f786dee566",
+  "public_wall_seconds": 9687.876547332999,
+  "reader_invocations": 484,
+  "records": [
+    {
+      "bytes": 1915,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/public_seal.json",
+      "sha256": "b2f972552b5383d05207737939ddb2fe81e0c9ff68077104e13939f786dee566"
+    },
+    {
+      "bytes": 63430,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/private_drain.json",
+      "sha256": "3887f3c4653491356bab509e883c0afb07506313c694cede9353a44167beea98"
+    },
+    {
+      "bytes": 645722,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/reports/run001/reader_operations.jsonl",
+      "sha256": "83354fc7f354e481ad11538c1162585a1c4da13bea370830dc2a1d298b8ae0d1"
+    }
+  ],
+  "replay_plaintexts_independently_checked": 0,
+  "sealed_utc": "2026-09-08T08:10:00.180702+00:00",
+  "stage": "post-drain provenance-only sealing; no crypto invocations",
+  "success": true
+}

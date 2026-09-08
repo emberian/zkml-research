@@ -1,0 +1,81 @@
+Selvage/CurveFullUDTeeth.lean:47:11: error: don't know how to synthesize implicit argument `b`
+  @And.intro (curveWord (fun j => legalWord ↑j) z ∈ reedSolomonCode dom 2)
+    (hammingDist (curveWord (fun j => legalWord ↑j) z) (curveWord (fun j => legalWord ↑j) z) ≤ 0)
+    (comb_mem (fun j => z ^ ↑j) fun j => legalWord_mem ↑j) ?m.65
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+⊢ Prop
+Selvage/CurveFullUDTeeth.lean:47:11: error: don't know how to synthesize implicit argument `a`
+  @And.intro (curveWord (fun j => legalWord ↑j) z ∈ reedSolomonCode dom 2)
+    (hammingDist (curveWord (fun j => legalWord ↑j) z) (curveWord (fun j => legalWord ↑j) z) ≤ 0)
+    (comb_mem (fun j => z ^ ↑j) fun j => legalWord_mem ↑j) ?m.65
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+⊢ Prop
+Selvage/CurveFullUDTeeth.lean:48:6: error: don't know how to synthesize implicit argument `u`
+  @comb_mem (Fin 5) (ZMod 101) (ZMod.instField 101) (?m.51 + 1) (reedSolomonCode dom 2) (fun j => z ^ ↑j)
+    (fun j => legalWord ↑j) fun j => legalWord_mem ↑j
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+⊢ Fin (?m.51 + 1) → Fin 5 → ZMod 101
+Selvage/CurveFullUDTeeth.lean:48:6: error: don't know how to synthesize implicit argument `ℓ`
+  @comb_mem (Fin 5) (ZMod 101) (ZMod.instField 101) (?m.51 + 1) (reedSolomonCode dom 2) (fun j => z ^ ↑j)
+    (fun j => legalWord ↑j) fun j => legalWord_mem ↑j
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+⊢ ℕ
+Selvage/CurveFullUDTeeth.lean:48:41: error: don't know how to synthesize implicit argument `n`
+  @Fin.val (?m.51 + 1) j
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+j : Fin (?m.51 + 1)
+⊢ ℕ
+Selvage/CurveFullUDTeeth.lean:48:22: error(lean.inferBinderTypeFailed): Failed to infer type of binder `j`
+Selvage/CurveFullUDTeeth.lean:48:15: error: don't know how to synthesize placeholder for argument `r`
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+⊢ Fin (?m.51 + 1) → ZMod 101
+Selvage/CurveFullUDTeeth.lean:47:12: error: don't know how to synthesize implicit argument `M`
+  @curveWord (ZMod 101) (ZMod.instField 101) (Fin 5) ?m.51 (fun j => legalWord ↑j) z
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+⊢ ℕ
+Selvage/CurveFullUDTeeth.lean:47:42: error: don't know how to synthesize implicit argument `n`
+  @Fin.val (?m.51 + 1) j
+context:
+M : ℕ
+hM : 1 ≤ M
+hM8 : M ≤ 8
+z : ZMod 101
+hz : z ∈ univ
+j : Fin (?m.51 + 1)
+⊢ ℕ
+Selvage/CurveFullUDTeeth.lean:47:27: error(lean.inferBinderTypeFailed): Failed to infer type of binder `j`

@@ -1,0 +1,14 @@
+{
+  "observed_utc": "2026-09-08 14:32:45 UTC",
+  "instrument": "Python Path.exists/rglob and ps -axo pid,ppid,etime,args; retain only cargo/rustc commands containing integer_adapter_probe, integer-public-adapter or private-ema-integer-adapter",
+  "probe_directory_existed_at_resume": false,
+  "probe_files_at_resume": [],
+  "matching_build_processes": [],
+  "build_attempts": 0,
+  "cumulative_build_seconds": 0,
+  "public_run_attempts": 0,
+  "status": "sealed draft: protocol categories existed in chat; executable sources and exact tensors were not frozen",
+  "parent_manifest_files_rechecked": 11,
+  "parent_manifest_sha256": "fd95162623908b95195d95c2b163d69a7bce4a31a139522ecc288ec75f9dbc6c",
+  "parent_manifest_files_unchanged": true
+}

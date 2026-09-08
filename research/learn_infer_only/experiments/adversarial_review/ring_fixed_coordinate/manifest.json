@@ -1,0 +1,46 @@
+{
+  "verdict": "conditional source/math and finite statistical/cost ledger accepted; no computational-security endorsement; finite QPT sampler obligations retained",
+  "author_manifest_sha256": "703e824295a40357f44d3a8cfa073ae2f6c1411b24783a83ca1c6e4f7992fbdb",
+  "files": [
+    {
+      "path": "NEXT.md",
+      "sha256": "9b00373bc1bac41f798f85260a074126303146cad2880f990903d255f43cd503",
+      "bytes": 531
+    },
+    {
+      "path": "REPORT.md",
+      "sha256": "5183db756af984c34a45f270bd7b33700942b2b9a7989bdd9116e517a5567d18",
+      "bytes": 17868
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "6ee0ed43d1faf5766f793aa4528602b3672e4b3268eba8ec8401914c4d1b785f",
+      "bytes": 1212
+    },
+    {
+      "path": "check.log",
+      "sha256": "c7d9102237266ac188e07adcdc03d3e7bf3080266c9dc719be8375010aeb8571",
+      "bytes": 4141
+    },
+    {
+      "path": "check.py",
+      "sha256": "eff706cc1d5549c4f8545b23d40adb5cbb417a179619b88604a8b67cc68c0190",
+      "bytes": 8510
+    },
+    {
+      "path": "results.json",
+      "sha256": "c7d9102237266ac188e07adcdc03d3e7bf3080266c9dc719be8375010aeb8571",
+      "bytes": 4141
+    },
+    {
+      "path": "source_pins.json",
+      "sha256": "efa372a58a969ce76baefa1ca179fc0b051441546f0298ce80def8bc4c955853",
+      "bytes": 5993
+    },
+    {
+      "path": "verification.json",
+      "sha256": "1572a3e975ea4b069bc620af6dc49df472a914fcf0b1c2110d19f222667eee0c",
+      "bytes": 642
+    }
+  ]
+}

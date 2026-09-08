@@ -1,0 +1,64 @@
+{
+  "Theory.PolynomialCurve": [
+    "Minidregg.PolynomialCurve.eval_poly",
+    "Minidregg.PolynomialCurve.coeff_poly",
+    "Minidregg.PolynomialCurve.natDegree_poly"
+  ],
+  "Theory.CurveRSInterpolationMatrix": [
+    "Minidregg.RSInterpolation.BW_entry_natDegree_zero",
+    "Minidregg.RSInterpolation.BW_entry_natDegree_le",
+    "Minidregg.RSInterpolation.BW_map_eval",
+    "Minidregg.RSInterpolation.BW_det_natDegree_le"
+  ],
+  "Theory.CurveRSInterpolationKernel": [
+    "Minidregg.RSInterpolation.curve_det_eq_zero_of_specializations",
+    "Minidregg.RSInterpolation.curve_bounded_kernel_of_specializations"
+  ],
+  "Selvage.CurveFullUDStatement": [
+    "Minidregg.Selvage.CurveFullUDWitness.zero_premise_inhabited",
+    "Minidregg.Selvage.CurveFullUDWitness.zero_conclusion_inhabited",
+    "Minidregg.Selvage.CurveFullUDWitness.impossible_radius_teeth"
+  ],
+  "Selvage.CurveFullUDInterpolation": [
+    "Minidregg.Selvage.curvePolynomial_eval",
+    "Minidregg.Selvage.curvePolynomial_coeff",
+    "Minidregg.Selvage.curvePolynomial_natDegree",
+    "Minidregg.Selvage.curve_bw_bounded_kernel_of_many_close"
+  ],
+  "Selvage.CurveFullUDBivariate": [
+    "Minidregg.Selvage.curve_bw_bivariate_of_many_close"
+  ],
+  "Selvage.CurveFullUDCore": [
+    "Minidregg.Selvage.curve_rs_nearby_polynomial",
+    "Minidregg.Selvage.curveFullUDCardCore"
+  ],
+  "Selvage.CurveProximityGapFullUD": [
+    "Minidregg.Selvage.curve_correlatedAgreement_of_many_close",
+    "Minidregg.Selvage.curve_bad_card_le",
+    "Minidregg.Selvage.geometricGenerator_pr_eq",
+    "Minidregg.Selvage.reedSolomonCode_isGeometricProximityGenerator_fullUD",
+    "Minidregg.Selvage.hasGeometricMutualCorrelatedAgreement_fullUD"
+  ],
+  "Selvage.CurveFriChallenge": [
+    "Minidregg.Selvage.curveWord_snoc",
+    "Minidregg.Selvage.correlatedAgreement_of_snoc",
+    "Minidregg.Selvage.curve_uniform_sound",
+    "Minidregg.Selvage.arity8_curve_sound",
+    "Minidregg.Selvage.arity8_injected_curve_sound",
+    "Minidregg.Selvage.arity8_injected_fixed_prefix_sound"
+  ],
+  "Selvage.CurveFullUDTeeth": [
+    "Minidregg.Selvage.CurveFullUDWitness.legalWord_mem",
+    "Minidregg.Selvage.CurveFullUDWitness.corrupted_premise_inhabited",
+    "Minidregg.Selvage.CurveFullUDWitness.zero_error_premise_inhabited",
+    "Minidregg.Selvage.CurveFullUDWitness.zero_error_core_fires",
+    "Minidregg.Selvage.CurveFullUDWitness.corrupted_actual_error",
+    "Minidregg.Selvage.CurveFullUDWitness.corrupted_distance_one",
+    "Minidregg.Selvage.CurveFullUDWitness.corrupted_not_mem",
+    "Minidregg.Selvage.CurveDegreeTeeth.curve_at_three_roots",
+    "Minidregg.Selvage.CurveDegreeTeeth.three_good_challenges",
+    "Minidregg.Selvage.CurveDegreeTeeth.no_correlated_agreement",
+    "Minidregg.Selvage.CurveDegreeTeeth.strict_radius_admissible",
+    "Minidregg.Selvage.CurveDegreeTeeth.unscaled_affine_bound_falsifier"
+  ]
+}

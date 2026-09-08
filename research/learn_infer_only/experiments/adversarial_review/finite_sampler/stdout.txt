@@ -1,0 +1,245 @@
+{
+  "status": "PASS",
+  "scope": "Deterministic public integer/Fraction controls only; no random samples, keys, encryption, estimator, or timing measurements.",
+  "spec_sha256": "2fef91992b092f93f6023a02b0072008a2f4f46e5601ea8fd71eb8d0972e1576",
+  "pi_interval_grid_width": 1,
+  "pi_lower_grid_numerator": "6710401180212168915155840974220003240804194089427148950727106424351713218671805380099500388914039",
+  "pi_upper_grid_numerator": "6710401180212168915155840974220003240804194089427148950727106424351713218671805380099500388914040",
+  "threshold_controls": [
+    {
+      "a": 0,
+      "k": 0,
+      "u_width": 0,
+      "rho_width_units": 256,
+      "threshold": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    },
+    {
+      "a": 0,
+      "k": 1,
+      "u_width": 1,
+      "rho_width_units": 920,
+      "threshold": "5003829879892804493313207133892704084007208926659542405612975301067544960711"
+    },
+    {
+      "a": 0,
+      "k": 2,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "403806657311224528699230871141899916901427925977166308091020945921014543"
+    },
+    {
+      "a": 0,
+      "k": 4,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "17126050823652677283788268377791709712465450097295648462"
+    },
+    {
+      "a": 0,
+      "k": 7,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "16189653421"
+    },
+    {
+      "a": 10,
+      "k": 0,
+      "u_width": 0,
+      "rho_width_units": 256,
+      "threshold": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    },
+    {
+      "a": 10,
+      "k": 1,
+      "u_width": 1,
+      "rho_width_units": 20991,
+      "threshold": "115791742318225969954371179036460414232498371388511459215803557623566095216406"
+    },
+    {
+      "a": 10,
+      "k": 1024,
+      "u_width": 1,
+      "rho_width_units": 920,
+      "threshold": "5003829879892804493313207133892704084007208926659542405612975301067544960711"
+    },
+    {
+      "a": 10,
+      "k": 2048,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "403806657311224528699230871141899916901427925977166308091020945921014543"
+    },
+    {
+      "a": 10,
+      "k": 4096,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "17126050823652677283788268377791709712465450097295648462"
+    },
+    {
+      "a": 10,
+      "k": 8191,
+      "u_width": 2,
+      "rho_width_units": 1,
+      "threshold": "0"
+    },
+    {
+      "a": 25,
+      "k": 0,
+      "u_width": 0,
+      "rho_width_units": 256,
+      "threshold": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    },
+    {
+      "a": 25,
+      "k": 1,
+      "u_width": 1,
+      "rho_width_units": 20991,
+      "threshold": "115792089237315872329506689457530865398520956702382847885517754404459165761023"
+    },
+    {
+      "a": 25,
+      "k": 33554432,
+      "u_width": 1,
+      "rho_width_units": 920,
+      "threshold": "5003829879892804493313207133892704084007208926659542405612975301067544960711"
+    },
+    {
+      "a": 25,
+      "k": 67108864,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "403806657311224528699230871141899916901427925977166308091020945921014543"
+    },
+    {
+      "a": 25,
+      "k": 134217728,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "17126050823652677283788268377791709712465450097295648462"
+    },
+    {
+      "a": 25,
+      "k": 268435455,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "0"
+    },
+    {
+      "a": 32,
+      "k": 0,
+      "u_width": 0,
+      "rho_width_units": 256,
+      "threshold": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    },
+    {
+      "a": 32,
+      "k": 1,
+      "u_width": 1,
+      "rho_width_units": 20991,
+      "threshold": "115792089237316195403850888310961369292553077474500294268083848806018237396161"
+    },
+    {
+      "a": 32,
+      "k": 4294967296,
+      "u_width": 1,
+      "rho_width_units": 920,
+      "threshold": "5003829879892804493313207133892704084007208926659542405612975301067544960711"
+    },
+    {
+      "a": 32,
+      "k": 8589934592,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "403806657311224528699230871141899916901427925977166308091020945921014543"
+    },
+    {
+      "a": 32,
+      "k": 17179869184,
+      "u_width": 1,
+      "rho_width_units": 1,
+      "threshold": "17126050823652677283788268377791709712465450097295648462"
+    },
+    {
+      "a": 32,
+      "k": 34359738367,
+      "u_width": 2,
+      "rho_width_units": 1,
+      "threshold": "0"
+    }
+  ],
+  "finite_probability_controls": {
+    "exhaustive_two_attempt_tapes": 16384,
+    "boundary_support_sigma_1": [
+      -7,
+      -6,
+      -5,
+      -4,
+      -3,
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "fallback_mixture_identity": true,
+    "removed_mass_coupling": true
+  },
+  "points": [
+    {
+      "label": "repaired_ring",
+      "dimension": 1048576,
+      "uniform_secret_coefficients": 16384,
+      "key_coefficients": 16777216,
+      "error_coefficients": 402653184,
+      "actual_gaussian_draws": 419430400,
+      "reduction_gaussian_allowance": 1007681536,
+      "gaussian_error_coefficient": 1548637700096,
+      "actual_uniform_draws": 16753024,
+      "reduction_uniform_overallowance": 36970880,
+      "uniform_error_coefficient": 56820777728,
+      "actual_gaussian_expected_attempt_upper": 7130316800,
+      "actual_gaussian_worst_attempt_upper": 1717986918400,
+      "actual_gaussian_expected_product_upper": 1276326707200,
+      "actual_gaussian_worst_product_upper": 307519658393600,
+      "actual_gaussian_expected_bit_upper": 1929463726080,
+      "actual_gaussian_worst_bit_upper": 464887260119040,
+      "actual_uniform_worst_bit_upper": 2474373742592,
+      "key_threshold_table_bytes": 17179869152,
+      "error_threshold_table_bytes": 524256
+    },
+    {
+      "label": "repaired_scalar",
+      "dimension": 262144,
+      "uniform_secret_coefficients": 16384,
+      "key_coefficients": 4194304,
+      "error_coefficients": 100663296,
+      "actual_gaussian_draws": 104857600,
+      "reduction_gaussian_allowance": 251920384,
+      "gaussian_error_coefficient": 387159425024,
+      "actual_uniform_draws": 4310671744,
+      "reduction_uniform_overallowance": 4330103168,
+      "uniform_error_coefficient": 6659659809536,
+      "actual_gaussian_expected_attempt_upper": 1782579200,
+      "actual_gaussian_worst_attempt_upper": 429496729600,
+      "actual_gaussian_expected_product_upper": 319081676800,
+      "actual_gaussian_worst_product_upper": 76879914598400,
+      "actual_gaussian_expected_bit_upper": 482865053696,
+      "actual_gaussian_worst_bit_upper": 116342074114048,
+      "actual_uniform_worst_bit_upper": 646664854306816,
+      "key_threshold_table_bytes": 2199023255520,
+      "error_threshold_table_bytes": 524256
+    }
+  ],
+  "combined_gaussian_error_coefficient": 1935797125120,
+  "combined_uniform_error_coefficient_overallowance": 6716480587264,
+  "gaussian_loss_below_2_minus_208": true,
+  "uniform_loss_below_2_minus_467": true,
+  "combined_loss_below_2_minus_207": true,
+  "checks_are_not_a_general_machine_proof_or_sampler_implementation": true
+}

@@ -1,0 +1,11 @@
+{
+  "complete_replay_pairs": 480,
+  "completed_events": 480,
+  "current_operation": null,
+  "elapsed_seconds": 9687.89240695801,
+  "operations": 1364,
+  "phase": "public_closed",
+  "public_phase_closed": false,
+  "reader_invocations": 0,
+  "updated_utc": "2026-09-08T08:09:56.372493+00:00"
+}

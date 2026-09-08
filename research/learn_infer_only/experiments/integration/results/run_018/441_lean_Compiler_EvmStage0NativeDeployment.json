@@ -1,0 +1,18 @@
+{
+  "label": "lean_Compiler_EvmStage0NativeDeployment",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/EvmStage0NativeDeployment.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/EvmStage0NativeDeployment.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "v1 honest reply: certified\nv2 honest reply: certified\nv3 honest reply: certified\nv4 honest reply: certified\nv5 honest reply: certified\nclaimed Z = 5 on (2^256 - 1, 5): rejected (publicPrefixMismatch)\nV1 wire 833 + 1: rejected (descriptorRejected)\nV1 reply minus one word: malformedResponse\n",
+  "stderr": "",
+  "elapsed_seconds": 456.8962200829992,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/EvmStage0NativeDeployment.lean",
+  "source_sha256_before": "cbdc8e9c85ec7b6f26fea295fe9f16d992427bca16a8f044e298a47b14f37484",
+  "source_sha256_after": "cbdc8e9c85ec7b6f26fea295fe9f16d992427bca16a8f044e298a47b14f37484"
+}

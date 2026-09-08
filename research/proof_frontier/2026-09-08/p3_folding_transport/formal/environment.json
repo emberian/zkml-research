@@ -1,0 +1,12 @@
+{
+  "checkout": "/tmp/minidregg-p3-folding-transport-20260908",
+  "companion_base": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "cached_olean_tree": "/Users/ember/dev/minidregg/.lake/build/lib/lean",
+  "symlinked_cache_files": 3000,
+  "fresh_modules": [
+    "Theory.BitReverseFriTransport",
+    "Selvage.P3FriQueryTransport"
+  ],
+  "full_closure_rebuilt": false,
+  "note": "The companion cache is reused through read-only symlinks. New module outputs are owned files. Root owns full closure validation."
+}

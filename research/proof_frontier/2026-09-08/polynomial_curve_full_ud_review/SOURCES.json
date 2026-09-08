@@ -1,0 +1,53 @@
+{
+  "source_pins": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/manifest.json",
+      "sha256": "fed8141f3d1606cd7ffa25bdd85918acbbdcb1ac8037307359adf1ff05994729"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/polynomial-curve-full-ud.patch",
+      "sha256": "3fa34548e2f1ec0f286ba04594374f3fc5aa636fda5dd5f7583bdeeca6dd7d0f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/integration_entry.json",
+      "sha256": "e906222d93d9c4bea0bff7bf2636357b4b6b1989c48093d5997124d5889b7759"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/654.pdf",
+      "sha256": "a66a5d0d43e53b6a1cb83cbe87ee86e9c8f5c65562c85b22fef1396603ffe47f"
+    },
+    {
+      "path": "/private/tmp/arity-eight-bciks2020-654.txt",
+      "sha256": "3998434b10f69c0eef183ecbc0370ba4ed246fb9f05e74bd55f14648008aa5aa"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/CorrelatedAgreement.lean",
+      "sha256": "1f93c645e77154fdd969855f17d153b9ffb9e2c147f997dbb704dce71876b70e"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/ReedSolomon.lean",
+      "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/NOTE.md",
+      "sha256": "6bc561ca24a00d797263b106a5e63219396e0aa99a9c41db748d82587f1ad727"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/ERRATUM.md",
+      "sha256": "feba813ebf02445616c68af3a739b381eaf02d734b9bc970d858626d97cea6c5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/SOURCES.json",
+      "sha256": "a515acc84dd6838d7495a55f0d7a425e29263787ca93892061ac01e2f31da059"
+    }
+  ],
+  "primary_read": "BCIKS20 Theorem6.1 printedp28 and proof\u00a76.1 pp29\u201330, from pinned local text extraction; Lean sources read directly.",
+  "new_web_queries": 0,
+  "new_scry_queries": 0,
+  "pdf_downloads": 0,
+  "crypto_runtime": false,
+  "reviewer_Lean_builds": 0,
+  "artifact_audit_command": "python3 research/proof_frontier/2026-09-08/polynomial_curve_full_ud_review/check_artifact.py",
+  "artifact_audit_exit_code": 0,
+  "artifact_audit_stdout": "{\"status\": \"PASS\", \"modules\": 10, \"pins\": 42, \"package_files_pinned\": 114, \"patch_targets\": 10, \"dependencies\": 8}\n"
+}

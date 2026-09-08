@@ -1,0 +1,544 @@
+{
+  "status": "PASS",
+  "source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+  "author_manifest_sha256": "233f869cc51584f2be295dbe2c7076734a4bc10e3cdcee16a596ecc813f401e0",
+  "author_files_checked": [
+    {
+      "path": "ArkLib-Apache-2.0.txt",
+      "sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+      "bytes": 11356
+    },
+    {
+      "path": "NEXT.md",
+      "sha256": "80f25147c7c24210cc4f9e2d997d42be96897ca057c8e96e671fcb77cb93253f",
+      "bytes": 440
+    },
+    {
+      "path": "PolynomialMatrixKernel.lean",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+      "bytes": 33375
+    },
+    {
+      "path": "README.md",
+      "sha256": "1ec1eb5378d44ee1b3a0f0de221354888897aee4a324d10d0679244dd3530ee6",
+      "bytes": 6624
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "90e39c7f41abe07e4ebdda033ddb120eafdca7e6a8c23e755ab110fec03387a6",
+      "bytes": 933
+    },
+    {
+      "path": "api_preservation.json",
+      "sha256": "c4e5fb3e3a28d65adb6a3ad6ca718559859eac614daca37d62cc069bdb951d57",
+      "bytes": 1129
+    },
+    {
+      "path": "changes-from-all-pins.diff",
+      "sha256": "a8e5cf66ebbfd94c0deb2214a630941af54ef2b52a3781db10626dfc80811b0e",
+      "bytes": 14777
+    },
+    {
+      "path": "import-boundary.log",
+      "sha256": "8ad794b7fb3c1f16f0b484345d6c90fdff74ed3bc3fdb20335aba83986ca789d",
+      "bytes": 160
+    },
+    {
+      "path": "integration_census.json",
+      "sha256": "4ace858e10942bc4fb8013d9f30de21d056cc10b289c45caaf64f44003816b47",
+      "bytes": 20185
+    },
+    {
+      "path": "integration_entry.json",
+      "sha256": "1d58f6820d3fd275c44a30e92f0ad8c9ef6c97e8a036a90f98c1d79448f142aa",
+      "bytes": 559
+    },
+    {
+      "path": "lean-01.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lean-02.log",
+      "sha256": "2995813ad38f3cd567b31efc86835411dcda441d8a57a7e48c89caec193737cd",
+      "bytes": 1179
+    },
+    {
+      "path": "lean-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lean_attempts.json",
+      "sha256": "fcdad3724c5fb94150a04f66b870b41b9c4282d17a9cdadc1174013e48a23c79",
+      "bytes": 1054
+    },
+    {
+      "path": "lean_final.json",
+      "sha256": "d94e91e8561ae91770ef53aab2738900051025d0739e4df4430ac1228dbc4b0a",
+      "bytes": 573
+    },
+    {
+      "path": "mathlib-degree-search.log",
+      "sha256": "6ae354ff915bab89ba2e77521261d2d7f692422f839855dc73baf0eb14d0ad1f",
+      "bytes": 1045
+    },
+    {
+      "path": "new-declarations.txt",
+      "sha256": "63f032514d61eae6b28899540ceae69476b7be0bc8e9e50c3c1df6c6b710152e",
+      "bytes": 565
+    },
+    {
+      "path": "patch_and_import_checks.json",
+      "sha256": "7adc4ff74d04ddfd152b79536782c412e2f330ee4d4a1d9459fe163e76740c8b",
+      "bytes": 1472
+    },
+    {
+      "path": "polynomial-curve-kernel.patch",
+      "sha256": "d93868e566910220380cfa96d33bcb665c6deb57090a34e62beaa0fe6fd56c8c",
+      "bytes": 46104
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "f0b1c90524726c538af425999642a75b63743eaaae640675d08d5ab313298b4e",
+      "bytes": 1505
+    },
+    {
+      "path": "support_file_entry.json",
+      "sha256": "9c6ef8aa0f0f33b9e79e2e4e7c31afccec2b4e5ee2d1d27980432c486fe4d97d",
+      "bytes": 231
+    }
+  ],
+  "independent_lean_invocations": 0,
+  "declarations": [
+    {
+      "name": "PolynomialMatrixKernel.BoundedKernel",
+      "line": 37,
+      "kind": "def",
+      "header": "def BoundedKernel (e : \u2115) (K : Matrix \u03b9 (Fin (e + 1)) F[X]) : Prop"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Premises",
+      "line": 42,
+      "kind": "def",
+      "header": "def Premises (e : \u2115) (K : Matrix \u03b9 (Fin (e + 1)) F[X]) : Prop"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Correctness",
+      "line": 49,
+      "kind": "def",
+      "header": "def Correctness : Prop"
+    },
+    {
+      "name": "PolynomialMatrixKernel.DegreeBoundedKernel",
+      "line": 53,
+      "kind": "def",
+      "header": "def DegreeBoundedKernel (M e : \u2115) (K : Matrix \u03b9 (Fin (e + 1)) F[X]) : Prop"
+    },
+    {
+      "name": "PolynomialMatrixKernel.DegreePremises",
+      "line": 58,
+      "kind": "def",
+      "header": "def DegreePremises (M e : \u2115) (K : Matrix \u03b9 (Fin (e + 1)) F[X]) : Prop"
+    },
+    {
+      "name": "PolynomialMatrixKernel.DegreeCorrectness",
+      "line": 64,
+      "kind": "def",
+      "header": "def DegreeCorrectness : Prop"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+      "line": 72,
+      "kind": "theorem",
+      "header": "theorem RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc (n : \u2115) (B : Matrix (Fin (n + 1)) (Fin (n + 1)) (Polynomial F)) (t : Fin (n + 1)) : B.adjugate t (Fin.last n) = (-1 : (Polynomial F)) ^ ((Fin.last n : \u2115) + (t : \u2115)) * Matrix.det (B.submatrix Fin.castSucc t.succAbove)"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+      "line": 83,
+      "kind": "theorem",
+      "header": "theorem RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc (n : \u2115) (B : Matrix (Fin (n + 1)) (Fin (n + 1)) (Polynomial F)) : B.adjugate (Fin.last n) (Fin.last n) = (-1 : (Polynomial F)) ^ ((Fin.last n : \u2115) + (Fin.last n : \u2115)) * Matrix.det (B.submatrix Fin.castSucc Fin.castSucc)"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+      "line": 94,
+      "kind": "theorem",
+      "header": "theorem RS_det_submatrix_eq_zero_of_det_eq_zero (n : \u2115) (K : Matrix (Fin n) (Fin n) (Polynomial F)) (hdet : Matrix.det K = 0) (I J : Fin n \u21aa Fin n) : Matrix.det (K.submatrix I J) = 0"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+      "line": 127,
+      "kind": "theorem",
+      "header": "theorem RS_mulVec_adjugate_col_eq_det (n : \u2115) (A : Matrix (Fin n) (Fin n) (Polynomial F)) (j : Fin n) : Matrix.mulVec A (fun i : Fin n => A.adjugate i j) = (fun i : Fin n => if i = j then Matrix.det A else 0)"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+      "line": 144,
+      "kind": "theorem",
+      "header": "theorem RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero (n : \u2115) (A : Matrix (Fin n) (Fin n) (Polynomial F)) (j : Fin n) (hdet : Matrix.det A = 0) : Matrix.mulVec A (fun i : Fin n => A.adjugate i j) = 0"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le",
+      "line": 159,
+      "kind": "theorem",
+      "header": "theorem RS_natDegree_det_le_of_entry_natDegree_le (M n : \u2115) (A : Matrix (Fin n) (Fin n) F[X]) (hdeg : \u2200 i j, (A i j).natDegree \u2264 M) : (Matrix.det A).natDegree \u2264 M * n"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+      "line": 199,
+      "kind": "theorem",
+      "header": "theorem RS_natDegree_det_le_of_entry_natDegree_le_one (n : \u2115) (A : Matrix (Fin n) (Fin n) F[X]) (hdeg : \u2200 i j, (A i j).natDegree \u2264 1) : (Matrix.det A).natDegree \u2264 n"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+      "line": 206,
+      "kind": "theorem",
+      "header": "theorem adjugate_updateRow_same_col {R : Type*} [CommRing R] {n : Type*} [Fintype n] [DecidableEq n] (A : Matrix n n R) (i j : n) (b : n \u2192 R) : (A.updateRow i b).adjugate j i = A.adjugate j i"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+      "line": 213,
+      "kind": "theorem",
+      "header": "theorem det_updateRow_eq_sum_mul_adjugate_col {R : Type*} [CommRing R] {n : Type*} [Fintype n] [DecidableEq n] (A : Matrix n n R) (i : n) (b : n \u2192 R) : (A.updateRow i b).det = \u2211 j : n, b j * A.adjugate j i"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le",
+      "line": 224,
+      "kind": "theorem",
+      "header": "theorem RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le (M e : \u2115) (K : Matrix \u03b9 (Fin (e + 1)) F[X]) (hcard : e + 1 \u2264 Fintype.card \u03b9) (hdeg : \u2200 i j, (K i j).natDegree \u2264 M) (hdet : \u2200 r : Fin (e + 1) \u2192 \u03b9, Matrix.det (K.submatrix r id) = 0) : \u2203 a : Fin (e + 1) \u2192 F[X], a \u2260 0 \u2227 (\u2200 t, (a t).natDegree \u2264 M * e) \u2227 Matrix.mulVec K a = 0"
+    },
+    {
+      "name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+      "line": 445,
+      "kind": "theorem",
+      "header": "theorem RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one (e : \u2115) (K : Matrix \u03b9 (Fin (e + 1)) F[X]) (hcard : e + 1 \u2264 Fintype.card \u03b9) (hdeg : \u2200 i j, (K i j).natDegree \u2264 1) (hdet : \u2200 r : Fin (e + 1) \u2192 \u03b9, Matrix.det (K.submatrix r id) = 0) : \u2203 a : Fin (e + 1) \u2192 F[X], a \u2260 0 \u2227 (\u2200 t, (a t).natDegree \u2264 e) \u2227 Matrix.mulVec K a = 0"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degree_correctness",
+      "line": 458,
+      "kind": "theorem",
+      "header": "theorem degree_correctness : DegreeCorrectness (F"
+    },
+    {
+      "name": "PolynomialMatrixKernel.correctness",
+      "line": 464,
+      "kind": "theorem",
+      "header": "theorem correctness : Correctness (F"
+    },
+    {
+      "name": "PolynomialMatrixKernel.witnessMatrix",
+      "line": 470,
+      "kind": "def",
+      "header": "noncomputable def witnessMatrix : Matrix (Fin 2) (Fin 2) F[X]"
+    },
+    {
+      "name": "PolynomialMatrixKernel.witnessVector",
+      "line": 473,
+      "kind": "def",
+      "header": "noncomputable def witnessVector : Fin 2 \u2192 F[X]"
+    },
+    {
+      "name": "PolynomialMatrixKernel.witnessMatrix_premises",
+      "line": 475,
+      "kind": "theorem",
+      "header": "theorem witnessMatrix_premises : Premises 1 (witnessMatrix (F"
+    },
+    {
+      "name": "PolynomialMatrixKernel.witnessVector_valid",
+      "line": 482,
+      "kind": "theorem",
+      "header": "theorem witnessVector_valid : witnessVector (F"
+    },
+    {
+      "name": "PolynomialMatrixKernel.premises_inhabited",
+      "line": 496,
+      "kind": "theorem",
+      "header": "theorem premises_inhabited : \u2203 K : Matrix (Fin 2) (Fin 2) F[X], K \u2260 0 \u2227 Premises 1 K"
+    },
+    {
+      "name": "PolynomialMatrixKernel.satisfiable",
+      "line": 504,
+      "kind": "theorem",
+      "header": "theorem satisfiable : \u2203 K : Matrix (Fin 2) (Fin 2) F[X], Premises 1 K \u2227 BoundedKernel 1 K"
+    },
+    {
+      "name": "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+      "line": 510,
+      "kind": "theorem",
+      "header": "theorem determinant_hypothesis_teeth (e : \u2115) : e + 1 \u2264 Fintype.card (Fin (e + 1)) \u2227 (\u2200 i j, ((1 : Matrix (Fin (e + 1)) (Fin (e + 1)) F[X]) i j).natDegree \u2264 1) \u2227 \u00ac BoundedKernel e (1 : Matrix (Fin (e + 1)) (Fin (e + 1)) F[X])"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degree_bound_teeth",
+      "line": 523,
+      "kind": "theorem",
+      "header": "theorem degree_bound_teeth : \u00ac \u2203 a : Fin 2 \u2192 F[X], a \u2260 0 \u2227 (\u2200 t, (a t).natDegree \u2264 0) \u2227 Matrix.mulVec (witnessMatrix (F"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degreeWitnessMatrix",
+      "line": 548,
+      "kind": "def",
+      "header": "noncomputable def degreeWitnessMatrix (M : \u2115) : Matrix (Fin 2) (Fin 2) F[X]"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degreeWitnessVector",
+      "line": 552,
+      "kind": "def",
+      "header": "noncomputable def degreeWitnessVector (M : \u2115) : Fin 2 \u2192 F[X]"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degree_witnessMatrix_premises",
+      "line": 554,
+      "kind": "theorem",
+      "header": "theorem degree_witnessMatrix_premises (M : \u2115) : DegreePremises M 1 (degreeWitnessMatrix (F"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degree_witnessVector_valid",
+      "line": 562,
+      "kind": "theorem",
+      "header": "theorem degree_witnessVector_valid (M : \u2115) : degreeWitnessVector (F"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degree_premises_inhabited",
+      "line": 577,
+      "kind": "theorem",
+      "header": "theorem degree_premises_inhabited (M : \u2115) : \u2203 K : Matrix (Fin 2) (Fin 2) F[X], K \u2260 0 \u2227 DegreePremises M 1 K"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degree_satisfiable",
+      "line": 585,
+      "kind": "theorem",
+      "header": "theorem degree_satisfiable (M : \u2115) : \u2203 K : Matrix (Fin 2) (Fin 2) F[X], DegreePremises M 1 K \u2227 DegreeBoundedKernel M 1 K"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degree_determinant_hypothesis_teeth",
+      "line": 593,
+      "kind": "theorem",
+      "header": "theorem degree_determinant_hypothesis_teeth (M e : \u2115) : e + 1 \u2264 Fintype.card (Fin (e + 1)) \u2227 (\u2200 i j, ((1 : Matrix (Fin (e + 1)) (Fin (e + 1)) F[X]) i j).natDegree \u2264 M) \u2227 \u00ac DegreeBoundedKernel M e (1 : Matrix (Fin (e + 1)) (Fin (e + 1)) F[X])"
+    },
+    {
+      "name": "PolynomialMatrixKernel.degree_strict_bound_teeth",
+      "line": 606,
+      "kind": "theorem",
+      "header": "theorem degree_strict_bound_teeth (M : \u2115) : \u00ac \u2203 a : Fin 2 \u2192 F[X], a \u2260 0 \u2227 (\u2200 t, (a t).natDegree < M) \u2227 Matrix.mulVec (degreeWitnessMatrix (F"
+    },
+    {
+      "name": "PolynomialMatrixKernel.entry_degree_hypothesis_teeth",
+      "line": 631,
+      "kind": "theorem",
+      "header": "theorem entry_degree_hypothesis_teeth : Premises 1 (witnessMatrix (F"
+    }
+  ],
+  "guarded_theorems": [
+    "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+    "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+    "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+    "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le",
+    "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+    "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+    "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+    "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le",
+    "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+    "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+    "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+    "PolynomialMatrixKernel.correctness",
+    "PolynomialMatrixKernel.degree_bound_teeth",
+    "PolynomialMatrixKernel.degree_correctness",
+    "PolynomialMatrixKernel.degree_determinant_hypothesis_teeth",
+    "PolynomialMatrixKernel.degree_premises_inhabited",
+    "PolynomialMatrixKernel.degree_satisfiable",
+    "PolynomialMatrixKernel.degree_strict_bound_teeth",
+    "PolynomialMatrixKernel.degree_witnessMatrix_premises",
+    "PolynomialMatrixKernel.degree_witnessVector_valid",
+    "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+    "PolynomialMatrixKernel.entry_degree_hypothesis_teeth",
+    "PolynomialMatrixKernel.premises_inhabited",
+    "PolynomialMatrixKernel.satisfiable",
+    "PolynomialMatrixKernel.witnessMatrix_premises",
+    "PolynomialMatrixKernel.witnessVector_valid"
+  ],
+  "old_theorems_preserved": [
+    "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+    "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+    "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+    "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+    "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+    "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+    "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+    "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+    "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+    "PolynomialMatrixKernel.correctness",
+    "PolynomialMatrixKernel.degree_bound_teeth",
+    "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+    "PolynomialMatrixKernel.premises_inhabited",
+    "PolynomialMatrixKernel.satisfiable",
+    "PolynomialMatrixKernel.witnessMatrix_premises",
+    "PolynomialMatrixKernel.witnessVector_valid"
+  ],
+  "old_guard_bytes_equal": true,
+  "old_definitions_and_binders_equal": true,
+  "only_changed_old_proof_bodies": [
+    "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+    "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one"
+  ],
+  "standard_guard_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "forbidden_tokens_in_comment_stripped_module": [],
+  "direct_imports": [
+    "Mathlib.Algebra.Polynomial.BigOperators",
+    "Mathlib.Data.Fin.Tuple.Embedding",
+    "Mathlib.Data.Fintype.EquivFin",
+    "Mathlib.Data.Nat.Find",
+    "Mathlib.LinearAlgebra.Matrix.Adjugate",
+    "Mathlib.Tactic.FinCases"
+  ],
+  "patch_payloads": [
+    {
+      "path": "Theory/PolynomialMatrixKernel.lean",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+      "bytes": 33375
+    },
+    {
+      "path": "LICENSES/ArkLib-Apache-2.0.txt",
+      "sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+      "bytes": 11356
+    }
+  ],
+  "retained_compile": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-o",
+      "/tmp/minidregg-polynomial-curve-kernel-20260908/.lake/build/lib/lean/Theory/PolynomialMatrixKernel.olean",
+      "Theory/PolynomialMatrixKernel.lean"
+    ],
+    "cwd": "/tmp/minidregg-polynomial-curve-kernel-20260908",
+    "elapsed_seconds": 10.643891332991188,
+    "exit_code": 0,
+    "source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+    "source_unchanged": true,
+    "stdout": "",
+    "stderr": "",
+    "olean_sha256": "eee1d113fdb0147e056be93d12f330bf0da86d40ff9608d116a976beeb267d7a"
+  },
+  "current_isolate_source_and_olean_match_retained_record": true,
+  "retained_patch_and_import_checks": {
+    "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+    "target_paths_absent_from_base": [
+      "Theory/PolynomialMatrixKernel.lean",
+      "LICENSES/ArkLib-Apache-2.0.txt"
+    ],
+    "patch_sha256": "d93868e566910220380cfa96d33bcb665c6deb57090a34e62beaa0fe6fd56c8c",
+    "patch_checks": [
+      {
+        "command": [
+          "git",
+          "init",
+          "-q"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "apply",
+          "--check",
+          "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel/polynomial-curve-kernel.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "apply",
+          "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel/polynomial-curve-kernel.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "exact_applied_bytes_match": true,
+    "import_boundary_exit_code": 0,
+    "direct_imports_mathlib_only": [
+      "Mathlib.Algebra.Polynomial.BigOperators",
+      "Mathlib.Data.Fin.Tuple.Embedding",
+      "Mathlib.Data.Fintype.EquivFin",
+      "Mathlib.Data.Nat.Find",
+      "Mathlib.LinearAlgebra.Matrix.Adjugate",
+      "Mathlib.Tactic.FinCases"
+    ],
+    "census_script_sha256": "563b52272d913d00eb5751588befbbe7f7b226d83016d1c53f917dececff57ff",
+    "original_source_unchanged": true
+  },
+  "independent_read_only_git_commands": [
+    {
+      "command": [
+        "git",
+        "-C",
+        "/tmp/minidregg-polynomial-curve-kernel-20260908",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/tmp/minidregg-polynomial-curve-kernel-20260908/.lake/packages/mathlib",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "1c2b90b13009c65b090d95a83c98e248deafb6f1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/tmp/minidregg-polynomial-curve-kernel-20260908",
+        "ls-tree",
+        "--name-only",
+        "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+        "--",
+        "Theory/PolynomialMatrixKernel.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/tmp/minidregg-polynomial-curve-kernel-20260908",
+        "ls-tree",
+        "--name-only",
+        "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+        "--",
+        "LICENSES/ArkLib-Apache-2.0.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_queries": {
+    "web": 0,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "eprint_network": 0
+  }
+}

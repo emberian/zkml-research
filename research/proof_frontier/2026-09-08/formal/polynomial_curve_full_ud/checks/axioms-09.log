@@ -1,0 +1,6 @@
+'Minidregg.Selvage.curveWord_snoc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.correlatedAgreement_of_snoc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.curve_uniform_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.arity8_curve_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.arity8_injected_curve_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.arity8_injected_fixed_prefix_sound' depends on axioms: [propext, Classical.choice, Quot.sound]

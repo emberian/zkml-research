@@ -1,0 +1,7 @@
+{
+  "command": "python3 -B verify_preparation.py > PREPARATION_RECHECK.json",
+  "exit_code": 1,
+  "reason": "FileNotFoundError: read-only review inventory path used HERE.parents[5] instead of HERE.parents[4]",
+  "missing_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/adversarial_review/public_seed_adapter/manifest.json",
+  "scope": "New postfreeze read-only collector path typo; no runtime source, contract, preparation pin or cryptographic operation changed"
+}

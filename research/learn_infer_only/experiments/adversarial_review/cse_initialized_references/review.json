@@ -1,0 +1,10 @@
+{
+  "author_manifest_sha256": "1c8d73ab40a06bde6dbed4b045d78d67d7fced01c5013141047ac40dc305c5c5",
+  "disposition": "accepted",
+  "patch_sha256": "39afffcab611adc4a3a292bd3935ea551ae5f22e264660c9d2c0523256c74c6c",
+  "report_sha256": "caf10024b2634fa2d5c684449bfad12d8bcb0e14d58ae0134809144403471927",
+  "schema": "independent-cse-initialized-reference-review-v1",
+  "scope": "Lean F2 initialized-reference preservation and functional Option storage presence for arbitrary payloads; no Rust/Vec/serde/TFHE refinement. Saved Lean output reviewed; no reviewer Lean build or gate/crypto execution.",
+  "source_sha256": "1e8037c2c4ce35727a804912560b13a89a673682a8ca7405f2d1d4504d884386",
+  "theorem_pins": 29
+}

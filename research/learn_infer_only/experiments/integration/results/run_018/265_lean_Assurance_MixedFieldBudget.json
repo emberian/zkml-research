@@ -1,0 +1,18 @@
+{
+  "label": "lean_Assurance_MixedFieldBudget",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Assurance/MixedFieldBudget.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Assurance/MixedFieldBudget.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "uniform_one_gate_recovers : \u2200 (P : PoWSoundnessParams),\n  mixedFieldSoundness P (uniformChallengeFields P.fieldCard 1) = soundnessErrorPoW P\nbaseGateExt4Fri_ceiling : 1 / 2 ^ 17 < mixedFieldSoundness secureBudget120 baseGateExt4Fri\nbaseGateExt4Fri_secure_16 : mixedFieldSoundness secureBudget120 baseGateExt4Fri \u2264 1 / 2 ^ 16\next6GateExt4Fri_ceiling : 1 / 2 ^ 76 < mixedFieldSoundness secureBudget120 ext6GateExt4Fri\next6GateExt4Fri_secure_75 : mixedFieldSoundness secureBudget120 ext6GateExt4Fri \u2264 1 / 2 ^ 75\nunifiedExt6_secure_137 : mixedFieldSoundness secureBudget120 unifiedExt6 \u2264 1 / 2 ^ 137\nunifiedExt6_ceiling : 1 / 2 ^ 138 < mixedFieldSoundness secureBudget120 unifiedExt6\n",
+  "stderr": "",
+  "elapsed_seconds": 5.7059465420024935,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Assurance/MixedFieldBudget.lean",
+  "source_sha256_before": "37e832f0d96a8da337e2629cffcbfd3ebe2f7b764ed962d48c006b24cf5e3468",
+  "source_sha256_after": "37e832f0d96a8da337e2629cffcbfd3ebe2f7b764ed962d48c006b24cf5e3468"
+}

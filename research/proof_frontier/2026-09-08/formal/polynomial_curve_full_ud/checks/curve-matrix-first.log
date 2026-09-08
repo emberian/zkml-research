@@ -1,0 +1,101 @@
+Theory/CurveRSInterpolationMatrix.lean:21:78: error: unsolved goals
+F : Type u_1
+inst✝¹ : Field F
+ι : Type u_2
+inst✝ : Fintype ι
+e d : ℕ
+dom : ι → F
+f : ι → F[X]
+i : ι
+j : Fin (e + 1 + (e + d))
+hj : e + 1 ≤ ↑j
+⊢ (if ↑j ≤ e then f i * C (dom i) ^ ↑j else -C (dom i) ^ (↑j - (e + 1))).natDegree = 0
+Theory/CurveRSInterpolationMatrix.lean:22:22: warning: This simp argument is unused:
+  Nat.not_lt_of_ge hj
+
+Hint: Omit it from the simp argument list.
+  simp [BW_homMatrix,̵ ̵N̵a̵t̵.̵n̵o̵t̵_̵l̵t̵_̵o̵f̵_̵g̵e̵ ̵h̵j̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Theory/CurveRSInterpolationMatrix.lean:28:4: error: Type mismatch: After simplification, term
+  LE.le.trans natDegree_mul_le
+    (Eq.mpr
+      (id
+        (congrFun'
+          (congrArg LE.le
+            (Eq.trans
+              (congrArg (HAdd.hAdd (f i).natDegree)
+                (Eq.trans (natDegree_pow (C (dom i)) ↑j)
+                  (Eq.trans (congrArg (HMul.hMul ↑j) (natDegree_C (dom i))) (mul_zero ↑j))))
+              (add_zero (f i).natDegree)))
+          M))
+      (hdeg i))
+ has type
+  (f i * C (dom i) ^ ↑j).natDegree ≤ M
+but is expected to have type
+  (if ↑j ≤ e then f i * C (dom i) ^ ↑j else -C (dom i) ^ (↑j - (e + 1))).natDegree ≤ M
+Theory/CurveRSInterpolationMatrix.lean:31:2: error: unsolved goals
+case neg
+F : Type u_1
+inst✝¹ : Field F
+ι : Type u_2
+inst✝ : Fintype ι
+M e d : ℕ
+dom : ι → F
+f : ι → F[X]
+hdeg : ∀ (i : ι), (f i).natDegree ≤ M
+i : ι
+j : Fin (e + 1 + (e + d))
+hj : ¬↑j < e + 1
+⊢ (if ↑j ≤ e then f i * C (dom i) ^ ↑j else -C (dom i) ^ (↑j - (e + 1))).natDegree ≤ M
+Theory/CurveRSInterpolationMatrix.lean:31:24: warning: This simp argument is unused:
+  hj
+
+Hint: Omit it from the simp argument list.
+  simp [BW_homMatrix,̵ ̵h̵j̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Theory/CurveRSInterpolationMatrix.lean:36:52: error: unsolved goals
+case pos
+F : Type u_1
+inst✝¹ : Field F
+ι : Type u_2
+inst✝ : Fintype ι
+e d : ℕ
+dom : ι → F
+f : ι → F[X]
+z : F
+i : ι
+j : Fin (e + 1 + (e + d))
+hj : ↑j < e + 1
+⊢ eval z (if ↑j ≤ e then f i * C (dom i) ^ ↑j else -C (dom i) ^ (↑j - (e + 1))) =
+    if ↑j ≤ e then eval z (f i) * dom i ^ ↑j else -dom i ^ (↑j - (e + 1))
+
+case neg
+F : Type u_1
+inst✝¹ : Field F
+ι : Type u_2
+inst✝ : Fintype ι
+e d : ℕ
+dom : ι → F
+f : ι → F[X]
+z : F
+i : ι
+j : Fin (e + 1 + (e + d))
+hj : ¬↑j < e + 1
+⊢ eval z (if ↑j ≤ e then f i * C (dom i) ^ ↑j else -C (dom i) ^ (↑j - (e + 1))) =
+    if ↑j ≤ e then eval z (f i) * dom i ^ ↑j else -dom i ^ (↑j - (e + 1))
+Theory/CurveRSInterpolationMatrix.lean:38:52: warning: This simp argument is unused:
+  hj
+
+Hint: Omit it from the simp argument list.
+  simp [BW_homMatrix,̵ ̵h̵j̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Theory/CurveRSInterpolationMatrix.lean:55:4: error: Type mismatch
+  natDegree_prod_le
+has type
+  ∀ (s : Finset ?m.185) [inst : CommSemiring ?m.184] (f : ?m.185 → ?m.184[X]),
+    (∏ i ∈ s, f i).natDegree ≤ ∑ i ∈ s, (f i).natDegree
+but is expected to have type
+  (∏ i, A (σ i) i).natDegree ≤ ∑ i, (A (σ i) i).natDegree

@@ -1,0 +1,1849 @@
+name,role,operation,wall_seconds,evaluate_seconds,peak_rss_bytes,serialized_bytes,xor_api_calls,and_api_calls,fixed_plan
+query_256,issuer,query,0.08347933299955912,0.0,189136896,6801,,,
+query_257,issuer,query,0.08312995798769407,0.0,189136896,6801,,,
+query_272,issuer,query,0.08595008400152437,0.0,189120512,6801,,,
+query_273,issuer,query,0.09048124999389984,0.0,189284352,6801,,,
+query_288,issuer,query,0.10654974999488331,0.0,189169664,6801,,,
+query_289,issuer,query,0.10994891700102016,0.0,189153280,6801,,,
+query_304,issuer,query,0.11463333398569375,0.0,189169664,6801,,,
+query_305,issuer,query,0.12155333400005475,0.0,189153280,6801,,,
+query_320,issuer,query,0.13362604199210182,0.0,256376832,6801,,,
+query_321,issuer,query,0.11237791701569222,0.0,189120512,6801,,,
+query_336,issuer,query,0.134566624998115,0.0,189136896,6801,,,
+query_337,issuer,query,0.11969437502557412,0.0,189153280,6801,,,
+query_352,issuer,query,0.13031745899934322,0.0,189104128,6801,,,
+query_353,issuer,query,0.13289341700146906,0.0,189005824,6801,,,
+query_368,issuer,query,0.10325174999888986,0.0,189022208,6801,,,
+query_369,issuer,query,0.11234854199574329,0.0,189153280,6801,,,
+initial_67000_0,issuer,init,0.48182691700640135,0.0,189513728,108441,,,
+initial_67000_1,issuer,init,0.3356446659890935,0.0,189218816,108441,,,
+h0-e0001.issue,issuer,learn,0.15801654200186022,0.0,189186048,33905,,,
+h0-e0001.primary,host,learn,18.907674415997462,18.640297542,484999168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0001.replay,host,learn,20.478385833994253,20.240048084,484933632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0002.issue,issuer,learn,0.200423583999509,0.0,189317120,33905,,,
+h0-e0002.primary,host,learn,19.506844209012343,19.236560084,483885056,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0002.replay,host,learn,14.090909374994226,13.805950792,484884480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0003.issue,issuer,learn,0.13151962499250658,0.0,189186048,33905,,,
+h0-e0003.primary,host,learn,12.243488500011154,12.084689334,484638720,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0003.replay,host,learn,12.612441584002227,12.472329333,482787328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0004.issue,issuer,learn,0.10583758298889734,0.0,189169664,33905,,,
+h0-e0004.primary,host,learn,14.285437624988845,14.12023025,483655680,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0004.replay,host,learn,20.394854582991684,20.118692083,483770368,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0005.issue,issuer,learn,0.14055270800599828,0.0,189136896,33905,,,
+h0-e0005.primary,host,learn,19.55739033300779,19.338743167,483016704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0005.replay,host,learn,18.12229924998246,17.870528708,483639296,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0006.issue,issuer,learn,0.17224037501728162,0.0,189120512,33905,,,
+h0-e0006.primary,host,learn,19.01577570900554,18.781357667,483262464,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0006.replay,host,learn,14.694182290986646,14.513382209,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0007.issue,issuer,learn,0.1302338329842314,0.0,189153280,33905,,,
+h0-e0007.primary,host,learn,13.575926291989163,13.414464083,484065280,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0007.replay,host,learn,20.778168125019874,20.613816292,482902016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0008.issue,issuer,learn,0.13622616700013168,0.0,189317120,33905,,,
+h0-e0008.primary,host,learn,16.87465429198346,16.668026666,552091648,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0008.replay,host,learn,17.615922916011186,17.452536417,483999744,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0009.issue,issuer,learn,0.11997404199792072,0.0,189153280,33905,,,
+h0-e0009.primary,host,learn,14.13753958401503,13.959693583,483819520,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0009.replay,host,learn,16.78263704100391,16.560761666,484950016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0010.issue,issuer,learn,0.11332904201117344,0.0,189169664,33905,,,
+h0-e0010.primary,host,learn,12.749245291983243,12.536745208,483442688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0010.replay,host,learn,12.671317375003127,12.510844917,485195776,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0011.issue,issuer,learn,0.11912225000560284,0.0,189284352,33905,,,
+h0-e0011.primary,host,learn,12.813219667004887,12.620560625,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0011.replay,host,learn,16.500112832989544,16.273666292,483344384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0012.issue,issuer,learn,0.0972393749980256,0.0,189169664,33905,,,
+h0-e0012.primary,host,learn,11.083754749997752,10.943849041,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0012.replay,host,learn,11.340311500011012,11.183341042,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0013.issue,issuer,learn,0.10936825000680983,0.0,189169664,33905,,,
+h0-e0013.primary,host,learn,12.087024417007342,11.931896541,483344384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0013.replay,host,learn,12.255370792001486,12.067621292,486457344,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0014.issue,issuer,learn,0.1149333750072401,0.0,189169664,33905,,,
+h0-e0014.primary,host,learn,13.159064750012476,12.965877708,485113856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0014.replay,host,learn,11.668062709009973,11.496435584,482869248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0015.issue,issuer,learn,0.11141145799774677,0.0,189169664,33905,,,
+h0-e0015.primary,host,learn,11.777463625010569,11.579289834,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0015.replay,host,learn,12.196921624999959,12.034632291,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0016.issue,issuer,learn,0.11051087500527501,0.0,189169664,33905,,,
+h0-e0016.primary,host,learn,13.684365166991483,13.521810583,485376000,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0016.replay,host,learn,12.615060041018296,12.407126125,483065856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0017.issue,issuer,learn,0.12027862499235198,0.0,189317120,33905,,,
+h0-e0017.primary,host,learn,12.850117249996401,12.672389834,483524608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0017.replay,host,learn,14.683713124977658,14.489636,485097472,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0018.issue,issuer,learn,0.1463812500005588,0.0,189317120,33905,,,
+h0-e0018.primary,host,learn,16.0710203750059,15.848133417,486129664,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0018.replay,host,learn,14.918813875003252,14.486069375,482885632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0019.issue,issuer,learn,0.12349783300305717,0.0,189153280,33905,,,
+h0-e0019.primary,host,learn,11.753419957996812,11.559456917,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0019.replay,host,learn,11.846209041017573,11.684115667,484589568,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0020.issue,issuer,learn,0.10347916599130258,0.0,189136896,33905,,,
+h0-e0020.primary,host,learn,13.041967291996116,12.879478375,486522880,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0020.replay,host,learn,15.139819833013462,14.971992125,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0021.issue,issuer,learn,0.11768670799210668,0.0,189136896,33905,,,
+h0-e0021.primary,host,learn,14.377768125006696,14.188700875,485720064,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0021.replay,host,learn,13.719176916987635,13.54156225,484163584,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0022.issue,issuer,learn,0.1120019170048181,0.0,189186048,33905,,,
+h0-e0022.primary,host,learn,14.419574707979336,14.231095166,485523456,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0022.replay,host,learn,13.927353459002916,13.763623291,484474880,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0023.issue,issuer,learn,0.12428612497751601,0.0,189136896,33905,,,
+h0-e0023.primary,host,learn,13.585413875000086,13.425565625,486277120,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0023.replay,host,learn,14.083802957989974,13.88006525,484868096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0024.issue,issuer,learn,0.14028941601281986,0.0,189284352,33905,,,
+h0-e0024.primary,host,learn,13.805188583006384,13.62151575,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0024.replay,host,learn,15.670356124988757,15.502566542,484196352,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0025.issue,issuer,learn,0.1139441659906879,0.0,189169664,33905,,,
+h0-e0025.primary,host,learn,12.959026083000936,12.808530875,485654528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0025.replay,host,learn,12.389345500007039,12.205101583,485081088,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0026.issue,issuer,learn,0.09214737502043135,0.0,189153280,33905,,,
+h0-e0026.primary,host,learn,11.337323040992487,11.201001125,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0026.replay,host,learn,12.562995582993608,12.403022875,484655104,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0027.issue,issuer,learn,0.1383053750032559,0.0,189267968,33905,,,
+h0-e0027.primary,host,learn,14.803504499985138,14.593775542,482918400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0027.replay,host,learn,12.128396790998522,11.970936583,483082240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0028.issue,issuer,learn,0.10667704200022854,0.0,189136896,33905,,,
+h0-e0028.primary,host,learn,11.728573875006987,11.512500458,485064704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0028.replay,host,learn,11.987622834014473,11.814894458,483344384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0029.issue,issuer,learn,0.11050591699313372,0.0,189153280,33905,,,
+h0-e0029.primary,host,learn,12.40744862498832,12.235271333,483885056,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0029.replay,host,learn,11.838741290994221,11.6629325,482983936,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0030.issue,issuer,learn,0.09678504097973928,0.0,189169664,33905,,,
+h0-e0030.primary,host,learn,10.812971999985166,10.665066167,485670912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0030.replay,host,learn,12.10921120797866,11.966602958,485654528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0031.issue,issuer,learn,0.1058765830239281,0.0,189136896,33905,,,
+h0-e0031.primary,host,learn,11.628918000002159,11.457507041,483033088,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0031.replay,host,learn,12.752089499990689,12.563286291,486162432,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0032.issue,issuer,learn,0.11671945799025707,0.0,189136896,33905,,,
+h0-e0032.primary,host,learn,12.374999958003173,12.196991417,483590144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0032.replay,host,learn,10.80599829199491,10.655891792,483721216,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0033.issue,issuer,learn,0.09823608299484476,0.0,189169664,33905,,,
+h0-e0033.primary,host,learn,10.387215541995829,10.231601709,485916672,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0033.replay,host,learn,10.134267582994653,9.961964166,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0034.issue,issuer,learn,0.08730387498508207,0.0,189136896,33905,,,
+h0-e0034.primary,host,learn,9.56867270800285,9.428968791,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0034.replay,host,learn,11.15507479099324,10.997937458,483983360,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0035.issue,issuer,learn,0.09406729199690744,0.0,189169664,33905,,,
+h0-e0035.primary,host,learn,9.885772708017612,9.741007916,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0035.replay,host,learn,11.19067404200905,11.050933542,485244928,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0036.issue,issuer,learn,0.11558087498997338,0.0,189186048,33905,,,
+h0-e0036.primary,host,learn,12.385738332988694,12.220267375,483033088,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0036.replay,host,learn,11.927302833006252,11.515293083,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0037.issue,issuer,learn,0.11052854100125842,0.0,189136896,33905,,,
+h0-e0037.primary,host,learn,11.709674750018166,11.539699,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0037.replay,host,learn,11.038611916999798,10.889258125,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0038.issue,issuer,learn,0.11486204198445193,0.0,189169664,33905,,,
+h0-e0038.primary,host,learn,11.58328729198547,11.418797458,484409344,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0038.replay,host,learn,12.296078125014901,12.102640916,483065856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0039.issue,issuer,learn,0.10314633400412276,0.0,189120512,33905,,,
+h0-e0039.primary,host,learn,12.551970041997265,12.390053542,483835904,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0039.replay,host,learn,13.560355207999237,13.388577459,485048320,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0040.issue,issuer,learn,0.11544470800436102,0.0,189136896,33905,,,
+h0-e0040.primary,host,learn,14.624557083996478,14.461977625,483639296,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0040.replay,host,learn,11.247320124995895,11.077519167,485998592,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0041.issue,issuer,learn,0.10762824999983422,0.0,189153280,33905,,,
+h0-e0041.primary,host,learn,10.356740833987715,10.188040833,483524608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0041.replay,host,learn,10.416300709010102,10.265976875,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0042.issue,issuer,learn,0.10596841698861681,0.0,189120512,33905,,,
+h0-e0042.primary,host,learn,11.859495207987493,11.700893625,485588992,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0042.replay,host,learn,11.922560000006342,11.778072709,484999168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0043.issue,issuer,learn,0.10688312500133179,0.0,189136896,33905,,,
+h0-e0043.primary,host,learn,12.142301833024248,11.977066666,485359616,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0043.replay,host,learn,11.401820416998817,11.225660584,485244928,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0044.issue,issuer,learn,0.10106766698299907,0.0,189153280,33905,,,
+h0-e0044.primary,host,learn,11.600086625025142,11.45778825,486457344,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0044.replay,host,learn,12.356551375007257,12.188285042,483360768,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0045.issue,issuer,learn,0.11035833301139064,0.0,189186048,33905,,,
+h0-e0045.primary,host,learn,12.113202165986877,11.940918292,485064704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0045.replay,host,learn,12.230673749989364,12.075338667,482967552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0046.issue,issuer,learn,0.10593766599777155,0.0,189169664,33905,,,
+h0-e0046.primary,host,learn,11.6696273330017,11.494945542,485048320,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0046.replay,host,learn,12.82429979200242,12.659983833,483622912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0047.issue,issuer,learn,0.16195979199255817,0.0,189317120,33905,,,
+h0-e0047.primary,host,learn,14.198183375003282,13.682101709,483524608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0047.replay,host,learn,12.197298500017496,11.964706667,482787328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0048.issue,issuer,learn,0.10565216600662097,0.0,189153280,33905,,,
+h0-e0048.primary,host,learn,10.094430957979057,9.934144083,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0048.replay,host,learn,9.57964529201854,9.4444225,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0049.issue,issuer,learn,0.09139349998440593,0.0,189186048,33905,,,
+h0-e0049.primary,host,learn,10.353496249997988,10.217753875,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0049.replay,host,learn,11.627428750012768,11.4491395,486473728,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0050.issue,issuer,learn,0.0901375410030596,0.0,189169664,33905,,,
+h0-e0050.primary,host,learn,9.34116099998937,9.191485875,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0050.replay,host,learn,9.615227417001734,9.48659175,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0051.issue,issuer,learn,0.08774241601349786,0.0,189136896,33905,,,
+h0-e0051.primary,host,learn,10.102753707993543,9.968460375,483311616,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0051.replay,host,learn,9.746695540990913,9.603994792,484966400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0052.issue,issuer,learn,0.09489799998118542,0.0,189136896,33905,,,
+h0-e0052.primary,host,learn,12.744301833008649,12.597259625,485212160,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0052.replay,host,learn,13.552569249994121,13.156947458,485064704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0053.issue,issuer,learn,0.09841191599844024,0.0,189120512,33905,,,
+h0-e0053.primary,host,learn,10.026593000016874,9.858861875,485081088,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0053.replay,host,learn,9.808023499994306,9.672742167,483459072,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0054.issue,issuer,learn,0.08983262500260025,0.0,189186048,33905,,,
+h0-e0054.primary,host,learn,10.200659833004465,10.062498291,485195776,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0054.replay,host,learn,10.940260875009699,10.790144833,483917824,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0055.issue,issuer,learn,0.12247237499104813,0.0,189300736,33905,,,
+h0-e0055.primary,host,learn,13.40797941701021,13.223560708,483819520,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0055.replay,host,learn,12.678630833979696,12.478348583,484163584,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0056.issue,issuer,learn,0.11632279198965989,0.0,189153280,33905,,,
+h0-e0056.primary,host,learn,10.003104167000856,9.842605584,485244928,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0056.replay,host,learn,9.700716000021202,9.532028417,483786752,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0057.issue,issuer,learn,0.09145404101582244,0.0,189153280,33905,,,
+h0-e0057.primary,host,learn,9.270394374994794,9.134890125,485785600,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0057.replay,host,learn,10.592104167008074,10.448092791,485064704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0058.issue,issuer,learn,0.11018824999337085,0.0,189169664,33905,,,
+h0-e0058.primary,host,learn,9.596867334010312,9.450544417,485031936,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0058.replay,host,learn,10.803688415995566,10.655411292,483180544,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0059.issue,issuer,learn,0.10284208299708553,0.0,189038592,33905,,,
+h0-e0059.primary,host,learn,10.846982290997403,10.701397416,483639296,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0059.replay,host,learn,10.162949416000629,9.91323475,485048320,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0060.issue,issuer,learn,0.09899029199732468,0.0,189136896,33905,,,
+h0-e0060.primary,host,learn,12.001040833012667,11.809200583,483721216,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0060.replay,host,learn,12.207692916999804,12.029093333,485654528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0061.issue,issuer,learn,0.1061754580005072,0.0,189136896,33905,,,
+h0-e0061.primary,host,learn,11.026270416012267,10.850157125,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0061.replay,host,learn,10.311811457999283,10.051927,487063552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0062.issue,issuer,learn,0.08931133299483918,0.0,189169664,33905,,,
+h0-e0062.primary,host,learn,9.815426917019067,9.660838,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0062.replay,host,learn,9.675789417000487,9.530990959,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0063.issue,issuer,learn,0.09287983400281519,0.0,189153280,33905,,,
+h0-e0063.primary,host,learn,10.57917483401252,10.409881792,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0063.replay,host,learn,11.17121120801312,11.001583625,483917824,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0064.issue,issuer,learn,0.0996080000186339,0.0,189153280,33905,,,
+h0-e0064.primary,host,learn,10.78721491698525,10.627182167,485392384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0064.replay,host,learn,12.014578041998902,11.82371525,483524608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0065.primary,host,infer,0.34533758301404305,0.198463792,482770944,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0065.replay,host,infer,0.3232969999953639,0.186427125,482508800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0066.primary,host,infer,0.3240721659967676,0.186819458,482623488,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0066.replay,host,infer,0.3281834999797866,0.19458125,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0067.primary,host,infer,0.34473033298854716,0.19541675,482656256,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0067.replay,host,infer,0.3709427500143647,0.211541208,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0068.primary,host,infer,0.3585079580079764,0.20322625,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0068.replay,host,infer,0.38940704200649634,0.2151195,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0069.primary,host,infer,0.35532891598995775,0.191863584,482770944,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0069.replay,host,infer,0.30991950002498925,0.183162292,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0070.primary,host,infer,0.31998199998633936,0.190817583,482639872,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0070.replay,host,infer,0.31471870801760815,0.182978875,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0071.primary,host,infer,0.31406849998165853,0.186998042,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0071.replay,host,infer,0.31541816698154435,0.186233083,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0072.primary,host,infer,0.3085617090109736,0.180393041,482656256,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0072.replay,host,infer,0.3084632919926662,0.183346,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0073.primary,host,infer,0.3557922920153942,0.190208917,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0073.replay,host,infer,0.3162133330188226,0.185192042,482656256,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0074.primary,host,infer,0.32139304201700725,0.183941083,550961152,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0074.replay,host,infer,0.320230375014944,0.188441958,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0075.primary,host,infer,0.31655716701061465,0.183030584,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0075.replay,host,infer,0.30644516699248925,0.179660458,484589568,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0076.primary,host,infer,0.3065242500160821,0.181959,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0076.replay,host,infer,0.3080304999893997,0.18242125,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0077.primary,host,infer,0.3089282079890836,0.182541291,482639872,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0077.replay,host,infer,0.3090752499992959,0.183130584,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0078.primary,host,infer,0.32209950001561083,0.186851292,482623488,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0078.replay,host,infer,0.3108862919907551,0.181599375,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0079.primary,host,infer,0.3101052500132937,0.185934125,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0079.replay,host,infer,0.31998295901576057,0.192642667,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0080.primary,host,infer,0.3216457079979591,0.187378042,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0080.replay,host,infer,0.31974345800699666,0.187631667,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0081.issue,issuer,learn,0.08662799999001436,0.0,189136896,33905,,,
+h0-e0081.primary,host,learn,10.748629707988584,10.600601833,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0081.replay,host,learn,9.529492125002434,9.359482333,484507648,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0082.issue,issuer,learn,0.10619175000465475,0.0,189169664,33905,,,
+h0-e0082.primary,host,learn,11.13597804197343,10.938387667,550141952,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0082.replay,host,learn,12.577574958006153,12.194325334,482852864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0083.issue,issuer,learn,0.10822766699129716,0.0,189136896,33905,,,
+h0-e0083.primary,host,learn,10.708160958020017,10.488123625,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0083.replay,host,learn,11.526282416016329,11.343938625,486080512,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0084.issue,issuer,learn,0.1371614160016179,0.0,189136896,33905,,,
+h0-e0084.primary,host,learn,11.144542624999303,10.925497584,483524608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0084.replay,host,learn,11.824440625001444,11.6629605,482934784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0085.issue,issuer,learn,0.13483366699074395,0.0,189186048,33905,,,
+h0-e0085.primary,host,learn,11.514035041996976,11.312682333,483901440,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0085.replay,host,learn,11.561493666988099,11.429454875,485113856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0086.issue,issuer,learn,0.10523474999354221,0.0,189153280,33905,,,
+h0-e0086.primary,host,learn,12.581676458998118,12.43290525,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0086.replay,host,learn,12.469819749996532,12.292814125,487194624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0087.issue,issuer,learn,0.10907854200922884,0.0,189136896,33905,,,
+h0-e0087.primary,host,learn,11.530151125014527,11.382642,486965248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0087.replay,host,learn,14.016046208998887,13.774947625,485048320,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0088.issue,issuer,learn,0.10674416599795222,0.0,189136896,33905,,,
+h0-e0088.primary,host,learn,11.365156874991953,11.193219292,484933632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0088.replay,host,learn,12.951717791991541,12.700755916,485064704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0089.issue,issuer,learn,0.11894400001619942,0.0,189267968,33905,,,
+h0-e0089.primary,host,learn,12.064555874996586,11.909662375,484311040,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0089.replay,host,learn,14.241108957998222,14.024646709,484999168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0090.issue,issuer,learn,0.1126449579896871,0.0,189251584,33905,,,
+h0-e0090.primary,host,learn,11.94371329198475,11.781730833,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0090.replay,host,learn,12.044774749985663,11.872720959,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0091.issue,issuer,learn,0.12464191700564697,0.0,189284352,33905,,,
+h0-e0091.primary,host,learn,11.82667333300924,11.637565458,483311616,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0091.replay,host,learn,11.164769374998286,11.024944625,484638720,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0092.issue,issuer,learn,0.10387941700173542,0.0,189136896,33905,,,
+h0-e0092.primary,host,learn,10.787444959016284,10.638673625,484409344,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0092.replay,host,learn,11.034058874996845,10.853415709,482754560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0093.issue,issuer,learn,0.09448533298564143,0.0,189136896,33905,,,
+h0-e0093.primary,host,learn,11.664962833019672,11.510363833,483803136,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0093.replay,host,learn,12.394810833007796,12.238312375,483393536,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0094.issue,issuer,learn,0.1220890840049833,0.0,189153280,33905,,,
+h0-e0094.primary,host,learn,14.392685875005554,14.206293083,518766592,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0094.replay,host,learn,11.758216207992518,11.592202042,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0095.issue,issuer,learn,0.0889872919942718,0.0,189186048,33905,,,
+h0-e0095.primary,host,learn,11.469825207983376,11.306798167,485261312,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0095.replay,host,learn,11.93862466601422,11.797389916,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0096.issue,issuer,learn,0.11122083300142549,0.0,189169664,33905,,,
+h0-e0096.primary,host,learn,11.894266374991275,11.73017775,483672064,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0096.replay,host,learn,10.836264833022142,10.639460333,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0097.issue,issuer,learn,0.10015750001184642,0.0,189153280,33905,,,
+h0-e0097.primary,host,learn,11.143844625010388,10.972346708,483704832,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0097.replay,host,learn,11.638720832997933,11.489640292,483065856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0098.issue,issuer,learn,0.11213233400485478,0.0,189136896,33905,,,
+h0-e0098.primary,host,learn,11.598152499995194,11.432007792,485556224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0098.replay,host,learn,13.274614499998279,13.105837,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0099.issue,issuer,learn,0.1237214159918949,0.0,189153280,33905,,,
+h0-e0099.primary,host,learn,12.582098250015406,12.338527625,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0099.replay,host,learn,11.351544459001161,11.166794292,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0100.issue,issuer,learn,0.10214012500364333,0.0,189136896,33905,,,
+h0-e0100.primary,host,learn,11.393547666986706,11.244136375,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0100.replay,host,learn,12.215829041000688,12.078402333,482934784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0101.issue,issuer,learn,0.11281370898359455,0.0,189136896,33905,,,
+h0-e0101.primary,host,learn,15.54393645800883,15.375510667,483196928,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0101.replay,host,learn,10.859909792023245,10.714025417,484098048,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0102.issue,issuer,learn,0.0898584579990711,0.0,189169664,33905,,,
+h0-e0102.primary,host,learn,10.62454370901105,10.481398458,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0102.replay,host,learn,11.770548542001052,11.6419425,484016128,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0103.issue,issuer,learn,0.10229008298483677,0.0,189153280,33905,,,
+h0-e0103.primary,host,learn,11.940854207990924,11.823556542,484458496,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0103.replay,host,learn,10.729528041993035,10.582224292,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0104.issue,issuer,learn,0.09995008399710059,0.0,189169664,33905,,,
+h0-e0104.primary,host,learn,11.17660837501171,11.025367125,485310464,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0104.replay,host,learn,11.20683445801842,11.056995,483901440,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0105.issue,issuer,learn,0.10818125001969747,0.0,189186048,33905,,,
+h0-e0105.primary,host,learn,10.594963334006025,10.427682583,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0105.replay,host,learn,12.577960458991583,12.418047083,484114432,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0106.issue,issuer,learn,0.19037525000749156,0.0,189267968,33905,,,
+h0-e0106.primary,host,learn,11.87077204202069,11.68694625,482836480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0106.replay,host,learn,11.463075250008842,11.3045035,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0107.issue,issuer,learn,0.09915483399527147,0.0,189169664,33905,,,
+h0-e0107.primary,host,learn,11.314072417007992,11.15827975,485588992,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0107.replay,host,learn,10.473564041982172,10.284731458,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0108.issue,issuer,learn,0.09695804098737426,0.0,189153280,33905,,,
+h0-e0108.primary,host,learn,11.596316083014244,11.431426792,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0108.replay,host,learn,12.678614124975866,12.491907375,495927296,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0109.issue,issuer,learn,0.09875199999078177,0.0,189120512,33905,,,
+h0-e0109.primary,host,learn,10.22312595800031,10.057970875,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0109.replay,host,learn,11.13938137498917,11.001943625,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0110.issue,issuer,learn,0.12173270899802446,0.0,189300736,33905,,,
+h0-e0110.primary,host,learn,11.301238957996247,11.1398745,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0110.replay,host,learn,11.171005708019948,11.026494541,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0111.issue,issuer,learn,0.0986061249859631,0.0,189136896,33905,,,
+h0-e0111.primary,host,learn,11.467597000009846,11.301827042,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0111.replay,host,learn,11.377593500015792,11.234571125,484933632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0112.issue,issuer,learn,0.09576837500208057,0.0,189136896,33905,,,
+h0-e0112.primary,host,learn,11.265946083003655,11.09032525,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0112.replay,host,learn,11.420147500000894,11.266191167,484851712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0113.issue,issuer,learn,0.09882020798977464,0.0,189136896,33905,,,
+h0-e0113.primary,host,learn,11.459867249999661,11.308724,483688448,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0113.replay,host,learn,11.968651916016825,11.807054333,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0114.issue,issuer,learn,0.10014891700120643,0.0,189169664,33905,,,
+h0-e0114.primary,host,learn,17.9884614579787,17.821742625,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0114.replay,host,learn,19.54018112499034,19.317428958,485097472,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0115.issue,issuer,learn,0.17132845800369978,0.0,189169664,33905,,,
+h0-e0115.primary,host,learn,14.086139166989597,13.874224875,487112704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0115.replay,host,learn,12.480720666993875,12.280680792,485244928,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0116.issue,issuer,learn,0.09373662501457147,0.0,189153280,33905,,,
+h0-e0116.primary,host,learn,11.561030874989228,11.39308175,483704832,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0116.replay,host,learn,11.147528625006089,10.981578667,483065856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0117.issue,issuer,learn,0.10002970800269395,0.0,189169664,33905,,,
+h0-e0117.primary,host,learn,11.229175749991555,10.442934625,484851712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0117.replay,host,learn,12.376514584000688,12.187355458,485031936,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0118.issue,issuer,learn,0.10843345799366944,0.0,189136896,33905,,,
+h0-e0118.primary,host,learn,11.4944059579866,11.305874041,484147200,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0118.replay,host,learn,11.250196250010049,11.077601834,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0119.issue,issuer,learn,0.0983553749974817,0.0,189153280,33905,,,
+h0-e0119.primary,host,learn,10.765055541007314,10.626098541,485523456,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0119.replay,host,learn,10.804165125009604,10.655461417,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0120.issue,issuer,learn,0.09158966600080021,0.0,189169664,33905,,,
+h0-e0120.primary,host,learn,11.47307816700777,11.280841084,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0120.replay,host,learn,12.747994541015942,12.569133667,486965248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0121.issue,issuer,learn,0.1220022090128623,0.0,189300736,33905,,,
+h0-e0121.primary,host,learn,12.159949875000166,11.995853541,484851712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0121.replay,host,learn,11.051198166009272,10.865354292,482983936,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0122.issue,issuer,learn,0.10903237501042895,0.0,189169664,33905,,,
+h0-e0122.primary,host,learn,10.898858249973273,10.734979791,483377152,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0122.replay,host,learn,12.94453337500454,12.767525167,485031936,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0123.issue,issuer,learn,0.16257983399555087,0.0,189202432,33905,,,
+h0-e0123.primary,host,learn,12.452188166993437,12.13327575,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0123.replay,host,learn,11.114490791980643,10.816133875,485212160,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0124.issue,issuer,learn,0.1318366669875104,0.0,189153280,33905,,,
+h0-e0124.primary,host,learn,11.270144874986727,11.063397791,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0124.replay,host,learn,12.583814125013305,12.440189416,483786752,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0125.issue,issuer,learn,0.11421366699505597,0.0,189153280,33905,,,
+h0-e0125.primary,host,learn,11.564149834011914,11.385724084,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0125.replay,host,learn,11.43222474999493,11.257793916,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0126.issue,issuer,learn,0.10603208298562095,0.0,189169664,33905,,,
+h0-e0126.primary,host,learn,10.585425583005417,10.453644333,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0126.replay,host,learn,10.9611508329981,10.823375542,484163584,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0127.issue,issuer,learn,0.13004333301796578,0.0,189300736,33905,,,
+h0-e0127.primary,host,learn,12.67220274999272,12.482024958,485490688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0127.replay,host,learn,10.58432479100884,10.420009125,495960064,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0128.issue,issuer,learn,0.103849041974172,0.0,189153280,33905,,,
+h0-e0128.primary,host,learn,12.60574229201302,12.45793775,485654528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0128.replay,host,learn,14.060934750013985,13.902429167,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0129.issue,issuer,learn,0.10584312499850057,0.0,189136896,33905,,,
+h0-e0129.primary,host,learn,11.125537457992323,10.941828333,485523456,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0129.replay,host,learn,11.148048125003697,10.989905708,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0130.issue,issuer,learn,0.09398670800146647,0.0,189169664,33905,,,
+h0-e0130.primary,host,learn,11.564801917003933,11.395933042,485523456,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0130.replay,host,learn,11.880546375003178,11.7206395,484589568,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0131.issue,issuer,learn,0.10007041698554531,0.0,189136896,33905,,,
+h0-e0131.primary,host,learn,11.386254125012783,11.193255167,483672064,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0131.replay,host,learn,13.140652750007575,12.979773459,485081088,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0132.issue,issuer,learn,0.13528395802131854,0.0,189186048,33905,,,
+h0-e0132.primary,host,learn,19.049100833013654,18.838255958,485752832,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0132.replay,host,learn,16.893715749989497,16.626268083,484868096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0133.issue,issuer,learn,0.1327362500014715,0.0,189317120,33905,,,
+h0-e0133.primary,host,learn,16.24756420898484,16.05844,484311040,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0133.replay,host,learn,15.091257666004822,14.912446958,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0134.issue,issuer,learn,0.1401836659933906,0.0,189267968,33905,,,
+h0-e0134.primary,host,learn,15.710051792004379,15.524831417,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0134.replay,host,learn,15.701431124994997,15.492026666,486326272,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0135.issue,issuer,learn,0.13945187500212342,0.0,189267968,33905,,,
+h0-e0135.primary,host,learn,15.672079334006412,15.479153416,485769216,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0135.replay,host,learn,16.700791832990944,16.492112208,486719488,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0136.issue,issuer,learn,0.15323170900228433,0.0,189284352,33905,,,
+h0-e0136.primary,host,learn,17.047092833992792,16.789731583,482934784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0136.replay,host,learn,16.736755666002864,16.515536958,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0137.issue,issuer,learn,0.15359529200941324,0.0,189186048,33905,,,
+h0-e0137.primary,host,learn,15.378374666004675,15.186057375,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0137.replay,host,learn,17.84988591700676,17.657089167,483688448,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0138.issue,issuer,learn,0.19591283399495296,0.0,189284352,33905,,,
+h0-e0138.primary,host,learn,20.152601791982306,19.911813167,483803136,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0138.replay,host,learn,15.580039249995025,15.34297625,487751680,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0139.issue,issuer,learn,0.127000542008318,0.0,189317120,33905,,,
+h0-e0139.primary,host,learn,14.547276124998461,14.375037792,485736448,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0139.replay,host,learn,17.975691750005353,17.793269667,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0140.issue,issuer,learn,0.13127879198873416,0.0,189300736,33905,,,
+h0-e0140.primary,host,learn,18.218611708987737,17.987386917,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0140.replay,host,learn,15.054692458012141,14.857370083,487735296,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0141.issue,issuer,learn,0.14689220799482428,0.0,189153280,33905,,,
+h0-e0141.primary,host,learn,16.174975125002675,15.969302917,486457344,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0141.replay,host,learn,17.522220916987862,17.332521834,485703680,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0142.issue,issuer,learn,0.1336542910139542,0.0,189202432,33905,,,
+h0-e0142.primary,host,learn,15.498111624998273,15.319128375,486965248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0142.replay,host,learn,14.218904833018314,14.04303725,483147776,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0143.issue,issuer,learn,0.12948345899349079,0.0,189317120,33905,,,
+h0-e0143.primary,host,learn,16.175365708011668,16.003015208,483442688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0143.replay,host,learn,14.521999000018695,14.298078209,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0144.issue,issuer,learn,0.12427025000215508,0.0,189153280,33905,,,
+h0-e0144.primary,host,learn,15.22601987500093,15.051428625,483491840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0144.replay,host,learn,16.0483649999951,15.882911209,484196352,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0145.primary,host,infer,0.4936563330120407,0.301105542,484671488,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0145.replay,host,infer,0.46931166597642004,0.297718125,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0146.primary,host,infer,0.5390804999915417,0.332565333,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0146.replay,host,infer,0.526884874998359,0.328361,484704256,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0147.primary,host,infer,0.5505355000204872,0.3414785,482656256,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0147.replay,host,infer,0.585735582979396,0.353412584,482738176,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0148.primary,host,infer,0.5386907499923836,0.331028916,484737024,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0148.replay,host,infer,0.5853147080051713,0.338789375,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0149.primary,host,infer,0.5857717079925351,0.3851255,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0149.replay,host,infer,0.5490337499941234,0.354412958,484868096,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0150.primary,host,infer,0.5648374580196105,0.353474708,484638720,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0150.replay,host,infer,0.5386282909894362,0.336699334,484638720,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0151.primary,host,infer,0.6791265420033596,0.435990041,482934784,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0151.replay,host,infer,0.5479405000223778,0.344356542,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0152.primary,host,infer,0.6400976670265663,0.342232083,484917248,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0152.replay,host,infer,0.5619057920121122,0.314555417,484638720,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0153.primary,host,infer,0.5293821660161484,0.306441708,484917248,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0153.replay,host,infer,0.7938255000044592,0.330092875,484884480,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0154.primary,host,infer,0.4700082920026034,0.288615083,484786176,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0154.replay,host,infer,0.4327225839952007,0.273010375,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0155.primary,host,infer,0.467535833013244,0.303607042,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0155.replay,host,infer,0.46172695900895633,0.292630417,484769792,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0156.primary,host,infer,0.4679250420012977,0.2904575,482689024,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0156.replay,host,infer,0.48935112499748357,0.316282625,484884480,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0157.primary,host,infer,0.49428625000291504,0.326972917,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0157.replay,host,infer,0.5197301660082303,0.328812167,482508800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0158.primary,host,infer,0.48484758302220143,0.309196167,484802560,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0158.replay,host,infer,0.490283916995395,0.297802375,484884480,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0159.primary,host,infer,0.4677403340174351,0.289259708,482689024,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0159.replay,host,infer,0.510476416995516,0.33586425,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0160.primary,host,infer,0.4499484589905478,0.280138291,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0160.replay,host,infer,0.5623238749976736,0.394004834,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0161.issue,issuer,learn,0.12566950000473298,0.0,189136896,33905,,,
+h0-e0161.primary,host,learn,15.363969416997861,15.167554958,486113280,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0161.replay,host,learn,19.63749637498404,19.447289125,486064128,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0162.issue,issuer,learn,0.1514243750134483,0.0,189136896,33905,,,
+h0-e0162.primary,host,learn,22.591486165998504,22.363452542,485949440,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0162.replay,host,learn,21.085018832993228,20.874038709,485392384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0163.issue,issuer,learn,0.15111054200679064,0.0,189267968,33905,,,
+h0-e0163.primary,host,learn,19.773478624993004,19.542199292,483672064,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0163.replay,host,learn,22.868887040996924,22.490545958,484720640,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0164.issue,issuer,learn,0.1723045000107959,0.0,189251584,33905,,,
+h0-e0164.primary,host,learn,20.178424874990014,19.959333708,483393536,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0164.replay,host,learn,19.663074249983765,19.453111916,483885056,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0165.issue,issuer,learn,0.15182087500579655,0.0,189186048,33905,,,
+h0-e0165.primary,host,learn,20.362871375022223,20.134291375,484245504,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0165.replay,host,learn,19.975073125009658,19.469377083,486064128,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0166.issue,issuer,learn,0.17096741701243445,0.0,189317120,33905,,,
+h0-e0166.primary,host,learn,21.527018916996894,21.31897825,486440960,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0166.replay,host,learn,25.786101750010857,25.541835875,486309888,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0167.issue,issuer,learn,0.15351820798241533,0.0,189251584,33905,,,
+h0-e0167.primary,host,learn,22.35416391698527,22.158187792,483622912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0167.replay,host,learn,20.138004500011448,19.913485958,485720064,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0168.issue,issuer,learn,0.14505054100300185,0.0,189317120,33905,,,
+h0-e0168.primary,host,learn,15.500903083011508,15.275944292,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0168.replay,host,learn,15.160829375003232,14.986316417,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0169.issue,issuer,learn,0.1268267499981448,0.0,189300736,33905,,,
+h0-e0169.primary,host,learn,17.492863083985867,17.317145458,485244928,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0169.replay,host,learn,17.58322041601059,17.371816625,485572608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0170.issue,issuer,learn,0.12047812499804422,0.0,189284352,33905,,,
+h0-e0170.primary,host,learn,17.701581416011322,17.48977475,487325696,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0170.replay,host,learn,19.348277124983724,19.091411583,483704832,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0171.issue,issuer,learn,0.16020037501584738,0.0,189284352,33905,,,
+h0-e0171.primary,host,learn,17.788614916993538,17.584306208,483573760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0171.replay,host,learn,18.507387249992462,18.337718333,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0172.issue,issuer,learn,0.14450683299219236,0.0,189300736,33905,,,
+h0-e0172.primary,host,learn,17.281945665978128,17.019641333,483344384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0172.replay,host,learn,17.404881499998737,17.206566292,483721216,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0173.issue,issuer,learn,0.19821108298492618,0.0,189169664,33905,,,
+h0-e0173.primary,host,learn,24.15366458299104,23.680361458,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0173.replay,host,learn,20.618687541020336,20.388413875,485031936,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0174.issue,issuer,learn,0.17376583299483173,0.0,189317120,33905,,,
+h0-e0174.primary,host,learn,18.90175516702584,18.638574417,485572608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0174.replay,host,learn,17.10527420800645,16.921409375,484950016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0175.issue,issuer,learn,0.1493989999871701,0.0,189284352,33905,,,
+h0-e0175.primary,host,learn,22.339504916977603,22.150420375,487063552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0175.replay,host,learn,19.547423207986867,19.362273416,485654528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0176.issue,issuer,learn,0.12684554202132858,0.0,189284352,33905,,,
+h0-e0176.primary,host,learn,15.510895415995037,15.33101725,487063552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0176.replay,host,learn,15.251355667016469,15.04593525,487309312,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0177.issue,issuer,learn,0.13744404099998064,0.0,189284352,33905,,,
+h0-e0177.primary,host,learn,16.3671819169831,16.196244167,485081088,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0177.replay,host,learn,16.80888708299608,16.606271417,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0178.issue,issuer,learn,0.1426859589992091,0.0,189284352,33905,,,
+h0-e0178.primary,host,learn,16.953367833979428,16.7664865,484556800,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0178.replay,host,learn,15.612073791009607,15.439925875,483672064,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0179.issue,issuer,learn,0.1455960830207914,0.0,189169664,33905,,,
+h0-e0179.primary,host,learn,18.044282458984526,17.810315292,485064704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0179.replay,host,learn,14.771577749983408,14.572858292,483622912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0180.issue,issuer,learn,0.1284101249766536,0.0,189317120,33905,,,
+h0-e0180.primary,host,learn,14.365038957999786,14.171274708,485015552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0180.replay,host,learn,15.838514208007837,15.666788917,486457344,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0181.issue,issuer,learn,0.15500766699551605,0.0,189251584,33905,,,
+h0-e0181.primary,host,learn,17.58025858300971,17.360201375,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0181.replay,host,learn,14.854772916994989,14.611738709,485244928,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0182.issue,issuer,learn,0.14092570802313276,0.0,189284352,33905,,,
+h0-e0182.primary,host,learn,14.415934332995676,14.190615875,485490688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0182.replay,host,learn,16.196475750009995,15.978295916,485670912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0183.issue,issuer,learn,0.12388999998802319,0.0,189300736,33905,,,
+h0-e0183.primary,host,learn,15.386062207981013,15.212008333,485834752,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0183.replay,host,learn,17.56541683297837,17.363576167,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0184.issue,issuer,learn,0.13737895802478306,0.0,189186048,33905,,,
+h0-e0184.primary,host,learn,27.734959375025937,27.530351625,483950592,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0184.replay,host,learn,18.860170333995484,18.665172125,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0185.issue,issuer,learn,0.17678166698897257,0.0,189317120,33905,,,
+h0-e0185.primary,host,learn,17.219368374993792,16.961383458,483606528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0185.replay,host,learn,21.264368708012626,21.041863459,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0186.issue,issuer,learn,0.14313695798045956,0.0,189153280,33905,,,
+h0-e0186.primary,host,learn,21.881604791007703,21.623518333,483885056,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0186.replay,host,learn,19.927102209010627,19.738380375,485015552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0187.issue,issuer,learn,0.14250683298450895,0.0,189169664,33905,,,
+h0-e0187.primary,host,learn,22.564896834024694,22.300288709,486768640,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0187.replay,host,learn,24.399065583012998,24.104239667,484999168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0188.issue,issuer,learn,0.3114397919853218,0.0,189317120,33905,,,
+h0-e0188.primary,host,learn,40.97226416700869,40.397675834,484753408,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0188.replay,host,learn,23.724764084006893,23.497441458,485572608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0189.issue,issuer,learn,0.16652895900188014,0.0,189317120,33905,,,
+h0-e0189.primary,host,learn,26.63517883399618,26.440375291,484229120,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0189.replay,host,learn,25.54303041700041,25.3075325,485310464,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0190.issue,issuer,learn,0.15958733297884464,0.0,189153280,33905,,,
+h0-e0190.primary,host,learn,22.574106834013946,22.41181125,484196352,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0190.replay,host,learn,25.387568667007145,25.158709792,483983360,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0191.issue,issuer,learn,0.21624720800900832,0.0,189317120,33905,,,
+h0-e0191.primary,host,learn,26.437357332993997,26.125251125,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0191.replay,host,learn,19.354641417012317,19.179005542,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0192.issue,issuer,learn,0.16519562498433515,0.0,189317120,33905,,,
+h0-e0192.primary,host,learn,17.962206416006666,17.753903958,487800832,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0192.replay,host,learn,19.33282204097486,19.122618208,486408192,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0193.issue,issuer,learn,0.14312799999606796,0.0,189317120,33905,,,
+h0-e0193.primary,host,learn,20.471745749993715,20.242592375,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0193.replay,host,learn,18.37758587501594,18.095898208,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0194.issue,issuer,learn,0.14885058300569654,0.0,189186048,33905,,,
+h0-e0194.primary,host,learn,15.743272374995286,15.540147667,485933056,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0194.replay,host,learn,14.693733332998818,14.494368125,484851712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0195.issue,issuer,learn,0.14247074999730103,0.0,189267968,33905,,,
+h0-e0195.primary,host,learn,16.421921165980166,16.22370725,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0195.replay,host,learn,17.785142041975632,17.563446917,483508224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0196.issue,issuer,learn,0.1608044579916168,0.0,189333504,33905,,,
+h0-e0196.primary,host,learn,16.616665541980183,16.425762583,484114432,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0196.replay,host,learn,16.910768541012658,16.671516208,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0197.issue,issuer,learn,0.2349429999885615,0.0,189153280,33905,,,
+h0-e0197.primary,host,learn,17.696455917001003,17.262684792,483819520,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0197.replay,host,learn,12.82215995900333,12.61524075,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0198.issue,issuer,learn,0.13310766601352952,0.0,189284352,33905,,,
+h0-e0198.primary,host,learn,15.876296958012972,15.671808041,484884480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0198.replay,host,learn,18.331714416010072,18.13881825,487096320,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0199.issue,issuer,learn,0.11246674999711104,0.0,189136896,33905,,,
+h0-e0199.primary,host,learn,14.451555541018024,14.241707625,486588416,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0199.replay,host,learn,14.836514333990635,14.651461875,483704832,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0200.issue,issuer,learn,0.13328020900371484,0.0,189153280,33905,,,
+h0-e0200.primary,host,learn,14.635824333992787,14.439580625,485425152,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0200.replay,host,learn,13.760811125015607,13.569975542,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0201.issue,issuer,learn,0.1159288749913685,0.0,189169664,33905,,,
+h0-e0201.primary,host,learn,12.678535417013336,12.512843584,486129664,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0201.replay,host,learn,13.41072441698634,13.245719125,484507648,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0202.issue,issuer,learn,0.12221287499414757,0.0,189169664,33905,,,
+h0-e0202.primary,host,learn,13.527489041996887,13.33325675,483704832,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0202.replay,host,learn,13.354068207991077,13.163757917,483622912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0203.issue,issuer,learn,0.10774362500524148,0.0,189169664,33905,,,
+h0-e0203.primary,host,learn,12.20091283301008,12.0235545,484720640,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0203.replay,host,learn,13.623177999979816,13.449155791,485490688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0204.issue,issuer,learn,0.1151114999956917,0.0,189120512,33905,,,
+h0-e0204.primary,host,learn,14.130142750014784,13.965677083,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0204.replay,host,learn,15.573476666002534,15.385017041,482951168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0205.issue,issuer,learn,0.13135412501287647,0.0,189284352,33905,,,
+h0-e0205.primary,host,learn,15.710423374985112,15.520608959,484196352,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0205.replay,host,learn,16.827201082982356,16.417661667,483622912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0206.issue,issuer,learn,0.15764554199995473,0.0,189136896,33905,,,
+h0-e0206.primary,host,learn,16.87120308401063,16.613099708,484966400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0206.replay,host,learn,17.215934290987207,16.729744,483606528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0207.issue,issuer,learn,0.16413195899804123,0.0,189284352,33905,,,
+h0-e0207.primary,host,learn,16.312992332997965,16.097337,485228544,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0207.replay,host,learn,15.642271707998589,15.419127834,485703680,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0208.issue,issuer,learn,0.12452470799325965,0.0,189153280,33905,,,
+h0-e0208.primary,host,learn,13.495580207993044,13.320947292,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0208.replay,host,learn,12.1931352080137,12.0085775,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0209.issue,issuer,learn,0.10943583399057388,0.0,189136896,33905,,,
+h0-e0209.primary,host,learn,12.524880375014618,12.371158042,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0209.replay,host,learn,13.704866041982314,13.546703459,484966400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0210.issue,issuer,learn,0.12360016599996015,0.0,189169664,33905,,,
+h0-e0210.primary,host,learn,13.306256458017742,13.128720417,486014976,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0210.replay,host,learn,12.895558500022162,12.728966375,483344384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0211.issue,issuer,learn,0.12677991701639257,0.0,189284352,33905,,,
+h0-e0211.primary,host,learn,12.687617584015243,12.485080125,486735872,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0211.replay,host,learn,13.863239624974085,13.699956084,483475456,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0212.issue,issuer,learn,0.11636516699218191,0.0,189136896,33905,,,
+h0-e0212.primary,host,learn,13.406081250024727,13.241078,483966976,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0212.replay,host,learn,12.906545250007184,12.721456666,482820096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0213.issue,issuer,learn,0.12970220900024287,0.0,222756864,33905,,,
+h0-e0213.primary,host,learn,13.373033749987371,13.200195958,485490688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0213.replay,host,learn,13.663325958972564,13.504503875,484851712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0214.issue,issuer,learn,0.12427258401294239,0.0,189186048,33905,,,
+h0-e0214.primary,host,learn,13.672262291016523,13.502147917,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0214.replay,host,learn,12.867542833002517,12.701182917,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0215.issue,issuer,learn,0.11796933299046941,0.0,189120512,33905,,,
+h0-e0215.primary,host,learn,13.456116125016706,13.291801916,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0215.replay,host,learn,13.40286337499856,13.251670792,486686720,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0216.issue,issuer,learn,0.11374287499347702,0.0,189153280,33905,,,
+h0-e0216.primary,host,learn,14.041282082995167,13.887754125,485474304,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0216.replay,host,learn,13.855318458983675,13.661535792,484868096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0217.issue,issuer,learn,0.12547383300261572,0.0,189120512,33905,,,
+h0-e0217.primary,host,learn,13.56251258298289,13.394437333,486768640,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0217.replay,host,learn,13.93330233299639,13.778200333,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0218.issue,issuer,learn,0.11595466698054224,0.0,189153280,33905,,,
+h0-e0218.primary,host,learn,13.957820375013398,13.795576375,484343808,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0218.replay,host,learn,13.598772124998504,13.400063375,485474304,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0219.issue,issuer,learn,0.12274491699645296,0.0,189169664,33905,,,
+h0-e0219.primary,host,learn,14.268606583995279,14.089784417,483557376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0219.replay,host,learn,13.454269707988715,13.272345375,483016704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0220.issue,issuer,learn,0.1251805409847293,0.0,189136896,33905,,,
+h0-e0220.primary,host,learn,14.31596691600862,14.130111959,483999744,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0220.replay,host,learn,15.070484791998751,14.186791334,486113280,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0221.issue,issuer,learn,0.11787749998620711,0.0,189153280,33905,,,
+h0-e0221.primary,host,learn,13.632609708001837,13.449444333,483606528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0221.replay,host,learn,14.535855124995578,14.281296625,485490688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0222.issue,issuer,learn,0.13485075000789948,0.0,189267968,33905,,,
+h0-e0222.primary,host,learn,14.165047125017736,13.951628667,485228544,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0222.replay,host,learn,14.484236792020965,14.303734625,483164160,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0223.issue,issuer,learn,0.1154404160042759,0.0,189186048,33905,,,
+h0-e0223.primary,host,learn,13.624699833977502,13.454432167,485343232,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0223.replay,host,learn,14.14609520797967,13.964518666,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0224.issue,issuer,learn,0.11532679101219401,0.0,189153280,33905,,,
+h0-e0224.primary,host,learn,13.46596766600851,13.293606333,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0224.replay,host,learn,14.051791417005006,13.879137583,484950016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0225.primary,host,infer,0.44505716700223275,0.267251333,484589568,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0225.replay,host,infer,0.4592458339757286,0.260630625,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0226.primary,host,infer,0.4517628340108786,0.279745125,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0226.replay,host,infer,0.4524078330141492,0.274394333,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0227.primary,host,infer,0.4666760829859413,0.273671375,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0227.replay,host,infer,0.48781416699057445,0.301805584,484638720,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0228.primary,host,infer,0.45272987498901784,0.262649958,482639872,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0228.replay,host,infer,0.4369443329924252,0.272376375,482754560,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0229.primary,host,infer,0.42892962499172427,0.266276125,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0229.replay,host,infer,0.46178587499889545,0.28803975,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0230.primary,host,infer,0.47917537498869933,0.2851145,482738176,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0230.replay,host,infer,0.4539934170024935,0.273932666,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0231.primary,host,infer,0.47072270899661817,0.276616708,484589568,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0231.replay,host,infer,0.48701237500063144,0.287885125,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0232.primary,host,infer,0.4551240839937236,0.279215375,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0232.replay,host,infer,0.47358941700076684,0.287659625,484589568,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0233.primary,host,infer,0.4787518329976592,0.280983584,482508800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0233.replay,host,infer,0.46745241701137275,0.27824925,482508800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0234.primary,host,infer,0.4879616659891326,0.300646958,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0234.replay,host,infer,0.5133588330063503,0.30799725,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0235.primary,host,infer,0.4894930410082452,0.29286725,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0235.replay,host,infer,0.4876413329911884,0.295820042,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0236.primary,host,infer,0.4798810000065714,0.30182675,484753408,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0236.replay,host,infer,0.5191860419872683,0.32589125,482525184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0237.primary,host,infer,0.5009072500106413,0.306086958,484753408,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0237.replay,host,infer,0.48118012500344776,0.290337459,484556800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0238.primary,host,infer,0.4784407500119414,0.293408333,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0238.replay,host,infer,0.5112569169723429,0.307562083,482770944,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0239.primary,host,infer,0.5038399579934776,0.301590333,484818944,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0239.replay,host,infer,0.5391189160000067,0.310420208,484704256,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0240.primary,host,infer,0.5005925000004936,0.31922025,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h0-e0240.replay,host,infer,0.492867541994201,0.294405083,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+initial_67001_0,issuer,init,0.2715350420039613,0.0,189513728,108441,,,
+initial_67001_1,issuer,init,0.2643708749965299,0.0,189349888,108441,,,
+h1-e0001.issue,issuer,learn,0.12658858401118778,0.0,189284352,33905,,,
+h1-e0001.primary,host,learn,14.00888258399209,13.770556917,483491840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0001.replay,host,learn,12.924058167001931,12.729616292,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0002.issue,issuer,learn,0.11540262500056997,0.0,189169664,33905,,,
+h1-e0002.primary,host,learn,13.386862666986417,13.223673542,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0002.replay,host,learn,14.66667750000488,14.471232208,487292928,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0003.issue,issuer,learn,0.1620097499981057,0.0,189317120,33905,,,
+h1-e0003.primary,host,learn,14.518657208012883,14.302075583,485687296,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0003.replay,host,learn,14.260284834017511,13.962022167,484966400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0004.issue,issuer,learn,0.12532091600587592,0.0,189136896,33905,,,
+h1-e0004.primary,host,learn,14.017904459004058,13.841437042,485654528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0004.replay,host,learn,13.342742417007685,13.179351042,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0005.issue,issuer,learn,0.15072779197362252,0.0,256425984,33905,,,
+h1-e0005.primary,host,learn,13.14503354098997,12.953631709,485654528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0005.replay,host,learn,13.538880875014002,13.366672083,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0006.issue,issuer,learn,0.11575587501283735,0.0,189169664,33905,,,
+h1-e0006.primary,host,learn,13.60125337500358,13.421541291,486965248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0006.replay,host,learn,13.667298165993998,13.481380375,485310464,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0007.issue,issuer,learn,0.15338879098999314,0.0,189300736,33905,,,
+h1-e0007.primary,host,learn,14.114715792005882,13.901947208,485228544,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0007.replay,host,learn,13.310675374988932,13.122951,484343808,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0008.issue,issuer,learn,0.1739310840202961,0.0,189186048,33905,,,
+h1-e0008.primary,host,learn,15.498018249985762,15.140669375,483622912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0008.replay,host,learn,13.92209770900081,13.621925292,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0009.issue,issuer,learn,0.1121230410062708,0.0,189169664,33905,,,
+h1-e0009.primary,host,learn,14.149822583975038,13.985116625,485490688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0009.replay,host,learn,13.436374500015518,13.24489875,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0010.issue,issuer,learn,0.11755408300086856,0.0,189104128,33905,,,
+h1-e0010.primary,host,learn,12.112915042001987,11.306303,483819520,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0010.replay,host,learn,13.745840624993434,13.579419458,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0011.issue,issuer,learn,0.12270274999900721,0.0,189120512,33905,,,
+h1-e0011.primary,host,learn,14.907061708014226,14.749585667,484016128,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0011.replay,host,learn,14.744891666981857,14.513491667,485081088,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0012.issue,issuer,learn,0.12071962500340305,0.0,189153280,33905,,,
+h1-e0012.primary,host,learn,13.180667417007498,12.884532541,483557376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0012.replay,host,learn,13.944864791992586,13.7878095,484065280,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0013.issue,issuer,learn,0.11851037500309758,0.0,189169664,33905,,,
+h1-e0013.primary,host,learn,14.930064999993192,14.769096208,485113856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0013.replay,host,learn,14.436597666994203,14.238487875,484573184,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0014.issue,issuer,learn,0.1253295830101706,0.0,189120512,33905,,,
+h1-e0014.primary,host,learn,14.098340458993334,13.901313,485752832,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0014.replay,host,learn,16.776478665997274,16.542897541,483835904,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0015.issue,issuer,learn,0.11550245899707079,0.0,189169664,33905,,,
+h1-e0015.primary,host,learn,13.861894667003071,13.666853333,485359616,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0015.replay,host,learn,14.211779625009513,14.027743917,485801984,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0016.issue,issuer,learn,0.11207183299120516,0.0,189153280,33905,,,
+h1-e0016.primary,host,learn,13.994647874991642,13.829490667,483688448,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0016.replay,host,learn,14.248174374981318,14.034305542,483622912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0017.issue,issuer,learn,0.13138837498263456,0.0,189186048,33905,,,
+h1-e0017.primary,host,learn,17.718403957987903,17.489230959,483852288,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0017.replay,host,learn,14.058296750008594,13.858819584,486293504,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0018.issue,issuer,learn,0.12629449999076314,0.0,189169664,33905,,,
+h1-e0018.primary,host,learn,14.166026083024917,13.938297375,483262464,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0018.replay,host,learn,16.636057708004955,16.403368875,483328000,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0019.issue,issuer,learn,0.1327951249841135,0.0,189136896,33905,,,
+h1-e0019.primary,host,learn,14.89361737499712,14.585488875,487538688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0019.replay,host,learn,12.624649957986549,12.424685125,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0020.issue,issuer,learn,0.10752975000650622,0.0,189153280,33905,,,
+h1-e0020.primary,host,learn,13.86528499997803,13.672065,483524608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0020.replay,host,learn,14.328981291007949,14.128040791,482902016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0021.issue,issuer,learn,0.13371779199223965,0.0,189136896,33905,,,
+h1-e0021.primary,host,learn,14.027753250004025,13.814325583,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0021.replay,host,learn,12.951242250012001,12.751637292,487211008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0022.issue,issuer,learn,0.10070708399871364,0.0,189153280,33905,,,
+h1-e0022.primary,host,learn,11.792937541991705,11.645374583,484884480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0022.replay,host,learn,12.459649875003379,12.29516975,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0023.issue,issuer,learn,0.10915158299030736,0.0,189153280,33905,,,
+h1-e0023.primary,host,learn,12.08345179099706,11.915649916,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0023.replay,host,learn,12.136431124992669,11.986755833,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0024.issue,issuer,learn,0.11707804200705141,0.0,189153280,33905,,,
+h1-e0024.primary,host,learn,12.29256699999678,12.123785083,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0024.replay,host,learn,12.337285666988464,12.187230541,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0025.issue,issuer,learn,0.10736620900570415,0.0,189136896,33905,,,
+h1-e0025.primary,host,learn,12.341428292013006,12.18322275,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0025.replay,host,learn,12.336225624982035,12.178959666,485556224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0026.issue,issuer,learn,0.10672504198737442,0.0,189153280,33905,,,
+h1-e0026.primary,host,learn,13.532336916017812,13.378886875,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0026.replay,host,learn,12.609130041004391,12.442552041,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0027.issue,issuer,learn,0.10545329199521802,0.0,189136896,33905,,,
+h1-e0027.primary,host,learn,12.229025875014486,12.067013833,485523456,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0027.replay,host,learn,10.983044666994829,10.836419958,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0028.issue,issuer,learn,0.09417608301737346,0.0,189186048,33905,,,
+h1-e0028.primary,host,learn,11.941652749985224,11.797878416,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0028.replay,host,learn,13.098645041987766,12.923070125,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0029.issue,issuer,learn,0.10353866699733771,0.0,189153280,33905,,,
+h1-e0029.primary,host,learn,11.79928458298673,11.654924209,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0029.replay,host,learn,11.74577604199294,11.593892042,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0030.issue,issuer,learn,0.11576012498699129,0.0,189169664,33905,,,
+h1-e0030.primary,host,learn,12.952229707996594,12.774349542,484081664,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0030.replay,host,learn,12.104312417010078,11.954514917,486899712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0031.issue,issuer,learn,0.11711262501194142,0.0,189153280,33905,,,
+h1-e0031.primary,host,learn,11.880058167007519,11.625864834,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0031.replay,host,learn,11.713741749990731,11.542940166,484409344,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0032.issue,issuer,learn,0.1048710829927586,0.0,189153280,33905,,,
+h1-e0032.primary,host,learn,11.655604667001171,11.505140625,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0032.replay,host,learn,12.253979875007644,12.100338042,484130816,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0033.issue,issuer,learn,0.10112112501519732,0.0,189169664,33905,,,
+h1-e0033.primary,host,learn,12.538054333999753,12.386347375,484851712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0033.replay,host,learn,12.628256583004259,12.46128975,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0034.issue,issuer,learn,0.11089549999451265,0.0,189169664,33905,,,
+h1-e0034.primary,host,learn,12.236199666978791,12.071682208,483934208,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0034.replay,host,learn,11.039558166987263,10.893755417,485392384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0035.issue,issuer,learn,0.09473750001052395,0.0,189120512,33905,,,
+h1-e0035.primary,host,learn,11.019419124990236,10.881958084,483426304,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0035.replay,host,learn,12.932664833002491,12.783780708,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0036.issue,issuer,learn,0.12166383300791495,0.0,189153280,33905,,,
+h1-e0036.primary,host,learn,11.9209373749909,11.76150325,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0036.replay,host,learn,11.375046208006097,11.21073625,486342656,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0037.issue,issuer,learn,0.12360787502257153,0.0,189169664,33905,,,
+h1-e0037.primary,host,learn,11.96853183300118,11.808980333,484704256,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0037.replay,host,learn,11.657700542011298,11.504016208,486785024,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0038.issue,issuer,learn,0.10447912500239909,0.0,189186048,33905,,,
+h1-e0038.primary,host,learn,11.965697332983837,11.821236917,485900288,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0038.replay,host,learn,11.692633708007634,11.523442917,484868096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0039.issue,issuer,learn,0.10584870900493115,0.0,189169664,33905,,,
+h1-e0039.primary,host,learn,12.09429883302073,11.942457416,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0039.replay,host,learn,12.051774541003397,11.886052458,485556224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0040.issue,issuer,learn,0.10618295799940825,0.0,189136896,33905,,,
+h1-e0040.primary,host,learn,11.903529875009554,11.744719417,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0040.replay,host,learn,12.471759124979144,12.314722083,486899712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0041.issue,issuer,learn,0.12109166700975038,0.0,189153280,33905,,,
+h1-e0041.primary,host,learn,11.953201625001384,11.75525975,485277696,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0041.replay,host,learn,11.698666124982992,11.546757375,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0042.issue,issuer,learn,0.10389537501032464,0.0,189120512,33905,,,
+h1-e0042.primary,host,learn,10.823578167008236,10.656254667,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0042.replay,host,learn,10.770028583006933,10.631282667,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0043.issue,issuer,learn,0.10571212499053217,0.0,189186048,33905,,,
+h1-e0043.primary,host,learn,12.581116583984112,12.429130125,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0043.replay,host,learn,11.687055834016064,11.526701667,484048896,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0044.issue,issuer,learn,0.09964558301726356,0.0,189153280,33905,,,
+h1-e0044.primary,host,learn,10.829392459010705,10.679571542,485113856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0044.replay,host,learn,11.540813582978444,11.390239083,483606528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0045.issue,issuer,learn,0.11868474999209866,0.0,189153280,33905,,,
+h1-e0045.primary,host,learn,11.198055459011812,11.014277166,483655680,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0045.replay,host,learn,10.593137707997812,10.462055916,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0046.issue,issuer,learn,0.10578820900991559,0.0,189186048,33905,,,
+h1-e0046.primary,host,learn,11.266726250003558,11.110378458,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0046.replay,host,learn,11.18574041701504,11.042777792,485998592,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0047.issue,issuer,learn,0.0980439159902744,0.0,189153280,33905,,,
+h1-e0047.primary,host,learn,10.63596337501076,10.499095542,486899712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0047.replay,host,learn,10.520642957999371,10.373890792,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0048.issue,issuer,learn,0.0920578750083223,0.0,189005824,33905,,,
+h1-e0048.primary,host,learn,10.685396417015,10.552107,483508224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0048.replay,host,learn,11.042341959022451,10.895847083,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0049.issue,issuer,learn,0.09275241600698791,0.0,189120512,33905,,,
+h1-e0049.primary,host,learn,10.15058233399759,9.998882625,551976960,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0049.replay,host,learn,10.14151179199689,10.007678,483606528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0050.issue,issuer,learn,0.09273345800465904,0.0,189153280,33905,,,
+h1-e0050.primary,host,learn,10.734522707993165,10.599227916,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0050.replay,host,learn,10.957768874999601,10.807762042,484687872,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0051.issue,issuer,learn,0.10216329200193286,0.0,189136896,33905,,,
+h1-e0051.primary,host,learn,12.095531708997441,11.960903875,482885632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0051.replay,host,learn,10.025049125018995,9.878616083,483885056,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0052.issue,issuer,learn,0.09321937497588806,0.0,189169664,33905,,,
+h1-e0052.primary,host,learn,10.85887583400472,10.727099625,483950592,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0052.replay,host,learn,11.377794208994601,11.225666583,485031936,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0053.issue,issuer,learn,0.09680662502069026,0.0,189136896,33905,,,
+h1-e0053.primary,host,learn,10.080988375004381,9.937591958,485556224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0053.replay,host,learn,10.886103625001851,10.740556875,486965248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0054.issue,issuer,learn,0.11393145800684579,0.0,189136896,33905,,,
+h1-e0054.primary,host,learn,11.853523416997632,11.699080875,483704832,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0054.replay,host,learn,9.969084582990035,9.830153125,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0055.issue,issuer,learn,0.09114108298672363,0.0,189186048,33905,,,
+h1-e0055.primary,host,learn,10.354713209002512,10.223389417,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0055.replay,host,learn,10.367080583004281,10.237495042,485195776,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0056.issue,issuer,learn,0.09435570798814297,0.0,189153280,33905,,,
+h1-e0056.primary,host,learn,9.916361375013366,9.780061417,484311040,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0056.replay,host,learn,11.599928415991599,11.459402416,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0057.issue,issuer,learn,0.1243221249897033,0.0,189153280,33905,,,
+h1-e0057.primary,host,learn,11.014870125014568,10.844303875,483655680,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0057.replay,host,learn,9.121994374989299,8.99949325,484884480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0058.issue,issuer,learn,0.08273824999923818,0.0,189022208,33905,,,
+h1-e0058.primary,host,learn,9.110923249972984,8.987370375,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0058.replay,host,learn,8.999000125011662,8.870581875,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0059.issue,issuer,learn,0.08280066700535826,0.0,189005824,33905,,,
+h1-e0059.primary,host,learn,9.006873582984554,8.885106625,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0059.replay,host,learn,9.245816332986578,9.121435416,520552448,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0060.issue,issuer,learn,0.08656545900157653,0.0,189136896,33905,,,
+h1-e0060.primary,host,learn,9.008375041012187,8.878231583,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0060.replay,host,learn,9.131526708981255,9.013727208,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0061.issue,issuer,learn,0.08421254099812359,0.0,189186048,33905,,,
+h1-e0061.primary,host,learn,8.892117333016358,8.767616625,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0061.replay,host,learn,9.069929624994984,8.944083667,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0062.issue,issuer,learn,0.08665574999758974,0.0,189120512,33905,,,
+h1-e0062.primary,host,learn,8.981022874999326,8.856818542,485195776,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0062.replay,host,learn,9.03182016700157,8.912095917,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0063.issue,issuer,learn,0.08712791700963862,0.0,189153280,33905,,,
+h1-e0063.primary,host,learn,9.19191958400188,9.065355375,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0063.replay,host,learn,9.00178325001616,8.865842791,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0064.issue,issuer,learn,0.08449308399576694,0.0,189136896,33905,,,
+h1-e0064.primary,host,learn,8.879453208006453,8.752983291,485654528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0064.replay,host,learn,9.047353792004287,8.919639041,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0065.primary,host,infer,0.3089927500113845,0.186532959,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0065.replay,host,infer,0.30816662500728853,0.1864835,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0066.primary,host,infer,0.2974679170001764,0.177552333,482508800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0066.replay,host,infer,0.30112170800566673,0.183019375,482443264,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0067.primary,host,infer,0.3063540000002831,0.184272667,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0067.replay,host,infer,0.3061494580178987,0.182378917,484589568,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0068.primary,host,infer,0.3070193330058828,0.185966583,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0068.replay,host,infer,0.30545725001138635,0.1867615,484589568,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0069.primary,host,infer,0.2992481250257697,0.177792708,482443264,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0069.replay,host,infer,0.2967736670107115,0.175833542,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0070.primary,host,infer,0.3135310829966329,0.188091834,484589568,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0070.replay,host,infer,0.3034667919855565,0.178250959,484589568,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0071.primary,host,infer,0.3024642909877002,0.187201417,484589568,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0071.replay,host,infer,0.3043332079832908,0.185819125,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0072.primary,host,infer,0.30183958300040103,0.182644792,482443264,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0072.replay,host,infer,0.29950358299538493,0.1788075,482721792,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0073.primary,host,infer,0.29749225001432933,0.176739708,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0073.replay,host,infer,0.2945594580087345,0.17561375,482738176,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0074.primary,host,infer,0.3053195840038825,0.182782,482738176,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0074.replay,host,infer,0.3012805829930585,0.179945375,484556800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0075.primary,host,infer,0.3042949579830747,0.184113125,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0075.replay,host,infer,0.303402791992994,0.185034917,484556800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0076.primary,host,infer,0.3101934580190573,0.183854041,482443264,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0076.replay,host,infer,0.31488045799778774,0.180691666,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0077.primary,host,infer,0.31493883300572634,0.188369959,482689024,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0077.replay,host,infer,0.6374750830000266,0.18608925,482754560,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0078.primary,host,infer,0.3052679579996038,0.181792417,482754560,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0078.replay,host,infer,0.3084796670009382,0.18820375,482443264,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0079.primary,host,infer,0.3064587079861667,0.186023792,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0079.replay,host,infer,0.29996745800599456,0.178685334,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0080.primary,host,infer,0.30728008298319764,0.187302166,482443264,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0080.replay,host,infer,0.30154070802382194,0.183414916,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0081.issue,issuer,learn,0.08412591699743643,0.0,189153280,33905,,,
+h1-e0081.primary,host,learn,9.03589674999239,8.918060042,485031936,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0081.replay,host,learn,9.234345999982907,9.113260083,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0082.issue,issuer,learn,0.0867417500121519,0.0,189153280,33905,,,
+h1-e0082.primary,host,learn,9.222919874999207,9.085855084,486965248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0082.replay,host,learn,9.165356374986004,9.0166645,497844224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0083.issue,issuer,learn,0.084959166997578,0.0,189005824,33905,,,
+h1-e0083.primary,host,learn,9.161841208988335,9.041218916,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0083.replay,host,learn,8.93581720799557,8.811778792,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0084.issue,issuer,learn,0.08425704200635664,0.0,189169664,33905,,,
+h1-e0084.primary,host,learn,8.979217417014297,8.857238042,485195776,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0084.replay,host,learn,9.291494207980577,9.164230958,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0085.issue,issuer,learn,0.0853240409924183,0.0,189169664,33905,,,
+h1-e0085.primary,host,learn,9.151076250011101,9.032047541,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0085.replay,host,learn,9.169654625002295,8.974376166,484933632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0086.issue,issuer,learn,0.090813667018665,0.0,189153280,33905,,,
+h1-e0086.primary,host,learn,9.003677000000607,8.879945334,483672064,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0086.replay,host,learn,9.251350791979348,9.125614208,485507072,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0087.issue,issuer,learn,0.084517458017217,0.0,189153280,33905,,,
+h1-e0087.primary,host,learn,9.061021166999126,8.924641375,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0087.replay,host,learn,9.386343124991981,9.261790458,483917824,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0088.issue,issuer,learn,0.08907633300987072,0.0,189136896,33905,,,
+h1-e0088.primary,host,learn,9.16481325001223,9.03195875,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0088.replay,host,learn,9.111693957995158,8.978688125,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0089.issue,issuer,learn,0.08768629201222211,0.0,189169664,33905,,,
+h1-e0089.primary,host,learn,9.187156083004083,8.977060625,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0089.replay,host,learn,8.984131958015496,8.8506365,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0090.issue,issuer,learn,0.08861116698244587,0.0,189153280,33905,,,
+h1-e0090.primary,host,learn,9.409794083010638,9.278913334,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0090.replay,host,learn,9.245619249995798,9.113354667,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0091.issue,issuer,learn,0.09001320900279097,0.0,189169664,33905,,,
+h1-e0091.primary,host,learn,9.210416459012777,9.080866625,484589568,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0091.replay,host,learn,8.993838624999626,8.8537725,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0092.issue,issuer,learn,0.08839337498648092,0.0,189136896,33905,,,
+h1-e0092.primary,host,learn,9.012281165982131,8.872101041,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0092.replay,host,learn,9.148285083996598,9.018001333,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0093.issue,issuer,learn,0.8684227499761619,0.0,189169664,33905,,,
+h1-e0093.primary,host,learn,8.940535292000277,8.802343916,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0093.replay,host,learn,8.894470958999591,8.755937708,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0094.issue,issuer,learn,0.08791104101692326,0.0,189153280,33905,,,
+h1-e0094.primary,host,learn,9.34256570902653,9.214669833,486588416,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0094.replay,host,learn,9.018196958000772,8.885323709,485818368,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0095.issue,issuer,learn,0.0883868750242982,0.0,189005824,33905,,,
+h1-e0095.primary,host,learn,9.013289458001964,8.877348792,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0095.replay,host,learn,9.106143582990626,8.976903208,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0096.issue,issuer,learn,0.08927791600581259,0.0,189169664,33905,,,
+h1-e0096.primary,host,learn,9.209056874999078,9.07407725,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0096.replay,host,learn,9.062419084017165,8.92543275,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0097.issue,issuer,learn,0.08826179101015441,0.0,189169664,33905,,,
+h1-e0097.primary,host,learn,9.229214040999068,9.092107542,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0097.replay,host,learn,9.207676791993435,9.08412225,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0098.issue,issuer,learn,0.08836312498897314,0.0,189005824,33905,,,
+h1-e0098.primary,host,learn,9.234081417002017,9.096993584,483524608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0098.replay,host,learn,9.462926041975152,9.306661083,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0099.issue,issuer,learn,0.09211208301712759,0.0,256098304,33905,,,
+h1-e0099.primary,host,learn,9.102133209002204,8.974646292,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0099.replay,host,learn,9.354234917002032,9.217605958,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0100.issue,issuer,learn,0.09091633302159607,0.0,189186048,33905,,,
+h1-e0100.primary,host,learn,9.288254583021626,9.158966209,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0100.replay,host,learn,9.15541595799732,9.019244084,484556800,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0101.issue,issuer,learn,0.08708100000512786,0.0,189136896,33905,,,
+h1-e0101.primary,host,learn,9.415185541991377,9.283997334,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0101.replay,host,learn,9.249078208988067,9.121330292,485523456,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0102.issue,issuer,learn,0.08618354197824374,0.0,189153280,33905,,,
+h1-e0102.primary,host,learn,9.393073040992022,9.259077125,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0102.replay,host,learn,9.156114625016926,9.026378708,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0103.issue,issuer,learn,0.08929054197506048,0.0,189136896,33905,,,
+h1-e0103.primary,host,learn,9.118786334001925,8.993697208,484638720,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0103.replay,host,learn,9.327147000003606,9.198578667,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0104.issue,issuer,learn,0.08792929098126478,0.0,189136896,33905,,,
+h1-e0104.primary,host,learn,8.979171083017718,8.840721959,487063552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0104.replay,host,learn,8.99373358298908,8.855474125,486326272,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0105.issue,issuer,learn,0.08849300001747906,0.0,189153280,33905,,,
+h1-e0105.primary,host,learn,8.991059958992992,8.864552042,485113856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0105.replay,host,learn,9.19461725000292,9.0556825,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0106.issue,issuer,learn,0.09270141698652878,0.0,189153280,33905,,,
+h1-e0106.primary,host,learn,9.058988332981244,8.92507525,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0106.replay,host,learn,9.14419912500307,9.009431041,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0107.issue,issuer,learn,0.09044291698955931,0.0,189153280,33905,,,
+h1-e0107.primary,host,learn,9.299616125004832,9.16349925,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0107.replay,host,learn,9.162997458013706,9.038826334,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0108.issue,issuer,learn,0.0887212920060847,0.0,189169664,33905,,,
+h1-e0108.primary,host,learn,9.073441457992885,8.943321166,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0108.replay,host,learn,9.268287167011295,9.132969833,485883904,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0109.issue,issuer,learn,0.09067033298197202,0.0,189136896,33905,,,
+h1-e0109.primary,host,learn,8.915120666002622,8.784148916,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0109.replay,host,learn,8.96043620799901,8.82393825,486277120,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0110.issue,issuer,learn,0.0918232919939328,0.0,189136896,33905,,,
+h1-e0110.primary,host,learn,9.271043208020274,9.134043291,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0110.replay,host,learn,9.103902082977584,8.972680167,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0111.issue,issuer,learn,0.0946044169832021,0.0,189120512,33905,,,
+h1-e0111.primary,host,learn,8.986764083005255,8.848601666,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0111.replay,host,learn,9.207600082998397,9.081963917,484278272,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0112.issue,issuer,learn,0.08786637498997152,0.0,189169664,33905,,,
+h1-e0112.primary,host,learn,9.128115041996352,8.995304458,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0112.replay,host,learn,8.962885207991349,8.837875459,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0113.issue,issuer,learn,0.08981279100407846,0.0,189169664,33905,,,
+h1-e0113.primary,host,learn,9.18737141598831,9.059550166,484245504,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0113.replay,host,learn,9.03360987501219,8.902881833,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0114.issue,issuer,learn,0.08656299998983741,0.0,189153280,33905,,,
+h1-e0114.primary,host,learn,9.228338541986886,9.10479025,486965248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0114.replay,host,learn,9.091382166021504,8.959630958,484524032,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0115.issue,issuer,learn,0.09039408300304785,0.0,189186048,33905,,,
+h1-e0115.primary,host,learn,9.260824541997863,9.126534,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0115.replay,host,learn,9.086960332992021,8.956175083,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0116.issue,issuer,learn,0.08390929197776131,0.0,189153280,33905,,,
+h1-e0116.primary,host,learn,9.08471420800197,8.955618541,484687872,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0116.replay,host,learn,9.330526624980848,9.207140709,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0117.issue,issuer,learn,0.08827120799105614,0.0,189169664,33905,,,
+h1-e0117.primary,host,learn,9.504291207995266,9.373921,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0117.replay,host,learn,8.986388916004216,8.816202333,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0118.issue,issuer,learn,0.08549291599774733,0.0,189169664,33905,,,
+h1-e0118.primary,host,learn,9.2451227499987,9.121713042,485392384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0118.replay,host,learn,8.952681708004093,8.827264291,485556224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0119.issue,issuer,learn,0.08533037500455976,0.0,189120512,33905,,,
+h1-e0119.primary,host,learn,9.070277624996379,8.94146775,485113856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0119.replay,host,learn,9.29824054101482,9.175829542,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0120.issue,issuer,learn,0.08474091699463315,0.0,189120512,33905,,,
+h1-e0120.primary,host,learn,9.01473100000294,8.879533667,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0120.replay,host,learn,9.15055312498589,9.024230458,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0121.issue,issuer,learn,0.08761516699451022,0.0,189153280,33905,,,
+h1-e0121.primary,host,learn,9.017982166988077,8.890918333,484884480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0121.replay,host,learn,8.977069124986883,8.848665958,485490688,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0122.issue,issuer,learn,0.09333066598628648,0.0,256311296,33905,,,
+h1-e0122.primary,host,learn,9.426518541993573,9.290868417,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0122.replay,host,learn,9.016851874999702,8.882130417,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0123.issue,issuer,learn,0.09224720901693217,0.0,189153280,33905,,,
+h1-e0123.primary,host,learn,9.21490587500739,9.084606209,484327424,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0123.replay,host,learn,9.11754179201671,8.979844125,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0124.issue,issuer,learn,0.08926479198271409,0.0,189136896,33905,,,
+h1-e0124.primary,host,learn,9.316055250004865,9.1766,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0124.replay,host,learn,9.173055541992653,9.045056375,486408192,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0125.issue,issuer,learn,0.08816262500477023,0.0,189153280,33905,,,
+h1-e0125.primary,host,learn,9.132624374993611,8.998183459,485113856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0125.replay,host,learn,8.930523332994198,8.790610542,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0126.issue,issuer,learn,0.08837554199271835,0.0,189186048,33905,,,
+h1-e0126.primary,host,learn,9.23463120899396,9.100188334,485523456,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0126.replay,host,learn,9.142347249988234,9.008215958,485113856,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0127.issue,issuer,learn,0.087706291989889,0.0,189022208,33905,,,
+h1-e0127.primary,host,learn,9.114122082974063,8.964852792,495632384,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0127.replay,host,learn,8.989014582999516,8.857069291,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0128.issue,issuer,learn,0.09046591699006967,0.0,189153280,33905,,,
+h1-e0128.primary,host,learn,9.147415000014007,9.013096417,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0128.replay,host,learn,9.09422945798724,8.969287166,485556224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0129.issue,issuer,learn,0.08664616697933525,0.0,189153280,33905,,,
+h1-e0129.primary,host,learn,9.242234083998483,9.112915166,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0129.replay,host,learn,9.302672582998639,9.156762916,485523456,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0130.issue,issuer,learn,0.09255050000501797,0.0,189153280,33905,,,
+h1-e0130.primary,host,learn,9.423507833009353,9.282728708,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0130.replay,host,learn,9.077855957992142,8.942353375,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0131.issue,issuer,learn,0.08618937499704771,0.0,189022208,33905,,,
+h1-e0131.primary,host,learn,8.995555375004187,8.862299333,486588416,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0131.replay,host,learn,9.073125834023813,8.940109584,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0132.issue,issuer,learn,0.08548549999250099,0.0,189153280,33905,,,
+h1-e0132.primary,host,learn,9.152943708002567,9.020915458,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0132.replay,host,learn,9.337564249988645,9.211277792,485556224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0133.issue,issuer,learn,0.08498979199794121,0.0,189153280,33905,,,
+h1-e0133.primary,host,learn,9.24378550000256,9.105899042,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0133.replay,host,learn,9.047790584008908,8.908872583,484851712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0134.issue,issuer,learn,0.08772870898246765,0.0,189136896,33905,,,
+h1-e0134.primary,host,learn,9.262120542000048,9.12771375,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0134.replay,host,learn,9.037813167000422,8.918015,485687296,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0135.issue,issuer,learn,0.0888035419920925,0.0,189153280,33905,,,
+h1-e0135.primary,host,learn,9.50922029101639,9.352482583,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0135.replay,host,learn,9.461269249994075,9.324441917,483540992,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0136.issue,issuer,learn,0.09073016600450501,0.0,189169664,33905,,,
+h1-e0136.primary,host,learn,9.306111415993655,9.160152083,486162432,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0136.replay,host,learn,9.416486000001896,9.2820905,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0137.issue,issuer,learn,0.08748995899804868,0.0,189136896,33905,,,
+h1-e0137.primary,host,learn,9.101349042000948,8.972218417,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0137.replay,host,learn,9.105779541976517,8.970125875,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0138.issue,issuer,learn,0.08681708399672061,0.0,189136896,33905,,,
+h1-e0138.primary,host,learn,9.098322709003696,8.96467725,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0138.replay,host,learn,9.259433625004021,9.132657875,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0139.issue,issuer,learn,0.08693574997596443,0.0,189169664,33905,,,
+h1-e0139.primary,host,learn,9.206524000008358,9.07216425,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0139.replay,host,learn,9.135110125003848,9.000556292,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0140.issue,issuer,learn,0.08696187500027008,0.0,189153280,33905,,,
+h1-e0140.primary,host,learn,9.04067858401686,8.908175875,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0140.replay,host,learn,9.125988958025118,8.992934542,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0141.issue,issuer,learn,0.08992058300646022,0.0,189005824,33905,,,
+h1-e0141.primary,host,learn,9.230038959009107,9.098358709,486391808,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0141.replay,host,learn,9.144753166998271,9.009250416,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0142.issue,issuer,learn,0.08730841701617464,0.0,189153280,33905,,,
+h1-e0142.primary,host,learn,9.278153458988527,9.148576708,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0142.replay,host,learn,9.195857708022231,9.063757333,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0143.issue,issuer,learn,0.0908299170259852,0.0,189169664,33905,,,
+h1-e0143.primary,host,learn,9.229264875000808,9.090284417,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0143.replay,host,learn,9.04809195798589,8.924061834,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0144.issue,issuer,learn,0.08791354100685567,0.0,189136896,33905,,,
+h1-e0144.primary,host,learn,9.139077917003306,9.0094785,484884480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0144.replay,host,learn,8.96596529200906,8.843723875,485507072,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0145.primary,host,infer,0.3099309160024859,0.183927375,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0145.replay,host,infer,0.3098380410228856,0.1841935,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0146.primary,host,infer,0.3144024579960387,0.188319,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0146.replay,host,infer,0.31705662500462495,0.186290375,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0147.primary,host,infer,0.3119017499848269,0.18707025,482754560,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0147.replay,host,infer,0.31928125000558794,0.187601208,482508800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0148.primary,host,infer,0.308380375005072,0.183123125,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0148.replay,host,infer,0.3077319999865722,0.1831145,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0149.primary,host,infer,0.3093219160218723,0.184271792,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0149.replay,host,infer,0.31391399999847636,0.187799625,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0150.primary,host,infer,0.3103982500033453,0.184522291,482656256,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0150.replay,host,infer,0.3244577089790255,0.182776417,482508800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0151.primary,host,infer,0.3176417499780655,0.183935416,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0151.replay,host,infer,0.32280191700556315,0.185469,484556800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0152.primary,host,infer,0.31963999997242354,0.184081625,482770944,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0152.replay,host,infer,0.309127874992555,0.182805833,482770944,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0153.primary,host,infer,0.3131882910092827,0.185345917,482738176,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0153.replay,host,infer,0.3191958329989575,0.186287083,482770944,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0154.primary,host,infer,0.31943070801207796,0.1898005,482656256,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0154.replay,host,infer,0.31761749999714084,0.190048333,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0155.primary,host,infer,0.3151216249971185,0.183972083,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0155.replay,host,infer,0.31160279200412333,0.184550666,484556800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0156.primary,host,infer,0.31980341699090786,0.189082625,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0156.replay,host,infer,0.31933995900908485,0.188872208,482738176,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0157.primary,host,infer,0.3086923749942798,0.183623041,482508800,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0157.replay,host,infer,0.3068031250149943,0.182927709,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0158.primary,host,infer,0.30583337499410845,0.181060333,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0158.replay,host,infer,0.31740495897247456,0.189018667,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0159.primary,host,infer,0.3082893749815412,0.180748042,482443264,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0159.replay,host,infer,0.3135676250094548,0.18673625,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0160.primary,host,infer,0.3108790830010548,0.182585125,482754560,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0160.replay,host,infer,0.3070230830053333,0.182682833,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0161.issue,issuer,learn,0.08610883299843408,0.0,189136896,33905,,,
+h1-e0161.primary,host,learn,9.457530832994962,8.932835834,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0161.replay,host,learn,9.40081900000223,9.264920084,485064704,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0162.issue,issuer,learn,0.09076420799829066,0.0,189136896,33905,,,
+h1-e0162.primary,host,learn,9.248621749982703,9.122810792,486899712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0162.replay,host,learn,9.224848000012571,9.086592583,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0163.issue,issuer,learn,0.09211787502863444,0.0,189169664,33905,,,
+h1-e0163.primary,host,learn,9.139065708994167,9.010075208,484507648,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0163.replay,host,learn,9.395205582986819,9.258982375,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0164.issue,issuer,learn,0.08920362498611212,0.0,189169664,33905,,,
+h1-e0164.primary,host,learn,9.016475417010952,8.890138166,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0164.replay,host,learn,8.974321375018917,8.835126459,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0165.issue,issuer,learn,0.08633133300463669,0.0,189022208,33905,,,
+h1-e0165.primary,host,learn,9.013205499999458,8.883312541,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0165.replay,host,learn,8.988975540996762,8.858988875,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0166.issue,issuer,learn,0.09045041698846035,0.0,189169664,33905,,,
+h1-e0166.primary,host,learn,8.896242125018034,8.761262708,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0166.replay,host,learn,9.107103666989133,8.986912125,483508224,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0167.issue,issuer,learn,0.0865573330083862,0.0,189169664,33905,,,
+h1-e0167.primary,host,learn,8.977538374980213,8.848569041,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0167.replay,host,learn,9.393500750011299,9.26717125,484868096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0168.issue,issuer,learn,0.08496925001963973,0.0,189153280,33905,,,
+h1-e0168.primary,host,learn,9.56268458298291,9.425021542,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0168.replay,host,learn,9.171596125001088,9.04842075,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0169.issue,issuer,learn,0.08445350002148189,0.0,189005824,33905,,,
+h1-e0169.primary,host,learn,9.084397624974372,8.959803417,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0169.replay,host,learn,9.047058250027476,8.919222042,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0170.issue,issuer,learn,0.08665383301558904,0.0,189169664,33905,,,
+h1-e0170.primary,host,learn,9.068162833020324,8.939285042,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0170.replay,host,learn,8.934604250011034,8.804229667,487063552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0171.issue,issuer,learn,0.08557329198811203,0.0,189153280,33905,,,
+h1-e0171.primary,host,learn,9.253487082984066,9.122496166,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0171.replay,host,learn,8.937786458001938,8.810229625,485670912,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0172.issue,issuer,learn,0.08477874999516644,0.0,188989440,33905,,,
+h1-e0172.primary,host,learn,9.115686959004961,8.990639583,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0172.replay,host,learn,8.984185709006852,8.849880417,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0173.issue,issuer,learn,0.08842266700230539,0.0,189022208,33905,,,
+h1-e0173.primary,host,learn,9.18500770899118,9.059473209,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0173.replay,host,learn,9.006079707993194,8.867783208,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0174.issue,issuer,learn,0.09041324999998324,0.0,189136896,33905,,,
+h1-e0174.primary,host,learn,9.007205792004243,8.871562375,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0174.replay,host,learn,9.17325674998574,9.046190292,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0175.issue,issuer,learn,0.08571349998237565,0.0,189169664,33905,,,
+h1-e0175.primary,host,learn,8.949448416999076,8.820854375,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0175.replay,host,learn,8.979475917003583,8.849814709,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0176.issue,issuer,learn,0.08945374999893829,0.0,189136896,33905,,,
+h1-e0176.primary,host,learn,9.03610545900301,8.907364459,487063552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0176.replay,host,learn,9.277993916010018,9.149792667,483328000,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0177.issue,issuer,learn,0.08959104202222079,0.0,189136896,33905,,,
+h1-e0177.primary,host,learn,9.373965124977985,9.238418916,484917248,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0177.replay,host,learn,8.919097625010181,8.788102375,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0178.issue,issuer,learn,0.08630374999484047,0.0,189136896,33905,,,
+h1-e0178.primary,host,learn,8.975299874990014,8.842601708,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0178.replay,host,learn,8.96701129199937,8.839245666,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0179.issue,issuer,learn,0.08436691699898802,0.0,189120512,33905,,,
+h1-e0179.primary,host,learn,9.142174958018586,9.014788625,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0179.replay,host,learn,9.258210917003453,9.1329825,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0180.issue,issuer,learn,0.09084033302497119,0.0,189153280,33905,,,
+h1-e0180.primary,host,learn,9.194621709000785,9.059835833,484868096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0180.replay,host,learn,9.004954333009664,8.869003375,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0181.issue,issuer,learn,0.0870217090123333,0.0,189120512,33905,,,
+h1-e0181.primary,host,learn,8.993127291993005,8.860354833,485146624,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0181.replay,host,learn,9.159958374977577,9.028299625,486899712,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0182.issue,issuer,learn,0.08639433298958465,0.0,189136896,33905,,,
+h1-e0182.primary,host,learn,9.224959666986251,9.088869625,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0182.replay,host,learn,9.284953916998347,9.156232792,485507072,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0183.issue,issuer,learn,0.08725133299594745,0.0,189169664,33905,,,
+h1-e0183.primary,host,learn,9.237425958010135,9.106440042,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0183.replay,host,learn,9.091477875015698,8.958848,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0184.issue,issuer,learn,0.08463812500122003,0.0,189153280,33905,,,
+h1-e0184.primary,host,learn,9.123755832988536,8.996723875,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0184.replay,host,learn,9.128685874980874,9.003396042,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0185.issue,issuer,learn,0.08333304099505767,0.0,189104128,33905,,,
+h1-e0185.primary,host,learn,9.387801707984181,9.265165375,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0185.replay,host,learn,9.061859624984208,8.928615625,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0186.issue,issuer,learn,0.08686808397760615,0.0,189169664,33905,,,
+h1-e0186.primary,host,learn,9.315682375017786,9.187121583,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0186.replay,host,learn,9.140138167014811,9.01179775,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0187.issue,issuer,learn,0.08559024997521192,0.0,189153280,33905,,,
+h1-e0187.primary,host,learn,9.01682783299475,8.880863667,487063552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0187.replay,host,learn,8.983737916016253,8.862476541,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0188.issue,issuer,learn,0.08384199999272823,0.0,189153280,33905,,,
+h1-e0188.primary,host,learn,9.128018707997398,8.991739209,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0188.replay,host,learn,8.925531666027382,8.801852209,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0189.issue,issuer,learn,0.08489962498424575,0.0,189022208,33905,,,
+h1-e0189.primary,host,learn,9.215870334010106,9.084147458,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0189.replay,host,learn,9.194946042000083,9.059961667,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0190.issue,issuer,learn,0.08454112499020994,0.0,189169664,33905,,,
+h1-e0190.primary,host,learn,8.970778624992818,8.842204,484048896,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0190.replay,host,learn,9.03673408398754,8.911209125,485638144,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0191.issue,issuer,learn,0.08610504100215621,0.0,189153280,33905,,,
+h1-e0191.primary,host,learn,9.107859916985035,8.978193125,485588992,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0191.replay,host,learn,9.147736957995221,9.0195335,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0192.issue,issuer,learn,0.08478924998780712,0.0,189136896,33905,,,
+h1-e0192.primary,host,learn,9.477754999999888,9.349543667,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0192.replay,host,learn,9.317946708004456,9.194707416,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0193.issue,issuer,learn,0.08657708298414946,0.0,189169664,33905,,,
+h1-e0193.primary,host,learn,9.084082084009424,8.958825791,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0193.replay,host,learn,8.906769499997608,8.782293833,485572608,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0194.issue,issuer,learn,0.0841056669887621,0.0,189169664,33905,,,
+h1-e0194.primary,host,learn,9.124557416012976,8.999359166,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0194.replay,host,learn,8.917851957987295,8.792255709,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0195.issue,issuer,learn,0.08480199999758042,0.0,189136896,33905,,,
+h1-e0195.primary,host,learn,9.130451375007397,9.004309416,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0195.replay,host,learn,9.170820917002857,9.037401209,484884480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0196.issue,issuer,learn,0.08762641702196561,0.0,189169664,33905,,,
+h1-e0196.primary,host,learn,9.340088500001002,9.2030195,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0196.replay,host,learn,8.936461417004466,8.808793792,483852288,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0197.issue,issuer,learn,0.08870216700597666,0.0,189169664,33905,,,
+h1-e0197.primary,host,learn,9.0957328749937,8.968379416,485195776,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0197.replay,host,learn,9.006995709001785,8.871144417,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0198.issue,issuer,learn,0.08626420801738277,0.0,189169664,33905,,,
+h1-e0198.primary,host,learn,9.413941959006479,9.290142417,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0198.replay,host,learn,9.24031495800591,9.117078458,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0199.issue,issuer,learn,0.0878957920067478,0.0,189153280,33905,,,
+h1-e0199.primary,host,learn,9.15007683300064,9.020364833,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0199.replay,host,learn,9.09733270900324,8.9613695,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0200.issue,issuer,learn,0.08839562500361353,0.0,189153280,33905,,,
+h1-e0200.primary,host,learn,9.078825792006683,8.95161825,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0200.replay,host,learn,9.137367333984002,9.004509083,486932480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0201.issue,issuer,learn,0.08754545799456537,0.0,189169664,33905,,,
+h1-e0201.primary,host,learn,9.290494874992874,9.158498375,484900864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0201.replay,host,learn,9.04999637498986,8.9227435,485343232,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0202.issue,issuer,learn,0.08916712499922141,0.0,189120512,33905,,,
+h1-e0202.primary,host,learn,9.317687125003431,9.195111708,485539840,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0202.replay,host,learn,8.98774520799634,8.862220125,484933632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0203.issue,issuer,learn,0.08511162499780767,0.0,189136896,33905,,,
+h1-e0203.primary,host,learn,9.39614716701908,9.271241625,486408192,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0203.replay,host,learn,9.085919417004334,8.960548583,485654528,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0204.issue,issuer,learn,0.08632733300328255,0.0,189153280,33905,,,
+h1-e0204.primary,host,learn,8.939557917008642,8.81248,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0204.replay,host,learn,8.999901874980424,8.880456708,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0205.issue,issuer,learn,0.08630837500095367,0.0,189136896,33905,,,
+h1-e0205.primary,host,learn,9.258985541993752,9.135178042,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0205.replay,host,learn,9.245188875007443,9.115050583,485163008,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0206.issue,issuer,learn,0.08725850001792423,0.0,189169664,33905,,,
+h1-e0206.primary,host,learn,8.914466583984904,8.785323958,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0206.replay,host,learn,8.98669008302386,8.852147,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0207.issue,issuer,learn,0.08702574999188073,0.0,189169664,33905,,,
+h1-e0207.primary,host,learn,9.255783208995126,9.125585334,484884480,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0207.replay,host,learn,9.119240708008874,8.991625041,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0208.issue,issuer,learn,0.08408720800071023,0.0,189153280,33905,,,
+h1-e0208.primary,host,learn,9.188359166990267,9.055134125,485867520,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0208.replay,host,learn,9.14242745898082,9.013604709,484868096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0209.issue,issuer,learn,0.0842579579912126,0.0,189120512,33905,,,
+h1-e0209.primary,host,learn,8.970781084004557,8.842832583,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0209.replay,host,learn,9.34663445802289,9.215017083,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0210.issue,issuer,learn,0.08978283399483189,0.0,189120512,33905,,,
+h1-e0210.primary,host,learn,9.107842833996983,8.981277667,484802560,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0210.replay,host,learn,8.921033499995247,8.794266625,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0211.issue,issuer,learn,0.08648224998614751,0.0,189153280,33905,,,
+h1-e0211.primary,host,learn,9.252195415989263,9.118581916,484933632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0211.replay,host,learn,9.218698833021335,9.089895125,484130816,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0212.issue,issuer,learn,0.0934489160135854,0.0,189169664,33905,,,
+h1-e0212.primary,host,learn,8.947446125006536,8.812750208,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0212.replay,host,learn,9.099669874995016,8.972552375,487030784,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0213.issue,issuer,learn,0.08768695901380852,0.0,189153280,33905,,,
+h1-e0213.primary,host,learn,9.295631874992978,9.165837958,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0213.replay,host,learn,8.947983791993465,8.814275083,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0214.issue,issuer,learn,0.08484241599217057,0.0,189153280,33905,,,
+h1-e0214.primary,host,learn,9.224316625011852,9.096372667,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0214.replay,host,learn,9.50335625000298,9.355164833,485179392,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0215.issue,issuer,learn,0.08930570899974555,0.0,189120512,33905,,,
+h1-e0215.primary,host,learn,9.189978750015143,9.055949334,485457920,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0215.replay,host,learn,9.113612499990268,8.976489125,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0216.issue,issuer,learn,0.09026337499381043,0.0,189153280,33905,,,
+h1-e0216.primary,host,learn,8.93013933300972,8.790380875,484950016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0216.replay,host,learn,9.258263499999885,9.136688542,484786176,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0217.issue,issuer,learn,0.08681679199798964,0.0,189169664,33905,,,
+h1-e0217.primary,host,learn,8.95953062499757,8.828308708,487014400,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0217.replay,host,learn,9.168112832994666,9.046253042,486948864,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0218.issue,issuer,learn,0.08947487501427531,0.0,189169664,33905,,,
+h1-e0218.primary,host,learn,9.354311041010078,9.228455959,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0218.replay,host,learn,8.92280374999973,8.799022959,485605376,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0219.issue,issuer,learn,0.0855546249949839,0.0,189136896,33905,,,
+h1-e0219.primary,host,learn,8.952838708995841,8.82521825,485130240,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0219.replay,host,learn,8.981674040987855,8.856496167,486981632,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0220.issue,issuer,learn,0.08462437501293607,0.0,189022208,33905,,,
+h1-e0220.primary,host,learn,9.062832791008987,8.936410375,487047168,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0220.replay,host,learn,8.908735083998181,8.784074,486916096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0221.issue,issuer,learn,0.08347466599661857,0.0,189136896,33905,,,
+h1-e0221.primary,host,learn,9.475495041988324,9.349048292,486998016,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0221.replay,host,learn,9.469392041995889,9.328471541,484818944,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0222.issue,issuer,learn,0.09256854100385681,0.0,189153280,33905,,,
+h1-e0222.primary,host,learn,8.96008712501498,8.823800375,487063552,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0222.replay,host,learn,9.285438874998363,9.157395959,485621760,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0223.issue,issuer,learn,0.0896725410129875,0.0,189022208,33905,,,
+h1-e0223.primary,host,learn,9.134888875007164,8.998263125,484835328,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0223.replay,host,learn,9.115363208024064,8.969991375,484868096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0224.issue,issuer,learn,0.08898816601140425,0.0,189153280,33905,,,
+h1-e0224.primary,host,learn,9.151361791009549,9.028630375,484868096,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0224.replay,host,learn,9.308396957989316,9.177400583,486457344,108441,342,196,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0225.primary,host,infer,0.3190615829953458,0.183158125,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0225.replay,host,infer,0.3034685000020545,0.175081,482721792,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0226.primary,host,infer,0.3207127919886261,0.185058375,482738176,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0226.replay,host,infer,0.30999508302193135,0.18123875,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0227.primary,host,infer,0.32379470800515264,0.186514334,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0227.replay,host,infer,0.3221122499962803,0.187512916,482721792,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0228.primary,host,infer,0.3106087910127826,0.183795083,482754560,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0228.replay,host,infer,0.310620166012086,0.182497208,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0229.primary,host,infer,0.31597754199174233,0.1859455,482443264,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0229.replay,host,infer,0.3145985830051359,0.183262875,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0230.primary,host,infer,0.3158390420139767,0.182771167,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0230.replay,host,infer,0.3036173750006128,0.174864875,482738176,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0231.primary,host,infer,0.3170873330091126,0.185850791,482705408,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0231.replay,host,infer,0.30701454100199044,0.179969167,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0232.primary,host,infer,0.3100271670264192,0.181107042,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0232.replay,host,infer,0.3194030419981573,0.179764583,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0233.primary,host,infer,0.31082125002285466,0.182931875,482443264,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0233.replay,host,infer,0.32089250002172776,0.179659334,482492416,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0234.primary,host,infer,0.31527958301012404,0.182867875,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0234.replay,host,infer,0.3196722920110915,0.186646708,482721792,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0235.primary,host,infer,0.31206987498444505,0.186298542,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0235.replay,host,infer,0.3070315000077244,0.180264458,482721792,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0236.primary,host,infer,0.306512915994972,0.178193583,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0236.replay,host,infer,0.30732641599024646,0.179664791,482754560,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0237.primary,host,infer,0.32274125001276843,0.187928083,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0237.replay,host,infer,0.31513624999206513,0.1759275,484605952,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0238.primary,host,infer,0.31455945799825713,0.181118916,482476032,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0238.replay,host,infer,0.30442733300151303,0.175986791,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0239.primary,host,infer,0.3122754159849137,0.18578775,484573184,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0239.replay,host,infer,0.312889916007407,0.18363075,482459648,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0240.primary,host,infer,0.3169467079860624,0.184152666,482689024,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+h1-e0240.replay,host,infer,0.30257233398151584,0.175996167,484622336,3413,6,3,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+initial_67000_0,reader,state,0.00676874999771826,0.0,,,,,
+initial_67000_1,reader,state,0.005241459002718329,0.0,,,,,
+initial_67001_0,reader,state,0.004886541981250048,0.0,,,,,
+initial_67001_1,reader,state,0.0044405420194379985,0.0,,,,,
+h0-e0001,reader,state,0.004275791987311095,0.0,,,,,
+h0-e0002,reader,state,0.004587125004036352,0.0,,,,,
+h0-e0003,reader,state,0.004416125011630356,0.0,,,,,
+h0-e0004,reader,state,0.004283208982087672,0.0,,,,,
+h0-e0005,reader,state,0.00425204198108986,0.0,,,,,
+h0-e0006,reader,state,0.0041690419893711805,0.0,,,,,
+h0-e0007,reader,state,0.004396125004859641,0.0,,,,,
+h0-e0008,reader,state,0.004363292013294995,0.0,,,,,
+h0-e0009,reader,state,0.004260541987605393,0.0,,,,,
+h0-e0010,reader,state,0.004707041982328519,0.0,,,,,
+h0-e0011,reader,state,0.004212333995383233,0.0,,,,,
+h0-e0012,reader,state,0.0042200839961878955,0.0,,,,,
+h0-e0013,reader,state,0.003969667013734579,0.0,,,,,
+h0-e0014,reader,state,0.004166917002294213,0.0,,,,,
+h0-e0015,reader,state,0.004087790992343798,0.0,,,,,
+h0-e0016,reader,state,0.004061957995872945,0.0,,,,,
+h0-e0017,reader,state,0.003878040995914489,0.0,,,,,
+h0-e0018,reader,state,0.0041017080075107515,0.0,,,,,
+h0-e0019,reader,state,0.004611458018189296,0.0,,,,,
+h0-e0020,reader,state,0.004096166987437755,0.0,,,,,
+h0-e0021,reader,state,0.004171040985966101,0.0,,,,,
+h0-e0022,reader,state,0.00439170899335295,0.0,,,,,
+h0-e0023,reader,state,0.004136917006690055,0.0,,,,,
+h0-e0024,reader,state,0.004137415991863236,0.0,,,,,
+h0-e0025,reader,state,0.003834958013612777,0.0,,,,,
+h0-e0026,reader,state,0.0039558749995194376,0.0,,,,,
+h0-e0027,reader,state,0.0038414169976022094,0.0,,,,,
+h0-e0028,reader,state,0.004042915999889374,0.0,,,,,
+h0-e0029,reader,state,0.0037594169843941927,0.0,,,,,
+h0-e0030,reader,state,0.004352417017798871,0.0,,,,,
+h0-e0031,reader,state,0.004095708020031452,0.0,,,,,
+h0-e0032,reader,state,0.004048374976264313,0.0,,,,,
+h0-e0033,reader,state,0.003967874974478036,0.0,,,,,
+h0-e0034,reader,state,0.004060250008478761,0.0,,,,,
+h0-e0035,reader,state,0.004226833989378065,0.0,,,,,
+h0-e0036,reader,state,0.004021707980427891,0.0,,,,,
+h0-e0037,reader,state,0.004139374999795109,0.0,,,,,
+h0-e0038,reader,state,0.004249583987984806,0.0,,,,,
+h0-e0039,reader,state,0.004305583017412573,0.0,,,,,
+h0-e0040,reader,state,0.003935749991796911,0.0,,,,,
+h0-e0041,reader,state,0.0038377080054488033,0.0,,,,,
+h0-e0042,reader,state,0.00397654197877273,0.0,,,,,
+h0-e0043,reader,state,0.004445416998350993,0.0,,,,,
+h0-e0044,reader,state,0.004314958001486957,0.0,,,,,
+h0-e0045,reader,state,0.0041621249984018505,0.0,,,,,
+h0-e0046,reader,state,0.0044578750093933195,0.0,,,,,
+h0-e0047,reader,state,0.004344165994552895,0.0,,,,,
+h0-e0048,reader,state,0.0041317089926451445,0.0,,,,,
+h0-e0049,reader,state,0.003916249988833442,0.0,,,,,
+h0-e0050,reader,state,0.004256457992596552,0.0,,,,,
+h0-e0051,reader,state,0.004029332980280742,0.0,,,,,
+h0-e0052,reader,state,0.004054250020999461,0.0,,,,,
+h0-e0053,reader,state,0.0038595839869230986,0.0,,,,,
+h0-e0054,reader,state,0.004191999993054196,0.0,,,,,
+h0-e0055,reader,state,0.004152084002271295,0.0,,,,,
+h0-e0056,reader,state,0.0037674579943995923,0.0,,,,,
+h0-e0057,reader,state,0.004055958008393645,0.0,,,,,
+h0-e0058,reader,state,0.004277625004760921,0.0,,,,,
+h0-e0059,reader,state,0.004070499999215826,0.0,,,,,
+h0-e0060,reader,state,0.0039174169942270964,0.0,,,,,
+h0-e0061,reader,state,0.004071332979947329,0.0,,,,,
+h0-e0062,reader,state,0.004642749991035089,0.0,,,,,
+h0-e0063,reader,state,0.003969500015955418,0.0,,,,,
+h0-e0064,reader,state,0.003976750012952834,0.0,,,,,
+h0-e0065,reader,output,0.003978333988925442,0.0,,,,,
+h0-e0066,reader,output,0.004151041997829452,0.0,,,,,
+h0-e0067,reader,output,0.004010999982710928,0.0,,,,,
+h0-e0068,reader,output,0.004427042003953829,0.0,,,,,
+h0-e0069,reader,output,0.004143415979342535,0.0,,,,,
+h0-e0070,reader,output,0.00412716600112617,0.0,,,,,
+h0-e0071,reader,output,0.004843082977458835,0.0,,,,,
+h0-e0072,reader,output,0.004038500017486513,0.0,,,,,
+h0-e0073,reader,output,0.00401204198715277,0.0,,,,,
+h0-e0074,reader,output,0.004231208004057407,0.0,,,,,
+h0-e0075,reader,output,0.004351042007328942,0.0,,,,,
+h0-e0076,reader,output,0.004284291993826628,0.0,,,,,
+h0-e0077,reader,output,0.003931833023671061,0.0,,,,,
+h0-e0078,reader,output,0.0038871249998919666,0.0,,,,,
+h0-e0079,reader,output,0.0036831669858656824,0.0,,,,,
+h0-e0080,reader,output,0.00409037500503473,0.0,,,,,
+h0-e0081,reader,state,0.00467170900083147,0.0,,,,,
+h0-e0082,reader,state,0.004319333005696535,0.0,,,,,
+h0-e0083,reader,state,0.003895874979207292,0.0,,,,,
+h0-e0084,reader,state,0.004269500001100823,0.0,,,,,
+h0-e0085,reader,state,0.004098625009646639,0.0,,,,,
+h0-e0086,reader,state,0.004642624990083277,0.0,,,,,
+h0-e0087,reader,state,0.004027042014058679,0.0,,,,,
+h0-e0088,reader,state,0.004177666996838525,0.0,,,,,
+h0-e0089,reader,state,0.004194415989331901,0.0,,,,,
+h0-e0090,reader,state,0.003994416998466477,0.0,,,,,
+h0-e0091,reader,state,0.0042367089772596955,0.0,,,,,
+h0-e0092,reader,state,0.004571208992274478,0.0,,,,,
+h0-e0093,reader,state,0.004157333984039724,0.0,,,,,
+h0-e0094,reader,state,0.004299499996704981,0.0,,,,,
+h0-e0095,reader,state,0.003943957999581471,0.0,,,,,
+h0-e0096,reader,state,0.003913541993824765,0.0,,,,,
+h0-e0097,reader,state,0.004183666984317824,0.0,,,,,
+h0-e0098,reader,state,0.004032458004076034,0.0,,,,,
+h0-e0099,reader,state,0.004357333004008979,0.0,,,,,
+h0-e0100,reader,state,0.00392662500962615,0.0,,,,,
+h0-e0101,reader,state,0.004267334006726742,0.0,,,,,
+h0-e0102,reader,state,0.004364499996881932,0.0,,,,,
+h0-e0103,reader,state,0.004581458022585139,0.0,,,,,
+h0-e0104,reader,state,0.00420608400600031,0.0,,,,,
+h0-e0105,reader,state,0.004278541018720716,0.0,,,,,
+h0-e0106,reader,state,0.003947457997128367,0.0,,,,,
+h0-e0107,reader,state,0.00386774999788031,0.0,,,,,
+h0-e0108,reader,state,0.0045584999897982925,0.0,,,,,
+h0-e0109,reader,state,0.004329082992626354,0.0,,,,,
+h0-e0110,reader,state,0.0043641670199576765,0.0,,,,,
+h0-e0111,reader,state,0.004999958007829264,0.0,,,,,
+h0-e0112,reader,state,0.0047662500001024455,0.0,,,,,
+h0-e0113,reader,state,0.004790917009813711,0.0,,,,,
+h0-e0114,reader,state,0.004346083995187655,0.0,,,,,
+h0-e0115,reader,state,0.004090249974979088,0.0,,,,,
+h0-e0116,reader,state,0.004148249980062246,0.0,,,,,
+h0-e0117,reader,state,0.00406533302157186,0.0,,,,,
+h0-e0118,reader,state,0.0038930409937165678,0.0,,,,,
+h0-e0119,reader,state,0.004050749994348735,0.0,,,,,
+h0-e0120,reader,state,0.004398332996061072,0.0,,,,,
+h0-e0121,reader,state,0.004486707999603823,0.0,,,,,
+h0-e0122,reader,state,0.004157582996413112,0.0,,,,,
+h0-e0123,reader,state,0.0040948750101961195,0.0,,,,,
+h0-e0124,reader,state,0.004261166992364451,0.0,,,,,
+h0-e0125,reader,state,0.003946582990465686,0.0,,,,,
+h0-e0126,reader,state,0.004182958015007898,0.0,,,,,
+h0-e0127,reader,state,0.0045407500001601875,0.0,,,,,
+h0-e0128,reader,state,0.004134833987336606,0.0,,,,,
+h0-e0129,reader,state,0.003913041000487283,0.0,,,,,
+h0-e0130,reader,state,0.003696957981446758,0.0,,,,,
+h0-e0131,reader,state,0.003951916994992644,0.0,,,,,
+h0-e0132,reader,state,0.003813625022303313,0.0,,,,,
+h0-e0133,reader,state,0.004096166987437755,0.0,,,,,
+h0-e0134,reader,state,0.004347334004705772,0.0,,,,,
+h0-e0135,reader,state,0.004151458007982001,0.0,,,,,
+h0-e0136,reader,state,0.0038863749941810966,0.0,,,,,
+h0-e0137,reader,state,0.0037779160193167627,0.0,,,,,
+h0-e0138,reader,state,0.004161249991739169,0.0,,,,,
+h0-e0139,reader,state,0.004242290975525975,0.0,,,,,
+h0-e0140,reader,state,0.0043100000184495,0.0,,,,,
+h0-e0141,reader,state,0.0044897499901708215,0.0,,,,,
+h0-e0142,reader,state,0.003988834010669962,0.0,,,,,
+h0-e0143,reader,state,0.003834834002191201,0.0,,,,,
+h0-e0144,reader,state,0.0038626659952569753,0.0,,,,,
+h0-e0145,reader,output,0.003996665996965021,0.0,,,,,
+h0-e0146,reader,output,0.0043699170055333525,0.0,,,,,
+h0-e0147,reader,output,0.004059582977788523,0.0,,,,,
+h0-e0148,reader,output,0.004015416983747855,0.0,,,,,
+h0-e0149,reader,output,0.004110874986508861,0.0,,,,,
+h0-e0150,reader,output,0.0039800829836167395,0.0,,,,,
+h0-e0151,reader,output,0.004139457974815741,0.0,,,,,
+h0-e0152,reader,output,0.0038405829982366413,0.0,,,,,
+h0-e0153,reader,output,0.0037577920011244714,0.0,,,,,
+h0-e0154,reader,output,0.0038562499976251274,0.0,,,,,
+h0-e0155,reader,output,0.004026000009616837,0.0,,,,,
+h0-e0156,reader,output,0.004099582991329953,0.0,,,,,
+h0-e0157,reader,output,0.004607249982655048,0.0,,,,,
+h0-e0158,reader,output,0.0040865000046323985,0.0,,,,,
+h0-e0159,reader,output,0.003910792001988739,0.0,,,,,
+h0-e0160,reader,output,0.003736791986739263,0.0,,,,,
+h0-e0161,reader,state,0.004634167009498924,0.0,,,,,
+h0-e0162,reader,state,0.004429416992934421,0.0,,,,,
+h0-e0163,reader,state,0.004331000003730878,0.0,,,,,
+h0-e0164,reader,state,0.003929624974261969,0.0,,,,,
+h0-e0165,reader,state,0.004030667012557387,0.0,,,,,
+h0-e0166,reader,state,0.004328250011894852,0.0,,,,,
+h0-e0167,reader,state,0.004325042013078928,0.0,,,,,
+h0-e0168,reader,state,0.004283707996364683,0.0,,,,,
+h0-e0169,reader,state,0.0047307920176535845,0.0,,,,,
+h0-e0170,reader,state,0.0042819170048460364,0.0,,,,,
+h0-e0171,reader,state,0.004337042017141357,0.0,,,,,
+h0-e0172,reader,state,0.004495291999774054,0.0,,,,,
+h0-e0173,reader,state,0.0040097500022966415,0.0,,,,,
+h0-e0174,reader,state,0.003920874994946644,0.0,,,,,
+h0-e0175,reader,state,0.004152708017500117,0.0,,,,,
+h0-e0176,reader,state,0.004230416991049424,0.0,,,,,
+h0-e0177,reader,state,0.0041661669965833426,0.0,,,,,
+h0-e0178,reader,state,0.004420499986736104,0.0,,,,,
+h0-e0179,reader,state,0.00402158300857991,0.0,,,,,
+h0-e0180,reader,state,0.004031707998365164,0.0,,,,,
+h0-e0181,reader,state,0.0038522499962709844,0.0,,,,,
+h0-e0182,reader,state,0.004008916002931073,0.0,,,,,
+h0-e0183,reader,state,0.004344374989159405,0.0,,,,,
+h0-e0184,reader,state,0.004185249999864027,0.0,,,,,
+h0-e0185,reader,state,0.003998125001089647,0.0,,,,,
+h0-e0186,reader,state,0.004285625007469207,0.0,,,,,
+h0-e0187,reader,state,0.00448291699285619,0.0,,,,,
+h0-e0188,reader,state,0.004135291994316503,0.0,,,,,
+h0-e0189,reader,state,0.0041343340126331896,0.0,,,,,
+h0-e0190,reader,state,0.004269416996976361,0.0,,,,,
+h0-e0191,reader,state,0.003990416007582098,0.0,,,,,
+h0-e0192,reader,state,0.004140957986237481,0.0,,,,,
+h0-e0193,reader,state,0.00453954201657325,0.0,,,,,
+h0-e0194,reader,state,0.004191375017398968,0.0,,,,,
+h0-e0195,reader,state,0.0043655420013237745,0.0,,,,,
+h0-e0196,reader,state,0.003909708000719547,0.0,,,,,
+h0-e0197,reader,state,0.004037792008602992,0.0,,,,,
+h0-e0198,reader,state,0.003853165981126949,0.0,,,,,
+h0-e0199,reader,state,0.004147166997427121,0.0,,,,,
+h0-e0200,reader,state,0.0043250419839750975,0.0,,,,,
+h0-e0201,reader,state,0.004025791015010327,0.0,,,,,
+h0-e0202,reader,state,0.004089957976248115,0.0,,,,,
+h0-e0203,reader,state,0.004506541998125613,0.0,,,,,
+h0-e0204,reader,state,0.004425083985552192,0.0,,,,,
+h0-e0205,reader,state,0.004178124974714592,0.0,,,,,
+h0-e0206,reader,state,0.004177499999059364,0.0,,,,,
+h0-e0207,reader,state,0.004091959010111168,0.0,,,,,
+h0-e0208,reader,state,0.004222791991196573,0.0,,,,,
+h0-e0209,reader,state,0.003787416993873194,0.0,,,,,
+h0-e0210,reader,state,0.004113959003007039,0.0,,,,,
+h0-e0211,reader,state,0.00431520800339058,0.0,,,,,
+h0-e0212,reader,state,0.004593457997543737,0.0,,,,,
+h0-e0213,reader,state,0.004490249993978068,0.0,,,,,
+h0-e0214,reader,state,0.004886833019554615,0.0,,,,,
+h0-e0215,reader,state,0.004842042020754889,0.0,,,,,
+h0-e0216,reader,state,0.004257624997990206,0.0,,,,,
+h0-e0217,reader,state,0.0039522080041933805,0.0,,,,,
+h0-e0218,reader,state,0.004034582991153002,0.0,,,,,
+h0-e0219,reader,state,0.004538875014986843,0.0,,,,,
+h0-e0220,reader,state,0.004733333014883101,0.0,,,,,
+h0-e0221,reader,state,0.004545999981928617,0.0,,,,,
+h0-e0222,reader,state,0.004110624984605238,0.0,,,,,
+h0-e0223,reader,state,0.0042979170102626085,0.0,,,,,
+h0-e0224,reader,state,0.004778834001626819,0.0,,,,,
+h0-e0225,reader,output,0.0040532090060878545,0.0,,,,,
+h0-e0226,reader,output,0.003964457981055602,0.0,,,,,
+h0-e0227,reader,output,0.0039551249938085675,0.0,,,,,
+h0-e0228,reader,output,0.003947708988562226,0.0,,,,,
+h0-e0229,reader,output,0.004235833010170609,0.0,,,,,
+h0-e0230,reader,output,0.004616166988853365,0.0,,,,,
+h0-e0231,reader,output,0.004011457989690825,0.0,,,,,
+h0-e0232,reader,output,0.0038762500043958426,0.0,,,,,
+h0-e0233,reader,output,0.003778084006626159,0.0,,,,,
+h0-e0234,reader,output,0.004248415993060917,0.0,,,,,
+h0-e0235,reader,output,0.0038825839874334633,0.0,,,,,
+h0-e0236,reader,output,0.004455500020412728,0.0,,,,,
+h0-e0237,reader,output,0.004217458015773445,0.0,,,,,
+h0-e0238,reader,output,0.00393783298204653,0.0,,,,,
+h0-e0239,reader,output,0.003968708013417199,0.0,,,,,
+h0-e0240,reader,output,0.004019915999379009,0.0,,,,,
+h1-e0001,reader,state,0.004186957987258211,0.0,,,,,
+h1-e0002,reader,state,0.004037208011141047,0.0,,,,,
+h1-e0003,reader,state,0.004058457998326048,0.0,,,,,
+h1-e0004,reader,state,0.003987167001469061,0.0,,,,,
+h1-e0005,reader,state,0.004199291026452556,0.0,,,,,
+h1-e0006,reader,state,0.003786042012507096,0.0,,,,,
+h1-e0007,reader,state,0.004310333024477586,0.0,,,,,
+h1-e0008,reader,state,0.0045455000072252005,0.0,,,,,
+h1-e0009,reader,state,0.004190792009467259,0.0,,,,,
+h1-e0010,reader,state,0.004416334006236866,0.0,,,,,
+h1-e0011,reader,state,0.003994416998466477,0.0,,,,,
+h1-e0012,reader,state,0.00420983400545083,0.0,,,,,
+h1-e0013,reader,state,0.0041284589970018715,0.0,,,,,
+h1-e0014,reader,state,0.00405558300553821,0.0,,,,,
+h1-e0015,reader,state,0.004057958023622632,0.0,,,,,
+h1-e0016,reader,state,0.00395991699770093,0.0,,,,,
+h1-e0017,reader,state,0.0039623749908059835,0.0,,,,,
+h1-e0018,reader,state,0.0039732079894747585,0.0,,,,,
+h1-e0019,reader,state,0.004020541993668303,0.0,,,,,
+h1-e0020,reader,state,0.004236334003508091,0.0,,,,,
+h1-e0021,reader,state,0.004258750006556511,0.0,,,,,
+h1-e0022,reader,state,0.004469291015993804,0.0,,,,,
+h1-e0023,reader,state,0.005314542009728029,0.0,,,,,
+h1-e0024,reader,state,0.0042291250138077885,0.0,,,,,
+h1-e0025,reader,state,0.004523166018771008,0.0,,,,,
+h1-e0026,reader,state,0.00436291701043956,0.0,,,,,
+h1-e0027,reader,state,0.004350457980763167,0.0,,,,,
+h1-e0028,reader,state,0.004092374991159886,0.0,,,,,
+h1-e0029,reader,state,0.003927124984329566,0.0,,,,,
+h1-e0030,reader,state,0.004172916000243276,0.0,,,,,
+h1-e0031,reader,state,0.004272708989446983,0.0,,,,,
+h1-e0032,reader,state,0.004075083008501679,0.0,,,,,
+h1-e0033,reader,state,0.0044148330052848905,0.0,,,,,
+h1-e0034,reader,state,0.004025458008982241,0.0,,,,,
+h1-e0035,reader,state,0.004278415988665074,0.0,,,,,
+h1-e0036,reader,state,0.004164292011409998,0.0,,,,,
+h1-e0037,reader,state,0.004345624998677522,0.0,,,,,
+h1-e0038,reader,state,0.004420167009811848,0.0,,,,,
+h1-e0039,reader,state,0.004456666996702552,0.0,,,,,
+h1-e0040,reader,state,0.00456420800765045,0.0,,,,,
+h1-e0041,reader,state,0.004495000001043081,0.0,,,,,
+h1-e0042,reader,state,0.0040615409961901605,0.0,,,,,
+h1-e0043,reader,state,0.0040612079901620746,0.0,,,,,
+h1-e0044,reader,state,0.004138457996305078,0.0,,,,,
+h1-e0045,reader,state,0.004186375008430332,0.0,,,,,
+h1-e0046,reader,state,0.004217792011331767,0.0,,,,,
+h1-e0047,reader,state,0.004353541997261345,0.0,,,,,
+h1-e0048,reader,state,0.004022165987407789,0.0,,,,,
+h1-e0049,reader,state,0.004019833984784782,0.0,,,,,
+h1-e0050,reader,state,0.00413262500660494,0.0,,,,,
+h1-e0051,reader,state,0.004564083006698638,0.0,,,,,
+h1-e0052,reader,state,0.004400875011924654,0.0,,,,,
+h1-e0053,reader,state,0.004396291013108566,0.0,,,,,
+h1-e0054,reader,state,0.00430233299266547,0.0,,,,,
+h1-e0055,reader,state,0.004860042012296617,0.0,,,,,
+h1-e0056,reader,state,0.004429583001183346,0.0,,,,,
+h1-e0057,reader,state,0.004930082999635488,0.0,,,,,
+h1-e0058,reader,state,0.00458758301101625,0.0,,,,,
+h1-e0059,reader,state,0.00436216700472869,0.0,,,,,
+h1-e0060,reader,state,0.004688707995228469,0.0,,,,,
+h1-e0061,reader,state,0.004445958009455353,0.0,,,,,
+h1-e0062,reader,state,0.004758374998345971,0.0,,,,,
+h1-e0063,reader,state,0.004921875020954758,0.0,,,,,
+h1-e0064,reader,state,0.00465466600144282,0.0,,,,,
+h1-e0065,reader,output,0.0039627090154681355,0.0,,,,,
+h1-e0066,reader,output,0.004013624973595142,0.0,,,,,
+h1-e0067,reader,output,0.003914083004929125,0.0,,,,,
+h1-e0068,reader,output,0.004097791010281071,0.0,,,,,
+h1-e0069,reader,output,0.004249583987984806,0.0,,,,,
+h1-e0070,reader,output,0.004219499998725951,0.0,,,,,
+h1-e0071,reader,output,0.004245791002176702,0.0,,,,,
+h1-e0072,reader,output,0.004563791997497901,0.0,,,,,
+h1-e0073,reader,output,0.003925792028894648,0.0,,,,,
+h1-e0074,reader,output,0.004114790994208306,0.0,,,,,
+h1-e0075,reader,output,0.004343749984400347,0.0,,,,,
+h1-e0076,reader,output,0.004334708995884284,0.0,,,,,
+h1-e0077,reader,output,0.004062416992383078,0.0,,,,,
+h1-e0078,reader,output,0.00465337501373142,0.0,,,,,
+h1-e0079,reader,output,0.004297041974496096,0.0,,,,,
+h1-e0080,reader,output,0.004646500019589439,0.0,,,,,
+h1-e0081,reader,state,0.004079125006683171,0.0,,,,,
+h1-e0082,reader,state,0.004008957999758422,0.0,,,,,
+h1-e0083,reader,state,0.004072166979312897,0.0,,,,,
+h1-e0084,reader,state,0.004094958014320582,0.0,,,,,
+h1-e0085,reader,state,0.004198165988782421,0.0,,,,,
+h1-e0086,reader,state,0.00427075001061894,0.0,,,,,
+h1-e0087,reader,state,0.0044082499807700515,0.0,,,,,
+h1-e0088,reader,state,0.004565333016216755,0.0,,,,,
+h1-e0089,reader,state,0.004354082979261875,0.0,,,,,
+h1-e0090,reader,state,0.004169833002379164,0.0,,,,,
+h1-e0091,reader,state,0.004031959018902853,0.0,,,,,
+h1-e0092,reader,state,0.004348374990513548,0.0,,,,,
+h1-e0093,reader,state,0.0040444579790346324,0.0,,,,,
+h1-e0094,reader,state,0.004178624978521839,0.0,,,,,
+h1-e0095,reader,state,0.004589707998093218,0.0,,,,,
+h1-e0096,reader,state,0.004264458024408668,0.0,,,,,
+h1-e0097,reader,state,0.004653291980503127,0.0,,,,,
+h1-e0098,reader,state,0.004549375007627532,0.0,,,,,
+h1-e0099,reader,state,0.004688333021476865,0.0,,,,,
+h1-e0100,reader,state,0.0041237910045310855,0.0,,,,,
+h1-e0101,reader,state,0.004056999983731657,0.0,,,,,
+h1-e0102,reader,state,0.004592749988660216,0.0,,,,,
+h1-e0103,reader,state,0.0039967920165508986,0.0,,,,,
+h1-e0104,reader,state,0.0043789580231532454,0.0,,,,,
+h1-e0105,reader,state,0.004871332988841459,0.0,,,,,
+h1-e0106,reader,state,0.0042063329892698675,0.0,,,,,
+h1-e0107,reader,state,0.004257624997990206,0.0,,,,,
+h1-e0108,reader,state,0.004385375010315329,0.0,,,,,
+h1-e0109,reader,state,0.0041331670072395355,0.0,,,,,
+h1-e0110,reader,state,0.0040119169862009585,0.0,,,,,
+h1-e0111,reader,state,0.003835792012978345,0.0,,,,,
+h1-e0112,reader,state,0.004066291992785409,0.0,,,,,
+h1-e0113,reader,state,0.004038415994727984,0.0,,,,,
+h1-e0114,reader,state,0.0041987079894170165,0.0,,,,,
+h1-e0115,reader,state,0.0046127499954309314,0.0,,,,,
+h1-e0116,reader,state,0.004663459025323391,0.0,,,,,
+h1-e0117,reader,state,0.003909958002623171,0.0,,,,,
+h1-e0118,reader,state,0.004003707988886163,0.0,,,,,
+h1-e0119,reader,state,0.004907374997856095,0.0,,,,,
+h1-e0120,reader,state,0.0045588329958263785,0.0,,,,,
+h1-e0121,reader,state,0.0038482090167235583,0.0,,,,,
+h1-e0122,reader,state,0.003914125001756474,0.0,,,,,
+h1-e0123,reader,state,0.004077292018337175,0.0,,,,,
+h1-e0124,reader,state,0.004032124998047948,0.0,,,,,
+h1-e0125,reader,state,0.004055958997923881,0.0,,,,,
+h1-e0126,reader,state,0.004075999982887879,0.0,,,,,
+h1-e0127,reader,state,0.005010041000787169,0.0,,,,,
+h1-e0128,reader,state,0.004033833014545962,0.0,,,,,
+h1-e0129,reader,state,0.004243208997650072,0.0,,,,,
+h1-e0130,reader,state,0.0042537080007605255,0.0,,,,,
+h1-e0131,reader,state,0.004122040991205722,0.0,,,,,
+h1-e0132,reader,state,0.00403895802446641,0.0,,,,,
+h1-e0133,reader,state,0.0038947499997448176,0.0,,,,,
+h1-e0134,reader,state,0.003924290998838842,0.0,,,,,
+h1-e0135,reader,state,0.004553833976387978,0.0,,,,,
+h1-e0136,reader,state,0.004459749994566664,0.0,,,,,
+h1-e0137,reader,state,0.004182583012152463,0.0,,,,,
+h1-e0138,reader,state,0.004088749992661178,0.0,,,,,
+h1-e0139,reader,state,0.004289290984161198,0.0,,,,,
+h1-e0140,reader,state,0.003994708007667214,0.0,,,,,
+h1-e0141,reader,state,0.004221999988658354,0.0,,,,,
+h1-e0142,reader,state,0.0045921670098323375,0.0,,,,,
+h1-e0143,reader,state,0.00450141602777876,0.0,,,,,
+h1-e0144,reader,state,0.005333707988029346,0.0,,,,,
+h1-e0145,reader,output,0.0049342499987687916,0.0,,,,,
+h1-e0146,reader,output,0.00456366699654609,0.0,,,,,
+h1-e0147,reader,output,0.005026791972341016,0.0,,,,,
+h1-e0148,reader,output,0.004739541007438675,0.0,,,,,
+h1-e0149,reader,output,0.0048346249968744814,0.0,,,,,
+h1-e0150,reader,output,0.004386832995805889,0.0,,,,,
+h1-e0151,reader,output,0.004630041978089139,0.0,,,,,
+h1-e0152,reader,output,0.004770083003677428,0.0,,,,,
+h1-e0153,reader,output,0.004729874985059723,0.0,,,,,
+h1-e0154,reader,output,0.004037459002574906,0.0,,,,,
+h1-e0155,reader,output,0.004263417009497061,0.0,,,,,
+h1-e0156,reader,output,0.004276125022443011,0.0,,,,,
+h1-e0157,reader,output,0.004386749991681427,0.0,,,,,
+h1-e0158,reader,output,0.004740375006804243,0.0,,,,,
+h1-e0159,reader,output,0.004112875001737848,0.0,,,,,
+h1-e0160,reader,output,0.0044032500009052455,0.0,,,,,
+h1-e0161,reader,state,0.0042309169948566705,0.0,,,,,
+h1-e0162,reader,state,0.00424120802199468,0.0,,,,,
+h1-e0163,reader,state,0.004560166998999193,0.0,,,,,
+h1-e0164,reader,state,0.004303791007259861,0.0,,,,,
+h1-e0165,reader,state,0.004096084012417123,0.0,,,,,
+h1-e0166,reader,state,0.004093499999726191,0.0,,,,,
+h1-e0167,reader,state,0.004261666996171698,0.0,,,,,
+h1-e0168,reader,state,0.004410250025102869,0.0,,,,,
+h1-e0169,reader,state,0.004407125001307577,0.0,,,,,
+h1-e0170,reader,state,0.004203500022413209,0.0,,,,,
+h1-e0171,reader,state,0.004602250002790242,0.0,,,,,
+h1-e0172,reader,state,0.00456516700796783,0.0,,,,,
+h1-e0173,reader,state,0.004363832995295525,0.0,,,,,
+h1-e0174,reader,state,0.004545834002783522,0.0,,,,,
+h1-e0175,reader,state,0.004771542007802054,0.0,,,,,
+h1-e0176,reader,state,0.004358333011623472,0.0,,,,,
+h1-e0177,reader,state,0.004170041007455438,0.0,,,,,
+h1-e0178,reader,state,0.004001499997684732,0.0,,,,,
+h1-e0179,reader,state,0.004128208995098248,0.0,,,,,
+h1-e0180,reader,state,0.004175249981926754,0.0,,,,,
+h1-e0181,reader,state,0.004434542002854869,0.0,,,,,
+h1-e0182,reader,state,0.004152291978243738,0.0,,,,,
+h1-e0183,reader,state,0.004413499991642311,0.0,,,,,
+h1-e0184,reader,state,0.004495667002629489,0.0,,,,,
+h1-e0185,reader,state,0.004205625009490177,0.0,,,,,
+h1-e0186,reader,state,0.004139041993767023,0.0,,,,,
+h1-e0187,reader,state,0.004111209011171013,0.0,,,,,
+h1-e0188,reader,state,0.004403083003126085,0.0,,,,,
+h1-e0189,reader,state,0.004151125001953915,0.0,,,,,
+h1-e0190,reader,state,0.004481125011807308,0.0,,,,,
+h1-e0191,reader,state,0.004269707977073267,0.0,,,,,
+h1-e0192,reader,state,0.004832707985769957,0.0,,,,,
+h1-e0193,reader,state,0.0043695839995052665,0.0,,,,,
+h1-e0194,reader,state,0.004195000015897676,0.0,,,,,
+h1-e0195,reader,state,0.004069792019436136,0.0,,,,,
+h1-e0196,reader,state,0.004520625021541491,0.0,,,,,
+h1-e0197,reader,state,0.004513334017246962,0.0,,,,,
+h1-e0198,reader,state,0.0038685830077156425,0.0,,,,,
+h1-e0199,reader,state,0.004052750009577721,0.0,,,,,
+h1-e0200,reader,state,0.003891416999977082,0.0,,,,,
+h1-e0201,reader,state,0.004325832996983081,0.0,,,,,
+h1-e0202,reader,state,0.004171416978351772,0.0,,,,,
+h1-e0203,reader,state,0.004062791995238513,0.0,,,,,
+h1-e0204,reader,state,0.004180290998192504,0.0,,,,,
+h1-e0205,reader,state,0.004046416986966506,0.0,,,,,
+h1-e0206,reader,state,0.004235416010487825,0.0,,,,,
+h1-e0207,reader,state,0.003928042016923428,0.0,,,,,
+h1-e0208,reader,state,0.004176207992713898,0.0,,,,,
+h1-e0209,reader,state,0.004395458003273234,0.0,,,,,
+h1-e0210,reader,state,0.004185625002719462,0.0,,,,,
+h1-e0211,reader,state,0.004094542004168034,0.0,,,,,
+h1-e0212,reader,state,0.00395745798596181,0.0,,,,,
+h1-e0213,reader,state,0.004212708008708432,0.0,,,,,
+h1-e0214,reader,state,0.00432195799658075,0.0,,,,,
+h1-e0215,reader,state,0.004514125001151115,0.0,,,,,
+h1-e0216,reader,state,0.0040767920145299286,0.0,,,,,
+h1-e0217,reader,state,0.004211709019728005,0.0,,,,,
+h1-e0218,reader,state,0.005016208975575864,0.0,,,,,
+h1-e0219,reader,state,0.004470832995139062,0.0,,,,,
+h1-e0220,reader,state,0.004149457992753014,0.0,,,,,
+h1-e0221,reader,state,0.0039891670166980475,0.0,,,,,
+h1-e0222,reader,state,0.004076749988598749,0.0,,,,,
+h1-e0223,reader,state,0.0044036250037606806,0.0,,,,,
+h1-e0224,reader,state,0.004284708003979176,0.0,,,,,
+h1-e0225,reader,output,0.00438158298493363,0.0,,,,,
+h1-e0226,reader,output,0.0047037080221343786,0.0,,,,,
+h1-e0227,reader,output,0.004209583014016971,0.0,,,,,
+h1-e0228,reader,output,0.0036517499829642475,0.0,,,,,
+h1-e0229,reader,output,0.004011457989690825,0.0,,,,,
+h1-e0230,reader,output,0.004039749997900799,0.0,,,,,
+h1-e0231,reader,output,0.0042819170048460364,0.0,,,,,
+h1-e0232,reader,output,0.004285332979634404,0.0,,,,,
+h1-e0233,reader,output,0.004183957993518561,0.0,,,,,
+h1-e0234,reader,output,0.004255459003616124,0.0,,,,,
+h1-e0235,reader,output,0.003860041993902996,0.0,,,,,
+h1-e0236,reader,output,0.004310084012104198,0.0,,,,,
+h1-e0237,reader,output,0.004096374992514029,0.0,,,,,
+h1-e0238,reader,output,0.004048375005368143,0.0,,,,,
+h1-e0239,reader,output,0.003767540998524055,0.0,,,,,
+h1-e0240,reader,output,0.004111833986826241,0.0,,,,,

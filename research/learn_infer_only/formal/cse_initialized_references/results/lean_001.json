@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_initialized_k25sfgy7/olean/Compiler/CseInitializedReferences.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references/Compiler/CseInitializedReferences.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references",
+  "exit_code": 1,
+  "source_sha256": "c382dd3127449daad1278b8072f02f5cd01a564c71f2abdfd794b4d70ccec0b4",
+  "source_sha256_after": "c382dd3127449daad1278b8072f02f5cd01a564c71f2abdfd794b4d70ccec0b4",
+  "source_unchanged": true,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references/Compiler/CseInitializedReferences.lean:88:12: error: Invalid `\u27e8...\u27e9` notation: The expected type\n  match k.b with\n  | DWire.cnst c => True\n  | DWire.wire i => i \u2208 List.map DGate.out gs ++ g.out :: available\nis not an inductive type\n\nNote: This notation can only be used when the expected type is an inductive type with a single constructor\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references/Compiler/CseInitializedReferences.lean:88:38: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  d \u2265 0\n  c \u2265 0\n  c - d \u2265 1\n  b \u2265 0\n  b - d \u2264 0\n  a \u2265 0\n  a - b \u2265 0\n  a - c \u2264 -1\n  a - d \u2264 -1\nwhere\n a := \u2191g.out\n b := \u2191lower\n c := \u2191bound\n d := \u2191k.out\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_initialized_references/Compiler/CseInitializedReferences.lean:95:13: error: Application type mismatch: The argument\n  ready_mono (List.map DGate.out (g :: gs) ++ available) (List.map DGate.out gs ++ g.out :: available) k.a hmem hka\nhas type\n  Ready (List.map DGate.out gs ++ g.out :: available) k.a\nbut is expected to have type\n  g.out + 1 \u2264 k.out\nin the application\n  And.intro\n    (ready_mono (List.map DGate.out (g :: gs) ++ available) (List.map DGate.out gs ++ g.out :: available) k.a hmem hka)\n",
+  "stderr": "",
+  "seconds": 10.273977417004062
+}

@@ -1,0 +1,41 @@
+'Minidregg.Selvage.EfficientRootOpening.preimage_of_mem' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.preimage_eq_answerOf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.badCheck_eq_true_iff' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.no_bad_of_check_false' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.retained_of_target' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.preimage_of_good' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.extractedAt_eq_of_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.suppliedOpeningSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.pathLog_length_of_accepted' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.openingLog_length_of_accepted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.supplied_accepts' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.prefix_bad_free' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.extracted_values' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.adapter_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.late_root_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.full_log_is_not_prefix' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.far_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.all_premises_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.response_collision_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

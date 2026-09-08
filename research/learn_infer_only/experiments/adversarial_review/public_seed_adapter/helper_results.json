@@ -1,0 +1,61 @@
+{
+  "actual_SHAKE_public_toy_derivations": 1,
+  "availability_scope": "Ideal independent bits only: one-candidate failure <577/2^128 <2^-118; not a concrete SHAKE guarantee.",
+  "backend_or_native_execution": 0,
+  "cap_counters_checked": 128,
+  "domain_coordinate_counter_cases": 18,
+  "exhaustive_public_byte_inputs": 512,
+  "framing_roundtrips": 7,
+  "group_parameters_checked_as_constants_only": true,
+  "high_bit_histograms": {
+    "2": {
+      "0": 64,
+      "1": 64,
+      "2": 64,
+      "3": 64
+    },
+    "3": {
+      "0": 32,
+      "1": 32,
+      "2": 32,
+      "3": 32,
+      "4": 32,
+      "5": 32,
+      "6": 32,
+      "7": 32
+    }
+  },
+  "key_generation_or_issuance_or_decryption": 0,
+  "ok": true,
+  "private_file_reads": 0,
+  "production_seed_derivations": 0,
+  "production_width_examples": 2,
+  "public_toy_reference": [
+    {
+      "accepted_counter": 1,
+      "raw_words_hex": [
+        "4f"
+      ],
+      "role": "tau",
+      "value": 1
+    },
+    {
+      "accepted_counter": 2,
+      "raw_words_hex": [
+        "13",
+        "43"
+      ],
+      "role": "U",
+      "value": 2
+    }
+  ],
+  "scope": "Pure public byte framing, hash recipe comparison and synthetic sampler edge controls; no cryptographic workload.",
+  "seed_searches": 0,
+  "source_pins_sha256": "be861661892f52e52068d88361fc1519989ae6103a4945a3c6c7e41a8ffc5fac",
+  "synthetic_byte_source_cases": [
+    "zero_tau_and_first_valid_U",
+    "minus_one_U_allowed",
+    "tau_cap_exhaustion_128",
+    "U_cap_exhaustion_128"
+  ]
+}

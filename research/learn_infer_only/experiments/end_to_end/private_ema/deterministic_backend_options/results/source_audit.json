@@ -1,0 +1,550 @@
+{
+  "scope": "source-only audit; no key/ciphertext reads, crypto, library build, binary invocation, or frozen-file mutation",
+  "created_utc": "2026-09-08T07:03:31.948625+00:00",
+  "command": "python3 /Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/deterministic_backend_options/audit_sources.py",
+  "archives": {
+    "tfhe-1.6.3": {
+      "path": "/Users/ember/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3.crate",
+      "sha256": "65191ecd03bb34ac41df98958a8445d5e062de19843cde95ccad8deff2e22194",
+      "matches_frozen_cargo_lock": true
+    },
+    "tfhe-ntt-0.7.1": {
+      "path": "/Users/ember/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1.crate",
+      "sha256": "10650c743ade46b166c698c8349902ed5986784a7db418c51f810bea25f09e3d",
+      "matches_frozen_cargo_lock": true
+    },
+    "tfhe-fft-0.10.1": {
+      "path": "/Users/ember/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1.crate",
+      "sha256": "960a6a2ef1869320837e3d45ab60bbc031c045005eb2578b20fe074a982c2e56",
+      "matches_frozen_cargo_lock": true
+    }
+  },
+  "source_files": [
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/lib.rs",
+      "sha256": "54c543baae6c17b3ea58dce4d32239f274fc533fab564ebc9abdff3d93f43b21",
+      "bytes": 5415,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          75,
+          87
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/ciphertext/mod.rs",
+      "sha256": "d2650d683cc9a23de5e8d2f700180c68e793ae038fc6376522f4f1c6e8e5b48a",
+      "bytes": 1537,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          10,
+          20
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/parameters/params.rs",
+      "sha256": "3ac1db249c48c031b144f1e2300531af228196d089bedad810655922ccbb8d69",
+      "bytes": 3618,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          45,
+          62
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs",
+      "sha256": "645ca26eab47b80d16c3088b1ab776966462d4bf2b3516567559d3b4234141f5",
+      "bytes": 38336,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          558,
+          593
+        ],
+        [
+          710,
+          747
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/bootstrapping.rs",
+      "sha256": "d330528dd580177e21843b1ddb504bd6e2f2eda45f46b780461f4a2fbd66cfd5",
+      "bytes": 21651,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          43,
+          65
+        ],
+        [
+          94,
+          163
+        ],
+        [
+          191,
+          200
+        ],
+        [
+          224,
+          275
+        ],
+        [
+          349,
+          401
+        ],
+        [
+          449,
+          486
+        ],
+        [
+          488,
+          535
+        ],
+        [
+          578,
+          610
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/mod.rs",
+      "sha256": "3d29abdf88906f3a43d9487fb1557ffee4b12bfbc9ecf62213b39595ea73ce18",
+      "bytes": 4311,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          1,
+          15
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/karatsuba_pbs.rs",
+      "sha256": "5fb8f380794e55be9ef3c9fdaeffb039d22eca5b61b789cbbc4b83d2fa3ead76",
+      "bytes": 16471,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          16,
+          210
+        ],
+        [
+          237,
+          310
+        ],
+        [
+          314,
+          415
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/polynomial_algorithms.rs",
+      "sha256": "0ac0f9577bd508ea63cbf57f65d7b97b1ae1b1cc0089082b57b0ede5c3d7a08b",
+      "bytes": 55679,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          306,
+          339
+        ],
+        [
+          1066,
+          1088
+        ],
+        [
+          1106,
+          1206
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/modulus_switch.rs",
+      "sha256": "d82b6f2fbd49866762817304d80a97ee59cbdee1f77ff88607e1fa8dc7e0b12e",
+      "bytes": 20757,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          1,
+          24
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/common.rs",
+      "sha256": "85e2789e9e7bb931420dea5e951468b7db35ccfc9b9b28d0fe256fb1b362ab03",
+      "bytes": 8211,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          10,
+          23
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/math/decomposition/decomposer.rs",
+      "sha256": "5aea64df5e3bd75d01e3dcc3ca62bd734f4c0b376850a1123900ac5ca59de7f2",
+      "bytes": 29382,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          86,
+          96
+        ],
+        [
+          156,
+          185
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/decomposition.rs",
+      "sha256": "cf36ac05506b5df91031d02f9653d09d60ab42c833951623d5350ea13866c97c",
+      "bytes": 2896,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          1,
+          100
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_bootstrap_key_conversion.rs",
+      "sha256": "c861ec7b23782772516f178da3541065f787ff5f214b9cef14ce954814fa6e37",
+      "bytes": 15708,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          290,
+          365
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/ntt64_pbs.rs",
+      "sha256": "0fb1ba7e0f6012ef6495c76f0cb282b37f4687549d2ab8b890800b311bb0dea7",
+      "bytes": 29482,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          439,
+          550
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/ntt64_bnf_pbs.rs",
+      "sha256": "3af0afc7c03b1f253e5c155e746f58154916841ce095a43f3c64b2d72b3b0142",
+      "bytes": 30568,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          31,
+          44
+        ],
+        [
+          86,
+          103
+        ],
+        [
+          428,
+          537
+        ],
+        [
+          559,
+          582
+        ],
+        [
+          628,
+          672
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/math/ntt/ntt64.rs",
+      "sha256": "42fd2f6d816f858815e723d1d9655330691a686d9ac09e566d5afe1e50211536",
+      "bytes": 8078,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          34,
+          54
+        ],
+        [
+          112,
+          244
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/test/lwe_programmable_bootstrapping.rs",
+      "sha256": "8a846118fb87f1680c7c423f00255c428ae0033fde73c981cec38073f72911de",
+      "bytes": 41594,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          710,
+          730
+        ],
+        [
+          1004,
+          1016
+        ],
+        [
+          1158,
+          1173
+        ],
+        [
+          1248,
+          1253
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs",
+      "sha256": "3157e01727300ac29dbd516ff9d01905e3de0da8b98b77eb4293439c6c5f9bcf",
+      "bytes": 25896,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          161,
+          197
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/README.md",
+      "sha256": "853830192d5324a248a23cf8d94ab05ef9553520fe0b34aa90103cdba441d2b5",
+      "bytes": 2362,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          1,
+          25
+        ],
+        [
+          54,
+          61
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/src/lib.rs",
+      "sha256": "056b21d39e1213b1eb4f29d00afd717f6847849ab7b285005b1f1f156ccd1bc9",
+      "bytes": 34357,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          447,
+          458
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/src/native32.rs",
+      "sha256": "24ae7664aa1ebecb363ebc0b74174cd3a9b17246ac11617c7b66edd259cd91e1",
+      "bytes": 18780,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          6,
+          18
+        ],
+        [
+          334,
+          431
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/src/prime32.rs",
+      "sha256": "437dfe9cf29462618aa5d9b16f7fe27259b7430687e38b576c7be12238998943",
+      "bytes": 63547,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          660,
+          685
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-ntt-0.7.1/src/prime64.rs",
+      "sha256": "8609010f2606545250d63b9c9f8b74fee65e1d6d0eb1b2681872a691a59d2d75",
+      "bytes": 69891,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          715,
+          724
+        ],
+        [
+          761,
+          812
+        ],
+        [
+          883,
+          977
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/fft_simd.rs",
+      "sha256": "917bae1b93c822281c7bae7b6e4800acb24182cff64e6cd419ea08c6264fba08",
+      "bytes": 8528,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          219,
+          315
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/unordered.rs",
+      "sha256": "06443ae63ac2d0df68c317a6eb2e45ad4cda410b864c4d85ff9d3666d523c021",
+      "bytes": 278033,
+      "archive_bytes_match": true,
+      "ranges": [
+        [
+          295,
+          347
+        ],
+        [
+          654,
+          682
+        ]
+      ]
+    }
+  ],
+  "existing_four_source_pins_match": true,
+  "public_source_pins_before_and_after_equal": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/Cargo.lock",
+      "sha256": "37e0e0a6a0570f06663565eb892bed9943868590943c1197375ad471dae58321"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/build_pins.json",
+      "sha256": "c6a119d437990fb51983755de350507461700a7a971d7385d9b00b1b4b299230"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/Cargo.toml",
+      "sha256": "796e049026014b1b01e97ca7456ac83a9179d25b45a777072d0fcce710657740"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/SOURCE_AUDIT.md",
+      "sha256": "315a86217678205bc1dc8f380801c51719dd4daaca75248c185738196e125979"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/CONTRACT.md",
+      "sha256": "36d444f76a3e36b43a2047d502090f00cbeeba4adc0376b842ed73730ca4d7e3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/lib.rs",
+      "sha256": "3c84bbb603e64b5be83a19732ca4783919b49da8016860c8f09ed3dc8eb3b3c0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/main.rs",
+      "sha256": "3f30f131c68d2a9199eef3c91784baee6cddefa4f5aaf3097b3db96a94b6b7dc"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/ciphertext.rs",
+      "sha256": "17b46813443f47feab647cd269a3789560a9ae589ec2fd1f9b5cc7790629e9f1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/plan_observation.rs",
+      "sha256": "23687aae6bc288ceec93fad5556791695b8d5603081d1b78255d08adf006fcdf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/setup.rs",
+      "sha256": "34380136654f11a69b71d9a53f3fa64f6d382f28f671c9b0df90cfb184990f98"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/REPORT.md",
+      "sha256": "958a279eaf41fc9e9831986ec2361a80b9d7da5c3ce5fb92263f2d27cb85c486"
+    }
+  ],
+  "searches": [
+    {
+      "command": [
+        "rg",
+        "-n",
+        "Ntt|ntt|karatsuba|deterministic",
+        "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean"
+      ],
+      "exit": 0,
+      "stdout": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/tests.rs:8:    let deterministic_seed = Seed(0);\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/tests.rs:14:    let mut seeder = DeterministicSeeder::<DefaultRandomGenerator>::new(deterministic_seed);\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/tests.rs:44:        let mut seeder = DeterministicSeeder::<DefaultRandomGenerator>::new(deterministic_seed);\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:371:    /// // WARNING: Using a deterministic seed is not recommended\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:374:    /// let deterministic_seed = Seed(0);\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:376:    /// let mut seeder = DeterministicSeeder::<DefaultRandomGenerator>::new(deterministic_seed);\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:396:        let mut deterministic_seeder =\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:402:            secret_generator: SecretRandomGenerator::<_>::new(deterministic_seeder.seed()),\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:404:                deterministic_seeder.seed(),\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:405:                &mut deterministic_seeder,\n/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:407:            bootstrapper: Bootstrapper::new(&mut deterministic_seeder),\n",
+      "stderr": "",
+      "postfilter": null
+    },
+    {
+      "command": [
+        "rg",
+        "-n",
+        "-i",
+        "deterministic|reproducib|cross.platform|cross.arch",
+        "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/README.md",
+        "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "",
+      "postfilter": null
+    },
+    {
+      "command": [
+        "rg",
+        "--files",
+        "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "postfilter": "path contains /benches/"
+    },
+    {
+      "command": [
+        "rg",
+        "-n",
+        "native32",
+        "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "",
+      "postfilter": null
+    }
+  ],
+  "derivation": {
+    "scope": "Pure integer arithmetic from source parameter and loop dimensions; no library execution or timing.",
+    "parameters_source": "tfhe-1.6.3/src/boolean/parameters/params.rs:46",
+    "n": 837,
+    "k": 2,
+    "levels": 2,
+    "N": 1024,
+    "standard_u32_bsk_coefficients": 15427584,
+    "standard_u32_bsk_coefficient_bytes_excluding_ksk_metadata": 61710336,
+    "worst_case_nonzero_modswitched_mask_count": 837,
+    "polynomial_products_per_pbs_upper_bound": 15066,
+    "karatsuba_schoolbook_leaves_per_product": 81,
+    "u32_schoolbook_multiply_accumulates_per_product": 331776,
+    "u32_schoolbook_multiply_accumulates_per_pbs_upper_bound": 4998537216,
+    "crt_primes": [
+      1062862849,
+      1063059457,
+      1064697857
+    ],
+    "crt_product": 1202987632058935920173056001,
+    "single_unsigned_u32_negacyclic_product_coefficient_absolute_bound": 18889465922682487833600,
+    "single_product_bound_strictly_below_half_crt_product": true,
+    "six_product_sum_bound_strictly_below_half_crt_product": true
+  }
+}

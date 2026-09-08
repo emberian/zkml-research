@@ -1,0 +1,18 @@
+{
+  "scope": "Targeted primary-source discovery; no absence survey",
+  "web_search_queries": [
+    "site.eprint.iacr.org/2023/1071 BCS extractability Merkle random oracle",
+    "site.github.com/Verified-zkEVM/VCV-io Merkle multi extractability",
+    "Merkle commitments extractability collision resistance interactive oracle proof random oracle straightline extraction"
+  ],
+  "web_queries_used": 3,
+  "scry_sql_used": 0,
+  "pdf_downloads": 0,
+  "primary_sources_read": [
+    "local mirror 2016/116, construction and Lemma 3.2 pp.14-15",
+    "local mirror 2023/1071, section 3.4 and Theorem 3.15 pp.24-25",
+    "local VCVio ffd0ca198fe6e640c0dd7f0f9c599943caacbf64, actual checkpoint game/extractor/theorem",
+    "local p3 82cfad73cd734d37a0d51953094f970c531817ec, mmcs.verify_batch"
+  ],
+  "not_followed": "Other search hits were not used to assert construction/game properties."
+}

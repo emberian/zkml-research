@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "scope": "Final hardened helper source, synthetic checks and read-only verification of actual observed export; no Lean build or actual consumption",
+  "helper_sha256": "91f31c3b80f3897d394832a79e43959e2c60c1b1206ae894a3656b25de02ac07",
+  "artifacts": {
+    "NEXT.md": "56cd3b0043e2536b824f1a68b06ff13160add7ff7eda7edcc647b3a3a096ce41",
+    "REPORT.md": "d55254208cf9180fef05aadd1409c3285d1187931e1a007da85f94d222ebedb9",
+    "STATUS.md": "7aa0df1a9c29479b5d7bffe83e29c1b78c33837d6a7a46694dd9e44a81787de9",
+    "actual_header_audit.json": "bd17aa88fbe7f07f039f153c46d1b996d78f959322d5d2cf5aed3d7b341dfadd",
+    "export_observation.json": "36645059bff0806c68daae822b665f09abbfae8cfc6d54b1038a24a5e3f09998",
+    "hardening.diff": "a4881f71b6f75fed15a470c9192baee8a7840f4f60aa0ac611694d94e28f295f",
+    "results.json": "aa36d3f111b65f2f164080efa818eca3103680f6cc0adf19308eb6a6fa74ef05",
+    "run_checks.py": "d21e622edf2061f7471ef5fbec883dbc1dc1a6e5ec617c767c288b8c1dd8def1",
+    "source_pins.json": "e231506b96437f32da69458e04a5d15b1ddf8ce416bea3bd30f9e129cd206bce",
+    "stderr.txt": "a1fdbb0e090589badc924c008c56b859f3dfe273a4cb12c4865dbb7da39ae1c3",
+    "stdout.txt": "aa36d3f111b65f2f164080efa818eca3103680f6cc0adf19308eb6a6fa74ef05"
+  }
+}

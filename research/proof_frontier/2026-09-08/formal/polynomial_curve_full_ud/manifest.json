@@ -1,0 +1,370 @@
+{
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "checkout": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+  "modules": [
+    {
+      "path": "Theory/PolynomialCurve.lean",
+      "sha256": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15",
+      "lines": 41,
+      "theorem_count": 3,
+      "pin_count": 3,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Theory/PolynomialCurve.olean",
+          "Theory/PolynomialCurve.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15",
+        "source_unchanged": true,
+        "elapsed_s": 24.562764883041382,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-01.log"
+      }
+    },
+    {
+      "path": "Theory/CurveRSInterpolationMatrix.lean",
+      "sha256": "1aa837d415fc37d43f64eff620ac4b4a4817677303b1b992caf20f27ba3242fa",
+      "lines": 90,
+      "theorem_count": 4,
+      "pin_count": 4,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Theory/CurveRSInterpolationMatrix.olean",
+          "Theory/CurveRSInterpolationMatrix.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "1aa837d415fc37d43f64eff620ac4b4a4817677303b1b992caf20f27ba3242fa",
+        "source_unchanged": true,
+        "elapsed_s": 11.285316944122314,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-02.log"
+      }
+    },
+    {
+      "path": "Theory/CurveRSInterpolationKernel.lean",
+      "sha256": "bfd73f5a0c6f6eab6bcb2fc45dc2b961d6a5d01d176e42a5ddd655aae2dbcc2c",
+      "lines": 346,
+      "theorem_count": 2,
+      "pin_count": 2,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Theory/CurveRSInterpolationKernel.olean",
+          "Theory/CurveRSInterpolationKernel.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "bfd73f5a0c6f6eab6bcb2fc45dc2b961d6a5d01d176e42a5ddd655aae2dbcc2c",
+        "source_unchanged": true,
+        "elapsed_s": 13.63739275932312,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-03.log"
+      }
+    },
+    {
+      "path": "Selvage/CurveFullUDStatement.lean",
+      "sha256": "870c0238d9d4a0ef5e7d4dd8a2f338add72c126e3281c7a3ec258f4dc95831c6",
+      "lines": 84,
+      "theorem_count": 3,
+      "pin_count": 3,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDStatement.olean",
+          "Selvage/CurveFullUDStatement.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "870c0238d9d4a0ef5e7d4dd8a2f338add72c126e3281c7a3ec258f4dc95831c6",
+        "source_unchanged": true,
+        "elapsed_s": 7.75705099105835,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-04.log"
+      }
+    },
+    {
+      "path": "Selvage/CurveFullUDInterpolation.lean",
+      "sha256": "b5219a6f0804828366ee2551b0fd66a40310ac3a29095aff79572703631ec21e",
+      "lines": 69,
+      "theorem_count": 4,
+      "pin_count": 4,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDInterpolation.olean",
+          "Selvage/CurveFullUDInterpolation.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "b5219a6f0804828366ee2551b0fd66a40310ac3a29095aff79572703631ec21e",
+        "source_unchanged": true,
+        "elapsed_s": 14.091995000839233,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-05.log"
+      }
+    },
+    {
+      "path": "Selvage/CurveFullUDBivariate.lean",
+      "sha256": "8f4d163e46eac8e571769613d726a92d7240a0e32bc750b6dfa427948297b66c",
+      "lines": 205,
+      "theorem_count": 1,
+      "pin_count": 1,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDBivariate.olean",
+          "Selvage/CurveFullUDBivariate.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "8f4d163e46eac8e571769613d726a92d7240a0e32bc750b6dfa427948297b66c",
+        "source_unchanged": true,
+        "elapsed_s": 11.898793935775757,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-06.log"
+      }
+    },
+    {
+      "path": "Selvage/CurveFullUDCore.lean",
+      "sha256": "fa041cb91bcb807abc2cfd450dbc68182637727bf2ecd50e665498d2f89dcb14",
+      "lines": 301,
+      "theorem_count": 2,
+      "pin_count": 2,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDCore.olean",
+          "Selvage/CurveFullUDCore.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "fa041cb91bcb807abc2cfd450dbc68182637727bf2ecd50e665498d2f89dcb14",
+        "source_unchanged": true,
+        "elapsed_s": 12.854462146759033,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-07.log"
+      }
+    },
+    {
+      "path": "Selvage/CurveProximityGapFullUD.lean",
+      "sha256": "f3bf7a31bbd0bd4eee896c1f122e54a9b62e5e895f43d57263e6a02a555484e5",
+      "lines": 134,
+      "theorem_count": 5,
+      "pin_count": 5,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveProximityGapFullUD.olean",
+          "Selvage/CurveProximityGapFullUD.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "f3bf7a31bbd0bd4eee896c1f122e54a9b62e5e895f43d57263e6a02a555484e5",
+        "source_unchanged": true,
+        "elapsed_s": 10.170692920684814,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-08.log"
+      }
+    },
+    {
+      "path": "Selvage/CurveFriChallenge.lean",
+      "sha256": "9de6c75ee6428629e178e24d91dfcebe97e4e7169cf6e5f827ead597f0f59547",
+      "lines": 111,
+      "theorem_count": 6,
+      "pin_count": 6,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFriChallenge.olean",
+          "Selvage/CurveFriChallenge.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "9de6c75ee6428629e178e24d91dfcebe97e4e7169cf6e5f827ead597f0f59547",
+        "source_unchanged": true,
+        "elapsed_s": 6.470205068588257,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-09.log"
+      }
+    },
+    {
+      "path": "Selvage/CurveFullUDTeeth.lean",
+      "sha256": "d0c20fa2c1785478155424fe488193196f1dfb16809dde48c59bed44111bcc96",
+      "lines": 198,
+      "theorem_count": 12,
+      "pin_count": 12,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveFullUDTeeth.olean",
+          "Selvage/CurveFullUDTeeth.lean"
+        ],
+        "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+        "exit_code": 0,
+        "source_sha256": "d0c20fa2c1785478155424fe488193196f1dfb16809dde48c59bed44111bcc96",
+        "source_unchanged": true,
+        "elapsed_s": 8.361940860748291,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/freeze-10.log"
+      }
+    }
+  ],
+  "owned_modules": 10,
+  "owned_lines": 1579,
+  "owned_theorems": 42,
+  "owned_pins": 42,
+  "patch_sha256": "3fa34548e2f1ec0f286ba04594374f3fc5aa636fda5dd5f7583bdeeca6dd7d0f",
+  "dependencies": [
+    {
+      "path": "Theory/RSInterpolationMatrix.lean",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Theory/RSInterpolationKernel.lean",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDStatement.lean",
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDTeeth.lean",
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDInterpolation.lean",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDBivariate.lean",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/FullUDCore.lean",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Selvage/ProximityGapFullUD.lean",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Theory/PolynomialMatrixKernel.lean",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+      "selected_package": "polynomial_curve_kernel",
+      "replaces_source_sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd"
+    },
+    {
+      "path": "Theory/PolynomialBivariate.lean",
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Theory/PolynomialGluingStatement.lean",
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+      "selected_package": "frozen full_ud closure"
+    },
+    {
+      "path": "Theory/PolynomialGluing.lean",
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+      "selected_package": "frozen full_ud closure"
+    }
+  ],
+  "frozen_predecessor_byte_checks": [
+    {
+      "path": "Theory/RSInterpolationMatrix.lean",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f"
+    },
+    {
+      "path": "Theory/RSInterpolationKernel.lean",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329"
+    },
+    {
+      "path": "Selvage/FullUDStatement.lean",
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42"
+    },
+    {
+      "path": "Selvage/FullUDTeeth.lean",
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7"
+    },
+    {
+      "path": "Selvage/FullUDInterpolation.lean",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8"
+    },
+    {
+      "path": "Selvage/FullUDBivariate.lean",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c"
+    },
+    {
+      "path": "Selvage/FullUDCore.lean",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3"
+    },
+    {
+      "path": "Selvage/ProximityGapFullUD.lean",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf"
+    },
+    {
+      "path": "Selvage/FullUDFriConsumer.lean",
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b"
+    },
+    {
+      "path": "Selvage/FullUDWitnesses.lean",
+      "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf"
+    },
+    {
+      "path": "Theory/PolynomialBivariate.lean",
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0"
+    },
+    {
+      "path": "Theory/PolynomialGluingStatement.lean",
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0"
+    },
+    {
+      "path": "Theory/PolynomialGluing.lean",
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41"
+    }
+  ],
+  "selected_kernel_source_sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+  "root_census_script_sha256": "f60454abf284ccf4de39bfcda9bdddef1564b3d42528c4d640923ea2e81a8bef",
+  "exact_guarded_checks_complete": true,
+  "all_pins_standard_only": true,
+  "umbrella_imports_proposed": [
+    "Selvage.CurveFriChallenge",
+    "Selvage.CurveFullUDTeeth"
+  ],
+  "source_evidence_sha256": "85378415b8f7bf43ea55430ffb846f4289bf6d56f7b5710793b4cd4e9fc10829",
+  "web_queries": 0,
+  "scry_sql_queries": 0,
+  "combined_umbrella_build": "not run by this lane; root owns integration"
+}

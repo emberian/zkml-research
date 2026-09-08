@@ -1,0 +1,78 @@
+{
+  "scope": "Frozen bounded sampler specification and deterministic probability/resource certificate; no sampler implementation or random outputs",
+  "status": "PASS",
+  "frozen_spec_before_implementation_sha256": "2fef91992b092f93f6023a02b0072008a2f4f46e5601ea8fd71eb8d0972e1576",
+  "public_input_files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/GRID.json",
+      "sha256": "de246339b8321791cba308e01ef0f929a42d725e3bbdd7a8b533622a7011031a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/REBUILT.json",
+      "sha256": "b945fd60fa17bbd002f229167b915b10b23733be7db65950fe6a119dbcbe8574"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/MANIFEST.json",
+      "sha256": "2f90bee88437465514066d879eddbc3918ab1af6d0c8d6592e63b0750adeef53"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/MODEL_AND_GRID.md",
+      "sha256": "a3b0e6db5cc15d52fb1eee75ae580045391d7d73dd1ee6ac36797486d7eef7c8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/MANIFEST.json",
+      "sha256": "f3a8047121fb86d310daec4488bcbd1a311a7d269486e15f1e392a24d0c75359"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/AUDIT.md",
+      "sha256": "53eeea3fc4e11cd03bcc6229ae47b42ddfe98c274acb4af90145eeb085a9fe57"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/CANDIDATE.md",
+      "sha256": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/SMUDGED_FIXED_COORDINATE.md",
+      "sha256": "a7f98b9f17b0e9b37537ca763697f7a9235df498364df4e0dd774f293d9b9327"
+    }
+  ],
+  "primary_web_sources": [
+    {
+      "url": "https://arxiv.org/html/1303.6257",
+      "seen": "Karney 1303.6257v2, section4 AlgorithmD and rational standard-deviation condition; not a frozen strict-cap implementation"
+    },
+    {
+      "url": "https://falcon-sign.info/impl/sign.c.html",
+      "seen": "Reference source comments1090-1092 (1.8205,72-bit half-Gaussian),1348-1353 (standard-deviation range1..2), BerExp finite-precision source; no runtime"
+    }
+  ],
+  "artifacts": {
+    "SPEC.md": "2fef91992b092f93f6023a02b0072008a2f4f46e5601ea8fd71eb8d0972e1576",
+    "AUDIT.md": "7528719aab9390c1876c6e4b5361302e096a7f94f889a555173e033206da7bf0",
+    "STATUS.md": "98c9cc8f63711909d697035c46f53a2db101b3fc13660d3887b8071bb8e6f5ad",
+    "NEXT.md": "fd6b0805e06258017e4195475b9b3c54a710bb33d5b403ab96ad4bebc6749323",
+    "check_bounds.py": "2b12ee13ec27c08becde25afeed452918c9165b0fcccc5120da75501144e5b03",
+    "RESULTS.json": "659cd143775f02ada72f9bc6371ce88aa5e0a8e8129e394e3f1fa6212b620bb5",
+    "SOURCES.json": "e4fc8a09c462505ae9a2baecda5c494b1cdecea8795d907d178a9c4ae4301afe",
+    "seal.py": "8ea2b0b5723629000b977639e0fa769301eb2bc5492a08241e638eb7c28718ac"
+  },
+  "meter": {
+    "web_search_queries": 2,
+    "web_page_open_calls": 3,
+    "distinct_opened_pages": 2,
+    "in_page_find_calls": 2,
+    "scry_sql_calls": 0,
+    "scry_schema_calls": 0,
+    "pdf_downloads": 0
+  },
+  "execution": {
+    "deterministic_probability_arithmetic_helper": "PASS",
+    "sampler_implementation": false,
+    "random_outputs": 0,
+    "keygen": 0,
+    "encryption": 0,
+    "estimator": 0,
+    "lattice_attack": 0
+  },
+  "review_status": "Assigned independent reviewer reports no correction needed; awaiting sealed final report"
+}

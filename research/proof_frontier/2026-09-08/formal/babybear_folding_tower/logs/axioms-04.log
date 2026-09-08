@@ -1,0 +1,30 @@
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.initial_farness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_fold_equation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_queries_accept' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.consumer_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.query_one_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_probability_positive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

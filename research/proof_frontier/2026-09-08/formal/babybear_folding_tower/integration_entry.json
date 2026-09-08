@@ -1,0 +1,12 @@
+{
+  "name": "babybear_folding_tower",
+  "root": "../proof_frontier/2026-09-08/formal/babybear_folding_tower",
+  "patch": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/babybear-folding-tower.patch",
+  "expected_pins": 48,
+  "source_files": {
+    "Selvage/BabyBearTwoAdic.lean": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearTwoAdic.lean",
+    "Selvage/PowerTwoRootFolding.lean": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/PowerTwoRootFolding.lean",
+    "Selvage/BabyBearFoldingTower.lean": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingTower.lean",
+    "Selvage/BabyBearFoldingWitnesses.lean": "../proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingWitnesses.lean"
+  }
+}

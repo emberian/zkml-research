@@ -1,0 +1,30 @@
+{
+  "status": "sealed uncompiled draft",
+  "files": [
+    {
+      "path": "NEXT.md",
+      "bytes": 811,
+      "sha256": "3284cf14d1ea174ad492c2a9b53230621731833a34289abfd8a8061339b2b6b1"
+    },
+    {
+      "path": "PROTOCOL_DRAFT.md",
+      "bytes": 2351,
+      "sha256": "286dba426579c0f644ccce2e56c7eff09338f552bbf12ec748e29599649a84d9"
+    },
+    {
+      "path": "STATUS.md",
+      "bytes": 1856,
+      "sha256": "290925500cff1945b48dabe14cf5ee1c73d53c10e85a868784b31b15a59b73c9"
+    },
+    {
+      "path": "results/resume_audit.json",
+      "bytes": 740,
+      "sha256": "a682c4d954e069ee9c2c6450f421f5c2d9644fe2d2ad2ffa7c8de82017b00c92"
+    },
+    {
+      "path": "results/source_pins.json",
+      "bytes": 2607,
+      "sha256": "5ae1c92d0596e1187512bcde44104a9d9f0fd2ae1ecac8f7753ddb7cf3471785"
+    }
+  ]
+}

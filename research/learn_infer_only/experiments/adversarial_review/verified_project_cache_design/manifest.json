@@ -1,0 +1,28 @@
+{
+  "created_utc": "2026-09-08T06:58:06.981986+00:00",
+  "file_count": 5,
+  "files": {
+    "REPORT.md": {
+      "bytes": 12754,
+      "sha256": "32d1b0f65c56286c98789fb16a28feda3a0142961a211d05187a894c7f6837bb"
+    },
+    "cache_plan.py": {
+      "bytes": 11328,
+      "sha256": "39d8f7251eefb854cfed6557b698d66e7978ab6ac52c32c438c832f98e43ab04"
+    },
+    "run018_schema.json": {
+      "bytes": 6296,
+      "sha256": "d08fe8a1479822be098c880c5ced09b3e35bcb85318ebdcaf90dca09e9e8ecd5"
+    },
+    "self_check.json": {
+      "bytes": 467,
+      "sha256": "ad735d06ff874d1f233f653232d4abd06071039833f5ea54fae223fb9a8e1e8b"
+    },
+    "source_reads.json": {
+      "bytes": 2989,
+      "sha256": "caec66047fc4245aa7da6ad844c11947e1520d4701d50f5a781d4482dabc1cd6"
+    }
+  },
+  "schema": "verified-project-cache-design-manifest-v1",
+  "scope": "Read-only design and conditional metadata planner; no Lean/build/model/crypto, export or cache installation. Subject run018 observed before final report; not certified complete here."
+}

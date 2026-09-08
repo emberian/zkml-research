@@ -1,0 +1,17 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    ".lake/build/lib/lean/Theory/BitReverseFriTransport.olean",
+    "Theory/BitReverseFriTransport.lean"
+  ],
+  "cwd": "/tmp/minidregg-p3-folding-transport-20260908",
+  "exit_code": 1,
+  "seconds": 10.69337937500677,
+  "source_sha256": "b7ed7c637b018a6e778d3ac5e42f67c0c0a5333cdae69806b08a348cc8ecfcee",
+  "source_sha256_after": "b7ed7c637b018a6e778d3ac5e42f67c0c0a5333cdae69806b08a348cc8ecfcee",
+  "stdout": "Theory/BitReverseFriTransport.lean:26:2: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  d \u2265 0\n  c \u2265 0\n  c - d \u2265 1\nwhere\n c := \u2191b\n d := \u2191i\ncase a\na b : \u2115\nx : BitVec (b + a)\ni : \u2115\nhi : i < b\n\u22a2 x.getLsbD (a + (b - 1 - i)) = (decide (i < b + a) && x.getLsbD (b + a - 1 - i))\ncase a\na b : \u2115\nx : BitVec (b + a)\ni : \u2115\nhi : i < b\n\u22a2 x.getLsbD (a + (b - 1 - i)) = (decide (i < b + a) && x.getLsbD (b + a - 1 - i))\n",
+  "stderr": ""
+}

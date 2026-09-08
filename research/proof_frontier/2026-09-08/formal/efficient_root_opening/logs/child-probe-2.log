@@ -1,0 +1,19 @@
+Selvage/EfficientRootOpening.lean:359:31: error: Tactic `subst` failed: invalid equality proof, it is not of the form (x = t) or (t = x)
+  e = (Query.node 10 11, 2011) ∨ e ∈ []
+
+case refine_2.inr.inr
+e : Query (ZMod 5) ℕ × ℕ
+hr : e.2 = 2011
+h✝ : e = (Query.node 10 11, 2011) ∨ e ∈ []
+⊢ e ∈ [(Query.node 10 11, 2011)]
+Selvage/EfficientRootOpening.lean:358:29: warning: This simp argument is unused:
+  List.mem_singleton
+
+Hint: Omit it from the simp argument list.
+  simp only [List.mem_cons,̵L̵i̵s̵t̵.̵m̵e̵m̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Minidregg.Selvage.EfficientRootOpening.Witnesses.child_target_falsifier' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

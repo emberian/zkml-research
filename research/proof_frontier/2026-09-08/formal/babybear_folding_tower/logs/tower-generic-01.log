@@ -1,0 +1,31 @@
+Selvage/PowerTwoRootFolding.lean:47:17: warning: This simp argument is unused:
+  PowerTwoFriLevels
+
+Hint: Omit it from the simp argument list.
+  simp only [P̵o̵w̵e̵r̵T̵w̵o̵F̵r̵i̵L̵e̵v̵e̵l̵s̵,̵ ̵hz, pow_zero] at hi hj
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/PowerTwoRootFolding.lean:141:40: error: unsolved goals
+F : Type u_1
+inst✝ : Field F
+ell : ℕ
+g : F
+hg : IsPrimitiveRoot g (2 ^ ell)
+htwo : 2 ≠ 0
+n : ℕ
+hn : n < ell
+w : PowerTwoFriLevels ell n → F
+a : F
+k : PowerTwoFriLevels ell (n + 1)
+⊢ (w ⟨↑k, ⋯⟩ + w (negativeIndex ell n ⟨↑k, ⋯⟩)) / 2 +
+      a *
+        ((w ⟨↑k, ⋯⟩ - w (negativeIndex ell n ⟨↑k, ⋯⟩)) /
+          (2 * { toFun := fun i => levelRoot g n ^ ↑i, inj' := ⋯ } ⟨↑k, ⋯⟩)) =
+    (w ⟨↑k, ⋯⟩ + w (pairedIndex n hn k)) / 2 + a * ((w ⟨↑k, ⋯⟩ - w (pairedIndex n hn k)) / (2 * levelRoot g n ^ ↑k))
+Selvage/PowerTwoRootFolding.lean:142:44: warning: This simp argument is unused:
+  negative_section
+
+Hint: Omit it from the simp argument list.
+  simp only [fold, foldEven, foldOdd, data, n̵e̵g̵a̵t̵i̵v̵e̵_̵s̵e̵c̵t̵i̵o̵n̵,̵ ̵domain, sectionIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

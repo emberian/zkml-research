@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "manifest_sha256": "3c8943f716651ed9db18176f41d7197a6d919c364dda9b8c30520f42a015439f",
+  "producer_helper_sha256": "86c3c3305864e6c6abaa78e4bc54d548f851de122fc2ec5de2a5bf903e9cf04a",
+  "project_modules": 567,
+  "project_object_and_source_files": 1134,
+  "evidence_files": 588,
+  "cohort_sha256": "f0118789533ab124a0366b078f903a4e944cc682a502c816d18786c5b1058e8a",
+  "current_external_cohort_rescan_performed": false,
+  "historical_attestation_claim": false,
+  "export_command_exit_code": 0,
+  "export_command_seconds": 301.5937797499937,
+  "verification_seconds": 9.657115540991072,
+  "helper_file_sha256_after_verification": "91f31c3b80f3897d394832a79e43959e2c60c1b1206ae894a3656b25de02ac07",
+  "verification_body_unchanged_across_audited_hardening": true
+}

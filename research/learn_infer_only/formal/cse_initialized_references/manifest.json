@@ -1,0 +1,23 @@
+{
+  "source_sha256": "1e8037c2c4ce35727a804912560b13a89a673682a8ca7405f2d1d4504d884386",
+  "patch_sha256": "39afffcab611adc4a3a292bd3935ea551ae5f22e264660c9d2c0523256c74c6c",
+  "frozen_input_count": 96,
+  "frozen_inputs_unchanged": true,
+  "files": {
+    "Compiler/CseInitializedReferences.lean": "1e8037c2c4ce35727a804912560b13a89a673682a8ca7405f2d1d4504d884386",
+    "README.md": "ae399374353a4c5278de132fabceae6435e1fec7902017f4987bbee88a5de403",
+    "check.py": "368a01d4a7a61b76beb4fbc1b24a0fd671686113940b214475a69cd37a99cfbf",
+    "integration_entry.json": "d04369e4d8fc868b2a8cb6aa28ca8b61c6ebca341b5eeac5fa9c4455e92f15f5",
+    "minidregg-cse-initialized-references.patch": "39afffcab611adc4a3a292bd3935ea551ae5f22e264660c9d2c0523256c74c6c",
+    "package.py": "f1c9a37bc2657532c865aff1e56ceb7b1971d35a71974989d155b49d5a24c4ba",
+    "results/baseline.json": "61a372432739aba6cfa2bcad8f636a14bd028c47752613f65b7b15efaa1e4199",
+    "results/environment.json": "a906f462dd61899ba8ef5d2dc1acd8cfd6aba978d4409cfe06ae5d0e604efd10",
+    "results/lean_001.json": "5b26a77fa8506d3ea0344f731d40c231bec712f6a1e5a5380f0a869efbbd42e6",
+    "results/lean_002.json": "acc6ead801da1ba6b918d1386297053e78c39ce1af4cf3e0b9f0f4cb4cd7512f",
+    "results/lean_003.json": "19b6ca70cbdf84bdbe6ebc9d890b96180d9d2aa1fe697b3c90001cdf0932c0b1",
+    "results/lean_004.json": "f043f579f93e9b456ba7f35de31fdeb697aa300a67d10f60fca26dba028142e9",
+    "results/lean_005.json": "0cc8ee55da90a0b8c227578758636b09beacef4a638fb904b119d69c14bb2cd8",
+    "results/lean_006.json": "ceba811f8783c1c4f14705e92260e98080734d687059269606fdf6271308baa8",
+    "results/verification.json": "500f2dafe1a69f069a6070f163691b43a162bafcd9163eaeaa49a9830c75c39a"
+  }
+}

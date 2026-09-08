@@ -1,0 +1,14 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    ".lake/build/lib/lean/Theory/BitReverseFriTransport.olean",
+    "Theory/BitReverseFriTransport.lean"
+  ],
+  "exit_code": 1,
+  "source_sha256": "21f3e3c38939db20314e4233c1b73c1dc596851c4aceed37dbc8ce846a7c9a29",
+  "stdout": "Theory/BitReverseFriTransport.lean:24:2: error: omega could not prove the goal: possible counterexample c=b d=i, d>=0, c-d>=1\n",
+  "note": "Initial tool-run failure transcribed; subsequent runs retain exact stdout/stderr."
+}

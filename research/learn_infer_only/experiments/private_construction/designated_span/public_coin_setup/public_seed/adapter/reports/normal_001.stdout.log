@@ -1,0 +1,9 @@
+{"stage": "fresh_complete_registry_fixed", "elapsed_ns": 3079100833, "recipients": 16}
+{"stage": "setup_verified", "elapsed_ns": 101461558958, "setup_ns": 101459136291, "context_id": "be14f3e3f83759c33238bf62c7511a6d8df897d2646a877b4acf8ef5b33fbbb5"}
+{"stage": "normal_public_workload", "elapsed_ns": 152581844625, "learns": 8, "infers": 1}
+{"stage": "normal_public_workload", "elapsed_ns": 202930868291, "learns": 16, "infers": 2}
+{"stage": "normal_public_workload", "elapsed_ns": 246626692375, "learns": 24, "infers": 2}
+{"stage": "normal_public_workload", "elapsed_ns": 295973584416, "learns": 32, "infers": 3}
+{"stage": "normal_public_workload", "elapsed_ns": 304918807791, "learns": 33, "infers": 4}
+{"stage": "public_evidence_closed_before_private_drain", "elapsed_ns": 341002693166, "public_phase_ns": 340932174458}
+{"ok": true, "all_match": true, "public_phase_seconds": 340.932174458, "total_seconds": 342.17955325}

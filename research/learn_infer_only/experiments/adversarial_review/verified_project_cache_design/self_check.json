@@ -1,0 +1,18 @@
+{
+  "changed_dependency_plan": {
+    "rebuild": 6,
+    "reuse": 0
+  },
+  "changed_environment_plan": {
+    "rebuild": 6,
+    "reuse": 0
+  },
+  "helper_sha256": "39d8f7251eefb854cfed6557b698d66e7978ab6ac52c32c438c832f98e43ab04",
+  "ok": true,
+  "schema": "cache-planner-metadata-self-check-v1",
+  "scope": "Pure Python dependency-plan fixtures; no actual cache approval, copying, Lean or build execution.",
+  "unchanged_plan": {
+    "rebuild": 4,
+    "reuse": 2
+  }
+}

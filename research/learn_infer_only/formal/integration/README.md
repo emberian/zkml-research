@@ -1,8 +1,8 @@
 # Combined proposal patch
 
-[EXECUTED current proposal, 2026-09-08] **Run017 passes70 modules/915 exact theorem pins**, all four umbrellas, patch application/content and both import boundaries. Use `formal/integration/minidregg-combined-resident-915.patch` (path relative to research/learn_infer_only), SHA256 `00175cda5228163b1626eabf94559ac3d8f406b7635f70dd01976b5301e5c3c6`. The explicit selection is `experiments/integration/modules_overnight_core.json`; the detailed record is `experiments/integration/results/run_017/SUMMARY.md`. Existing dependency artifacts are reused; no companion source is edited.
+[EXECUTED current proposal, 2026-09-08] **Run018 passes72 proposed modules/952 exact theorem pins within a567-module project-source rebuild**, all four umbrellas, patch application/content and both import boundaries. Use `formal/integration/minidregg-combined-resident-952.patch` (path relative to research/learn_infer_only), SHA256 `82e1ac3f54aa0b82e74c464358724a05be206e358bb634b4f49016a196b3dd18`. Selection: `experiments/integration/modules_overnight_sampled.json`; evidence: `experiments/integration/results/run_018/SUMMARY.md`. Only external package/toolchain artifacts were cached; no companion source is edited.
 
-[DERIVED] This joins the signed-word/emitted-schedule/adaptation proofs and the full unique-decoding closure. It does not establish Rust/TFHE refinement, private release or deployed soundness. Two packaging-instrument failures are preserved as run015/run016. The numbered915 snapshot remains immutable when later selections are generated. Earlier current-language paragraphs below are historical checkpoints.
+[DERIVED] This joins the signed-word/emitted-schedule/adaptation and full unique-decoding closure with concrete BabyBear carrier and coherent sampled-query bounds. It does not establish Rust/TFHE refinement, private release or deployed soundness. The numbered915 and952 snapshots remain immutable. Earlier current-language paragraphs below are historical checkpoints.
 
 
 [EXECUTED current proposal, 2026-09-07] Use

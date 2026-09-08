@@ -1,0 +1,6 @@
+'Minidregg.RSInterpolation.curve_det_eq_zero_of_specializations' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.RSInterpolation.curve_bounded_kernel_of_specializations' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

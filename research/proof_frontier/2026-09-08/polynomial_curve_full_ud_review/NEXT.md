@@ -1,0 +1,3 @@
+[OPEN root integration] Select polynomial_curve_kernel source f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91, preserve the frozen affine/PS dependencies, apply the reviewed curve patch, and include the proposed CurveFriChallenge/CurveFullUDTeeth imports in the next joint closure build.
+
+[OPEN future application] A reusable eight-fibre reconstruction/farness lemma and actual input-resolution timing are the next mathematical/runtime bridge; multi-height and coherent-query composition remain separate. Do not transfer the frozen independent-binary3603-query proposal to beta,beta²,beta⁴. No additional review action remains for these frozen bytes.

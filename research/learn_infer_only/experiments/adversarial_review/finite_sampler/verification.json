@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "author_manifest_sha256": "23226a36d44899189716a63bd97378bdf114b8791fa0f80a39ed3f212b1adf4e",
+  "author_artifacts_checked": 8,
+  "author_public_inputs_checked": 8,
+  "independent_threshold_controls": 23,
+  "exhaustive_finite_probability_tapes": 16384,
+  "author_resource_and_count_fields_compared": 28,
+  "pi_endpoints_and_gaussian_ledger_match": true,
+  "independent_uniform_overallowance_dominates_author": true,
+  "independent_check_exit_code": 0,
+  "stdout_equals_results": true,
+  "stderr_empty": true,
+  "random_draws": 0,
+  "cryptographic_executions": 0,
+  "estimator_executions": 0,
+  "author_files_mutated": false
+}

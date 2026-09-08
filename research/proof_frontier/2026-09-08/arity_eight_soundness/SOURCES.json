@@ -1,0 +1,88 @@
+{
+  "sources": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/654.pdf",
+      "sha256": "a66a5d0d43e53b6a1cb83cbe87ee86e9c8f5c65562c85b22fef1396603ffe47f"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1586.pdf",
+      "sha256": "ccacc62cf5529ff95c3cf115cf730b020336f8d95c310c8deb64e3beac30ce61"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/CorrelatedAgreement.lean",
+      "sha256": "1f93c645e77154fdd969855f17d153b9ffb9e2c147f997dbb704dce71876b70e"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/Proximity.lean",
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs",
+      "sha256": "9060c57409d84c42a2454d0b6895960d3e4fcb8fe2f9bb855cf2a18a5fd8f5a9"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs",
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs",
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationMatrix.lean",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationKernel.lean",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDInterpolation.lean",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDBivariate.lean",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDCore.lean",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/ProximityGapFullUD.lean",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf"
+    }
+  ],
+  "web_search_queries": [
+    "\"Proximity Gaps for Reed\u2013Solomon Codes\" \"2025\" \"2026\" Carmon Hab\u00f6ck",
+    "\"2020/654\" \"Theorem 6.1\" curves",
+    "\"2025/2055\" \"curves\""
+  ],
+  "web_direct_opens": [
+    "https://eprint.iacr.org/2020/654",
+    "https://eprint.iacr.org/2024/1586"
+  ],
+  "counts": {
+    "web_search_queries": 3,
+    "web_direct_opens": 2,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "pdf_downloads": 0
+  },
+  "primary_pdf_instrument": "pdftotext -layout (local mirror only)",
+  "execution": {
+    "command": "python3 finite_controls.py > RESULTS.json",
+    "exit_code": 0,
+    "output_sha256": "171e7cf97d78fc26ede9f6af9dc8e9df85ae95161ba14aebee094a1e5e806419"
+  },
+  "scratch_text_extractions": [
+    {
+      "path": "/tmp/arity-eight-whir2024-1586.txt",
+      "sha256": "3dbbdcb1a7f0147a3b11c09bd29d8a14e0e4aa560054215b7f08eac189a6ae33"
+    },
+    {
+      "path": "/tmp/arity-eight-bciks2020-654.txt",
+      "sha256": "3998434b10f69c0eef183ecbc0370ba4ed246fb9f05e74bd55f14648008aa5aa"
+    }
+  ]
+}

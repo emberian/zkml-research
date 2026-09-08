@@ -1,0 +1,533 @@
+{
+  "artifacts": [
+    {
+      "path": "NEXT.md",
+      "sha256": "5a8a6ff92f34031bc7b15d4fd32560e66420bf2757c4a1f0d467d1ed01eb3578"
+    },
+    {
+      "path": "README.md",
+      "sha256": "68fc91a13d843fce11fefc7ae98b5167d226f118a54f0935eafc17717f929a07"
+    },
+    {
+      "path": "RESULTS.json",
+      "sha256": "35e91f69d9be15fde4ff312887726370b18d2b4f603e04ea7893f70d29b56531"
+    },
+    {
+      "path": "SOURCES.json",
+      "sha256": "df6735188186aad61d8de07c3eeb6060a34bcb866f8049e0f2a4c4d38ec1e4e5"
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "22467dfbb4f7f1bc69b0f21c82357dcec52d52adfab899fb5e45527c1e8cc5af"
+    },
+    {
+      "path": "check_transport.py",
+      "sha256": "82a7786661970b45e789160593ba7b3eb61e109d4037c1f7b7a121bada2768d4"
+    },
+    {
+      "path": "formal/MANIFEST.json",
+      "sha256": "86493914e061b885444429e17d1bd3ee745c4f6e186f1a9def5d433ea6981791"
+    },
+    {
+      "path": "formal/README.md",
+      "sha256": "bf2ca24e6a94bf8aa48cd64e97bdb18db4701f9272940f07e54c77de1d528741"
+    },
+    {
+      "path": "formal/check_lean.py",
+      "sha256": "990419b8a8fa7d20e96d65753f4cda4629782917ac866246a9a431774bf00a6d"
+    },
+    {
+      "path": "formal/environment.json",
+      "sha256": "3e91dab8e08c71f8cc0860cd1f4ec6cf919bd13154c7a8f70e91b793c5b629fc"
+    },
+    {
+      "path": "formal/integration_entry.json",
+      "sha256": "8526c26f7f431f89fdaf336d03dc1d9cdba69c1471940b2282756f0be12afc48"
+    },
+    {
+      "path": "formal/logs/lean_001.json",
+      "sha256": "ddb815857f1de32cb54a46f14284d5d6cea67ffc28e63436e836b89b81c6f279"
+    },
+    {
+      "path": "formal/logs/lean_001.lean",
+      "sha256": "21f3e3c38939db20314e4233c1b73c1dc596851c4aceed37dbc8ce846a7c9a29"
+    },
+    {
+      "path": "formal/logs/lean_002.json",
+      "sha256": "2ce856f7cceeaf68609ea2904a641079603a5e0f5c137bf7243be93bec332f01"
+    },
+    {
+      "path": "formal/logs/lean_002.lean",
+      "sha256": "b7ed7c637b018a6e778d3ac5e42f67c0c0a5333cdae69806b08a348cc8ecfcee"
+    },
+    {
+      "path": "formal/logs/lean_003.json",
+      "sha256": "d3242dac227de34a1b85157b0c6035f5456a16f8733f2549a83cc136cdc43f8b"
+    },
+    {
+      "path": "formal/logs/lean_003.lean",
+      "sha256": "f298a824de7bb79deb2c07535fb23920c5ffb20b822774516a57e79a56656a54"
+    },
+    {
+      "path": "formal/logs/lean_004.json",
+      "sha256": "06826c9135881fb469b18700973a40247fdc057c4cd6e700329c0413457ed6f0"
+    },
+    {
+      "path": "formal/logs/lean_004.lean",
+      "sha256": "91fb9ce4cfe34ce4e19f851825fa7560803acc8299c20447bb1b98283cf57014"
+    },
+    {
+      "path": "formal/logs/lean_005.json",
+      "sha256": "7c45bb022d8fa17b327fe414fb08b493c2155c9544327f4ac875ad6b0822d10f"
+    },
+    {
+      "path": "formal/logs/lean_005.lean",
+      "sha256": "32520e35abf386687ed07ddfcaf81418b20af3a5582ca865c3562500e0ad1748"
+    },
+    {
+      "path": "formal/logs/lean_006.json",
+      "sha256": "30f4566fac8af7939e798e8a5732d0d3d248aa61b3c184d135e710b68c7d5d2f"
+    },
+    {
+      "path": "formal/logs/lean_006.lean",
+      "sha256": "b33acd6a93f8b86be0c2d2da76c5e4a9f50648fc5a0541f8c35425d7e9e25718"
+    },
+    {
+      "path": "formal/logs/lean_007.json",
+      "sha256": "cf7d337b31da9dd3a12b1b25216546138c682733ff2ff08b4cbc808fe26c0465"
+    },
+    {
+      "path": "formal/logs/lean_007.lean",
+      "sha256": "49a40f98c2b1eeca5b36c0a75138acc86fa5467368a7318e5b72b2cdec3c00e7"
+    },
+    {
+      "path": "formal/logs/lean_008.json",
+      "sha256": "9dcd13ff155b89d237c9fdd373ddd12fcf32e980943418a6ebc1560631cbc378"
+    },
+    {
+      "path": "formal/logs/lean_008.lean",
+      "sha256": "49a40f98c2b1eeca5b36c0a75138acc86fa5467368a7318e5b72b2cdec3c00e7"
+    },
+    {
+      "path": "formal/logs/lean_009.json",
+      "sha256": "e0e0338d3c12aa6601d29b6efc036bd875a790edbbb0719c4454eb4635d9d83d"
+    },
+    {
+      "path": "formal/logs/lean_009.lean",
+      "sha256": "f546b123f49632cbe3284baa23c3f12943529f7c2b8231e87f7ac71b2c2399cf"
+    },
+    {
+      "path": "formal/logs/selvage_001.json",
+      "sha256": "a28a732df42d172640c8b6497072883cb0a7f4e9ec1c71d21d79c2d5cda77fb6"
+    },
+    {
+      "path": "formal/logs/selvage_001.lean",
+      "sha256": "50829b6b120c66ce15684a46faccaca0c5795bc6e41cd5495b412844d46210ca"
+    },
+    {
+      "path": "formal/logs/selvage_002.json",
+      "sha256": "977b31488e31cd9e224af35d111fc604b0dbcda4a7c7a8e7ffabbaefd2e62462"
+    },
+    {
+      "path": "formal/logs/selvage_002.lean",
+      "sha256": "50829b6b120c66ce15684a46faccaca0c5795bc6e41cd5495b412844d46210ca"
+    },
+    {
+      "path": "formal/logs/selvage_003.json",
+      "sha256": "1d3435406f46dd2907912c3b6e5f4ea468b6ca6d403b080037f7fb578e9fb32e"
+    },
+    {
+      "path": "formal/logs/selvage_003.lean",
+      "sha256": "e67923c0bd57cedf64993209e03fc3589e4e9f36fcabd255da3a3a7f792d507b"
+    },
+    {
+      "path": "formal/logs/selvage_004.json",
+      "sha256": "554ae753a436e855af41db912230a6c66c3de3280ff634d54fc6448731adc026"
+    },
+    {
+      "path": "formal/logs/selvage_004.lean",
+      "sha256": "e67923c0bd57cedf64993209e03fc3589e4e9f36fcabd255da3a3a7f792d507b"
+    },
+    {
+      "path": "formal/logs/selvage_005.json",
+      "sha256": "6223c2aa911f52b046025835a9fe9e67daa7c3d98864eba1b61a8cb04b7b8e35"
+    },
+    {
+      "path": "formal/logs/selvage_005.lean",
+      "sha256": "9cfbb720613e77e3652c7de8ddf7ebac9e39322ad36e49bf7c43ff6b09f3c176"
+    },
+    {
+      "path": "formal/minidregg-p3-query-transport.patch",
+      "sha256": "a853d61feffbe71802b46ddaf086b93a378246116abf429feef5fed870d48bca"
+    },
+    {
+      "path": "formal/package.py",
+      "sha256": "dd4c76a70d72e4840f9c14d10b4e6e92eb332a4c13173eb9c1be136265274b8a"
+    },
+    {
+      "path": "formal/src/Selvage/P3FriQueryTransport.lean",
+      "sha256": "9cfbb720613e77e3652c7de8ddf7ebac9e39322ad36e49bf7c43ff6b09f3c176"
+    },
+    {
+      "path": "formal/src/Theory/BitReverseFriTransport.lean",
+      "sha256": "f546b123f49632cbe3284baa23c3f12943529f7c2b8231e87f7ac71b2c2399cf"
+    },
+    {
+      "path": "formal/verification.json",
+      "sha256": "df9554ce10a1600d81f4a5c64267d73b5e9312f2361d999c113a7c664b465bd8"
+    },
+    {
+      "path": "formal/README.md",
+      "sha256": "bf2ca24e6a94bf8aa48cd64e97bdb18db4701f9272940f07e54c77de1d528741"
+    },
+    {
+      "path": "formal/check_lean.py",
+      "sha256": "990419b8a8fa7d20e96d65753f4cda4629782917ac866246a9a431774bf00a6d"
+    },
+    {
+      "path": "formal/environment.json",
+      "sha256": "3e91dab8e08c71f8cc0860cd1f4ec6cf919bd13154c7a8f70e91b793c5b629fc"
+    },
+    {
+      "path": "formal/integration_entry.json",
+      "sha256": "8526c26f7f431f89fdaf336d03dc1d9cdba69c1471940b2282756f0be12afc48"
+    },
+    {
+      "path": "formal/logs/lean_001.json",
+      "sha256": "ddb815857f1de32cb54a46f14284d5d6cea67ffc28e63436e836b89b81c6f279"
+    },
+    {
+      "path": "formal/logs/lean_001.lean",
+      "sha256": "21f3e3c38939db20314e4233c1b73c1dc596851c4aceed37dbc8ce846a7c9a29"
+    },
+    {
+      "path": "formal/logs/lean_002.json",
+      "sha256": "2ce856f7cceeaf68609ea2904a641079603a5e0f5c137bf7243be93bec332f01"
+    },
+    {
+      "path": "formal/logs/lean_002.lean",
+      "sha256": "b7ed7c637b018a6e778d3ac5e42f67c0c0a5333cdae69806b08a348cc8ecfcee"
+    },
+    {
+      "path": "formal/logs/lean_003.json",
+      "sha256": "d3242dac227de34a1b85157b0c6035f5456a16f8733f2549a83cc136cdc43f8b"
+    },
+    {
+      "path": "formal/logs/lean_003.lean",
+      "sha256": "f298a824de7bb79deb2c07535fb23920c5ffb20b822774516a57e79a56656a54"
+    },
+    {
+      "path": "formal/logs/lean_004.json",
+      "sha256": "06826c9135881fb469b18700973a40247fdc057c4cd6e700329c0413457ed6f0"
+    },
+    {
+      "path": "formal/logs/lean_004.lean",
+      "sha256": "91fb9ce4cfe34ce4e19f851825fa7560803acc8299c20447bb1b98283cf57014"
+    },
+    {
+      "path": "formal/logs/lean_005.json",
+      "sha256": "7c45bb022d8fa17b327fe414fb08b493c2155c9544327f4ac875ad6b0822d10f"
+    },
+    {
+      "path": "formal/logs/lean_005.lean",
+      "sha256": "32520e35abf386687ed07ddfcaf81418b20af3a5582ca865c3562500e0ad1748"
+    },
+    {
+      "path": "formal/logs/lean_006.json",
+      "sha256": "30f4566fac8af7939e798e8a5732d0d3d248aa61b3c184d135e710b68c7d5d2f"
+    },
+    {
+      "path": "formal/logs/lean_006.lean",
+      "sha256": "b33acd6a93f8b86be0c2d2da76c5e4a9f50648fc5a0541f8c35425d7e9e25718"
+    },
+    {
+      "path": "formal/logs/lean_007.json",
+      "sha256": "cf7d337b31da9dd3a12b1b25216546138c682733ff2ff08b4cbc808fe26c0465"
+    },
+    {
+      "path": "formal/logs/lean_007.lean",
+      "sha256": "49a40f98c2b1eeca5b36c0a75138acc86fa5467368a7318e5b72b2cdec3c00e7"
+    },
+    {
+      "path": "formal/logs/lean_008.json",
+      "sha256": "9dcd13ff155b89d237c9fdd373ddd12fcf32e980943418a6ebc1560631cbc378"
+    },
+    {
+      "path": "formal/logs/lean_008.lean",
+      "sha256": "49a40f98c2b1eeca5b36c0a75138acc86fa5467368a7318e5b72b2cdec3c00e7"
+    },
+    {
+      "path": "formal/logs/lean_009.json",
+      "sha256": "e0e0338d3c12aa6601d29b6efc036bd875a790edbbb0719c4454eb4635d9d83d"
+    },
+    {
+      "path": "formal/logs/lean_009.lean",
+      "sha256": "f546b123f49632cbe3284baa23c3f12943529f7c2b8231e87f7ac71b2c2399cf"
+    },
+    {
+      "path": "formal/logs/selvage_001.json",
+      "sha256": "a28a732df42d172640c8b6497072883cb0a7f4e9ec1c71d21d79c2d5cda77fb6"
+    },
+    {
+      "path": "formal/logs/selvage_001.lean",
+      "sha256": "50829b6b120c66ce15684a46faccaca0c5795bc6e41cd5495b412844d46210ca"
+    },
+    {
+      "path": "formal/logs/selvage_002.json",
+      "sha256": "977b31488e31cd9e224af35d111fc604b0dbcda4a7c7a8e7ffabbaefd2e62462"
+    },
+    {
+      "path": "formal/logs/selvage_002.lean",
+      "sha256": "50829b6b120c66ce15684a46faccaca0c5795bc6e41cd5495b412844d46210ca"
+    },
+    {
+      "path": "formal/logs/selvage_003.json",
+      "sha256": "1d3435406f46dd2907912c3b6e5f4ea468b6ca6d403b080037f7fb578e9fb32e"
+    },
+    {
+      "path": "formal/logs/selvage_003.lean",
+      "sha256": "e67923c0bd57cedf64993209e03fc3589e4e9f36fcabd255da3a3a7f792d507b"
+    },
+    {
+      "path": "formal/logs/selvage_004.json",
+      "sha256": "554ae753a436e855af41db912230a6c66c3de3280ff634d54fc6448731adc026"
+    },
+    {
+      "path": "formal/logs/selvage_004.lean",
+      "sha256": "e67923c0bd57cedf64993209e03fc3589e4e9f36fcabd255da3a3a7f792d507b"
+    },
+    {
+      "path": "formal/logs/selvage_005.json",
+      "sha256": "6223c2aa911f52b046025835a9fe9e67daa7c3d98864eba1b61a8cb04b7b8e35"
+    },
+    {
+      "path": "formal/logs/selvage_005.lean",
+      "sha256": "9cfbb720613e77e3652c7de8ddf7ebac9e39322ad36e49bf7c43ff6b09f3c176"
+    },
+    {
+      "path": "formal/minidregg-p3-query-transport.patch",
+      "sha256": "a853d61feffbe71802b46ddaf086b93a378246116abf429feef5fed870d48bca"
+    },
+    {
+      "path": "formal/package.py",
+      "sha256": "dd4c76a70d72e4840f9c14d10b4e6e92eb332a4c13173eb9c1be136265274b8a"
+    },
+    {
+      "path": "formal/src/Selvage/P3FriQueryTransport.lean",
+      "sha256": "9cfbb720613e77e3652c7de8ddf7ebac9e39322ad36e49bf7c43ff6b09f3c176"
+    },
+    {
+      "path": "formal/src/Theory/BitReverseFriTransport.lean",
+      "sha256": "f546b123f49632cbe3284baa23c3f12943529f7c2b8231e87f7ac71b2c2399cf"
+    },
+    {
+      "path": "formal/verification.json",
+      "sha256": "df9554ce10a1600d81f4a5c64267d73b5e9312f2361d999c113a7c664b465bd8"
+    }
+  ],
+  "sources": {
+    "/Users/ember/dev/minidregg/prover/src/babybear.rs": {
+      "lines": [
+        3,
+        10,
+        13,
+        60,
+        75
+      ],
+      "seen": "modulus, 2-adicity27, source generator440564289, repeated-squaring lower roots, 31^15 unit test",
+      "sha256": "f405d7c6d3645a0535dbb40a98a2e4d528a44a5d3117773dbd2c38157dda1959",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/prover/src/mle_kernels.rs": {
+      "lines": [
+        407,
+        421,
+        425,
+        565,
+        571,
+        650
+      ],
+      "seen": "Ext6 natural-order half-pair fold, inverse-root twiddle, natural-power evaluation helper",
+      "sha256": "53a2fa85f63863cde5b0fe9ce4c8a4759c85aa6956dd8d3b339344daa2d84550",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/baby-bear/src/baby_bear.rs": {
+      "lines": [
+        42,
+        46,
+        49
+      ],
+      "seen": "active p3 two-adic root table, bits20 root0x0ba067a3, maxroot0x1a427a41",
+      "sha256": "6695e14d7adbc4549c876f1e48e342bd89fb4eef35da48338194cc4e60a7b87a",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/breadstuffs/Cargo.toml": {
+      "lines": [
+        247,
+        250,
+        320
+      ],
+      "seen": "active vendored FRI patch and p3 git revision82cfad73cd734d37a0d51953094f970c531817ec",
+      "sha256": "1c3572d9d73d88899c3652488b69b2e3d1e1faa2309b6c7338128c9eb3bc96a8",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs": {
+      "lines": [
+        230,
+        243,
+        256,
+        270,
+        276,
+        626,
+        677,
+        764
+      ],
+      "seen": "bit-reversed row roots and inverse-root twiddles; PCS evaluation coset Val::GENERATOR*H",
+      "sha256": "9060c57409d84c42a2454d0b6895960d3e4fcb8fe2f9bb855cf2a18a5fd8f5a9",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs": {
+      "lines": [
+        214,
+        238,
+        245,
+        257
+      ],
+      "seen": "bit-reversed adjacent conjugate rows; next-height beta^arity input injection; final polynomial",
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs": {
+      "lines": [
+        268,
+        313,
+        447
+      ],
+      "seen": "query bits, bit-reversed polynomial evaluation point, authenticated row/current-index shift",
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/Selvage/BabyBearExt4.lean": {
+      "lines": [
+        29,
+        43,
+        47,
+        59,
+        131
+      ],
+      "seen": "existing modulus and proved prime, squareN certified repeated squaring, actual AdjoinRoot X^4-11 carrier",
+      "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/Selvage/Proximity.lean": {
+      "lines": [
+        177,
+        337,
+        377
+      ],
+      "seen": "existing FoldingData/FoldingTower interfaces and fold_preserves_code",
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean": {
+      "lines": [
+        28,
+        50,
+        217
+      ],
+      "seen": "existing level types, modulo query indices and sampled consumer",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/minidregg/Selvage/ReedSolomon.lean": {
+      "lines": [
+        122,
+        149
+      ],
+      "seen": "card_agreeSet_lt_of_ne and reedSolomonCode_minDist",
+      "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean": {
+      "lines": [
+        290,
+        333
+      ],
+      "seen": "frozen fullUDSampling_coherent_sound and fullUDSampling_babyBear_55",
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+      "source_label": "SOURCE",
+      "instrument": "read-only source inspection"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/util/src/lib.rs": {
+      "seen": "reverse_bits_len machine-word bit reversal",
+      "sha256": "6fc789ee34d157602ca97782da58e38e65d0ee901c8a2e05e978e17fe71d6fbb",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/matrix/src/bitrev.rs": {
+      "seen": "row-index bit-reversal view and involution",
+      "sha256": "6efa423482d3bfcc8de5458a123fd37d3eecf6e2fa75ad15881cdf99760a8450",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/dft/src/radix_2_dit_parallel.rs": {
+      "seen": "production DFT logical evaluation order",
+      "sha256": "f0bf090b21f083b0064402d1e3f4c29e41dff4c238effa4ffd697da1b9a3dc45",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/config.rs": {
+      "seen": "arity scheduler and folding strategy",
+      "sha256": "f56b385c3a0e6b25411687af657219749c076d8a070a90c237d7e81507b13534",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs": {
+      "seen": "named production field/DFT/FRI configuration",
+      "sha256": "cddf287418459b37cc6e529d014ff110f0d0a902edb0d53bec6e41d38d37d6d4",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs": {
+      "seen": "named IR2 FRI configuration",
+      "sha256": "596a450e77a8b905626e8c8b7b68dcffadd07b9bd9bcb71a040f009e8f77fb89",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/PowerTwoRootFolding.lean": {
+      "seen": "frozen natural-power domain, half-pair fold and coherent exponent theorem",
+      "sha256": "96b937887805230da7cda826287beefb5b8fb7836168a4e0f56db31d6ca1acaf",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingTower.lean": {
+      "seen": "frozen actual BabyBear root tower specialization",
+      "sha256": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/field/src/extension/mod.rs": {
+      "seen": "binomial field presentation and multiplication law",
+      "sha256": "ca2d186e928a67c33df88dde0807e7d3f0c75f232b3d527f041b592361d3dfad",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/field/src/extension/binomial_extension.rs": {
+      "seen": "extension coefficient array representation",
+      "sha256": "d0ca889ce5896faee03601ddab3df462b81aed2ee1769c07a6f6c29aec1cf057",
+      "instrument": "read-only source inspection",
+      "source_label": "SOURCE"
+    }
+  }
+}

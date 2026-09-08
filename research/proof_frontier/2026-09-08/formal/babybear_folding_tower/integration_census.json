@@ -1,0 +1,964 @@
+{
+  "Selvage/BabyBearTwoAdic.lean": {
+    "theorems": [
+      "generator_source_value",
+      "generator_half_order",
+      "generator_full_order",
+      "generator_primitive",
+      "generator_contract",
+      "generator_premise_inhabited",
+      "squared_generator_falsifier",
+      "extension_generator_primitive",
+      "omega20_source_value",
+      "omega_primitive",
+      "omega_ne_zero",
+      "omega_square",
+      "omega_half_turn"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "generator_source_value",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_source_value",
+        "private": false,
+        "line": 25
+      },
+      {
+        "name": "generator_half_order",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_half_order",
+        "private": false,
+        "line": 28
+      },
+      {
+        "name": "generator_full_order",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_full_order",
+        "private": false,
+        "line": 33
+      },
+      {
+        "name": "generator_primitive",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_primitive",
+        "private": false,
+        "line": 39
+      },
+      {
+        "name": "generator_contract",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_contract",
+        "private": false,
+        "line": 48
+      },
+      {
+        "name": "generator_premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_premise_inhabited",
+        "private": false,
+        "line": 52
+      },
+      {
+        "name": "squared_generator_falsifier",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.squared_generator_falsifier",
+        "private": false,
+        "line": 57
+      },
+      {
+        "name": "extension_generator_primitive",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.extension_generator_primitive",
+        "private": false,
+        "line": 66
+      },
+      {
+        "name": "omega20_source_value",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega20_source_value",
+        "private": false,
+        "line": 73
+      },
+      {
+        "name": "omega_primitive",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_primitive",
+        "private": false,
+        "line": 79
+      },
+      {
+        "name": "omega_ne_zero",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_ne_zero",
+        "private": false,
+        "line": 85
+      },
+      {
+        "name": "omega_square",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_square",
+        "private": false,
+        "line": 89
+      },
+      {
+        "name": "omega_half_turn",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_half_turn",
+        "private": false,
+        "line": 97
+      }
+    ],
+    "theorem_count": 13,
+    "pin_count": 13,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_source_value",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_source_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 108,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_source_value' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_source_value"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_half_order",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_half_order",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 110,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_half_order' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_half_order"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_full_order",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_full_order",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 112,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_full_order' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_full_order"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_primitive",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_primitive",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 114,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_primitive' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_primitive"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_contract",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_contract",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 116,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_contract' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_contract"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_premise_inhabited",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 118,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.generator_premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.squared_generator_falsifier",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.squared_generator_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 120,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.squared_generator_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.squared_generator_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.extension_generator_primitive",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.extension_generator_primitive",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 122,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.extension_generator_primitive' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.extension_generator_primitive"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega20_source_value",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega20_source_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 124,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega20_source_value' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega20_source_value"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_primitive",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_primitive",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 126,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_primitive' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_primitive"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_ne_zero",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_ne_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 128,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_ne_zero"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_square",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_square",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 130,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_square' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_square"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_half_turn",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_half_turn",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 132,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_half_turn' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.TwoAdic.omega_half_turn"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/PowerTwoRootFolding.lean": {
+    "theorems": [
+      "levelRoot_primitive",
+      "levelRoot_pow_mod",
+      "size_halves",
+      "levelRoot_succ",
+      "levelRoot_half_turn",
+      "negative_section",
+      "tower_contract",
+      "coherent_index_powers",
+      "fold_pair"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "levelRoot_primitive",
+        "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_primitive",
+        "private": false,
+        "line": 26
+      },
+      {
+        "name": "levelRoot_pow_mod",
+        "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_pow_mod",
+        "private": false,
+        "line": 34
+      },
+      {
+        "name": "size_halves",
+        "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.size_halves",
+        "private": false,
+        "line": 56
+      },
+      {
+        "name": "levelRoot_succ",
+        "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_succ",
+        "private": false,
+        "line": 81
+      },
+      {
+        "name": "levelRoot_half_turn",
+        "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_half_turn",
+        "private": false,
+        "line": 86
+      },
+      {
+        "name": "negative_section",
+        "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.negative_section",
+        "private": false,
+        "line": 93
+      },
+      {
+        "name": "tower_contract",
+        "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.tower_contract",
+        "private": false,
+        "line": 129
+      },
+      {
+        "name": "coherent_index_powers",
+        "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.coherent_index_powers",
+        "private": false,
+        "line": 134
+      },
+      {
+        "name": "fold_pair",
+        "qualified_name": "Minidregg.Selvage.PowerTwoRootFolding.fold_pair",
+        "private": false,
+        "line": 150
+      }
+    ],
+    "theorem_count": 9,
+    "pin_count": 9,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_primitive",
+        "requested_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_primitive",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 167,
+        "expected_message": "info: 'Minidregg.Selvage.PowerTwoRootFolding.levelRoot_primitive' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_primitive"
+      },
+      {
+        "theorem": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_pow_mod",
+        "requested_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_pow_mod",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 169,
+        "expected_message": "info: 'Minidregg.Selvage.PowerTwoRootFolding.levelRoot_pow_mod' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_pow_mod"
+      },
+      {
+        "theorem": "Minidregg.Selvage.PowerTwoRootFolding.size_halves",
+        "requested_name": "Minidregg.Selvage.PowerTwoRootFolding.size_halves",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 171,
+        "expected_message": "info: 'Minidregg.Selvage.PowerTwoRootFolding.size_halves' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.PowerTwoRootFolding.size_halves"
+      },
+      {
+        "theorem": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_succ",
+        "requested_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_succ",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 173,
+        "expected_message": "info: 'Minidregg.Selvage.PowerTwoRootFolding.levelRoot_succ' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_succ"
+      },
+      {
+        "theorem": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_half_turn",
+        "requested_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_half_turn",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 175,
+        "expected_message": "info: 'Minidregg.Selvage.PowerTwoRootFolding.levelRoot_half_turn' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.PowerTwoRootFolding.levelRoot_half_turn"
+      },
+      {
+        "theorem": "Minidregg.Selvage.PowerTwoRootFolding.negative_section",
+        "requested_name": "Minidregg.Selvage.PowerTwoRootFolding.negative_section",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 177,
+        "expected_message": "info: 'Minidregg.Selvage.PowerTwoRootFolding.negative_section' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.PowerTwoRootFolding.negative_section"
+      },
+      {
+        "theorem": "Minidregg.Selvage.PowerTwoRootFolding.tower_contract",
+        "requested_name": "Minidregg.Selvage.PowerTwoRootFolding.tower_contract",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 179,
+        "expected_message": "info: 'Minidregg.Selvage.PowerTwoRootFolding.tower_contract' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.PowerTwoRootFolding.tower_contract"
+      },
+      {
+        "theorem": "Minidregg.Selvage.PowerTwoRootFolding.coherent_index_powers",
+        "requested_name": "Minidregg.Selvage.PowerTwoRootFolding.coherent_index_powers",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 181,
+        "expected_message": "info: 'Minidregg.Selvage.PowerTwoRootFolding.coherent_index_powers' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.PowerTwoRootFolding.coherent_index_powers"
+      },
+      {
+        "theorem": "Minidregg.Selvage.PowerTwoRootFolding.fold_pair",
+        "requested_name": "Minidregg.Selvage.PowerTwoRootFolding.fold_pair",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 183,
+        "expected_message": "info: 'Minidregg.Selvage.PowerTwoRootFolding.fold_pair' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.PowerTwoRootFolding.fold_pair"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/BabyBearFoldingTower.lean": {
+    "theorems": [
+      "initialRoot_primitive",
+      "two_ne_zero",
+      "correctness",
+      "tower_premise_inhabited",
+      "levelRoot_source",
+      "domain_source",
+      "domain_ne_zero",
+      "initial_domain_zero_index",
+      "consecutive_domain_falsifier",
+      "farWord_not_mem",
+      "farWord_mem_successor",
+      "farWord_relDist",
+      "farWord_far",
+      "source_degree_falsifier",
+      "tower_and_farness_inhabited",
+      "coherent_sound"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "initialRoot_primitive",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initialRoot_primitive",
+        "private": false,
+        "line": 25
+      },
+      {
+        "name": "two_ne_zero",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.two_ne_zero",
+        "private": false,
+        "line": 29
+      },
+      {
+        "name": "correctness",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.correctness",
+        "private": false,
+        "line": 39
+      },
+      {
+        "name": "tower_premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_premise_inhabited",
+        "private": false,
+        "line": 43
+      },
+      {
+        "name": "levelRoot_source",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.levelRoot_source",
+        "private": false,
+        "line": 48
+      },
+      {
+        "name": "domain_source",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_source",
+        "private": false,
+        "line": 56
+      },
+      {
+        "name": "domain_ne_zero",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_ne_zero",
+        "private": false,
+        "line": 62
+      },
+      {
+        "name": "initial_domain_zero_index",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initial_domain_zero_index",
+        "private": false,
+        "line": 66
+      },
+      {
+        "name": "consecutive_domain_falsifier",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.consecutive_domain_falsifier",
+        "private": false,
+        "line": 71
+      },
+      {
+        "name": "farWord_not_mem",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_not_mem",
+        "private": false,
+        "line": 85
+      },
+      {
+        "name": "farWord_mem_successor",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_mem_successor",
+        "private": false,
+        "line": 106
+      },
+      {
+        "name": "farWord_relDist",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_relDist",
+        "private": false,
+        "line": 111
+      },
+      {
+        "name": "farWord_far",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_far",
+        "private": false,
+        "line": 123
+      },
+      {
+        "name": "source_degree_falsifier",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.source_degree_falsifier",
+        "private": false,
+        "line": 130
+      },
+      {
+        "name": "tower_and_farness_inhabited",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_and_farness_inhabited",
+        "private": false,
+        "line": 135
+      },
+      {
+        "name": "coherent_sound",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.coherent_sound",
+        "private": false,
+        "line": 144
+      }
+    ],
+    "theorem_count": 16,
+    "pin_count": 16,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initialRoot_primitive",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initialRoot_primitive",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 160,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initialRoot_primitive' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initialRoot_primitive"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.two_ne_zero",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.two_ne_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 162,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.two_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.two_ne_zero"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.correctness",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.correctness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 164,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.correctness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.correctness"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_premise_inhabited",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 166,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.levelRoot_source",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.levelRoot_source",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 168,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.levelRoot_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.levelRoot_source"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_source",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_source",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 170,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_source' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_source"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_ne_zero",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_ne_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 172,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.domain_ne_zero"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initial_domain_zero_index",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initial_domain_zero_index",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 174,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initial_domain_zero_index' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.initial_domain_zero_index"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.consecutive_domain_falsifier",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.consecutive_domain_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 176,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.consecutive_domain_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.consecutive_domain_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_not_mem",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_not_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 178,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_not_mem"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_mem_successor",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_mem_successor",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 180,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_mem_successor' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_mem_successor"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_relDist",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_relDist",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 182,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_relDist' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_relDist"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_far",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_far",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 184,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_far' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.farWord_far"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.source_degree_falsifier",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.source_degree_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 186,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.source_degree_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.source_degree_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_and_farness_inhabited",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_and_farness_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 188,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_and_farness_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.tower_and_farness_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.coherent_sound",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.coherent_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 190,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.coherent_sound"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/BabyBearFoldingWitnesses.lean": {
+    "theorems": [
+      "first_fold",
+      "first_fold_zero",
+      "first_fold_one",
+      "initial_farness",
+      "zero_fold_equation",
+      "zero_queries_accept",
+      "consumer_inhabited",
+      "query_one_falsifier",
+      "witnessed_probability_positive",
+      "witnessed_sound"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "first_fold",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold",
+        "private": false,
+        "line": 38
+      },
+      {
+        "name": "first_fold_zero",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_zero",
+        "private": false,
+        "line": 52
+      },
+      {
+        "name": "first_fold_one",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_one",
+        "private": false,
+        "line": 59
+      },
+      {
+        "name": "initial_farness",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.initial_farness",
+        "private": false,
+        "line": 67
+      },
+      {
+        "name": "zero_fold_equation",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_fold_equation",
+        "private": false,
+        "line": 72
+      },
+      {
+        "name": "zero_queries_accept",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_queries_accept",
+        "private": false,
+        "line": 85
+      },
+      {
+        "name": "consumer_inhabited",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.consumer_inhabited",
+        "private": false,
+        "line": 112
+      },
+      {
+        "name": "query_one_falsifier",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.query_one_falsifier",
+        "private": false,
+        "line": 117
+      },
+      {
+        "name": "witnessed_probability_positive",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_probability_positive",
+        "private": false,
+        "line": 128
+      },
+      {
+        "name": "witnessed_sound",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_sound",
+        "private": false,
+        "line": 145
+      }
+    ],
+    "theorem_count": 10,
+    "pin_count": 10,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 156,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_zero",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 158,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_zero"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_one",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 160,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.first_fold_one"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.initial_farness",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.initial_farness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 162,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.initial_farness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.initial_farness"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_fold_equation",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_fold_equation",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 164,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_fold_equation' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_fold_equation"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_queries_accept",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_queries_accept",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 166,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_queries_accept' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.zero_queries_accept"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.consumer_inhabited",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.consumer_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 168,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.consumer_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.consumer_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.query_one_falsifier",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.query_one_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 170,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.query_one_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.query_one_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_probability_positive",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_probability_positive",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 172,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_probability_positive' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_probability_positive"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_sound",
+        "requested_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 174,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.MultiplicativeTower.Witnesses.witnessed_sound"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "status": "PASS",
+  "scope": "Pure arithmetic/source and retained estimator-output audit. No Sage, estimator, Gaussian sampling or crypto execution.",
+  "author_manifest_sha256": "2f90bee88437465514066d879eddbc3918ab1af6d0c8d6592e63b0750adeef53",
+  "frozen_public_files_unchanged": 53,
+  "estimator_archive_commit": "53da5982597709ba0fdf94ea37a84d822310fd84",
+  "archive_source_files_matching": 27,
+  "saved_attempts": 24,
+  "saved_estimator_entries": 24,
+  "errors": 0,
+  "timeouts": 0,
+  "Infinity_or_nonfinite_fields": 0,
+  "saved_log2_fields_recomputed": 56,
+  "minima": [
+    {
+      "point": "ring_baseline_4096",
+      "minima": {
+        "MATZOV_classical": {
+          "log2_modeled_cost": 51.94400665886226,
+          "path": "bdd",
+          "beta": 60,
+          "lattice_dimension": 8145
+        },
+        "ADPS16_classical": {
+          "log2_modeled_cost": 17.811999999999998,
+          "path": "usvp",
+          "beta": 61,
+          "lattice_dimension": 7945
+        },
+        "ADPS16_quantum_core_svp": {
+          "log2_modeled_cost": 16.165,
+          "path": "usvp",
+          "beta": 61,
+          "lattice_dimension": 7945
+        },
+        "MATZOV_quantum_depth_width": {
+          "log2_modeled_cost": 55.750336070641495,
+          "path": "bdd",
+          "beta": 60,
+          "lattice_dimension": 8111
+        }
+      }
+    },
+    {
+      "point": "ring_joint_repair_16384",
+      "minima": {
+        "MATZOV_classical": {
+          "log2_modeled_cost": 211.90974474869606,
+          "path": "bdd",
+          "beta": 629,
+          "lattice_dimension": 33609
+        },
+        "ADPS16_classical": {
+          "log2_modeled_cost": 184.25199999999998,
+          "path": "usvp",
+          "beta": 631,
+          "lattice_dimension": 32688
+        },
+        "ADPS16_quantum_core_svp": {
+          "log2_modeled_cost": 167.215,
+          "path": "usvp",
+          "beta": 631,
+          "lattice_dimension": 32688
+        },
+        "MATZOV_quantum_depth_width": {
+          "log2_modeled_cost": 199.73157229596697,
+          "path": "bdd",
+          "beta": 629,
+          "lattice_dimension": 33609
+        }
+      }
+    }
+  ],
+  "joint_parameter_and_cost_fields_compared": 46,
+  "finite_points": [
+    {
+      "N": 4096,
+      "root_order": 8192,
+      "C_pow2": 58,
+      "regularity_k_values_pass": [
+        1,
+        2
+      ],
+      "coalitions_checked": 17,
+      "max_privacy_statistical_log2_informational": -168.1548585442407,
+      "correctness_log2_informational": -203.24255139015105,
+      "decoder_scale": "60612896562862346171488433051960381449958923222795080866685104784700003464050",
+      "decoder_noise_margin": "58803645168529280617995136411199632889751579712394447053550133290502651261810",
+      "extra_message_scale_products_excluded_from_dN": 577,
+      "uniform_secret_coefficients": 4096,
+      "scalar_flood_draws": 577,
+      "costs": {
+        "ciphertext_coefficients": 262721,
+        "ciphertext_bytes": 9490797,
+        "public_A_and_P_bytes": 94847488,
+        "recipient_key_bits_per_coefficient_strict_tail": 28,
+        "one_recipient_key_bytes_strict_tail": 917504,
+        "all_recipient_keys_bytes_strict_tail": 14680064,
+        "fresh_encode_full_ring_products": 64,
+        "fresh_encode_scalar_coefficient_multiplications": 2363392,
+        "fresh_encode_gaussian_coefficients": 262144,
+        "read_coefficient_multiplications": 262144,
+        "add_or_expire_residue_operations": 262721
+      }
+    },
+    {
+      "N": 16384,
+      "root_order": 32768,
+      "C_pow2": 61,
+      "regularity_k_values_pass": [
+        1,
+        2
+      ],
+      "coalitions_checked": 17,
+      "max_privacy_statistical_log2_informational": -168.15485833183402,
+      "correctness_log2_informational": -200.24258069009466,
+      "decoder_scale": "60612896562862346171488433051960381449958923222795080866685104784700003464050",
+      "decoder_noise_margin": "46138885408197821743542059925874392968300175139590010361605332831121185846130",
+      "extra_message_scale_products_excluded_from_dN": 577,
+      "uniform_secret_coefficients": 16384,
+      "scalar_flood_draws": 577,
+      "costs": {
+        "ciphertext_coefficients": 1049153,
+        "ciphertext_bytes": 37900653,
+        "public_A_and_P_bytes": 379389952,
+        "recipient_key_bits_per_coefficient_strict_tail": 29,
+        "one_recipient_key_bytes_strict_tail": 3801088,
+        "all_recipient_keys_bytes_strict_tail": 60817408,
+        "fresh_encode_full_ring_products": 64,
+        "fresh_encode_scalar_coefficient_multiplications": 9453568,
+        "fresh_encode_gaussian_coefficients": 1048576,
+        "read_coefficient_multiplications": 1048576,
+        "add_or_expire_residue_operations": 1049153
+      }
+    }
+  ],
+  "ring_map_controls": {
+    "ring": "F5[X]/(X^2+1)",
+    "elements": 25,
+    "units": 16,
+    "affine_permutations": 400,
+    "inverse_identities": 40000
+  },
+  "new_estimator_calls": 0,
+  "new_sage_calls": 0,
+  "new_crypto_calls": 0,
+  "new_web_queries": 0,
+  "new_scry_queries": 0,
+  "new_PDF_downloads": 0
+}

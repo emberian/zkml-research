@@ -1,0 +1,35 @@
+{
+  "scope": "Lexical regression controls; the integration separately elaborates every exact axiom guard in Lean.",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/durable_integration/window_frame/Assurance/CiphertextWindowFrameWitness.lean",
+  "source_sha256": "629ef9054f66a365ee10fc54236f9b11cfba5b8fcc50127e14eceb3386f543bd",
+  "checker_sha256": "44fdab8adf39806641e77cf9eca44feadd935082dcb4c1a0ac3d2fbc1d1d09ef",
+  "imported_admission_identifier_accepted": true,
+  "positive_pins": 14,
+  "negative_controls": [
+    {
+      "label": "proof placeholder tactic",
+      "refused": true,
+      "reason": "Forbidden constructs in proposed proof source: [{'token': 'by admit', 'line': 56}]"
+    },
+    {
+      "label": "sorry proof placeholder",
+      "refused": true,
+      "reason": "Forbidden constructs in proposed proof source: [{'token': 'sorry', 'line': 56}]"
+    },
+    {
+      "label": "untrusted native proof shortcut",
+      "refused": true,
+      "reason": "Forbidden constructs in proposed proof source: [{'token': 'native_decide', 'line': 56}]"
+    },
+    {
+      "label": "unguarded axiom print",
+      "refused": true,
+      "reason": "Unguarded axiom print: 15 prints, 14 guards"
+    },
+    {
+      "label": "missing theorem axiom guard",
+      "refused": true,
+      "reason": "Axiom output comment without adjacent exact guard"
+    }
+  ]
+}

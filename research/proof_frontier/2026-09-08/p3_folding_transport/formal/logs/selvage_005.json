@@ -1,0 +1,17 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-p3-folding-transport-20260908/.lake/build/lib/lean/Selvage/P3FriQueryTransport.olean",
+    "Selvage/P3FriQueryTransport.lean"
+  ],
+  "cwd": "/tmp/minidregg-p3-folding-transport-20260908",
+  "exit_code": 0,
+  "seconds": 7.788577083003474,
+  "source_sha256": "9cfbb720613e77e3652c7de8ddf7ebac9e39322ad36e49bf7c43ff6b09f3c176",
+  "source_sha256_after": "9cfbb720613e77e3652c7de8ddf7ebac9e39322ad36e49bf7c43ff6b09f3c176",
+  "stdout": "",
+  "stderr": ""
+}

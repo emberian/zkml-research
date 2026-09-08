@@ -1,0 +1,104 @@
+{
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "checkout": "/tmp/minidregg-efficient-root-opening-20260908",
+  "modules": [
+    {
+      "path": "Selvage/EfficientRootOpening.lean",
+      "sha256": "defd19242e66118333d477cd14bcb1b108c4d517b1e55861dee66f35647dafe6",
+      "lines": 412,
+      "theorem_count": 20,
+      "pin_count": 20,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-efficient-root-opening-20260908/.lake/build/lib/lean/Selvage/EfficientRootOpening.olean",
+          "Selvage/EfficientRootOpening.lean"
+        ],
+        "cwd": "/tmp/minidregg-efficient-root-opening-20260908",
+        "exit_code": 0,
+        "source_sha256": "defd19242e66118333d477cd14bcb1b108c4d517b1e55861dee66f35647dafe6",
+        "source_unchanged": true,
+        "elapsed_s": 28.96565450000344,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening/logs/final-freeze.log"
+      }
+    }
+  ],
+  "owned_modules": 1,
+  "owned_theorems": 20,
+  "owned_pins": 20,
+  "patch_sha256": "c1d7aebabd8d755192d38c3628b266e1351a3703b03fa66f0dd042fef645d5b2",
+  "dependencies": [
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/BinaryMerkle.lean",
+      "sha256": "55e3a1a0053102b52e62aab393e1fe91743bcd6c8091c2843f5c85eef66c7137",
+      "locations": {
+        "HashSuite": 27,
+        "recompute": 73,
+        "openingScheme": 134,
+        "recompute_cons_some_iff": 156,
+        "accepted_different_values_imply_collision": 257
+      },
+      "isolated_copy_identical": true
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/OracleLogExtraction.lean",
+      "sha256": "bc6f99709e7c6caf6353023f985ec4b5496192eb9bad38f8af1f7d0616e8b6d4",
+      "locations": {
+        "OracleLog": 78,
+        "OracleLog.answerOf": 92
+      },
+      "isolated_copy_identical": true
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/BinaryLookup.lean",
+      "sha256": "04cc95ec2034959c18c8e5fae51659fb710d83457ee70abbde5ae61da11558ac",
+      "locations": {
+        "binaryAddressBits": 28
+      },
+      "isolated_copy_identical": true
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/CorrelatedAgreement.lean",
+      "sha256": "1f93c645e77154fdd969855f17d153b9ffb9e2c147f997dbb704dce71876b70e",
+      "locations": {
+        "close": 112
+      },
+      "isolated_copy_identical": true
+    }
+  ],
+  "root_census_script_sha256": "f60454abf284ccf4de39bfcda9bdddef1564b3d42528c4d640923ea2e81a8bef",
+  "exact_guarded_checks_complete": true,
+  "all_pins_standard_only": true,
+  "companion_read_only": true,
+  "source_evidence_sha256": "856cedcf823647166ac6f4c610d3479882518d596599ede337c233510d17663b",
+  "web_queries": 0,
+  "scry_sql_queries": 0,
+  "files": {
+    "NEXT.md": "cdd7b69c88590d5af094203fe6d1182d0c6dce9018220398d2376421fd370895",
+    "README.md": "e83f6d1465d22a3f98bddecdbe6319f36e9769990c233846532cfc59447e7d71",
+    "STATUS.md": "bc6d73ab0b9a73d7b6f864a3e16712b25e1f643fb8d23a6cc34ba507a170007b",
+    "declaration-names.json": "20ca6f9a5eab31c6191b9b0b466861abc6e6e394f3b2edc2a3b3ca69ad01f728",
+    "efficient-root-opening.patch": "c1d7aebabd8d755192d38c3628b266e1351a3703b03fa66f0dd042fef645d5b2",
+    "integration_census.json": "6376337a1a2241f152e016cfe0ad22283ed07c600195cc3e1cc34db031c38c79",
+    "integration_entry.json": "73ceef5106dda3a6c0d950888b4a037fb8f90f46f4614cce4aa956bb3b580b53",
+    "logs/axiom-probe.json": "a1ece121d5529902e155d68e87df716aecf8b2fde9db17e72dbf6cde1a2e5a56",
+    "logs/axiom-probe.log": "e2c2248273282bea3c4fc88de32d85be013fbb0bd6d7011471bea8805d1787cc",
+    "logs/child-probe-2.json": "3cf25bd57fede6632f9e4ab3c92babf06c932244e15abb4bffad122ad87709e1",
+    "logs/child-probe-2.log": "c6e19059f4391b317fcfa2d18f52e152cc1e250aa4705cf0e0a9ff204ba45db4",
+    "logs/child-probe.json": "5954a115201c3dc051743e2d0363289ed63b5e98c442e2b90e0a212b60fdd0fc",
+    "logs/child-probe.log": "c9730bb8706306847d4b6a4adf855eca9e288662647933b6a9777e484cb1dad8",
+    "logs/final-freeze.json": "881b99dd8f736cfc282fb7beec28490abe57805957c9d7380793c0e7f775b7f2",
+    "logs/final-freeze.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/final-guard.json": "806a3ff1a3b0af8616c197a6f4028bca8c5667d0283d4fdfdaf7af6f0b71cf04",
+    "logs/final-guard.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/import-boundary.log": "8ad794b7fb3c1f16f0b484345d6c90fdff74ed3bc3fdb20335aba83986ca789d",
+    "logs/patch-apply.log": "f855d97c1bf0f52254a06b354554c457ef313292263c60e04a24f42b7646e023",
+    "package.py": "d3b08203ac3063715670bd1ec897699874c42159eb5c5fcf10b4704b9cc692a4",
+    "run_lean.py": "ec9e37fde0a356e1ecb4acdbaeeafc1a81c256cadf1aea5e814e8689fda35ad6",
+    "source-evidence.json": "856cedcf823647166ac6f4c610d3479882518d596599ede337c233510d17663b",
+    "src/Selvage/EfficientRootOpening.lean": "defd19242e66118333d477cd14bcb1b108c4d517b1e55861dee66f35647dafe6"
+  }
+}

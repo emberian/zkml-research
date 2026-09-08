@@ -1,0 +1,18 @@
+{
+  "label": "lean_Compiler_BfvSignedAccumulatorAir",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Compiler/BfvSignedAccumulatorAir.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/BfvSignedAccumulatorAir.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/BfvSignedAccumulatorAir.lean:182:49: warning: unused variable `hcarryp`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/BfvSignedAccumulatorAir.lean:299:54: warning: This simp argument is unused:\n  Fin.append_left\n\nHint: Omit it from the simp argument list.\n  simp only [OwnerRow.activeValue, activeShift, F\u0335i\u0335n\u0335.\u0335a\u0335p\u0335p\u0335e\u0335n\u0335d\u0335_\u0335l\u0335e\u0335f\u0335t\u0335,\u0335 \u0335Fin.append_right, Nat.cast_ofNat]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n",
+  "stderr": "",
+  "elapsed_seconds": 12.899496083002305,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Compiler/BfvSignedAccumulatorAir.lean",
+  "source_sha256_before": "4dba7a65f208da660b878e7cfbef4ce241f34bae7d39a520bba7aeafaf76361c",
+  "source_sha256_after": "4dba7a65f208da660b878e7cfbef4ce241f34bae7d39a520bba7aeafaf76361c"
+}

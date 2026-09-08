@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-polynomial-curve-full-ud-20260908/.lake/build/lib/lean/Selvage/CurveProximityGapFullUD.olean",
+    "Selvage/CurveProximityGapFullUD.lean"
+  ],
+  "cwd": "/tmp/minidregg-polynomial-curve-full-ud-20260908",
+  "exit_code": 1,
+  "source_sha256": "34b57d6876de16852be31edd66b045e446d6b5f7c03f448d1c1306543781c278",
+  "source_unchanged": true,
+  "elapsed_s": 12.254684925079346,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/checks/curve-proximity-first.log"
+}

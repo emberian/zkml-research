@@ -1,0 +1,18 @@
+{
+  "label": "lean_Selvage_SpongeIndiff",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean/Selvage/SpongeIndiff.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/SpongeIndiff.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source",
+  "exit_code": 0,
+  "stdout": "@walk_programs : \u2200 {Rate Cap : Type} [inst : AddCommGroup Rate] {O : Oracle (Rate \u00d7 Cap) (Rate \u00d7 Cap)}\n  {iv s : Rate \u00d7 Cap},\n  O.lookup s = none \u2192\n    \u2200 {m : List Rate}, completion? O iv s = some m \u2192 \u2200 (v : Rate \u00d7 Cap), walkFrom (O.respond s v).2 iv m = some v\n@sponge_realizes_handler_step : \u2200 {Rate Cap : Type} [inst : AddCommGroup Rate] (iv : Rate \u00d7 Cap)\n  (ro : Oracle (List Rate) Rate) (os : Oracle (Rate \u00d7 Cap) (Rate \u00d7 Cap)) {s : Rate \u00d7 Cap},\n  os.lookup s = none \u2192\n    \u2200 {m : List Rate},\n      completion? os iv s = some m \u2192\n        \u2200 (rc rc' : Rate) (bc : Rate \u00d7 Cap),\n          walkFrom (simFwdRO iv ro os s rc bc).2.2 iv m = some ((ro.respond m rc).1, bc.2) \u2227\n            ((simFwdRO iv ro os s rc bc).2.1.respond m rc').1 = (ro.respond m rc).1\n@uniquePaths_simFwd : \u2200 {Rate Cap : Type} [inst : AddCommGroup Rate] {O : Oracle (Rate \u00d7 Cap) (Rate \u00d7 Cap)}\n  {iv s coin : Rate \u00d7 Cap},\n  UniquePaths O iv \u2192\n    \u2200 (H : List Rate \u2192 Rate), coin.2 \u2209 capsOf O iv \u2192 coin.2 \u2260 s.2 \u2192 UniquePaths (simFwd H iv O s coin).2 iv\n@capBad_le : \u2200 {Cap : Type} [inst : Fintype Cap] (qc : \u2115) (S : Finset Cap),\n  S.card \u2264 qc + 1 \u2192 uniformProb (Fin qc \u2192 Cap) (CapBad S) \u2264 2 * \u2191qc ^ 2 / \u2191(Fintype.card Cap)\nSpongeIndiffGame : (Rate Cap : Type) \u2192\n  [AddCommGroup Rate] \u2192 [Fintype Rate] \u2192 [Fintype Cap] \u2192 [DecidableEq Rate] \u2192 [DecidableEq Cap] \u2192 Rate \u00d7 Cap \u2192 Prop\n",
+  "stderr": "",
+  "elapsed_seconds": 4.905494082981022,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_018/source/Selvage/SpongeIndiff.lean",
+  "source_sha256_before": "c25fe2d6ae78686b6f8cef11f465258609d042cc5ddecb0cb8ffd9330ebf17d0",
+  "source_sha256_after": "c25fe2d6ae78686b6f8cef11f465258609d042cc5ddecb0cb8ffd9330ebf17d0"
+}

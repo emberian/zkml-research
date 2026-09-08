@@ -1,0 +1,189 @@
+--- a/Theory.lean
++++ b/Theory.lean
+@@ -75,3 +75,5 @@
+ import Theory.LaceMerge  -- the replica keyset merge over CausalVersionDag's AddressedEvent: ids_merge and the CRDT laws; the ancestor's anonymously-carried CrossCanonical gap DERIVED from the typed realizer slot BindingPremise (crossCanonical_of_binding, sameView_of_binding, merge_converges — replication converges on CONTENT); premise inhabited (injectiveScheme_binding, ideal digest) and refuted (lengthScheme_not_binding, crossCanonical_is_the_gap, merge_drops_at_collision) over one computable lawful codec. Residuals [LACE-frontier] [LACE-equivocation] [LACE-order] [LACE-catchup]
+ import Theory.RevocationConsensus  -- the negative lifecycle is consensus-bound and the positive one is not: revocation_needs_consensus (cross-vat sound + gated ⇒ Consensus) with its satisfiable and teeth poles, LocalCollect separated from Consensus on ONE decision, and dead_undecidable ported (deadness across the halting family is not computably decidable; resolved operationally by leases). Residuals [LIVENESS-lease] [LIVENESS-crossvat-cycle]
+ import Theory.PrivateTrace  -- the learn/infer-only interface as a state-machine fact, candidate-independent: a deterministic Machine S C O (step, out), an ADAPTIVE policy π : List O → C, trace M π s n. trace_eq_of_preserved (NO axioms): a relation preserved by EVERY allowed command and respected by out gives equal finite traces under every adaptive policy — the multi-step lift of Kernel/PrivateTurn.lean's one-step post_public_agrees (its hblind IS the preservation premise); randomized state needs a coupling version, not done. The byte toy as theorems: with output = high bit and update +128 only, the honest invariant is EQUAL HIGH BIT (highR; lowR fails hout — lowR_traces_differ), flip_trace_eq_of_highR, and the visible state genuinely changes (flip_trace_alternates). Falsifier for preservation: add the update +1 (twoMachine) — equal next answers (highR_two_out) yet not_highR_two_step (127 ↦ 128, 0 ↦ 1) and highR_two_traces_differ: certify the COMBINED learn-and-infer interface, not the two verbs independently. Recovery, sharp both ways: with arbitrary chosen offsets a binary-search policy recovers the byte in 8 observations (search_recovers, decide +kernel over all 256; exists_policy_recovers over all pairs), 7 are insufficient for that policy (search_seven_insufficient) and for EVERY policy (no_policy_recovers_seven, pigeonhole over List.Vector Bool 7); {+1,+128} alone cannot recover in 8 and is used only for the falsifier.
++
++import Theory.BitReverseFriTransport
+--- a/Selvage.lean
++++ b/Selvage.lean
+@@ -151,3 +151,5 @@
+ import Selvage.HeteroCompositionSuccinct -- ⭐ [HETERO-succinct] census upgrade 4, resolved the other way: HeteroComposition.KnowledgeSound is PERFECT (∀ x π, Verify → ∃ w, Rel — it reads no error) while accFsSound_bcs is a counting bound at (t+2)/5 over F₅, so "inhabit KnowledgeSound at a system whose proof is not the witness" is FALSE as stated — accBcsSystem_F5_not_knowledgeSound: at the oracle answering 1 (the landed γbase) a genesis with no witness for any w has an accepted proof, the 1/|F| event at the seam. What is true: fsProofSystem r s O δ ε (the generic FS-compiled ProofSystem: Proof := SrOutput, Verify := decide FsAccepts ∧ the decider on the carried w', Wit := r.W, Rel := R_{≤δ}), FsKnowledgeSoundRO at positive error per oracle with rung_sound_ro; and at error 0 the bridge knowledgeSound_of_fs_zero FIRES on AccRbrFoldExtract's carried fold — carriedFsSystem, KnowledgeSound proved twice (bridge, and the NAMED extractor carried_srExtract_sound = srExtract (foldCarriedRbr …), toy_srExtract_ne_id: not the identity) — giving rung_sound its FIRST consumer with an extractor theorem as hB (carried_rung, toy_rung_fired), and the falsifier rung_hypothesis_load_bearing (at acc F₅ the rung's conclusion fails on an accepted proof). Named: [HETERO-succinct], [HETERO-err-tower] (TowerSoundRO), and the KnowledgeSound/err mismatch in HeteroComposition itself. ⚠ Aside for a later pass: ComposeErrorBound (HeteroComposition:235) is provable from err_nonneg alone — an obligation that is either trivial or mis-stated.
+ import Selvage.HeteroCompositionErrorBound -- ⚠ [HETERO-compose-error] the named obligation ComposeErrorBound (HeteroComposition:235) is MIS-STATED: its Prop concludes 0 ≤ A.err + B.err — arithmetic on two err fields, never mentioning the composed system — so composeErrorBound_of_err_nonneg discharges it from err_nonneg alone with both hypotheses discarded, it is inert (composeErrorBound_ignores_hypotheses; the body holds at systems that admit no embedding), and composeErrorBound_trivial_witness satisfies it at a system whose composed rung is knowledge-sound nowhere. The HONEST statement is written down and CLOSES: ComposeErrorBoundStrict over an EventMeasure semantics (nonneg / mono / subadditive) with composeSystem — composeErrorBoundStrict_closes by containment through bwd then subadditivity — with a TIGHT witness at the F₅ instance (mass 1 = err 1, equality) and two falsifiers: the transfer clause is load-bearing (toy) and the target error is load-bearing at the LANDED F₅ instance at budget 0, where the naive sum is exceeded (mass 1 > 0 + 2/5). ComposeFixedPoint is fine and stays (satisfiable, refutable at F₅). Coordinator: de-list ComposeErrorBound from the formal-status inventory and point the row at ComposeErrorBoundStrict's transfer clause.
+ import Selvage.AccRbrBcsShiftedTransport -- ⚑ [ACC-rbr-bcs-shifted] census upgrade 5: RETIRED with the obstruction proved. accRbrKnowledgeSoundBcsShifted (AccRbrBcsShifted:374 — the constrained-mask fold-root schedule, the ZK-carrying deployed shape) is FALSE below error 1: the unlinked shifted verifier never ties consecutive roots, so an adversary that anchors the genesis and commits an aggregate-solving LAST word is accepted with a satisfied output at every challenge vector, and Def 4.2's backward chain forces a source witness the statement lacks — shiftedRbr_floor / accRbrKnowledgeSoundBcsShifted_forces_one (for EVERY state and extractor some round error ≥ 1; the Prop forces 1 ≤ εfold δ), satisfiable only at ε ≡ 1 (degenerateRbr: every Reduction is Def-4.2 sound at error 1), the price 1/5 refuted at F₅ (shifted_accRbrError_false_F5), and shifted_retired_log_stands_F5: the unlinked object dead and linkedAdaptiveIncrementSound_F5 live at the SAME instance — the Def-4.2 twin of adaptiveViaLog_accRbrError_false. The linked log route is the corrected statement, not a transport source; its Def-4.2 packaging is the named obligation accRbrKnowledgeSoundBcsShiftedLinked ([ACC-rbr-bcs-shifted-linked]: satisfiable at ε ≡ 1, ε ≡ 0 refuted at the all-ones designation by decide, open at accRbrError). The :552 ledger bullet in AccRbrBcsShifted says RETIRED. Owner note: hoist not_of_uniformProb_le_zero into Depth.lean beside AccRbrFold.uniformProb_pos_of_witness on a later pass.
++
++import Selvage.P3FriQueryTransport
+--- /dev/null
++++ b/Theory/BitReverseFriTransport.lean
+@@ -0,0 +1,116 @@
++/-
++[DERIVED statement-first] Fixed-width bit reversal transports removal of low
++runtime index bits to the natural exponent modulo the remaining domain size.
++The subject is the existing BitVec.reverse/extractLsb' operations, not a new
++bit-reversal implementation or a FRI probability model.
++-/
++import Mathlib.Data.Nat.Bitwise
++
++namespace Minidregg.Theory.BitReverseFriTransport
++
++set_option autoImplicit false
++
++def ProjectionTransport : Prop :=
++  ∀ (a b : Nat) (x : BitVec (b + a)),
++    (x.extractLsb' a b).reverse.toNat = x.reverse.toNat % 2 ^ b
++
++/-- A natural-number view of the existing fixed-width reversal operation. -/
++def reverseIndex (bits index : Nat) : Nat := (BitVec.ofNat bits index).reverse.toNat
++
++def QueryTransport : Prop :=
++  ∀ (bits dropped index : Nat), dropped ≤ bits → index < 2 ^ bits →
++    reverseIndex (bits - dropped) (index / 2 ^ dropped) =
++      reverseIndex bits index % 2 ^ (bits - dropped)
++
++theorem reverse_high_eq_low_reverse (a b : Nat) (x : BitVec (b + a)) :
++    (x.extractLsb' a b).reverse = x.reverse.extractLsb' 0 b := by
++  ext i hi
++  simp only [BitVec.getElem_reverse, BitVec.getElem_extractLsb', Nat.zero_add,
++    BitVec.getMsbD_eq_getLsbD, BitVec.getLsbD_extractLsb', BitVec.getLsbD_reverse]
++  simp only [hi, show b - 1 - i < b by omega, show i < b + a by omega,
++    decide_true, Bool.true_and]
++  congr 1
++  omega
++
++theorem projection_transport : ProjectionTransport := by
++  intro a b x
++  rw [reverse_high_eq_low_reverse]
++  simp only [BitVec.extractLsb'_toNat, Nat.shiftRight_zero]
++
++theorem bounded_extract (a b index : Nat) (hi : index < 2 ^ (b + a)) :
++    (BitVec.ofNat (b + a) index).extractLsb' a b = BitVec.ofNat b (index / 2 ^ a) := by
++  apply BitVec.eq_of_toNat_eq
++  simp only [BitVec.extractLsb'_toNat, BitVec.toNat_ofNat, Nat.mod_eq_of_lt hi,
++    Nat.shiftRight_eq_div_pow]
++
++theorem query_transport : QueryTransport := by
++  intro bits dropped index hd hi
++  have he : bits - dropped + dropped = bits := Nat.sub_add_cancel hd
++  have h := projection_transport dropped (bits - dropped)
++    (BitVec.ofNat (bits - dropped + dropped) index)
++  rw [bounded_extract dropped (bits - dropped) index (by simpa only [he] using hi)] at h
++  exact h.trans (congrArg
++    (fun width => (BitVec.ofNat width index).reverse.toNat % 2 ^ (bits - dropped)) he)
++
++theorem query_transport_composition (bits first total index : Nat)
++    (hf : first ≤ total) (ht : total ≤ bits) (hi : index < 2 ^ bits) :
++    reverseIndex (bits - first) (index / 2 ^ first) % 2 ^ (bits - total) =
++      reverseIndex (bits - total) (index / 2 ^ total) := by
++  rw [query_transport bits first index (hf.trans ht) hi,
++    query_transport bits total index ht hi]
++  exact Nat.mod_mod_of_dvd _ (pow_dvd_pow 2 (by omega))
++
++theorem binary_coherent_index (bits round index : Nat)
++    (hr : round + 1 ≤ bits) (hi : index < 2 ^ bits) :
++    reverseIndex (bits - 1) (index / 2) % 2 ^ (bits - (round + 1)) =
++      reverseIndex (bits - (round + 1)) (index / 2 ^ (round + 1)) := by
++  simpa only [Nat.pow_one] using
++    query_transport_composition bits 1 (round + 1) index (by omega) hr hi
++
++theorem reverse_involution (b : Nat) (x : BitVec b) : x.reverse.reverse = x :=
++  BitVec.reverse_reverse_eq
++
++theorem reverseIndex_lt (bits index : Nat) : reverseIndex bits index < 2 ^ bits :=
++  (BitVec.ofNat bits index).reverse.isLt
++
++def reverseEquiv (b : Nat) : BitVec b ≃ BitVec b where
++  toFun := BitVec.reverse
++  invFun := BitVec.reverse
++  left_inv := reverse_involution b
++  right_inv := reverse_involution b
++
++theorem source_premises_inhabited : 3 ≤ 8 ∧ 181 < 2 ^ 8 := by decide +kernel
++
++theorem source_index_subject :
++    ((BitVec.ofNat 8 181).extractLsb' 3 5).reverse.toNat = 13 ∧
++    (BitVec.ofNat 8 181).reverse.toNat % 2 ^ 5 = 13 := by
++  decide +kernel
++
++theorem wrong_projection_refused :
++    ((BitVec.ofNat 8 181).extractLsb' 3 5).reverse.toNat ≠ 181 % 2 ^ 5 := by
++  decide +kernel
++
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.reverse_high_eq_low_reverse' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms reverse_high_eq_low_reverse
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.projection_transport' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms projection_transport
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.bounded_extract' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms bounded_extract
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.query_transport' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms query_transport
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.query_transport_composition' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms query_transport_composition
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.binary_coherent_index' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms binary_coherent_index
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.reverse_involution' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms reverse_involution
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.reverseIndex_lt' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms reverseIndex_lt
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.source_premises_inhabited' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms source_premises_inhabited
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.source_index_subject' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms source_index_subject
++/-- info: 'Minidregg.Theory.BitReverseFriTransport.wrong_projection_refused' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms wrong_projection_refused
++
++end Minidregg.Theory.BitReverseFriTransport
+--- /dev/null
++++ b/Selvage/P3FriQueryTransport.lean
+@@ -0,0 +1,51 @@
++/-
++[DERIVED statement-first] The bit-reversed binary runtime query's pair seed
++feeds the existing powerTwoRoundIndex, without changing the tower or sampler.
++The 20-bit premise witness and wrong-row falsifier below exercise this exact map.
++This is index arithmetic, not a challenger or Rust execution refinement.
++-/
++import Theory.BitReverseFriTransport
++import Selvage.HalfThresholdFriCoherent
++
++namespace Minidregg.Selvage.P3FriQueryTransport
++
++open Minidregg.Theory.BitReverseFriTransport
++
++set_option autoImplicit false
++
++def pairSeed (ell index : Nat) : PowerTwoFriLevels ell 1 :=
++  ⟨reverseIndex (ell - 1) (index / 2), reverseIndex_lt _ _⟩
++
++def ExistingCoherentTransport : Prop :=
++  ∀ (ell m : Nat) (hm : m ≤ ell) (j : Fin m) (index : Fin (2 ^ ell)),
++    (powerTwoRoundIndex hm j (pairSeed ell index.val)).val =
++      reverseIndex (ell - (j.val + 1)) (index.val / 2 ^ (j.val + 1))
++
++theorem existing_coherent_transport : ExistingCoherentTransport := by
++  intro ell m hm j index
++  exact binary_coherent_index ell j.val index.val (by omega) index.isLt
++
++theorem actual_dimension_premises :
++    19 ≤ 20 ∧ 18 < 19 ∧ 181 < 2 ^ 20 := by decide +kernel
++
++theorem actual_dimension_subject :
++    (powerTwoRoundIndex (ell := 20) (m := 19) (by decide)
++      (⟨2, by decide⟩ : Fin 19) (pairSeed 20 181)).val =
++      reverseIndex 17 (181 / 8) :=
++  existing_coherent_transport 20 19 (by decide) ⟨2, by decide⟩ ⟨181, by decide⟩
++
++theorem natural_untransported_index_refused :
++    (powerTwoRoundIndex (ell := 20) (m := 19) (by decide)
++      (⟨2, by decide⟩ : Fin 19) (pairSeed 20 181)).val ≠ 181 % 2 ^ 17 := by
++  decide +kernel
++
++/-- info: 'Minidregg.Selvage.P3FriQueryTransport.existing_coherent_transport' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms existing_coherent_transport
++/-- info: 'Minidregg.Selvage.P3FriQueryTransport.actual_dimension_premises' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in #print axioms actual_dimension_premises
++/-- info: 'Minidregg.Selvage.P3FriQueryTransport.actual_dimension_subject' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms actual_dimension_subject
++/-- info: 'Minidregg.Selvage.P3FriQueryTransport.natural_untransported_index_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms natural_untransported_index_refused
++
++end Minidregg.Selvage.P3FriQueryTransport

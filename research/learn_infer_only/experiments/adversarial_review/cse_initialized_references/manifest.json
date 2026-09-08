@@ -1,0 +1,49 @@
+{
+  "files": {
+    "EXECUTION.json": {
+      "bytes": 940,
+      "sha256": "cbc314f3b284b52da1777ea09884873b9de5e2c06771a29b6eb0e817ff577082"
+    },
+    "NEXT.md": {
+      "bytes": 392,
+      "sha256": "25c2eafa888eced30949361c11c8a02b42412e7038a4bc28c19d5e63a5fa0bef"
+    },
+    "REPORT.md": {
+      "bytes": 9081,
+      "sha256": "caf10024b2634fa2d5c684449bfad12d8bcb0e14d58ae0134809144403471927"
+    },
+    "STATUS.md": {
+      "bytes": 639,
+      "sha256": "06b827eee1efd25c974b5a58a0640a265a25677fd92cfead12627443bd39c0c1"
+    },
+    "check_evidence.py": {
+      "bytes": 8200,
+      "sha256": "a9c8ea9e4d82288ea18ea1c296b7aff91b164778fb4186dfa78ad7d0f05f8da6"
+    },
+    "evidence_check.log": {
+      "bytes": 1568,
+      "sha256": "56c98cb06a0ed43b4b2b236e68f97af2c8b4011644571172c1c023bb757e4464"
+    },
+    "evidence_results.json": {
+      "bytes": 9796,
+      "sha256": "f91a392d72ca9b4cb1da4413fdcbbc6824a3fd59e35d95c824121d7a2688c133"
+    },
+    "presence_check.log": {
+      "bytes": 1179,
+      "sha256": "2743ea6f85f0708b6b98ba3670d45f4b2a8ea89cef0fd4745a553adfc9dc96a4"
+    },
+    "presence_check.py": {
+      "bytes": 3484,
+      "sha256": "5600528e8dc18a8f1aa74cd25583a10942f64ce82590a083cf38b5765cebe65d"
+    },
+    "presence_results.json": {
+      "bytes": 1179,
+      "sha256": "2743ea6f85f0708b6b98ba3670d45f4b2a8ea89cef0fd4745a553adfc9dc96a4"
+    },
+    "review.json": {
+      "bytes": 705,
+      "sha256": "efb4c3635f1cebd3d4597929122a440cf6c04a93a1a6b0bb80c91263a3e1e44e"
+    }
+  },
+  "schema": "independent-cse-initialized-references-manifest-v1"
+}

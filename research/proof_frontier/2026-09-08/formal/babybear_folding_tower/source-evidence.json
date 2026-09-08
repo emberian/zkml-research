@@ -1,0 +1,175 @@
+{
+  "sources": {
+    "/Users/ember/dev/minidregg/prover/src/babybear.rs": {
+      "lines": [
+        3,
+        10,
+        13,
+        60,
+        75
+      ],
+      "seen": "modulus, 2-adicity27, source generator440564289, repeated-squaring lower roots, 31^15 unit test",
+      "sha256": "f405d7c6d3645a0535dbb40a98a2e4d528a44a5d3117773dbd2c38157dda1959",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/minidregg/prover/src/mle_kernels.rs": {
+      "lines": [
+        407,
+        421,
+        425,
+        565,
+        571,
+        650
+      ],
+      "seen": "Ext6 natural-order half-pair fold, inverse-root twiddle, natural-power evaluation helper",
+      "sha256": "53a2fa85f63863cde5b0fe9ce4c8a4759c85aa6956dd8d3b339344daa2d84550",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/baby-bear/src/baby_bear.rs": {
+      "lines": [
+        42,
+        46,
+        49
+      ],
+      "seen": "active p3 two-adic root table, bits20 root0x0ba067a3, maxroot0x1a427a41",
+      "sha256": "6695e14d7adbc4549c876f1e48e342bd89fb4eef35da48338194cc4e60a7b87a",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/breadstuffs/Cargo.toml": {
+      "lines": [
+        247,
+        250,
+        320
+      ],
+      "seen": "active vendored FRI patch and p3 git revision82cfad73cd734d37a0d51953094f970c531817ec",
+      "sha256": "1c3572d9d73d88899c3652488b69b2e3d1e1faa2309b6c7338128c9eb3bc96a8",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs": {
+      "lines": [
+        230,
+        243,
+        256,
+        270,
+        276,
+        626,
+        677,
+        764
+      ],
+      "seen": "bit-reversed row roots and inverse-root twiddles; PCS evaluation coset Val::GENERATOR*H",
+      "sha256": "9060c57409d84c42a2454d0b6895960d3e4fcb8fe2f9bb855cf2a18a5fd8f5a9",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs": {
+      "lines": [
+        214,
+        238,
+        245,
+        257
+      ],
+      "seen": "bit-reversed adjacent conjugate rows; next-height beta^arity input injection; final polynomial",
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs": {
+      "lines": [
+        268,
+        313,
+        447
+      ],
+      "seen": "query bits, bit-reversed polynomial evaluation point, authenticated row/current-index shift",
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/minidregg/Selvage/BabyBearExt4.lean": {
+      "lines": [
+        29,
+        43,
+        47,
+        59,
+        131
+      ],
+      "seen": "existing modulus and proved prime, squareN certified repeated squaring, actual AdjoinRoot X^4-11 carrier",
+      "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/minidregg/Selvage/Proximity.lean": {
+      "lines": [
+        177,
+        337,
+        377
+      ],
+      "seen": "existing FoldingData/FoldingTower interfaces and fold_preserves_code",
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean": {
+      "lines": [
+        28,
+        50,
+        217
+      ],
+      "seen": "existing level types, modulo query indices and sampled consumer",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/GroupTheory/OrderOfElement.lean": {
+      "lines": [
+        529
+      ],
+      "seen": "orderOf_eq_prime_pow",
+      "sha256": "764e07cfc91094fd6e83d7e7aac78ed51768743415d18adfd40aa965ef6127d0",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/minidregg/.lake/packages/mathlib/Mathlib/RingTheory/RootsOfUnity/PrimitiveRoots.lean": {
+      "lines": [
+        136,
+        249,
+        284,
+        421
+      ],
+      "seen": "power injectivity, order descent, injective root mapping, primitive order2 equals-1",
+      "sha256": "1cfba2efdd9bce4088376b96021fae035aefa9daba3201cc23ab8b464d5b818d",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection via rg/sed; no source-to-runtime execution equivalence asserted"
+    },
+    "/Users/ember/dev/minidregg/Selvage/ReedSolomon.lean": {
+      "lines": [
+        122,
+        149
+      ],
+      "seen": "card_agreeSet_lt_of_ne and reedSolomonCode_minDist",
+      "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection; existing proof dependency"
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean": {
+      "lines": [
+        290,
+        333
+      ],
+      "seen": "frozen fullUDSampling_coherent_sound and fullUDSampling_babyBear_55",
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+      "source_label": "SOURCE",
+      "instrument": "local source inspection; existing proof dependency"
+    }
+  },
+  "root_fact_absence_search": {
+    "corpus": "current main /Users/ember/dev/minidregg Lean files reached by rg with ordinary ignore rules",
+    "command": "rg -n 'IsPrimitiveRoot|440564289' /Users/ember/dev/minidregg --glob '*.lean'",
+    "result": "no matches"
+  },
+  "web_queries": 0,
+  "scry_sql_queries": 0
+}

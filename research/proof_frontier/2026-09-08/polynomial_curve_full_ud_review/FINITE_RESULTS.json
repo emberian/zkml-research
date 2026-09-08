@@ -1,0 +1,322 @@
+{
+  "scope": "Exact public finite field and integer/Fraction mathematics only; not Lean kernel evidence or Rust execution.",
+  "degree_arithmetic": {
+    "cases": 187264,
+    "integer_radius_boundary_cases": 8448,
+    "e_zero_cases": 16640,
+    "M_range": [
+      1,
+      8
+    ],
+    "n_range": [
+      1,
+      64
+    ],
+    "good_challenges_tested": "M*n+1, the largest PS ratio among admissible integer cardinalities",
+    "at_Mn_boundary_PS_ratio": "exactly 1 when 2e+d=n; strict PS premise fails"
+  },
+  "exhaustive_curves": [
+    {
+      "p": 5,
+      "M": 1,
+      "n": 3,
+      "d": 1,
+      "e": 1,
+      "families": 625,
+      "core_premise_satisfied": 73,
+      "not_jointly_close": 552,
+      "max_good_without_common_agreement": 3,
+      "strict_threshold_counterexample": {
+        "rows": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "good": [
+          0,
+          2,
+          4
+        ],
+        "largest_common_set": 1
+      }
+    },
+    {
+      "p": 7,
+      "M": 2,
+      "n": 3,
+      "d": 1,
+      "e": 1,
+      "families": 117649,
+      "core_premise_satisfied": 1027,
+      "not_jointly_close": 116622,
+      "max_good_without_common_agreement": 6,
+      "strict_threshold_counterexample": {
+        "rows": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1
+          ],
+          [
+            1,
+            2,
+            6
+          ]
+        ],
+        "good": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "largest_common_set": 1
+      }
+    },
+    {
+      "p": 7,
+      "M": 2,
+      "n": 2,
+      "d": 1,
+      "e": 0,
+      "families": 343,
+      "core_premise_satisfied": 1,
+      "not_jointly_close": 342,
+      "max_good_without_common_agreement": 2,
+      "strict_threshold_counterexample": null
+    }
+  ],
+  "higher_degree_controls": {
+    "M7_M8": [
+      {
+        "p": 101,
+        "M": 7,
+        "n": 2,
+        "d": 1,
+        "delta": "1/5",
+        "integer_error": 0,
+        "row_polynomial": [
+          0,
+          13,
+          54,
+          8,
+          73,
+          74,
+          80,
+          1
+        ],
+        "good": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "probability": "7/101",
+        "curve_bound": "14/101",
+        "false_affine_bound": "2/101"
+      },
+      {
+        "p": 101,
+        "M": 8,
+        "n": 2,
+        "d": 1,
+        "delta": "1/5",
+        "integer_error": 0,
+        "row_polynomial": [
+          0,
+          10,
+          39,
+          99,
+          2,
+          60,
+          19,
+          73,
+          1
+        ],
+        "good": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "probability": "8/101",
+        "curve_bound": "16/101",
+        "false_affine_bound": "2/101"
+      }
+    ],
+    "post_challenge_g_refusal": {
+      "p": 101,
+      "n": 2,
+      "M": 8,
+      "u": "u_0=(0,1); u_1..u_7=0",
+      "g_beta": "(0,-beta^-8) for beta!=0; (0,0) otherwise",
+      "good_count": 100,
+      "forbidden_claim_bound": "16/101",
+      "actual_probability": "100/101"
+    }
+  },
+  "source_witness_controls": [
+    {
+      "M": 1,
+      "positive_radius_good": 101,
+      "corrupted_coefficient_distances": [
+        1,
+        1
+      ],
+      "curve_distance_histogram": {
+        "0": 1,
+        "1": 100
+      },
+      "common_agreement_size": 4,
+      "e_zero_good": 101
+    },
+    {
+      "M": 2,
+      "positive_radius_good": 101,
+      "corrupted_coefficient_distances": [
+        1,
+        1,
+        1
+      ],
+      "curve_distance_histogram": {
+        "1": 101
+      },
+      "common_agreement_size": 4,
+      "e_zero_good": 101
+    },
+    {
+      "M": 3,
+      "positive_radius_good": 101,
+      "corrupted_coefficient_distances": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "curve_distance_histogram": {
+        "0": 3,
+        "1": 98
+      },
+      "common_agreement_size": 4,
+      "e_zero_good": 101
+    },
+    {
+      "M": 4,
+      "positive_radius_good": 101,
+      "corrupted_coefficient_distances": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "curve_distance_histogram": {
+        "0": 4,
+        "1": 97
+      },
+      "common_agreement_size": 4,
+      "e_zero_good": 101
+    },
+    {
+      "M": 5,
+      "positive_radius_good": 101,
+      "corrupted_coefficient_distances": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "curve_distance_histogram": {
+        "0": 1,
+        "1": 100
+      },
+      "common_agreement_size": 4,
+      "e_zero_good": 101
+    },
+    {
+      "M": 6,
+      "positive_radius_good": 101,
+      "corrupted_coefficient_distances": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "curve_distance_histogram": {
+        "1": 101
+      },
+      "common_agreement_size": 4,
+      "e_zero_good": 101
+    },
+    {
+      "M": 7,
+      "positive_radius_good": 101,
+      "corrupted_coefficient_distances": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "curve_distance_histogram": {
+        "0": 3,
+        "1": 98
+      },
+      "common_agreement_size": 4,
+      "e_zero_good": 101
+    },
+    {
+      "M": 8,
+      "positive_radius_good": 101,
+      "corrupted_coefficient_distances": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "curve_distance_histogram": {
+        "1": 101
+      },
+      "common_agreement_size": 4,
+      "e_zero_good": 101
+    }
+  ],
+  "script_sha256": "231369e73785c0863fa592413e30ba08036610b57a06a8eb9a08190a24d5256f",
+  "elapsed_seconds": 2.195129208994331,
+  "status": "PASS"
+}

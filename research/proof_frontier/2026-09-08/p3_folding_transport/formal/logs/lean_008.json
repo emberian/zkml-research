@@ -1,0 +1,17 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-p3-folding-transport-20260908/.lake/build/lib/lean/Theory/BitReverseFriTransport.olean",
+    "Theory/BitReverseFriTransport.lean"
+  ],
+  "cwd": "/tmp/minidregg-p3-folding-transport-20260908",
+  "exit_code": 0,
+  "seconds": 8.365600833989447,
+  "source_sha256": "49a40f98c2b1eeca5b36c0a75138acc86fa5467368a7318e5b72b2cdec3c00e7",
+  "source_sha256_after": "49a40f98c2b1eeca5b36c0a75138acc86fa5467368a7318e5b72b2cdec3c00e7",
+  "stdout": "'Minidregg.Theory.BitReverseFriTransport.reverse_high_eq_low_reverse' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.BitReverseFriTransport.projection_transport' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.BitReverseFriTransport.bounded_extract' depends on axioms: [propext]\n'Minidregg.Theory.BitReverseFriTransport.query_transport' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.BitReverseFriTransport.query_transport_composition' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.BitReverseFriTransport.binary_coherent_index' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.BitReverseFriTransport.reverse_involution' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.BitReverseFriTransport.reverseIndex_lt' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.BitReverseFriTransport.source_premises_inhabited' depends on axioms: [propext]\n'Minidregg.Theory.BitReverseFriTransport.source_index_subject' depends on axioms: [propext, Quot.sound]\n'Minidregg.Theory.BitReverseFriTransport.wrong_projection_refused' depends on axioms: [propext, Quot.sound]\n",
+  "stderr": ""
+}
