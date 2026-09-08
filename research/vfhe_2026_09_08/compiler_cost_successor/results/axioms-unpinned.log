@@ -1,0 +1,30 @@
+'Minidregg.Compiler.AirAssertionShare.instLawfulBEqKey' depends on axioms: [propext]
+'Minidregg.Compiler.AirAssertionShare.restore_key_hom' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.restore_key_eval' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.mem_uniqueGo' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.share_preserves' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.optimize_preserves' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.emitShared_accepts_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.emitShared_forces' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.Teeth.distinct_assertions_collide' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.Teeth.repeated_assertion_removed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.Teeth.nonzero_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.Teeth.emitted_premise_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.Teeth.changed_distinct_variable_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.AirAssertionShare.Teeth.dropping_distinct_assertion_is_failopen' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvRescaleAssertionShare.sharedSystem_accepts_iff' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvRescaleAssertionShare.sharedSystem_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

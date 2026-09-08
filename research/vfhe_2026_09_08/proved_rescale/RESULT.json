@@ -1,0 +1,238 @@
+{
+  "schema": "vfhe-small-complete-rescale-result-v1",
+  "completed_utc": "2026-09-08T16:55:05.997276+00:00",
+  "claim": "EXECUTED actual small BFV ciphertext multiplication and proof of its complete fixed-point rescale step",
+  "operation": {
+    "actual_rescale_positions": 24,
+    "all_output_plaintext_coefficients_match": true,
+    "base_moduli": [
+      68719403009,
+      68719230977,
+      137438822401
+    ],
+    "claim": "EXECUTED actual BFV ct*ct and complete rescale data at a small arithmetic-only degree",
+    "degree": 8,
+    "expected_plaintext": [
+      1032033,
+      1032083,
+      1032137,
+      0,
+      56,
+      110,
+      160,
+      204
+    ],
+    "extended_moduli": [
+      68719403009,
+      68719230977,
+      137438822401,
+      4611686018427322369,
+      4611686018427289601,
+      4611686018427215873
+    ],
+    "files": [
+      {
+        "bytes": 238,
+        "name": "a.ct",
+        "sha256": "8d62426c190c3931f433ed5b69274f826cdb375d7a1f80b574a724b53abb4ab6"
+      },
+      {
+        "bytes": 238,
+        "name": "b.ct",
+        "sha256": "8059db86e3912f41e4b141a24de6859dbbd64d32dd2873fc418b37486cbccda7"
+      },
+      {
+        "bytes": 357,
+        "name": "output.ct",
+        "sha256": "aa9a8ba600a907180f9ad18755f9302392b34b634e6f4f85495ab9bd7b6d71be"
+      },
+      {
+        "bytes": 154,
+        "name": "public_key.bin",
+        "sha256": "5ca1841ad807f9d6311ab312c55b613d0ba4e3342b932b7888c969b405dba91f"
+      },
+      {
+        "bytes": 304,
+        "name": "product-0.poly",
+        "sha256": "7314c6f4dffed8d60995628eee76e1a9454c71e7469344a5ab38fc106fd11b28"
+      },
+      {
+        "bytes": 304,
+        "name": "product-1.poly",
+        "sha256": "41278265520b97974a6f8508fcabe57e537194d63537ffc255f54d7a5984ce98"
+      },
+      {
+        "bytes": 304,
+        "name": "product-2.poly",
+        "sha256": "62cc3858eb4ad94e0d7709fe508d00d05dda57b1c2b822461e08967e94613019"
+      }
+    ],
+    "input_components": 2,
+    "modulus_switch": false,
+    "multiply_ns": 13417,
+    "output_components": 3,
+    "output_residue_equations": 72,
+    "padding": {
+      "rows": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "source_row": 23
+    },
+    "plaintext_modulus": 1032193,
+    "proof_rows": 32,
+    "public_intermediate_downscale_matches_all_output_residues": true,
+    "public_tuple_width": 88,
+    "relinearization": false,
+    "scope": "Whole small rescale step. RNS extension and convolution provenance from a,b to product are executed source-based reconstruction, not covered by the rescale relation. Degree8 is not a secure FHE parameter.",
+    "secret_key_saved": false,
+    "total_ns": 18164209
+  },
+  "proof": {
+    "actual_positions": 24,
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "claim": "EXECUTED complete small BFV rescale proof over Lean-generated relation",
+    "proof_bytes": 8592353,
+    "proof_rows": 32,
+    "proof_sha256": "939cc8f8c3c2d24e2f5809b1fb4e50057aab72835744fb5aff529cccf67a63b2",
+    "prove_ns": 1377067292,
+    "public_tuple_width": 88,
+    "self_verify_ns": 408355042,
+    "template_sha256": "842a74f0a9950243847bf10427ce5394ad5314eb48488aeedeb68abccca55822",
+    "trace_width": 37665,
+    "verified": true
+  },
+  "fresh_verifier": {
+    "changed_output_rejected": false,
+    "claim": "EXECUTED fresh-process verification",
+    "proof_sha256": "939cc8f8c3c2d24e2f5809b1fb4e50057aab72835744fb5aff529cccf67a63b2",
+    "verified": true,
+    "verify_ns": 311987500
+  },
+  "changed_output": {
+    "changed_output_rejected": true,
+    "claim": "EXECUTED fresh-process verification",
+    "proof_sha256": "939cc8f8c3c2d24e2f5809b1fb4e50057aab72835744fb5aff529cccf67a63b2",
+    "verified": false,
+    "verify_ns": 92772208
+  },
+  "costs": {
+    "generate": {
+      "command": [
+        "target/release/vfhe-proved-rescale",
+        "generate",
+        "results/case001"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale",
+      "started_utc": "2026-09-08T16:44:30.061135+00:00",
+      "pid": 9229,
+      "returncode": 0,
+      "elapsed_seconds": 0.033069875033106655,
+      "finished_utc": "2026-09-08T16:44:30.094864+00:00",
+      "user_seconds": 0.017058999999999998,
+      "system_seconds": 0.006424,
+      "max_rss_bytes": 2981888
+    },
+    "prove": {
+      "command": [
+        "env",
+        "RAYON_NUM_THREADS=4",
+        "target/release/vfhe-proved-rescale",
+        "prove",
+        "../arithmetic_rescale/artifacts/template_ir2.json",
+        "results/case001",
+        "../arithmetic_rescale/artifacts/trace.leu32",
+        "results/proof001"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale",
+      "started_utc": "2026-09-08T16:49:46.516741+00:00",
+      "pid": 14405,
+      "returncode": 0,
+      "elapsed_seconds": 2.027717041957658,
+      "finished_utc": "2026-09-08T16:49:48.547934+00:00",
+      "user_seconds": 2.00797,
+      "system_seconds": 0.11793,
+      "max_rss_bytes": 244711424
+    },
+    "verify": {
+      "command": [
+        "env",
+        "RAYON_NUM_THREADS=4",
+        "target/release/vfhe-proved-rescale",
+        "verify",
+        "../arithmetic_rescale/artifacts/template_ir2.json",
+        "results/case001",
+        "results/proof001/proof.bin"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale",
+      "started_utc": "2026-09-08T16:50:58.608168+00:00",
+      "pid": 15769,
+      "returncode": 0,
+      "elapsed_seconds": 0.43959437496960163,
+      "finished_utc": "2026-09-08T16:50:59.048214+00:00",
+      "user_seconds": 0.4154,
+      "system_seconds": 0.019932,
+      "max_rss_bytes": 106135552
+    },
+    "verify-changed-output": {
+      "command": [
+        "env",
+        "RAYON_NUM_THREADS=4",
+        "target/release/vfhe-proved-rescale",
+        "verify-changed-output",
+        "../arithmetic_rescale/artifacts/template_ir2.json",
+        "results/case001",
+        "results/proof001/proof.bin"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale",
+      "started_utc": "2026-09-08T16:50:59.150574+00:00",
+      "pid": 15789,
+      "returncode": 0,
+      "elapsed_seconds": 0.21269837499130517,
+      "finished_utc": "2026-09-08T16:50:59.363687+00:00",
+      "user_seconds": 0.19688699999999998,
+      "system_seconds": 0.014926,
+      "max_rss_bytes": 108314624
+    }
+  },
+  "emission": {
+    "wrong_nearest_refused": true,
+    "trace_width": 37665,
+    "trace_bytes": 4821120,
+    "rows": 32,
+    "radix64_refused": true,
+    "public_tuple_order": "rowID,product_extended6x11,output3x7",
+    "public_arity": 88,
+    "ir2_arithmetic_constraints": 45209,
+    "captured_nearest_plus_one_accepted": true,
+    "all_actual_source_rows_checked": true
+  },
+  "artifacts": {
+    "proof": "results/proof001/proof.bin",
+    "public_rows": "results/case001/public_rows.json",
+    "public_rows_sha256": "8f387a91dd4aea8655abcb8b135b800d36d7a96210c3b75d9b1d981f23477be8",
+    "template": "../arithmetic_rescale/artifacts/template_ir2.json",
+    "trace": "../arithmetic_rescale/artifacts/trace.leu32"
+  },
+  "selected_source_pins": {
+    "Cargo.toml": "44dcc1ef3758d7bc7185d91ad7d65fa8cac9cca40b493c126fab1894167b0489",
+    "Cargo.lock": "33dbb45f55536f1a740c7f8892c589514c354aafee8829caca4fd9ff9a14bec6",
+    "src/main.rs": "9cbeaa6a76795d28c98bcbcea158b059d5847e5cd3e7678543211282c2225b81",
+    "run_command.py": "0db436e24924e78f79ef53cadd68c714de5b62789c37afb799322ae32b6bc23d",
+    "target/release/vfhe-proved-rescale": "11bdb1c15236ac169a156a742207d7d665a991687b056215cc2d0f602ea41239",
+    "../proved_operation/backend/src/lib.rs": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b"
+  },
+  "scope": [
+    "All24 actual positions across3 output components are covered;8 repeated public rows pad the trace to32.",
+    "Output residues are forced by the generated source+target integer/fixed-point downscaler relation, including existing nearest-plus-one behavior.",
+    "Input extension and convolution were executed/reconstructed with pinned library operators but are not included in this rescale proof.",
+    "The public input/output tuples are decoded PowerBasis coefficients; codec and basis conversion remain Rust implementation assumptions.",
+    "N8 is an arithmetic fixture, not a secure FHE parameter. No relinearization, modulus switching, encrypted-learner claim or private-key storage."
+  ]
+}

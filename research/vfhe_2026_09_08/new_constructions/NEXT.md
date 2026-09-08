@@ -1,7 +1,7 @@
 # Next
 
-[EXECUTED] Source search, exact fusion relation, public Python/native controls, actual prover integration and the first PCS-enabled proof are complete. Frozen native patch and command/source pins are under `implementation/`; preserve this first-run evidence.
+[EXECUTED] Source search, exact fusion relation, public Python/native controls, initial actual prover integration, and larger matched native comparison are complete. Preserve the first native package under implementation/ and the additive complete-source/proof-replay package under scaled/.
 
-[OPEN root-authorized next cycle] Use a separate successor copy/patch for one larger matched native proof comparison, incorporating polynomial_gluing's shared-point quotient/remainder contraction after it arrives. Choose one configuration with real row/component reuse and keep parameter/security scope explicit. Preserve the unchanged verifier and avoid a benchmark grid.
+[EXECUTED] The larger pair integrates polynomial_gluing's shared Y/Q contraction, uses the same matrix/ciphertexts for both paths, and establishes a measured combined whole-prover improvement with complete proof-byte equality. No additional proof run is needed for this package.
 
-[OPEN public replay] Coordinate with independent_review on a complete canonical serializer for the actual proof structure. Current saved PCS pieces and ciphertexts do not encode the sumcheck private fields; they cannot alone replay the completed proof outside its process.
+[OPEN coordinated consumer] independent_review has the complete canonical proof codec, fresh verifier API and successful saved statement/proof fixtures. Browser/WASM execution is their independent next seam; this lane claims native replay only. Root owns integration and shared ledgers.

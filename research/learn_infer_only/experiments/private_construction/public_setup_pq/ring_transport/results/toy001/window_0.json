@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "role_command": "window",
+  "pid": 7889,
+  "elapsed_seconds": 0.0022271659690886736,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_0.ring",
+      "kind": "ciphertext",
+      "bytes": 1566,
+      "payload_bytes": 1027,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "080020ac5bf34abd88af99c71bed2f93b96994b89cb0ad059c92e41212cf512f"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring",
+        "coefficient": 1
+      }
+    ],
+    "live_fresh_ciphertexts": 1,
+    "live_L1_weight": 1,
+    "private_rows_read": 0
+  },
+  "error": null
+}

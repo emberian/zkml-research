@@ -1,0 +1,12 @@
+'Minidregg.Selvage.ArityEight.TwoRound.BabyBear.firstSix_domains' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.BabyBear.firstSix_transitions' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.BabyBear.terminal_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.BabyBear.supplied_terminal_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

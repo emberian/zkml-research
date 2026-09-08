@@ -1,0 +1,26 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean:29:15: error: unsolved goals
+case add.add
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝¹ b✝¹ a✝ b✝ : Key F Idx
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝¹ b = true → a✝¹ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝¹ b = true → b✝¹ = b
+⊢ instBEqKey.beq a✝¹ a✝ = true → instBEqKey.beq b✝¹ b✝ = true → a✝¹ = a✝ ∧ b✝¹ = b✝
+
+case mul.mul
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝¹ b✝¹ a✝ b✝ : Key F Idx
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝¹ b = true → a✝¹ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝¹ b = true → b✝¹ = b
+⊢ instBEqKey.beq a✝¹ a✝ = true → instBEqKey.beq b✝¹ b✝ = true → a✝¹ = a✝ ∧ b✝¹ = b✝

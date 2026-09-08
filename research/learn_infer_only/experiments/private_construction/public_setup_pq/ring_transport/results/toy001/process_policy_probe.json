@@ -1,0 +1,32 @@
+[
+  {
+    "role": "public",
+    "argv": [
+      "/usr/bin/sandbox-exec",
+      "-f",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+      "-c",
+      "import sys; open(sys.argv[1],\"rb\").read()",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_01/public_canary.txt"
+    ],
+    "returncode": 1,
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys; open(sys.argv[1],\"rb\").read()\n                ~~~~^^^^^^^^^^^^^^^^^^\nPermissionError: [Errno 1] Operation not permitted: '/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_01/public_canary.txt'\n",
+    "stdout": ""
+  },
+  {
+    "role": "recipient_00",
+    "argv": [
+      "/usr/bin/sandbox-exec",
+      "-f",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/recipient_00.sb",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+      "-c",
+      "import sys; open(sys.argv[1],\"rb\").read()",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_01/public_canary.txt"
+    ],
+    "returncode": 1,
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys; open(sys.argv[1],\"rb\").read()\n                ~~~~^^^^^^^^^^^^^^^^^^\nPermissionError: [Errno 1] Operation not permitted: '/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_01/public_canary.txt'\n",
+    "stdout": ""
+  }
+]

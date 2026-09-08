@@ -1,0 +1,482 @@
+{
+  "scope": "two fresh-scalar arity-eight terminal transitions; existing coherent sampler; extracted supplied BinaryMerkle openings",
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "checkout": "/tmp/minidregg-multi-round-successor-20260908",
+  "lean_toolchain": "leanprover/lean4:v4.30.0",
+  "modules": [
+    {
+      "path": "Selvage/ArityEightTwoRound.lean",
+      "sha256": "88ccc7cc374cf0ad333b2432b092e72fb5b4b8df4260d848042bbe00b327dab9",
+      "lines": 215,
+      "theorems": 5,
+      "guards": 5,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-multi-round-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightTwoRound.olean",
+          "Selvage/ArityEightTwoRound.lean"
+        ],
+        "cwd": "/tmp/minidregg-multi-round-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "88ccc7cc374cf0ad333b2432b092e72fb5b4b8df4260d848042bbe00b327dab9",
+        "source_unchanged": true,
+        "elapsed_s": 24.448382139205933,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/checks/final-01.log"
+      },
+      "locations": {
+        "uniform_fst": 56,
+        "bad_challenge_bound": 66,
+        "earliest_transition_cover": 105,
+        "coherent_query_bound": 136,
+        "sound": 158
+      }
+    },
+    {
+      "path": "Selvage/ArityEightTwoRoundSupplied.lean",
+      "sha256": "aa2ae33fd4cb5d51f695838f32569a0634912b41c1531131ada3aa97d37357b5",
+      "lines": 147,
+      "theorems": 2,
+      "guards": 2,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-multi-round-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightTwoRoundSupplied.olean",
+          "Selvage/ArityEightTwoRoundSupplied.lean"
+        ],
+        "cwd": "/tmp/minidregg-multi-round-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "aa2ae33fd4cb5d51f695838f32569a0634912b41c1531131ada3aa97d37357b5",
+        "source_unchanged": true,
+        "elapsed_s": 7.806452989578247,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/checks/final-02.log"
+      },
+      "locations": {
+        "supplied_cover": 73,
+        "supplied_sound": 102
+      }
+    },
+    {
+      "path": "Selvage/ArityEightTwoRoundBabyBear.lean",
+      "sha256": "4e5102893fb5ffc6ecae0026102600abb93bbf31ac3ed282bbe58de45988a961",
+      "lines": 92,
+      "theorems": 4,
+      "guards": 4,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-multi-round-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightTwoRoundBabyBear.olean",
+          "Selvage/ArityEightTwoRoundBabyBear.lean"
+        ],
+        "cwd": "/tmp/minidregg-multi-round-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "4e5102893fb5ffc6ecae0026102600abb93bbf31ac3ed282bbe58de45988a961",
+        "source_unchanged": true,
+        "elapsed_s": 5.140439987182617,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/checks/final-03.log"
+      },
+      "locations": {
+        "firstSix_domains": 16,
+        "firstSix_transitions": 18,
+        "terminal_sound": 23,
+        "supplied_terminal_sound": 47
+      }
+    },
+    {
+      "path": "Selvage/ArityEightTwoRoundWitnesses.lean",
+      "sha256": "f5be8500a800fa2e07ca82143f1f76fa50adabc0f046598220d824b4322d68da",
+      "lines": 225,
+      "theorems": 13,
+      "guards": 13,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-multi-round-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightTwoRoundWitnesses.olean",
+          "Selvage/ArityEightTwoRoundWitnesses.lean"
+        ],
+        "cwd": "/tmp/minidregg-multi-round-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "f5be8500a800fa2e07ca82143f1f76fa50adabc0f046598220d824b4322d68da",
+        "source_unchanged": true,
+        "elapsed_s": 5.731308221817017,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/checks/final-04.log"
+      },
+      "locations": {
+        "fold_even_power": 13,
+        "fold8_power": 28,
+        "farWord_not_mem": 49,
+        "farWord_far": 68,
+        "second_input_not_fixed": 89,
+        "first_block_exact": 94,
+        "second_block_exact": 101,
+        "terminal_mem": 110,
+        "terminal_domain_zero": 114,
+        "terminal_domain_one": 118,
+        "zero_seed_accepts": 124,
+        "one_seed_rejects": 140,
+        "sound_fires": 157
+      }
+    },
+    {
+      "path": "Selvage/ArityEightTwoRoundLogged.lean",
+      "sha256": "4713570812a75c3466be109703b831fc78cdfeff7ff497195315f26c00cc06f4",
+      "lines": 352,
+      "theorems": 19,
+      "guards": 19,
+      "check": {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-o",
+          "/tmp/minidregg-multi-round-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightTwoRoundLogged.olean",
+          "Selvage/ArityEightTwoRoundLogged.lean"
+        ],
+        "cwd": "/tmp/minidregg-multi-round-successor-20260908",
+        "exit_code": 0,
+        "source_sha256": "4713570812a75c3466be109703b831fc78cdfeff7ff497195315f26c00cc06f4",
+        "source_unchanged": true,
+        "elapsed_s": 5.411710023880005,
+        "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/checks/final-05.log"
+      },
+      "locations": {
+        "evaluate_injective": 20,
+        "pathLog_valid": 25,
+        "openingLog_valid": 47,
+        "completeLog_valid": 62,
+        "completeLog_contains": 71,
+        "checkpoint_valid": 84,
+        "no_bad": 95,
+        "extracted_word": 104,
+        "extracted_checkpoints": 129,
+        "no_failure": 139,
+        "first_logged": 157,
+        "second_logged": 171,
+        "first_verified": 186,
+        "second_zero_verified": 200,
+        "checkpoints_logged": 218,
+        "openings_logged": 221,
+        "extracted_far": 226,
+        "supplied_zero_accepts": 235,
+        "supplied_bound_fires": 254
+      }
+    }
+  ],
+  "module_count": 5,
+  "theorem_count": 43,
+  "all_exact_guarded_checks_pass": true,
+  "standard_axioms_only": true,
+  "patch": "arity-eight-two-round.patch",
+  "patch_sha256": "5575cc8cc203bab5147ed6d4be499f8a12b2ea9b8ffc0dac0671be1a82cebeb2",
+  "dependencies": {
+    "Selvage/ArityEightSampling.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "07a38e944dd9c4d59209766e81f632e85cc8fca8892affe84d14acd5c73a766b",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightSampling.lean"
+    },
+    "Selvage/ArityEightFold.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "f2aaf9bbb3d2c694d663586d61929a354a01ff7a630234aeda41a64066a2288e",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightFold.lean"
+    },
+    "Selvage/Proximity.lean": {
+      "kind": "base",
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/Proximity.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/CurveFriChallenge.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "9de6c75ee6428629e178e24d91dfcebe97e4e7169cf6e5f827ead597f0f59547",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFriChallenge.lean"
+    },
+    "Selvage/CurveProximityGapFullUD.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "f3bf7a31bbd0bd4eee896c1f122e54a9b62e5e895f43d57263e6a02a555484e5",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveProximityGapFullUD.lean"
+    },
+    "Selvage/CurveFullUDCore.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "fa041cb91bcb807abc2cfd450dbc68182637727bf2ecd50e665498d2f89dcb14",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDCore.lean"
+    },
+    "Selvage/CurveFullUDBivariate.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "8f4d163e46eac8e571769613d726a92d7240a0e32bc750b6dfa427948297b66c",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDBivariate.lean"
+    },
+    "Selvage/CurveFullUDInterpolation.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "b5219a6f0804828366ee2551b0fd66a40310ac3a29095aff79572703631ec21e",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDInterpolation.lean"
+    },
+    "Selvage/CurveFullUDStatement.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "870c0238d9d4a0ef5e7d4dd8a2f338add72c126e3281c7a3ec258f4dc95831c6",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Selvage/CurveFullUDStatement.lean"
+    },
+    "Selvage/FullUDStatement.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDStatement.lean"
+    },
+    "Selvage/FullUDInterpolation.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDInterpolation.lean"
+    },
+    "Theory/RSInterpolationKernel.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationKernel.lean"
+    },
+    "Theory/RSInterpolationMatrix.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationMatrix.lean"
+    },
+    "Theory/PolynomialMatrixKernel.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel/PolynomialMatrixKernel.lean"
+    },
+    "Theory/CurveRSInterpolationKernel.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "bfd73f5a0c6f6eab6bcb2fc45dc2b961d6a5d01d176e42a5ddd655aae2dbcc2c",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Theory/CurveRSInterpolationKernel.lean"
+    },
+    "Theory/CurveRSInterpolationMatrix.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "1aa837d415fc37d43f64eff620ac4b4a4817677303b1b992caf20f27ba3242fa",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Theory/CurveRSInterpolationMatrix.lean"
+    },
+    "Theory/PolynomialCurve.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "2eb68d7ad88b63605c70edd3b1d37bec78c8ab247e8ba10e1cf796b1d50b9b15",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/src/Theory/PolynomialCurve.lean"
+    },
+    "Theory/PolynomialBivariate.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialBivariate.lean"
+    },
+    "Theory/PolynomialGluing.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluing.lean"
+    },
+    "Theory/PolynomialGluingStatement.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluingStatement.lean"
+    },
+    "Selvage/ProximityGapFullUD.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/ProximityGapFullUD.lean"
+    },
+    "Selvage/FullUDCore.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDCore.lean"
+    },
+    "Selvage/FullUDBivariate.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDBivariate.lean"
+    },
+    "Selvage/FullUDTeeth.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDTeeth.lean"
+    },
+    "Selvage/Sumcheck.lean": {
+      "kind": "base",
+      "sha256": "fb62103bbe093ba866ebef01e001eba3398d2bce707c7b71420a33185d3aa0a0",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/Sumcheck.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/HalfThresholdFriCoherent.lean": {
+      "kind": "base",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/ArityEightSupplied.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "7e1945b7b131983a78c441bd87c66f38a2685f3ce45da0a7b97befea0a1ec7b0",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightSupplied.lean"
+    },
+    "Selvage/EfficientRootOpening.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "defd19242e66118333d477cd14bcb1b108c4d517b1e55861dee66f35647dafe6",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening/src/Selvage/EfficientRootOpening.lean"
+    },
+    "Selvage/BinaryMerkle.lean": {
+      "kind": "base",
+      "sha256": "55e3a1a0053102b52e62aab393e1fe91743bcd6c8091c2843f5c85eef66c7137",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/BinaryMerkle.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/OracleLogExtraction.lean": {
+      "kind": "base",
+      "sha256": "bc6f99709e7c6caf6353023f985ec4b5496192eb9bad38f8af1f7d0616e8b6d4",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/OracleLogExtraction.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/BabyBearFoldingTower.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "3233a666603b5f1fa98871b7349f3573462a526efac1a770ee82578013a6a314",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearFoldingTower.lean"
+    },
+    "Selvage/BabyBearTwoAdic.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "470ebf789a733f160523e816570079bb08ef05276b5b025b92d0fd60379b5eb0",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/BabyBearTwoAdic.lean"
+    },
+    "Selvage/BabyBearExt4.lean": {
+      "kind": "base",
+      "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/BabyBearExt4.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/PowerTwoRootFolding.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "96b937887805230da7cda826287beefb5b8fb7836168a4e0f56db31d6ca1acaf",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/src/Selvage/PowerTwoRootFolding.lean"
+    },
+    "Selvage/FullUDSamplingBudget.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean"
+    },
+    "Selvage/FullUDFriConsumer.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDFriConsumer.lean"
+    },
+    "Selvage/HalfThresholdFriTranscript.lean": {
+      "kind": "base",
+      "sha256": "9dbb34989ea4af684802075717f8b3fe5602bc5d128b796b851a5efa9d28e432",
+      "main_source": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean",
+      "main_bytes_match": true
+    },
+    "Selvage/BabyBearFullUD.lean": {
+      "kind": "frozen_research_dependency",
+      "sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+      "matching_source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/BabyBearFullUD.lean"
+    }
+  },
+  "source_evidence": [
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/two_adic_pcs.rs",
+      "sha256": "9060c57409d84c42a2454d0b6895960d3e4fcb8fe2f9bb855cf2a18a5fd8f5a9"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs",
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs",
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/NOTE.md",
+      "sha256": "6bc561ca24a00d797263b106a5e63219396e0aa99a9c41db748d82587f1ad727"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/arity_eight_soundness/ERRATUM.md",
+      "sha256": "feba813ebf02445616c68af3a739b381eaf02d734b9bc970d858626d97cea6c5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/p3_folding_transport/MANIFEST.json",
+      "sha256": "17b4f5a087248c521eb25e7ca8d44ee859f67f2a22dac7a54dfaca43602327f5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_full_ud/MANIFEST.json",
+      "sha256": "fed8141f3d1606cd7ffa25bdd85918acbbdcb1ac8037307359adf1ff05994729"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_curve_kernel/PolynomialMatrixKernel.lean",
+      "sha256": "f510b6cc0c648a3583e3eefa49e283b2186add24d2e4df71f3afeb9b06a3fa91"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/efficient_root_opening/MANIFEST.json",
+      "sha256": "9b18d46259b37570d073999589ed06daee9e1cbbe57dbed232c2dc8c24a9b7ef"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/babybear_folding_tower/MANIFEST.json",
+      "sha256": "ae965e4e43fdded42b7992ee8ee9a1a265085c9ab861e2c481fef75ca1e14dc2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/MANIFEST.json",
+      "sha256": "00c949485be9154cf4bc9cc85118ba17b45764af71894d8d4872b759b00aee11"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/arity-eight-consumer.patch",
+      "sha256": "5b06aa2514285208b58e2c486ee1655659681ad45b631953f7a635c0fea026db"
+    }
+  ],
+  "import_gate": {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "cwd": "/tmp/minidregg-multi-round-successor-20260908",
+    "exit_code": 0,
+    "elapsed_s": 0.14353609085083008,
+    "output": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n"
+  },
+  "patch_replay": {
+    "command": [
+      "git",
+      "apply",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/arity-eight-two-round.patch"
+    ],
+    "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/arity-eight-two-round-replay-vdj_rfmu",
+    "exit_code": 0,
+    "output": "",
+    "exact_target_files": [
+      "Selvage/ArityEightTwoRound.lean",
+      "Selvage/ArityEightTwoRoundBabyBear.lean",
+      "Selvage/ArityEightTwoRoundLogged.lean",
+      "Selvage/ArityEightTwoRoundSupplied.lean",
+      "Selvage/ArityEightTwoRoundWitnesses.lean"
+    ],
+    "all_exact_bytes": true,
+    "file_matches": {
+      "Selvage/ArityEightTwoRound.lean": true,
+      "Selvage/ArityEightTwoRoundSupplied.lean": true,
+      "Selvage/ArityEightTwoRoundBabyBear.lean": true,
+      "Selvage/ArityEightTwoRoundWitnesses.lean": true,
+      "Selvage/ArityEightTwoRoundLogged.lean": true
+    }
+  },
+  "broad_rebuild_performed": false,
+  "independent_review_campaign_performed": false,
+  "new_web_queries": 0,
+  "new_scry_sql_queries": 0,
+  "predecessors_preserved": true,
+  "artifact_sha256": {
+    "README.md": "011e9660c1784ae722e0fcf0d185373d7006ebcc4179185d7c89eda9c9e05601",
+    "STATUS.md": "516c47267e87fc13fc78bef717f1bf7a92cb3108e653944ffa376f7baac473a2",
+    "NEXT.md": "9d15fa47925d1bf09753c1eb772f24c189ec292e673bf7939c8f222c8745751b",
+    "DEPENDENCIES.json": "09897143876a4b5ff7304d208316ba6ae774eb93eb2c888d5070378802965127",
+    "declaration-names.json": "6a1fcb40fbfc21b04eca3a9e835d57d263b86b65f8a77ef5c9e1d8416c75b3c1",
+    "integration_entry.json": "e1bf8ef0aa0103dd7b4fe621010de36e1ebb0ab53ee03c3311936c68c517526e",
+    "run_lean.py": "395dc1c3f6ba915183d63bf135a88c596c76df1559b1ca62e783aecda043c623",
+    "pin_all.py": "aafb7cc7c2cbbc6ec1a9f0e74fd796e3383b881fd3bd77190c3d494738e707dd",
+    "finalize.py": "f932ae2342fbfca844c70e1cf0856837e0510111b3dd8bcbe00ebb33d5ccbae3"
+  }
+}

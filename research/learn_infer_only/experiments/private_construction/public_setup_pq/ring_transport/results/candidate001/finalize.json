@@ -1,0 +1,112 @@
+{
+  "status": "PASS",
+  "role_command": "finalize",
+  "pid": 10478,
+  "elapsed_seconds": 15.824629208014812,
+  "peak_rss_bytes_macos": 824360960,
+  "uid": 501,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/a.ring",
+      "kind": "a",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_00.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_01.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_02.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_03.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_04.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_05.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_06.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_07.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_08.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_09.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_10.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_11.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_12.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_13.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_14.ring",
+      "kind": "registration",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_15.ring",
+      "kind": "registration",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/public.ring",
+      "kind": "public",
+      "bytes": 379390500,
+      "payload_bytes": 379389952,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "50ac05de34ac960f9a43bec629ff15e6343583a1e04da47803c7adb1ed10888a"
+    }
+  ],
+  "result": {
+    "actual_private_rows_generated": 0,
+    "missing_public_rows_generated_directly": 561,
+    "registrations": 16
+  },
+  "error": null
+}

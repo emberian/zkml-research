@@ -1,0 +1,129 @@
+{
+  "claim": "EXECUTED public-only learner-update proof pipeline",
+  "started_utc": "2026-09-08T16:45:34.135456+00:00",
+  "status": "verified",
+  "steps": [
+    {
+      "label": "export",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "export-update-ntt",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/case"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T16:45:34.143338+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 0.035959042026661336
+    },
+    {
+      "label": "emit",
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "--run",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/EmitBfvExpiry.lean",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/emitted",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/case/public_ntt_rows.json"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T16:45:34.180304+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 215.8873507080134
+    },
+    {
+      "label": "prove",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "prove-update",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/emitted/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/case",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/emitted/trace.leu32",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/proof"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T16:49:10.114599+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 2.692005874996539
+    },
+    {
+      "label": "verify",
+      "command": [
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation",
+        "verify-update",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/emitted/template_ir2.json",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/case",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/runs/event66/proof/proof.bin"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "started_utc": "2026-09-08T16:49:12.807862+00:00",
+      "returncode": 0,
+      "elapsed_seconds": 0.17822533298749477
+    }
+  ],
+  "operation": "acc + fresh - old",
+  "approved_template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+  "runtime_sha256": "dd41ec2eac52bf35ff8a9c6e736fa4dcb7cb4ae41cec6bace5cf593a3cf87cc6",
+  "compiler_source_sha256": "73b4d829a04f48a8c186cba8181b6ade7233894c8ed4d3e275adbfa413e8f1fb",
+  "lean": "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+  "lean_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "inputs": {
+    "acc.ct": {
+      "sha256": "a5aee736d943cd3124e1899c4e664c8263ff2d240f8df8efdc8f5e2cb24f6175",
+      "bytes": 85103
+    },
+    "fresh.ct": {
+      "sha256": "a35daa00d55bced1a14f4e4563c083c059cf4e9408f710259aa607c51af069a5",
+      "bytes": 85103
+    },
+    "old.ct": {
+      "sha256": "5979469e84bc82ed2b2955e7750fdd6a5c539646db4e1fd183a85d0909f8c2da",
+      "bytes": 85103
+    },
+    "out.ct": {
+      "sha256": "6f7f0bf7b08a9a24b397c569e49d0d2084667d302be3d9d57536a53c835e9f70",
+      "bytes": 85103
+    }
+  },
+  "scope": "Selected exact ciphertext coefficient relation; no encoder, FIFO authorization, key membership or confidentiality claim.",
+  "source_event_sha256": "7346c50b6c494b1bc6964d9f915dc13cdfb4a00881ae1df48a196c1d705ebe2b",
+  "source_event_scope": "Carried application metadata; not authenticated or proved by this pipeline.",
+  "verified": true,
+  "verification": {
+    "changed_output_claim_rejected": false,
+    "claim": "EXECUTED fresh-process verification",
+    "proof_bytes": 508744,
+    "proof_sha256": "0448c926927aef877253cfd8487891c34c77bdcd84f45c9e0f212511170c28fa",
+    "verified": true,
+    "verify_ns": 114858125
+  },
+  "proof": {
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "claim": "EXECUTED proof over Lean-derived BFV relation",
+    "proof_bytes": 508744,
+    "proof_sha256": "0448c926927aef877253cfd8487891c34c77bdcd84f45c9e0f212511170c28fa",
+    "prove_ns": 2517451792,
+    "public_rows_bound": 8192,
+    "public_tuple_width": 57,
+    "rows": 8192,
+    "self_verify_ns": 110480625,
+    "template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+    "trace_width": 1017,
+    "verified": true
+  },
+  "public_rows_sha256": "c579a85e208488fe4862281a0c5922a7ac76b96893be52b0a376e1460b2e6240",
+  "emission": {
+    "trace_width": 1017,
+    "trace_bytes": 33325056,
+    "standard_descriptor_nWires": 5925,
+    "standard_descriptor_gates": 3865,
+    "source_constraints": 1456,
+    "rows": 8192,
+    "radix64_refused": true,
+    "public_tuple_order": "rowID,acc2x7,fresh2x7,old2x7,out2x7",
+    "ir2_arithmetic_constraints": 1456,
+    "constructed_cases_checked": 4,
+    "changed_output_refused": true,
+    "all_actual_source_rows_checked": true
+  },
+  "finished_utc": "2026-09-08T16:49:12.988364+00:00",
+  "elapsed_seconds": 218.80211691599106
+}

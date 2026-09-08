@@ -1,0 +1,21 @@
+{
+  "claim": "SOURCE exact completed public ring-matvec bundle; acceptance must come from the verifier",
+  "degree": 4096,
+  "matrix_rows": 64,
+  "matrix_columns": 8192,
+  "files": {
+    "statement.bin": {
+      "bytes": 8519793,
+      "sha256": "1a9d2f8aad28cc2429d293f3c1b6ba6c53c689d2d8ec259c4a7a9fffe912e929",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/paired_001/statement.bin"
+    },
+    "proof.bin": {
+      "bytes": 4433968,
+      "sha256": "b3a17a7a1660c5f2ab1befc7b8f6a08e4e68ec013414e134869bb3fd45ff578c",
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/paired_001/fused.proof"
+    }
+  },
+  "source_revision": "matvecmul 00379074cad457367a86dde2ecee9d0f318a7e12 plus combined-matvec.patch",
+  "source_patch_sha256": "0c033993da08c8dd90177bfcb7330628821f125be2fc236e7b62123ea4a272af",
+  "scope": "Complete existing verifier with all three PCS openings, public caller matrix/input/expected output. WHIR ConjectureList; configured level100 is not certified security bits."
+}

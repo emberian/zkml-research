@@ -1,0 +1,18 @@
+{"event": "init", "role": "public", "seconds": 0.24810537497978657, "status": "PASS"}
+{"event": "register_00", "role": "recipient_00", "seconds": 0.5551211659912951, "status": "PASS"}
+{"event": "register_01", "role": "recipient_01", "seconds": 0.5947187920100987, "status": "PASS"}
+{"event": "finalize", "role": "public", "seconds": 0.19655029196292162, "status": "PASS"}
+{"event": "encode_0", "role": "public", "seconds": 0.5715799579629675, "status": "PASS"}
+{"event": "encode_1", "role": "public", "seconds": 0.5675615830114111, "status": "PASS"}
+{"event": "encode_2", "role": "public", "seconds": 0.5102949590072967, "status": "PASS"}
+{"event": "signed", "role": "public", "seconds": 0.16541829198831692, "status": "PASS"}
+{"event": "window_0", "role": "public", "seconds": 0.17509745800634846, "status": "PASS"}
+{"event": "window_1", "role": "public", "seconds": 0.17688804201316088, "status": "PASS"}
+{"event": "window_expiry", "role": "public", "seconds": 0.16922387504018843, "status": "PASS"}
+{"event": "decode_window_00", "role": "recipient_00", "seconds": 0.1622340840403922, "status": "PASS"}
+{"event": "decode_window_01", "role": "recipient_01", "seconds": 0.15314791700802743, "status": "PASS"}
+{"event": "decode_fresh_0", "role": "recipient_00", "seconds": 0.14477841701591387, "status": "PASS"}
+{"event": "decode_fresh_1", "role": "recipient_00", "seconds": 0.14934237499255687, "status": "PASS"}
+{"event": "decode_fresh_2", "role": "recipient_00", "seconds": 0.15420216601341963, "status": "PASS"}
+{"event": "decode_signed", "role": "recipient_00", "seconds": 0.1671468749991618, "status": "PASS"}
+{"status": "PASS", "elapsed_seconds": 4.881236000044737, "report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/WORKFLOW.json"}

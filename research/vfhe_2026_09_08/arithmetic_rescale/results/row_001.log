@@ -1,0 +1,24 @@
+Compiler/BfvRescaleRow.lean:75:21: warning: This simp argument is unused:
+  Function.comp_def
+
+Hint: Omit it from the simp argument list.
+  simp [sourceView,̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵d̵e̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/BfvRescaleRow.lean:87:21: warning: This simp argument is unused:
+  Function.comp_def
+
+Hint: Omit it from the simp argument list.
+  simp [targetView,̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵d̵e̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Compiler/BfvRescaleRow.lean:114:6: error: Type mismatch: After simplification, term
+  hs
+ has type
+  (systemAccepts asg [vr zeroWire] ∧ systemAccepts asg (renameS sourceIx FheSourceCertificate.sourceSystem)) ∧
+    systemAccepts asg (renameS targetIx FheTargetProjection.sourceSystem)
+but is expected to have type
+  systemAccepts asg [vr zeroWire] ∧
+    systemAccepts asg (renameS sourceIx FheSourceCertificate.sourceSystem) ∧
+      systemAccepts asg (renameS targetIx FheTargetProjection.sourceSystem)
+Compiler/BfvRescaleRow.lean:111:10: error: Tactic `rcases` failed: `left✝ : ∀ t ∈ [vr zeroWire], accepts asg t` is not an inductive datatype

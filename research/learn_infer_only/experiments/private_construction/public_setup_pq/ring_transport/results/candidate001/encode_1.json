@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "role_command": "encode",
+  "pid": 11028,
+  "elapsed_seconds": 9.408920832967851,
+  "peak_rss_bytes_macos": 980860928,
+  "uid": 501,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/public.ring",
+      "kind": "public",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/input_1.json",
+      "kind": "input",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/cipher_1.ring",
+      "kind": "ciphertext",
+      "bytes": 37901312,
+      "payload_bytes": 37900653,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "c89821a14cf27d90fbb470ad1644819821113e2046c712d686af56f4f9e79efd"
+    }
+  ],
+  "result": {
+    "encoded_coordinates": 577,
+    "private_rows_read": 0
+  },
+  "error": null
+}

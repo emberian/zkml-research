@@ -1,0 +1,1352 @@
+diff --git a/examples/fused_proof.rs b/examples/fused_proof.rs
+new file mode 100644
+--- /dev/null
++++ b/examples/fused_proof.rs
+@@ -0,0 +1,74 @@
++//! One normal proof/verifier execution through the fused production prover path.
++//! Synthetic public workload; private key and randomness remain in process memory.
++use std::{fs, path::PathBuf, time::Instant};
++use ark_ff::PrimeField;
++use matvec::{arith::{cyclotomic_ring::CyclotomicRing, field::{Field64, Field64_2}, linalg::Matrix},
++    protocol::{prover::Prover, verifier::Verifier}, rlwe::{decrypt, encrypt}};
++
++fn main() {
++    const D: usize = 1024;
++    const P: usize = 16;
++    const WIDTH: usize = 2048;
++    const HEIGHT: usize = 4;
++    type F = Field64;
++    type E = Field64_2;
++    let out = PathBuf::from(std::env::args().nth(1).expect("public output directory"));
++    fs::create_dir(&out).expect("fresh directory required; no overwrite/retry");
++    let started = Instant::now();
++    let data: Vec<F> = (0..HEIGHT*WIDTH).map(|i| {
++        let last_column_offset = if i % WIDTH == WIDTH-1 { i/WIDTH+1 } else { 0 };
++        F::from(((i*7 + i/WIDTH*3 + 1 + last_column_offset)%P) as u64)
++    }).collect();
++    let matrix = Matrix::from_vec(data, WIDTH);
++    let values: Vec<u64> = (0..WIDTH).map(|i| ((i*5+3)%P) as u64).collect();
++    let expected: Vec<F> = matrix.mat_vec_mul(&values.iter().map(|&v|F::from(v)).collect())
++        .iter().map(|v|F::from(v.into_bigint().0[0] % P as u64)).collect();
++    assert_eq!(expected, vec![F::from(14u64), F::from(12u64), F::from(10u64), F::from(8u64)]);
++    let sk = vec![CyclotomicRing::<D,F>::get_random_bin()];
++    let x: Vec<_> = values.chunks(D).map(|msg|encrypt::<D,P,F>(&sk,msg)).collect();
++    let encryption_ns = started.elapsed().as_nanos();
++    let prepare = Instant::now();
++    let (m_rq, cache, m_mle, m_base, num_vars, mut transcript) = Prover::<D,E>::preprocess(&matrix);
++    let preprocessing_ns = prepare.elapsed().as_nanos();
++    assert_eq!(cache.evaluation_count(),0);
++    let prove_start = Instant::now();
++    let proof = Prover::<D,E>::prove(&m_rq,&cache,&m_mle,&m_base,num_vars,&mut transcript,&x,true);
++    let prove_ns = prove_start.elapsed().as_nanos();
++    assert_eq!(cache.evaluation_count(),1, "actual prover must use the fused cache once");
++    assert!(proof.r0_mle_proof.is_some() && proof.r1_mle_proof.is_some() && proof.m_mle_proof.is_some());
++    // Run the unchanged verifier with independently initialized public preprocessing.
++    let verify_start = Instant::now();
++    let (vm, vnum, mut vt) = Verifier::<D,E>::preprocess(&matrix);
++    assert!(Verifier::<D,E>::verify(&vm,vnum,&mut vt,&x,&proof).is_ok());
++    let verify_ns = verify_start.elapsed().as_nanos();
++    // Drain only after the public verifier returned success.
++    let decrypt_start = Instant::now();
++    let actual: Vec<F> = proof.y.iter().map(|ct|decrypt::<D,P,F>(&sk,ct)[0]).collect();
++    assert_eq!(actual,expected);
++    let decrypt_ns = decrypt_start.elapsed().as_nanos();
++    let mut input_bytes = vec![];
++    for ct in &x { for c in ct.get_ring_elements() { c.serialize(&mut input_bytes).unwrap(); } }
++    let mut output_bytes = vec![];
++    for ct in &proof.y { for c in ct.get_ring_elements() { c.serialize(&mut output_bytes).unwrap(); } }
++    fs::write(out.join("input_ciphertexts.bin"), &input_bytes).unwrap();
++    fs::write(out.join("output_ciphertexts.bin"), &output_bytes).unwrap();
++    fs::write(out.join("r0_commitment.bin"), &proof.r0_commitment).unwrap();
++    fs::write(out.join("r1_commitment.bin"), &proof.r1_commitment).unwrap();
++    let mut pcs_bytes = 0;
++    for (name, opening) in [("r0_opening",proof.r0_mle_proof.as_ref().unwrap()),
++                           ("r1_opening",proof.r1_mle_proof.as_ref().unwrap()),
++                           ("matrix_opening",proof.m_mle_proof.as_ref().unwrap())] {
++        fs::write(out.join(format!("{name}.bin")), &opening.proof).unwrap();
++        pcs_bytes += opening.proof.len();
++    }
++    let summary = format!(concat!("{{\n  \"status\":\"PASS\",\n  \"ring_degree\":{},\n  \"integer_width\":{},\n  \"integer_height\":{},\n",
++      "  \"ring_inner_dimension\":{},\n  \"components\":2,\n  \"fused_prover_calls\":{},\n  \"cached_field_elements\":{},\n",
++      "  \"pcs_enabled\":true,\n  \"unchanged_verifier_accepted\":true,\n  \"integer_matches\":{},\n",
++      "  \"encryption_and_fixture_ns\":{},\n  \"preprocessing_ns\":{},\n  \"prove_ns\":{},\n  \"verify_with_preprocessing_ns\":{},\n  \"decrypt_compare_ns\":{},\n",
++      "  \"input_ciphertext_bytes\":{},\n  \"output_ciphertext_bytes\":{},\n  \"pcs_opening_bytes\":{},\n  \"sumcheck_reported_bytes\":{}\n}}\n"),
++      D,WIDTH,HEIGHT,WIDTH/D,cache.evaluation_count(),cache.cached_field_elements(),actual.len(),
++      encryption_ns,preprocessing_ns,prove_ns,verify_ns,decrypt_ns,input_bytes.len(),output_bytes.len(),pcs_bytes,
++      proof.z1_sumcheck_proof.size_in_bytes()+proof.z3_sumcheck_proof.size_in_bytes());
++    fs::write(out.join("result.json"),&summary).unwrap();
++    println!("{summary}");
++}
+diff --git a/examples/matched_proof.rs b/examples/matched_proof.rs
+new file mode 100644
+--- /dev/null
++++ b/examples/matched_proof.rs
+@@ -0,0 +1,91 @@
++//! One paired real proof run on one shared public matrix and encrypted input.
++//! Each path proves once. Keys and randomness remain in this process only.
++use std::{fs, path::PathBuf, process::Command, time::Instant};
++use ark_ff::PrimeField;
++use matvec::{arith::{cyclotomic_ring::CyclotomicRing, field::{Field64 as F, Field64_2 as E}, linalg::Matrix},
++    protocol::{prover::Prover, prover_unfused::Prover as Unfused, verifier::Verifier,
++      public_wire::{encode_statement, encode_proof, same_outputs}}, rlwe::{decrypt, encrypt}};
++
++fn main() {
++    const D: usize = 4096;
++    const P: usize = 16;
++    const WIDTH: usize = 8192;
++    const HEIGHT: usize = 64;
++    let out = PathBuf::from(std::env::args().nth(1).expect("public output directory"));
++    fs::create_dir(&out).expect("fresh directory required; no overwrite/retry");
++    let started = Instant::now();
++    let data: Vec<F> = (0..HEIGHT*WIDTH).map(|i| {
++        let offset = if i % WIDTH == WIDTH-1 { (i/WIDTH)%7+1 } else { 0 };
++        F::from(((i*7 + i/WIDTH*3 + 1 + offset)%P) as u64)
++    }).collect();
++    let matrix = Matrix::from_vec(data, WIDTH);
++    let values: Vec<u64> = (0..WIDTH).map(|i| ((i*5+3)%P) as u64).collect();
++    let expected: Vec<F> = matrix.mat_vec_mul(&values.iter().map(|&v|F::from(v)).collect())
++        .iter().map(|v|F::from(v.into_bigint().0[0] % P as u64)).collect();
++    assert_eq!(expected, (0..HEIGHT).map(|i|F::from((14*(i%7+1)%P) as u64)).collect::<Vec<_>>());
++    let sk = vec![CyclotomicRing::<D,F>::get_random_bin()];
++    let x: Vec<_> = values.chunks(D).map(|msg|encrypt::<D,P,F>(&sk,msg)).collect();
++    let fixture_ns = started.elapsed().as_nanos();
++
++    let timer = Instant::now();
++    let (bm, bp, b_mle, b_base, bn, mut bt) = Unfused::<D,E>::preprocess(&matrix);
++    let baseline_preprocessing_ns = timer.elapsed().as_nanos();
++    let timer = Instant::now();
++    let baseline = Unfused::<D,E>::prove(&bm,&bp,&b_mle,&b_base,bn,&mut bt,&x,true);
++    let baseline_prove_ns = timer.elapsed().as_nanos();
++    assert!(baseline.r0_mle_proof.is_some() && baseline.r1_mle_proof.is_some() && baseline.m_mle_proof.is_some());
++    let timer = Instant::now();
++    let (vm,vn,mut vt) = Verifier::<D,E>::preprocess(&matrix);
++    assert!(Verifier::<D,E>::verify(&vm,vn,&mut vt,&x,&baseline).is_ok());
++    let baseline_verify_ns = timer.elapsed().as_nanos();
++    drop((bm,bp,b_mle,b_base,bt,vm,vt));
++
++    let timer = Instant::now();
++    let (fm, cache, f_mle, f_base, fn_, mut ft) = Prover::<D,E>::preprocess(&matrix);
++    let fused_preprocessing_ns = timer.elapsed().as_nanos();
++    assert_eq!(cache.evaluation_count(),0);
++    let timer = Instant::now();
++    let fused = Prover::<D,E>::prove(&fm,&cache,&f_mle,&f_base,fn_,&mut ft,&x,true);
++    let fused_prove_ns = timer.elapsed().as_nanos();
++    assert_eq!(cache.evaluation_count(),1);
++    assert!(fused.r0_mle_proof.is_some() && fused.r1_mle_proof.is_some() && fused.m_mle_proof.is_some());
++    let timer = Instant::now();
++    let (vm,vn,mut vt) = Verifier::<D,E>::preprocess(&matrix);
++    assert!(Verifier::<D,E>::verify(&vm,vn,&mut vt,&x,&fused).is_ok());
++    let fused_verify_ns = timer.elapsed().as_nanos();
++    assert!(same_outputs(&baseline.y,&fused.y));
++
++    let statement = encode_statement::<D>(&matrix,&x,&baseline.y);
++    let baseline_bytes = encode_proof(&baseline);
++    let fused_bytes = encode_proof(&fused);
++    fs::write(out.join("statement.bin"), &statement).unwrap();
++    fs::write(out.join("baseline.proof"), &baseline_bytes).unwrap();
++    fs::write(out.join("fused.proof"), &fused_bytes).unwrap();
++    // Fresh processes reconstruct the caller-selected statement and full proof.
++    // Both saved artifacts are publicly checked before any recipient decrypt.
++    let verifier = std::env::current_exe().unwrap().with_file_name("verify_saved");
++    for name in ["baseline","fused"] {
++        let result = Command::new(&verifier).arg(out.join("statement.bin"))
++            .arg(out.join(format!("{name}.proof"))).output().unwrap();
++        fs::write(out.join(format!("{name}_replay.json")),&result.stdout).unwrap();
++        fs::write(out.join(format!("{name}_replay.stderr")),&result.stderr).unwrap();
++        assert!(result.status.success(), "fresh saved-proof verification failed");
++    }
++    let public_close_ns = started.elapsed().as_nanos();
++    let timer = Instant::now();
++    let actual: Vec<F> = fused.y.iter().map(|ct|decrypt::<D,P,F>(&sk,ct)[0]).collect();
++    assert_eq!(actual,expected);
++    let decrypt_ns = timer.elapsed().as_nanos();
++    let summary = format!(concat!("{{\n  \"status\":\"PASS\",\n  \"ring_degree\":{},\n  \"integer_width\":{},\n  \"integer_height\":{},\n",
++      "  \"ring_inner_dimension\":2,\n  \"components\":2,\n  \"same_input_objects\":true,\n  \"order\":[\"baseline\",\"fused\"],\n",
++      "  \"proofs_per_path\":1,\n  \"pcs_enabled\":true,\n  \"both_unchanged_verifiers_accepted\":true,\n  \"fresh_saved_replays_accepted\":2,\n",
++      "  \"all_output_coefficients_matched\":{},\n  \"integer_matches\":{},\n  \"fused_prover_calls\":{},\n  \"cached_field_elements\":{},\n",
++      "  \"fixture_and_encryption_ns\":{},\n  \"baseline_preprocessing_ns\":{},\n  \"baseline_prove_ns\":{},\n  \"baseline_verify_with_preprocessing_ns\":{},\n",
++      "  \"fused_preprocessing_ns\":{},\n  \"fused_prove_ns\":{},\n  \"fused_verify_with_preprocessing_ns\":{},\n",
++      "  \"public_close_before_decrypt_ns\":{},\n  \"decrypt_compare_ns\":{},\n  \"statement_bytes\":{},\n  \"baseline_proof_bytes\":{},\n  \"fused_proof_bytes\":{},\n",
++      "  \"complete_proofs_byte_equal\":{}\n}}\n"),D,WIDTH,HEIGHT,HEIGHT*2*D,actual.len(),cache.evaluation_count(),cache.cached_field_elements(),
++      fixture_ns,baseline_preprocessing_ns,baseline_prove_ns,baseline_verify_ns,fused_preprocessing_ns,fused_prove_ns,fused_verify_ns,
++      public_close_ns,decrypt_ns,statement.len(),baseline_bytes.len(),fused_bytes.len(),baseline_bytes==fused_bytes);
++    fs::write(out.join("result.json"), &summary).unwrap();
++    println!("{summary}");
++}
+diff --git a/examples/verify_saved.rs b/examples/verify_saved.rs
+new file mode 100644
+--- /dev/null
++++ b/examples/verify_saved.rs
+@@ -0,0 +1,23 @@
++//! Fresh-process public verifier: no key, encryption, prover, or transcript import.
++use std::{fs, path::Path, time::Instant};
++use matvec::{arith::field::Field64_2, protocol::{public_wire::{decode_statement,decode_proof,same_outputs},verifier::Verifier}};
++fn bounded_read(path:&Path)->Vec<u8> {
++    assert!(fs::metadata(path).unwrap().len()<=64*1024*1024,"wire file cap");
++    fs::read(path).unwrap()
++}
++fn main() {
++    const D:usize=4096;
++    let args:Vec<_>=std::env::args().collect(); assert_eq!(args.len(),3);
++    let timer=Instant::now();
++    let statement=bounded_read(Path::new(&args[1]));
++    let proof_bytes=bounded_read(Path::new(&args[2]));
++    let (matrix,x,expected_y)=decode_statement::<D>(&statement).expect("canonical caller statement");
++    let proof=decode_proof::<D>(&proof_bytes,matrix.width(),matrix.height()).expect("complete canonical proof");
++    assert!(same_outputs(&proof.y,&expected_y),"caller-selected output mismatch");
++    let decode_ns=timer.elapsed().as_nanos();
++    let timer=Instant::now();
++    let (m,n,mut transcript)=Verifier::<D,Field64_2>::preprocess(&matrix);
++    assert!(Verifier::<D,Field64_2>::verify(&m,n,&mut transcript,&x,&proof).is_ok());
++    println!("{{\"status\":\"PASS\",\"fresh_public_preprocessing\":true,\"all_three_pcs\":true,\"expected_output_matched\":true,\"decode_ns\":{},\"verify_with_preprocessing_ns\":{},\"statement_blake3\":\"{}\",\"proof_blake3\":\"{}\"}}",
++      decode_ns,timer.elapsed().as_nanos(),blake3::hash(&statement).to_hex(),blake3::hash(&proof_bytes).to_hex());
++}
+diff --git a/src/arith/fused_matvec.rs b/src/arith/fused_matvec.rs
+new file mode 100644
+--- /dev/null
++++ b/src/arith/fused_matvec.rs
+@@ -0,0 +1,108 @@
++//! One public spectral cache serves both ring evaluation and quotient witnesses.
++//! A zero-padded 2D negacyclic product equals the ordinary product (degree <2D).
++use std::{marker::PhantomData, sync::atomic::{AtomicUsize, Ordering}};
++use ark_ff::PrimeField;
++use tfhe_ntt::prime64::Plan;
++use crate::{arith::{cyclotomic_ring::CyclotomicRing, linalg::Matrix,
++    polynomial_ring::PolynomialRing}, rlwe::RLWE};
++
++pub struct FusedMatvec<const D: usize, F: PrimeField> {
++    plan: Plan,
++    spectra: Vec<Vec<u64>>,
++    width: usize,
++    height: usize,
++    evaluations: AtomicUsize,
++    _field: PhantomData<F>,
++}
++
++impl<const D: usize, F: PrimeField> FusedMatvec<D, F> {
++    pub fn new(matrix: &Matrix<CyclotomicRing<D, F>>) -> Self {
++        assert!(D.is_power_of_two());
++        assert_eq!(F::MODULUS.as_ref().len(), 1, "NTT modulus must fit u64");
++        assert!(matrix.width() > 0 && matrix.height() > 0);
++        let plan = Plan::try_new(2 * D, F::MODULUS.as_ref()[0]).expect("2D NTT plan");
++        let spectra = matrix.data.iter().map(|a| {
++            assert_eq!(a.coeffs.len(), D);
++            let mut v: Vec<u64> = a.coeffs.iter().map(|c| c.into_bigint().as_ref()[0]).collect();
++            v.resize(2 * D, 0);
++            plan.fwd(&mut v);
++            v
++        }).collect();
++        Self { plan, spectra, width: matrix.width(), height: matrix.height(),
++            evaluations: AtomicUsize::new(0), _field: PhantomData }
++    }
++
++    pub fn evaluation_count(&self) -> usize { self.evaluations.load(Ordering::Relaxed) }
++
++    pub fn cached_field_elements(&self) -> usize { self.spectra.len() * 2 * D }
++
++    pub fn evaluate(&self, x: &[RLWE<CyclotomicRing<D, F>>]) ->
++        (Vec<RLWE<CyclotomicRing<D, F>>>, Vec<Vec<PolynomialRing<D, F>>>) {
++        assert_eq!(x.len(), self.width);
++        let components = x[0].rank() + 1;
++        let xhat: Vec<Vec<Vec<u64>>> = x.iter().map(|ct| {
++            assert_eq!(ct.rank() + 1, components);
++            ct.get_ring_elements().iter().map(|c| {
++                assert_eq!(c.coeffs.len(), D);
++                let mut v: Vec<u64> = c.coeffs.iter().map(|a| a.into_bigint().as_ref()[0]).collect();
++                v.resize(2 * D, 0);
++                self.plan.fwd(&mut v);
++                v
++            }).collect()
++        }).collect();
++        let mut outputs = Vec::with_capacity(self.height);
++        let mut quotients = Vec::with_capacity(self.height);
++        for i in 0..self.height {
++            let mut row_y = Vec::with_capacity(components);
++            let mut row_q = Vec::with_capacity(components);
++            for k in 0..components {
++                let mut acc = vec![0u64; 2 * D];
++                for j in 0..self.width {
++                    self.plan.mul_accumulate(&mut acc, &self.spectra[i * self.width + j], &xhat[j][k]);
++                }
++                self.plan.normalize(&mut acc);
++                self.plan.inv(&mut acc);
++                // S=L+X^D H, hence S=(L-H)+(X^D+1)H.
++                assert_eq!(acc[2 * D - 1], 0, "Product degree must be at most 2D-2");
++                let hi: Vec<F> = acc[D..].iter().map(|&v| F::from(v)).collect();
++                let lo_minus_hi: Vec<F> = acc[..D].iter().zip(&hi).map(|(&l, h)| F::from(l) - h).collect();
++                row_y.push(CyclotomicRing::from_coeffs(&lo_minus_hi));
++                row_q.push(PolynomialRing::from_cyclotomic(&CyclotomicRing::from_coeffs(&hi)));
++            }
++            outputs.push(RLWE::from_ring_elements(row_y));
++            quotients.push(row_q);
++        }
++        self.evaluations.fetch_add(1, Ordering::Relaxed);
++        (outputs, quotients)
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use crate::arith::field::Field64;
++    #[test]
++    fn public_fused_matches_existing_products() {
++        const D: usize = 32;
++        type F = Field64;
++        let matrix = Matrix::from_vec((0..6).map(|i| {
++            CyclotomicRing::<D,F>::from_coeffs(&(0..D).map(|t| F::from((3+i*7+t*t) as u64)).collect::<Vec<_>>())
++        }).collect(), 3);
++        let x: Vec<_> = (0..3).map(|j| RLWE::from_ring_elements((0..2).map(|k| {
++            CyclotomicRing::<D,F>::from_coeffs(&(0..D).map(|t| F::from((5+j*11+k*13+t*t*t) as u64)).collect::<Vec<_>>())
++        }).collect())).collect();
++        let cache = FusedMatvec::new(&matrix);
++        let (actual_y, actual_q) = cache.evaluate(&x);
++        let old_y = matrix.mat_rlwe_vec_mul(&x);
++        let old_s = matrix.lift_to_polynomial_ring().mat_rlwe_vec_mul(&x.iter().map(|ct|ct.lift_to_polynomial_ring()).collect());
++        for i in 0..2 {
++            let (old_q, remainder) = old_s[i].long_division_by_cyclotomic();
++            for k in 0..2 {
++                assert_eq!(actual_y[i].get_ring_element(k).unwrap().coeffs, old_y[i].get_ring_element(k).unwrap().coeffs);
++                assert_eq!(actual_y[i].get_ring_element(k).unwrap().coeffs, remainder[k].coeffs);
++                assert_eq!(actual_q[i][k].coeffs, old_q[k].coeffs);
++            }
++        }
++        assert_eq!(cache.evaluation_count(), 1);
++    }
++}
+diff --git a/src/arith/mod.rs b/src/arith/mod.rs
+--- a/src/arith/mod.rs
++++ b/src/arith/mod.rs
+@@ -1,5 +1,6 @@
+ pub mod cyclotomic_ring;
+ pub mod field;
++pub mod fused_matvec;
+ pub mod linalg;
+ pub mod ntt;
+ pub mod polynomial_ring;
+diff --git a/src/protocol/mod.rs b/src/protocol/mod.rs
+--- a/src/protocol/mod.rs
++++ b/src/protocol/mod.rs
+@@ -8,6 +8,9 @@
+ 
+ pub mod pcs;
+ pub mod prover;
++pub mod prover_unfused;
++pub mod public_wire;
++mod ring_contraction;
+ pub mod sumcheck;
+ pub mod transcript;
+ mod utils;
+diff --git a/src/protocol/prover/mod.rs b/src/protocol/prover/mod.rs
+--- a/src/protocol/prover/mod.rs
++++ b/src/protocol/prover/mod.rs
+@@ -4,13 +4,14 @@
+ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+ 
+ use crate::{
+-    arith::{cyclotomic_ring::CyclotomicRing, linalg::Matrix, polynomial_ring::PolynomialRing},
++    arith::{cyclotomic_ring::CyclotomicRing, linalg::Matrix, polynomial_ring::PolynomialRing, fused_matvec::FusedMatvec},
+     protocol::{
+         Proof,
++        ring_contraction::contract_remainder_quotient,
+         pcs::whir::Whir,
+         sumcheck::{multilinear::MultilinearPolynomial, prove},
+         transcript::Blake3Transcript,
+-        utils::{build_eq_poly, sum_over_boolean_hypercube},
++        utils::build_eq_poly,
+     },
+     rand::get_rng,
+     rlwe::RLWE,
+@@ -28,7 +29,7 @@
+         m: &Matrix<F::BasePrimeField>,
+     ) -> (
+         Matrix<CyclotomicRing<D, F::BasePrimeField>>,
+-        Matrix<PolynomialRing<D, F::BasePrimeField>>,
++        FusedMatvec<D, F::BasePrimeField>,
+         MultilinearPolynomial<F>,
+         MultilinearPolynomial<F::BasePrimeField>,
+         usize,
+@@ -37,10 +38,8 @@
+         // interpret each row as a ring elements and rearrange columns
+         let m_rq = m.lift_to_rq::<D>();
+ 
+-        // lift matrix entries to polynomial ring elements of max degree 2*D
+-        // this performs a clone of the coefficients
+-        // should look into optimizing
+-        let m_polyring = m_rq.lift_to_polynomial_ring();
++        // Cache public matrix spectra once for both evaluation and quotient witnesses.
++        let m_polyring = FusedMatvec::new(&m_rq);
+ 
+         // this also clones the coefficients. should look into optimizing.
+         let (m_mle_evals, num_vars): (Vec<F::BasePrimeField>, usize) = m_rq.to_mle_evals();
+@@ -72,7 +71,7 @@
+ 
+     pub fn prove(
+         m_rq: &Matrix<CyclotomicRing<D, F::BasePrimeField>>,
+-        m_polyring: &Matrix<PolynomialRing<D, F::BasePrimeField>>,
++        m_polyring: &FusedMatvec<D, F::BasePrimeField>,
+         m_mle: &MultilinearPolynomial<F>,
+         m_mle_over_base_f: &MultilinearPolynomial<F::BasePrimeField>,
+         z1_num_vars: usize,
+@@ -92,20 +91,7 @@
+         let mut beta = transcript.squeeze(1);
+         beta.push(beta[0] * beta[0]);
+ 
+-        let x_polyring = x
+-            .iter()
+-            .map(|elem| elem.lift_to_polynomial_ring())
+-            .collect::<Vec<_>>();
+-
+-        let y_polyring = m_polyring.mat_rlwe_vec_mul(&x_polyring);
+-
+-        let (vec_quotients, _vec_remainders): (
+-            Vec<Vec<PolynomialRing<D, F::BasePrimeField>>>,
+-            Vec<Vec<CyclotomicRing<D, F::BasePrimeField>>>,
+-        ) = y_polyring
+-            .iter()
+-            .map(|ct| ct.long_division_by_cyclotomic())
+-            .collect();
++        let (y, vec_quotients) = m_polyring.evaluate(x);
+ 
+         let mut rng = get_rng();
+         let z3_num_vars = z1_num_vars - m_rq.width().ilog2() as usize;
+@@ -150,9 +136,7 @@
+             None
+         };
+ 
+-        // mat vec mul -- this value should coincide with vec_remainders
+-        // maybe it would be better to compute it from `y_polyring`
+-        let y = m_rq.mat_rlwe_vec_mul(&x);
++        // y and quotients are already produced by the same fused spectral accumulation.
+ 
+         // assumes RLWE rank is 1
+         let y_batched = y
+@@ -196,6 +180,14 @@
+             })
+             .collect();
+ 
++        // Y and Q are already fixed/committed before alpha. Contract their
++        // actual coefficients once, sharing the existing row and power bases.
++        let mut row_weights = Vec::with_capacity(y.len());
++        build_eq_poly(&vec_tau, &mut row_weights);
++        let (y_eval, q_eval) = contract_remainder_quotient::<D, F>(
++            &y, &vec_quotients, &powers_of_alpha, &row_weights, &beta,
++        );
++
+         let mut z1_mles = compute_z1_mles(
+             &m_rq,
+             &m_mle,
+@@ -206,7 +198,10 @@
+             &vec_tau,
+         );
+ 
+-        let z1_claim = sum_over_boolean_hypercube(&z1_mles);
++        // The fused product supplies S = Y + (X^D + 1)Q. Only the honest
++        // prover's total computation changes; all round polynomials are still
++        // computed from z1_mles, and the verifier retains both sumcheck chains.
++        let z1_claim = y_eval + (alpha * powers_of_alpha[D - 1] + F::ONE) * q_eval;
+ 
+         let (z1_sumcheck_proof, z1_challenges) =
+             prove(z1_claim, &mut z1_mles, z1_num_vars, transcript);
+@@ -221,7 +216,7 @@
+             &vec_tau,
+         );
+ 
+-        let z3_claim = sum_over_boolean_hypercube(&z3_mles);
++        let z3_claim = q_eval;
+ 
+         let (z3_sumcheck_proof, z3_challenges) =
+             prove(z3_claim, &mut z3_mles, z3_num_vars, transcript);
+@@ -397,3 +392,6 @@
+ 
+     vec![eq_tau_mle, batched_r_mle, alpha_mle]
+ }
++
++#[cfg(test)]
++mod ring_contraction_tests;
+diff --git a/src/protocol/prover/ring_contraction_tests.rs b/src/protocol/prover/ring_contraction_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/src/protocol/prover/ring_contraction_tests.rs
+@@ -0,0 +1,239 @@
++use super::*;
++use crate::{
++    arith::field::{Field64, Field64_2},
++    protocol::{utils::sum_over_boolean_hypercube, verifier::Verifier},
++};
++use ark_ff::AdditiveGroup;
++use std::{hint::black_box, time::Instant};
++
++type B = Field64;
++type E = Field64_2;
++
++fn extension(a: u64, b: u64) -> E {
++    E::new(B::from(a), B::from(b))
++}
++
++// All data are deterministic public field elements, with distinct row,
++// component and coefficient patterns. No encryption or secret key is needed.
++fn fixture<const D: usize>() -> (Matrix<B>, Vec<RLWE<CyclotomicRing<D, B>>>) {
++    let matrix = Matrix::from_vec(
++        (0..4 * 2 * D)
++            .map(|t| B::from((3 + 17 * (t / D) + t * t) as u64))
++            .collect(),
++        2 * D,
++    );
++    let x = (0..2)
++        .map(|j| {
++            RLWE::from_ring_elements(
++                (0..2)
++                    .map(|k| {
++                        CyclotomicRing::from_coeffs(
++                            &(0..D)
++                                .map(|t| B::from((5 + j * 11 + k * 13 + t * t * t) as u64))
++                                .collect::<Vec<_>>(),
++                        )
++                    })
++                    .collect(),
++            )
++        })
++        .collect();
++    (matrix, x)
++}
++
++fn powers<const D: usize>(alpha: E) -> Vec<E> {
++    (0..D)
++        .scan(E::ONE, |a, _| {
++            let out = *a;
++            *a *= alpha;
++            Some(out)
++        })
++        .collect()
++}
++
++#[test]
++fn contracts_actual_fused_tensors_into_existing_sumchecks() {
++    const D: usize = 32;
++    let (matrix, x) = fixture::<D>();
++    let (m, cache, m_mle, _, nv, _) = Prover::<D, E>::preprocess(&matrix);
++    let (y, q) = cache.evaluate(&x);
++    let (r0, r1) = compute_r_bpf_mle_evals::<D, E>(&q);
++    let beta0 = extension(7, 11);
++    let beta = vec![beta0, beta0 * beta0];
++    let tau = vec![extension(3, 5), extension(13, 17)];
++    let mut rows = vec![];
++    build_eq_poly(&tau, &mut rows);
++
++    for alpha in [E::ZERO, E::ONE, -E::ONE, extension(19, 23)] {
++        let powers = powers::<D>(alpha);
++        let z1 = compute_z1_mles(&m, &m_mle, &x, nv, &beta, &powers, &tau);
++        let z3 = compute_z3_mles::<D, E>(&powers, &r0, &r1, &beta, nv - 1, &tau);
++        let (ye, qe) = contract_remainder_quotient::<D, E>(&y, &q, &powers, &rows, &beta);
++        let claims = [ye + (alpha * powers[D - 1] + E::ONE) * qe, qe];
++        for (mles, claim, vars) in [(z1, claims[0], nv), (z3, claims[1], nv - 1)] {
++            let old_claim = sum_over_boolean_hypercube(&mles);
++            assert_eq!(claim, old_claim);
++            let degree = mles.len();
++            let mut old_tables = mles.clone();
++            let mut new_tables = mles.clone();
++            let mut old_t = Blake3Transcript::new();
++            let mut new_t = old_t.clone();
++            let (old_proof, old_challenges) = prove(old_claim, &mut old_tables, vars, &mut old_t);
++            let (new_proof, new_challenges) = prove(claim, &mut new_tables, vars, &mut new_t);
++            assert_eq!(old_challenges, new_challenges);
++            assert_eq!(old_t.squeeze(2), new_t.squeeze(2));
++            let old_result = old_proof.verify(vars, degree, &mut Blake3Transcript::new());
++            let new_result = new_proof.verify(vars, degree, &mut Blake3Transcript::new());
++            assert!(old_result.is_ok());
++            assert_eq!(old_result, new_result);
++            let terminal = new_tables.iter().map(|p| p.evals()[0]).product::<E>();
++            assert_eq!(terminal, new_result.unwrap().1);
++        }
++    }
++
++    // Concrete controls: the helper cannot silently swap rows/components,
++    // drop the quotient factor, or hide a modified committed coefficient.
++    let alpha = extension(19, 23);
++    let powers = powers::<D>(alpha);
++    let (ye, qe) = contract_remainder_quotient::<D, E>(&y, &q, &powers, &rows, &beta);
++    let total = ye + (alpha * powers[D - 1] + E::ONE) * qe;
++    assert_ne!(qe, E::ZERO);
++    assert_ne!(total, ye);
++    let mut wrong_rows = rows.clone();
++    wrong_rows.swap(0, 1);
++    assert_ne!(
++        contract_remainder_quotient::<D, E>(&y, &q, &powers, &wrong_rows, &beta),
++        (ye, qe)
++    );
++    let mut wrong_beta = beta.clone();
++    wrong_beta.swap(0, 1);
++    assert_ne!(
++        contract_remainder_quotient::<D, E>(&y, &q, &powers, &rows, &wrong_beta),
++        (ye, qe)
++    );
++    let mut corrupted_q = q.clone();
++    corrupted_q[0][1].coeffs[0] += B::ONE;
++    let (_, bad_qe) = contract_remainder_quotient::<D, E>(&y, &corrupted_q, &powers, &rows, &beta);
++    assert_ne!(bad_qe, qe);
++    let mut z3 = compute_z3_mles::<D, E>(&powers, &r0, &r1, &beta, nv - 1, &tau);
++    let (bad_proof, _) = prove(bad_qe, &mut z3, nv - 1, &mut Blake3Transcript::new());
++    assert_eq!(
++        bad_proof.verify(nv - 1, 3, &mut Blake3Transcript::new()),
++        Err(0)
++    );
++}
++
++#[test]
++#[should_panic(expected = "assertion `left == right` failed")]
++fn rejects_truncated_committed_quotient_shape() {
++    let (matrix, x) = fixture::<32>();
++    let (m, _, _, _, _, _) = Prover::<32, E>::preprocess(&matrix);
++    let (y, mut q) = FusedMatvec::new(&m).evaluate(&x);
++    q[0][0].coeffs.pop();
++    contract_remainder_quotient::<32, E>(
++        &y,
++        &q,
++        &vec![E::ONE; 32],
++        &vec![E::ONE; 4],
++        &vec![E::ONE; 2],
++    );
++}
++
++// One consumer workload, invoked explicitly in release mode. The scan timings
++// exclude shared table construction (the tables are still used by sumcheck).
++#[test]
++#[ignore = "explicit public release workload with PCS enabled"]
++fn ring_claim_workload_and_real_pcs_consumer() {
++    const D: usize = 1024;
++    let (matrix, x) = fixture::<D>();
++    let (m, cache, mle, base_mle, nv, mut transcript) = Prover::<D, E>::preprocess(&matrix);
++    let (y, q) = cache.evaluate(&x);
++    let (r0, r1) = compute_r_bpf_mle_evals::<D, E>(&q);
++    let alpha = extension(19, 23);
++    let beta0 = extension(7, 11);
++    let beta = vec![beta0, beta0 * beta0];
++    let tau = vec![extension(3, 5), extension(13, 17)];
++    let powers = powers::<D>(alpha);
++    let z1 = compute_z1_mles(&m, &mle, &x, nv, &beta, &powers, &tau);
++    let z3 = compute_z3_mles::<D, E>(&powers, &r0, &r1, &beta, nv - 1, &tau);
++    let old = || {
++        (
++            sum_over_boolean_hypercube(black_box(&z1)),
++            sum_over_boolean_hypercube(black_box(&z3)),
++        )
++    };
++    let new = || {
++        let mut rows = Vec::with_capacity(y.len());
++        build_eq_poly(black_box(&tau), &mut rows);
++        let (ye, qe) =
++            contract_remainder_quotient::<D, E>(black_box(&y), &q, &powers, &rows, &beta);
++        (ye + (alpha * powers[D - 1] + E::ONE) * qe, qe)
++    };
++    assert_eq!(old(), new());
++    for _ in 0..4 {
++        black_box(old());
++        black_box(new());
++    }
++    let mut samples = vec![];
++    for sample in 0..9 {
++        let time = |f: &dyn Fn() -> (E, E)| {
++            let start = Instant::now();
++            for _ in 0..32 {
++                black_box(f());
++            }
++            start.elapsed().as_nanos() / 32
++        };
++        let (old_ns, new_ns) = if sample % 2 == 0 {
++            (time(&old), time(&new))
++        } else {
++            let new_ns = time(&new);
++            (time(&old), new_ns)
++        };
++        samples.push((old_ns, new_ns));
++        println!(
++            "{{\"phase\":\"claim_totals\",\"sample\":{sample},\"old_ns\":{old_ns},\"new_ns\":{new_ns}}}"
++        );
++    }
++    let mut old_ns: Vec<_> = samples.iter().map(|x| x.0).collect();
++    let mut new_ns: Vec<_> = samples.iter().map(|x| x.1).collect();
++    old_ns.sort();
++    new_ns.sort();
++    println!(
++        "{{\"phase\":\"claim_medians\",\"ring_degree\":{D},\"rows\":4,\"inner\":2,\"components\":2,\"old_ns\":{},\"new_ns\":{}}}",
++        old_ns[4], new_ns[4]
++    );
++
++    // This calls the modified production method; all three existing PCS
++    // openings remain enabled and the unchanged public verifier consumes it.
++    let start = Instant::now();
++    let proof = Prover::<D, E>::prove(&m, &cache, &mle, &base_mle, nv, &mut transcript, &x, true);
++    let prove_ns = start.elapsed().as_nanos();
++    assert!(
++        proof.r0_mle_proof.is_some() && proof.r1_mle_proof.is_some() && proof.m_mle_proof.is_some()
++    );
++    let (vm, vnv, mut vt) = Verifier::<D, E>::preprocess(&matrix);
++    let verify_start = Instant::now();
++    assert!(Verifier::<D, E>::verify(&vm, vnv, &mut vt, &x, &proof).is_ok());
++    let verify_ns = verify_start.elapsed().as_nanos();
++    for (actual, expected) in proof.y.iter().zip(&y) {
++        for k in 0..2 {
++            assert_eq!(
++                actual.get_ring_element(k).unwrap().coeffs,
++                expected.get_ring_element(k).unwrap().coeffs
++            );
++        }
++    }
++    let mut wrong = proof.clone();
++    let mut row: Vec<_> = wrong.y[0].get_ring_elements().into_iter().cloned().collect();
++    row[0].coeffs[0] += B::ONE;
++    wrong.y[0] = RLWE::from_ring_elements(row);
++    let (_, _, mut wt) = Verifier::<D, E>::preprocess(&matrix);
++    // The existing verifier uses unwrap/assert at several refusal points.
++    // Count either Err or its existing panic as refusal, not a clean-error API.
++    let refusal = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
++        Verifier::<D, E>::verify(&vm, vnv, &mut wt, &x, &wrong)
++    }));
++    assert!(!matches!(refusal, Ok(Ok(_))));
++    println!(
++        "{{\"phase\":\"actual_consumer\",\"pcs_enabled\":true,\"verifier_accepted\":true,\"modified_output_refused\":true,\"output_coefficients_matched\":8192,\"prove_ns\":{prove_ns},\"verify_ns\":{verify_ns}}}"
++    );
++}
+diff --git a/src/protocol/prover_unfused.rs b/src/protocol/prover_unfused.rs
+new file mode 100644
+--- /dev/null
++++ b/src/protocol/prover_unfused.rs
+@@ -0,0 +1,399 @@
++use std::marker::PhantomData;
++
++use ark_ff::{FftField, Field};
++use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
++
++use crate::{
++    arith::{cyclotomic_ring::CyclotomicRing, linalg::Matrix, polynomial_ring::PolynomialRing},
++    protocol::{
++        Proof,
++        pcs::whir::Whir,
++        sumcheck::{multilinear::MultilinearPolynomial, prove},
++        transcript::Blake3Transcript,
++        utils::{build_eq_poly, sum_over_boolean_hypercube},
++    },
++    rand::get_rng,
++    rlwe::RLWE,
++};
++
++pub struct Prover<const D: usize, F: FftField> {
++    _pd: PhantomData<F>,
++}
++
++impl<const D: usize, F> Prover<D, F>
++where
++    F: FftField,
++{
++    pub fn preprocess(
++        m: &Matrix<F::BasePrimeField>,
++    ) -> (
++        Matrix<CyclotomicRing<D, F::BasePrimeField>>,
++        Matrix<PolynomialRing<D, F::BasePrimeField>>,
++        MultilinearPolynomial<F>,
++        MultilinearPolynomial<F::BasePrimeField>,
++        usize,
++        Blake3Transcript<F>,
++    ) {
++        // interpret each row as a ring elements and rearrange columns
++        let m_rq = m.lift_to_rq::<D>();
++
++        // lift matrix entries to polynomial ring elements of max degree 2*D
++        // this performs a clone of the coefficients
++        // should look into optimizing
++        let m_polyring = m_rq.lift_to_polynomial_ring();
++
++        // this also clones the coefficients. should look into optimizing.
++        let (m_mle_evals, num_vars): (Vec<F::BasePrimeField>, usize) = m_rq.to_mle_evals();
++
++        let m_mle_over_base_f = MultilinearPolynomial::new(m_mle_evals.clone(), num_vars);
++        let m_mle = MultilinearPolynomial::new(
++            m_mle_evals
++                .iter()
++                .map(|e| F::from_base_prime_field(*e))
++                .collect(),
++            num_vars,
++        );
++
++        let mut transcript = Blake3Transcript::<F>::new();
++
++        for elem in m.data.iter() {
++            transcript.absorb(&F::from_base_prime_field(*elem))
++        }
++
++        (
++            m_rq,
++            m_polyring,
++            m_mle,
++            m_mle_over_base_f,
++            num_vars,
++            transcript,
++        )
++    }
++
++    pub fn prove(
++        m_rq: &Matrix<CyclotomicRing<D, F::BasePrimeField>>,
++        m_polyring: &Matrix<PolynomialRing<D, F::BasePrimeField>>,
++        m_mle: &MultilinearPolynomial<F>,
++        m_mle_over_base_f: &MultilinearPolynomial<F::BasePrimeField>,
++        z1_num_vars: usize,
++        transcript: &mut Blake3Transcript<F>,
++        x: &Vec<RLWE<CyclotomicRing<D, F::BasePrimeField>>>,
++        include_pcs: bool,
++    ) -> Proof<D, F> {
++        let mut x_bytes_to_absorb = vec![];
++        for ct in x.iter() {
++            // consider body only (compressed ciphertext)
++            let el = ct.get_ring_element(1).unwrap();
++            el.serialize(&mut x_bytes_to_absorb).unwrap();
++        }
++
++        transcript.absorb_bytes_par(&x_bytes_to_absorb);
++
++        let mut beta = transcript.squeeze(1);
++        beta.push(beta[0] * beta[0]);
++
++        let x_polyring = x
++            .iter()
++            .map(|elem| elem.lift_to_polynomial_ring())
++            .collect::<Vec<_>>();
++
++        let y_polyring = m_polyring.mat_rlwe_vec_mul(&x_polyring);
++
++        let (vec_quotients, _vec_remainders): (
++            Vec<Vec<PolynomialRing<D, F::BasePrimeField>>>,
++            Vec<Vec<CyclotomicRing<D, F::BasePrimeField>>>,
++        ) = y_polyring
++            .iter()
++            .map(|ct| ct.long_division_by_cyclotomic())
++            .collect();
++
++        let mut rng = get_rng();
++        let z3_num_vars = z1_num_vars - m_rq.width().ilog2() as usize;
++
++        let (r0_mle_base_prime_f_evals, r1_mle_base_prime_f_evals) =
++            compute_r_bpf_mle_evals::<D, F>(&vec_quotients);
++
++        let r0_mle_over_base_prime_f =
++            MultilinearPolynomial::new(r0_mle_base_prime_f_evals.clone(), z3_num_vars);
++        let whir_r0_mle = Whir::<F>::new(r0_mle_over_base_prime_f.num_variables(), &mut rng);
++
++        let r1_mle_over_base_prime_f =
++            MultilinearPolynomial::new(r1_mle_base_prime_f_evals.clone(), z3_num_vars);
++        let whir_r1_mle = Whir::<F>::new(r1_mle_over_base_prime_f.num_variables(), &mut rng);
++
++        let mut r0_commitment = vec![];
++        let whir_r0_mle_commitment_and_prover_state = if include_pcs {
++            let (commitment, prover_state) = whir_r0_mle.commit(&r0_mle_over_base_prime_f);
++            r0_commitment.extend_from_slice(prover_state.narg_string());
++            Some((commitment, prover_state))
++        } else {
++            None
++        };
++
++        let mut r1_commitment = vec![];
++        let whir_r1_mle_commitment_and_prover_state = if include_pcs {
++            let (commitment, prover_state) = whir_r1_mle.commit(&r1_mle_over_base_prime_f);
++            r1_commitment.extend_from_slice(prover_state.narg_string());
++            Some((commitment, prover_state))
++        } else {
++            None
++        };
++
++        let whir_m_mle = Whir::<F>::new(m_mle_over_base_f.num_variables(), &mut rng);
++
++        let mut m_commitment = vec![];
++        let whir_m_mle_commitment_and_prover_state = if include_pcs {
++            let (commitment, prover_state) = whir_m_mle.commit(&m_mle_over_base_f);
++            m_commitment.extend_from_slice(prover_state.narg_string());
++            Some((commitment, prover_state))
++        } else {
++            None
++        };
++
++        // mat vec mul -- this value should coincide with vec_remainders
++        // maybe it would be better to compute it from `y_polyring`
++        let y = m_rq.mat_rlwe_vec_mul(&x);
++
++        // assumes RLWE rank is 1
++        let y_batched = y
++            .par_iter()
++            .map(|ct| {
++                ct.get_ring_element(0)
++                    .unwrap()
++                    .coeffs
++                    .iter()
++                    .zip(ct.get_ring_element(1).unwrap().coeffs.iter())
++                    .map(|(c0, c1)| {
++                        beta[0].mul_by_base_prime_field(&c0) + beta[1].mul_by_base_prime_field(&c1)
++                    })
++                    .collect::<Vec<F>>()
++            })
++            .flatten()
++            .collect::<Vec<F>>();
++
++        let mut y_bytes_to_absorb = vec![];
++        for y_batched_i in y_batched.iter() {
++            y_batched_i
++                .serialize_uncompressed(&mut y_bytes_to_absorb)
++                .unwrap();
++        }
++
++        transcript.absorb_bytes_par(&y_bytes_to_absorb);
++        transcript.absorb_bytes(&r0_commitment);
++        transcript.absorb_bytes(&r1_commitment);
++
++        let mut challenges = transcript.squeeze(m_rq.height().ilog2() as usize + 1);
++
++        let alpha = challenges.pop().unwrap();
++        let vec_tau = challenges;
++
++        // let start = Instant::now();
++        let powers_of_alpha: Vec<F> = (0..D)
++            .scan(F::one(), |state, _| {
++                let result = *state;
++                *state *= alpha;
++                Some(result)
++            })
++            .collect();
++
++        let mut z1_mles = compute_z1_mles(
++            &m_rq,
++            &m_mle,
++            x,
++            z1_num_vars,
++            &beta,
++            &powers_of_alpha,
++            &vec_tau,
++        );
++
++        let z1_claim = sum_over_boolean_hypercube(&z1_mles);
++
++        let (z1_sumcheck_proof, z1_challenges) =
++            prove(z1_claim, &mut z1_mles, z1_num_vars, transcript);
++
++        // z_3
++        let mut z3_mles = compute_z3_mles::<D, F>(
++            &powers_of_alpha,
++            &r0_mle_base_prime_f_evals,
++            &r1_mle_base_prime_f_evals,
++            &beta,
++            z3_num_vars,
++            &vec_tau,
++        );
++
++        let z3_claim = sum_over_boolean_hypercube(&z3_mles);
++
++        let (z3_sumcheck_proof, z3_challenges) =
++            prove(z3_claim, &mut z3_mles, z3_num_vars, transcript);
++
++        // Whir proofs for r_mle and m_mle.
++        let (m_mle_proof, r0_mle_proof, r1_mle_proof) = if include_pcs {
++            let (r0_mle_commitment, r0_mle_prover_state) =
++                whir_r0_mle_commitment_and_prover_state.unwrap();
++
++            let r0_mle_proof =
++                whir_r0_mle.prove(r0_mle_commitment, r0_mle_prover_state, &z3_challenges);
++
++            let (r1_mle_commitment, r1_mle_prover_state) =
++                whir_r1_mle_commitment_and_prover_state.unwrap();
++
++            let r1_mle_proof =
++                whir_r1_mle.prove(r1_mle_commitment, r1_mle_prover_state, &z3_challenges);
++
++            let (m_mle_commitment, m_mle_prover_state) =
++                whir_m_mle_commitment_and_prover_state.unwrap();
++            let m_mle_proof =
++                whir_m_mle.prove(m_mle_commitment, m_mle_prover_state, &z1_challenges);
++
++            (Some(m_mle_proof), Some(r0_mle_proof), Some(r1_mle_proof))
++        } else {
++            (None, None, None)
++        };
++
++        Proof {
++            y,
++            z1_sumcheck_proof,
++            z3_sumcheck_proof,
++            r0_commitment,
++            r1_commitment,
++            r0_mle_proof,
++            r1_mle_proof,
++            m_mle_proof,
++        }
++    }
++}
++
++fn compute_z1_mles<const D: usize, F: Field>(
++    m_rq: &Matrix<CyclotomicRing<D, F::BasePrimeField>>,
++    m_mle: &MultilinearPolynomial<F>,
++    x: &Vec<RLWE<CyclotomicRing<D, F::BasePrimeField>>>,
++    num_vars: usize,
++    beta: &Vec<F>,
++    powers_of_alpha: &Vec<F>,
++    vec_tau: &Vec<F>,
++) -> Vec<MultilinearPolynomial<F>> {
++    // this might not be very efficient memory-wise, but we need it to keep genericity in the sumcheck prover.
++    // TODO: send minimal information to the sumcheck prover and a function describing how to pad the MLEs
++    let padded_alpha_mle_evals = (0..m_rq.width() * m_rq.height())
++        .flat_map(|_| powers_of_alpha.clone())
++        .collect::<Vec<_>>();
++
++    let alpha_mle = MultilinearPolynomial::new(padded_alpha_mle_evals, num_vars);
++
++    let x_batched = x
++        .par_iter()
++        .map(|ct| {
++            ct.get_ring_element(0)
++                .unwrap()
++                .coeffs
++                .iter()
++                .zip(ct.get_ring_element(1).unwrap().coeffs.iter())
++                .map(|(c0, c1)| {
++                    beta[0].mul_by_base_prime_field(c0) + beta[1].mul_by_base_prime_field(c1)
++                })
++                .collect::<Vec<F>>()
++        })
++        .flatten()
++        .collect::<Vec<F>>();
++
++    let x_alpha_mle_evals = x_batched
++        .chunks(D)
++        .map(|chunk| {
++            chunk
++                .iter()
++                .zip(powers_of_alpha.iter())
++                .map(|(c, a)| c.mul(a))
++                .sum::<F>()
++        })
++        .collect::<Vec<F>>();
++
++    // pad x_alpha_mle_evals
++    let padded_x_alpha_mle_evals = (0..m_rq.height() as usize)
++        .flat_map(|_| {
++            x_alpha_mle_evals
++                .iter()
++                .map(|e| vec![*e; D])
++                .flatten()
++                .collect::<Vec<F>>()
++        })
++        .collect::<Vec<F>>();
++
++    let x_alpha_mle: MultilinearPolynomial<F> =
++        MultilinearPolynomial::new(padded_x_alpha_mle_evals, num_vars);
++
++    // compute eq polynomial
++    let m = m_rq.height().ilog2() as usize;
++    let mut eq_tau_mle_evals = Vec::<F>::with_capacity(1 << m);
++    build_eq_poly(&vec_tau, &mut eq_tau_mle_evals);
++
++    let padded_eq_tau_mle_evals = eq_tau_mle_evals
++        .iter()
++        .map(|e| vec![*e; m_rq.width() as usize * D])
++        .flatten()
++        .collect::<Vec<F>>();
++
++    let eq_tau_mle = MultilinearPolynomial::new(padded_eq_tau_mle_evals, num_vars);
++
++    vec![
++        eq_tau_mle,
++        m_mle.clone(),
++        x_alpha_mle.clone(),
++        alpha_mle.clone(),
++    ]
++}
++
++fn compute_r_bpf_mle_evals<const D: usize, F: Field>(
++    vec_quotients: &Vec<Vec<PolynomialRing<D, F::BasePrimeField>>>,
++) -> (Vec<F::BasePrimeField>, Vec<F::BasePrimeField>) {
++    let r0_mle_base_prime_f_evals = vec_quotients
++        .iter()
++        .flat_map(|quotients| &quotients[0].coeffs[0..D]) // only consider the lower order coefficients
++        .copied()
++        .collect::<Vec<F::BasePrimeField>>();
++
++    let r1_mle_base_prime_f_evals = vec_quotients
++        .iter()
++        .flat_map(|quotients| &quotients[1].coeffs[0..D]) // only consider the lower order coefficients
++        .copied()
++        .collect::<Vec<F::BasePrimeField>>();
++
++    (r0_mle_base_prime_f_evals, r1_mle_base_prime_f_evals)
++}
++
++fn compute_z3_mles<const D: usize, F: Field>(
++    powers_of_alpha: &Vec<F>,
++    r0_mle_base_prime_f_evals: &Vec<F::BasePrimeField>,
++    r1_mle_base_prime_f_evals: &Vec<F::BasePrimeField>,
++    beta: &Vec<F>,
++    z3_num_vars: usize,
++    vec_tau: &Vec<F>,
++) -> Vec<MultilinearPolynomial<F>> {
++    let batched_r_mle_evals = r0_mle_base_prime_f_evals
++        .iter()
++        .zip(r1_mle_base_prime_f_evals.iter())
++        .map(|(e0, e1)| beta[0].mul_by_base_prime_field(&e0) + beta[1].mul_by_base_prime_field(&e1))
++        .collect::<Vec<F>>();
++
++    let batched_r_mle_evals_len = batched_r_mle_evals.len();
++    let batched_r_mle = MultilinearPolynomial::new(batched_r_mle_evals, z3_num_vars);
++
++    let padded_alpha_mle_evals = (0..batched_r_mle_evals_len / D)
++        .flat_map(|_| powers_of_alpha.clone())
++        .collect::<Vec<_>>();
++    let alpha_mle = MultilinearPolynomial::new(padded_alpha_mle_evals, z3_num_vars);
++
++    // compute eq polynomial
++    let m = (batched_r_mle_evals_len / D).ilog2() as usize;
++    let mut eq_tau_mle_evals = Vec::<F>::with_capacity(1 << m);
++    build_eq_poly(&vec_tau, &mut eq_tau_mle_evals);
++
++    let padded_eq_tau_mle_evals = eq_tau_mle_evals
++        .iter()
++        .map(|e| vec![*e; D])
++        .flatten()
++        .collect::<Vec<F>>();
++
++    let eq_tau_mle = MultilinearPolynomial::new(padded_eq_tau_mle_evals, z3_num_vars);
++
++    vec![eq_tau_mle, batched_r_mle, alpha_mle]
++}
+diff --git a/src/protocol/public_wire.rs b/src/protocol/public_wire.rs
+new file mode 100644
+--- /dev/null
++++ b/src/protocol/public_wire.rs
+@@ -0,0 +1,141 @@
++//! Complete bounded public proof wire format for this fixed research configuration.
++//! This transports the real proof; it does not serialize RNG or transcript state.
++use std::io::{Cursor, Read};
++use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
++use crate::{arith::{field::{Field64 as F, Field64_2 as E}, cyclotomic_ring::CyclotomicRing,
++    linalg::Matrix}, rlwe::RLWE, protocol::{Proof, pcs::whir::WhirProof, sumcheck::SumCheckProof}};
++
++type Ct<const D:usize> = RLWE<CyclotomicRing<D,F>>;
++const MAX_ELEMENTS:usize = 1 << 20;
++const MAX_PCS_BYTES:usize = 1 << 24;
++fn put_n(out:&mut Vec<u8>, n:usize) { out.extend_from_slice(&(n as u64).to_le_bytes()); }
++fn get_n(input:&mut Cursor<&[u8]>, cap:usize)->Result<usize,String> {
++    let mut b=[0u8;8]; input.read_exact(&mut b).map_err(|e|e.to_string())?;
++    let x=u64::from_le_bytes(b); if x>cap as u64 { return Err("length cap".into()); } Ok(x as usize)
++}
++fn put_f<T:CanonicalSerialize>(out:&mut Vec<u8>,x:&T) { x.serialize_compressed(out).unwrap(); }
++fn get_f<T:CanonicalDeserialize>(input:&mut Cursor<&[u8]>)->Result<T,String> {
++    T::deserialize_compressed(input).map_err(|e|e.to_string())
++}
++fn header<const D:usize>(out:&mut Vec<u8>, kind:u8) {
++    out.extend_from_slice(b"MVFUSE01"); out.push(kind);
++    // Version, ring degree, base modulus, quadratic nonresidue, WHIR security/rate/folds,
++    // and exact ConjectureList configuration discriminator.
++    for x in [1u64,D as u64,18446744069414584321,7,100,1,4,4,1] { out.extend_from_slice(&x.to_le_bytes()); }
++}
++fn check_header<const D:usize>(input:&mut Cursor<&[u8]>,kind:u8)->Result<(),String> {
++    if D==0 || !D.is_power_of_two() || D>4096 { return Err("unsupported D".into()); }
++    let mut expected=vec![]; header::<D>(&mut expected,kind);
++    let mut actual=vec![0;expected.len()]; input.read_exact(&mut actual).map_err(|e|e.to_string())?;
++    if actual!=expected { return Err("version/field/configuration mismatch".into()); } Ok(())
++}
++fn put_cts<const D:usize>(out:&mut Vec<u8>, values:&[Ct<D>]) {
++    put_n(out,values.len());
++    for ct in values { assert_eq!(ct.rank(),1); for c in ct.get_ring_elements() {
++        assert_eq!(c.coeffs.len(),D); for v in &c.coeffs { put_f(out,v); }
++    }}
++}
++fn get_cts<const D:usize>(input:&mut Cursor<&[u8]>, expected:usize)->Result<Vec<Ct<D>>,String> {
++    if get_n(input,1024)?!=expected { return Err("ciphertext count".into()); }
++    let mut result=Vec::with_capacity(expected);
++    for _ in 0..expected { let mut components=vec![]; for _ in 0..2 {
++        let coeffs:Result<Vec<F>,_>=(0..D).map(|_|get_f(input)).collect();
++        components.push(CyclotomicRing::from_coeffs(&coeffs?));
++    } result.push(RLWE::from_ring_elements(components)); }
++    Ok(result)
++}
++fn finish(input:&Cursor<&[u8]>)->Result<(),String> {
++    if input.position()!=input.get_ref().len() as u64 { return Err("trailing bytes".into()); } Ok(())
++}
++pub fn encode_statement<const D:usize>(matrix:&Matrix<F>, x:&[Ct<D>], expected_y:&[Ct<D>])->Vec<u8> {
++    let mut out=vec![]; header::<D>(&mut out,0); put_n(&mut out,matrix.width()); put_n(&mut out,matrix.height());
++    for value in &matrix.data { put_f(&mut out,value); }
++    put_cts(&mut out,x); put_cts(&mut out,expected_y); out
++}
++pub fn decode_statement<const D:usize>(bytes:&[u8])->Result<(Matrix<F>,Vec<Ct<D>>,Vec<Ct<D>>),String> {
++    let mut input=Cursor::new(bytes); check_header::<D>(&mut input,0)?;
++    let width=get_n(&mut input,65536)?; let height=get_n(&mut input,1024)?;
++    if D==0 || !width.is_power_of_two() || !height.is_power_of_two() || width%D!=0 || width*height>MAX_ELEMENTS {
++        return Err("matrix shape".into()); }
++    let data:Result<Vec<F>,_>=(0..width*height).map(|_|get_f(&mut input)).collect();
++    let x=get_cts(&mut input,width/D)?; let y=get_cts(&mut input,height)?; finish(&input)?;
++    Ok((Matrix::from_vec(data?,width),x,y))
++}
++fn put_sum(out:&mut Vec<u8>, proof:&SumCheckProof<E>) {
++    let (claim,polys)=proof.public_parts(); put_f(out,&claim); put_n(out,polys.len());
++    for poly in polys { put_n(out,poly.len()); for c in poly {put_f(out,&c);} }
++}
++fn get_sum(input:&mut Cursor<&[u8]>, rounds:usize, degree:usize)->Result<SumCheckProof<E>,String> {
++    let claim=get_f(input)?;
++    if get_n(input,32)?!=rounds { return Err("sumcheck rounds".into()); }
++    let mut polys=vec![]; for _ in 0..rounds {
++        let count=get_n(input,degree+1)?; if count==0 {return Err("empty polynomial".into());}
++        let coeffs:Result<Vec<E>,_>=(0..count).map(|_|get_f(input)).collect(); polys.push(coeffs?);
++    } Ok(SumCheckProof::from_public_parts(claim,polys))
++}
++fn put_bytes(out:&mut Vec<u8>,data:&[u8]) {put_n(out,data.len());out.extend_from_slice(data);}
++fn get_bytes(input:&mut Cursor<&[u8]>,cap:usize)->Result<Vec<u8>,String> {
++    let size=get_n(input,cap)?;let mut out=vec![0;size];input.read_exact(&mut out).map_err(|e|e.to_string())?;Ok(out)
++}
++fn put_opening(out:&mut Vec<u8>,opening:&Option<WhirProof<E>>) {
++    let p=opening.as_ref().expect("PCS required");out.push(1);put_f(out,&p.claim);put_bytes(out,&p.proof);
++}
++fn get_opening(input:&mut Cursor<&[u8]>)->Result<Option<WhirProof<E>>,String> {
++    let mut tag=[0];input.read_exact(&mut tag).map_err(|e|e.to_string())?;
++    if tag!=[1] {return Err("all three PCS openings required".into());}
++    Ok(Some(WhirProof{claim:get_f(input)?,proof:get_bytes(input,MAX_PCS_BYTES)?}))
++}
++pub fn encode_proof<const D:usize>(proof:&Proof<D,E>)->Vec<u8> {
++    let mut out=vec![];header::<D>(&mut out,1);put_cts(&mut out,&proof.y);
++    put_sum(&mut out,&proof.z1_sumcheck_proof);put_sum(&mut out,&proof.z3_sumcheck_proof);
++    put_bytes(&mut out,&proof.r0_commitment);put_bytes(&mut out,&proof.r1_commitment);
++    put_opening(&mut out,&proof.r0_mle_proof);put_opening(&mut out,&proof.r1_mle_proof);put_opening(&mut out,&proof.m_mle_proof);out
++}
++pub fn decode_proof<const D:usize>(bytes:&[u8],width:usize,height:usize)->Result<Proof<D,E>,String> {
++    if D==0 || width>65536 || height>1024 || !width.is_power_of_two() || !height.is_power_of_two() || width%D!=0 || width*height>MAX_ELEMENTS {
++        return Err("caller shape".into()); }
++    let mut input=Cursor::new(bytes);check_header::<D>(&mut input,1)?;
++    let y=get_cts(&mut input,height)?;
++    let z1_sumcheck_proof=get_sum(&mut input,(width*height).ilog2() as usize,4)?;
++    let z3_sumcheck_proof=get_sum(&mut input,(D*height).ilog2() as usize,3)?;
++    let r0_commitment=get_bytes(&mut input,1024)?;let r1_commitment=get_bytes(&mut input,1024)?;
++    let r0_mle_proof=get_opening(&mut input)?;let r1_mle_proof=get_opening(&mut input)?;let m_mle_proof=get_opening(&mut input)?;
++    finish(&input)?;
++    Ok(Proof{y,z1_sumcheck_proof,z3_sumcheck_proof,r0_commitment,r1_commitment,r0_mle_proof,r1_mle_proof,m_mle_proof})
++}
++pub fn same_outputs<const D:usize>(a:&[Ct<D>],b:&[Ct<D>])->bool {
++    a.len()==b.len() && a.iter().zip(b).all(|(x,y)| x.rank()==y.rank() && x.get_ring_elements().iter()
++        .zip(y.get_ring_elements()).all(|(x,y)|x.coeffs==y.coeffs))
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    // Public message fixture, not a cryptographic proof: every wire field is
++    // nonempty, extension coordinates are nonzero, and all coefficient order
++    // and opaque PCS bytes must survive the codec exactly.
++    #[test]
++    fn public_wire_preserves_complete_messages() {
++        const D:usize=4;
++        let matrix=Matrix::from_vec((1..=16).map(F::from).collect(),8);
++        let cts:Vec<Ct<D>>=(0..2).map(|r| RLWE::from_ring_elements((0..2).map(|k|
++            CyclotomicRing::from_coeffs(&(0..D).map(|t|F::from((1+r*31+k*13+t) as u64)).collect::<Vec<_>>())
++        ).collect())).collect();
++        let statement=encode_statement(&matrix,&cts,&cts);
++        let (m,x,y)=decode_statement::<D>(&statement).unwrap();
++        assert_eq!(matrix.data,m.data); assert!(same_outputs(&cts,&x)); assert!(same_outputs(&cts,&y));
++        assert_eq!(statement,encode_statement(&m,&x,&y));
++        let scalar=|i|E::new(F::from(i),F::from(i+17));
++        let sum=|rounds,degree|SumCheckProof::from_public_parts(scalar(11),
++            (0..rounds).map(|r| (0..=degree).map(|d|scalar(1+r*7+d)).collect()).collect());
++        let opening=|i|Some(WhirProof{claim:scalar(i),proof:vec![i as u8,3,7,0,255]});
++        let proof=Proof{y,z1_sumcheck_proof:sum(4,4),z3_sumcheck_proof:sum(3,3),
++            r0_commitment:vec![1,2,3],r1_commitment:vec![4,5,6],
++            r0_mle_proof:opening(21),r1_mle_proof:opening(22),m_mle_proof:opening(23)};
++        let bytes=encode_proof(&proof);
++        let decoded=decode_proof::<D>(&bytes,8,2).unwrap();
++        assert_eq!(bytes,encode_proof(&decoded));
++        assert_eq!(proof.z1_sumcheck_proof.public_parts(),decoded.z1_sumcheck_proof.public_parts());
++        assert_eq!(proof.z3_sumcheck_proof.public_parts(),decoded.z3_sumcheck_proof.public_parts());
++    }
++}
+diff --git a/src/protocol/ring_contraction.rs b/src/protocol/ring_contraction.rs
+new file mode 100644
+--- /dev/null
++++ b/src/protocol/ring_contraction.rs
+@@ -0,0 +1,50 @@
++//! Shared-point evaluation of the actual quotient and remainder vectors.
++//! This is prover arithmetic; commitments and the sumcheck verifier are unchanged.
++use crate::{
++    arith::{cyclotomic_ring::CyclotomicRing, polynomial_ring::PolynomialRing},
++    rlwe::RLWE,
++};
++use ark_ff::Field;
++
++/// Evaluate both row/component/coefficient tensors with the same outer weights.
++/// `powers[t] = alpha^t`; `row_weights` uses the caller's existing eq convention.
++/// Component weights are in RLWE order: mask components, then body.
++///
++/// The quotient representation has 2D storage; its existing committed MLE uses
++/// the low D coefficients, which this helper consumes in the identical order.
++/// Nothing constructs a second field-sized MLE table or recomputes a basis per
++/// coefficient. Multiplying by component and row weights after each dot product
++/// is distributivity in the existing field.
++pub(crate) fn contract_remainder_quotient<const D: usize, F: Field>(
++    y: &[RLWE<CyclotomicRing<D, F::BasePrimeField>>],
++    q: &[Vec<PolynomialRing<D, F::BasePrimeField>>],
++    powers: &[F],
++    row_weights: &[F],
++    component_weights: &[F],
++) -> (F, F) {
++    assert!(D > 0);
++    assert_eq!(powers.len(), D);
++    assert_eq!(y.len(), q.len());
++    assert_eq!(y.len(), row_weights.len());
++    let (mut y_eval, mut q_eval) = (F::ZERO, F::ZERO);
++    for ((yi, qi), &row_weight) in y.iter().zip(q).zip(row_weights) {
++        assert_eq!(yi.rank() + 1, component_weights.len());
++        assert_eq!(qi.len(), component_weights.len());
++        let (mut row_y, mut row_q) = (F::ZERO, F::ZERO);
++        for (k, &beta) in component_weights.iter().enumerate() {
++            let yk = yi.get_ring_element(k).expect("validated component shape");
++            assert_eq!(yk.coeffs.len(), D);
++            assert_eq!(qi[k].coeffs.len(), 2 * D);
++            let (mut component_y, mut component_q) = (F::ZERO, F::ZERO);
++            for (t, power) in powers.iter().enumerate() {
++                component_y += power.mul_by_base_prime_field(&yk.coeffs[t]);
++                component_q += power.mul_by_base_prime_field(&qi[k].coeffs[t]);
++            }
++            row_y += beta * component_y;
++            row_q += beta * component_q;
++        }
++        y_eval += row_weight * row_y;
++        q_eval += row_weight * row_q;
++    }
++    (y_eval, q_eval)
++}
+diff --git a/src/protocol/sumcheck/mod.rs b/src/protocol/sumcheck/mod.rs
+--- a/src/protocol/sumcheck/mod.rs
++++ b/src/protocol/sumcheck/mod.rs
+@@ -16,6 +16,16 @@
+ }
+ 
+ impl<F: Field> SumCheckProof<F> {
++    /// Public proof messages, in transcript order; no prover witness/RNG state.
++    pub fn public_parts(&self) -> (F, Vec<Vec<F>>) {
++        (self.claim, self.polys.iter().map(|p| p.coeffs().to_vec()).collect())
++    }
++
++    /// The wire layer validates round/degree/field bounds before construction.
++    pub fn from_public_parts(claim: F, polys: Vec<Vec<F>>) -> Self {
++        Self { claim, polys: polys.into_iter().map(UnivariatePolynomial::new).collect() }
++    }
++
+     pub fn verify(
+         &self,
+         num_vars: usize,
+diff --git a/src/rlwe/mod.rs b/src/rlwe/mod.rs
+--- a/src/rlwe/mod.rs
++++ b/src/rlwe/mod.rs
+@@ -133,6 +133,13 @@
+ }
+ 
+ impl<R: Ring> RLWE<R> {
++    /// Construct mask components followed by body, preserving the wire component order.
++    pub fn from_ring_elements(mut elements: Vec<R>) -> Self {
++        assert_eq!(elements.len(), K + 1);
++        let body = elements.pop().unwrap();
++        Self { mask: elements, body }
++    }
++
+     pub fn zero() -> Self {
+         RLWE {
+             mask: vec![R::zero(); K],

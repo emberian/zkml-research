@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/learner_join/prepare_inputs.py", line 97, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/learner_join/prepare_inputs.py", line 17, in main
+    for rel,h in PINS.items():assert hashlib.sha256((SOURCE/rel).read_bytes()).hexdigest()==h,rel
+                                                    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 777, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/ember/dev/zkml-research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/plain/learner.json'

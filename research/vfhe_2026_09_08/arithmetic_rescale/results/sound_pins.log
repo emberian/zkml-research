@@ -1,0 +1,4 @@
+'Minidregg.Compiler.BfvRescaleRow.joinedMatricesSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvRescaleRow.joinedMatricesInhabited' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvRescaleRow.wrongNearestExcluded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvRescaleRow.simplifiedSource_sound' depends on axioms: [propext, Classical.choice, Quot.sound]

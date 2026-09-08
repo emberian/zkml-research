@@ -1,0 +1,10 @@
+   Compiling matvec v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul)
+    Finished `release` profile [optimized] target(s) in 4.25s
+     Running unittests src/lib.rs (target/release/deps/matvec-05e485c334458da0)
+
+running 2 tests
+test protocol::public_wire::tests::public_wire_preserves_complete_messages ... ok
+test arith::fused_matvec::tests::public_fused_matches_existing_products ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 15 filtered out; finished in 0.00s
+

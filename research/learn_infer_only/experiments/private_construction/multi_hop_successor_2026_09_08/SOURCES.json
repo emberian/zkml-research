@@ -1,0 +1,40 @@
+{
+  "label": "SOURCE access inventory, not a construction manifest",
+  "web_queries": [
+    "\"Multi-Hop Functional Encryption\" \"Datta\"",
+    "\"Multi-Hop Functional Encryption\" \"pdf\"",
+    "site:eprint.iacr.org \"Multi-Hop Functional Encryption\"",
+    "\"TCC 2026\" \"Multi-Hop\"",
+    "\"Pratish Datta\" \"Multi-Hop\" paper",
+    "\"Alexis Korb\" \"Multi-Hop Functional Encryption\""
+  ],
+  "web_search_count": 6,
+  "page_access_attempt_count": 5,
+  "accesses": [
+    {
+      "url": "https://www.guan.io/publications/",
+      "access": "full HTML text; MHFE entry has Abs/Bib, no full-paper link; opened twice including focused entry reread"
+    },
+    {
+      "url": "https://tcc.iacr.org/2026/",
+      "access": "fetch failed restricted URL; no conference-source content read"
+    },
+    {
+      "url": "https://alexiskorb.me/",
+      "access": "full HTML publication list; no MHFE entry in inspected text"
+    },
+    {
+      "url": "https://web.cs.ucla.edu/~sahai/",
+      "access": "full homepage; links to publication indexes, no MHFE manuscript link in inspected text"
+    }
+  ],
+  "scry_sql_count": 1,
+  "schema_count": 0,
+  "scry_output": "sources/scry_1.json",
+  "scry_sql": "SELECT id,title,doi,primary_location.landing_page_url,publication_year FROM openalex.works WHERE hasAllTokens(search_text_lc,['multi','hop','functional','encryption']) ORDER BY publication_year DESC,cited_by_count DESC LIMIT 12",
+  "local_scan": "sources/local_search.json",
+  "local_scan_program": "search_local.py",
+  "local_scan_note": "A second scan expands hyphen normalization and records numeric file extrema; both scans had the same intended front-two-page corpus. Only final stronger scan output retained; first output reported zero matches/errors over1855 PDFs.",
+  "pdf_downloads": 0,
+  "corpus_boundary": "Existing2026 local mirror first two pages only; source-availability conclusion is bounded to these instruments and pages."
+}

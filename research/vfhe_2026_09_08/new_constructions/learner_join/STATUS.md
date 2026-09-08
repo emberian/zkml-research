@@ -1,0 +1,5 @@
+[EXECUTED] Complete: one real fresh-encryption/proof batch over the cached public revision 128 text learner. All 64 exact signed scores and eight decisions agree with the reference. The saved complete proof passed in a fresh native verifier before recipient decoding. Whole proof 637.339 ms; fresh verify with preprocessing 81.534 ms; one attempt, exit 0, no retry.
+
+[DERIVED/EXECUTED] Two small CRT moduli and shifted output coefficients preserve the full signed score range with the inherited noise parameter. RELATION.md states the exact packing and conditional decode bound; input_reference.json and the native public test check it. REPORT.md, REPLAY.md and SCORES.csv provide the result and reusable interface.
+
+[OPEN scope] This is a separate ring backend and reused-data integration. The inherited Goldilocks/WHIR parameters remain unpriced, the existing BFV ciphertexts were not consumed, and no full private resident or release-only credential is claimed. Earlier sources and evidence remain untouched.

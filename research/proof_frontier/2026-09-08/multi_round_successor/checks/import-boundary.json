@@ -1,0 +1,10 @@
+{
+  "command": [
+    "bash",
+    "scripts/check-import-boundary.sh"
+  ],
+  "cwd": "/tmp/minidregg-multi-round-successor-20260908",
+  "exit_code": 0,
+  "elapsed_s": 0.14353609085083008,
+  "output": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n"
+}

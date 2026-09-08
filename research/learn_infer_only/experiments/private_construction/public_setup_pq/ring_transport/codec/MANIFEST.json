@@ -1,0 +1,50 @@
+{
+  "benchmark_count": 1,
+  "claim_label": "EXECUTED",
+  "completed_utc": "2026-09-08 16:37:39 UTC",
+  "files": {
+    ".gitignore": {
+      "bytes": 13,
+      "sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b"
+    },
+    "DESIGN.md": {
+      "bytes": 4996,
+      "sha256": "a711a3f12c8a1ec59770437ade6dbbb40b4ec141f15f910a6ce8b3fc9257edc7"
+    },
+    "MEASUREMENTS.json": {
+      "bytes": 2054,
+      "sha256": "814cffb14a1ac0a0afa326a1b97ccdcf9db09c971b704349390b398a65c732d9"
+    },
+    "NEXT.md": {
+      "bytes": 655,
+      "sha256": "aea6fc1c823f8248a6c4c57989234a78d5a86826edef2748a80e7fd1996d304e"
+    },
+    "RUN.log": {
+      "bytes": 745,
+      "sha256": "f1a8cec4270bb2e5396616f452fc112d7f1aebd0b20be047823e80c95b328cdb"
+    },
+    "STATUS.md": {
+      "bytes": 643,
+      "sha256": "7dc3bba9924534a16810f49ec2e2e0bd2330ec8f583c56aa94a22ef615c61cbc"
+    },
+    "__init__.py": {
+      "bytes": 262,
+      "sha256": "1587cdb77469d37959f4a3f94b46282517fd1f03b423ec110d67c6f1e0ce02d7"
+    },
+    "check_and_measure.py": {
+      "bytes": 6016,
+      "sha256": "0aa85f9ca9ccdc762073f55006e4406c40a461f11d512cc246e8fc0dad28e599"
+    },
+    "packed.py": {
+      "bytes": 6324,
+      "sha256": "abcc3d76f8bc7b01c901884334df6cb4e3c5f1fb4e38c0a0d638f074df16551d"
+    }
+  },
+  "frozen": true,
+  "measured_sources_unchanged": true,
+  "payload_files_persisted": 0,
+  "private_artifact_reads": 0,
+  "public_benchmark_values": 1048576,
+  "scope": "Raw canonical unsigned packed payload only; parent owns headers, signed interpretation, parameter/context binding, total length and actual transport.",
+  "search_queries": 0
+}

@@ -1,0 +1,18 @@
+[
+  "Minidregg.Compiler.AirAssertionShare.instLawfulBEqKey",
+  "Minidregg.Compiler.AirAssertionShare.restore_key_hom",
+  "Minidregg.Compiler.AirAssertionShare.restore_key_eval",
+  "Minidregg.Compiler.AirAssertionShare.mem_uniqueGo",
+  "Minidregg.Compiler.AirAssertionShare.share_preserves",
+  "Minidregg.Compiler.AirAssertionShare.optimize_preserves",
+  "Minidregg.Compiler.AirAssertionShare.emitShared_accepts_iff",
+  "Minidregg.Compiler.AirAssertionShare.emitShared_forces",
+  "Minidregg.Compiler.AirAssertionShare.Teeth.distinct_assertions_collide",
+  "Minidregg.Compiler.AirAssertionShare.Teeth.repeated_assertion_removed",
+  "Minidregg.Compiler.AirAssertionShare.Teeth.nonzero_witness",
+  "Minidregg.Compiler.AirAssertionShare.Teeth.emitted_premise_inhabited",
+  "Minidregg.Compiler.AirAssertionShare.Teeth.changed_distinct_variable_refused",
+  "Minidregg.Compiler.AirAssertionShare.Teeth.dropping_distinct_assertion_is_failopen",
+  "Minidregg.Compiler.BfvRescaleAssertionShare.sharedSystem_accepts_iff",
+  "Minidregg.Compiler.BfvRescaleAssertionShare.sharedSystem_sound"
+]

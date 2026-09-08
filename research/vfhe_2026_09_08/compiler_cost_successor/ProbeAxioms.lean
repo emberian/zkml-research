@@ -1,0 +1,18 @@
+import Compiler.AirAssertionShare
+import Compiler.BfvRescaleAssertionShare
+#print axioms Minidregg.Compiler.AirAssertionShare.instLawfulBEqKey
+#print axioms Minidregg.Compiler.AirAssertionShare.restore_key_hom
+#print axioms Minidregg.Compiler.AirAssertionShare.restore_key_eval
+#print axioms Minidregg.Compiler.AirAssertionShare.mem_uniqueGo
+#print axioms Minidregg.Compiler.AirAssertionShare.share_preserves
+#print axioms Minidregg.Compiler.AirAssertionShare.optimize_preserves
+#print axioms Minidregg.Compiler.AirAssertionShare.emitShared_accepts_iff
+#print axioms Minidregg.Compiler.AirAssertionShare.emitShared_forces
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.distinct_assertions_collide
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.repeated_assertion_removed
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.nonzero_witness
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.emitted_premise_inhabited
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.changed_distinct_variable_refused
+#print axioms Minidregg.Compiler.AirAssertionShare.Teeth.dropping_distinct_assertion_is_failopen
+#print axioms Minidregg.Compiler.BfvRescaleAssertionShare.sharedSystem_accepts_iff
+#print axioms Minidregg.Compiler.BfvRescaleAssertionShare.sharedSystem_sound

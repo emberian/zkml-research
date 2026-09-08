@@ -1,0 +1,5 @@
+[EXECUTED] Apply assertion-sharing.patch after the frozen arithmetic_rescale source package when selected by the maintainer. Generic integration into the root's independent fast expiry exporter is `AirAssertionShare.optimize system` before the existing IR2 fold. The pass and removal of duplicate per-row producer checks are independent.
+
+[EXECUTED] One liveness check on the exact optimized six-to-three template found211 unused columns (0.56%); see column-liveness.json. This does not predict the count for the active larger nine-to-four source.
+
+[OPEN next construction] If another implementation cycle is authorized, assess the larger layout's live variables once. A substantial width reduction likely requires proved capacity-aware result/carry-width selection, not only unused-index compaction, because the current conservative range gadgets actively reference their padding/carry-bit columns. Do not remove those range assertions without deriving the tighter bounds and a witness/refinement bridge.

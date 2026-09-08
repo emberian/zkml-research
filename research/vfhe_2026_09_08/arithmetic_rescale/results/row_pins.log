@@ -1,0 +1,6 @@
+'Minidregg.Compiler.BfvRescaleRow.source_balanced' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvRescaleRow.target_balanced' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvRescaleRow.source_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvRescaleRow.shared_output' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvRescaleRow.target_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvRescaleRow.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound]

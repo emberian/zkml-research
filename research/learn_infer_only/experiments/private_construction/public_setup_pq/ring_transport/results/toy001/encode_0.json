@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "role_command": "encode",
+  "pid": 7873,
+  "elapsed_seconds": 0.36402599996654317,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/public.ring",
+      "kind": "public",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/input_0.json",
+      "kind": "input",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring",
+      "kind": "ciphertext",
+      "bytes": 1498,
+      "payload_bytes": 1027,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "d0fe574ee91b76dea9f6e88d4d7a32cdaa5033239c91a7ea8d653d79dd45adc5"
+    }
+  ],
+  "result": {
+    "encoded_coordinates": 9,
+    "private_rows_read": 0
+  },
+  "error": null
+}

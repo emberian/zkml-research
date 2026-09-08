@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "test_indices": [
+    0,
+    280,
+    160,
+    40,
+    200,
+    240,
+    120,
+    80
+  ],
+  "prototype_range": [
+    -535,
+    545
+  ],
+  "query_range": [
+    -69,
+    80
+  ],
+  "signed_score_bound": 74322432,
+  "crt_product": 268140589,
+  "literal_shifted_coefficient_checks": 128,
+  "wrong_577_shift_differs": 64,
+  "input_bytes": 74691,
+  "input_sha256": "4420c610817cefc3d47ff670ebfd5b0663321bdf6cc75787b5417b82e46831ba",
+  "ideal_gaussian_union_bound": 6.584855993964582e-54
+}

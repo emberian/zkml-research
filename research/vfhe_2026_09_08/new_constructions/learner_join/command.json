@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/learner_join/matvecmul/target/release/examples/learner_proof",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/learner_join/learner_inputs.bin",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/learner_join/normal_001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/learner_join/matvecmul",
+  "timeout_seconds": 600,
+  "source_pins_sha256": "17fc4dfc740f59f327fa5b7dc191e8c9b081c12e93d6c1d902a570aee1ad1fc5",
+  "driver_sha256": "28acefd21175e5c35af2d15d6b02fda797507e5fd7b26d8bfad3702794a429a1",
+  "started_utc": "2026-09-08T17:02:35.353088+00:00",
+  "rayon_num_threads_environment": null,
+  "pid": 36730,
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.993290624988731,
+  "finished_utc": "2026-09-08T17:02:36.347077+00:00",
+  "source_unchanged": true,
+  "inputs_unchanged": true,
+  "stdout_sha256": "c1eea8b3864fc62578a409a59fbb8250de85e6b321818503820323e17d49c11b",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

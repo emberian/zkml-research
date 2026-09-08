@@ -1,0 +1,53 @@
+{
+  "all_passed": true,
+  "benchmark": {
+    "all_values_equal": true,
+    "count": 1048576,
+    "input": "public 1024-value deterministic cyclic pattern",
+    "io": "BytesIO; codec blocks bounded, benchmark payload resident in memory",
+    "pack_seconds": 0.18070712499320507,
+    "pack_values_per_second": 5802626.764381473,
+    "payload_bytes": 37879808,
+    "unpack_and_compare_seconds": 0.23496149998391047,
+    "unpack_and_compare_values_per_second": 4462756.6646952955,
+    "upper_bound": 497323236409786642155382248146820840100456150797347717440463976893159497012533375545401,
+    "width": 289
+  },
+  "claim_label": "EXECUTED",
+  "command": "python3 -B research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/codec/check_and_measure.py",
+  "completed_utc": "2026-09-08 16:35:54 UTC",
+  "payload_files_persisted": 0,
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "private_artifact_reads": 0,
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "qualification": "One public-data benchmark; parent owns container headers, total-length validation, signed interpretation and full transport run.",
+  "search_queries": 0,
+  "source_sha256": {
+    "__init__.py": "1587cdb77469d37959f4a3f94b46282517fd1f03b423ec110d67c6f1e0ce02d7",
+    "check_and_measure.py": "0aa85f9ca9ccdc762073f55006e4406c40a461f11d512cc246e8fc0dad28e599",
+    "packed.py": "abcc3d76f8bc7b01c901884334df6cb4e3c5f1fb4e38c0a0d638f074df16551d"
+  },
+  "sources_unchanged": true,
+  "tests": {
+    "all_passed": true,
+    "later_section_left_unread": true,
+    "partial_read_write_roundtrip": true,
+    "refused": [
+      "negative value",
+      "too-wide value",
+      "bool value",
+      "float value",
+      "too few values",
+      "too many values",
+      "noncanonical input residue",
+      "noncanonical decoded residue",
+      "truncation",
+      "high padding",
+      "standalone trailing byte",
+      "zero width",
+      "negative count",
+      "invalid bound"
+    ],
+    "small_roundtrips": 5
+  }
+}

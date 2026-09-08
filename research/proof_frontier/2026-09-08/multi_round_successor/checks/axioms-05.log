@@ -1,0 +1,57 @@
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.evaluate_injective' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.pathLog_valid' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.openingLog_valid' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.completeLog_valid' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.completeLog_contains' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.checkpoint_valid' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.no_bad' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.extracted_word' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.extracted_checkpoints' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.no_failure' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.first_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.second_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.first_verified' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.second_zero_verified' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.checkpoints_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.openings_logged' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.extracted_far' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.supplied_zero_accepts' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.supplied_bound_fires' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

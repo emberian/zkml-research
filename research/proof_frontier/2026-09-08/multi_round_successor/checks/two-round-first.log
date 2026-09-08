@@ -1,0 +1,72 @@
+Selvage/ArityEightTwoRound.lean:97:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  uniformProb (?m.477 × ?m.478) fun x => ?p x.1
+in the target expression
+  (uniformProb (F × F) fun c =>
+      close ρ₀ (reedSolomonCode (T.dom 3) (8 * d)) (block0 T s c.1) ∨
+        ¬close ρ₁ (reedSolomonCode (T.dom 3) (8 * d)) (s.middle c.1) ∧
+          close ρ₁ (reedSolomonCode (T.dom 6) d) (block1 T s c.1 c.2)) ≤
+    (uniformProb (F × F) fun r => close ρ₀ (reedSolomonCode (T.dom 3) (8 * d)) (block0 T s r.1)) +
+      uniformProb (F × F) fun r =>
+        ¬close ρ₁ (reedSolomonCode (T.dom 3) (8 * d)) (s.middle r.1) ∧
+          close ρ₁ (reedSolomonCode (T.dom 6) d) (block1 T s r.1 r.2)
+
+F : Type
+inst✝² : Field F
+inst✝¹ : Fintype F
+inst✝ : DecidableEq F
+ell : ℕ
+T : FoldingTower F (PowerTwoFriLevels ell) 6
+s : Words F (PowerTwoFriLevels ell)
+d : ℕ
+hd : 1 ≤ d
+ρ₀ ρ₁ : ℝ
+hρ₀ : 0 < ρ₀
+hρ₁ : 0 < ρ₁
+hrate₀ : ↑(8 * d) < (1 - 2 * ρ₀) * ↑(Fintype.card (PowerTwoFriLevels ell 3))
+hrate₁ : ↑d < (1 - 2 * ρ₁) * ↑(Fintype.card (PowerTwoFriLevels ell 6))
+hfar : ¬close ρ₀ (reedSolomonCode (T.dom 0) (64 * d)) s.source
+hf : ¬close ρ₀ (reedSolomonCode (T.dom 0) (8 * (8 * d))) s.source
+h₀ :
+  (uniformProb F fun β =>
+      close ρ₀ (reedSolomonCode (T.dom (2 + 1)) (8 * d)) fun i =>
+        fold8 (T.data 0 ⋯) (T.data 1 ⋯) (T.data 2 ⋯) s.source β i + β ^ 8 * s.input0 i) ≤
+    ↑(8 * Fintype.card (PowerTwoFriLevels ell (2 + 1))) / ↑(Fintype.card F)
+h₁ :
+  (uniformProb (F × F) fun r =>
+      ¬close ρ₁ (reedSolomonCode (T.dom 3) (8 * d)) (s.middle r.1) ∧
+        close ρ₁ (reedSolomonCode (T.dom 6) d) (block1 T s r.1 r.2)) ≤
+    ↑(8 * Fintype.card (PowerTwoFriLevels ell 6)) / ↑(Fintype.card F)
+hsplit :
+  (uniformProb (F × F) fun c =>
+      close ρ₀ (reedSolomonCode (T.dom 3) (8 * d)) (block0 T s c.1) ∨
+        ¬close ρ₁ (reedSolomonCode (T.dom 3) (8 * d)) (s.middle c.1) ∧
+          close ρ₁ (reedSolomonCode (T.dom 6) d) (block1 T s c.1 c.2)) ≤
+    (uniformProb (F × F) fun r => close ρ₀ (reedSolomonCode (T.dom 3) (8 * d)) (block0 T s r.1)) +
+      uniformProb (F × F) fun r =>
+        ¬close ρ₁ (reedSolomonCode (T.dom 3) (8 * d)) (s.middle r.1) ∧
+          close ρ₁ (reedSolomonCode (T.dom 6) d) (block1 T s r.1 r.2)
+⊢ uniformProb (F × F) (BadChallenge T s d ρ₀ ρ₁) ≤
+    ↑(8 * Fintype.card (PowerTwoFriLevels ell 3)) / ↑(Fintype.card F) +
+      ↑(8 * Fintype.card (PowerTwoFriLevels ell 6)) / ↑(Fintype.card F)
+Selvage/ArityEightTwoRound.lean:105:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ArityEight.TwoRound.earliest_transition_cover`:
+  [Fintype F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/ArityEightTwoRound.lean:142:22: error: (deterministic) timeout at `isDefEq`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/ArityEightTwoRound.lean:140:2: error: (deterministic) timeout at `«tactic execution»`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/ArityEightTwoRound.lean:132:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/ArityEightTwoRound.lean:152:8: error: (kernel) unknown constant 'Minidregg.Selvage.ArityEight.TwoRound.coherent_query_bound'

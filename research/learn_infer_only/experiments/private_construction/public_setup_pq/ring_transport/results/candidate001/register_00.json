@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "role_command": "register",
+  "pid": 9428,
+  "elapsed_seconds": 4.682402749953326,
+  "peak_rss_bytes_macos": 209534976,
+  "uid": 501,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/a.ring",
+      "kind": "a",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/private/recipient_00/key.ring",
+      "kind": "key",
+      "bytes": 3801648,
+      "payload_bytes": 3801088,
+      "private": true,
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/registration_00.ring",
+      "kind": "registration",
+      "bytes": 592441,
+      "payload_bytes": 591872,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "fa2f7e214de2c42975b0e42fe036271db366f603b08ef244c5d7dafb4232f087"
+    }
+  ],
+  "result": {
+    "actual_private_rows_generated": 1,
+    "recipient_coordinate": 0,
+    "private_coefficients_generated": 1048576
+  },
+  "error": null
+}
