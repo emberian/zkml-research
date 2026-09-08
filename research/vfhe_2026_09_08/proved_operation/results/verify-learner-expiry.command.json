@@ -1,0 +1,20 @@
+{
+  "command": [
+    "env",
+    "RAYON_NUM_THREADS=4",
+    "target/release/vfhe-proved-operation",
+    "verify-update",
+    "../arithmetic_coverage/artifacts_expiry/template_ir2.json",
+    "results/learner_expiry001",
+    "results/expiry_proof001/proof.bin"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation",
+  "started_utc": "2026-09-08T16:29:15.451328+00:00",
+  "pid": 92094,
+  "returncode": 0,
+  "elapsed_seconds": 0.11005320894764736,
+  "finished_utc": "2026-09-08T16:29:15.561859+00:00",
+  "user_seconds": 0.282317,
+  "system_seconds": 0.014157,
+  "max_rss_bytes": 64765952
+}

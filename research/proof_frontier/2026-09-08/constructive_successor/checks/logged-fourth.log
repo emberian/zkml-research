@@ -1,0 +1,30 @@
+Selvage/ArityEightLoggedWitnesses.lean:168:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  uniformProb (F × (Fin q → Fin 2)) fun x =>
+    RoundBad checkpoint checkpoint checkpoint checkpoint sourceRoot inputRoot nextRoot
+in the target expression
+  uniformProb (F × (Fin q → Fin (2 ^ (4 - (2 + 1)))))
+      (SuppliedCrossing H D₀ D₁ D₂ 1 (1 / 10) q (fun x => checkpoint) 0 sourceRoot inputRoot (fun x => nextRoot)
+        fun x a => row (x.2 a)) ≤
+    ↑(8 * 2 ^ (4 - (2 + 1))) / ↑(Fintype.card F) + (1 - 1 / 10) ^ q +
+      uniformProb (F × (Fin q → Fin (2 ^ (4 - (2 + 1))))) fun x =>
+        RoundBad checkpoint checkpoint ((fun x => checkpoint) x.1) ((fun x => checkpoint) x) sourceRoot inputRoot
+          ((fun x => nextRoot) x.1)
+
+q : ℕ
+hf : EfficientRootOpening.Far_E (1 / 5) 4 (reedSolomonCode (dom 0) 8) checkpoint 0 sourceRoot
+h :
+  uniformProb (F × (Fin q → Fin (2 ^ (4 - (2 + 1)))))
+      (SuppliedCrossing H D₀ D₁ D₂ 1 (1 / 10) q (fun x => checkpoint) 0 sourceRoot inputRoot (fun x => nextRoot)
+        fun x a => row (x.2 a)) ≤
+    ↑(8 * 2 ^ (4 - (2 + 1))) / ↑(Fintype.card F) + (1 - 1 / 10) ^ q +
+      uniformProb (F × (Fin q → Fin (2 ^ (4 - (2 + 1))))) fun x =>
+        RoundBad checkpoint checkpoint ((fun x => checkpoint) x.1) ((fun x => checkpoint) x) sourceRoot inputRoot
+          ((fun x => nextRoot) x.1)
+hz :
+  (uniformProb (F × (Fin q → Fin 2)) fun x =>
+      RoundBad checkpoint checkpoint checkpoint checkpoint sourceRoot inputRoot nextRoot) =
+    0
+⊢ uniformProb (F × (Fin q → Fin 2))
+      (SuppliedCrossing H D₀ D₁ D₂ 1 (1 / 10) q (fun x => checkpoint) 0 sourceRoot inputRoot (fun x => nextRoot)
+        fun x a => row (x.2 a)) ≤
+    16 / 17 + (9 / 10) ^ q

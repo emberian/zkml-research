@@ -1,0 +1,81 @@
+{
+  "lean": "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+  "lean_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "scope": "Five new Compiler modules only; reused prebuilt dependency oleans; no umbrella build",
+  "checks": [
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombination.olean",
+        "Compiler/BfvLinearCombination.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "source_sha256": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab",
+      "exit": 0,
+      "seconds": 5.804426908493042,
+      "output": "results/BfvLinearCombination_final.log"
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvLinearCombinationLayout.olean",
+        "Compiler/BfvLinearCombinationLayout.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "source_sha256": "e92ccd44e442a6ebcbb35864079a5c1522e4d279031705de14956c3790aefdc3",
+      "exit": 0,
+      "seconds": 6.228083848953247,
+      "output": "results/BfvLinearCombinationLayout_final.log"
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiry.olean",
+        "Compiler/BfvExpiry.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "source_sha256": "518885c19e7910b61886c8e19f00d4cf37fba5ad09a7b7cbb155c418d87d42e6",
+      "exit": 0,
+      "seconds": 8.12258505821228,
+      "output": "results/BfvExpiry_final.log"
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvExpiryLayout.olean",
+        "Compiler/BfvExpiryLayout.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "source_sha256": "90a8c1b9e665de22a0f9bad2d9b319b1432696288a47f6f12d2e876bc10665f5",
+      "exit": 0,
+      "seconds": 5.761699199676514,
+      "output": "results/BfvExpiryLayout_final.log"
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/BfvOperationWitness.olean",
+        "Compiler/BfvOperationWitness.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage",
+      "source_sha256": "dd2af44988c3d853c8bc64329474adf647ee54b89479b8e75ee2ecf19a158fd9",
+      "exit": 0,
+      "seconds": 6.80265998840332,
+      "output": "results/BfvOperationWitness_final.log"
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "scope": "Read-only companion boundary, no Theory/Selvage changes in proposal",
+      "exit": 0,
+      "output": "results/import_boundary.log"
+    }
+  ]
+}

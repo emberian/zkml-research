@@ -1,0 +1,10 @@
+{
+  "verified": false,
+  "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4",
+  "public_rows": 8192,
+  "public_width": 64,
+  "proof_bytes": 557634,
+  "template_sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684",
+  "error": "proof rejected: IR v2 verification failed: InvalidOpeningArgument(InvalidPowWitness)",
+  "elapsedMs": 2001.1300840000001
+}

@@ -1,0 +1,10 @@
+'Minidregg.Selvage.ArityEight.point_query_miss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.sampled_crossing_of_challenge_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.fold8_uniform_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.fold8_injected_uniform_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.fold8_sampled_crossing' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.fold8_injected_sampled_crossing' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

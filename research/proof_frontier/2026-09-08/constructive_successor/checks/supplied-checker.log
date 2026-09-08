@@ -1,0 +1,21 @@
+Selvage/ArityEightSupplied.lean:27:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ArityEight.supplied_point_pins`:
+  [Field F]
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Field F] [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/ArityEightSupplied.lean:62:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Classical.propDecidable', which is 'noncomputable'
+Selvage/ArityEightSupplied.lean:67:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'pointCheck', which is 'noncomputable'
+Selvage/ArityEightSupplied.lean:78:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.ArityEight.rowCheck_eq_true_iff`:
+  [DecidableEq Digest]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq Digest] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/ArityEightSupplied.lean:127:5: warning: unused variable `Ps`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Selvage/ArityEightSupplied.lean:127:8: warning: unused variable `Pg`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

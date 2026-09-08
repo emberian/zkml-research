@@ -1,0 +1,108 @@
+/-
+Compiler vocabulary for exact variable-by-variable integer sums. Product links
+are source terms; range gadgets and the existing radix carry compiler do the
+field-to-integer work. No second AIR evaluator or polynomial executor is added.
+-/
+import Compiler.IntegerCertificateEmission
+
+namespace Minidregg.Compiler.IntegerBilinearEmission
+
+open Minidregg.Compiler
+open Minidregg.Compiler.BfvSignedAccumulatorAir
+open Minidregg.Compiler.IntegerCertificateEmission
+open Minidregg.Compiler.NativeKernelPlan
+open Minidregg.Theory
+open scoped BigOperators
+set_option autoImplicit false
+set_option maxRecDepth 20000
+
+structure ProductWires (J : Type) (n inputBits productBits : Nat) where
+  left : Fin n → J
+  right : Fin n → J
+  product : Fin n → J
+  leftBit : Fin n → Fin inputBits → J
+  rightBit : Fin n → Fin inputBits → J
+  productBit : Fin n → Fin productBits → J
+
+def productEquation {J : Type} {n inputBits productBits : Nat}
+    (w : ProductWires J n inputBits productBits) (i : Fin n) : Term (AirSig BabyBear J) :=
+  add' (mul' (vr (w.left i)) (vr (w.right i))) (mul' (cst (-1)) (vr (w.product i)))
+
+def productSystem {J : Type} {n inputBits productBits : Nat}
+    (w : ProductWires J n inputBits productBits) : ConstraintSystem BabyBear J :=
+  AirBignum.limbRangeSystem w.left w.leftBit ++
+  AirBignum.limbRangeSystem w.right w.rightBit ++
+  AirBignum.limbRangeSystem w.product w.productBit ++
+  (List.finRange n).map (productEquation w)
+
+/-- Statement first: satisfying the generated product relation forces integer
+products, including shared inputs reused at arbitrary pair indices. -/
+def ProductSound {J : Type} {n inputBits productBits : Nat}
+    (w : ProductWires J n inputBits productBits) : Prop :=
+  ∀ asg : J → BabyBear, systemAccepts asg (productSystem w) →
+    ∀ i, (asg (w.product i)).val = (asg (w.left i)).val * (asg (w.right i)).val
+
+theorem productEquation_correct {J : Type} {n ib pb : Nat}
+    (w : ProductWires J n ib pb) (asg : J → BabyBear) (i : Fin n) :
+    accepts asg (productEquation w i) ↔
+      asg (w.left i) * asg (w.right i) = asg (w.product i) := by
+  simp only [accepts, productEquation, eval_add', eval_mul', eval_vr, eval_cst]
+  constructor <;> intro h <;> linear_combination h
+
+theorem productSystem_sound {J : Type} {n ib pb : Nat}
+    (w : ProductWires J n ib pb)
+    (hib : 2^ib ≤ babyBearP)
+    (hmul : (2^ib-1)*(2^ib-1) < babyBearP) : ProductSound w := by
+  intro asg hs i
+  obtain ⟨⟨⟨hl,hr⟩,_hp⟩,he⟩ :=
+    (by simpa only [productSystem, systemAccepts_append] using hs)
+  have hlr := (AirBignum.limbRangeSystem_correct asg w.left w.leftBit).mp hl i
+  have hrr := (AirBignum.limbRangeSystem_correct asg w.right w.rightBit).mp hr i
+  have hleft := rangeGadget_val_lt hib asg _ _ hlr
+  have hright := rangeGadget_val_lt hib asg _ _ hrr
+  have heq := (productEquation_correct w asg i).mp
+    (he _ (List.mem_map.mpr ⟨i, List.mem_finRange i, rfl⟩))
+  have hbound : (asg (w.left i)).val * (asg (w.right i)).val < babyBearP := by
+    have hh := Nat.mul_le_mul (show (asg (w.left i)).val ≤ 2^ib-1 by omega)
+      (show (asg (w.right i)).val ≤ 2^ib-1 by omega)
+    omega
+  have hv := congrArg ZMod.val heq
+  simpa only [ZMod.val_mul, Nat.mod_eq_of_lt hbound] using hv.symm
+
+def bilinearSystem {J : Type} {n ib pb width lb cb : Nat}
+    (constant : Nat) (coefficient : Fin n → Nat)
+    (p : ProductWires J n ib pb) (w : WeightedSumWires J width lb cb) :
+    ConstraintSystem BabyBear J :=
+  productSystem p ++ weightedSumGadget constant coefficient p.product w
+
+def BilinearSound {J : Type} {n ib pb width lb cb : Nat}
+    (constant : Nat) (coefficient : Fin n → Nat)
+    (p : ProductWires J n ib pb) (w : WeightedSumWires J width lb cb) : Prop :=
+  ∀ asg : J → BabyBear, systemAccepts asg (bilinearSystem constant coefficient p w) →
+    Bignum.denoteNat (2^lb) (AirBignum.limbVals asg w.result) =
+      constant + ∑ i, coefficient i * ((asg (p.left i)).val * (asg (p.right i)).val)
+
+/-- Existing weighted-sum soundness now covers bilinear integer forms. Every
+no-wrap bound is numeric, independent of any witness's claimed product value. -/
+theorem bilinearSystem_sound {J : Type} {n ib pb width lb cb constant : Nat}
+    (coefficient : Fin n → Nat) (p : ProductWires J n ib pb)
+    (w : WeightedSumWires J width lb cb)
+    (hib : 2^ib ≤ babyBearP) (hmul : (2^ib-1)*(2^ib-1) < babyBearP)
+    (hlb : 2^lb ≤ babyBearP) (hcb : 2^cb ≤ babyBearP) (hpb : 2^pb ≤ babyBearP)
+    (hconstant : constant < (2^lb)^width)
+    (hcoefficient : ∀ i, coefficient i < (2^lb)^width)
+    (hleft : (2^lb-1)+n*(2^lb-1)*(2^pb-1)+(2^cb-1) < babyBearP)
+    (hright : (2^lb-1)+2^lb*(2^cb-1) < babyBearP) :
+    BilinearSound constant coefficient p w := by
+  intro asg hs
+  obtain ⟨hp,hw⟩ := (systemAccepts_append asg _ _).mp hs
+  have heq := productSystem_sound p hib hmul asg hp
+  have hrange : systemAccepts asg (AirBignum.limbRangeSystem p.product p.productBit) := by
+    have hp' := hp
+    simp only [productSystem, systemAccepts_append] at hp'
+    exact hp'.1.2
+  have hh := ranged_weighted_sound hlb hcb hpb hconstant coefficient hcoefficient
+    hleft hright asg p.product p.productBit w hrange hw
+  simpa only [heq] using hh
+
+end Minidregg.Compiler.IntegerBilinearEmission

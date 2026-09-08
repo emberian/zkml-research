@@ -1,0 +1,27 @@
+{
+  "claim": "EXECUTED same JavaScript/WASM verifier API used by browser consumers",
+  "fixture": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/fixtures/operation",
+  "genuine": {
+    "verified": true,
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "public_rows": 8192,
+    "public_width": 64,
+    "proof_bytes": 557834,
+    "template_sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684",
+    "error": null
+  },
+  "changedPublicOutput": {
+    "verified": false,
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "public_rows": 8192,
+    "public_width": 64,
+    "proof_bytes": 557834,
+    "template_sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684",
+    "error": "proof rejected: IR v2 verification failed: InvalidOpeningArgument(InvalidPowWitness)"
+  },
+  "genuineMs": 1669.260458,
+  "changedPublicOutputMs": 1608.025833,
+  "proofBytes": 557834,
+  "browserEngine": "Node WebAssembly runtime",
+  "noNewProofGenerated": true
+}

@@ -1,0 +1,114 @@
+{
+  "claim": "EXECUTED WASM build and source/artifact provenance; genuine-proof test pending",
+  "build_command": "cargo build --release --offline --lib --target wasm32-unknown-unknown -j 2",
+  "build_returncode": 0,
+  "bindgen_command": "wasm-bindgen --target web --out-dir web/pkg --out-name vfhe_browser_verifier target/wasm32-unknown-unknown/release/vfhe_browser_verifier.wasm",
+  "bindgen_returncode": 0,
+  "backend_sources_modified": false,
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/Cargo.toml",
+      "bytes": 918,
+      "sha256": "2ffeb9fcfc52c56350b0c95328ce41a403ae8272da71fe51e50d250cd458dd79"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/Cargo.lock",
+      "bytes": 31768,
+      "sha256": "412b36f4e9f6c7bfccade027ec4c7814bf576a13371f88d5f73a502f1180f580"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/.cargo/config.toml",
+      "bytes": 86,
+      "sha256": "3d93ea0b6c032f4b65b3c9e8e66b52f80ec41806f3c86bc38b870003915448ef"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/src/lib.rs",
+      "bytes": 5179,
+      "sha256": "7f4573491a87591c9815c46c4e36b347d28794bd8a02eb32c3823ce627861e7e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/src/main.rs",
+      "bytes": 801,
+      "sha256": "9f8fceb9b21f73fbd4151a318cea8c215659d6a39b96e4ebfb2c498be780c032"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/circuit/Cargo.toml",
+      "bytes": 7043,
+      "sha256": "cd3d6c0aa0471063885ffe21521e36c52e99bd657c73c5f186d5bca5f492c655"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/circuit/src/descriptor_proof_backend.rs",
+      "bytes": 17638,
+      "sha256": "a01b35bc99ea2ba92870c0a8b01945c6ed2ebc22ab8bfc9b16b5fe56217d5e20"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs",
+      "bytes": 603828,
+      "sha256": "596a450e77a8b905626e8c8b7b68dcffadd07b9bd9bcb71a040f009e8f77fb89"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/circuit/src/stark_zk.rs",
+      "bytes": 8618,
+      "sha256": "8c5d6f57b0d6e2d137ff0e8bb2088ef13cd593369744a662988b9c104180383c"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/Cargo.toml",
+      "bytes": 1783,
+      "sha256": "1836f622fdb3677c99b7d910f2c8b1abc5f2b22e064c9158bf691c05eaf66658"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-challenger-82cfad73/Cargo.toml",
+      "bytes": 2175,
+      "sha256": "6a5153af314b97cf3f2f659fb5c2f9096b174ff1371044181601213e22a1a4da"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier.d.ts",
+      "bytes": 1942,
+      "sha256": "481b151baa99a73ff118ad192d56e67732d15e09ba26de4088be7635a469b054"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier.js",
+      "bytes": 8325,
+      "sha256": "58e31dbd078d6769aea5f7518900d55d93422c6eddf065425b0a00c133102f0e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier_bg.wasm",
+      "bytes": 2229453,
+      "sha256": "0b399ccd9c189c4c3105550fbc44f3fee6e44faf44b0074851752afc7d7addbb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier_bg.wasm.d.ts",
+      "bytes": 725,
+      "sha256": "9d6af5e8addb975cd6f3534cc6144ccff96c48cbd2aa4e2e399c85c7da67aeac"
+    }
+  ],
+  "tool_versions": [
+    {
+      "argv": [
+        "rustc",
+        "-Vv"
+      ],
+      "returncode": 0,
+      "stdout": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "wasm-bindgen",
+        "--version"
+      ],
+      "returncode": 0,
+      "stdout": "wasm-bindgen 0.2.127\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "returncode": 0,
+      "stdout": "v26.8.1\n",
+      "stderr": ""
+    }
+  ]
+}

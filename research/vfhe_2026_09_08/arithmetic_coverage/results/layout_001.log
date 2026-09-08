@@ -1,0 +1,15 @@
+Compiler/BfvLinearCombinationLayout.lean:35:50: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Hashable BabyBear
+
+Hint: Adding the command `deriving instance Hashable for Minidregg.Compiler.BabyBear` may allow Lean to derive the missing instance.
+Compiler/BfvLinearCombinationLayout.lean:57:14: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Hashable BabyBear
+
+Hint: Adding the command `deriving instance Hashable for Minidregg.Compiler.BabyBear` may allow Lean to derive the missing instance.
+Compiler/BfvLinearCombinationLayout.lean:56:68: error: unsolved goals
+v : ℕ → BabyBear
+h : descriptorHolds descriptor v
+⊢ ∀ (limb : Fin 3),
+    (∀ (kind : Fin 3), word (fun i => v ↑i) (layout limb) kind < primes limb) ∧
+      word (fun i => v ↑i) (layout limb) 2 =
+        (3 * word (fun i => v ↑i) (layout limb) 0 + 5 * word (fun i => v ↑i) (layout limb) 1) % primes limb

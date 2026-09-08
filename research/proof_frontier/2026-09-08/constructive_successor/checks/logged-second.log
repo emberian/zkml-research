@@ -1,0 +1,39 @@
+Selvage/ArityEightLoggedWitnesses.lean:35:71: error: Tactic `decide` failed for proposition
+  ¬EfficientRootOpening.ResponseCollision checkpoint
+because its `Decidable` instance
+  instDecidableNot
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableNot` and `Classical.propDecidable`, reduction got stuck at the `Decidable` instance
+  Classical.choice ⋯
+
+Hint: Reduction got stuck on `Classical.choice`, which indicates that a `Decidable` instance is defined using classical reasoning, proving an instance exists rather than giving a concrete construction. The `decide` tactic works by evaluating a decision procedure via reduction, and it cannot make progress with such instances. This can occur due to the `open scoped Classical` command, which enables the instance `Classical.propDecidable`.
+Selvage/ArityEightLoggedWitnesses.lean:69:2: error: unsolved goals
+case refine_2
+i : Fin 2
+e : EfficientRootOpening.Query F Digest × Digest
+he :
+  e ∈ EfficientRootOpening.openingLog H (row i).injected.value (binaryAddressBits (4 - (2 + 1)) i) (row i).injected.path
+hm : e ∈ completeLog 1 fun x => 0
+⊢ e ∈ completeLog 4 farWord ∨ (e ∈ completeLog 1 fun x => 0) ∨ e ∈ completeLog 1 fun x => 1
+Selvage/ArityEightLoggedWitnesses.lean:72:2: error: unsolved goals
+case refine_3
+i : Fin 2
+e : EfficientRootOpening.Query F Digest × Digest
+he : e ∈ EfficientRootOpening.openingLog H (row i).next.value (binaryAddressBits (4 - (2 + 1)) i) (row i).next.path
+hm : e ∈ completeLog 1 fun x => 1
+⊢ e ∈ completeLog 4 farWord ∨ (e ∈ completeLog 1 fun x => 0) ∨ e ∈ completeLog 1 fun x => 1
+Selvage/ArityEightLoggedWitnesses.lean:71:21: warning: This simp argument is unused:
+  hm
+
+Hint: Omit it from the simp argument list.
+  simp [checkpoint,̵h̵m̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightLoggedWitnesses.lean:74:21: warning: This simp argument is unused:
+  hm
+
+Hint: Omit it from the simp argument list.
+  simp [checkpoint,̵h̵m̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

@@ -1,0 +1,4 @@
+'Minidregg.Compiler.BfvExpiry.prime_capacity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvExpiry.wholeRowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvExpiry.descriptor_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvExpiry.simplifiedSource_sound' depends on axioms: [propext, Classical.choice, Quot.sound]

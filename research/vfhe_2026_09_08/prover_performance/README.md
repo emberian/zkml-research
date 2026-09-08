@@ -45,4 +45,6 @@ After applying the patch in an isolated minidregg checkout:
 cargo test --release --manifest-path prover/Cargo.toml --test matmul_binding_reuse --test zkml_matmul_conformance
 ```
 
-[OPEN application] The vFHE execution lane currently targets `3·ctA+5·ctB` through a DescriptorIR-v2 STARK, which does not call this engine. The separate ring/vector lane's proposed shared-point contractions of Y and Q have the same reusable-basis shape, but that connection has not been implemented here. No FRI query count, soundness knob, commitment policy or security label changed; the fourfold figure is not a complete vFHE/system speedup.
+[OPEN application] The vFHE execution lane currently targets `3·ctA+5·ctB` through a DescriptorIR-v2 STARK, which does not call this engine. No FRI query count, soundness knob, commitment policy or security label changed; the fourfold figure is not a complete vFHE/system speedup.
+
+[EXECUTED follow-on] The same scheduling idea now has a separate actual ring consumer: [shared Y/Q contraction](ring_consumer/README.md) replaces the fused ring prover's two total scans and feeds its original sumchecks. Its one workload measured550444ns→63639ns for the replaced phase (8.65×); the modified production caller passed the unchanged verifier with all three PCS openings enabled. This is a second implementation and measurement, not an extension of the first timing's scope. Both patches are ready for maintainer integration.

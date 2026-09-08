@@ -1,0 +1,15 @@
+{
+  "name": "constructive_successor",
+  "root": "../proof_frontier/2026-09-08/constructive_successor",
+  "patch": "../proof_frontier/2026-09-08/constructive_successor/arity-eight-consumer.patch",
+  "expected_pins": 39,
+  "source_files": {
+    "Selvage/ArityEightBabyBear.lean": "../proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightBabyBear.lean",
+    "Selvage/ArityEightFold.lean": "../proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightFold.lean",
+    "Selvage/ArityEightLoggedWitnesses.lean": "../proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightLoggedWitnesses.lean",
+    "Selvage/ArityEightQueryTransport.lean": "../proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightQueryTransport.lean",
+    "Selvage/ArityEightSampling.lean": "../proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightSampling.lean",
+    "Selvage/ArityEightSupplied.lean": "../proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightSupplied.lean",
+    "Selvage/ArityEightWitnesses.lean": "../proof_frontier/2026-09-08/constructive_successor/src/Selvage/ArityEightWitnesses.lean"
+  }
+}

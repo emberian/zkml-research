@@ -1,0 +1,20 @@
+{
+  "command": [
+    "env",
+    "RAYON_NUM_THREADS=4",
+    "target/release/vfhe-proved-operation",
+    "verify-changed-output",
+    "../arithmetic_coverage/artifacts/template_ir2.json",
+    "results/case001",
+    "results/proof002/proof.bin"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation",
+  "started_utc": "2026-09-08T16:27:54.893452+00:00",
+  "pid": 90462,
+  "returncode": 0,
+  "elapsed_seconds": 1.8653991669998504,
+  "finished_utc": "2026-09-08T16:27:56.760205+00:00",
+  "user_seconds": 1.600875,
+  "system_seconds": 0.096707,
+  "max_rss_bytes": 577241088
+}

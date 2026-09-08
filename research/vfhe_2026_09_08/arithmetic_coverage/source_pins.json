@@ -1,0 +1,28 @@
+{
+  "proposal": {
+    "Compiler/BfvLinearCombination.lean": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab",
+    "Compiler/BfvLinearCombinationLayout.lean": "e92ccd44e442a6ebcbb35864079a5c1522e4d279031705de14956c3790aefdc3",
+    "Compiler/BfvExpiry.lean": "518885c19e7910b61886c8e19f00d4cf37fba5ad09a7b7cbb155c418d87d42e6",
+    "Compiler/BfvExpiryLayout.lean": "90a8c1b9e665de22a0f9bad2d9b319b1432696288a47f6f12d2e876bc10665f5",
+    "Compiler/BfvOperationWitness.lean": "dd2af44988c3d853c8bc64329474adf647ee54b89479b8e75ee2ecf19a158fd9",
+    "EmitBfvLinearCombination.lean": "0450e5787f48ba8bde3bf5c1a55c9b0fd38fc5fb52ebde85f83d9d0319ffb4a5",
+    "EmitBfvExpiry.lean": "73b4d829a04f48a8c186cba8181b6ade7233894c8ed4d3e275adbfa413e8f1fb",
+    "proposal.patch": "ede8583f0ad6e9800fbc07b3fe08c6b0b7b65533d44740c508913af734ef6fbd"
+  },
+  "reused_source": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/Compiler/IntegerCertificateEmission.lean": "57eb7f061e878e5b4a94d9782723c896502a7a7f027a942c9f540a3df96c5628",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79",
+    "/Users/ember/dev/minidregg/Compiler/AirBignum.lean": "770a790ac381c925126aa0ba4656780cc0c1f242248697903b9e2368d14874fb",
+    "/Users/ember/dev/minidregg/Compiler/AirModularView.lean": "ef4627388d0d48b088f1e4ce54a72d4d3ef353a880e2ffada4c13c8022582b52",
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6"
+  },
+  "direct_dependency_oleans": {
+    "IntegerCertificateEmission.olean": "1b3e312c1d7e910ff903112d81eea8b41bf0c5e5fcc00f5aca680e9ea303fbcb",
+    "AirSimplify.olean": "11f9a012773e6130694a902a5c6f9e6964dd6c1d881c9429f5ea600d5fb61344",
+    "AirBignum.olean": "2c007e649e3315bc11575a5bc23674e775f87d949274ac0f8c0d858044977bb4",
+    "AirModularView.olean": "574f07158009ef63a2cdb32cef563dbe95c110de7e96cf5b057dd79fbde94d48",
+    "DescriptorEval.olean": "64954e60e1d392e34e158c231c583ab72c5203d71555e60594fdb649c2e1c80c"
+  },
+  "companion_head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "note": "Companion is read-only and may be dirty; HEAD is identification only. Exact prebuilt dependency oleans were reused, not rebuilt. Root owns whole-tree integration."
+}

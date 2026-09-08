@@ -1,0 +1,212 @@
+warning: unused import: `crate::dsl::descriptors::merkle_poseidon2_circuit`
+  --> /Users/ember/dev/breadstuffs/circuit/src/body_membership.rs:24:5
+   |
+24 | use crate::dsl::descriptors::merkle_poseidon2_circuit;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `AccumulatorNonMembershipWitness`
+  --> /Users/ember/dev/breadstuffs/circuit/src/dsl/accumulator.rs:25:24
+   |
+25 |     ACCUMULATOR_WIDTH, AccumulatorNonMembershipWitness, AccumulatorNonRevocationWitness, ExtElem,
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `BoundaryDef`, `BoundaryRow`, `CircuitDescriptor`, `ColumnDef`, `ColumnKind`, `ConstraintExpr`, and `DslCircuit`
+  --> /Users/ember/dev/breadstuffs/circuit/src/dsl/fold.rs:30:5
+   |
+30 |     BoundaryDef, BoundaryRow, CircuitDescriptor, ColumnDef, ColumnKind, ConstraintExpr, DslCircuit,
+   |     ^^^^^^^^^^^  ^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^  ^^^^^^^^^  ^^^^^^^^^^  ^^^^^^^^^^^^^^  ^^^^^^^^^^
+
+warning: unused import: `hash_4_to_1`
+ --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/trace.rs:8:37
+  |
+8 | use crate::poseidon2::{hash_2_to_1, hash_4_to_1};
+  |                                     ^^^^^^^^^^^
+
+warning: private item shadows public glob re-export
+  --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/trace_rotated.rs:47:13
+   |
+47 | use super::{EFFECT_VM_WIDTH, EffectVmContext, generate_effect_vm_trace_ext};
+   |             ^^^^^^^^^^^^^^^
+   |
+note: the name `EFFECT_VM_WIDTH` in the value namespace is supposed to be publicly re-exported here
+  --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/trace_rotated.rs:52:9
+   |
+52 | pub use crate::effect_vm::layout_generated::*;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+note: but the private item here shadows it
+  --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/trace_rotated.rs:47:13
+   |
+47 | use super::{EFFECT_VM_WIDTH, EffectVmContext, generate_effect_vm_trace_ext};
+   |             ^^^^^^^^^^^^^^^
+   = note: `#[warn(hidden_glob_reexports)]` on by default
+
+warning: unused import: `EFFECT_VM_WIDTH`
+  --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/transfer_fee_avail_weld.rs:37:5
+   |
+37 |     EFFECT_VM_WIDTH, PARAM_BASE, STATE_AFTER_BASE, STATE_BEFORE_BASE, param, state,
+   |     ^^^^^^^^^^^^^^^
+
+warning: unused imports: `prove` and `verify`
+  --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:40:40
+   |
+40 | use p3_uni_stark::{Proof, StarkConfig, prove, verify};
+   |                                        ^^^^^  ^^^^^^
+
+warning: unused doc comment
+   --> /Users/ember/dev/breadstuffs/circuit/src/refusal.rs:485:1
+    |
+485 | / /// Set while this thread is inside [`catch_quietly`]. The hook installed below reads it, so
+486 | | /// silencing is scoped to the thread that asked for it.
+    | |_-------------------------------------------------------^
+    |   |
+    |   rustdoc does not generate documentation for macro invocations
+    |
+    = help: to document an item produced by a macro, the macro must produce the documentation as part of its expansion
+    = note: `#[warn(unused_doc_comments)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `crate::dsl::predicates::*`
+   --> /Users/ember/dev/breadstuffs/circuit/src/lib.rs:700:13
+    |
+700 |     pub use crate::dsl::predicates::*;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::dsl::predicates::*`
+   --> /Users/ember/dev/breadstuffs/circuit/src/lib.rs:701:13
+    |
+701 |     pub use crate::dsl::predicates::*;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `WindowAccess`
+  --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:29:40
+   |
+29 | use p3_air::{Air, AirBuilder, BaseAir, WindowAccess};
+   |                                        ^^^^^^^^^^^^
+
+warning: unused import: `BaseAir`
+  --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:29:31
+   |
+29 | use p3_air::{Air, AirBuilder, BaseAir, WindowAccess};
+   |                               ^^^^^^^
+
+warning: unused import: `Air`
+  --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:29:14
+   |
+29 | use p3_air::{Air, AirBuilder, BaseAir, WindowAccess};
+   |              ^^^
+
+warning: variable does not need to be mutable
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:5712:9
+     |
+5712 |     let mut fact_hist: BTreeMap<(u32, u32, u32), u64> = BTreeMap::new();
+     |         ----^^^^^^^^^
+     |         |
+     |         help: remove this `mut`
+     |
+     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> /Users/ember/dev/breadstuffs/circuit/src/table_air.rs:404:13
+    |
+404 |         let mut share_out_of_range = |e: &TableExpr, what: &str| -> Result<(), String> {
+    |             ----^^^^^^^^^^^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /Users/ember/dev/breadstuffs/circuit/src/table_air.rs:428:13
+    |
+428 |         let mut prep_out_of_range = |e: &TableExpr, what: &str| -> Result<(), String> {
+    |             ----^^^^^^^^^^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: type `CompiledMain` is more private than the item `Ir2Air::Main::compiled`
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:3672:9
+     |
+3672 |         compiled: Arc<crate::flat_eval::CompiledMain>,
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ field `Ir2Air::Main::compiled` is reachable at visibility `pub`
+     |
+note: but type `CompiledMain` is only usable at visibility `pub(crate)`
+    --> /Users/ember/dev/breadstuffs/circuit/src/flat_eval.rs:368:1
+     |
+ 368 | pub(crate) struct CompiledMain {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     = note: `#[warn(private_interfaces)]` on by default
+
+warning: type `CompiledTable` is more private than the item `Ir2Air::LeanTable::compiled`
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:3760:9
+     |
+3760 |         compiled: Arc<crate::flat_eval::CompiledTable>,
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ field `Ir2Air::LeanTable::compiled` is reachable at visibility `pub`
+     |
+note: but type `CompiledTable` is only usable at visibility `pub(crate)`
+    --> /Users/ember/dev/breadstuffs/circuit/src/flat_eval.rs:418:1
+     |
+ 418 | pub(crate) struct CompiledTable {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `resolve_row` is never used
+   --> /Users/ember/dev/breadstuffs/circuit/src/dsl/circuit.rs:636:8
+    |
+635 | impl BoundaryDef {
+    | ---------------- method in this implementation
+636 |     fn resolve_row(&self, trace_len: usize) -> usize {
+    |        ^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `lookup_index` is never read
+   --> /Users/ember/dev/breadstuffs/circuit/src/dsl/circuit.rs:673:5
+    |
+668 | pub struct DslCircuit {
+    |            ---------- field in this struct
+...
+673 |     lookup_index: LookupIndex,
+    |     ^^^^^^^^^^^^
+
+warning: field `set_elements` is never read
+   --> /Users/ember/dev/breadstuffs/circuit/src/non_membership.rs:140:5
+    |
+138 | pub struct NonMembershipProver {
+    |            ------------------- field in this struct
+139 |     /// The set's elements (needed for witness generation).
+140 |     set_elements: Vec<BabyBear>,
+    |     ^^^^^^^^^^^^
+    |
+    = note: `NonMembershipProver` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: constant `ROUND_STATES_OFFSET` is never used
+   --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:289:7
+    |
+289 | const ROUND_STATES_OFFSET: usize = 5;
+    |       ^^^^^^^^^^^^^^^^^^^
+
+warning: constant `PARENT_COL` is never used
+   --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:292:7
+    |
+292 | const PARENT_COL: usize = P3_TRACE_WIDTH - 1; // 245
+    |       ^^^^^^^^^^
+
+warning: function `vm_site_digest_concrete` is never used
+    --> /Users/ember/dev/breadstuffs/circuit/src/lean_descriptor_air.rs:1633:15
+     |
+1633 | pub(crate) fn vm_site_digest_concrete(
+     |               ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `CHIP_MULT_STATE16` is never used
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:3505:7
+     |
+3505 | const CHIP_MULT_STATE16: usize = CHIP_MULT_NARROW;
+     |       ^^^^^^^^^^^^^^^^^
+
+warning: function `hash2_state_c` is never used
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:5248:4
+     |
+5248 | fn hash2_state_c(a: BabyBear, b: BabyBear) -> [BabyBear; POSEIDON2_WIDTH] {
+     |    ^^^^^^^^^^^^^
+
+warning: `dregg-circuit` (lib) generated 26 warnings (run `cargo fix --lib -p dregg-circuit` to apply 11 suggestions)
+   Compiling vfhe-proved-operation v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation)
+    Finished `release` profile [optimized] target(s) in 5.96s

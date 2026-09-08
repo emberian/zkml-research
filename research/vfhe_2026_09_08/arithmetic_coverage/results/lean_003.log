@@ -1,0 +1,4 @@
+Compiler/IntegerBilinearEmission.lean:101:59: error: Invalid projection: Projections cannot be used on functions, and
+  hp
+has function type
+  ∀ t ∈ productSystem p, accepts asg t

@@ -1,0 +1,12 @@
+{"trace_width": 1017,
+ "trace_bytes": 33325056,
+ "standard_descriptor_nWires": 5925,
+ "standard_descriptor_gates": 3865,
+ "source_constraints": 1456,
+ "rows": 8192,
+ "radix64_refused": true,
+ "public_tuple_order": "rowID,acc2x7,fresh2x7,old2x7,out2x7",
+ "ir2_arithmetic_constraints": 1456,
+ "constructed_cases_checked": 4,
+ "changed_output_refused": true,
+ "all_actual_source_rows_checked": true}

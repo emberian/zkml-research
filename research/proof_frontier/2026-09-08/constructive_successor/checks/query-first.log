@@ -1,0 +1,17 @@
+Selvage/ArityEightQueryTransport.lean:31:10: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ((powerTwoBatchSplitEquiv ?hmell ?j) ?seed).2
+in the target expression
+  p (x.1, powerTwoCoherentRound ⋯ 2 x.2) ↔ p (x.1, ((powerTwoBatchSplitEquiv ⋯ 2) x.2).2)
+
+case h
+F : Type
+inst✝ : Fintype F
+q : ℕ
+p : F × (Fin q → PowerTwoFriLevels 20 3) → Prop
+s : (Fin q → PowerTwoFriLevels 20 1) ≃ (Fin q → Fin (2 ^ ↑⟨2, ⋯⟩)) × (Fin q → PowerTwoFriLevels 20 (↑⟨2, ⋯⟩ + 1)) :=
+  powerTwoBatchSplitEquiv ⋯ ⟨2, ⋯⟩
+e : F × (Fin q → PowerTwoFriLevels 20 1) ≃ (Fin q → Fin (2 ^ 2)) × F × (Fin q → PowerTwoFriLevels 20 3) :=
+  { toFun := fun x => ((s x.2).1, x.1, (s x.2).2), invFun := fun x => (x.2.1, s.symm (x.1, x.2.2)), left_inv := ⋯,
+    right_inv := ⋯ }
+x : F × (Fin q → PowerTwoFriLevels 20 1)
+⊢ p (x.1, powerTwoCoherentRound ⋯ 2 x.2) ↔ p (x.1, ((powerTwoBatchSplitEquiv ⋯ 2) x.2).2)

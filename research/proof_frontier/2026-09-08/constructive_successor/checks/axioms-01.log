@@ -1,0 +1,6 @@
+'Minidregg.Selvage.ArityEight.correlatedAgreement_recompose_family' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.reconstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.fold8_eq_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.foldRow8_eq_fold8' depends on axioms: [propext, Quot.sound]

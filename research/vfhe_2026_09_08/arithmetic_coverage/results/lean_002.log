@@ -1,0 +1,1 @@
+Compiler/IntegerBilinearEmission.lean:6:0: error: object file '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/build/Compiler/IntegerCertificateEmission.olean' of module Compiler.IntegerCertificateEmission does not exist

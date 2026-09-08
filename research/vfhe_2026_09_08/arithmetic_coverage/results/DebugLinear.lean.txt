@@ -1,0 +1,5 @@
+import Compiler.BfvLinearCombinationLayout
+open Minidregg.Compiler Minidregg.Compiler.BfvLinearCombination
+#eval (List.range 7).map (digit (68719403009-1))
+#eval (List.range 7).map (bit 63)
+#eval let a := variableArray (rowOfValues 0 (fun _ => 0) (fun _ => 0) (fun _ => 0)); (List.range 32).map (fun i => (i+386,(a[i+386]!).val))

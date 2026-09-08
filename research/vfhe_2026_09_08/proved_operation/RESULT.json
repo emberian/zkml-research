@@ -1,0 +1,274 @@
+{
+  "schema": "vfhe-proved-operations-result-v1",
+  "completed_utc": "2026-09-08T16:34:39.862080+00:00",
+  "claim": "EXECUTED two complete BFV ciphertext relations with generated Lean arithmetic/witnesses and real proof/verifier",
+  "weighted": {
+    "proof": {
+      "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+      "claim": "EXECUTED proof over Lean-derived BFV relation",
+      "proof_bytes": 557834,
+      "proof_sha256": "a2bf044768672690ddef7c8d08eed40323356b30b949d72d0e157cea68689648",
+      "prove_ns": 3141241541,
+      "public_rows_bound": 8192,
+      "public_tuple_width": 64,
+      "rows": 8192,
+      "self_verify_ns": 132944708,
+      "template_sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684",
+      "trace_width": 1234,
+      "verified": true
+    },
+    "fresh_verification": {
+      "changed_output_claim_rejected": false,
+      "claim": "EXECUTED fresh-process verification",
+      "proof_bytes": 557834,
+      "proof_sha256": "a2bf044768672690ddef7c8d08eed40323356b30b949d72d0e157cea68689648",
+      "verified": true,
+      "verify_ns": 100217083
+    },
+    "changed_output": {
+      "changed_output_claim_rejected": true,
+      "claim": "EXECUTED fresh-process verification",
+      "proof_bytes": 557834,
+      "proof_sha256": "a2bf044768672690ddef7c8d08eed40323356b30b949d72d0e157cea68689648",
+      "verified": false,
+      "verify_ns": 147412750
+    },
+    "command_costs": {
+      "command": [
+        "env",
+        "RAYON_NUM_THREADS=4",
+        "target/release/vfhe-proved-operation",
+        "prove",
+        "../arithmetic_coverage/artifacts/template_ir2.json",
+        "results/case001",
+        "../arithmetic_coverage/artifacts/trace.leu32",
+        "results/proof002"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation",
+      "started_utc": "2026-09-08T16:27:13.397168+00:00",
+      "pid": 89902,
+      "returncode": 0,
+      "elapsed_seconds": 4.7495690420037135,
+      "finished_utc": "2026-09-08T16:27:18.147417+00:00",
+      "user_seconds": 11.321324,
+      "system_seconds": 0.598121,
+      "max_rss_bytes": 1589149696
+    },
+    "operation": {
+      "all_plaintext_coefficients_match": true,
+      "all_rns_coefficient_equations_match": true,
+      "ciphertext_components": 2,
+      "ciphertext_files": [
+        {
+          "bytes": 111646,
+          "name": "a.ct",
+          "sha256": "dd9ca165cfab0aba5244f7fa2164300ae48a8e905053ae87f343dff822b01d1d"
+        },
+        {
+          "bytes": 111646,
+          "name": "b.ct",
+          "sha256": "55c732c996c5f1754d7f0fc3570d851bbb7f083e70a249b321650101b1b1a328"
+        },
+        {
+          "bytes": 111646,
+          "name": "output.ct",
+          "sha256": "efa8e820eeca9665edb542d9b14195901fe15579a6ef453303cf2002807d46ec"
+        },
+        {
+          "bytes": 55859,
+          "name": "public_key.bin",
+          "sha256": "cb54096a613bbbb27e2aae1c0b07fb891e234953336fb6d4d591d95033e3dd32"
+        }
+      ],
+      "claim": "EXECUTED real BFV ciphertext linear combination on public synthetic messages",
+      "coefficient_rows": 8192,
+      "degree": 4096,
+      "moduli": [
+        68719403009,
+        68719230977,
+        137438822401
+      ],
+      "operation": "3*A + 5*B",
+      "operation_ns": 116166,
+      "plaintext_coefficients_checked": 4096,
+      "plaintext_modulus": 1032193,
+      "proof_produced": false,
+      "public_tuple_width": 64,
+      "residue_equations": 24576,
+      "secret_key_saved": false,
+      "total_ns": 882592833
+    },
+    "proof_path": "results/proof002/proof.bin",
+    "template_path": "../arithmetic_coverage/artifacts/template_ir2.json",
+    "public_rows_path": "results/case001/public_rows.json",
+    "public_rows_sha256": "267092b2fe739fde58a70aec79769f891a92c2967475f304b41cd28edb7001ba"
+  },
+  "learner_expiry": {
+    "proof": {
+      "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+      "claim": "EXECUTED proof over Lean-derived BFV relation",
+      "proof_bytes": 508777,
+      "proof_sha256": "acf747cf42eff8171b2b774abae5572e8d7bdb7ace144754c7605128c15e5ba6",
+      "prove_ns": 1766806583,
+      "public_rows_bound": 8192,
+      "public_tuple_width": 57,
+      "rows": 8192,
+      "self_verify_ns": 86208083,
+      "template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+      "trace_width": 1017,
+      "verified": true
+    },
+    "fresh_verification": {
+      "changed_output_claim_rejected": false,
+      "claim": "EXECUTED fresh-process verification",
+      "proof_bytes": 508777,
+      "proof_sha256": "acf747cf42eff8171b2b774abae5572e8d7bdb7ace144754c7605128c15e5ba6",
+      "verified": true,
+      "verify_ns": 85509375
+    },
+    "changed_output": {
+      "changed_output_claim_rejected": true,
+      "claim": "EXECUTED fresh-process verification",
+      "proof_bytes": 508777,
+      "proof_sha256": "acf747cf42eff8171b2b774abae5572e8d7bdb7ace144754c7605128c15e5ba6",
+      "verified": false,
+      "verify_ns": 73820917
+    },
+    "command_costs": {
+      "command": [
+        "env",
+        "RAYON_NUM_THREADS=4",
+        "target/release/vfhe-proved-operation",
+        "prove-update",
+        "../arithmetic_coverage/artifacts_expiry/template_ir2.json",
+        "results/learner_expiry001",
+        "../arithmetic_coverage/artifacts_expiry/trace.leu32",
+        "results/expiry_proof001"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation",
+      "started_utc": "2026-09-08T16:28:25.603835+00:00",
+      "pid": 91014,
+      "returncode": 0,
+      "elapsed_seconds": 1.9037895840010606,
+      "finished_utc": "2026-09-08T16:28:27.508214+00:00",
+      "user_seconds": 6.4134,
+      "system_seconds": 0.291329,
+      "max_rss_bytes": 998146048
+    },
+    "operation": {
+      "ciphertext_components": 2,
+      "claim": "EXECUTED public replay/export of real useful-learner expiry",
+      "class": "card_arrival",
+      "coefficient_rows": 8192,
+      "complete_payload_replay_equal": true,
+      "degree": 4096,
+      "event": 65,
+      "moduli": [
+        2199023190017,
+        4398046486529
+      ],
+      "operation": "acc+fresh-old",
+      "operation_ns": 21209,
+      "plaintext_modulus": 4294828033,
+      "private_files_read": 0,
+      "public_tuple_width": 57,
+      "residue_equations": 16384,
+      "scope": "Ciphertext relation; encoder, FIFO authorization, ciphertext-key membership and plaintext correctness are outside this proof statement.",
+      "source_event_sha256": "94eb4b24de3eb1052f38f5fe599ffd352e6673b0a3752a803eeb1d450a062458"
+    },
+    "proof_path": "results/expiry_proof001/proof.bin",
+    "template_path": "../arithmetic_coverage/artifacts_expiry/template_ir2.json",
+    "public_rows_path": "results/learner_expiry001/public_ntt_rows.json",
+    "public_rows_sha256": "125fdd7d2bc8739898559c3275a8d572cbb0ea693e2d8b9cbb1b8d2cc944c8b1"
+  },
+  "backend_checks": {
+    "public_commitment_stable_across_config_and_call_order": true,
+    "public_data_change_changes_commitment": true,
+    "witness_commitments_remain_randomized": true,
+    "test_log": "results/backend-test-portable-online.stdout"
+  },
+  "browser_consumer": {
+    "attribution": "Executed in sibling browser_verifier lane, retained Node WebAssembly JS API results",
+    "weighted": {
+      "claim": "EXECUTED same JavaScript/WASM verifier API used by browser consumers",
+      "fixture": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/fixtures/operation",
+      "genuine": {
+        "verified": true,
+        "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+        "public_rows": 8192,
+        "public_width": 64,
+        "proof_bytes": 557834,
+        "template_sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684",
+        "error": null
+      },
+      "changedPublicOutput": {
+        "verified": false,
+        "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+        "public_rows": 8192,
+        "public_width": 64,
+        "proof_bytes": 557834,
+        "template_sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684",
+        "error": "proof rejected: IR v2 verification failed: InvalidOpeningArgument(InvalidPowWitness)"
+      },
+      "genuineMs": 1669.260458,
+      "changedPublicOutputMs": 1608.025833,
+      "proofBytes": 557834,
+      "browserEngine": "Node WebAssembly runtime",
+      "noNewProofGenerated": true
+    },
+    "expiry": {
+      "claim": "EXECUTED same JavaScript/WASM verifier API used by browser consumers",
+      "fixture": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/fixtures/learner-expiry",
+      "genuine": {
+        "verified": true,
+        "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+        "public_rows": 8192,
+        "public_width": 57,
+        "proof_bytes": 508777,
+        "template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+        "error": null
+      },
+      "changedPublicOutput": {
+        "verified": false,
+        "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+        "public_rows": 8192,
+        "public_width": 57,
+        "proof_bytes": 508777,
+        "template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+        "error": "proof rejected: IR v2 verification failed: InvalidOpeningArgument(InvalidPowWitness)"
+      },
+      "genuineMs": 1747.2978750000002,
+      "changedPublicOutputMs": 1694.513208,
+      "proofBytes": 508777,
+      "browserEngine": "Node WebAssembly runtime",
+      "noNewProofGenerated": true
+    }
+  },
+  "retained_failure": {
+    "proof_path": "results/proof001/proof.bin",
+    "proof_sha256": "76e7a1a11e3c10be02d17af1254e12056be4bef82c624a0c11f73938950c26c4",
+    "accepted": false,
+    "reason": "Independent verifier reconstruction randomized public preprocessing leaf salts; original batch internal self-verification with saved common data passed. Portable public-only preprocessing adapter fixes reconstruction."
+  },
+  "selected_source_pins": {
+    "Cargo.toml": "df76cdc958636e92280de62565b306722fdf40ce5c936aff5df043771eecd499",
+    "Cargo.lock": "15f272cc634d8e1a5aa20a66e7d80e54c79a73e44ddab888a3deb9bea6f1ef69",
+    "src/main.rs": "b3ee26658dc6d739509f8e1d463453da4651cfb229b066d556075cb82c3062d7",
+    "src/update.rs": "9414935ad8dd6cb0a505f7fc280219db9b384c4bf8ff3df6075157744ec6117e",
+    "backend/Cargo.toml": "ff6d7b6a881eee5eda9b52678b71e947c97bb6142ae5acb264220cf71860f6a9",
+    "backend/src/lib.rs": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b",
+    "run_command.py": "0db436e24924e78f79ef53cadd68c714de5b62789c37afb799322ae32b6bc23d",
+    "target/release/vfhe-proved-operation": "dd41ec2eac52bf35ff8a9c6e736fa4dcb7cb4ae41cec6bace5cf593a3cf87cc6"
+  },
+  "companion_heads": {
+    "breadstuffs": "3e51def6a5a95424e54fbe7432539b06088de5c3",
+    "minidregg": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd"
+  },
+  "scope": [
+    "Weighted proof covers all 24576 PowerBasis residue equations, with library basis conversion in the input reader.",
+    "Learner expiry proof covers all 16384 canonical serialized NTT slot residue equations; no basis conversion in this reader.",
+    "Full input/output coefficient tuples are public verifier-selected statement data in ExactPublicRows table11.",
+    "Rust codecs, generic IR2 parser/evaluator, PCS adapter and Plonky3 backend remain implementation assumptions, separate from the Lean arithmetic theorem.",
+    "No proof of encoder execution, FIFO authorization, ciphertext-key membership, distributed witness privacy, or a full learner theorem."
+  ]
+}

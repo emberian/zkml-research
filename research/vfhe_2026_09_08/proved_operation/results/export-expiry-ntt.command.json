@@ -1,0 +1,16 @@
+{
+  "command": [
+    "target/release/vfhe-proved-operation",
+    "export-update-ntt",
+    "results/learner_expiry001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation",
+  "started_utc": "2026-09-08T16:23:18.670344+00:00",
+  "pid": 86391,
+  "returncode": 0,
+  "elapsed_seconds": 0.03581579198362306,
+  "finished_utc": "2026-09-08T16:23:18.707036+00:00",
+  "user_seconds": 0.022786,
+  "system_seconds": 0.005957,
+  "max_rss_bytes": 28344320
+}

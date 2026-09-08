@@ -1,0 +1,6 @@
+'Minidregg.Compiler.BfvLinearCombination.canonicalSystem_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.BfvLinearCombination.radix_balance' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvLinearCombination.column_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvLinearCombination.rowSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound]

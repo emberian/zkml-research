@@ -1,0 +1,6 @@
+'Minidregg.Selvage.ArityEight.BabyBear.first_injected_crossing' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.BabyBear.actual_far_source_fires' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

@@ -1,0 +1,42 @@
+{
+  "claim": "EXECUTED one shared native-reported/WASM failure; not a genuine accepted fixture",
+  "command": "node web/verify-file.mjs ../arithmetic_coverage/artifacts/template_ir2.json ../proved_operation/results/case001/public_rows.json ../proved_operation/results/proof001/proof.bin 26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684",
+  "returncode": 1,
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/artifacts/template_ir2.json",
+      "bytes": 315975,
+      "sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/case001/public_rows.json",
+      "bytes": 1461721,
+      "sha256": "267092b2fe739fde58a70aec79769f891a92c2967475f304b41cd28edb7001ba"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/proof001/proof.bin",
+      "bytes": 557634,
+      "sha256": "76e7a1a11e3c10be02d17af1254e12056be4bef82c624a0c11f73938950c26c4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/verify-file.mjs",
+      "bytes": 1037,
+      "sha256": "5e281aedc85bd55bac8cdccb028b51b88d5c313148899d82727ce388e5ae6c0f"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/verifier.js",
+      "bytes": 1122,
+      "sha256": "3f8f73180eac337b0b2210d3490f225dc7691b86b0a2d40db7284847ae524f24"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier_bg.wasm",
+      "bytes": 2229453,
+      "sha256": "0b399ccd9c189c4c3105550fbc44f3fee6e44faf44b0074851752afc7d7addbb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/target/release/vfhe-verify",
+      "bytes": 2358704,
+      "sha256": "513fcb8f195105dd4dd104ecba5decc588df5721df302aa1dceab8e4897f5d88"
+    }
+  ]
+}
