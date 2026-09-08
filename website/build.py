@@ -37,7 +37,7 @@ def json_bytes(value: object) -> bytes:
     return (json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode()
 
 
-def public_source(path: str) -> Path:
+def public_source(path: str, preview: bool = False) -> Path:
     p = Path(path)
     if p.is_absolute() or ".." in p.parts or not p.parts:
         raise ValueError(f"Non-relative source: {path}")
@@ -51,7 +51,8 @@ def public_source(path: str) -> Path:
     resolved = (ROOT / p).resolve()
     if not resolved.is_relative_to(ROOT) or not resolved.is_file():
         raise ValueError(f"Missing public source: {path}")
-    git("ls-files", "--error-unmatch", "--", path)
+    if not preview:
+        git("ls-files", "--error-unmatch", "--", path)
     ignored = subprocess.run(["git", "-C", str(ROOT), "check-ignore", "--no-index", "-q", "--", path])
     if ignored.returncode == 0:
         raise ValueError(f"Ignored source cannot be published: {path}")
@@ -62,7 +63,7 @@ def source_records(data: dict, preview: bool) -> tuple[dict, dict]:
     records, lock = {}, {}
     for key, source in data["sources"].items():
         path = source["path"]
-        raw = public_source(path).read_bytes()
+        raw = public_source(path, preview).read_bytes()
         lines = raw.splitlines(keepends=True)
         start, end = source["lines"]
         if not (1 <= start <= end <= len(lines)):
@@ -70,15 +71,17 @@ def source_records(data: dict, preview: bool) -> tuple[dict, dict]:
         excerpt = b"".join(lines[start - 1:end])
         lock[key] = {"path": path, "lines": [start, end], "excerpt_sha256": digest(excerpt)}
         revision = git("log", "-1", "--format=%H", "--", path).decode().strip()
-        committed = git("show", f"{revision}:{path}")
+        committed = git("show", f"{revision}:{path}") if revision else b""
         committed_excerpt = b"".join(committed.splitlines(keepends=True)[start - 1:end])
-        if committed_excerpt != excerpt:
+        draft = not revision or committed_excerpt != excerpt
+        if draft:
             if not preview:
                 raise ValueError(f"Reviewed source differs from committed evidence: {path}. Commit it before publication; --preview permits a local draft.")
             revision = data["branch"]
             committed = raw
         anchor = f"#L{start}" + (f"-L{end}" if end != start else "")
         records[key] = {**lock[key], "label": source["label"], "revision": revision,
+                        "draft": draft,
                         "source_sha256": digest(committed),
                         "url": f'{data["repository"]}/blob/{revision}/{quote(path)}{anchor}'}
     return records, lock
@@ -123,6 +126,7 @@ def render(data: dict, records: dict) -> bytes:
         "GAME_LINK": source_link(records["game"], "Read the resident security game"),
         "HOUSE_LINK": source_link(records["house"], "Read the repository’s house rule"),
         "CREDENTIALS_LINK": source_link(records["credentials"], "Read the credential boundary"),
+        "DRAFT_NOTICE": '<p class="scope-strip draft-notice"><strong>Local draft.</strong> New evidence links await the source commit. This preview is not the published site.</p>' if any(s["draft"] for s in records.values()) else "",
     }
     for key, value in replacements.items():
         template = template.replace("{{" + key + "}}", value)

@@ -85,21 +85,13 @@
       ],
       "label": "Public-coin setup · written proof review"
     },
-    "setup_run": {
-      "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/reports/positive_001/report.json",
-      "lines": [
-        1,
-        1
-      ],
-      "label": "Public-coin primitive · executed JSON"
-    },
     "tfhe": {
-      "path": "research/learn_infer_only/experiments/end_to_end/private_ema/REPORT.md",
+      "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md",
       "lines": [
         1,
-        76
+        18
       ],
-      "label": "Encrypted EMA · feasibility and limits"
+      "label": "Lean-emitted runtime · finite plaintext and encrypted checks"
     },
     "formal": {
       "path": "research/learn_infer_only/formal/integration/README.md",
@@ -133,14 +125,6 @@
       ],
       "label": "Independent-key ladder · construction and primary theorem"
     },
-    "pq": {
-      "path": "research/learn_infer_only/PQ_COMPOSITION.md",
-      "lines": [
-        1,
-        37
-      ],
-      "label": "Post-quantum composition · assumptions ledger"
-    },
     "pq_interfaces": {
       "path": "research/learn_infer_only/PQ_COMPOSITION.md",
       "lines": [
@@ -148,6 +132,78 @@
         59
       ],
       "label": "Post-quantum audit · source games and receipt boundary"
+    },
+    "setup_journal": {
+      "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/README.md",
+      "lines": [
+        1,
+        70
+      ],
+      "label": "Public-coin journal · completed run and scope"
+    },
+    "tfhe_scope": {
+      "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md",
+      "lines": [
+        89,
+        104
+      ],
+      "label": "Lean-emitted runtime · proof and reader-key boundary"
+    },
+    "tfhe_failure": {
+      "path": "research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/REPORT.md",
+      "lines": [
+        1,
+        15
+      ],
+      "label": "Older long run · first mismatch and semantic boundary"
+    },
+    "tfhe_controls": {
+      "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md",
+      "lines": [
+        1,
+        19
+      ],
+      "label": "Fixed-FFT controls · five observed replay pairs"
+    },
+    "tfhe_controls_scope": {
+      "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md",
+      "lines": [
+        56,
+        99
+      ],
+      "label": "Fixed-FFT controls · separate cases and unresolved cause"
+    },
+    "pq_costs": {
+      "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md",
+      "lines": [
+        179,
+        237
+      ],
+      "label": "Conditional PQ sizing · normalization and structural costs"
+    },
+    "pq_costs_scope": {
+      "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md",
+      "lines": [
+        267,
+        281
+      ],
+      "label": "Conditional PQ sizing · no certified parameter set"
+    },
+    "pq_review": {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/REVIEW.md",
+      "lines": [
+        1,
+        19
+      ],
+      "label": "Independent review · accepted fixed-policy construction"
+    },
+    "pq_restricted": {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md",
+      "lines": [
+        1,
+        68
+      ],
+      "label": "Restricted QPT argument · exact assumptions"
     }
   },
   "paths": [
@@ -178,7 +234,7 @@
       "number": "02",
       "title": "Encrypted learning",
       "question": "Can protected state keep learning?",
-      "description": "Read the useful plaintext fixture, its exact encrypted replay, and the smaller nonlinear feasibility result.",
+      "description": "Follow the semantic fixture, its exact BFV replay, and the smaller Lean-emitted nonlinear runtime. Keep the longer replay failure in view.",
       "steps": [
         {
           "label": "Understand the semantic study",
@@ -189,11 +245,11 @@
           "source": "bfv"
         },
         {
-          "label": "Inspect encrypted nonlinear updates",
+          "label": "Inspect the emitted nonlinear runtime",
           "source": "tfhe"
         }
       ],
-      "result": "semantic-bfv"
+      "result": "encrypted-ema"
     },
     {
       "id": "mental-autarky",
@@ -264,29 +320,45 @@
     },
     {
       "id": "public-coin-setup",
-      "status": "derived",
+      "status": "executed",
       "topic": "mental-autarky",
-      "title": "Setup without computing a scalar master",
-      "metric": "Public coins",
-      "metric_label": "a conditional construction",
-      "body": "Written review accepts an exact-distribution argument for a public constructor with no scalar-master generation or private projection-key delivery. A separate primitive run completed 33 Learn events, four Infer events and one expiry.",
-      "limit": "Honest direct sampling and independent honest recipient registration are premises. Public consistency does not certify unknown logarithms. Recipients retain the full fixed span; this card covers the primitive and proof review, not a durable journal join.",
+      "title": "Public-coin setup joins the durable journal",
+      "metric": "40 / 4 / 8",
+      "metric_label": "Learn / Infer / exact-original expiries",
+      "body": "The honest public constructor generates no scalar master. Its journal join completed all 44 independent transition replays; both ordered histories agree and all four private integers match the fixture. Reopening and exact historical retries preserve the head.",
+      "limit": "Honest sampling and independent recipient registration remain premises. Recipients retain the full per-input fixed span, including expired inputs. The setup proof excludes the instrumented timing view; this arithmetic fixture establishes no model utility or whole-protocol privacy.",
       "sources": [
-        "setup",
-        "setup_run"
+        "setup_journal",
+        "setup"
       ]
     },
     {
       "id": "encrypted-ema",
       "status": "executed",
       "topic": "encrypted-learning",
-      "title": "Nonlinear updates on encrypted addresses",
-      "metric": "2 updates",
-      "metric_label": "plus 2 encrypted sign queries",
-      "body": "A TFHE probe updates four encrypted signed bytes using encrypted-address selection and signed floor arithmetic. All four separate-process full-byte replay pairs match, and encrypted state continues between calls.",
-      "limit": "A bounded feasibility result on a preregistered public fixture. The full reader key remains. This probe does not establish useful semantic learning, restricted release or a journal integration.",
+      "title": "A generic runtime for Lean-emitted updates",
+      "metric": "4 replay pairs",
+      "metric_label": "2 Learn + 2 Infer on encrypted state",
+      "body": "A Rust TFHE interpreter executes the Lean-emitted Boolean schedules. Both encrypted updates and sign answers match the integer oracle; all four separate-process byte comparisons pass. Independent plaintext checks cover 25,600 Learn rows and 49,152 Infer rows.",
+      "limit": "These are finite checks. The unrestricted reader key remains. The separate formal proposal does not prove Rust parsing, TFHE correctness or universal byte determinism. The older long-run failure remains part of the record.",
       "sources": [
-        "tfhe"
+        "tfhe",
+        "tfhe_scope"
+      ]
+    },
+    {
+      "id": "nonlinear-replay-boundary",
+      "status": "executed",
+      "topic": "encrypted-learning",
+      "title": "A longer replay stops at Learn 14",
+      "metric": "13, then a mismatch",
+      "metric_label": "the older handwritten runtime",
+      "body": "The first thirteen Learn replay pairs match; the fourteenth produces different ciphertext bytes from identical public inputs. A separate emitted runtime with a fixed FFT plan later passes five preregistered replay pairs, including that public input case.",
+      "limit": "Byte mismatch does not imply incorrect plaintext. The five controls are independent cases, not a completed learning trajectory; no new plaintext decoding was done. They establish neither the old cause nor general deterministic replay.",
+      "sources": [
+        "tfhe_failure",
+        "tfhe_controls",
+        "tfhe_controls_scope"
       ]
     },
     {
@@ -346,13 +418,16 @@
       "id": "pq-composition",
       "status": "open",
       "topic": "proof-systems",
-      "title": "Post-quantum composition remains an obligation",
-      "metric": "Separate games",
-      "metric_label": "for every cryptographic component",
-      "body": "The source audit distinguishes conditional post-quantum obfuscation, the games needed for randomized functional encryption, and the receipt’s classical random-oracle model. A primitive label does not establish their conjunction.",
-      "limit": "Stronger auxiliary-state assumptions, correctness interfaces, primitive instantiations and receipt composition require their own arguments. This site makes no whole-resident post-quantum security claim.",
+      "title": "A conditional post-quantum route, with costs",
+      "metric": "No certified bits",
+      "metric_label": "finite sizing is not a security level",
+      "body": "Independent review accepts a conditional fixed-policy LWE construction. A narrower QPT argument permits smaller widths. One n = 1,024 sizing example still needs 84.43 MB per ciphertext and 86.46 GB of public matrices; these are calculated, packed sizes, not generated objects.",
+      "limit": "The example normalizes unresolved source constants. Gaussian implementation error, reduction errors and computational hardness remain open. Fixed per-input recipient leakage persists, and receipt composition is separate. No whole-resident post-quantum result is claimed.",
       "sources": [
-        "pq",
+        "pq_review",
+        "pq_restricted",
+        "pq_costs",
+        "pq_costs_scope",
         "pq_interfaces"
       ]
     }
