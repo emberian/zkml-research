@@ -25,3 +25,10 @@ increase follows from the abstract.
 `rg` search found earlier mention of2024/1764 in ring-hash source-identity
 corrections and2025/286 in an archived note. These hits are orientation, not
 new theorem evidence and not citations for current claims.
+
+[SOURCE: publication interface read] Root additionally opened the official
+[Pages REST API](https://docs.github.com/en/rest/pages/pages?apiVersion=2022-11-28)
+and [custom workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
+before configuring the reviewed site. These add two primary HTML opens, no
+search queries. Live Pages HTTP checks are deployment validation, recorded in
+website/deployment.json, not literature queries.

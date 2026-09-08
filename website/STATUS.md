@@ -1,11 +1,18 @@
-# Research website handoff
+# Research website — published
 
-[EXECUTED, 2026-09-08] The local site is complete and ready for root review and
-publication. It has ten evidence cards, three reading paths, search, topic/type
+[EXECUTED, 2026-09-08] The site is live at
+https://emberian.github.io/zkml-research/. Root enabled GitHub Actions Pages,
+pushed the reviewed site at88e4b780 and verified successful workflow34186886811.
+The six served HTML/assets/manifests match the local build byte for byte;
+deployment metadata `.nojekyll` returned404 and is recorded separately.
+Root checked the live desktop page and expanded source links through native
+Chrome/CUA. `deployment.json` retains the HTTP, hash and workflow evidence.
+
+[EXECUTED interface] It has ten evidence cards, three reading paths, search, topic/type
 filters, URL-restored filters, no-results/reset behavior, deep links and native
 expandable evidence. All result summaries retain explicit limitations.
 
-[EXECUTED ownership] This lane changed only `website/` and the new
+[EXECUTED construction-lane ownership] The construction lane changed only `website/` and the new
 `.github/workflows/pages.yml`. It did not edit shared research ledgers, root
 README, VERDICTS or companion trees, commit, push, change repository settings,
 publish, or run research experiments. The source facts are the earlier completed
@@ -63,5 +70,6 @@ The allowlisted static artifact excludes raw source notes, runtime data and
 private profile material. The public blob check confirms linked evidence was
 already available at the recorded commits when checked.
 
-[OPEN] Deployment has not been performed by this lane. Root owns that step and
-must verify the actual Pages URL and successful deployment workflow.
+[EXECUTED publication scope] Publication is complete. Subsequent result-card
+changes require reading the completed evidence and refreshing the reviewed
+source locks; ongoing experiments are not imported automatically.

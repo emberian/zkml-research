@@ -46,3 +46,9 @@ wrong for the people who made them.
 Every note separates **verified** (computed or proved here), **sourced** (with
 citation), and **inferred** (mine). If a number has no provenance it does not go
 in.
+
+## Research website
+
+[Explore the research index](https://emberian.github.io/zkml-research/) for
+result cards, linked evidence and limitations, with reading paths through proof
+systems, encrypted learning and mental autarky.
