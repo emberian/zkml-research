@@ -1,0 +1,1056 @@
+diff --git a/Selvage/ArityEightTwoRound.lean b/Selvage/ArityEightTwoRound.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightTwoRound.lean
+@@ -0,0 +1,215 @@
++/- Two external arity-eight rounds on existing binary tower levels 0,3,6.
++There is one fresh scalar per external round. Input and middle-word
++functions state the commitment timing before the respective fresh scalar. -/
++import Selvage.ArityEightSampling
++
++namespace Minidregg.Selvage.ArityEight.TwoRound
++open scoped Classical
++
++/-- Five actual words at the three external checkpoints. Only the first
++scalar may affect the second input; both scalars may affect the final word. -/
++structure Words (F : Type) (ι : ℕ → Type) where
++  source : ι 0 → F
++  input0 : ι 3 → F
++  middle : F → ι 3 → F
++  input1 : F → ι 6 → F
++  final : F → F → ι 6 → F
++
++section Tower
++variable {F : Type} [Field F] {ell : ℕ}
++
++/-- Three consecutive existing folds, evaluated at one scalar and its powers. -/
++def block0 (T : FoldingTower F (PowerTwoFriLevels ell) 6) (s : Words F (PowerTwoFriLevels ell))
++    (a : F) : PowerTwoFriLevels ell 3 → F :=
++  fun i => fold8 (T.data 0 (by decide)) (T.data 1 (by decide)) (T.data 2 (by decide))
++    s.source a i + a^8*s.input0 i
++
++def block1 (T : FoldingTower F (PowerTwoFriLevels ell) 6) (s : Words F (PowerTwoFriLevels ell))
++    (a b : F) : PowerTwoFriLevels ell 6 → F :=
++  fun i => fold8 (T.data 3 (by decide)) (T.data 4 (by decide)) (T.data 5 (by decide))
++    (s.middle a) b i + b^8*s.input1 a i
++
++/-- Only actual sampled equations and final RS membership are accepted. -/
++def Accepts [DecidableEq F] (T : FoldingTower F (PowerTwoFriLevels ell) 6)
++    (s : Words F (PowerTwoFriLevels ell)) (d q : ℕ) (hell : 6 ≤ ell)
++    (r : F × F) (seed : Fin q → PowerTwoFriLevels ell 1) : Prop :=
++  s.final r.1 r.2 ∈ reedSolomonCode (T.dom 6) d ∧
++  (∀ a, s.middle r.1 (powerTwoCoherentRound hell (⟨2,by decide⟩ : Fin 6) seed a) =
++    block0 T s r.1 (powerTwoCoherentRound hell (⟨2,by decide⟩ : Fin 6) seed a)) ∧
++  (∀ a, s.final r.1 r.2 (powerTwoCoherentRound hell (⟨5,by decide⟩ : Fin 6) seed a) =
++    block1 T s r.1 r.2 (powerTwoCoherentRound hell (⟨5,by decide⟩ : Fin 6) seed a))
++
++/-- The second exceptional event matters only when its prefix-selected source
++is far. This avoids imposing a far-middle premise on the adversary. -/
++def BadChallenge [DecidableEq F] (T : FoldingTower F (PowerTwoFriLevels ell) 6)
++    (s : Words F (PowerTwoFriLevels ell)) (d : ℕ) (ρ₀ ρ₁ : ℝ) (r : F × F) : Prop :=
++  close ρ₀ (reedSolomonCode (T.dom 3) (8*d)) (block0 T s r.1) ∨
++  (¬close ρ₁ (reedSolomonCode (T.dom 3) (8*d)) (s.middle r.1) ∧
++    close ρ₁ (reedSolomonCode (T.dom 6) d) (block1 T s r.1 r.2))
++
++end Tower
++
++section Probability
++variable {F : Type} [Field F] [Fintype F] [DecidableEq F] {ell : ℕ}
++
++/-- A first-coordinate event has its exact marginal when the discarded factor is nonempty. -/
++theorem uniform_fst {A B : Type} [Fintype A] [Fintype B] [Nonempty B] (p : A → Prop) :
++    uniformProb (A × B) (fun x => p x.1) = uniformProb A p := by
++  let e := Equiv.prodComm A B
++  calc
++    _ = uniformProb (B × A) (fun x => p x.2) := by
++      simpa [e] using uniformProb_equiv e (fun x => p x.2)
++    _ = _ := uniformProb_prod_snd p
++
++/-- The two fresh challenge errors add. The second input and source may
++change with the first challenge, but not with the second challenge. -/
++theorem bad_challenge_bound (T : FoldingTower F (PowerTwoFriLevels ell) 6)
++    (s : Words F (PowerTwoFriLevels ell)) {d : ℕ} (hd : 1 ≤ d) {ρ₀ ρ₁ : ℝ}
++    (hρ₀ : 0 < ρ₀) (hρ₁ : 0 < ρ₁)
++    (hrate₀ : (8*d:ℕ) < (1-2*ρ₀)*(Fintype.card (PowerTwoFriLevels ell 3):ℝ))
++    (hrate₁ : (d:ℝ) < (1-2*ρ₁)*(Fintype.card (PowerTwoFriLevels ell 6):ℝ))
++    (hfar : ¬close ρ₀ (reedSolomonCode (T.dom 0) (64*d)) s.source) :
++    uniformProb (F × F) (BadChallenge T s d ρ₀ ρ₁) ≤
++      ((8*Fintype.card (PowerTwoFriLevels ell 3):ℕ):ℝ)/Fintype.card F +
++      ((8*Fintype.card (PowerTwoFriLevels ell 6):ℕ):ℝ)/Fintype.card F := by
++  classical
++  have hf : ¬close ρ₀ (reedSolomonCode (T.dom 0) (8*(8*d))) s.source := by
++    simpa only [show 8*(8*d)=64*d by omega] using hfar
++  have h₀ := fold8_injected_uniform_sound (T.data 0 (by decide)) (T.data 1 (by decide))
++    (T.data 2 (by decide)) (d := 8*d) (by omega) hρ₀ hrate₀ s.source s.input0 hf
++  have h₁ : uniformProb (F × F)
++      (fun r => ¬close ρ₁ (reedSolomonCode (T.dom 3) (8*d)) (s.middle r.1) ∧
++        close ρ₁ (reedSolomonCode (T.dom 6) d) (block1 T s r.1 r.2)) ≤
++      ((8*Fintype.card (PowerTwoFriLevels ell 6):ℕ):ℝ)/Fintype.card F := by
++    apply uniformProb_prod_le (by positivity)
++    intro a
++    by_cases hf : close ρ₁ (reedSolomonCode (T.dom 3) (8*d)) (s.middle a)
++    · rw [uniformProb_false (fun _ h => h.1 hf)]
++      positivity
++    · exact le_trans (uniformProb_mono fun _ h => h.2)
++        (fold8_injected_uniform_sound (T.data 3 (by decide)) (T.data 4 (by decide))
++          (T.data 5 (by decide)) hd hρ₁ hrate₁ (s.middle a) (s.input1 a) hf)
++  have hsplit := uniformProb_or_le
++    (fun r : F × F => close ρ₀ (reedSolomonCode (T.dom 3) (8*d)) (block0 T s r.1))
++    (fun r : F × F => ¬close ρ₁ (reedSolomonCode (T.dom 3) (8*d)) (s.middle r.1) ∧
++      close ρ₁ (reedSolomonCode (T.dom 6) d) (block1 T s r.1 r.2))
++  rw [uniform_fst (B := F) (fun a => close ρ₀ (reedSolomonCode (T.dom 3) (8*d)) (block0 T s a))] at hsplit
++  change uniformProb (F × F) (BadChallenge T s d ρ₀ ρ₁) ≤ _ at hsplit
++  change uniformProb F (fun a => close ρ₀ (reedSolomonCode (T.dom 3) (8*d))
++    (block0 T s a)) ≤ _ at h₀
++  linarith
++
++omit [Fintype F] in
++/-- Off the explicit challenge events, terminal membership forces an actual
++far transition. The choice is made after the challenge pair is fixed. -/
++theorem earliest_transition_cover (T : FoldingTower F (PowerTwoFriLevels ell) 6)
++    (s : Words F (PowerTwoFriLevels ell)) {d : ℕ} {ρ₀ ρ₁ τ : ℝ}
++    (hgap₀ : ρ₁+τ ≤ ρ₀) (hgap₁ : τ ≤ ρ₁) (r : F × F)
++    (hgood : ¬BadChallenge T s d ρ₀ ρ₁ r)
++    (hfinal : s.final r.1 r.2 ∈ reedSolomonCode (T.dom 6) d) :
++    τ ≤ relDist (s.middle r.1) (block0 T s r.1) ∨
++      τ ≤ relDist (s.final r.1 r.2) (block1 T s r.1 r.2) := by
++  by_cases hm : close ρ₁ (reedSolomonCode (T.dom 3) (8*d)) (s.middle r.1)
++  · left
++    by_contra hd
++    have hlt := lt_of_not_ge hd
++    obtain ⟨w,hw,hclose⟩ := hm
++    apply hgood
++    left
++    refine ⟨w,hw,?_⟩
++    have htri := relDist_triangle (block0 T s r.1) (s.middle r.1) w
++    rw [relDist_comm (block0 T s r.1) (s.middle r.1)] at htri
++    linarith
++  · right
++    by_contra hd
++    have hlt := lt_of_not_ge hd
++    apply hgood
++    right
++    refine ⟨hm,s.final r.1 r.2,hfinal,?_⟩
++    rw [relDist_comm]
++    linarith
++
++omit [Fintype F] in
++set_option maxHeartbeats 800000 in
++/-- Both rounds share one query vector. Selecting the far transition costs
++one column-sampling tail, rather than summing two tails. -/
++theorem coherent_query_bound (T : FoldingTower F (PowerTwoFriLevels ell) 6)
++    (s : Words F (PowerTwoFriLevels ell)) (d q : ℕ) (hell : 6 ≤ ell)
++    {ρ₀ ρ₁ τ : ℝ} (hτ : τ ≤ 1) (hgap₀ : ρ₁+τ ≤ ρ₀) (hgap₁ : τ ≤ ρ₁)
++    (r : F × F) (hgood : ¬BadChallenge T s d ρ₀ ρ₁ r) :
++    uniformProb (Fin q → PowerTwoFriLevels ell 1) (Accepts T s d q hell r) ≤ (1-τ)^q := by
++  by_cases hf : s.final r.1 r.2 ∈ reedSolomonCode (T.dom 6) d
++  · rcases earliest_transition_cover T s hgap₀ hgap₁ r hgood hf with h₀ | h₁
++    · refine le_trans (uniformProb_mono fun seed h => h.2.1) ?_
++      exact le_trans (powerTwoCoherentRound_uniform_le hell (⟨2,by decide⟩ : Fin 6)
++        (fun Q : Fin q → PowerTwoFriLevels ell 3 =>
++          ∀ a, s.middle r.1 (Q a) = block0 T s r.1 (Q a)))
++        (point_query_miss q h₀)
++    · refine le_trans (uniformProb_mono fun seed h => h.2.2) ?_
++      exact le_trans (powerTwoCoherentRound_uniform_le hell (⟨5,by decide⟩ : Fin 6)
++        (fun Q : Fin q → PowerTwoFriLevels ell 6 =>
++          ∀ a, s.final r.1 r.2 (Q a) = block1 T s r.1 r.2 (Q a)))
++        (point_query_miss q h₁)
++  · rw [uniformProb_false (fun _ h => hf h.1)]
++    exact pow_nonneg (sub_nonneg.mpr hτ) _
++
++/-- Full two-round terminal soundness, derived from actual folds, prefix
++challenge bounds and the existing coherent query sampler. -/
++theorem sound (T : FoldingTower F (PowerTwoFriLevels ell) 6)
++    (s : Words F (PowerTwoFriLevels ell)) {d : ℕ} (hd : 1 ≤ d) (q : ℕ) (hell : 6 ≤ ell)
++    {ρ₀ ρ₁ τ : ℝ} (hρ₀ : 0 < ρ₀) (hρ₁ : 0 < ρ₁) (hτ : τ ≤ 1)
++    (hgap₀ : ρ₁+τ ≤ ρ₀) (hgap₁ : τ ≤ ρ₁)
++    (hrate₀ : (8*d:ℕ) < (1-2*ρ₀)*(Fintype.card (PowerTwoFriLevels ell 3):ℝ))
++    (hrate₁ : (d:ℝ) < (1-2*ρ₁)*(Fintype.card (PowerTwoFriLevels ell 6):ℝ))
++    (hfar : ¬close ρ₀ (reedSolomonCode (T.dom 0) (64*d)) s.source) :
++    uniformProb ((F × F) × (Fin q → PowerTwoFriLevels ell 1))
++      (fun x => Accepts T s d q hell x.1 x.2) ≤
++      ((8*Fintype.card (PowerTwoFriLevels ell 3):ℕ):ℝ)/Fintype.card F +
++      ((8*Fintype.card (PowerTwoFriLevels ell 6):ℕ):ℝ)/Fintype.card F + (1-τ)^q := by
++  let bad := BadChallenge T s d ρ₀ ρ₁
++  have hb := bad_challenge_bound T s hd hρ₀ hρ₁ hrate₀ hrate₁ hfar
++  have hq : uniformProb ((F × F) × (Fin q → PowerTwoFriLevels ell 1))
++      (fun x => ¬bad x.1 ∧ Accepts T s d q hell x.1 x.2) ≤ (1-τ)^q := by
++    apply uniformProb_prod_le (pow_nonneg (sub_nonneg.mpr hτ) _)
++    intro r
++    by_cases hbad : bad r
++    · rw [uniformProb_false (fun _ h => h.1 hbad)]
++      exact pow_nonneg (sub_nonneg.mpr hτ) _
++    · exact le_trans (uniformProb_mono fun _ h => h.2)
++        (coherent_query_bound T s d q hell hτ hgap₀ hgap₁ r hbad)
++  have hsplit : uniformProb ((F × F) × (Fin q → PowerTwoFriLevels ell 1))
++      (fun x => Accepts T s d q hell x.1 x.2) ≤
++      uniformProb ((F × F) × (Fin q → PowerTwoFriLevels ell 1)) (fun x => bad x.1) +
++      uniformProb ((F × F) × (Fin q → PowerTwoFriLevels ell 1))
++        (fun x => ¬bad x.1 ∧ Accepts T s d q hell x.1 x.2) := by
++    refine le_trans (uniformProb_mono fun x hx => ?_) (uniformProb_or_le _ _)
++    by_cases hbad : bad x.1
++    · exact Or.inl hbad
++    · exact Or.inr ⟨hbad,hx⟩
++  rw [uniform_fst (B := Fin q → PowerTwoFriLevels ell 1) bad] at hsplit
++  change uniformProb (F × F) bad ≤ _ at hb
++  linarith
++
++end Probability
++end Minidregg.Selvage.ArityEight.TwoRound
++
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.uniform_fst' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.uniform_fst
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.bad_challenge_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.bad_challenge_bound
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.earliest_transition_cover' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.earliest_transition_cover
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.coherent_query_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.coherent_query_bound
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.sound
+diff --git a/Selvage/ArityEightTwoRoundBabyBear.lean b/Selvage/ArityEightTwoRoundBabyBear.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightTwoRoundBabyBear.lean
+@@ -0,0 +1,92 @@
++/- Actual BabyBearExt4 specialization of two external arity-eight rounds.
++The tower is a projection of the existing certified tower, with unchanged
++root, domain, squaring, negation and section objects. -/
++import Selvage.ArityEightTwoRoundSupplied
++import Selvage.BabyBearFoldingTower
++
++namespace Minidregg.Selvage.ArityEight.TwoRound.BabyBear
++open BabyBearExt4
++noncomputable section
++
++/-- Exactly the first six transition objects of the existing tower. -/
++def firstSix : FoldingTower Ext4 (PowerTwoFriLevels 20) 6 where
++  dom := MultiplicativeTower.tower.dom
++  data j hj := MultiplicativeTower.tower.data j (by omega)
++
++theorem firstSix_domains (n : ℕ) : firstSix.dom n = MultiplicativeTower.tower.dom n := rfl
++
++theorem firstSix_transitions (j : ℕ) (hj : j < 6) :
++    firstSix.data j hj = MultiplicativeTower.tower.data j (by omega) := rfl
++
++/-- All rate, degree, radius and carrier arithmetic is discharged. The five
++word functions retain their explicit prefix dependence. -/
++theorem terminal_sound (s : Words Ext4 (PowerTwoFriLevels 20)) (q : ℕ)
++    (hfar : ¬close (2/5:ℝ)
++      (reedSolomonCode (MultiplicativeTower.tower.dom 0) (2^19)) s.source) :
++    uniformProb ((Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 20 1))
++      (fun x => Accepts firstSix s (2^13) q (by decide) x.1 x.2) ≤
++      ((2^20+2^17:ℕ):ℝ)/(modulus^4:ℕ) + (9/10:ℝ)^q := by
++  have hf : ¬close (1/5:ℝ) (reedSolomonCode (firstSix.dom 0) (64*2^13)) s.source := by
++    rintro ⟨w,hw,hclose⟩
++    apply hfar
++    refine ⟨w,?_,?_⟩
++    · convert hw using 1
++    · linarith
++  have h := sound firstSix s (d := 2^13) (by norm_num) q (by decide)
++    (ρ₀ := (1/5:ℝ)) (ρ₁ := (1/10:ℝ)) (τ := (1/10:ℝ)) (by norm_num) (by norm_num)
++    (by norm_num) (by norm_num) (by norm_num) (by norm_num [PowerTwoFriLevels])
++    (by norm_num [PowerTwoFriLevels]) hf
++  have hc : Fintype.card Ext4 = modulus^4 := ext4_card
++  rw [hc] at h
++  norm_num [PowerTwoFriLevels] at h ⊢
++  convert h using 1
++  ring
++
++/-- Actual-field supplied-opening theorem with summed transition failures
++and a single coherent-query tail. The observed log term is not assigned bits. -/
++theorem supplied_terminal_sound {Digest : Type} [DecidableEq Digest]
++    (H : BinaryMerkle.HashSuite Ext4 Digest) (st : Checkpoints Ext4 Digest) (default : Ext4) (q : ℕ)
++    (openings : (Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 20 1) → Openings Ext4 Digest q)
++    (logs : (Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 20 1) → EfficientRootOpening.Log Ext4 Digest)
++    (hsub : ∀ x, CheckpointsLogged st (logs x) x.1)
++    (hlog : ∀ x, OpeningsLogged H firstSix (logs x) q (by decide) x.2 (openings x))
++    (hfar : EfficientRootOpening.Far_E (2/5:ℝ) 20
++      (reedSolomonCode (MultiplicativeTower.tower.dom 0) (2^19)) st.source.1 default st.source.2) :
++    uniformProb ((Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 20 1))
++      (fun x => SuppliedAccepts H firstSix st default (2^13) q (by decide) x.1 x.2 (openings x)) ≤
++      ((2^20+2^17:ℕ):ℝ)/(modulus^4:ℕ) + (9/10:ℝ)^q +
++      uniformProb ((Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 20 1))
++        (fun x => Failure st (logs x) x.1) := by
++  let Ω := (Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 20 1)
++  let ideal : Ω → Prop := fun x => Accepts firstSix (extracted st default) (2^13) q (by decide) x.1 x.2
++  let raw : Ω → Prop := fun x => SuppliedAccepts H firstSix st default (2^13) q (by decide) x.1 x.2 (openings x)
++  let bad : Ω → Prop := fun x => Failure st (logs x) x.1
++  have h : uniformProb Ω ideal ≤ ((2^20+2^17:ℕ):ℝ)/(modulus^4:ℕ)+(9/10:ℝ)^q :=
++    terminal_sound (extracted st default) q hfar
++  have hcover : ∀ x : Ω, raw x → ideal x ∨ bad x := by
++    intro x hx
++    exact supplied_cover H firstSix st default (2^13) q (by decide) x.1 x.2
++      (openings x) (logs x) (hsub x) (hlog x) hx
++  have hsplit : uniformProb Ω raw ≤ uniformProb Ω ideal + uniformProb Ω bad :=
++    le_trans (uniformProb_mono hcover) (uniformProb_or_le ideal bad)
++  change uniformProb Ω raw ≤ _
++  linarith
++
++end
++end Minidregg.Selvage.ArityEight.TwoRound.BabyBear
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.BabyBear.firstSix_domains' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.BabyBear.firstSix_domains
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.BabyBear.firstSix_transitions' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.BabyBear.firstSix_transitions
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.BabyBear.terminal_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.BabyBear.terminal_sound
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.BabyBear.supplied_terminal_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.BabyBear.supplied_terminal_sound
+diff --git a/Selvage/ArityEightTwoRoundLogged.lean b/Selvage/ArityEightTwoRoundLogged.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightTwoRoundLogged.lean
+@@ -0,0 +1,352 @@
++/- A finite honest checkpoint witness for both supplied-opening rounds.
++The digest is an explicit tree-valued toy hash. No cryptographic pricing or
++huge finite-field enumeration is used: log consistency is proved structurally. -/
++import Selvage.ArityEightTwoRoundSupplied
++import Selvage.ArityEightTwoRoundWitnesses
++
++namespace Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged
++open BabyBearExt4
++open scoped Classical
++noncomputable section
++
++inductive Digest where
++  | leaf : Ext4 → Digest
++  | node : Digest → Digest → Digest
++  deriving DecidableEq
++
++def H : BinaryMerkle.HashSuite Ext4 Digest := ⟨Digest.leaf,Digest.node⟩
++
++/-- Constructor separation gives this explicit toy hash injective typed queries. -/
++theorem evaluate_injective : Function.Injective (EfficientRootOpening.evaluate H) := by
++  intro q q' h
++  cases q <;> cases q' <;> simp_all [EfficientRootOpening.evaluate,H]
++
++/-- Every recursively recorded node response is its actual hash evaluation. -/
++theorem pathLog_valid (leaf : Digest) : ∀ (k : ℕ) (address : Fin k → Bool)
++    (path : List Digest) (e : EfficientRootOpening.Query Ext4 Digest × Digest),
++    e ∈ EfficientRootOpening.pathLog H leaf address path →
++      e.2 = EfficientRootOpening.evaluate H e.1 := by
++  intro k
++  induction k with
++  | zero => intro address path e he; simp [EfficientRootOpening.pathLog] at he
++  | succ k ih =>
++    intro address path e he
++    cases path with
++    | nil => simp [EfficientRootOpening.pathLog] at he
++    | cons sibling rest =>
++      cases hr : BinaryMerkle.recompute H leaf (fun i => address i.succ) rest with
++      | none => simp [EfficientRootOpening.pathLog,hr] at he
++      | some child =>
++        simp only [EfficientRootOpening.pathLog,hr] at he
++        rcases List.mem_append.mp he with he | he
++        · exact ih _ _ _ he
++        · have heq := List.mem_singleton.mp he
++          rw [heq]
++
++/-- Supplied opening logs are truthful hash-call records. -/
++theorem openingLog_valid (k : ℕ) (v : Ext4) (address : Fin k → Bool) (path : List Digest)
++    (e : EfficientRootOpening.Query Ext4 Digest × Digest)
++    (he : e ∈ EfficientRootOpening.openingLog H v address path) :
++    e.2 = EfficientRootOpening.evaluate H e.1 := by
++  rcases List.mem_cons.mp he with he | he
++  · rw [he]; rfl
++  · exact pathLog_valid (H.leaf v) k address path e he
++
++def honestPoint (k : ℕ) (f : Fin (2^k) → Ext4) (i : Fin (2^k)) : PointOpening Ext4 Digest :=
++  ⟨f i,(BinaryMerkle.openingScheme H k).openAt f i⟩
++
++@[irreducible] def completeLog (k : ℕ) (f : Fin (2^k) → Ext4) : EfficientRootOpening.Log Ext4 Digest :=
++  (List.ofFn fun i : Fin (2^k) => EfficientRootOpening.openingLog H (f i)
++    (binaryAddressBits k i) (honestPoint k f i).path).flatten
++
++theorem completeLog_valid (k : ℕ) (f : Fin (2^k) → Ext4)
++    (e : EfficientRootOpening.Query Ext4 Digest × Digest) (he : e ∈ completeLog k f) :
++    e.2 = EfficientRootOpening.evaluate H e.1 := by
++  unfold completeLog at he
++  obtain ⟨l,hl,he⟩ := List.mem_flatten.mp he
++  obtain ⟨i,hi⟩ := List.mem_ofFn.mp hl
++  subst l
++  exact openingLog_valid k (f i) (binaryAddressBits k i) _ e he
++
++theorem completeLog_contains (k : ℕ) (f : Fin (2^k) → Ext4) (i : Fin (2^k)) :
++    PointLogged H (completeLog k f) i (honestPoint k f i) := by
++  intro e he
++  unfold completeLog
++  exact List.mem_flatten.mpr ⟨_,List.mem_ofFn.mpr ⟨i,rfl⟩,he⟩
++
++/-- A fixed honest middle word; the adaptive-input witness is separate. -/
++def middleWord : PowerTwoFriLevels 7 3 → Ext4 := fun i => (smallTower.dom 3 i)^8
++
++def checkpoint : EfficientRootOpening.Log Ext4 Digest :=
++  completeLog 7 farWord ++ completeLog 4 middleWord ++
++    completeLog 4 (fun _ => 0) ++ completeLog 1 (fun _ => 0) ++ completeLog 1 (fun _ => 1)
++
++theorem checkpoint_valid (e : EfficientRootOpening.Query Ext4 Digest × Digest)
++    (he : e ∈ checkpoint) : e.2 = EfficientRootOpening.evaluate H e.1 := by
++  simp only [checkpoint,List.mem_append] at he
++  rcases he with (((he | he) | he) | he) | he
++  · exact completeLog_valid 7 farWord e he
++  · exact completeLog_valid 4 middleWord e he
++  · exact completeLog_valid 4 (fun _ => 0) e he
++  · exact completeLog_valid 1 (fun _ => 0) e he
++  · exact completeLog_valid 1 (fun _ => 1) e he
++
++/-- A structural proof of no observed collision or late checkpoint entry. -/
++theorem no_bad (root : Digest) : ¬EfficientRootOpening.Bad checkpoint checkpoint root := by
++  rintro (⟨e,he,e',he',hresp,hne⟩ | ⟨e,he,hnot,_⟩)
++  · apply hne
++    apply evaluate_injective
++    rw [←checkpoint_valid e he,←checkpoint_valid e' he']
++    exact hresp
++  · exact hnot he
++
++/-- Retained honest openings determine the existing checkpoint extractor exactly. -/
++theorem extracted_word (k : ℕ) (f : Fin (2^k) → Ext4)
++    (hsub : ∀ e ∈ completeLog k f, e ∈ checkpoint) :
++    EfficientRootOpening.word checkpoint 0 k ((BinaryMerkle.openingScheme H k).commit f) = f := by
++  funext i
++  symm
++  apply supplied_point_pins H checkpoint checkpoint 0 _ i (honestPoint k f i)
++    (fun _ h => h) (no_bad _)
++  · exact fun e he => hsub e (completeLog_contains k f i e he)
++  · exact (BinaryMerkle.openingScheme H k).verifyOpen_commit f i
++
++def checkpoints : Checkpoints Ext4 Digest where
++  source := (checkpoint,(BinaryMerkle.openingScheme H 7).commit farWord)
++  input0 := (checkpoint,(BinaryMerkle.openingScheme H 4).commit (fun _ => 0))
++  middle _ := (checkpoint,(BinaryMerkle.openingScheme H 4).commit middleWord)
++  input1 _ := (checkpoint,(BinaryMerkle.openingScheme H 1).commit (fun _ => 0))
++  final _ _ := (checkpoint,(BinaryMerkle.openingScheme H 1).commit (fun _ => 1))
++
++def fixedWords : Words Ext4 (PowerTwoFriLevels 7) where
++  source := farWord
++  input0 := fun _ => 0
++  middle _ := middleWord
++  input1 _ _ := 0
++  final _ _ _ := 1
++
++/-- All five extracted words coincide with their concrete honest commitments. -/
++theorem extracted_checkpoints : extracted checkpoints 0 = fixedWords := by
++  have hs := extracted_word 7 farWord (by intros e he; simp only [checkpoint,List.mem_append]; tauto)
++  have hm := extracted_word 4 middleWord (by intros e he; simp only [checkpoint,List.mem_append]; tauto)
++  have hg := extracted_word 4 (fun _ => (0:Ext4)) (by intros e he; simp only [checkpoint,List.mem_append]; tauto)
++  have hi := extracted_word 1 (fun _ => (0:Ext4)) (by intros e he; simp only [checkpoint,List.mem_append]; tauto)
++  have hn := extracted_word 1 (fun _ => (1:Ext4)) (by intros e he; simp only [checkpoint,List.mem_append]; tauto)
++  change Words.mk _ _ _ _ _ = Words.mk _ _ _ _ _
++  simp only [checkpoints,hs,hm,hg,hi,hn]
++
++/-- Both round failure events are absent at this actual fixed checkpoint. -/
++theorem no_failure (r : Ext4 × Ext4) : ¬Failure checkpoints checkpoint r := by
++  rintro ((h | h | h) | (h | h | h)) <;> exact no_bad _ h
++
++def firstRow (i : PowerTwoFriLevels 7 3) : RowOpening Ext4 Digest where
++  source c b a := honestPoint 7 farWord
++    (rowPoint (smallTower.data 0 (by decide)) (smallTower.data 1 (by decide))
++      (smallTower.data 2 (by decide)) i c b a)
++  injected := honestPoint 4 (fun _ => 0) i
++  next := honestPoint 4 middleWord i
++
++def secondRow (i : PowerTwoFriLevels 7 6) : RowOpening Ext4 Digest where
++  source c b a := honestPoint 4 middleWord
++    (rowPoint (smallTower.data 3 (by decide)) (smallTower.data 4 (by decide))
++      (smallTower.data 5 (by decide)) i c b a)
++  injected := honestPoint 1 (fun _ => 0) i
++  next := honestPoint 1 (fun _ => 1) i
++
++/-- Every supplied path in either round is already logged before the challenge pair. -/
++theorem first_logged (i : PowerTwoFriLevels 7 3) :
++    RowLogged H checkpoint (smallTower.data 0 (by decide)) (smallTower.data 1 (by decide))
++      (smallTower.data 2 (by decide)) i (firstRow i) := by
++  refine ⟨?_,?_,?_⟩
++  · intro c b a e he
++    have hm := completeLog_contains 7 farWord _ e he
++    simp only [checkpoint,List.mem_append]; tauto
++  · intro e he
++    have hm := completeLog_contains 4 (fun _ => (0:Ext4)) i e he
++    simp only [checkpoint,List.mem_append]; tauto
++  · intro e he
++    have hm := completeLog_contains 4 middleWord i e he
++    simp only [checkpoint,List.mem_append]; tauto
++
++theorem second_logged (i : PowerTwoFriLevels 7 6) :
++    RowLogged H checkpoint (smallTower.data 3 (by decide)) (smallTower.data 4 (by decide))
++      (smallTower.data 5 (by decide)) i (secondRow i) := by
++  refine ⟨?_,?_,?_⟩
++  · intro c b a e he
++    have hm := completeLog_contains 4 middleWord _ e he
++    simp only [checkpoint,List.mem_append]; tauto
++  · intro e he
++    have hm := completeLog_contains 1 (fun _ => (0:Ext4)) i e he
++    simp only [checkpoint,List.mem_append]; tauto
++  · intro e he
++    have hm := completeLog_contains 1 (fun _ => (1:Ext4)) i e he
++    simp only [checkpoint,List.mem_append]; tauto
++
++/-- Every first-round row is the exact honest fold. -/
++theorem first_verified (β : Ext4) (i : PowerTwoFriLevels 7 3) :
++    RowVerified H (smallTower.data 0 (by decide)) (smallTower.data 1 (by decide))
++      (smallTower.data 2 (by decide)) checkpoints.source.2 checkpoints.input0.2
++      (checkpoints.middle β).2 β i (firstRow i) := by
++  refine ⟨fun _ _ _ => ?_,?_,?_,?_⟩
++  · exact (BinaryMerkle.openingScheme H 7).verifyOpen_commit farWord _
++  · exact (BinaryMerkle.openingScheme H 4).verifyOpen_commit (fun _ => (0:Ext4)) _
++  · exact (BinaryMerkle.openingScheme H 4).verifyOpen_commit middleWord _
++  · change middleWord i = foldRow8 _ _ _ i (fun c b a => farWord (rowPoint _ _ _ i c b a)) β + β^8*0
++    rw [foldRow8_eq_fold8]
++    have h := congrFun (first_block_exact β) i
++    simpa [block0,words,middleWord] using h.symm
++
++/-- A genuine accepted second-round row on the same shared middle root. -/
++theorem second_zero_verified (a b : Ext4) :
++    RowVerified H (smallTower.data 3 (by decide)) (smallTower.data 4 (by decide))
++      (smallTower.data 5 (by decide)) (checkpoints.middle a).2 (checkpoints.input1 a).2
++      (checkpoints.final a b).2 b 0 (secondRow 0) := by
++  refine ⟨fun _ _ _ => ?_,?_,?_,?_⟩
++  · exact (BinaryMerkle.openingScheme H 4).verifyOpen_commit middleWord _
++  · exact (BinaryMerkle.openingScheme H 1).verifyOpen_commit (fun _ => (0:Ext4)) _
++  · exact (BinaryMerkle.openingScheme H 1).verifyOpen_commit (fun _ => (1:Ext4)) _
++  · change (1:Ext4) = foldRow8 _ _ _ 0
++      (fun c b a => middleWord (rowPoint _ _ _ 0 c b a)) b + b^8*0
++    rw [foldRow8_eq_fold8]
++    have h := congrFun (second_block_exact 0 b) 0
++    simpa [block1,words,middleWord,terminal_domain_zero] using h.symm
++
++def openings (q : ℕ) (x : (Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 7 1)) : Openings Ext4 Digest q where
++  first a := firstRow (powerTwoCoherentRound (show 6 ≤ 7 by decide) (⟨2,by decide⟩ : Fin 6) x.2 a)
++  second a := secondRow (powerTwoCoherentRound (show 6 ≤ 7 by decide) (⟨5,by decide⟩ : Fin 6) x.2 a)
++
++theorem checkpoints_logged (r : Ext4 × Ext4) : CheckpointsLogged checkpoints checkpoint r :=
++  ⟨fun _ h => h,fun _ h => h,fun _ h => h,fun _ h => h,fun _ h => h⟩
++
++theorem openings_logged (q : ℕ) (x : (Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 7 1)) :
++    OpeningsLogged H smallTower checkpoint q (by decide) x.2 (openings q x) :=
++  ⟨fun _ => first_logged _,fun _ => second_logged _⟩
++
++/-- The initial extracted farness premise is actually inhabited. -/
++theorem extracted_far : EfficientRootOpening.Far_E (1/5:ℝ) 7
++    (reedSolomonCode (smallTower.dom 0) 64) checkpoints.source.1 0 checkpoints.source.2 := by
++  have h := congrArg Words.source extracted_checkpoints
++  change (extracted checkpoints 0).source = farWord at h
++  change ¬close (1/5:ℝ) (reedSolomonCode (smallTower.dom 0) 64) (extracted checkpoints 0).source
++  rw [h]
++  exact farWord_far
++
++/-- Both supplied rounds, terminal membership and no observed failure hold together. -/
++theorem supplied_zero_accepts (r : Ext4 × Ext4) (q : ℕ) :
++    SuppliedAccepts H smallTower checkpoints 0 1 q (by decide) r (fun _ => 0)
++      (openings q (r,fun _ => 0)) := by
++  refine ⟨?_,?_,?_⟩
++  · rw [extracted_checkpoints]
++    exact mem_reedSolomonCode_one_iff.mpr (fun _ _ => rfl)
++  · intro a
++    exact first_verified r.1 _
++  · intro a
++    have hz : powerTwoCoherentRound (show 6 ≤ 7 by decide) (⟨5,by decide⟩ : Fin 6)
++        (fun _ : Fin q => (0 : PowerTwoFriLevels 7 1)) a = 0 := by
++      apply Fin.ext
++      simp [powerTwoCoherentRound,powerTwoRoundIndex]
++    change RowVerified _ _ _ _ _ _ _ _ _ (secondRow _)
++    rw [hz]
++    exact second_zero_verified r.1 r.2
++
++/-- The complete supplied two-round theorem fires with zero observed failure
++and inhabited positive query acceptance, not just an ideal-word hypothesis. -/
++theorem supplied_bound_fires (q : ℕ) :
++    uniformProb ((Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 7 1))
++      (fun x => SuppliedAccepts H smallTower checkpoints 0 1 q (by decide) x.1 x.2 (openings q x)) ≤
++      (144:ℝ)/(modulus^4:ℕ)+(9/10:ℝ)^q := by
++  have h := supplied_sound H smallTower checkpoints 0 (d := 1) (by decide) q (by decide)
++    (ρ₀ := (1/5:ℝ)) (ρ₁ := (1/10:ℝ)) (τ := (1/10:ℝ))
++    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
++    (by norm_num [PowerTwoFriLevels]) (by norm_num [PowerTwoFriLevels])
++    (openings q) (fun _ => checkpoint) (fun x => checkpoints_logged x.1) (openings_logged q) extracted_far
++  have hz : uniformProb ((Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 7 1))
++      (fun x => Failure checkpoints checkpoint x.1) = 0 :=
++    uniformProb_false (fun x => no_failure x.1)
++  dsimp only at h
++  rw [hz] at h
++  have hc : Fintype.card Ext4 = modulus^4 := ext4_card
++  rw [hc] at h
++  norm_num [PowerTwoFriLevels] at h ⊢
++  convert h using 1
++  ring
++
++end
++end Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged
++
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.evaluate_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.evaluate_injective
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.pathLog_valid' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.pathLog_valid
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.openingLog_valid' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.openingLog_valid
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.completeLog_valid' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.completeLog_valid
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.completeLog_contains' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.completeLog_contains
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.checkpoint_valid' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.checkpoint_valid
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.no_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.no_bad
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.extracted_word' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.extracted_word
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.extracted_checkpoints' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.extracted_checkpoints
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.no_failure' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.no_failure
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.first_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.first_logged
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.second_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.second_logged
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.first_verified' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.first_verified
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.second_zero_verified' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.second_zero_verified
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.checkpoints_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.checkpoints_logged
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.openings_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.openings_logged
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.extracted_far' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.extracted_far
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.supplied_zero_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.supplied_zero_accepts
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.supplied_bound_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.Logged.supplied_bound_fires
+diff --git a/Selvage/ArityEightTwoRoundSupplied.lean b/Selvage/ArityEightTwoRoundSupplied.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightTwoRoundSupplied.lean
+@@ -0,0 +1,147 @@
++/- Two-round supplied BinaryMerkle reduction. Every source/input checkpoint
++is fixed before its fresh scalar; the final checkpoint depends only on the
++challenge pair, never on query seeds. Observed hash-log failures stay explicit. -/
++import Selvage.ArityEightTwoRound
++import Selvage.ArityEightSupplied
++
++namespace Minidregg.Selvage.ArityEight.TwoRound
++open scoped Classical
++
++abbrev Checkpoint (F Digest : Type) := EfficientRootOpening.Log F Digest × Digest
++
++/-- The five actual log/root checkpoints, with their allowed prefix dependence. -/
++structure Checkpoints (F Digest : Type) where
++  source : Checkpoint F Digest
++  input0 : Checkpoint F Digest
++  middle : F → Checkpoint F Digest
++  input1 : F → Checkpoint F Digest
++  final : F → F → Checkpoint F Digest
++
++section Extraction
++variable {F Digest : Type} [Field F] [DecidableEq F] [DecidableEq Digest] {ell : ℕ}
++
++/-- Existing deterministic extractor at the actual three tower levels. -/
++def extracted (st : Checkpoints F Digest) (default : F) : Words F (PowerTwoFriLevels ell) where
++  source := EfficientRootOpening.word st.source.1 default ell st.source.2
++  input0 := EfficientRootOpening.word st.input0.1 default (ell-3) st.input0.2
++  middle a := EfficientRootOpening.word (st.middle a).1 default (ell-3) (st.middle a).2
++  input1 a := EfficientRootOpening.word (st.input1 a).1 default (ell-6) (st.input1 a).2
++  final a b := EfficientRootOpening.word (st.final a b).1 default (ell-6) (st.final a b).2
++
++/-- Checkpoint inclusion in the actual finite execution log. -/
++def CheckpointsLogged (st : Checkpoints F Digest) (L : EfficientRootOpening.Log F Digest)
++    (r : F × F) : Prop :=
++  (∀ e ∈ st.source.1, e ∈ L) ∧ (∀ e ∈ st.input0.1, e ∈ L) ∧
++  (∀ e ∈ (st.middle r.1).1, e ∈ L) ∧ (∀ e ∈ (st.input1 r.1).1, e ∈ L) ∧
++  (∀ e ∈ (st.final r.1 r.2).1, e ∈ L)
++
++/-- The two actual observed round failures; the middle root is shared. -/
++def Failure (st : Checkpoints F Digest) (L : EfficientRootOpening.Log F Digest) (r : F × F) : Prop :=
++  RoundBad st.source.1 st.input0.1 (st.middle r.1).1 L
++    st.source.2 st.input0.2 (st.middle r.1).2 ∨
++  RoundBad (st.middle r.1).1 (st.input1 r.1).1 (st.final r.1 r.2).1 L
++    (st.middle r.1).2 (st.input1 r.1).2 (st.final r.1 r.2).2
++
++/-- Supplied paths are allowed to depend on both challenges and all queries. -/
++structure Openings (F Digest : Type) (q : ℕ) where
++  first : Fin q → RowOpening F Digest
++  second : Fin q → RowOpening F Digest
++
++def SuppliedAccepts (H : BinaryMerkle.HashSuite F Digest)
++    (T : FoldingTower F (PowerTwoFriLevels ell) 6) (st : Checkpoints F Digest)
++    (default : F) (d q : ℕ) (hell : 6 ≤ ell)
++    (r : F × F) (seed : Fin q → PowerTwoFriLevels ell 1) (o : Openings F Digest q) : Prop :=
++  (extracted st default).final r.1 r.2 ∈ reedSolomonCode (T.dom 6) d ∧
++  (∀ a, RowVerified H (T.data 0 (by decide)) (T.data 1 (by decide)) (T.data 2 (by decide))
++    st.source.2 st.input0.2 (st.middle r.1).2 r.1
++    (powerTwoCoherentRound hell (⟨2,by decide⟩ : Fin 6) seed a) (o.first a)) ∧
++  (∀ a, RowVerified H (T.data 3 (by decide)) (T.data 4 (by decide)) (T.data 5 (by decide))
++    (st.middle r.1).2 (st.input1 r.1).2 (st.final r.1 r.2).2 r.2
++    (powerTwoCoherentRound hell (⟨5,by decide⟩ : Fin 6) seed a) (o.second a))
++
++def OpeningsLogged (H : BinaryMerkle.HashSuite F Digest)
++    (T : FoldingTower F (PowerTwoFriLevels ell) 6) (L : EfficientRootOpening.Log F Digest)
++    (q : ℕ) (hell : 6 ≤ ell) (seed : Fin q → PowerTwoFriLevels ell 1)
++    (o : Openings F Digest q) : Prop :=
++  (∀ a, RowLogged H L (T.data 0 (by decide)) (T.data 1 (by decide)) (T.data 2 (by decide))
++    (powerTwoCoherentRound hell (⟨2,by decide⟩ : Fin 6) seed a) (o.first a)) ∧
++  (∀ a, RowLogged H L (T.data 3 (by decide)) (T.data 4 (by decide)) (T.data 5 (by decide))
++    (powerTwoCoherentRound hell (⟨5,by decide⟩ : Fin 6) seed a) (o.second a))
++
++/-- Off observed log failures, both supplied transitions pin to the same
++prefix-selected middle word. No global event bound is a premise. -/
++theorem supplied_cover (H : BinaryMerkle.HashSuite F Digest)
++    (T : FoldingTower F (PowerTwoFriLevels ell) 6) (st : Checkpoints F Digest)
++    (default : F) (d q : ℕ) (hell : 6 ≤ ell)
++    (r : F × F) (seed : Fin q → PowerTwoFriLevels ell 1) (o : Openings F Digest q)
++    (L : EfficientRootOpening.Log F Digest)
++    (hsub : CheckpointsLogged st L r) (hlog : OpeningsLogged H T L q hell seed o)
++    (ha : SuppliedAccepts H T st default d q hell r seed o) :
++    Accepts T (extracted st default) d q hell r seed ∨ Failure st L r := by
++  by_cases hb : Failure st L r
++  · exact Or.inr hb
++  · refine Or.inl ⟨ha.1,?_,?_⟩
++    · intro a
++      exact supplied_row_pins H (T.data 0 (by decide)) (T.data 1 (by decide))
++        (T.data 2 (by decide)) st.source.1 st.input0.1 (st.middle r.1).1 L default
++        st.source.2 st.input0.2 (st.middle r.1).2 hsub.1 hsub.2.1 hsub.2.2.1
++        (fun h => hb (Or.inl h)) r.1
++        (powerTwoCoherentRound hell (⟨2,by decide⟩ : Fin 6) seed a) (o.first a)
++        (hlog.1 a) (ha.2.1 a)
++    · intro a
++      exact supplied_row_pins H (T.data 3 (by decide)) (T.data 4 (by decide))
++        (T.data 5 (by decide)) (st.middle r.1).1 (st.input1 r.1).1 (st.final r.1 r.2).1 L default
++        (st.middle r.1).2 (st.input1 r.1).2 (st.final r.1 r.2).2
++        hsub.2.2.1 hsub.2.2.2.1 hsub.2.2.2.2 (fun h => hb (Or.inr h)) r.2
++        (powerTwoCoherentRound hell (⟨5,by decide⟩ : Fin 6) seed a) (o.second a)
++        (hlog.2 a) (ha.2.2 a)
++
++set_option maxHeartbeats 800000 in
++/-- Two actual externally challenged rounds with supplied openings: summed
++challenge errors, one coherent-query tail, and the observed execution-log residual. -/
++theorem supplied_sound [Fintype F] (H : BinaryMerkle.HashSuite F Digest)
++    (T : FoldingTower F (PowerTwoFriLevels ell) 6) (st : Checkpoints F Digest)
++    (default : F) {d : ℕ} (hd : 1 ≤ d) (q : ℕ) (hell : 6 ≤ ell)
++    {ρ₀ ρ₁ τ : ℝ} (hρ₀ : 0 < ρ₀) (hρ₁ : 0 < ρ₁) (hτ : τ ≤ 1)
++    (hgap₀ : ρ₁+τ ≤ ρ₀) (hgap₁ : τ ≤ ρ₁)
++    (hrate₀ : (8*d:ℕ) < (1-2*ρ₀)*(Fintype.card (PowerTwoFriLevels ell 3):ℝ))
++    (hrate₁ : (d:ℝ) < (1-2*ρ₁)*(Fintype.card (PowerTwoFriLevels ell 6):ℝ))
++    (openings : (F × F) × (Fin q → PowerTwoFriLevels ell 1) → Openings F Digest q)
++    (logs : (F × F) × (Fin q → PowerTwoFriLevels ell 1) → EfficientRootOpening.Log F Digest)
++    (hsub : ∀ x, CheckpointsLogged st (logs x) x.1)
++    (hlog : ∀ x, OpeningsLogged H T (logs x) q hell x.2 (openings x))
++    (hfar : EfficientRootOpening.Far_E ρ₀ ell (reedSolomonCode (T.dom 0) (64*d))
++      st.source.1 default st.source.2) :
++    uniformProb ((F × F) × (Fin q → PowerTwoFriLevels ell 1))
++      (fun x => SuppliedAccepts H T st default d q hell x.1 x.2 (openings x)) ≤
++      ((8*Fintype.card (PowerTwoFriLevels ell 3):ℕ):ℝ)/Fintype.card F +
++      ((8*Fintype.card (PowerTwoFriLevels ell 6):ℕ):ℝ)/Fintype.card F + (1-τ)^q +
++      uniformProb ((F × F) × (Fin q → PowerTwoFriLevels ell 1))
++        (fun x => Failure st (logs x) x.1) := by
++  let Ω := (F × F) × (Fin q → PowerTwoFriLevels ell 1)
++  let ideal : Ω → Prop := fun x => Accepts T (extracted st default) d q hell x.1 x.2
++  let raw : Ω → Prop := fun x => SuppliedAccepts H T st default d q hell x.1 x.2 (openings x)
++  let bad : Ω → Prop := fun x => Failure st (logs x) x.1
++  have hf : ¬close ρ₀ (reedSolomonCode (T.dom 0) (64*d)) (extracted st default).source := hfar
++  have h : uniformProb Ω ideal ≤
++      ((8*Fintype.card (PowerTwoFriLevels ell 3):ℕ):ℝ)/Fintype.card F +
++      ((8*Fintype.card (PowerTwoFriLevels ell 6):ℕ):ℝ)/Fintype.card F + (1-τ)^q :=
++    sound T (extracted st default) hd q hell hρ₀ hρ₁ hτ hgap₀ hgap₁ hrate₀ hrate₁ hf
++  have hcover : ∀ x : Ω, raw x → ideal x ∨ bad x := by
++    intro x hx
++    exact supplied_cover H T st default d q hell x.1 x.2 (openings x) (logs x) (hsub x) (hlog x) hx
++  have hsplit : uniformProb Ω raw ≤ uniformProb Ω ideal + uniformProb Ω bad :=
++    le_trans (uniformProb_mono hcover) (uniformProb_or_le ideal bad)
++  change uniformProb Ω raw ≤ _
++  linarith
++
++end Extraction
++end Minidregg.Selvage.ArityEight.TwoRound
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.supplied_cover' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.supplied_cover
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.supplied_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.supplied_sound
+diff --git a/Selvage/ArityEightTwoRoundWitnesses.lean b/Selvage/ArityEightTwoRoundWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightTwoRoundWitnesses.lean
+@@ -0,0 +1,225 @@
++/- A small actual-carrier two-round schedule with a far source and a genuinely
++prefix-dependent injected input. All domains come from existing certified roots. -/
++import Selvage.ArityEightTwoRound
++import Selvage.BabyBearFoldingTower
++
++namespace Minidregg.Selvage.ArityEight.TwoRound
++open scoped Classical
++
++section PolynomialControls
++variable {F ι κ : Type*} [Field F] {dom : ι ↪ F} {domSq : κ ↪ F}
++
++/-- Even monomials fold to the corresponding monomial on the squared domain. -/
++theorem fold_even_power (D : FoldingData F dom domSq) (k : ℕ) (β : F) :
++    fold D (fun i => (dom i)^(2*k)) β = fun i => (domSq i)^k := by
++  funext i
++  have he : Even (2*k) := ⟨k,by omega⟩
++  simp only [fold,foldEven,foldOdd,D.dom_neg,he.neg_pow,sub_self,zero_div,mul_zero,add_zero]
++  have hs := D.domSq_sq (D.sec i)
++  rw [D.sq_sec] at hs
++  rw [hs,←pow_mul]
++  field_simp [D.two_ne]
++  ring
++
++variable {ι₀ ι₁ ι₂ ι₃ : Type*}
++variable {dom₀ : ι₀ ↪ F} {dom₁ : ι₁ ↪ F} {dom₂ : ι₂ ↪ F} {dom₃ : ι₃ ↪ F}
++
++/-- Three real folds divide an exponent by eight, without any challenge dependence. -/
++theorem fold8_power (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (k : ℕ) (β : F) :
++    fold8 D₀ D₁ D₂ (fun i => (dom₀ i)^(8*k)) β = fun i => (dom₃ i)^k := by
++  unfold fold8
++  rw [show 8*k=2*(4*k) by omega,fold_even_power]
++  rw [show 4*k=2*(2*k) by omega,fold_even_power,fold_even_power]
++
++end PolynomialControls
++
++namespace Witnesses
++open BabyBearExt4 Polynomial
++noncomputable section
++
++/-- 128→16→2 is a positive-degree two-block schedule over the actual carrier. -/
++def smallTower : FoldingTower Ext4 (PowerTwoFriLevels 7) 6 :=
++  PowerTwoRootFolding.tower (TwoAdic.omega_primitive 7 (by decide))
++    MultiplicativeTower.two_ne_zero (by decide)
++
++def farWord : PowerTwoFriLevels 7 0 → Ext4 := fun i => (smallTower.dom 0 i)^64
++
++/-- The high-degree source cannot lie in the degree-below-64 code. -/
++theorem farWord_not_mem : farWord ∉ reedSolomonCode (smallTower.dom 0) 64 := by
++  intro hw
++  obtain ⟨p,hp,heval⟩ := mem_reedSolomonCode_iff.mp hw
++  have hne : (X^64 : Polynomial Ext4) ≠ p := by
++    intro heq
++    rw [←heq] at hp
++    norm_num at hp
++  have hcard := card_agreeSet_lt_of_ne (smallTower.dom 0) (d := 65)
++    (p := (X^64 : Polynomial Ext4)) (by norm_num) (q := p) (hp.trans (by norm_num)) hne
++  have hall : (Finset.univ.filter fun i =>
++      (X^64 : Polynomial Ext4).eval (smallTower.dom 0 i) = p.eval (smallTower.dom 0 i)) =
++      Finset.univ := by
++    apply Finset.filter_eq_self.mpr
++    intro i _
++    simpa [farWord] using heval i
++  rw [hall,Finset.card_univ] at hcard
++  norm_num [PowerTwoFriLevels] at hcard
++
++/-- The farness premise is positive and derived from existing RS minimum distance. -/
++theorem farWord_far : ¬close (1/5:ℝ) (reedSolomonCode (smallTower.dom 0) 64) farWord := by
++  rintro ⟨w,hw,hclose⟩
++  have hmem : farWord ∈ reedSolomonCode (smallTower.dom 0) 65 :=
++    mem_reedSolomonCode_iff.mpr ⟨X^64,by norm_num,fun i => by simp [farWord]⟩
++  have hw' : w ∈ reedSolomonCode (smallTower.dom 0) 65 := by
++    obtain ⟨p,hp,heval⟩ := mem_reedSolomonCode_iff.mp hw
++    exact mem_reedSolomonCode_iff.mpr ⟨p,hp.trans (by norm_num),heval⟩
++  have h := reedSolomonCode_minDist (smallTower.dom 0) 65 farWord hmem w hw'
++    (fun heq => farWord_not_mem (heq ▸ hw))
++  norm_num [PowerTwoFriLevels] at h
++  linarith
++
++/-- The second injected word changes with the first challenge; the final
++constant changes with both. The middle word is the exact first fold. -/
++def words : Words Ext4 (PowerTwoFriLevels 7) where
++  source := farWord
++  input0 := fun _ => 0
++  middle _ i := (smallTower.dom 3 i)^8
++  input1 a _ := a
++  final a b _ := 1+b^8*a
++
++theorem second_input_not_fixed : words.input1 0 ≠ words.input1 1 := by
++  intro h
++  have heq := congrFun h 0
++  exact zero_ne_one heq
++
++theorem first_block_exact (a : Ext4) : block0 smallTower words a = words.middle a := by
++  unfold block0
++  change (fun i => fold8 _ _ _ (fun i => (smallTower.dom 0 i)^64) a i + a^8*0) = _
++  simp only [mul_zero,add_zero]
++  exact fold8_power (smallTower.data 0 (by decide)) (smallTower.data 1 (by decide))
++    (smallTower.data 2 (by decide)) 8 a
++
++theorem second_block_exact (a b : Ext4) :
++    block1 smallTower words a b = fun i => smallTower.dom 6 i+b^8*a := by
++  have h := fold8_power (smallTower.data 3 (by decide)) (smallTower.data 4 (by decide))
++    (smallTower.data 5 (by decide)) 1 b
++  simp only [mul_one,pow_one] at h
++  unfold block1
++  change (fun i => fold8 _ _ _ (fun i => (smallTower.dom 3 i)^8) b i + b^8*a) = _
++  rw [h]
++
++theorem terminal_mem (r : Ext4 × Ext4) :
++    words.final r.1 r.2 ∈ reedSolomonCode (smallTower.dom 6) 1 :=
++  mem_reedSolomonCode_one_iff.mpr (fun _ _ => rfl)
++
++theorem terminal_domain_zero : smallTower.dom 6 (0 : PowerTwoFriLevels 7 6) = 1 := by
++  change (PowerTwoRootFolding.levelRoot (TwoAdic.omega 7) 6)^0 = 1
++  simp
++
++theorem terminal_domain_one : smallTower.dom 6 (1 : PowerTwoFriLevels 7 6) = -1 := by
++  have h := PowerTwoRootFolding.levelRoot_half_turn
++    (TwoAdic.omega_primitive 7 (by decide)) 6 (by decide)
++  simpa [smallTower,PowerTwoRootFolding.tower,PowerTwoRootFolding.domain] using h
++
++/-- Both external rounds accept the all-zero coherent query vector. -/
++theorem zero_seed_accepts (r : Ext4 × Ext4) (q : ℕ) :
++    Accepts smallTower words 1 q (by decide) r (fun _ => 0) := by
++  refine ⟨terminal_mem r,?_,?_⟩
++  · intro a
++    rw [first_block_exact]
++  · intro a
++    rw [second_block_exact]
++    have hz : powerTwoCoherentRound (show 6 ≤ 7 by decide) (⟨5,by decide⟩ : Fin 6)
++        (fun _ : Fin q => (0 : PowerTwoFriLevels 7 1)) a = 0 := by
++      apply Fin.ext
++      simp [powerTwoCoherentRound,powerTwoRoundIndex]
++    rw [hz]
++    change 1+r.2^8*r.1 = smallTower.dom 6 0+r.2^8*r.1
++    rw [terminal_domain_zero]
++
++/-- The same legal terminal word rejects the second round at seed one. -/
++theorem one_seed_rejects (r : Ext4 × Ext4) :
++    ¬Accepts smallTower words 1 1 (by decide) r (fun _ => 1) := by
++  intro h
++  have heq := h.2.2 0
++  rw [second_block_exact] at heq
++  have hi : powerTwoCoherentRound (show 6 ≤ 7 by decide) (⟨5,by decide⟩ : Fin 6)
++      (fun _ : Fin 1 => (1 : PowerTwoFriLevels 7 1)) 0 = 1 := by
++    apply Fin.ext
++    norm_num [powerTwoCoherentRound,powerTwoRoundIndex]
++  rw [hi] at heq
++  change 1+r.2^8*r.1 = smallTower.dom 6 1+r.2^8*r.1 at heq
++  rw [terminal_domain_one] at heq
++  have htwo : (2:Ext4)=0 := by linear_combination heq
++  exact MultiplicativeTower.two_ne_zero htwo
++
++/-- Every source, degree, rate, gap and timing premise of the two-round
++soundness statement fires on this inhabited small schedule. -/
++theorem sound_fires (q : ℕ) :
++    uniformProb ((Ext4 × Ext4) × (Fin q → PowerTwoFriLevels 7 1))
++      (fun x => Accepts smallTower words 1 q (by decide) x.1 x.2) ≤
++      (144:ℝ)/(modulus^4:ℕ)+(9/10:ℝ)^q := by
++  have h := sound smallTower words (d := 1) (by decide) q (by decide)
++    (ρ₀ := (1/5:ℝ)) (ρ₁ := (1/10:ℝ)) (τ := (1/10:ℝ))
++    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
++    (by norm_num [PowerTwoFriLevels]) (by norm_num [PowerTwoFriLevels]) farWord_far
++  have hc : Fintype.card Ext4 = modulus^4 := ext4_card
++  rw [hc] at h
++  norm_num [PowerTwoFriLevels] at h ⊢
++  convert h using 1
++  ring
++
++end
++end Witnesses
++end Minidregg.Selvage.ArityEight.TwoRound
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.fold_even_power' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.fold_even_power
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.fold8_power' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.fold8_power
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.farWord_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.farWord_not_mem
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.farWord_far' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.farWord_far
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.second_input_not_fixed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.second_input_not_fixed
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.first_block_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.first_block_exact
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.second_block_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.second_block_exact
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.terminal_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.terminal_mem
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.terminal_domain_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.terminal_domain_zero
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.terminal_domain_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.terminal_domain_one
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.zero_seed_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.zero_seed_accepts
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.one_seed_rejects' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.one_seed_rejects
++
++/-- info: 'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.sound_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.TwoRound.Witnesses.sound_fires

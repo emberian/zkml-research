@@ -1,0 +1,32 @@
+Selvage/ArityEightTwoRoundLogged.lean:128:95: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Selvage/ArityEightTwoRoundLogged.lean:129:98: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Selvage/ArityEightTwoRoundLogged.lean:134:13: warning: This simp argument is unused:
+  extracted
+
+Hint: Omit it from the simp argument list.
+  simp only [̵e̵x̵t̵r̵a̵c̵t̵e̵d̵,̵c̵h̵e̵c̵k̵p̵o̵i̵n̵t̵s̵,̵f̵i̵x̵e̵d̵W̵o̵r̵d̵s̵,̵h̵s̵,̵h̵m̵,̵h̵g̵,̵h̵i̵,̵h̵n̵]̵[̲c̲h̲e̲c̲k̲p̲o̲i̲n̲t̲s̲,̲ ̲f̲i̲x̲e̲d̲W̲o̲r̲d̲s̲,̲ ̲h̲s̲,̲ ̲h̲m̲,̲ ̲h̲g̲,̲ ̲h̲i̲,̲ ̲h̲n̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightTwoRoundLogged.lean:134:35: warning: This simp argument is unused:
+  fixedWords
+
+Hint: Omit it from the simp argument list.
+  simp only [̵e̵x̵t̵r̵a̵c̵t̵e̵d̵,̵c̵h̵e̵c̵k̵p̵o̵i̵n̵t̵s̵,̵f̵i̵x̵e̵d̵W̵o̵r̵d̵s̵,̵h̵s̵,̵h̵m̵,̵h̵g̵,̵h̵i̵,̵h̵n̵]̵[̲e̲x̲t̲r̲a̲c̲t̲e̲d̲,̲ ̲c̲h̲e̲c̲k̲p̲o̲i̲n̲t̲s̲,̲ ̲h̲s̲,̲ ̲h̲m̲,̲ ̲h̲g̲,̲ ̲h̲i̲,̲ ̲h̲n̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightTwoRoundLogged.lean:167:44: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Selvage/ArityEightTwoRoundLogged.lean:175:44: error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Selvage/ArityEightTwoRoundLogged.lean:221:7: warning: unused variable `a`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Selvage/ArityEightTwoRoundLogged.lean:221:31: warning: unused variable `a`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

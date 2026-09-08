@@ -1,0 +1,545 @@
+{
+  "status": "PASS",
+  "started_utc": "2026-09-08T16:43:27.352436+00:00",
+  "finished_utc": "2026-09-08T16:43:32.233637+00:00",
+  "elapsed_seconds": 4.881236000044737,
+  "profile": "toy",
+  "parameters": {
+    "N": 64,
+    "w": 4,
+    "d": 9,
+    "recipients": 2,
+    "p": 257,
+    "q": 2013265921,
+    "sigma_key": 2,
+    "sigma_error": 1,
+    "flood": 1024,
+    "W": 8,
+    "denominator": null
+  },
+  "commands": [
+    {
+      "label": "init",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/init.json",
+        "init",
+        "--profile",
+        "toy",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/a.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.24810537497978657,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/init.json"
+    },
+    {
+      "label": "register_00",
+      "role": "recipient_00",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/recipient_00.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/register_00.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/a.ring",
+        "--coordinate",
+        "0",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/registration_00.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.5551211659912951,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/register_00.json"
+    },
+    {
+      "label": "register_01",
+      "role": "recipient_01",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/recipient_01.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/register_01.json",
+        "register",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/a.ring",
+        "--coordinate",
+        "1",
+        "--key-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_01/key.ring",
+        "--registration-out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/registration_01.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.5947187920100987,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/register_01.json"
+    },
+    {
+      "label": "finalize",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/finalize.json",
+        "finalize",
+        "--public-a",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/a.ring",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/public.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/registration_00.ring",
+        "--registration",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/registration_01.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.19655029196292162,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/finalize.json"
+    },
+    {
+      "label": "encode_0",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/encode_0.json",
+        "encode",
+        "--public",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/public.ring",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/input_0.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.5715799579629675,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/encode_0.json"
+    },
+    {
+      "label": "encode_1",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/encode_1.json",
+        "encode",
+        "--public",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/public.ring",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/input_1.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_1.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.5675615830114111,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/encode_1.json"
+    },
+    {
+      "label": "encode_2",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/encode_2.json",
+        "encode",
+        "--public",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/public.ring",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/input_2.json",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_2.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.5102949590072967,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/encode_2.json"
+    },
+    {
+      "label": "signed",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/signed.json",
+        "combine",
+        "--term",
+        "2",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring",
+        "--term",
+        "-1",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_1.ring",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/signed.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.16541829198831692,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/signed.json"
+    },
+    {
+      "label": "window_0",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/window_0.json",
+        "window",
+        "--add",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring",
+        "--capacity",
+        "2",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_0.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.17509745800634846,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/window_0.json"
+    },
+    {
+      "label": "window_1",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/window_1.json",
+        "window",
+        "--state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_0.ring",
+        "--add",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_1.ring",
+        "--capacity",
+        "2",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_1.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.17688804201316088,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/window_1.json"
+    },
+    {
+      "label": "window_expiry",
+      "role": "public",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/public.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/window_expiry.json",
+        "window",
+        "--state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_1.ring",
+        "--add",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_2.ring",
+        "--expire",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring",
+        "--capacity",
+        "2",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_2.ring"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.16922387504018843,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/window_expiry.json"
+    },
+    {
+      "label": "decode_window_00",
+      "role": "recipient_00",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/recipient_00.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_window_00.json",
+        "decode",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/key.ring",
+        "--ciphertext",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_2.ring",
+        "--expected-lift",
+        "-27",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/window_output.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.1622340840403922,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_window_00.json"
+    },
+    {
+      "label": "decode_window_01",
+      "role": "recipient_01",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/recipient_01.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_window_01.json",
+        "decode",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_01/key.ring",
+        "--ciphertext",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_2.ring",
+        "--expected-lift",
+        "-126",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_01/window_output.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.15314791700802743,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_window_01.json"
+    },
+    {
+      "label": "decode_fresh_0",
+      "role": "recipient_00",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/recipient_00.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_fresh_0.json",
+        "decode",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/key.ring",
+        "--ciphertext",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring",
+        "--expected-lift",
+        "-16",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/fresh_output_0.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.14477841701591387,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_fresh_0.json"
+    },
+    {
+      "label": "decode_fresh_1",
+      "role": "recipient_00",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/recipient_00.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_fresh_1.json",
+        "decode",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/key.ring",
+        "--ciphertext",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_1.ring",
+        "--expected-lift",
+        "72",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/fresh_output_1.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.14934237499255687,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_fresh_1.json"
+    },
+    {
+      "label": "decode_fresh_2",
+      "role": "recipient_00",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/recipient_00.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_fresh_2.json",
+        "decode",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/key.ring",
+        "--ciphertext",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_2.ring",
+        "--expected-lift",
+        "-99",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/fresh_output_2.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.15420216601341963,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_fresh_2.json"
+    },
+    {
+      "label": "decode_signed",
+      "role": "recipient_00",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/recipient_00.sb",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/.venv/bin/python",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py",
+        "--receipt",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_signed.json",
+        "decode",
+        "--key",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/key.ring",
+        "--ciphertext",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/signed.ring",
+        "--expected-lift",
+        "-104",
+        "--out",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/signed_output.json"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.1671468749991618,
+      "receipt": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/results/toy001/decode_signed.json"
+    }
+  ],
+  "public_artifacts": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/a.ring": {
+      "bytes": 1269,
+      "sha256": "a689f1ba7dceda5d11520ec0fdf07181f73f4df9a67d847b79655bf473925226"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_0.ring": {
+      "bytes": 1498,
+      "sha256": "d0fe574ee91b76dea9f6e88d4d7a32cdaa5033239c91a7ea8d653d79dd45adc5"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_1.ring": {
+      "bytes": 1498,
+      "sha256": "cb45ee290c718128b8b54bb31cd7f2f7611ff01f9eb024fcfce990bc2b2b4491"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/cipher_2.ring": {
+      "bytes": 1498,
+      "sha256": "4d324de0f4870e40d6e2447e291156b5449a20c715e7a3ab77b4305741d37f35"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/input_0.json": {
+      "bytes": 43,
+      "sha256": "de35bf5df8b1a0ac4918f5e0efd2cbeaa385d9c6755d09f24de009c6e787c410"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/input_1.json": {
+      "bytes": 44,
+      "sha256": "12bfa3ecd91a2a15a98359dc96f6b2d00f85e611e73736509e69046e61bdf9a5"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/input_2.json": {
+      "bytes": 43,
+      "sha256": "2854aa4db109db354327c83ea0cc6b522dbbb8017e5985559930a8c486b6ee2b"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/malformed.ring": {
+      "bytes": 630,
+      "sha256": "2bb9ed5e946e936357e2c1568b2a6c0e3333c60928a0d76b0b9038b46e34c24f"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/public.ring": {
+      "bytes": 3584,
+      "sha256": "8b30ca98f361548ed8381ecefbf5589a6704d6a1b2132eb4adf11cf2b14bcdb2"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/registration_00.ring": {
+      "bytes": 629,
+      "sha256": "622623210e7b6d96e493701ba398365e647123dd076a451603e2822cd79c1ede"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/registration_01.ring": {
+      "bytes": 629,
+      "sha256": "151d4cb41972ddb91d35c3b41dc14783c8ca4a717bc39cb256ea6637cf138382"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/signed.ring": {
+      "bytes": 1638,
+      "sha256": "721659395a5460ac3e675ff9a2877d51dc9be07dc3c16be5622184898335e5f9"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_0.ring": {
+      "bytes": 1566,
+      "sha256": "080020ac5bf34abd88af99c71bed2f93b96994b89cb0ad059c92e41212cf512f"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_1.ring": {
+      "bytes": 1637,
+      "sha256": "a0ec055a9d8327221f7c24b27eb74882246d49c8cc0ec996a8ee6547e51fb4f1"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/window_2.ring": {
+      "bytes": 1637,
+      "sha256": "2f3b7d00f68129b914c6b8a8f22213deddd120b8241c284e402eb92f7874840f"
+    }
+  },
+  "private_metadata_only": [
+    {
+      "recipient": 0,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/key.ring",
+      "bytes": 532,
+      "mode": "0o600"
+    },
+    {
+      "recipient": 1,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_01/key.ring",
+      "bytes": 532,
+      "mode": "0o600"
+    }
+  ],
+  "actual_recipient_rows_generated": 2,
+  "absent_recipient_rows_generated": 0,
+  "fresh_encodes": 3,
+  "designated_outputs_matched": 6,
+  "malformed_trailing_byte_rejected": true,
+  "process_policy_denial_probes": 2,
+  "public_roles_private_artifact_reads": 0,
+  "source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/transport.py": "6634540331b5793c117068750ec989c1855d6c980a9dbca30360cc7118e06d97",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/workflow.py": "3e4af32c6cde28a8408795c029bb8d95ea58a51e89118b810b9227b908e60e02",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/codec/packed.py": "abcc3d76f8bc7b01c901884334df6cb4e3c5f1fb4e38c0a0d638f074df16551d"
+  },
+  "sources_unchanged": true,
+  "orchestrator_private_payload_reads": 0,
+  "security_scope": "Experiment artifact path sandbox; same-host administration and malicious-process sandbox escapes not addressed"
+}

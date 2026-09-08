@@ -1,0 +1,9 @@
+   Compiling matvec v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/learner_join/matvecmul)
+    Finished `release` profile [optimized] target(s) in 6.67s
+     Running unittests src/lib.rs (target/release/deps/matvec-05e485c334458da0)
+
+running 1 test
+test learner_adapter::tests::learner_public_packing_and_signed_decode ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 17 filtered out; finished in 0.01s
+

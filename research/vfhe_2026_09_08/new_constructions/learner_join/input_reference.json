@@ -1,0 +1,392 @@
+{
+  "status": "PASS",
+  "source_root": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08",
+  "source_sha256": {
+    "models/plain/learner.json": "9aa42d447794a8c685924ff89b745857b753ec7f83c70480f41e9e2ba65979d8",
+    "features.npz": "03959f885631c4b095d81210b06def3e4071a1d9bf98e1c7427b1cd114aeaf6a",
+    "data/selected.json": "5e1e10fce61b7074345bdee1e5cecf5768f5cdd91684e06fb37cf783abe2eb09",
+    "plaintext_result.json": "0d2ea48a4640d660c3cef2c775a4113f05ae945c1156286a936a8ac8c6935a9d",
+    "config.json": "1e051be559a01ce600f4434bf9a85c2585023f14e425d86c55cf0cd77a0ca5ee"
+  },
+  "selection_rule": "first original cached test row per class in config class order",
+  "labels": [
+    "card_arrival",
+    "cash_withdrawal_charge",
+    "card_payment_not_recognised",
+    "lost_or_stolen_card",
+    "pending_card_payment",
+    "pending_transfer",
+    "transfer_not_received_by_recipient",
+    "wrong_amount_of_cash_received"
+  ],
+  "test_indices": [
+    0,
+    280,
+    160,
+    40,
+    200,
+    240,
+    120,
+    80
+  ],
+  "selected_public_rows": [
+    {
+      "text": "How do I locate my card?",
+      "category": "card_arrival",
+      "source_split": "test",
+      "source_row": 0
+    },
+    {
+      "text": "I see some fees for cash withdraw.",
+      "category": "cash_withdrawal_charge",
+      "source_split": "test",
+      "source_row": 2880
+    },
+    {
+      "text": "I have a strange payment in my statement",
+      "category": "card_payment_not_recognised",
+      "source_split": "test",
+      "source_row": 1080
+    },
+    {
+      "text": "My entire gym bag, including my wallet, was stolen out of my locker today. Everything in my wallet is gone - how do I block the card to make it can't be used?",
+      "category": "lost_or_stolen_card",
+      "source_split": "test",
+      "source_row": 440
+    },
+    {
+      "text": "My card payment is still on hold, why is it so?",
+      "category": "pending_card_payment",
+      "source_split": "test",
+      "source_row": 1600
+    },
+    {
+      "text": "I did transfer, why is it pending",
+      "category": "pending_transfer",
+      "source_split": "test",
+      "source_row": 1840
+    },
+    {
+      "text": "I completed an in country transfer a few days ago and was sure to check the account information several times since the transaction was completed, but the funds are still not available. What is the problem?",
+      "category": "transfer_not_received_by_recipient",
+      "source_split": "test",
+      "source_row": 840
+    },
+    {
+      "text": "I don't know if this is an issue with the ATM or my account, but I just tried withdrawing 30 pounds from the ATM I'm at now and it only gave me 10. Is this a glitch or what exactly is going on?",
+      "category": "wrong_amount_of_cash_received",
+      "source_split": "test",
+      "source_row": 760
+    }
+  ],
+  "revision": 128,
+  "active_examples_per_class": 8,
+  "features": 576,
+  "discarded_bias_coordinate": "577th coordinate exactly zero in all inputs",
+  "prototype_range": [
+    -535,
+    545
+  ],
+  "query_range": [
+    -69,
+    80
+  ],
+  "scores": [
+    [
+      1765933,
+      1588186,
+      1697736,
+      1767760,
+      1668537,
+      1549522,
+      1640276,
+      1586897
+    ],
+    [
+      1561369,
+      1796987,
+      1659753,
+      1583474,
+      1616300,
+      1567797,
+      1575741,
+      1716687
+    ],
+    [
+      1623113,
+      1704545,
+      1808786,
+      1646020,
+      1754474,
+      1645972,
+      1671184,
+      1733846
+    ],
+    [
+      1647830,
+      1640740,
+      1655883,
+      1763302,
+      1637346,
+      1587898,
+      1645311,
+      1658768
+    ],
+    [
+      1784751,
+      1720955,
+      1813001,
+      1750500,
+      1890544,
+      1749978,
+      1763427,
+      1730542
+    ],
+    [
+      1648227,
+      1590405,
+      1656662,
+      1611946,
+      1769983,
+      1756535,
+      1711818,
+      1610758
+    ],
+    [
+      1683068,
+      1683110,
+      1727196,
+      1669696,
+      1782932,
+      1802364,
+      1798624,
+      1711693
+    ],
+    [
+      1603195,
+      1701688,
+      1708072,
+      1622744,
+      1693690,
+      1664780,
+      1683678,
+      1782289
+    ]
+  ],
+  "predictions": [
+    "lost_or_stolen_card",
+    "cash_withdrawal_charge",
+    "card_payment_not_recognised",
+    "lost_or_stolen_card",
+    "pending_card_payment",
+    "pending_card_payment",
+    "pending_transfer",
+    "wrong_amount_of_cash_received"
+  ],
+  "decisions_correct_in_reused_eight": 5,
+  "signed_score_bound": 74322432,
+  "crt_moduli": [
+    16381,
+    16369
+  ],
+  "crt_product": 268140589,
+  "class_start_positions": [
+    0,
+    1152,
+    2304,
+    4096,
+    5248,
+    6400,
+    8192,
+    9344
+  ],
+  "literal_shifted_coefficient_checks": 128,
+  "wrong_577_shift_differs": 64,
+  "query_l1": [
+    9800,
+    9735,
+    9715,
+    9871,
+    9767,
+    9786,
+    9685,
+    9744
+  ],
+  "query_l2_squared": [
+    262520,
+    262219,
+    262447,
+    262535,
+    262223,
+    261958,
+    263083,
+    261880
+  ],
+  "conditional_decode_bounds": [
+    {
+      "query": 0,
+      "plaintext_modulus": 16381,
+      "delta": 1126106102766289,
+      "q_remainder": 4212,
+      "weighted_error_bound": 70506183136036,
+      "absolute_unreduced_residue_score_bound": 160524000,
+      "twice_decoder_error_numerator": 2309924924156987432,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 0,
+      "plaintext_modulus": 16369,
+      "delta": 1126931643314471,
+      "q_remainder": 8522,
+      "weighted_error_bound": 70506183136036,
+      "absolute_unreduced_residue_score_bound": 160406400,
+      "twice_decoder_error_numerator": 2308234157474228168,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 1,
+      "plaintext_modulus": 16381,
+      "delta": 1126106102766289,
+      "q_remainder": 4212,
+      "weighted_error_bound": 70506183136004,
+      "absolute_unreduced_residue_score_bound": 159459300,
+      "twice_decoder_error_numerator": 2309924915186906248,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 1,
+      "plaintext_modulus": 16369,
+      "delta": 1126931643314471,
+      "q_remainder": 8522,
+      "weighted_error_bound": 70506183136004,
+      "absolute_unreduced_residue_score_bound": 159342480,
+      "twice_decoder_error_numerator": 2308234139339728072,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 2,
+      "plaintext_modulus": 16381,
+      "delta": 1126106102766289,
+      "q_remainder": 4212,
+      "weighted_error_bound": 70506183135994,
+      "absolute_unreduced_residue_score_bound": 159131700,
+      "twice_decoder_error_numerator": 2309924912426876228,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 2,
+      "plaintext_modulus": 16369,
+      "delta": 1126931643314471,
+      "q_remainder": 8522,
+      "weighted_error_bound": 70506183135994,
+      "absolute_unreduced_residue_score_bound": 159015120,
+      "twice_decoder_error_numerator": 2308234133759876852,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 3,
+      "plaintext_modulus": 16381,
+      "delta": 1126106102766289,
+      "q_remainder": 4212,
+      "weighted_error_bound": 70506183136072,
+      "absolute_unreduced_residue_score_bound": 161686980,
+      "twice_decoder_error_numerator": 2309924933955110384,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 3,
+      "plaintext_modulus": 16369,
+      "delta": 1126931643314471,
+      "q_remainder": 8522,
+      "weighted_error_bound": 70506183136072,
+      "absolute_unreduced_residue_score_bound": 161568528,
+      "twice_decoder_error_numerator": 2308234177282716368,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 4,
+      "plaintext_modulus": 16381,
+      "delta": 1126106102766289,
+      "q_remainder": 4212,
+      "weighted_error_bound": 70506183136020,
+      "absolute_unreduced_residue_score_bound": 159983460,
+      "twice_decoder_error_numerator": 2309924919602954280,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 4,
+      "plaintext_modulus": 16369,
+      "delta": 1126931643314471,
+      "q_remainder": 8522,
+      "weighted_error_bound": 70506183136020,
+      "absolute_unreduced_residue_score_bound": 159866256,
+      "twice_decoder_error_numerator": 2308234148267490024,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 5,
+      "plaintext_modulus": 16381,
+      "delta": 1126106102766289,
+      "q_remainder": 4212,
+      "weighted_error_bound": 70368744182557,
+      "absolute_unreduced_residue_score_bound": 160294680,
+      "twice_decoder_error_numerator": 2305422147231316754,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 5,
+      "plaintext_modulus": 16369,
+      "delta": 1126931643314471,
+      "q_remainder": 8522,
+      "weighted_error_bound": 70368744182557,
+      "absolute_unreduced_residue_score_bound": 160177248,
+      "twice_decoder_error_numerator": 2303734677109565978,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 6,
+      "plaintext_modulus": 16381,
+      "delta": 1126106102766289,
+      "q_remainder": 4212,
+      "weighted_error_bound": 70506183135979,
+      "absolute_unreduced_residue_score_bound": 158640300,
+      "twice_decoder_error_numerator": 2309924908286831198,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 6,
+      "plaintext_modulus": 16369,
+      "delta": 1126931643314471,
+      "q_remainder": 8522,
+      "weighted_error_bound": 70506183135979,
+      "absolute_unreduced_residue_score_bound": 158524080,
+      "twice_decoder_error_numerator": 2308234125390100022,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 7,
+      "plaintext_modulus": 16381,
+      "delta": 1126106102766289,
+      "q_remainder": 4212,
+      "weighted_error_bound": 70368744182536,
+      "absolute_unreduced_residue_score_bound": 159606720,
+      "twice_decoder_error_numerator": 2305422141435253712,
+      "required_strict_upper_bound": 18446744069414584321
+    },
+    {
+      "query": 7,
+      "plaintext_modulus": 16369,
+      "delta": 1126931643314471,
+      "q_remainder": 8522,
+      "weighted_error_bound": 70368744182536,
+      "absolute_unreduced_residue_score_bound": 159489792,
+      "twice_decoder_error_numerator": 2303734665391878416,
+      "required_strict_upper_bound": 18446744069414584321
+    }
+  ],
+  "ideal_gaussian_union_bound": 6.584855993964582e-54,
+  "probability_scope": "Only an ideal independent Gaussian model before rounding; this is not a rigorous analysis of the floating-point rand_distr sampler.",
+  "input_bytes": 74691,
+  "input_sha256": "4420c610817cefc3d47ff670ebfd5b0663321bdf6cc75787b5417b82e46831ba",
+  "adapter_sha256": "50780896344152419f936b54654862a0f04e472e99d1c2da11d178fe917954e3"
+}

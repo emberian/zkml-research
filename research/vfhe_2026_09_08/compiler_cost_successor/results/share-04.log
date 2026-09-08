@@ -1,0 +1,250 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean:28:9: error: unsolved goals
+case constant
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+c✝ : F
+⊢ instBEqKey.beq (Key.constant c✝) (Key.constant c✝) = true
+
+case variable
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+i✝ : Idx
+⊢ instBEqKey.beq (Key.variable i✝) (Key.variable i✝) = true
+
+case add
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝ b✝ : Key F Idx
+a_ih✝ : instBEqKey.beq a✝ a✝ = true
+b_ih✝ : instBEqKey.beq b✝ b✝ = true
+⊢ instBEqKey.beq (a✝.add b✝) (a✝.add b✝) = true
+
+case mul
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝ b✝ : Key F Idx
+a_ih✝ : instBEqKey.beq a✝ a✝ = true
+b_ih✝ : instBEqKey.beq b✝ b✝ = true
+⊢ instBEqKey.beq (a✝.mul b✝) (a✝.mul b✝) = true
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean:29:15: error: unsolved goals
+case constant.constant
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+c✝¹ c✝ : F
+⊢ instBEqKey.beq (Key.constant c✝¹) (Key.constant c✝) = true → c✝¹ = c✝
+
+case constant.variable
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+c✝ : F
+i✝ : Idx
+⊢ instBEqKey.beq (Key.constant c✝) (Key.variable i✝) = false
+
+case constant.add
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+c✝ : F
+a✝ b✝ : Key F Idx
+⊢ instBEqKey.beq (Key.constant c✝) (a✝.add b✝) = false
+
+case constant.mul
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+c✝ : F
+a✝ b✝ : Key F Idx
+⊢ instBEqKey.beq (Key.constant c✝) (a✝.mul b✝) = false
+
+case variable.constant
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+i✝ : Idx
+c✝ : F
+⊢ instBEqKey.beq (Key.variable i✝) (Key.constant c✝) = false
+
+case variable.variable
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+i✝¹ i✝ : Idx
+⊢ instBEqKey.beq (Key.variable i✝¹) (Key.variable i✝) = true → i✝¹ = i✝
+
+case variable.add
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+i✝ : Idx
+a✝ b✝ : Key F Idx
+⊢ instBEqKey.beq (Key.variable i✝) (a✝.add b✝) = false
+
+case variable.mul
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+i✝ : Idx
+a✝ b✝ : Key F Idx
+⊢ instBEqKey.beq (Key.variable i✝) (a✝.mul b✝) = false
+
+case add.constant
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝ b✝ : Key F Idx
+c✝ : F
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝ b = true → a✝ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝ b = true → b✝ = b
+⊢ instBEqKey.beq (a✝.add b✝) (Key.constant c✝) = false
+
+case add.variable
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝ b✝ : Key F Idx
+i✝ : Idx
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝ b = true → a✝ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝ b = true → b✝ = b
+⊢ instBEqKey.beq (a✝.add b✝) (Key.variable i✝) = false
+
+case add.add
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝¹ b✝¹ a✝ b✝ : Key F Idx
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝¹ b = true → a✝¹ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝¹ b = true → b✝¹ = b
+⊢ instBEqKey.beq (a✝¹.add b✝¹) (a✝.add b✝) = true → a✝¹ = a✝ ∧ b✝¹ = b✝
+
+case add.mul
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝¹ b✝¹ a✝ b✝ : Key F Idx
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝¹ b = true → a✝¹ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝¹ b = true → b✝¹ = b
+⊢ instBEqKey.beq (a✝¹.add b✝¹) (a✝.mul b✝) = false
+
+case mul.constant
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝ b✝ : Key F Idx
+c✝ : F
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝ b = true → a✝ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝ b = true → b✝ = b
+⊢ instBEqKey.beq (a✝.mul b✝) (Key.constant c✝) = false
+
+case mul.variable
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝ b✝ : Key F Idx
+i✝ : Idx
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝ b = true → a✝ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝ b = true → b✝ = b
+⊢ instBEqKey.beq (a✝.mul b✝) (Key.variable i✝) = false
+
+case mul.add
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝¹ b✝¹ a✝ b✝ : Key F Idx
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝¹ b = true → a✝¹ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝¹ b = true → b✝¹ = b
+⊢ instBEqKey.beq (a✝¹.mul b✝¹) (a✝.add b✝) = false
+
+case mul.mul
+F : Type u
+inst✝⁴ : Field F
+Idx : Type u
+inst✝³ : BEq F
+inst✝² : LawfulBEq F
+inst✝¹ : BEq Idx
+inst✝ : LawfulBEq Idx
+a✝¹ b✝¹ a✝ b✝ : Key F Idx
+a_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq a✝¹ b = true → a✝¹ = b
+b_ih✝ : ∀ {b : Key F Idx}, instBEqKey.beq b✝¹ b = true → b✝¹ = b
+⊢ instBEqKey.beq (a✝¹.mul b✝¹) (a✝.mul b✝) = true → a✝¹ = a✝ ∧ b✝¹ = b✝

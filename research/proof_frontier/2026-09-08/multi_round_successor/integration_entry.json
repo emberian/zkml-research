@@ -1,0 +1,13 @@
+{
+  "name": "multi_round_successor",
+  "root": "../proof_frontier/2026-09-08/multi_round_successor",
+  "patch": "../proof_frontier/2026-09-08/multi_round_successor/arity-eight-two-round.patch",
+  "expected_pins": 43,
+  "source_files": {
+    "Selvage/ArityEightTwoRound.lean": "../proof_frontier/2026-09-08/multi_round_successor/src/Selvage/ArityEightTwoRound.lean",
+    "Selvage/ArityEightTwoRoundBabyBear.lean": "../proof_frontier/2026-09-08/multi_round_successor/src/Selvage/ArityEightTwoRoundBabyBear.lean",
+    "Selvage/ArityEightTwoRoundLogged.lean": "../proof_frontier/2026-09-08/multi_round_successor/src/Selvage/ArityEightTwoRoundLogged.lean",
+    "Selvage/ArityEightTwoRoundSupplied.lean": "../proof_frontier/2026-09-08/multi_round_successor/src/Selvage/ArityEightTwoRoundSupplied.lean",
+    "Selvage/ArityEightTwoRoundWitnesses.lean": "../proof_frontier/2026-09-08/multi_round_successor/src/Selvage/ArityEightTwoRoundWitnesses.lean"
+  }
+}

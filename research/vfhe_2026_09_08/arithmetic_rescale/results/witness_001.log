@@ -1,0 +1,7 @@
+Compiler/BfvRescaleWitness.lean:36:53: error: unexpected token 'variables'; expected ')'
+Compiler/BfvRescaleWitness.lean:36:54: warning: 'variables' has been replaced by 'variable' in lean 4
+Compiler/BfvRescaleWitness.lean:36:64: error: unexpected token ':'; expected command
+Compiler/BfvRescaleWitness.lean:43:45: warning: 'variables' has been replaced by 'variable' in lean 4
+Compiler/BfvRescaleWitness.lean:43:55: error: unexpected token; expected command
+Compiler/BfvRescaleWitness.lean:55:56: error(lean.unknownIdentifier): Unknown identifier `matrixWitness`
+Compiler/BfvRescaleWitness.lean:58:48: error(lean.unknownIdentifier): Unknown identifier `matrixWitness`

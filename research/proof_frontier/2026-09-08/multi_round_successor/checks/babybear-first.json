@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-multi-round-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightTwoRoundBabyBear.olean",
+    "Selvage/ArityEightTwoRoundBabyBear.lean"
+  ],
+  "cwd": "/tmp/minidregg-multi-round-successor-20260908",
+  "exit_code": 1,
+  "source_sha256": "cab3b05c36c491721269bd9cb6206f3beb4f0e00ce3575f487ee15f08c76c025",
+  "source_unchanged": true,
+  "elapsed_s": 7.191502094268799,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/checks/babybear-first.log"
+}

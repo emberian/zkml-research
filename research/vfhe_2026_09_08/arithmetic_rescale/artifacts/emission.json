@@ -1,0 +1,10 @@
+{"wrong_nearest_refused": true,
+ "trace_width": 37665,
+ "trace_bytes": 4821120,
+ "rows": 32,
+ "radix64_refused": true,
+ "public_tuple_order": "rowID,product_extended6x11,output3x7",
+ "public_arity": 88,
+ "ir2_arithmetic_constraints": 45209,
+ "captured_nearest_plus_one_accepted": true,
+ "all_actual_source_rows_checked": true}

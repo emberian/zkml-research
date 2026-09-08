@@ -1,0 +1,6 @@
+{"trace_width": 37665,
+ "trace_projection_changed": false,
+ "removed_repeated_assertions": 5880,
+ "public_arity": 88,
+ "before_arithmetic_constraints": 45209,
+ "after_arithmetic_constraints": 39329}

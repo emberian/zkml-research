@@ -1,0 +1,21 @@
+{
+  "command": [
+    "env",
+    "RAYON_NUM_THREADS=4",
+    "target/release/vfhe-proved-rescale",
+    "prove",
+    "../arithmetic_rescale/artifacts/template_ir2.json",
+    "results/case001",
+    "../arithmetic_rescale/artifacts/trace.leu32",
+    "results/proof001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale",
+  "started_utc": "2026-09-08T16:49:46.516741+00:00",
+  "pid": 14405,
+  "returncode": 0,
+  "elapsed_seconds": 2.027717041957658,
+  "finished_utc": "2026-09-08T16:49:48.547934+00:00",
+  "user_seconds": 2.00797,
+  "system_seconds": 0.11793,
+  "max_rss_bytes": 244711424
+}

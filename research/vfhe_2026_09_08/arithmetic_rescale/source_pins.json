@@ -1,0 +1,36 @@
+{
+  "proposal": {
+    "Compiler/BfvRescaleRow.lean": "27396905c9e7e58cbcddd4effabd6abd2205268e1c28dfccb88338162857da9b",
+    "Compiler/BfvRescaleWitness.lean": "1788612154ce6674e72e3731ad96f0d25993c3d489a40552fedcc0c777bbfdef",
+    "Compiler/BfvRescaleSound.lean": "fc0d61b81ddfad5399978e2e9c3dae092b4c9976515180613acbb1c636ed7d9c",
+    "EmitBfvRescale.lean": "7abd63fda7ec6a3224864205cd5636617ea971dbb458d6248395e08edb1692fd",
+    "proposal.patch": "25879df1391330bf8fb4ceaba47e2f3c1ff5720ebd56768eaf9911e07e69f2df"
+  },
+  "reused_source": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/engine_refinement/Compiler/FheRnsScaleDecomposition.lean": "486e63dc09d79c10858f9b1e37cbf6b7a5b63841c23e8cbb914cc0e2b8b49167",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificate.lean": "12da5937356804b74b3e429d712daa33f10d41c77506aba67e29c345a66fe887",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateLayout.lean": "580b6540040be2383d98ea99eb3b33f070bfa1a25e1be1bef617540eba234e3e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateEmit.lean": "c5e1fa8c24b6a59d2f974043b3b458fc7e78fe0ac083a5d1c2f6cf45990dec81",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateWitness.lean": "8c0878724091c81606a89d8c4b835da08c5837d47a596db4214ddb4bc1bbe9e7",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjection.lean": "4f6f6f1d5bc89d416a9275f732fb623736232c6ef4bfe3abfccdf64bacb0f1d0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionLayout.lean": "8194cb7e55cce3ae1e3266a35267e00f26f588b3cd0246a608dedc1fee8fd439",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionEmit.lean": "23653006b13b339c5d3a1e58255e273c8d607e17a108ec4c1c4b38614a585363",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionWitness.lean": "dd0c8ee14a1dbc779f7d4c16ec6b9c314444304c9652a13134b966fd8386a79c",
+    "/Users/ember/dev/minidregg/Compiler/PredCompile.lean": "4951a50318eb399789ae9b0ead336528b99385b1c85c0f2dc7fe8ec526078bdc",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integer_certificate_emission/optimization/Compiler/AirSimplify.lean": "a731cf62061751104e97619c9804530987a9cd2271b039edefbdcdb8cb583f79"
+  },
+  "direct_dependency_oleans": {
+    "FheRnsScaleDecomposition.olean": "2a652d43869b47f94553e9a54f7a31331a23c2fd634e9e36f16aec690a6215c8",
+    "FheSourceCertificate.olean": "74c8d2d7d3f12243233c5396edb02d18a2cdddaddeb69fbfec57cbc167bc3e61",
+    "FheSourceCertificateLayout.olean": "97b7f84fa370f38c26e85e4fb4dfc630f493c9817c5de38c95c462bf865c0dc2",
+    "FheSourceCertificateEmit.olean": "3ba8d1d2114e33f4c700f38b7d3dd1272e1ae3847be93e85537ca63a14501393",
+    "FheSourceCertificateWitness.olean": "e54227c07f5db117c5b2755afcd282ddb97536cddab3d9e8627982663bb49622",
+    "FheTargetProjection.olean": "17191cb789a582b4ccad4547f2f221bf2c6c88646489e7bfa2e4136599b71684",
+    "FheTargetProjectionLayout.olean": "37f85fb1cc7600f4640f07d29db6607ee1932b586eddb0968f034a0dff08c6f2",
+    "FheTargetProjectionEmit.olean": "ae56e70d6d8f4a0197d34ecf3f745e531a12db308701c2cad31452c13b68b0eb",
+    "FheTargetProjectionWitness.olean": "675ec0e7cbe940112ff1aa322951852802303d5a613456f997a1d5a9352269da",
+    "PredCompile.olean": "0f705feea01c993ca43ab7e19974c04b7795851c9f099a2f55d9e22844aed189",
+    "AirSimplify.olean": "11f9a012773e6130694a902a5c6f9e6964dd6c1d881c9429f5ea600d5fb61344"
+  },
+  "scope": "Prebuilt predecessor oleans reused; old Checks runners not imported or executed; no companion edits; root owns umbrella integration."
+}

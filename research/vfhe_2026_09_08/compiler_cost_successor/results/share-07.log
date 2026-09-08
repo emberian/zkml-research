@@ -1,0 +1,4 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/AirAssertionShare.lean:152:85: error: unsolved goals
+h : systemAccepts bad sample
+hh : 2 = 0 ∨ 2 = 1
+⊢ False

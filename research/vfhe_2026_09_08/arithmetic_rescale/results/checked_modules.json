@@ -1,0 +1,55 @@
+{
+  "lean": "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+  "lean_path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "scope": "Three new Compiler modules only; reused prebuilt predecessor oleans; no umbrella build or old Checks runner",
+  "checks": [
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleRow.olean",
+        "Compiler/BfvRescaleRow.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale",
+      "source_sha256": "27396905c9e7e58cbcddd4effabd6abd2205268e1c28dfccb88338162857da9b",
+      "exit": 0,
+      "seconds": 30.16988205909729,
+      "output": "results/BfvRescaleRow_final.log"
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleWitness.olean",
+        "Compiler/BfvRescaleWitness.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale",
+      "source_sha256": "1788612154ce6674e72e3731ad96f0d25993c3d489a40552fedcc0c777bbfdef",
+      "exit": 0,
+      "seconds": 3.112694025039673,
+      "output": "results/BfvRescaleWitness_final.log"
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale/build/Compiler/BfvRescaleSound.olean",
+        "Compiler/BfvRescaleSound.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale",
+      "source_sha256": "fc0d61b81ddfad5399978e2e9c3dae092b4c9976515180613acbb1c636ed7d9c",
+      "exit": 0,
+      "seconds": 2.8261568546295166,
+      "output": "results/BfvRescaleSound_final.log"
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "scope": "Read-only companion boundary, no Theory/Selvage changes in proposal",
+      "exit": 0,
+      "output": "results/import_boundary.log"
+    }
+  ]
+}

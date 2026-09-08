@@ -1,0 +1,111 @@
+{
+  "claim": "EXECUTED direct WASM build provenance",
+  "build_command": "cargo build --release --locked --lib --target wasm32-unknown-unknown -j 2",
+  "build_returncode": 0,
+  "bindgen_command": "wasm-bindgen --target web --out-dir web/pkg --out-name ring_browser_verifier target/wasm32-unknown-unknown/release/ring_browser_verifier.wasm",
+  "bindgen_returncode": 0,
+  "verification_command": "node web/verify-fixture.mjs fixtures/matvec4096",
+  "verification_returncode": 0,
+  "source_verifier_or_configuration_edits": false,
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/ring_browser_verifier/Cargo.toml",
+      "bytes": 641,
+      "sha256": "b1a3995885dab09cd0f93b50d500a8489ec06deaf9de687039cdebe5bbec583c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/ring_browser_verifier/Cargo.lock",
+      "bytes": 35453,
+      "sha256": "17726d781db260cbc4f093a4f637421ada3a02e910b753c6bebcc917e9f552bd"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/ring_browser_verifier/.cargo/config.toml",
+      "bytes": 86,
+      "sha256": "3d93ea0b6c032f4b65b3c9e8e66b52f80ec41806f3c86bc38b870003915448ef"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/ring_browser_verifier/src/lib.rs",
+      "bytes": 3669,
+      "sha256": "4fc7216dc5de8be3bc8dc55820bb5151d9e4085eaf0709e88d727e7fdb4d5d9e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/ring_browser_verifier/src/main.rs",
+      "bytes": 1280,
+      "sha256": "6905b8ce2995eac67d01fa565d7e7f98030a089beeb1f8b83426d133e9c7cabb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul/Cargo.toml",
+      "bytes": 815,
+      "sha256": "3cf3fe9c83905c0661c986374394c3bce79c34473c856c003ad4513edd42efc2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul/Cargo.lock",
+      "bytes": 40341,
+      "sha256": "d73ad84a9fdf4b34cda8a453fc287e7e33da6afa0517ee255ea4b405d8081b50"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul/src/protocol/public_wire.rs",
+      "bytes": 8814,
+      "sha256": "85c7deb573337a1bb8307c8a2287cf261ec816b1e512f48b7eb3d1dfc3a0be10"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul/src/protocol/verifier/mod.rs",
+      "bytes": 9448,
+      "sha256": "404aaf15ef2e8f2958bd8523a684719150d19b50d524d547b83fca9a19738aaf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul/src/protocol/pcs/whir.rs",
+      "bytes": 7100,
+      "sha256": "40490b84f0b3f1ccf0e16605a91543ae229e3c4e700cfa7f9bb7f04f16520dd4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul/src/protocol/sumcheck/mod.rs",
+      "bytes": 7532,
+      "sha256": "821d27aff1995ed49fd196ccb62e2925b4c42e7f9691b6e78cd0af1fd812a212"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/combined-matvec.patch",
+      "bytes": 60681,
+      "sha256": "0c033993da08c8dd90177bfcb7330628821f125be2fc236e7b62123ea4a272af"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/source_pins.json",
+      "bytes": 6430,
+      "sha256": "a10d6d94678b5435b388ebbcfcad3dd4d599195ba3b7d52ddd2ceb3ce52bfa85"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/ring_browser_verifier/web/pkg/ring_browser_verifier_bg.wasm",
+      "bytes": 575831,
+      "sha256": "bbaa6a4e817088bace8a546a715971f2760925cd2a0dacb0077272c5212f4661"
+    }
+  ],
+  "tool_versions": [
+    {
+      "argv": [
+        "rustc",
+        "-Vv"
+      ],
+      "returncode": 0,
+      "stdout": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "wasm-bindgen",
+        "--version"
+      ],
+      "returncode": 0,
+      "stdout": "wasm-bindgen 0.2.127\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "returncode": 0,
+      "stdout": "v26.8.1\n",
+      "stderr": ""
+    }
+  ]
+}

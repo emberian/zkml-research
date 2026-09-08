@@ -1,0 +1,51 @@
+{
+  "claim": "EXECUTED unchanged complete verifier/codec through browser-target WASM API",
+  "environment": "Node WebAssembly runtime; timings are not browser-network measurements",
+  "fileReadMs": 3.933,
+  "moduleInitMs": 13.627165999999995,
+  "genuineMs": 107.98320900000002,
+  "changedOutputMs": 31.052375000000012,
+  "wasmBytes": 575831,
+  "statementBytes": 8519793,
+  "proofBytes": 4433968,
+  "genuine": {
+    "verified": true,
+    "stage": "accepted",
+    "verifier_ran": true,
+    "expected_output_matched": true,
+    "degree": 4096,
+    "matrix_rows": 64,
+    "matrix_columns": 8192,
+    "statement_bytes": 8519793,
+    "proof_bytes": 4433968,
+    "statement_blake3": "4fc83a1e515c71bcae4de53500171369a7cb2b1e83535d2be231e18161083ec7",
+    "proof_blake3": "cbfe422883f09c1a3dbb595fd99b30dcf37c6173049b4c8641f45e06351f1a1d",
+    "whir_configured_security_level": 100,
+    "whir_soundness_type": "ConjectureList",
+    "security_scope": "Upstream ConjectureList model; configured WHIR level is not a certified security-bit claim.",
+    "error": null
+  },
+  "changedOutput": {
+    "verified": false,
+    "stage": "expected_output",
+    "verifier_ran": false,
+    "expected_output_matched": false,
+    "degree": 4096,
+    "matrix_rows": 64,
+    "matrix_columns": 8192,
+    "statement_bytes": 8519793,
+    "proof_bytes": 4433968,
+    "statement_blake3": "8405df214e16be02cbf10d64ef6810c71ef7c62be0b8446262fda56a53ee1f05",
+    "proof_blake3": "cbfe422883f09c1a3dbb595fd99b30dcf37c6173049b4c8641f45e06351f1a1d",
+    "whir_configured_security_level": 100,
+    "whir_soundness_type": "ConjectureList",
+    "security_scope": "Upstream ConjectureList model; configured WHIR level is not a certified security-bit claim.",
+    "error": "proof output differs from caller-selected expected output"
+  },
+  "mutation": {
+    "byteOffset": 8519785,
+    "field": "last caller-selected expected output coefficient"
+  },
+  "negativeScope": "The existing caller-output equality gate refuses before the cryptographic verifier; it is not claimed as a PCS rejection.",
+  "newProofsGenerated": 0
+}

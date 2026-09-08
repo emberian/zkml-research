@@ -1,0 +1,13 @@
+{
+  "claim": "EXECUTED one same-event pipeline comparison; both actual proofs independently verified",
+  "event": 66,
+  "source_class": "cash_withdrawal_charge",
+  "trace_bytes": 33325056,
+  "trace_sha256": "e118a52e777dbab4b88a309505c74161d7fe837f7b7f26174fdcfb0219e5f1ac",
+  "trace_byte_identity": true,
+  "template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+  "checked_seconds": 218.80211691599106,
+  "production_seconds": 41.37162445799913,
+  "speedup": 5.288700160616633,
+  "scope": "Removed repeated source-constraint interpretation from witness exporter; unchanged generated relation and byte-identical witness; same actual proof checks."
+}

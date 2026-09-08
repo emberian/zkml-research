@@ -1,0 +1,31 @@
+'Minidregg.Selvage.ArityEight.TwoRound.fold_even_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.fold8_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.farWord_not_mem' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.farWord_far' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.second_input_not_fixed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.first_block_exact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.second_block_exact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.terminal_mem' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.terminal_domain_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.terminal_domain_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.zero_seed_accepts' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.one_seed_rejects' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.Witnesses.sound_fires' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,19 @@
+{
+  "claim_label": "EXECUTED single paired sample, not a distributional estimate",
+  "baseline_prove_ms": 711.650209,
+  "fused_prove_ms": 459.556875,
+  "whole_prover_ratio": 1.5485574206674637,
+  "whole_prover_reduction_percent": 35.42377010669858,
+  "baseline_preprocess_plus_prove_ms": 749.575709,
+  "fused_preprocess_plus_prove_ms": 509.259875,
+  "preprocess_plus_prove_ratio": 1.4718923398392618,
+  "cache_u64_payload_bytes": 8388608,
+  "cache_payload_MiB": 8.0,
+  "public_output_coefficients": 524288,
+  "complete_proofs_byte_equal_direct_check": true,
+  "cpu_observed_after_run": "Apple M2 Max",
+  "logical_cpus_observed_after_run": 12,
+  "rustc": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)",
+  "rayon_num_threads_current_environment": null,
+  "thread_caveat": "No process affinity or isolation; launch environment did not separately archive thread count. Current inherited RAYON_NUM_THREADS is recorded only as a post-run observation."
+}

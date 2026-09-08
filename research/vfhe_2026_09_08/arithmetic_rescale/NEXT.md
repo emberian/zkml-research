@@ -1,0 +1,1 @@
+The small complete rescale construction is finished. The independent cost-successor lane can optimize this exact generated workload. The next arithmetic coverage step is to parameterize the exact scaler certificate for the actual nonlinear learner's 9→4 instance, then address the preceding extension/convolution/NTT bindings; the present theorem does not imply those.

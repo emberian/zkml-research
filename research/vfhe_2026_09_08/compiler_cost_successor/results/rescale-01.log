@@ -1,0 +1,6 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor/Compiler/BfvRescaleAssertionShare.lean:19:2: error: Type mismatch
+  AirAssertionShare.optimize_preserves
+has type
+  AirAssertionShare.Preserves AirAssertionShare.optimize
+but is expected to have type
+  PreservesRescale

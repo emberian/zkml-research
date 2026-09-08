@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "role_command": "register",
+  "pid": 7848,
+  "elapsed_seconds": 0.3709994580131024,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/a.ring",
+      "kind": "a",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/private/recipient_00/key.ring",
+      "kind": "key",
+      "bytes": 532,
+      "payload_bytes": 160,
+      "private": true,
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/toy001/public/registration_00.ring",
+      "kind": "registration",
+      "bytes": 629,
+      "payload_bytes": 248,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "622623210e7b6d96e493701ba398365e647123dd076a451603e2822cd79c1ede"
+    }
+  ],
+  "result": {
+    "actual_private_rows_generated": 1,
+    "recipient_coordinate": 0,
+    "private_coefficients_generated": 256
+  },
+  "error": null
+}

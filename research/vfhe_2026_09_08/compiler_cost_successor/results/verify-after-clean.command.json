@@ -1,0 +1,20 @@
+{
+  "command": [
+    "env",
+    "RAYON_NUM_THREADS=4",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale/target/release/vfhe-proved-rescale",
+    "verify",
+    "artifacts/template_ir2.json",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale/results/case001",
+    "results/proof-after-clean/proof.bin"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/compiler_cost_successor",
+  "started_utc": "2026-09-08T17:01:25.775405+00:00",
+  "pid": 35657,
+  "returncode": 0,
+  "elapsed_seconds": 0.49874183401698247,
+  "finished_utc": "2026-09-08T17:01:26.277823+00:00",
+  "user_seconds": 0.40544399999999997,
+  "system_seconds": 0.023937999999999997,
+  "max_rss_bytes": 94584832
+}

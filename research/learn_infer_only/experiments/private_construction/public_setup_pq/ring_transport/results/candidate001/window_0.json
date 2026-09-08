@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "role_command": "window",
+  "pid": 11339,
+  "elapsed_seconds": 2.1371170839993283,
+  "peak_rss_bytes_macos": 316997632,
+  "uid": 501,
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/cipher_0.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/cipher_0.ring",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/window_0.ring",
+      "kind": "ciphertext",
+      "bytes": 37901380,
+      "payload_bytes": 37900653,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "1fea0e11a6e259b6cb9943bb56a1a90359633a282615a90016d062c484c47968"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_transport/.runtime/candidate001/public/cipher_0.ring",
+        "coefficient": 1
+      }
+    ],
+    "live_fresh_ciphertexts": 1,
+    "live_L1_weight": 1,
+    "private_rows_read": 0
+  },
+  "error": null
+}

@@ -1,0 +1,1 @@
+[EXECUTED] Complete N8 rescale relation, Lean witness, actual proof, fresh verification and changed-output rejection all pass. Three new Compiler modules and ten guarded axiom pins compile. Patch and artifacts are fixed and identified by source_pins.json/artifact_pins.json. Root owns umbrella integration.

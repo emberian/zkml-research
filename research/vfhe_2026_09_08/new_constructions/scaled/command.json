@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul/target/release/examples/matched_proof",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/paired_001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul",
+  "timeout_seconds": 600,
+  "source_pins_sha256": "a10d6d94678b5435b388ebbcfcad3dd4d599195ba3b7d52ddd2ceb3ce52bfa85",
+  "driver_sha256": "25cdfe87d1eef6138f3b8917ff97ec7a0b30691520a150b501c227e914414a4b",
+  "started_utc": "2026-09-08T16:31:35.523227+00:00",
+  "pid": 94771,
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 1.5534882920328528,
+  "finished_utc": "2026-09-08T16:31:37.090771+00:00",
+  "source_unchanged": true,
+  "stdout_sha256": "5da7747ab65004e5cac5e84237412e99bf842aec900d47c2111bbe8e2e6c0f69",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

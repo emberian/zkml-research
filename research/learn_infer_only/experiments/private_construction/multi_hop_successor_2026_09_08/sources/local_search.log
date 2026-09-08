@@ -1,0 +1,11 @@
+{
+  "instrument": "pdftotext -f 1 -l 2 on every 2026 mirror PDF, whitespace collapse, soft-hyphen removal, then multi + optional space/ASCII-or-Unicode-hyphen + hop functional encryption regex",
+  "corpus": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026",
+  "pdf_count": 1855,
+  "numeric_first": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/1.pdf",
+  "numeric_last": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2026/1861.pdf",
+  "matches": [],
+  "errors": [],
+  "elapsed_seconds": 16.240349375002552,
+  "scope": "Front two pages of existing 2026 files only; neither other-year files nor papers missing from this local mirror are ruled out."
+}

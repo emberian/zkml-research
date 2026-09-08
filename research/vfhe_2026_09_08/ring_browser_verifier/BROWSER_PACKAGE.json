@@ -1,0 +1,77 @@
+{
+  "claim": "EXECUTED frozen ring-matvec WASM consumer and actual saved proof fixture",
+  "created_utc": "2026-09-08T16:50:21.230941+00:00",
+  "file_count": 12,
+  "total_bytes": 13548153,
+  "files": [
+    {
+      "path": "fixtures/matvec4096/fixture.json",
+      "bytes": 1088,
+      "sha256": "f9096d75af99ad457224b3bf2d41e8e49b875bc3e39d84e28603090f1bc7e909"
+    },
+    {
+      "path": "fixtures/matvec4096/proof.bin",
+      "bytes": 4433968,
+      "sha256": "b3a17a7a1660c5f2ab1befc7b8f6a08e4e68ec013414e134869bb3fd45ff578c"
+    },
+    {
+      "path": "fixtures/matvec4096/statement.bin",
+      "bytes": 8519793,
+      "sha256": "1a9d2f8aad28cc2429d293f3c1b6ba6c53c689d2d8ec259c4a7a9fffe912e929"
+    },
+    {
+      "path": "web/package.json",
+      "bytes": 34,
+      "sha256": "55c40fada2c832d834f915351168d4a46598bde8070f076b72ab6b45d53b3da5"
+    },
+    {
+      "path": "web/pkg/ring_browser_verifier.d.ts",
+      "bytes": 1589,
+      "sha256": "71b416e5a5cdd4dfaa766841c0e58d0c5c1a448a0dda97c93df0736b84f8e4f2"
+    },
+    {
+      "path": "web/pkg/ring_browser_verifier.js",
+      "bytes": 10374,
+      "sha256": "d445232e3cfd49214bf7a7de46937ad645c8d1cbba9595cba569b52ce800cc5d"
+    },
+    {
+      "path": "web/pkg/ring_browser_verifier_bg.wasm",
+      "bytes": 575831,
+      "sha256": "bbaa6a4e817088bace8a546a715971f2760925cd2a0dacb0077272c5212f4661"
+    },
+    {
+      "path": "web/pkg/ring_browser_verifier_bg.wasm.d.ts",
+      "bytes": 522,
+      "sha256": "2ef7d0cfaa1f2a0bc5b8eb003c83022870ad0c775e0f526248ac24cee723abcd"
+    },
+    {
+      "path": "web/verifier.js",
+      "bytes": 647,
+      "sha256": "936d358db7298b5929b81ccd36cb8853c0c64fd33d8f87a15ec115c63bb75a8c"
+    },
+    {
+      "path": "web/verify-file.mjs",
+      "bytes": 925,
+      "sha256": "ee2ef390969649c7609cadbbd48c756ebd6536fbfa2d9fa19f3c13e5d2b44a2f"
+    },
+    {
+      "path": "web/verify-fixture.mjs",
+      "bytes": 2897,
+      "sha256": "8c39027c04edb29108a8c0b3cfc7a13feb51e8b35222b05f796e628599b8bc8d"
+    },
+    {
+      "path": "web/worker.js",
+      "bytes": 485,
+      "sha256": "72f59f9a4917d46c2f61628824fb535382a619cde0e3d077d5a5fa800148166d"
+    }
+  ],
+  "verification_result": {
+    "path": "results/verify-wasm.json",
+    "bytes": 2079,
+    "sha256": "f140203a2abefc446e44c8e129e21dc179ff32e4a2077bd7367666dad1db6100"
+  },
+  "source_verifier_unchanged": true,
+  "new_proofs_generated": 0,
+  "scope": "Existing complete ring-matvec verifier/codec; WHIR ConjectureList, configured100 is not certified security bits. Negative control refuses at caller-output equality before PCS.",
+  "integration": "Preserve web/verifier.js, web/worker.js and web/pkg relative imports; application chooses intended public statement."
+}

@@ -1,0 +1,18 @@
+{
+  "artifacts/template_ir2.json": {
+    "sha256": "842a74f0a9950243847bf10427ce5394ad5314eb48488aeedeb68abccca55822",
+    "bytes": 9885565
+  },
+  "artifacts/trace.leu32": {
+    "sha256": "b2a35a0dea3e54ba27b652e123b656d7ed44d51ec222855947c4bf734db4c40f",
+    "bytes": 4821120
+  },
+  "artifacts/emission.json": {
+    "sha256": "23430845d1e9925ff052acf75e808cf16f9efbe13e9e1b60a0755afd60c61522",
+    "bytes": 327
+  },
+  "../proved_rescale/results/case001/public_rows.json": {
+    "sha256": "8f387a91dd4aea8655abcb8b135b800d36d7a96210c3b75d9b1d981f23477be8",
+    "bytes": 7514
+  }
+}

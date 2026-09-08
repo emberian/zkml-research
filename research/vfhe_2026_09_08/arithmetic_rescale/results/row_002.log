@@ -1,0 +1,6 @@
+Compiler/BfvRescaleRow.lean:115:36: error: Type mismatch: After simplification, term
+  hz
+ has type
+  asg zeroWire = 0 ∧ systemAccepts asg []
+but is expected to have type
+  asg zeroWire = 0

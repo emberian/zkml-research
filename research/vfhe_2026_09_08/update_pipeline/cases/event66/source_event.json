@@ -1,0 +1,69 @@
+{
+  "schema": "useful-prototype-expiry-proof-join-v1",
+  "event": 66,
+  "class": "cash_withdrawal_charge",
+  "operation": "out=acc+fresh-old in each canonical ciphertext component and q residue",
+  "fifo_capacity": 8,
+  "class_count_before": 8,
+  "class_count_after": 8,
+  "prior_state_event": 30,
+  "expired_input_event": 2,
+  "files": {
+    "acc": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/cases/event66/acc.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/state-000030-00edf0ef.ct",
+      "bytes": 85103,
+      "sha256": "a5aee736d943cd3124e1899c4e664c8263ff2d240f8df8efdc8f5e2cb24f6175"
+    },
+    "fresh": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/cases/event66/fresh.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/input-000066-61c6359a.ct",
+      "bytes": 85103,
+      "sha256": "a35daa00d55bced1a14f4e4563c083c059cf4e9408f710259aa607c51af069a5"
+    },
+    "old": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/cases/event66/old.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/input-000002-31f4fe38.ct",
+      "bytes": 85103,
+      "sha256": "5979469e84bc82ed2b2955e7750fdd6a5c539646db4e1fd183a85d0909f8c2da"
+    },
+    "out": {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/update_pipeline/cases/event66/out.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/state-000066-61c6359a.ct",
+      "bytes": 85103,
+      "sha256": "6f7f0bf7b08a9a24b397c569e49d0d2084667d302be3d9d57536a53c835e9f70"
+    }
+  },
+  "public_operation_record": {
+    "command": "host-learn",
+    "arguments": {
+      "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/state-000030-00edf0ef.ct",
+      "fresh": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/input-000066-61c6359a.ct",
+      "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/state-000066-61c6359a.ct",
+      "old": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/input-000002-31f4fe38.ct"
+    },
+    "elapsed_seconds": 0.022505834000185132,
+    "returncode": 0,
+    "result": {
+      "acc_sha256": "a5aee736d943cd3124e1899c4e664c8263ff2d240f8df8efdc8f5e2cb24f6175",
+      "arithmetic_ns": 14292,
+      "bytes": 85103,
+      "canonical": true,
+      "components": 2,
+      "degree": 4096,
+      "fresh_sha256": "a35daa00d55bced1a14f4e4563c083c059cf4e9408f710259aa607c51af069a5",
+      "key_id": "09143779d452ebdf2c023542e34af4b092197d2dae9c162ae0a512414fb054e8",
+      "key_id_scope": "declared metadata; no proof ciphertext belongs to this key",
+      "kind": "learn_result",
+      "level": 0,
+      "old_sha256": "5979469e84bc82ed2b2955e7750fdd6a5c539646db4e1fd183a85d0909f8c2da",
+      "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+      "payload_bytes": 85022,
+      "process_work_ns": 18282708,
+      "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+      "schema": "resident-crypto-result-v1",
+      "sha256": "6f7f0bf7b08a9a24b397c569e49d0d2084667d302be3d9d57536a53c835e9f70"
+    }
+  },
+  "scope": "Recorded public learner event; metadata is not proved by the arithmetic pipeline."
+}

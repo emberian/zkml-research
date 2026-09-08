@@ -1,0 +1,7 @@
+'Minidregg.Selvage.ArityEight.TwoRound.uniform_fst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.bad_challenge_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.earliest_transition_cover' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.coherent_query_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.TwoRound.sound' depends on axioms: [propext, Classical.choice, Quot.sound]

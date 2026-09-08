@@ -1,0 +1,22 @@
+{
+  "normal_001/learner.proof": {
+    "bytes": 4439648,
+    "sha256": "76bd3671b5fe092ba6a789b6f44afaa3eeb8104de4847d25161a7641012c96ac"
+  },
+  "normal_001/replay.json": {
+    "bytes": 332,
+    "sha256": "edf3a8107f790c7add54b8064d8cc89ab3d086961dee2891befcfc6cf4db3d7b"
+  },
+  "normal_001/replay.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "normal_001/result.json": {
+    "bytes": 1638,
+    "sha256": "0f72f5f0eed400c95233704397e61e4b51571cb6976490509e43913bf7eda6ec"
+  },
+  "normal_001/statement.bin": {
+    "bytes": 12845169,
+    "sha256": "12200b7b7f7f4988623f784bb46a55f55dbac4791db43e6a7fcb20380d184d61"
+  }
+}

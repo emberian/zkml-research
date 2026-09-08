@@ -1,0 +1,16 @@
+Selvage/ArityEightTwoRound.lean:144:21: error: (deterministic) timeout at `isDefEq`, maximum number of heartbeats (800000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/ArityEightTwoRound.lean:142:2: error: (deterministic) timeout at `«tactic execution»`, maximum number of heartbeats (800000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/ArityEightTwoRound.lean:134:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (800000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/ArityEightTwoRound.lean:154:8: error: (kernel) unknown constant 'Minidregg.Selvage.ArityEight.TwoRound.coherent_query_bound'

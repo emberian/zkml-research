@@ -1,0 +1,65 @@
+{
+  "status": "saved_actual_expiry_proof_accepted",
+  "proof_metadata": {
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "claim": "EXECUTED proof over Lean-derived BFV relation",
+    "proof_bytes": 508777,
+    "proof_sha256": "acf747cf42eff8171b2b774abae5572e8d7bdb7ace144754c7605128c15e5ba6",
+    "prove_ns": 1766806583,
+    "public_rows_bound": 8192,
+    "public_tuple_width": 57,
+    "rows": 8192,
+    "self_verify_ns": 86208083,
+    "template_sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+    "trace_width": 1017,
+    "verified": true
+  },
+  "native_verify_results": [
+    {
+      "changed_output_claim_rejected": true,
+      "claim": "EXECUTED fresh-process verification",
+      "proof_bytes": 508777,
+      "proof_sha256": "acf747cf42eff8171b2b774abae5572e8d7bdb7ace144754c7605128c15e5ba6",
+      "verified": false,
+      "verify_ns": 73820917
+    },
+    {
+      "changed_output_claim_rejected": false,
+      "claim": "EXECUTED fresh-process verification",
+      "proof_bytes": 508777,
+      "proof_sha256": "acf747cf42eff8171b2b774abae5572e8d7bdb7ace144754c7605128c15e5ba6",
+      "verified": true,
+      "verify_ns": 85509375
+    }
+  ],
+  "read_only_hashes": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/expiry_proof001/proof.bin": {
+      "bytes": 508777,
+      "sha256": "acf747cf42eff8171b2b774abae5572e8d7bdb7ace144754c7605128c15e5ba6"
+    },
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/expiry_proof001/proof.json": {
+      "bytes": 572,
+      "sha256": "3b1280edf0619d3ad1809ee8bdd43667208b3790bab443bd31663976a5fe538d"
+    },
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/artifacts_expiry/template_ir2.json": {
+      "bytes": 268925,
+      "sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7"
+    },
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/learner_expiry001/public_ntt_rows.json": {
+      "bytes": 1355662,
+      "sha256": "125fdd7d2bc8739898559c3275a8d572cbb0ea693e2d8b9cbb1b8d2cc944c8b1"
+    },
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/verify-learner-expiry-changed-output.stdout": {
+      "bytes": 226,
+      "sha256": "bd2c5c6c04fd7fc3fec645afe729e79c38898b7f4712b6cb8e043ad3e7cece79"
+    },
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/verify-learner-expiry.stdout": {
+      "bytes": 226,
+      "sha256": "a3e27739230cc6e60850eecca75841793f61c737a7727318c9f2c0193acacd4c"
+    }
+  },
+  "reran_proof": false,
+  "ran_cryptography": false,
+  "private_reads": false,
+  "scope": "Actual Learn65 complete ciphertext arithmetic; not encoder, FIFO authorization or key membership."
+}

@@ -1,0 +1,101 @@
+{
+  "status": "PASS",
+  "workflow_sha256": "6dd36c2f566f1ed7b36449d79bf09841a41f1b9c31b604a2ad35d6057b469ab3",
+  "total_seconds": 160.2662109590019,
+  "actor_processes": 45,
+  "unique_actor_pids": 45,
+  "role_seconds": {
+    "init": {
+      "count": 1,
+      "total": 2.454965875018388,
+      "min": 2.454965875018388,
+      "max": 2.454965875018388
+    },
+    "register": {
+      "count": 16,
+      "total": 68.66904804296792,
+      "min": 3.587421333009843,
+      "max": 5.123090958979446
+    },
+    "finalize": {
+      "count": 1,
+      "total": 16.033970625023358,
+      "min": 16.033970625023358,
+      "max": 16.033970625023358
+    },
+    "encode": {
+      "count": 3,
+      "total": 29.644888333044946,
+      "min": 9.581806000031065,
+      "max": 10.175892958010081
+    },
+    "combine": {
+      "count": 1,
+      "total": 2.5644339169957675,
+      "min": 2.5644339169957675,
+      "max": 2.5644339169957675
+    },
+    "window": {
+      "count": 3,
+      "total": 10.671071998949628,
+      "min": 2.316532124998048,
+      "max": 5.130802290979773
+    },
+    "decode": {
+      "count": 20,
+      "total": 29.769854497921187,
+      "min": 1.2898728749714792,
+      "max": 1.8705356660066172
+    }
+  },
+  "peak_actor_rss_bytes": 982990848,
+  "actual_recipient_keys": 16,
+  "absent_recipient_keys": 0,
+  "designated_outputs_matched": 20,
+  "public_private_payload_reads": 0,
+  "orchestrator_private_payload_reads": 0,
+  "key_container_bytes_min": 3801648,
+  "key_container_bytes_max": 3801649,
+  "actual_artifact_sizes": {
+    "a.ring": {
+      "bytes": 37880273,
+      "payload_bytes": 37879808
+    },
+    "public.ring": {
+      "bytes": 379390500,
+      "payload_bytes": 379389952
+    },
+    "cipher_0.ring": {
+      "bytes": 37901312,
+      "payload_bytes": 37900653
+    },
+    "cipher_1.ring": {
+      "bytes": 37901312,
+      "payload_bytes": 37900653
+    },
+    "cipher_2.ring": {
+      "bytes": 37901312,
+      "payload_bytes": 37900653
+    },
+    "signed.ring": {
+      "bytes": 37901452,
+      "payload_bytes": 37900653
+    },
+    "window_0.ring": {
+      "bytes": 37901380,
+      "payload_bytes": 37900653
+    },
+    "window_1.ring": {
+      "bytes": 37901451,
+      "payload_bytes": 37900653
+    },
+    "window_2.ring": {
+      "bytes": 37901451,
+      "payload_bytes": 37900653
+    }
+  },
+  "actual_registration_bytes_min": 592441,
+  "actual_registration_bytes_max": 592442,
+  "private_payloads_opened_by_this_summary": 0,
+  "new_crypto_runs": 0
+}

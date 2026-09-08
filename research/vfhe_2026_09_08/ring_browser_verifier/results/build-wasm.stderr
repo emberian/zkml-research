@@ -1,0 +1,14 @@
+error: failed to get `spongefish` as a dependency of package `matvec v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/new_constructions/scaled/matvecmul)`
+    ... which satisfies path dependency `matvec` of package `ring-browser-verifier v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/ring_browser_verifier)`
+
+Caused by:
+  failed to load source for dependency `spongefish`
+
+Caused by:
+  unable to update https://github.com/arkworks-rs/spongefish
+
+Caused by:
+  failed to lookup reference in preexisting repository, and can't check for updates in offline mode (--offline)
+
+Caused by:
+  reference 'refs/remotes/origin/HEAD' not found; class=Reference (4); code=NotFound (-3)

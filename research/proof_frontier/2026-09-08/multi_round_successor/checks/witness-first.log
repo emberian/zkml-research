@@ -1,0 +1,40 @@
+Selvage/ArityEightTwoRoundWitnesses.lean:22:2: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+Selvage/ArityEightTwoRoundWitnesses.lean:95:2: error: Type mismatch: After simplification, term
+  fold8_power (smallTower.data 0 (of_decide_eq_true (id (Eq.refl true))))
+    (smallTower.data 1 (of_decide_eq_true (id (Eq.refl true))))
+    (smallTower.data 2 (of_decide_eq_true (id (Eq.refl true)))) 8 a
+ has type
+  fold8 (smallTower.data 0 ⋯) (smallTower.data 1 ⋯) (smallTower.data 2 ⋯) (fun i => (smallTower.dom 0) i ^ 64) a =
+    fun i => (smallTower.dom 3) i ^ 8
+but is expected to have type
+  block0 smallTower
+      { source := farWord, input0 := fun x => 0, middle := fun x i => (smallTower.dom 3) i ^ 8, input1 := fun a x => a,
+        final := fun a b x => 1 + b ^ 8 * a }
+      a =
+    fun i => (smallTower.dom 3) i ^ 8
+Selvage/ArityEightTwoRoundWitnesses.lean:133:11: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (smallTower.dom 6) 0
+in the target expression
+  words.final r.1 r.2 0 = (fun i => (smallTower.dom 6) i + r.2 ^ 8 * r.1) 0
+
+case refine_2
+r : Ext4 × Ext4
+q : ℕ
+a : Fin q
+hz : powerTwoCoherentRound ⋯ ⟨5, ⋯⟩ (fun x => 0) a = 0
+⊢ words.final r.1 r.2 0 = (fun i => (smallTower.dom 6) i + r.2 ^ 8 * r.1) 0
+Selvage/ArityEightTwoRoundWitnesses.lean:146:9: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (smallTower.dom 6) 1
+in the target expression
+  words.final r.1 r.2 1 = (fun i => (smallTower.dom 6) i + r.2 ^ 8 * r.1) 1
+
+r : Ext4 × Ext4
+h : Accepts smallTower words 1 1 ⋯ r fun x => 1
+heq : words.final r.1 r.2 1 = (fun i => (smallTower.dom 6) i + r.2 ^ 8 * r.1) 1
+hi : powerTwoCoherentRound ⋯ ⟨5, ⋯⟩ (fun x => 1) 0 = 1
+⊢ False
+Selvage/ArityEightTwoRoundWitnesses.lean:164:20: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`

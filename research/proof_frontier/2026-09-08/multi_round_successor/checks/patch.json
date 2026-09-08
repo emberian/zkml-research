@@ -1,0 +1,25 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/multi_round_successor/arity-eight-two-round.patch"
+  ],
+  "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/arity-eight-two-round-replay-vdj_rfmu",
+  "exit_code": 0,
+  "output": "",
+  "exact_target_files": [
+    "Selvage/ArityEightTwoRound.lean",
+    "Selvage/ArityEightTwoRoundBabyBear.lean",
+    "Selvage/ArityEightTwoRoundLogged.lean",
+    "Selvage/ArityEightTwoRoundSupplied.lean",
+    "Selvage/ArityEightTwoRoundWitnesses.lean"
+  ],
+  "all_exact_bytes": true,
+  "file_matches": {
+    "Selvage/ArityEightTwoRound.lean": true,
+    "Selvage/ArityEightTwoRoundSupplied.lean": true,
+    "Selvage/ArityEightTwoRoundBabyBear.lean": true,
+    "Selvage/ArityEightTwoRoundWitnesses.lean": true,
+    "Selvage/ArityEightTwoRoundLogged.lean": true
+  }
+}
