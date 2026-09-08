@@ -1,4 +1,21 @@
-# Learn/infer-only resident — second timed run collected after interruption
+# Learn/infer-only resident — third overnight swarm active
+
+[EXECUTED authorization, 2026-09-07 late evening EDT] Ember cleared the old
+goal and explicitly authorized broad parallel research and proof-system work
+until **2026-09-08 11am EDT /15:00 UTC**, with primary-source web/Scry research
+and a GitHub Pages site. The new goal is active. Baseline is recovery357b437;
+[the run brief](../../swarm/OVERNIGHT-2026-09-08.md) records scope, ownership and
+companion protections. Existing dirty minidregg work is preserved by isolated
+proof checkouts/patches and a HEAD/status/content baseline.
+
+[OPEN first wave] Public-coin setup and durable journal integration; fixed-law
+private-address EMA utility; a universal bitvector/arithmetic refinement patch;
+current FRI/proximity composition research; exact restricted-release capsule
+and interrupted PQ proof reviews; and a public research site. Root integrates,
+reviews and checkpoints named artifacts. No prior completed384/96 workload is
+rerun merely to restart, and prior safety-stopped tasks remain stopped.
+
+## Second-run recovery (completed collection)
 
 [REPORTED interruption; EXECUTED recovery, 2026-09-07] The user reports an
 overnight usage-limit interruption and reboot. The goal's deadline was10am EDT
