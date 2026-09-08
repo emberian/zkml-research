@@ -1,0 +1,57 @@
+{
+  "status": "PASS",
+  "role_command": "combine",
+  "pid": 25846,
+  "elapsed_seconds": 2.154186583997216,
+  "peak_rss_bytes_macos": 405176320,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/b826f093e71a40de8ec406720195e8a2634a41a10fe0b79a0a611597607e9c23",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach05/fresh.ring",
+      "kind": "ciphertext",
+      "private": false
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/741cac253b2b77242237cbfbb791d1a248f6f18b30e70f580f1c0f7ec17a85c4",
+      "kind": "ciphertext",
+      "private": false
+    }
+  ],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/changed-candidate-refusal/verification.ring",
+      "kind": "ciphertext",
+      "bytes": 37901536,
+      "payload_bytes": 37900653,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "7fd81294823a16283efa38f55f8c762df469431459bfbf5ab19a7f34e514bc76"
+    }
+  ],
+  "result": {
+    "terms": [
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/b826f093e71a40de8ec406720195e8a2634a41a10fe0b79a0a611597607e9c23",
+        "coefficient": 1
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/proposals/teach05/fresh.ring",
+        "coefficient": 1
+      },
+      {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/cas/741cac253b2b77242237cbfbb791d1a248f6f18b30e70f580f1c0f7ec17a85c4",
+        "coefficient": -1
+      }
+    ],
+    "live_fresh_ciphertexts": 2,
+    "live_L1_weight": 2,
+    "private_rows_read": 0
+  },
+  "error": null
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "target/release/vfhe-whole-rescale-runtime",
+    "import",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/nonlinear_successor_2026_09_08/public_trace",
+    "results/case001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime",
+  "started_utc": "2026-09-08T18:30:51.201735+00:00",
+  "pid": 36895,
+  "returncode": 0,
+  "elapsed_seconds": 0.18565454200142995,
+  "finished_utc": "2026-09-08T18:30:51.388067+00:00",
+  "user_seconds": 0.15803799999999998,
+  "system_seconds": 0.017793,
+  "max_rss_bytes": 71958528
+}

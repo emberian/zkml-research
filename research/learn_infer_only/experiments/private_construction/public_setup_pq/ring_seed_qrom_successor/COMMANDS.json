@@ -1,0 +1,20 @@
+{
+  "scope": "Saved source extraction and deterministic arithmetic; no quantum or cryptographic execution",
+  "commands": [
+    {
+      "command": "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/1361.pdf research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_qrom_successor/extracts/2020-1361.txt",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": "python3 research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_qrom_successor/price_bounds.py",
+      "runs": 2,
+      "rerun_reason": "Replaced single wide-field arithmetic price by the completed child's smaller-field independent output lanes; probability controls unchanged",
+      "exit_code": 0,
+      "final_stdout": {"status":"PASS","actual_seed_programming_upper":"2^-94 + 2^-191","base_statistical_upper":"2^-168","future_seed_lengths_bytes":[48,64],"largest_source_block_bits":13603307520,"ordinary_wrapper_table_bytes":1894400000}
+    }
+  ],
+  "child_saved_controls": "quantum_simulation/RUN.log and MANIFEST.json",
+  "no_repeated_controls_after_final_root_resumption": true,
+  "search_counts_total_including_child": {"web_queries":4,"Scry_SQL":0,"web_opens":0,"PDF_downloads":0}
+}

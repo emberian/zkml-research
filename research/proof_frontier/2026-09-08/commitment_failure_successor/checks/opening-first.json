@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-commitment-failure-successor-20260908/.lake/build/lib/lean/Selvage/SuppliedOpeningTrace.olean",
+    "Selvage/SuppliedOpeningTrace.lean"
+  ],
+  "cwd": "/tmp/minidregg-commitment-failure-successor-20260908",
+  "exit_code": 1,
+  "source_sha256": "f2c973f351bbf7b1b889963d29ce422850e23d85861a025ba887072dd2e26911",
+  "source_unchanged": true,
+  "elapsed_s": 7.6089348793029785,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/checks/opening-first.log"
+}

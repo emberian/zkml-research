@@ -1,0 +1,176 @@
+{
+  "claim": "EXECUTED smaller emitted9-to4 rescale relation with same native binary/backend/actual batch; baseline reused without reproof",
+  "shared_backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+  "same_native_binary": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale_generic/target/release/vfhe-proved-rescale-generic",
+  "same_case": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale_generic/results/case001",
+  "same_rayon_threads": 4,
+  "selected_actual_positions": 32,
+  "total_ciphertext_positions": 24576,
+  "output_residue_equations": 128,
+  "public_columns": 88,
+  "baseline_proof": {
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "claim": "EXECUTED generated exact rescale proof for a bounded real nonlinear batch",
+    "output_residue_equations": 128,
+    "proof_bytes": 14454987,
+    "proof_sha256": "eb887940a2734828b56500a4d5f42316e29c1fb12c20a795ee341c6c24f62a31",
+    "prove_ns": 2590258625,
+    "public_tuple_width": 88,
+    "selected_positions": 32,
+    "self_verify_ns": 641082458,
+    "template_sha256": "66a7e92c42525450458f4a4bd0062ddd43fb4da095b476e9ced54940ad56e517",
+    "total_ciphertext_positions": 24576,
+    "trace_width": 63845,
+    "verified": true
+  },
+  "successor_proof": {
+    "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+    "claim": "EXECUTED generated exact rescale proof for a bounded real nonlinear batch",
+    "output_residue_equations": 128,
+    "proof_bytes": 5664793,
+    "proof_sha256": "2c4806c9526b7aa2a975cfa8bdf2e722d2ca35b9a3aff02d2181970d4d407045",
+    "prove_ns": 381008709,
+    "public_tuple_width": 88,
+    "selected_positions": 32,
+    "self_verify_ns": 191108709,
+    "template_sha256": "37a02768080e1ca8284fab4bc186b2e5981ad0b97a4af7965472953cdfe4df5a",
+    "total_ciphertext_positions": 24576,
+    "trace_width": 24575,
+    "verified": true
+  },
+  "baseline_command": {
+    "command": [
+      "env",
+      "RAYON_NUM_THREADS=4",
+      "target/release/vfhe-proved-rescale-generic",
+      "prove",
+      "../arithmetic_rescale_generic/artifacts/template_ir2.json",
+      "results/case001",
+      "../arithmetic_rescale_generic/artifacts/trace.leu32",
+      "results/proof001"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale_generic",
+    "started_utc": "2026-09-08T17:25:37.806930+00:00",
+    "pid": 62851,
+    "returncode": 0,
+    "elapsed_seconds": 3.868960125022568,
+    "finished_utc": "2026-09-08T17:25:41.677764+00:00",
+    "user_seconds": 2.987575,
+    "system_seconds": 0.117404,
+    "max_rss_bytes": 412254208
+  },
+  "successor_command": {
+    "command": [
+      "env",
+      "RAYON_NUM_THREADS=4",
+      "../proved_rescale_generic/target/release/vfhe-proved-rescale-generic",
+      "prove",
+      "../rescale_compiler_successor/artifacts/template_ir2.json",
+      "../proved_rescale_generic/results/case001",
+      "../rescale_compiler_successor/artifacts/trace.leu32",
+      "results/proof001"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_cost_runtime",
+    "started_utc": "2026-09-08T18:15:18.425765+00:00",
+    "pid": 22048,
+    "returncode": 0,
+    "elapsed_seconds": 0.7633798329625279,
+    "finished_utc": "2026-09-08T18:15:19.189489+00:00",
+    "user_seconds": 1.03882,
+    "system_seconds": 0.070697,
+    "max_rss_bytes": 175882240
+  },
+  "successor_fresh_verification": {
+    "changed_output_rejected": false,
+    "claim": "EXECUTED fresh-process verification of bounded real rescale batch",
+    "proof_sha256": "2c4806c9526b7aa2a975cfa8bdf2e722d2ca35b9a3aff02d2181970d4d407045",
+    "selected_positions": 32,
+    "verified": true,
+    "verify_ns": 196284625
+  },
+  "successor_changed_output_control": {
+    "changed_output_rejected": true,
+    "claim": "EXECUTED fresh-process verification of bounded real rescale batch",
+    "proof_sha256": "2c4806c9526b7aa2a975cfa8bdf2e722d2ca35b9a3aff02d2181970d4d407045",
+    "selected_positions": 32,
+    "verified": false,
+    "verify_ns": 63042042
+  },
+  "successor_emission": {
+    "trace_width": 24575,
+    "trace_bytes": 3145600,
+    "rows": 32,
+    "radix512_refused": true,
+    "public_tuple_order": "rowID,product_extended9x7_radix512,output4x6_radix512",
+    "public_arity": 88,
+    "ir2_arithmetic_constraints": 32043,
+    "changed_public_output_refused": true,
+    "all_actual_source_rows_checked": true
+  },
+  "metrics": {
+    "trace_columns": {
+      "baseline": 63845,
+      "successor": 24575,
+      "reduction_percent": 61.50834051217793,
+      "baseline_over_successor": 2.5979654120040694
+    },
+    "arithmetic_constraints": {
+      "baseline": 76269,
+      "successor": 32043,
+      "reduction_percent": 57.98686229005232,
+      "baseline_over_successor": 2.380207845707331
+    },
+    "trace_bytes": {
+      "baseline": 8172160,
+      "successor": 3145600,
+      "reduction_percent": 61.50834051217793,
+      "baseline_over_successor": 2.5979654120040694
+    },
+    "proof_bytes": {
+      "baseline": 14454987,
+      "successor": 5664793,
+      "reduction_percent": 60.81080529508605,
+      "baseline_over_successor": 2.551723778785915
+    },
+    "proving_ns": {
+      "baseline": 2590258625,
+      "successor": 381008709,
+      "reduction_percent": 85.29070783424184,
+      "baseline_over_successor": 6.798423668053215
+    },
+    "same_process_independent_config_verification_ns": {
+      "baseline": 641082458,
+      "successor": 191108709,
+      "reduction_percent": 70.18968361789116,
+      "baseline_over_successor": 3.3545433976009957
+    },
+    "fresh_process_verification_ns": {
+      "baseline": 506973750,
+      "successor": 196284625,
+      "reduction_percent": 61.283079252130904,
+      "baseline_over_successor": 2.5828500321917724
+    },
+    "whole_proving_command_seconds": {
+      "baseline": 3.868960125022568,
+      "successor": 0.7633798329625279,
+      "reduction_percent": 80.26912120325677,
+      "baseline_over_successor": 5.068197976894267
+    },
+    "peak_proving_child_rss_bytes": {
+      "baseline": 412254208,
+      "successor": 175882240,
+      "reduction_percent": 57.33645974087911,
+      "baseline_over_successor": 2.343921751280857
+    }
+  },
+  "input_pins": "INPUTS.json",
+  "baseline_reproved": false,
+  "native_rebuilt": false,
+  "private_files_read": 0,
+  "limits": [
+    "Single earlier baseline and single new shared-host observation; no throughput distribution or guaranteed speedup",
+    "Same32realpositions only; no wholeciphertext/wholelearner expansion",
+    "Captured intermediates, public decoding, NTT/serialization, BFV validity and protocol remain outside the arithmetic theorem"
+  ],
+  "created_utc": "2026-09-08T18:18:33.280771+00:00"
+}

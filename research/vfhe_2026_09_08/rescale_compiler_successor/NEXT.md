@@ -1,0 +1,3 @@
+[OPEN] Continue in separate `../rescale_native_emitter/`: derive a native BigInt witness plan from this same Lean source/producer, compare one original32-row trace byte-for-byte, and construct six4096-row chunks for the entire24,576-position native rescale tensor. Every untrusted native witness must enter the actual generated proof relation. Do not run whole-tensor Lean sourceCheck or edit frozen inputs.
+
+[OPEN] A separate mathematical completeness extension may prove the full digit-window bound behind automatic carry allocation and a total field-witness construction theorem. Neither is needed to trust the accepted-output implication already proved here.

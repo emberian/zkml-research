@@ -1,0 +1,29 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/commitment-failure.patch"
+  ],
+  "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/commitment-failure-replay-9xbbv9gn",
+  "exit_code": 0,
+  "output": "",
+  "exact_target_files": [
+    "Selvage/CommitmentExecutionWitness.lean",
+    "Selvage/CommitmentFailureReduction.lean",
+    "Selvage/CommitmentFailureSoundness.lean",
+    "Selvage/CommitmentFreshTrace.lean",
+    "Selvage/CommitmentTraceWitnesses.lean",
+    "Selvage/SuppliedOpeningTrace.lean",
+    "Selvage/SuppliedScheduleTrace.lean"
+  ],
+  "all_exact_bytes": true,
+  "file_matches": {
+    "Selvage/CommitmentFreshTrace.lean": true,
+    "Selvage/CommitmentFailureReduction.lean": true,
+    "Selvage/SuppliedOpeningTrace.lean": true,
+    "Selvage/SuppliedScheduleTrace.lean": true,
+    "Selvage/CommitmentFailureSoundness.lean": true,
+    "Selvage/CommitmentTraceWitnesses.lean": true,
+    "Selvage/CommitmentExecutionWitness.lean": true
+  }
+}

@@ -1,0 +1,1463 @@
+diff --git a/Selvage/CommitmentExecutionWitness.lean b/Selvage/CommitmentExecutionWitness.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/CommitmentExecutionWitness.lean
+@@ -0,0 +1,142 @@
++/- A finite-digest execution inhabits every causal/log certificate, for any
++number of supplied queries. Missing paths are rejected by the actual checker. -/
++import Selvage.CommitmentFailureSoundness
++
++namespace Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness
++open BabyBearExt4 ArityEight ArityEight.Schedule ArityEight.Schedule.BabyBear
++open SuppliedOpeningTrace
++open scoped Classical
++noncomputable section
++
++variable (N : ℕ) [NeZero N]
++
++def one : Strategy Ext4 1 N 11 where
++  query _ _ := .leaf 0
++  roots _ _ := []
++  roots_le _ _ := by simp
++
++omit [NeZero N] in
++theorem one_fresh : Fresh (one N) := fun _ _ _ _ => Subsingleton.elim _ _
++
++def checkpoints (c : Coins 1 N) : Checkpoints Ext4 (Fin N) where
++  word _ _ := (entries (one N) c,c 0)
++  input _ _ := (entries (one N) c,c 0)
++
++def emptyRow : RowOpening Ext4 (Fin N) := ⟨fun _ _ _ => ⟨0,[]⟩,⟨0,[]⟩,⟨0,[]⟩⟩
++
++omit [NeZero N] in
++theorem all_origin (c : Coins 1 N) :
++    CheckpointOrigin (one N) c (entries (one N) c) (c 0) := by
++  refine ⟨1,le_rfl,?_,?_⟩
++  · intro e
++    rw [mem_entries_iff,mem_prefixLog_iff]
++    constructor
++    · rintro ⟨t,ht⟩; exact ⟨t,t.isLt,ht⟩
++    · rintro ⟨t,_,ht⟩; exact ⟨t,ht⟩
++  · intro t ht
++    omega
++
++omit [NeZero N] in
++theorem pathLog_nil {Value Digest : Type} (H : BinaryMerkle.HashSuite Value Digest)
++    (v : Digest) {k : ℕ} (a : Fin k → Bool) : EfficientRootOpening.pathLog H v a [] = [] := by
++  cases k <;> rfl
++
++omit [NeZero N] in
++/-- A malformed empty path still records its supplied leaf hash, exactly once. -/
++theorem empty_row_log {k₀ k₁ k₂ k₃ : ℕ}
++    {d₀ : Fin (2^k₀) ↪ Ext4} {d₁ : Fin (2^k₁) ↪ Ext4}
++    {d₂ : Fin (2^k₂) ↪ Ext4} {d₃ : Fin (2^k₃) ↪ Ext4}
++    (H : BinaryMerkle.HashSuite Ext4 (Fin N))
++    (D₀ : FoldingData Ext4 d₀ d₁) (D₁ : FoldingData Ext4 d₁ d₂) (D₂ : FoldingData Ext4 d₂ d₃)
++    (rs rg rn : Fin N) (β : Ext4) (i : Fin (2^k₃)) (e : EfficientRootOpening.Query Ext4 (Fin N) × Fin N) :
++    e ∈ (rowRun H D₀ D₁ D₂ rs rg rn β i (emptyRow N)).2 ↔ e = (.leaf 0,H.leaf 0) := by
++  simp [rowRun,sourceRuns,emptyRow,pointRun,openingRun_eq,EfficientRootOpening.openingLog,pathLog_nil]
++
++theorem leaf_answer (c : Coins 1 N) : (cachedSuite (one N) c 0).leaf 0 = c 0 :=
++  cachedSuite_entry (one N) (one_fresh N) c 0 0
++
++/-- Every generated verifier record is a replay of the sole counted leaf query. -/
++theorem verification_covered (q : ℕ) (c : Coins 1 N) (x : External q) :
++    LogCovered (one N) c (verificationLog (cachedSuite (one N) c 0) firstFifteen
++      (checkpoints N c) q (by decide) x.1 x.2 (fun _ _ => emptyRow N)) := by
++  intro e he
++  obtain ⟨L,hL,he⟩ := List.mem_flatten.mp he
++  obtain ⟨j,rfl⟩ := List.mem_ofFn.mp hL
++  obtain ⟨L,hL,he⟩ := List.mem_flatten.mp he
++  obtain ⟨a,rfl⟩ := List.mem_ofFn.mp hL
++  have hh := (empty_row_log N _ _ _ _ _ _ _ _ _ e).mp he
++  rw [leaf_answer] at hh
++  rw [hh]
++  exact List.mem_ofFn.mpr ⟨0,rfl⟩
++
++/-- All concrete execution premises are inhabited over a finite digest alphabet.
++The supplied empty paths are deliberately invalid; this is a rejection control. -/
++def execution (q : ℕ) : Execution 1 N q where
++  strategy _ := one N
++  fresh _ := one_fresh N
++  checkpoints := checkpoints N
++  proverLog c _ := entries (one N) c
++  openings _ _ _ _ := emptyRow N
++  origins c _ := ⟨fun _ _ => all_origin N c,fun _ => all_origin N c⟩
++  checkpoints_logged _ _ := ⟨fun _ _ _ he => he,fun _ _ he => he⟩
++  covered c x e he := by
++    rw [oracleLog_eq_entries (one N) (one_fresh N) c]
++    rcases List.mem_append.mp he with hp | hv
++    · exact hp
++    · exact verification_covered N q c x e hv
++
++/-- The prover log has one call; all counted cache entries occur in it. -/
++theorem execution_call_premises (q : ℕ) :
++    (∀ c x, ((execution N q).proverLog c x).length ≤ 1) ∧
++    (∀ c x e, e ∈ entries ((execution N q).strategy x) c →
++      e ∈ executionLog (execution N q).strategy (execution N q).checkpoints
++        (execution N q).proverLog (execution N q).openings c x) := by
++  constructor
++  · intro c x
++    simp [execution,entries]
++  · intro c x e he
++    exact List.mem_append.mpr (Or.inl he)
++
++/-- An actually supplied positive query count fails on the absent source path. -/
++theorem execution_rejects {q : ℕ} (hq : 0 < q) (default : Ext4)
++    (c : Coins 1 N) (x : External q) : ¬Accepts (execution N q) default c x := by
++  intro ha
++  have h := ha.2 (0 : Fin 5) (⟨0,hq⟩ : Fin q)
++  have hp := h.1 false false false
++  change BinaryMerkle.recompute _ _ _ [] = some _ at hp
++  simp [BinaryMerkle.recompute] at hp
++
++end
++end Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.one_fresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.one_fresh
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.all_origin' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.all_origin
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.pathLog_nil' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.pathLog_nil
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.empty_row_log' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.empty_row_log
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.leaf_answer' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.leaf_answer
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.verification_covered' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.verification_covered
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.execution_call_premises' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.execution_call_premises
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.execution_rejects' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.Witness.execution_rejects
+diff --git a/Selvage/CommitmentFailureReduction.lean b/Selvage/CommitmentFailureReduction.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/CommitmentFailureReduction.lean
+@@ -0,0 +1,266 @@
++/- Observed finite-log Failure reduces to actual prefix-fixed targets and
++fresh response collisions. Executable witnesses inspect only retained entries. -/
++import Selvage.CommitmentFreshTrace
++import Selvage.ArityEightScheduleSupplied
++
++namespace Minidregg.Selvage.CommitmentFreshTrace
++open scoped Classical
++variable {Value : Type} {Q N R : ℕ}
++
++/-- A checkpoint consists of all entries before some fresh-query cut. Its
++root has been declared by every later fresh query, before that query's coin. -/
++def CheckpointOrigin (A : Strategy Value Q N R) (c : Fin Q → Fin N)
++    (P : EfficientRootOpening.Log Value (Fin N)) (root : Fin N) : Prop :=
++  ∃ (k : ℕ) (hk : k ≤ Q),
++    (∀ e, e ∈ P ↔ e ∈ prefixLog A k hk (friPrefix c k hk)) ∧
++    ∀ t : Fin Q, k ≤ t.val → root ∈ A.roots t (friPrefix c t (by omega))
++
++/-- Only actually observed entries may be charged to the fresh-response tape. -/
++def LogCovered (A : Strategy Value Q N R) (c : Fin Q → Fin N)
++    (L : EfficientRootOpening.Log Value (Fin N)) : Prop :=
++  ∀ e ∈ L, e ∈ entries A c
++
++/-- Log coverage supplies actual hash-call validity for the canonical cache;
++this is derived from the existing handler's fresh-query response equality. -/
++theorem covered_cached_valid (A : Strategy Value Q N R) (hf : Fresh A)
++    (c : Fin Q → Fin N) (dflt : Fin N) (L : EfficientRootOpening.Log Value (Fin N))
++    (hL : LogCovered A c L) :
++    ∀ e ∈ L, e.2 = EfficientRootOpening.evaluate (cachedSuite A c dflt) e.1 := by
++  intro e he
++  obtain ⟨t,ht⟩ := (mem_entries_iff A c e).mp (hL e he)
++  rw [←ht]
++  exact (cachedSuite_entry A hf c dflt t).symm
++
++/-- An observed collision supplies two distinct fresh-query indices. -/
++theorem response_collision_cover (A : Strategy Value Q N R) (c : Fin Q → Fin N)
++    (L : EfficientRootOpening.Log Value (Fin N)) (hL : LogCovered A c L)
++    (hb : EfficientRootOpening.ResponseCollision L) : Collides c := by
++  obtain ⟨e,he,e',he',hresp,hne⟩ := hb
++  obtain ⟨i,hi⟩ := (mem_entries_iff A c e).mp (hL e he)
++  obtain ⟨j,hj⟩ := (mem_entries_iff A c e').mp (hL e' he')
++  apply collides_of_ne (i := i) (j := j)
++  · intro h
++    apply hne
++    rw [←hi,←hj,h]
++  · simpa only [←hi,←hj,entry] using hresp
++
++/-- A late entry occurs after the checkpoint cut, so its root or child target
++was already fixed by the prefix seen before its fresh response. -/
++theorem late_target_cover (A : Strategy Value Q N R) (c : Fin Q → Fin N)
++    (P L : EfficientRootOpening.Log Value (Fin N)) (root : Fin N)
++    (hP : CheckpointOrigin A c P root) (hL : LogCovered A c L)
++    (hb : EfficientRootOpening.LateTarget P L root) :
++    ∃ t, c t ∈ targets A t (friPrefix c t (by omega)) := by
++  obtain ⟨k,hk,hmem,hroot⟩ := hP
++  obtain ⟨e,he,hnot,htarget⟩ := hb
++  obtain ⟨t,ht⟩ := (mem_entries_iff A c e).mp (hL e he)
++  have hkt : k ≤ t.val := by
++    by_contra h
++    apply hnot
++    apply (hmem e).mpr
++    exact (mem_prefixLog_iff A c k hk e).mpr ⟨t,by omega,ht⟩
++  refine ⟨t,?_⟩
++  rcases htarget with hr | ⟨ep,hep,hchild⟩
++  · have hh := hroot t hkt
++    have hc : c t = root := by simpa only [←ht,entry] using hr
++    simp only [targets,List.mem_append]
++    exact Or.inr (hc ▸ hh)
++  · obtain ⟨s,hs,hse⟩ := (mem_prefixLog_iff A c k hk ep).mp ((hmem ep).mp hep)
++    have hp : ep ∈ prefixLog A t (by omega) (friPrefix c t (by omega)) :=
++      (mem_prefixLog_iff A c t (by omega) ep).mpr ⟨s,by omega,hse⟩
++    have hc : c t ∈ EfficientRootOpening.children ep.1 := by simpa only [←ht,entry] using hchild
++    simp only [targets,List.mem_append]
++    exact Or.inl (Or.inl (List.mem_flatMap.mpr ⟨ep,hp,hc⟩))
++
++theorem checkpoint_bad_cover (A : Strategy Value Q N R) (c : Fin Q → Fin N)
++    (P L : EfficientRootOpening.Log Value (Fin N)) (root : Fin N)
++    (hP : CheckpointOrigin A c P root) (hL : LogCovered A c L)
++    (hb : EfficientRootOpening.Bad P L root) : Bad A c := by
++  rcases hb with h | h
++  · exact Or.inl (response_collision_cover A c L hL h)
++  · exact Or.inr (late_target_cover A c P L root hP hL h)
++
++/-- The exact collision pair is returned, with no oracle calls or semantic
++search over unobserved alternative openings. -/
++def collisionWitness [DecidableEq Value] (L : EfficientRootOpening.Log Value (Fin N)) :
++    Option ((EfficientRootOpening.Query Value (Fin N) × Fin N) ×
++      (EfficientRootOpening.Query Value (Fin N) × Fin N)) :=
++  (L.product L).find? (fun p => decide (p.1.2 = p.2.2 ∧ p.1.1 ≠ p.2.1))
++
++theorem collisionWitness_sound [DecidableEq Value] (L : EfficientRootOpening.Log Value (Fin N))
++    {p} (hp : collisionWitness L = some p) :
++    p.1 ∈ L ∧ p.2 ∈ L ∧ p.1.2 = p.2.2 ∧ p.1.1 ≠ p.2.1 := by
++  have hm := List.mem_of_find?_eq_some hp
++  have ht := List.find?_some hp
++  exact ⟨(List.mem_product.mp hm).1,(List.mem_product.mp hm).2,of_decide_eq_true ht⟩
++
++theorem collisionWitness_none_iff [DecidableEq Value] (L : EfficientRootOpening.Log Value (Fin N)) :
++    collisionWitness L = none ↔ ¬EfficientRootOpening.ResponseCollision L := by
++  constructor
++  · intro hnone hb
++    obtain ⟨e,he,e',he',hresp,hne⟩ := hb
++    have hf := List.find?_eq_none.mp hnone (e,e') (List.mem_product.mpr ⟨he,he'⟩)
++    exact hf (by simp [hresp,hne])
++  · intro hn
++    apply List.find?_eq_none.mpr
++    intro p hp ht
++    have hm := List.mem_product.mp hp
++    have hh : p.1.2 = p.2.2 ∧ p.1.1 ≠ p.2.1 := of_decide_eq_true ht
++    exact hn ⟨p.1,hm.1,p.2,hm.2,hh⟩
++
++/-- Under actual hash-call validity, the returned pair is a typed-hash
++collision. This includes leaf-versus-node collisions, unlike separate-only CR. -/
++theorem collisionWitness_typed [DecidableEq Value]
++    (H : BinaryMerkle.HashSuite Value (Fin N)) (L : EfficientRootOpening.Log Value (Fin N))
++    (hvalid : ∀ e ∈ L, e.2 = EfficientRootOpening.evaluate H e.1)
++    {p} (hp : collisionWitness L = some p) :
++    p.1.1 ≠ p.2.1 ∧ EfficientRootOpening.evaluate H p.1.1 = EfficientRootOpening.evaluate H p.2.1 := by
++  obtain ⟨h₁,h₂,he,hne⟩ := collisionWitness_sound L hp
++  exact ⟨hne,(hvalid p.1 h₁).symm.trans (he.trans (hvalid p.2 h₂))⟩
++
++/-- The retained collision witness is a real typed-hash collision in this
++finite fresh-query game, without a separate hash-consistency premise. -/
++theorem covered_collision_typed [DecidableEq Value]
++    (A : Strategy Value Q N R) (hf : Fresh A) (c : Fin Q → Fin N) (dflt : Fin N)
++    (L : EfficientRootOpening.Log Value (Fin N)) (hL : LogCovered A c L)
++    {p} (hp : collisionWitness L = some p) :
++    p.1.1 ≠ p.2.1 ∧ EfficientRootOpening.evaluate (cachedSuite A c dflt) p.1.1 =
++      EfficientRootOpening.evaluate (cachedSuite A c dflt) p.2.1 :=
++  collisionWitness_typed _ L (covered_cached_valid A hf c dflt L hL) hp
++
++/-- At most this many retained entry pairs are searched; extraction makes no new hash query. -/
++theorem collision_candidates (L : EfficientRootOpening.Log Value (Fin N)) :
++    (L.product L).length = L.length^2 := by
++  induction L with
++  | nil => simp [List.product]
++  | cons e L ih =>
++    simp only [List.product,List.length_flatMap,List.length_map]
++    simp
++    ring
++
++def lateWitness [DecidableEq Value] (P L : EfficientRootOpening.Log Value (Fin N)) (root : Fin N) :
++    Option (EfficientRootOpening.Query Value (Fin N) × Fin N) :=
++  L.find? (fun e => decide (e ∉ P) &&
++    (decide (e.2 = root) || P.any (fun p => decide (e.2 ∈ EfficientRootOpening.children p.1))))
++
++theorem lateWitness_sound [DecidableEq Value] (P L : EfficientRootOpening.Log Value (Fin N))
++    (root : Fin N) {e} (he : lateWitness P L root = some e) :
++    e ∈ L ∧ e ∉ P ∧ EfficientRootOpening.Target P root e.2 := by
++  have hm := List.mem_of_find?_eq_some he
++  have ht := List.find?_some he
++  exact ⟨hm,by simpa [EfficientRootOpening.Target,List.any_eq_true] using ht⟩
++
++theorem lateWitness_none_iff [DecidableEq Value]
++    (P L : EfficientRootOpening.Log Value (Fin N)) (root : Fin N) :
++    lateWitness P L root = none ↔ ¬EfficientRootOpening.LateTarget P L root := by
++  simp [lateWitness,List.find?_eq_none,EfficientRootOpening.LateTarget,
++    EfficientRootOpening.Target,List.any_eq_true]
++
++section Schedule
++variable {F : Type} [Field F] [DecidableEq F] {m : ℕ}
++
++/-- Concrete origin certificates for the actual roots used by every supplied round. -/
++def Origins (A : Strategy F Q N R) (c : Fin Q → Fin N)
++    (st : ArityEight.Schedule.Checkpoints F (Fin N)) (r : Fin m → F) : Prop :=
++  (∀ n (hn : n ≤ m),
++    CheckpointOrigin A c (st.word n (friPrefix r n hn)).1 (st.word n (friPrefix r n hn)).2) ∧
++  (∀ j : Fin m,
++    CheckpointOrigin A c (st.input j (friPrefix r j (by omega))).1
++      (st.input j (friPrefix r j (by omega))).2)
++
++omit [Field F] [DecidableEq F] in
++/-- The observed finite multi-round Failure is covered by the trace's
++collision/target event. No global probability premise is introduced. -/
++theorem schedule_failure_cover (A : Strategy F Q N R) (c : Fin Q → Fin N)
++    (st : ArityEight.Schedule.Checkpoints F (Fin N)) (r : Fin m → F)
++    (L : EfficientRootOpening.Log F (Fin N)) (hO : Origins A c st r) (hL : LogCovered A c L)
++    (hF : ArityEight.Schedule.Failure st L r) : Bad A c := by
++  obtain ⟨j,h | h | h⟩ := hF
++  · exact checkpoint_bad_cover A c _ L _ (hO.1 j (by omega)) hL h
++  · exact checkpoint_bad_cover A c _ L _ (hO.2 j) hL h
++  · exact checkpoint_bad_cover A c _ L _ (hO.1 (j+1) (by omega)) hL h
++
++omit [Field F] [DecidableEq F] in
++/-- The formerly unpriced observed Failure now has a classical fresh-query
++bound when its actual checkpoints and retained entries come from this trace. -/
++theorem schedule_failure_probability [NeZero N] (A : Strategy F Q N R)
++    (st : (Fin Q → Fin N) → ArityEight.Schedule.Checkpoints F (Fin N))
++    (r : (Fin Q → Fin N) → Fin m → F) (logs : (Fin Q → Fin N) → EfficientRootOpening.Log F (Fin N))
++    (hO : ∀ c, Origins A c (st c) (r c)) (hL : ∀ c, LogCovered A c (logs c)) :
++    uniformProb (Fin Q → Fin N) (fun c => ArityEight.Schedule.Failure (st c) (logs c) (r c)) ≤
++      ((3*(Q:ℝ)^2+Q)/2+R*Q)/N :=
++  le_trans (uniformProb_mono fun c h => schedule_failure_cover A c (st c) (r c) (logs c) (hO c) (hL c) h)
++    (bad_probability A)
++
++omit [Field F] [DecidableEq F] in
++/-- Same bound through the existing Oracle handler's actual response log.
++Freshness is used by the proved handler equality, not asserted as independence prose. -/
++theorem oracle_schedule_failure_probability [NeZero N] (A : Strategy F Q N R) (hf : Fresh A)
++    (st : (Fin Q → Fin N) → ArityEight.Schedule.Checkpoints F (Fin N))
++    (r : (Fin Q → Fin N) → Fin m → F) (logs : (Fin Q → Fin N) → EfficientRootOpening.Log F (Fin N))
++    (hO : ∀ c, Origins A c (st c) (r c))
++    (hL : ∀ c e, e ∈ logs c → e ∈ oracleLog A c) :
++    uniformProb (Fin Q → Fin N) (fun c => ArityEight.Schedule.Failure (st c) (logs c) (r c)) ≤
++      ((3*(Q:ℝ)^2+Q)/2+R*Q)/N := by
++  apply schedule_failure_probability A st r logs hO
++  intro c e he
++  simpa only [oracleLog_eq_entries A hf c] using hL c e he
++
++end Schedule
++end Minidregg.Selvage.CommitmentFreshTrace
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.covered_cached_valid' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.covered_cached_valid
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.response_collision_cover' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.response_collision_cover
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.late_target_cover' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.late_target_cover
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.checkpoint_bad_cover' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.checkpoint_bad_cover
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_sound' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_sound
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_none_iff' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_none_iff
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_typed' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_typed
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.covered_collision_typed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.covered_collision_typed
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.collision_candidates' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.collision_candidates
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.lateWitness_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.lateWitness_sound
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.lateWitness_none_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.lateWitness_none_iff
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.schedule_failure_cover' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.schedule_failure_cover
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.schedule_failure_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.schedule_failure_probability
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.oracle_schedule_failure_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.oracle_schedule_failure_probability
+diff --git a/Selvage/CommitmentFailureSoundness.lean b/Selvage/CommitmentFailureSoundness.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/CommitmentFailureSoundness.lean
+@@ -0,0 +1,146 @@
++/- Composition of the actual five-round supplied verifier with finite classical
++fresh hash coins. Hash coins and FRI challenge/query coins are distinct factors.
++No Fiat–Shamir or quantum-oracle reduction is asserted. -/
++import Selvage.SuppliedScheduleTrace
++
++namespace Minidregg.Selvage.CommitmentFreshTrace.BabyBear
++open BabyBearExt4 ArityEight.Schedule ArityEight.Schedule.BabyBear
++open SuppliedOpeningTrace
++open scoped Classical
++noncomputable section
++
++abbrev External (q : ℕ) := (Fin 5 → Ext4) × (Fin q → PowerTwoFriLevels 20 1)
++abbrev Coins (Q N : ℕ) := Fin Q → Fin N
++
++def executionLog {Q N q : ℕ} [NeZero N]
++    (A : External q → Strategy Ext4 Q N 11)
++    (st : Coins Q N → Checkpoints Ext4 (Fin N))
++    (P : Coins Q N → External q → EfficientRootOpening.Log Ext4 (Fin N))
++    (o : Coins Q N → External q → Openings Ext4 (Fin N) 5 q)
++    (c : Coins Q N) (x : External q) :=
++  P c x ++ verificationLog (cachedSuite (A x) c 0) firstFifteen (st c) q (by decide) x.1 x.2 (o c x)
++
++/-- Causal execution certificates, all stated as concrete query/log facts.
++Fixing the hash tape leaves the checkpoints FRI-prefix adaptive. Fixing the FRI
++coins leaves the hash strategy adaptive only in earlier hash answers. -/
++structure Execution (Q N q : ℕ) [NeZero N] where
++  strategy : External q → Strategy Ext4 Q N 11
++  fresh : ∀ x, Fresh (strategy x)
++  checkpoints : Coins Q N → Checkpoints Ext4 (Fin N)
++  proverLog : Coins Q N → External q → EfficientRootOpening.Log Ext4 (Fin N)
++  openings : Coins Q N → External q → Openings Ext4 (Fin N) 5 q
++  origins : ∀ c x, Origins (strategy x) c (checkpoints c) x.1
++  checkpoints_logged : ∀ c x, CheckpointsLogged (checkpoints c) (proverLog c x) x.1
++  covered : ∀ c x e, e ∈ executionLog strategy checkpoints proverLog openings c x →
++    e ∈ oracleLog (strategy x) c
++
++variable {Q N q : ℕ} [NeZero N]
++
++def InitiallyFar (E : Execution Q N q) (default : Ext4) (c : Coins Q N) : Prop :=
++  EfficientRootOpening.Far_E (2/5:ℝ) 20
++    (reedSolomonCode (MultiplicativeTower.tower.dom 0) (2^19))
++    (E.checkpoints c |>.word 0 (fun i => i.elim0)).1 default
++    (E.checkpoints c |>.word 0 (fun i => i.elim0)).2
++
++def Accepts (E : Execution Q N q) (default : Ext4) (c : Coins Q N) (x : External q) : Prop :=
++  SuppliedAccepts (cachedSuite (E.strategy x) c 0) firstFifteen (E.checkpoints c) default degree
++    q (by decide) x.1 x.2 (E.openings c x)
++
++/-- The observed residual is priced by a derived fresh-query bound, after
++conditioning on the separate external challenge/query coins. -/
++theorem failure_probability (E : Execution Q N q) :
++    uniformProb (Coins Q N × External q) (fun y => Failure (E.checkpoints y.1)
++      (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) y.2.1) ≤
++      ((3*(Q:ℝ)^2+Q)/2+11*Q)/N := by
++  have h := uniformProb_equiv (Equiv.prodComm (Coins Q N) (External q))
++    (fun y => Failure (E.checkpoints y.2)
++      (executionLog E.strategy E.checkpoints E.proverLog E.openings y.2 y.1) y.1.1)
++  simp only [Equiv.prodComm_apply,Prod.swap] at h
++  rw [h]
++  apply uniformProb_prod_le (by positivity)
++  intro x
++  exact oracle_schedule_failure_probability (E.strategy x) (E.fresh x) E.checkpoints
++    (fun _ => x.1) (fun c => executionLog E.strategy E.checkpoints E.proverLog E.openings c x)
++    (fun c => E.origins c x) (fun c => E.covered c x)
++
++set_option maxHeartbeats 2500000 in
++/-- Full composed five-round soundness. Initial extraction farness is part
++of the event: it is not incorrectly required on every colliding hash tape.
++The FRI term is inherited unchanged; the observed residual is now discharged. -/
++theorem sound (E : Execution Q N q) (default : Ext4) :
++    uniformProb (Coins Q N × External q)
++      (fun y => InitiallyFar E default y.1 ∧ Accepts E default y.1 y.2) ≤
++      (1198336:ℝ)/(modulus^4:ℕ)+(24/25:ℝ)^q+((3*(Q:ℝ)^2+Q)/2+11*Q)/N := by
++  let ideal : Coins Q N × External q → Prop := fun y => InitiallyFar E default y.1 ∧
++    ArityEight.Schedule.Accepts firstFifteen (extracted (E.checkpoints y.1) default)
++      degree q (by decide) y.2.1 y.2.2
++  let bad : Coins Q N × External q → Prop := fun y => Failure (E.checkpoints y.1)
++    (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) y.2.1
++  have hi : uniformProb (Coins Q N × External q) ideal ≤
++      (1198336:ℝ)/(modulus^4:ℕ)+(24/25:ℝ)^q := by
++    apply uniformProb_prod_le (by positivity)
++    intro c
++    by_cases hf : InitiallyFar E default c
++    · have h := terminal_sound (extracted (E.checkpoints c) default) q hf
++      norm_num at h
++      exact le_trans (uniformProb_mono fun _ hx => hx.2) (by simpa only [Nat.cast_pow] using h)
++    · rw [uniformProb_false (fun _ hx => hf hx.1)]
++      positivity
++  have hc : ∀ y : Coins Q N × External q,
++      InitiallyFar E default y.1 ∧ Accepts E default y.1 y.2 → ideal y ∨ bad y := by
++    intro y hy
++    let H := cachedSuite (E.strategy y.2) y.1 0
++    have hs : CheckpointsLogged (E.checkpoints y.1)
++        (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) y.2.1 := by
++      simpa only [executionLog] using checkpointsLogged_append (E.checkpoints y.1) y.2.1 (E.proverLog y.1 y.2)
++        (verificationLog H firstFifteen (E.checkpoints y.1) q (by decide) y.2.1 y.2.2
++          (E.openings y.1 y.2)) (E.checkpoints_logged y.1 y.2)
++    have hl : OpeningsLogged H firstFifteen
++        (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2)
++        q (by decide) y.2.2 (E.openings y.1 y.2) := by
++      simpa only [executionLog] using verificationLog_append_logged H firstFifteen (E.checkpoints y.1) q (by decide)
++        y.2.1 y.2.2 (E.openings y.1 y.2) (E.proverLog y.1 y.2)
++    have h := supplied_cover (ell := 20) (m := 5) H firstFifteen
++      (E.checkpoints y.1) default degree q (by decide) y.2.1 y.2.2 (E.openings y.1 y.2)
++      (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) hs hl (by
++        simpa only [Accepts] using hy.2)
++    exact h.elim (fun h => Or.inl ⟨hy.1,h⟩) Or.inr
++  exact le_trans (le_trans (uniformProb_mono hc) (uniformProb_or_le ideal bad))
++    (add_le_add hi (failure_probability E))
++
++/-- If the fixed fresh-query budget is covered by actual retained calls,
++the composed bound can be expressed using prover calls plus 720 per query seed. -/
++theorem sound_call_budget (E : Execution Q N q) (default : Ext4) (B : ℕ)
++    (hP : ∀ c x, (E.proverLog c x).length ≤ B)
++    (hcache : ∀ c x e, e ∈ entries (E.strategy x) c →
++      e ∈ executionLog E.strategy E.checkpoints E.proverLog E.openings c x) :
++    uniformProb (Coins Q N × External q)
++      (fun y => InitiallyFar E default y.1 ∧ Accepts E default y.1 y.2) ≤
++      (1198336:ℝ)/(modulus^4:ℕ)+(24/25:ℝ)^q+
++      ((3*((B+720*q:ℕ):ℝ)^2+(B+720*q:ℕ))/2+11*(B+720*q:ℕ))/N := by
++  let c : Coins Q N := fun _ => 0
++  let x : External q := (fun _ => 0, fun _ => 0)
++  have hQ : Q ≤ B+720*q := SuppliedOpeningTrace.BabyBear.fresh_count_le_total
++    (E.strategy x) (E.fresh x) c (cachedSuite (E.strategy x) c 0) (E.checkpoints c) q x.1 x.2
++    (E.openings c x) (E.proverLog c x) (hP c x) (hcache c x)
++  apply le_trans (sound E default)
++  apply add_le_add le_rfl
++  apply div_le_div_of_nonneg_right _ (by positivity)
++  have hc : (Q:ℝ) ≤ (B+720*q:ℕ) := by exact_mod_cast hQ
++  have hs : (Q:ℝ)^2 ≤ ((B+720*q:ℕ):ℝ)^2 := sq_le_sq₀ (by positivity) (by positivity) |>.mpr hc
++  linarith
++
++end
++end Minidregg.Selvage.CommitmentFreshTrace.BabyBear
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.failure_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.failure_probability
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.sound
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.BabyBear.sound_call_budget' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.BabyBear.sound_call_budget
+diff --git a/Selvage/CommitmentFreshTrace.lean b/Selvage/CommitmentFreshTrace.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/CommitmentFreshTrace.lean
+@@ -0,0 +1,313 @@
++/- Classical fresh-query trace accounting for checkpoint opening extraction.
++Queries and declared roots use only earlier digest responses. This module
++uses the existing Oracle handler and birthday kernel, not a FS/QROM claim. -/
++import Selvage.ArityEightSchedule
++import Selvage.EfficientRootOpening
++import Selvage.CollisionResistanceROM
++
++namespace Minidregg.Selvage.CommitmentFreshTrace
++open scoped Classical
++
++/-- A query and all roots already declared before its response may depend on
++prior responses. R is a bound on the retained declared-root list. -/
++structure Strategy (Value : Type) (Q N R : ℕ) where
++  query : ∀ t : Fin Q, (Fin t.val → Fin N) → EfficientRootOpening.Query Value (Fin N)
++  roots : ∀ t : Fin Q, (Fin t.val → Fin N) → List (Fin N)
++  roots_le : ∀ t p, (roots t p).length ≤ R
++
++variable {Value : Type} {Q N R : ℕ}
++
++def entry (A : Strategy Value Q N R) (c : Fin Q → Fin N) (t : Fin Q) :
++    EfficientRootOpening.Query Value (Fin N) × Fin N :=
++  (A.query t (friPrefix c t (by omega)),c t)
++
++def prefixLog (A : Strategy Value Q N R) (n : ℕ) (hn : n ≤ Q) (p : Fin n → Fin N) :
++    EfficientRootOpening.Log Value (Fin N) :=
++  List.ofFn fun t : Fin n => (A.query ⟨t.val,by omega⟩ (friPrefix p t (by omega)),p t)
++
++def entries (A : Strategy Value Q N R) (c : Fin Q → Fin N) : EfficientRootOpening.Log Value (Fin N) :=
++  List.ofFn (entry A c)
++
++/-- Earlier node children, current query children, and previously declared
++roots. The response to the current query is not available to this function. -/
++def targets (A : Strategy Value Q N R) (t : Fin Q) (p : Fin t.val → Fin N) : List (Fin N) :=
++  (prefixLog A t (by omega) p).flatMap (fun e => EfficientRootOpening.children e.1) ++
++    EfficientRootOpening.children (A.query t p) ++ A.roots t p
++
++def Bad (A : Strategy Value Q N R) (c : Fin Q → Fin N) : Prop :=
++  Collides c ∨ ∃ t, c t ∈ targets A t (friPrefix c t (by omega))
++
++/-- Every counted query is fresh along every response tape. Repeated actual
++calls must be represented by their existing cached entry, not a new coin. -/
++def Fresh (A : Strategy Value Q N R) : Prop :=
++  ∀ c : Fin Q → Fin N, Function.Injective (fun t => (entry A c t).1)
++
++/-- Actual response list of the existing lazy-sampling Oracle handler. -/
++noncomputable def oracleLog (A : Strategy Value Q N R) (c : Fin Q → Fin N) :
++    EfficientRootOpening.Log Value (Fin N) :=
++  (entries A c).map Prod.fst |>.zip (oracleRun Oracle.empty (entries A c)).2
++
++/-- Adaptive prefix queries are answered by their own coins in the actual
++handler, once all counted queries are proved fresh. -/
++theorem oracle_answers (A : Strategy Value Q N R) (hf : Fresh A) (c : Fin Q → Fin N) :
++    (oracleRun Oracle.empty (entries A c)).2 = List.ofFn c := by
++  apply Eq.trans (oracleRun_fresh _ _ ?_ (fun e _ => Oracle.lookup_empty e.1))
++  · rw [entries,List.map_ofFn]
++    rfl
++  · simpa [entries,List.map_ofFn] using List.nodup_ofFn.mpr (hf c)
++
++theorem oracleLog_eq_entries (A : Strategy Value Q N R) (hf : Fresh A) (c : Fin Q → Fin N) :
++    oracleLog A c = entries A c := by
++  rw [oracleLog,oracle_answers A hf c]
++  have hc : List.ofFn c = (entries A c).map Prod.snd := by
++    rw [entries,List.map_ofFn]
++    rfl
++  rw [hc,List.zip_map']
++  simp
++
++/-- Exact checkpoint-prefix membership, retaining original typed query/response pairs. -/
++theorem mem_prefixLog_iff (A : Strategy Value Q N R) (c : Fin Q → Fin N)
++    (n : ℕ) (hn : n ≤ Q) (e : EfficientRootOpening.Query Value (Fin N) × Fin N) :
++    e ∈ prefixLog A n hn (friPrefix c n hn) ↔
++      ∃ t : Fin Q, t.val < n ∧ entry A c t = e := by
++  constructor
++  · intro he
++    obtain ⟨t,ht⟩ := List.mem_ofFn.mp he
++    exact ⟨⟨t.val,by omega⟩,t.isLt,ht⟩
++  · rintro ⟨t,ht,he⟩
++    exact List.mem_ofFn.mpr ⟨⟨t.val,ht⟩,he⟩
++
++theorem mem_entries_iff (A : Strategy Value Q N R) (c : Fin Q → Fin N)
++    (e : EfficientRootOpening.Query Value (Fin N) × Fin N) :
++    e ∈ entries A c ↔ ∃ t, entry A c t = e := List.mem_ofFn
++
++theorem children_length_le (q : EfficientRootOpening.Query Value (Fin N)) :
++    (EfficientRootOpening.children q).length ≤ 2 := by
++  cases q <;> simp [EfficientRootOpening.children]
++
++/-- Every typed node query contributes at most two child targets. -/
++theorem children_log_length_le (L : EfficientRootOpening.Log Value (Fin N)) :
++    (L.flatMap (fun e => EfficientRootOpening.children e.1)).length ≤ 2*L.length := by
++  induction L with
++  | nil => simp
++  | cons e L ih =>
++    simp only [List.flatMap_cons,List.length_append,List.length_cons]
++    have h := children_length_le e.1
++    omega
++
++theorem targets_length_le (A : Strategy Value Q N R) (t : Fin Q) (p : Fin t.val → Fin N) :
++    (targets A t p).length ≤ 2*(t.val+1)+R := by
++  have hp := children_log_length_le (prefixLog A t (by omega) p)
++  have hc := children_length_le (A.query t p)
++  have hr := A.roots_le t p
++  have hl : (prefixLog A t (by omega) p).length = t.val := List.length_ofFn
++  rw [hl] at hp
++  simp only [targets,List.length_append]
++  omega
++
++/-- Existing forward log lookup returns the retained answer whenever all
++records for that query agree. -/
++theorem answerOf_of_mem_unique {K C : Type} (L : OracleLog K C) (k : K) (v : C)
++    (hm : (k,v) ∈ L) (hu : ∀ e ∈ L, e.1 = k → e.2 = v) :
++    OracleLog.answerOf L k = some v := by
++  induction L with
++  | nil => simp at hm
++  | cons e L ih =>
++    by_cases hk : e.1 = k
++    · have hv := hu e (List.mem_cons_self ..) hk
++      have he : e = (k,v) := Prod.ext hk hv
++      rw [he,OracleLog.answerOf_cons_self]
++    · have ht : (k,v) ∈ L := by
++        rcases List.mem_cons.mp hm with he | he
++        · exact False.elim (hk (congrArg Prod.fst he).symm)
++        · exact he
++      have hh := ih ht (fun e he => hu e (List.mem_cons_of_mem _ he))
++      simpa only [OracleLog.answerOf_cons_of_ne (Ne.symm hk)] using hh
++
++/-- A full typed HashSuite completion of the actual finite cache. All absent
++queries receive the same public default; only logged calls matter to this reduction. -/
++noncomputable def cachedSuite (A : Strategy Value Q N R) (c : Fin Q → Fin N) (dflt : Fin N) :
++    BinaryMerkle.HashSuite Value (Fin N) where
++  leaf v := (OracleLog.answerOf (entries A c) (.leaf v)).getD dflt
++  node a b := (OracleLog.answerOf (entries A c) (.node a b)).getD dflt
++
++theorem evaluate_cachedSuite (A : Strategy Value Q N R) (c : Fin Q → Fin N) (dflt : Fin N)
++    (q : EfficientRootOpening.Query Value (Fin N)) :
++    EfficientRootOpening.evaluate (cachedSuite A c dflt) q =
++      (OracleLog.answerOf (entries A c) q).getD dflt := by cases q <;> rfl
++
++/-- The completed suite exactly replays every actual fresh query response. -/
++theorem cachedSuite_entry (A : Strategy Value Q N R) (hf : Fresh A)
++    (c : Fin Q → Fin N) (dflt : Fin N) (t : Fin Q) :
++    EfficientRootOpening.evaluate (cachedSuite A c dflt) (entry A c t).1 = c t := by
++  rw [evaluate_cachedSuite]
++  have hm : ((entry A c t).1,c t) ∈ entries A c := List.mem_ofFn.mpr ⟨t,rfl⟩
++  have hh := answerOf_of_mem_unique (entries A c) (entry A c t).1 (c t) hm (by
++    intro e he hq
++    obtain ⟨i,hi⟩ := (mem_entries_iff A c e).mp he
++    have ht : i = t := hf c (by simpa only [hi] using hq)
++    simp only [←hi,ht,entry])
++  rw [hh]
++  rfl
++
++/-- Distinct fresh queries cannot outnumber the actual retained call records
++covering them. Repeated verifier calls can reuse the same fresh cache entry. -/
++theorem fresh_count_le_calls [DecidableEq Value] (A : Strategy Value Q N R) (hf : Fresh A)
++    (c : Fin Q → Fin N) (L : EfficientRootOpening.Log Value (Fin N))
++    (hcover : ∀ e ∈ entries A c, e ∈ L) : Q ≤ L.length := by
++  have hn : (entries A c).Nodup := List.nodup_ofFn.mpr (by
++    intro i j h
++    exact hf c (congrArg Prod.fst h))
++  have hs : (entries A c).toFinset ⊆ L.toFinset := by
++    intro e he
++    exact List.mem_toFinset.mpr (hcover e (List.mem_toFinset.mp he))
++  calc
++    Q = (entries A c).toFinset.card := by rw [List.toFinset_card_of_nodup hn]; exact List.length_ofFn.symm
++    _ ≤ L.toFinset.card := Finset.card_le_card hs
++    _ ≤ L.length := List.toFinset_card_le L
++
++section Probability
++variable [NeZero N]
++
++/-- Prefix-conditioning over an arbitrary nonempty finite alphabet. This is
++the same existing split-coordinate argument, without a field restriction on digests. -/
++theorem uniform_prefix_event_le {C : Type} [Fintype C] (dflt : C)
++    (t : Fin Q) (p : (Fin t.val → C) → C → Prop) {ε : ℝ} (hε : 0 ≤ ε)
++    (hp : ∀ pfx, uniformProb C (p pfx) ≤ ε) :
++    uniformProb (Fin Q → C) (fun c => p (friPrefix c t (by omega)) (c t)) ≤ ε := by
++  let e := splitCoord (β := C) t
++  have he := uniformProb_equiv e (fun x => p (friPrefix (e.symm x) t (by omega)) x.2)
++  have hh : uniformProb (Fin Q → C) (fun c => p (friPrefix c t (by omega)) (c t)) =
++      uniformProb (({i : Fin Q // i ≠ t} → C) × C)
++        (fun x => p (friPrefix (e.symm x) t (by omega)) x.2) := by
++    rw [←he]
++    apply uniformProb_congr
++    intro c
++    rw [Equiv.symm_apply_apply]
++    rfl
++  rw [hh]
++  apply uniformProb_prod_le hε
++  intro a
++  have hc : ∀ b : C, friPrefix (e.symm (a,b)) t (by omega) =
++      friPrefix (e.symm (a,dflt)) t (by omega) := by
++    intro b
++    funext i
++    unfold friPrefix
++    have hi : (⟨i.val,by omega⟩ : Fin Q) ≠ t := by
++      intro h
++      exact (Nat.ne_of_lt i.isLt) (congrArg Fin.val h)
++    exact (splitCoord_symm_apply_of_ne (a,b) hi).trans (splitCoord_symm_apply_of_ne (a,dflt) hi).symm
++  calc
++    _ = uniformProb C (p (friPrefix (e.symm (a,dflt)) t (by omega))) :=
++      uniformProb_congr fun b => by rw [hc b]
++    _ ≤ ε := hp _
++
++/-- One fresh response hits only a bounded prefix-fixed target list. -/
++theorem target_hit_le (A : Strategy Value Q N R) (t : Fin Q) :
++    uniformProb (Fin Q → Fin N) (fun c => c t ∈ targets A t (friPrefix c t (by omega))) ≤
++      ((2*(t.val+1)+R:ℕ):ℝ)/N := by
++  apply uniform_prefix_event_le (0 : Fin N) t (fun p b => b ∈ targets A t p) (by positivity)
++  intro p
++  have hm : uniformProb (Fin N) (fun b => b ∈ targets A t p) =
++      uniformProb (Fin N) (fun b => b ∈ (targets A t p).toFinset) :=
++    uniformProb_congr fun b => by simp
++  rw [hm,uniformProb_mem_finset,Fintype.card_fin]
++  have hn := le_trans (List.toFinset_card_le (targets A t p)) (targets_length_le A t p)
++  gcongr
++
++/-- The exact target-count sum, before dividing by digest cardinality. -/
++theorem target_sum (Q R : ℕ) :
++    (∑ t : Fin Q, ((2*(t.val+1)+R:ℕ):ℝ)) = (Q:ℝ)*(Q+1)+R*Q := by
++  induction Q with
++  | zero => simp
++  | succ Q ih =>
++    rw [Fin.sum_univ_castSucc]
++    simp only [Fin.val_castSucc,Fin.val_last]
++    rw [ih]
++    push_cast
++    ring
++
++/-- Classical adaptive fresh-query trace bound. The birthday term is reused
++from CollisionResistanceROM; only prefix-fixed roots/children are charged as targets. -/
++theorem bad_probability (A : Strategy Value Q N R) :
++    uniformProb (Fin Q → Fin N) (Bad A) ≤
++      ((3*(Q:ℝ)^2+Q)/2+R*Q)/N := by
++  have hhit : uniformProb (Fin Q → Fin N)
++      (fun c => ∃ t, c t ∈ targets A t (friPrefix c t (by omega))) ≤
++      ((Q:ℝ)*(Q+1)+R*Q)/N := by
++    calc
++      _ ≤ ∑ t : Fin Q, uniformProb (Fin Q → Fin N)
++          (fun c => c t ∈ targets A t (friPrefix c t (by omega))) := uniformProb_exists_le _
++      _ ≤ ∑ t : Fin Q, ((2*(t.val+1)+R:ℕ):ℝ)/N := Finset.sum_le_sum fun t _ => target_hit_le A t
++      _ = _ := by rw [←Finset.sum_div,target_sum]
++  have hcol := birthday_bound Q N
++  have hs := uniformProb_or_le (C := Fin Q → Fin N) Collides
++    (fun c => ∃ t, c t ∈ targets A t (friPrefix c t (by omega)))
++  change uniformProb (Fin Q → Fin N) (Bad A) ≤ _ at hs
++  change uniformProb (Fin Q → Fin N) Collides ≤ _ at hcol
++  calc
++    _ ≤ (Q:ℝ)*(Q-1)/(2*N)+((Q:ℝ)*(Q+1)+R*Q)/N := hs.trans (add_le_add hcol hhit)
++    _ = _ := by ring
++
++end Probability
++end Minidregg.Selvage.CommitmentFreshTrace
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.oracle_answers' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.oracle_answers
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.oracleLog_eq_entries' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.oracleLog_eq_entries
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.mem_prefixLog_iff' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.mem_prefixLog_iff
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.mem_entries_iff' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.mem_entries_iff
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.children_length_le' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.children_length_le
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.children_log_length_le' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.children_log_length_le
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.targets_length_le' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.targets_length_le
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.answerOf_of_mem_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.answerOf_of_mem_unique
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.evaluate_cachedSuite' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.evaluate_cachedSuite
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.cachedSuite_entry' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.cachedSuite_entry
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.fresh_count_le_calls' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.fresh_count_le_calls
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.uniform_prefix_event_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.uniform_prefix_event_le
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.target_hit_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.target_hit_le
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.target_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.target_sum
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.bad_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.bad_probability
+diff --git a/Selvage/CommitmentTraceWitnesses.lean b/Selvage/CommitmentTraceWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/CommitmentTraceWitnesses.lean
+@@ -0,0 +1,178 @@
++/- Small finite adaptive trace controls and actual instrumented row witnesses. -/
++import Selvage.SuppliedScheduleTrace
++import Selvage.ArityEightLoggedWitnesses
++
++namespace Minidregg.Selvage.CommitmentFreshTrace.Witnesses
++open scoped Classical
++
++/-- The second query contains the first answer; leaf/node tags ensure freshness. -/
++def adaptive : Strategy Bool 2 17 1 where
++  query t p := if h : t.val = 0 then .leaf false else .node (p ⟨0,by omega⟩) 2
++  roots _ _ := [4]
++  roots_le _ _ := by decide
++
++def good : Fin 2 → Fin 17 := ![1,3]
++def late : Fin 2 → Fin 17 := ![1,4]
++def collision : Fin 2 → Fin 17 := ![1,1]
++
++theorem adaptive_fresh : Fresh adaptive := by
++  intro c i j h
++  fin_cases i <;> fin_cases j <;> simp_all [entry,adaptive]
++
++theorem adaptive_really_uses_answer :
++    adaptive.query 1 (fun _ => 1) ≠ adaptive.query 1 (fun _ => 2) := by decide
++
++theorem good_no_bad : ¬Bad adaptive good := by
++  unfold Bad Collides
++  decide
++
++theorem late_observed : EfficientRootOpening.LateTarget [] (entries adaptive late) 4 := by
++  exact Classical.not_not.mp ((lateWitness_none_iff [] (entries adaptive late) 4).mpr.mt (by decide))
++
++theorem collision_observed : EfficientRootOpening.ResponseCollision (entries adaptive collision) := by
++  exact Classical.not_not.mp ((collisionWitness_none_iff (entries adaptive collision)).mpr.mt (by decide))
++
++theorem empty_origin (c : Fin 2 → Fin 17) : CheckpointOrigin adaptive c [] 4 := by
++  refine ⟨0,by decide,?_,?_⟩
++  · intro e
++    simp [prefixLog]
++  · intro t ht
++    simp [adaptive]
++
++theorem late_extracted : lateWitness [] (entries adaptive late) 4 =
++    some (.node 1 2,4) := by decide
++
++theorem collision_extracted : collisionWitness (entries adaptive collision) =
++    some ((.leaf false,1),(.node 1 2,1)) := by decide
++
++/-- A concrete typed leaf/node collision exists in the canonically completed suite. -/
++theorem collision_typed :
++    EfficientRootOpening.evaluate (cachedSuite adaptive collision 0) (.leaf false) =
++      EfficientRootOpening.evaluate (cachedSuite adaptive collision 0) (.node 1 2) := by
++  have h0 := cachedSuite_entry adaptive adaptive_fresh collision 0 0
++  have h1 := cachedSuite_entry adaptive adaptive_fresh collision 0 1
++  simpa [entry,adaptive,collision] using h0.trans h1.symm
++
++/-- The derived probability bound is nontrivial on an inhabited adaptive strategy. -/
++theorem adaptive_probability : uniformProb (Fin 2 → Fin 17) (Bad adaptive) ≤ 9/17 := by
++  have h := bad_probability adaptive
++  norm_num at h ⊢
++  exact h
++
++/-- No roots are declared by this one-query strategy. -/
++def undeclared : Strategy Bool 1 17 0 where
++  query _ _ := .leaf false
++  roots _ _ := []
++  roots_le _ _ := by decide
++
++/-- Choosing root equal to the new response creates a late hit on every tape. -/
++theorem future_root_hit (c : Fin 1 → Fin 17) :
++    EfficientRootOpening.LateTarget [] (entries undeclared c) (c 0) := by
++  refine ⟨(.leaf false,c 0),?_,by simp,Or.inl rfl⟩
++  exact List.mem_ofFn.mpr ⟨0,rfl⟩
++
++/-- The causal origin requirement excludes that future-root attack. -/
++theorem future_root_origin_false (c : Fin 1 → Fin 17) :
++    ¬CheckpointOrigin undeclared c [] (c 0) := by
++  rintro ⟨k,hk,hmem,hroot⟩
++  have hzero : k = 0 := by
++    by_contra hn
++    have he : entry undeclared c 0 ∈ prefixLog undeclared k hk (friPrefix c k hk) :=
++      (mem_prefixLog_iff undeclared c k hk _).mpr ⟨0,by omega,rfl⟩
++    simpa using (hmem _).mpr he
++  have h := hroot 0 (by omega)
++  simp [undeclared] at h
++
++end Minidregg.Selvage.CommitmentFreshTrace.Witnesses
++
++namespace Minidregg.Selvage.SuppliedOpeningTrace.Witnesses
++open ArityEight ArityEight.Witnesses ArityEight.Witnesses.Logged
++
++/-- The new instrumented checker accepts the existing far-source supplied witness. -/
++theorem instrumented_accepts (β : F) :
++    (rowRun H D₀ D₁ D₂ sourceRoot inputRoot nextRoot β 0 (row 0)).1 = true := by
++  rw [rowRun_check]
++  exact row_zero_check β
++
++/-- Honest paths cannot rescue the wrong row's fold equation. -/
++theorem instrumented_rejects (β : F) :
++    (rowRun H D₀ D₁ D₂ sourceRoot inputRoot nextRoot β 1 (row 1)).1 = false := by
++  rw [rowRun_check]
++  exact row_one_check β
++
++/-- Farness, genuine supplied acceptance and generated path logs coexist. -/
++theorem instrumented_inhabited (β : F) :
++    EfficientRootOpening.Far_E (1/5:ℝ) 4 (reedSolomonCode (dom 0) 8) checkpoint 0 sourceRoot ∧
++    (rowRun H D₀ D₁ D₂ sourceRoot inputRoot nextRoot β 0 (row 0)).1 = true ∧
++    RowLogged H (rowRun H D₀ D₁ D₂ sourceRoot inputRoot nextRoot β 0 (row 0)).2
++      D₀ D₁ D₂ 0 (row 0) :=
++  ⟨(supplied_premises_inhabited β).1,instrumented_accepts β,rowRun_logged _ _ _ _ _ _ _ _ _ _⟩
++
++theorem instrumented_record_count :
++    (rowRun H D₀ D₁ D₂ sourceRoot inputRoot nextRoot 0 0 (row 0)).2.length = 44 := by decide
++
++end Minidregg.Selvage.SuppliedOpeningTrace.Witnesses
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_fresh' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_fresh
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_really_uses_answer' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_really_uses_answer
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.good_no_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.good_no_bad
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.late_observed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.late_observed
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_observed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_observed
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.empty_origin' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.empty_origin
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.late_extracted' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.late_extracted
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_extracted' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_extracted
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_typed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_typed
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_probability' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_probability
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.future_root_hit' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.future_root_hit
++
++/-- info: 'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.future_root_origin_false' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.CommitmentFreshTrace.Witnesses.future_root_origin_false
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_accepts
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_rejects' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_rejects
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_inhabited
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_record_count' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_record_count
+diff --git a/Selvage/SuppliedOpeningTrace.lean b/Selvage/SuppliedOpeningTrace.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/SuppliedOpeningTrace.lean
+@@ -0,0 +1,209 @@
++/- One-pass instrumented BinaryMerkle recomputation and concrete supplied-row
++hash-call logs. The result is proved equal to the existing verifier; accounting
++counts emitted hash-call records, not implementation time or packed MMCS work. -/
++import Selvage.CommitmentFailureReduction
++import Selvage.ArityEightScheduleBabyBear
++
++namespace Minidregg.Selvage.SuppliedOpeningTrace
++open scoped Classical
++variable {Value Digest : Type}
++
++/-- One recursive verifier pass returns its result together with the exact
++node calls. Every successful level evaluates its node hash once. -/
++def recomputeLogged (H : BinaryMerkle.HashSuite Value Digest) (leaf : Digest) :
++    {k : ℕ} → (Fin k → Bool) → List Digest → Option Digest × EfficientRootOpening.Log Value Digest
++  | 0, _, [] => (some leaf,[])
++  | 0, _, _::_ => (none,[])
++  | _+1, _, [] => (none,[])
++  | k+1, address, sibling::rest =>
++      let r := recomputeLogged H leaf (fun i : Fin k => address i.succ) rest
++      match r.1 with
++      | none => (none,[])
++      | some child =>
++          let query := if address 0 then EfficientRootOpening.Query.node sibling child
++            else EfficientRootOpening.Query.node child sibling
++          let answer := EfficientRootOpening.evaluate H query
++          (some answer,r.2++[(query,answer)])
++
++/-- Exact source-verifier and source-log equality, including malformed paths. -/
++theorem recomputeLogged_eq (H : BinaryMerkle.HashSuite Value Digest) (leaf : Digest) :
++    ∀ (k : ℕ) (address : Fin k → Bool) (path : List Digest),
++    recomputeLogged H leaf address path =
++      (BinaryMerkle.recompute H leaf address path,EfficientRootOpening.pathLog H leaf address path) := by
++  intro k
++  induction k with
++  | zero => intro address path; cases path <;> rfl
++  | succ k ih =>
++    intro address path
++    cases path with
++    | nil => rfl
++    | cons sibling rest =>
++      simp only [recomputeLogged,ih]
++      cases h : BinaryMerkle.recompute H leaf (fun i => address i.succ) rest with
++      | none => simp [BinaryMerkle.recompute,EfficientRootOpening.pathLog,h]
++      | some child =>
++        cases hb : address 0 <;>
++          simp [BinaryMerkle.recompute,EfficientRootOpening.pathLog,h,hb,EfficientRootOpening.evaluate]
++
++/-- The leaf is hashed once, then the existing path is traversed once. -/
++def openingRun (H : BinaryMerkle.HashSuite Value Digest) (v : Value)
++    {k : ℕ} (address : Fin k → Bool) (path : List Digest) :
++    Option Digest × EfficientRootOpening.Log Value Digest :=
++  let d := H.leaf v
++  let r := recomputeLogged H d address path
++  (r.1,(.leaf v,d)::r.2)
++
++theorem openingRun_eq (H : BinaryMerkle.HashSuite Value Digest) (v : Value)
++    (k : ℕ) (address : Fin k → Bool) (path : List Digest) :
++    openingRun H v address path =
++      (BinaryMerkle.recompute H (H.leaf v) address path,EfficientRootOpening.openingLog H v address path) := by
++  simp [openingRun,recomputeLogged_eq,EfficientRootOpening.openingLog]
++
++/-- Even a malformed supplied path emits no more than k node records. -/
++theorem pathLog_length_le (H : BinaryMerkle.HashSuite Value Digest) (leaf : Digest) :
++    ∀ (k : ℕ) (address : Fin k → Bool) (path : List Digest),
++      (EfficientRootOpening.pathLog H leaf address path).length ≤ k := by
++  intro k
++  induction k with
++  | zero => intro address path; simp [EfficientRootOpening.pathLog]
++  | succ k ih =>
++    intro address path
++    cases path with
++    | nil => simp [EfficientRootOpening.pathLog]
++    | cons sibling rest =>
++      cases h : BinaryMerkle.recompute H leaf (fun i => address i.succ) rest with
++      | none => simp [EfficientRootOpening.pathLog,h]
++      | some child =>
++        have ht := ih (fun i => address i.succ) rest
++        simpa only [EfficientRootOpening.pathLog,h,List.length_append,List.length_singleton,Nat.succ_eq_add_one,
++          Nat.add_le_add_iff_right] using Nat.add_le_add_right ht 1
++
++theorem openingRun_length_le (H : BinaryMerkle.HashSuite Value Digest) (v : Value)
++    (k : ℕ) (address : Fin k → Bool) (path : List Digest) :
++    (openingRun H v address path).2.length ≤ k+1 := by
++  rw [openingRun_eq]
++  simpa only [EfficientRootOpening.openingLog,List.length_cons,Nat.succ_eq_add_one]
++    using Nat.add_le_add_right (pathLog_length_le H (H.leaf v) k address path) 1
++
++section Row
++open ArityEight
++variable {F : Type} [Field F] [DecidableEq F] [DecidableEq Digest]
++variable {k₀ k₁ k₂ k₃ : ℕ}
++variable {dom₀ : Fin (2^k₀) ↪ F} {dom₁ : Fin (2^k₁) ↪ F}
++variable {dom₂ : Fin (2^k₂) ↪ F} {dom₃ : Fin (2^k₃) ↪ F}
++
++def pointRun (H : BinaryMerkle.HashSuite F Digest) {k : ℕ} (i : Fin (2^k)) (o : PointOpening F Digest) :=
++  openingRun H o.value (binaryAddressBits k i) o.path
++
++omit [Field F] [DecidableEq F] [DecidableEq Digest] in
++theorem pointRun_result (H : BinaryMerkle.HashSuite F Digest) {k : ℕ} (i : Fin (2^k)) (o : PointOpening F Digest) :
++    (pointRun H i o).1 = BinaryMerkle.recompute H (H.leaf o.value) (binaryAddressBits k i) o.path := by
++  rw [pointRun,openingRun_eq]
++
++omit [Field F] [DecidableEq F] [DecidableEq Digest] in
++theorem pointRun_log (H : BinaryMerkle.HashSuite F Digest) {k : ℕ} (i : Fin (2^k)) (o : PointOpening F Digest) :
++    (pointRun H i o).2 = EfficientRootOpening.openingLog H o.value (binaryAddressBits k i) o.path := by
++  rw [pointRun,openingRun_eq]
++
++def sourceRuns (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃)
++    (i : Fin (2^k₃)) (o : RowOpening F Digest) :
++    List (Option Digest × EfficientRootOpening.Log F Digest) :=
++  [false,true].flatMap fun c => [false,true].flatMap fun b => [false,true].map fun a =>
++    pointRun H (rowPoint D₀ D₁ D₂ i c b a) (o.source c b a)
++
++/-- Actual row verifier plus retained records, sharing the ten evaluated runs. -/
++def rowRun (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃)
++    (rs rg rn : Digest) (β : F) (i : Fin (2^k₃)) (o : RowOpening F Digest) :
++    Bool × EfficientRootOpening.Log F Digest :=
++  let src := sourceRuns H D₀ D₁ D₂ i o
++  let inp := pointRun H i o.injected
++  let dst := pointRun H i o.next
++  (src.all (fun r => decide (r.1 = some rs)) && decide (inp.1 = some rg) && decide (dst.1 = some rn) &&
++      decide (o.next.value = foldRow8 D₀ D₁ D₂ i (fun c b a => (o.source c b a).value) β + β^8*o.injected.value),
++    (src.flatMap Prod.snd)++inp.2++dst.2)
++
++/-- The instrumented Boolean result is exactly the frozen supplied-row checker. -/
++theorem rowRun_check (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃)
++    (rs rg rn : Digest) (β : F) (i : Fin (2^k₃)) (o : RowOpening F Digest) :
++    (rowRun H D₀ D₁ D₂ rs rg rn β i o).1 = rowCheck H D₀ D₁ D₂ rs rg rn β i o := by
++  simp [rowRun,sourceRuns,rowCheck,pointCheck,pointRun_result,Bool.and_assoc]
++
++/-- All hash calls needed by the supplied-path reduction occur in the produced log. -/
++theorem rowRun_logged (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃)
++    (rs rg rn : Digest) (β : F) (i : Fin (2^k₃)) (o : RowOpening F Digest) :
++    RowLogged H (rowRun H D₀ D₁ D₂ rs rg rn β i o).2 D₀ D₁ D₂ i o := by
++  refine ⟨?_,?_,?_⟩
++  · intro c b a e he
++    cases c <;> cases b <;> cases a <;>
++      simp only [rowRun,sourceRuns,List.flatMap_cons,List.flatMap_nil,List.flatMap_append,List.map_cons,List.map_nil,
++        List.append_nil,List.mem_append,pointRun_log] <;> tauto
++  · intro e he
++    simp only [rowRun,List.mem_append,pointRun_log]
++    exact Or.inl (Or.inr he)
++  · intro e he
++    simp only [rowRun,List.mem_append,pointRun_log]
++    exact Or.inr he
++
++/-- Eight depth-k0 paths and two depth-k3 paths: exact scalar interface accounting. -/
++theorem rowRun_length_le (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃)
++    (rs rg rn : Digest) (β : F) (i : Fin (2^k₃)) (o : RowOpening F Digest) :
++    (rowRun H D₀ D₁ D₂ rs rg rn β i o).2.length ≤ 8*(k₀+1)+2*(k₃+1) := by
++  have hs (c b a : Bool) := openingRun_length_le H (o.source c b a).value k₀
++    (binaryAddressBits k₀ (rowPoint D₀ D₁ D₂ i c b a)) (o.source c b a).path
++  have hg := openingRun_length_le H o.injected.value k₃ (binaryAddressBits k₃ i) o.injected.path
++  have hn := openingRun_length_le H o.next.value k₃ (binaryAddressBits k₃ i) o.next.path
++  have h000 := hs false false false
++  have h001 := hs false false true
++  have h010 := hs false true false
++  have h011 := hs false true true
++  have h100 := hs true false false
++  have h101 := hs true false true
++  have h110 := hs true true false
++  have h111 := hs true true true
++  simp only [rowRun,sourceRuns,List.flatMap_cons,List.flatMap_nil,List.flatMap_append,List.map_cons,List.map_nil,
++    List.append_nil,List.length_append,pointRun]
++  omega
++
++end Row
++end Minidregg.Selvage.SuppliedOpeningTrace
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.recomputeLogged_eq' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.recomputeLogged_eq
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.openingRun_eq' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.openingRun_eq
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.pathLog_length_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.pathLog_length_le
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.openingRun_length_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.openingRun_length_le
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.pointRun_result' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.pointRun_result
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.pointRun_log' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.pointRun_log
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.rowRun_check' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.rowRun_check
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.rowRun_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.rowRun_logged
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.rowRun_length_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.rowRun_length_le
+diff --git a/Selvage/SuppliedScheduleTrace.lean b/Selvage/SuppliedScheduleTrace.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/SuppliedScheduleTrace.lean
+@@ -0,0 +1,174 @@
++/- Constructed supplied-path verification logs and finite-schedule accounting.
++This discharges opening-log inclusion from actual instrumented verifier runs. -/
++import Selvage.SuppliedOpeningTrace
++
++namespace Minidregg.Selvage.SuppliedOpeningTrace
++open ArityEight.Schedule
++open scoped Classical
++variable {F Digest : Type} [Field F] [DecidableEq F] [DecidableEq Digest] {ell m : ℕ}
++
++/-- Run every actually supplied row once and retain its emitted records. -/
++def verificationLog (H : BinaryMerkle.HashSuite F Digest)
++    (T : FoldingTower F (PowerTwoFriLevels ell) (3*m)) (st : Checkpoints F Digest)
++    (q : ℕ) (hell : 3*m ≤ ell) (r : Fin m → F) (seed : Fin q → PowerTwoFriLevels ell 1)
++    (o : Openings F Digest m q) : EfficientRootOpening.Log F Digest :=
++  (List.ofFn fun j : Fin m => (List.ofFn fun a : Fin q =>
++    (rowRun H (T.data (3*j.val) (by omega)) (T.data (3*j.val+1) (by omega))
++      (T.data (3*j.val+2) (by omega))
++      (st.word j (friPrefix r j (by omega))).2 (st.input j (friPrefix r j (by omega))).2
++      (st.word (j+1) (friPrefix r (j+1) (by omega))).2
++      (r j) (roundQueries hell j seed a) (o j a)).2).flatten).flatten
++
++theorem verificationLog_contains (H : BinaryMerkle.HashSuite F Digest)
++    (T : FoldingTower F (PowerTwoFriLevels ell) (3*m)) (st : Checkpoints F Digest)
++    (q : ℕ) (hell : 3*m ≤ ell) (r : Fin m → F) (seed : Fin q → PowerTwoFriLevels ell 1)
++    (o : Openings F Digest m q) (j : Fin m) (a : Fin q)
++    (e : EfficientRootOpening.Query F Digest × Digest)
++    (he : e ∈ (rowRun H (T.data (3*j.val) (by omega)) (T.data (3*j.val+1) (by omega))
++      (T.data (3*j.val+2) (by omega))
++      (st.word j (friPrefix r j (by omega))).2 (st.input j (friPrefix r j (by omega))).2
++      (st.word (j+1) (friPrefix r (j+1) (by omega))).2
++      (r j) (roundQueries hell j seed a) (o j a)).2) :
++    e ∈ verificationLog H T st q hell r seed o :=
++  List.mem_flatten.mpr ⟨_,List.mem_ofFn.mpr ⟨j,rfl⟩,
++    List.mem_flatten.mpr ⟨_,List.mem_ofFn.mpr ⟨a,rfl⟩,he⟩⟩
++
++/-- Existing OpeningsLogged is now a theorem of the constructed verifier log. -/
++theorem verificationLog_logged (H : BinaryMerkle.HashSuite F Digest)
++    (T : FoldingTower F (PowerTwoFriLevels ell) (3*m)) (st : Checkpoints F Digest)
++    (q : ℕ) (hell : 3*m ≤ ell) (r : Fin m → F) (seed : Fin q → PowerTwoFriLevels ell 1)
++    (o : Openings F Digest m q) :
++    OpeningsLogged H T (verificationLog H T st q hell r seed o) q hell seed o := by
++  intro j a
++  have h := rowRun_logged H (T.data (3*j.val) (by omega)) (T.data (3*j.val+1) (by omega))
++    (T.data (3*j.val+2) (by omega))
++    (st.word j (friPrefix r j (by omega))).2 (st.input j (friPrefix r j (by omega))).2
++    (st.word (j+1) (friPrefix r (j+1) (by omega))).2
++    (r j) (roundQueries hell j seed a) (o j a)
++  exact ⟨fun c b d e he => verificationLog_contains H T st q hell r seed o j a e (h.1 c b d e he),
++    fun e he => verificationLog_contains H T st q hell r seed o j a e (h.2.1 e he),
++    fun e he => verificationLog_contains H T st q hell r seed o j a e (h.2.2 e he)⟩
++
++omit [Field F] [DecidableEq F] [DecidableEq Digest] in
++/-- Finite concatenation preserves the sum of the per-entry record bounds. -/
++theorem flatten_ofFn_length_le {α : Type} {n : ℕ} (L : Fin n → List α) (b : Fin n → ℕ)
++    (hb : ∀ i, (L i).length ≤ b i) : (List.ofFn L).flatten.length ≤ ∑ i, b i := by
++  simp only [List.length_flatten,List.map_ofFn,List.sum_ofFn]
++  exact Finset.sum_le_sum fun i _ => hb i
++
++/-- The bound includes every supplied source, input and next-word path. -/
++theorem verificationLog_length_le (H : BinaryMerkle.HashSuite F Digest)
++    (T : FoldingTower F (PowerTwoFriLevels ell) (3*m)) (st : Checkpoints F Digest)
++    (q : ℕ) (hell : 3*m ≤ ell) (r : Fin m → F) (seed : Fin q → PowerTwoFriLevels ell 1)
++    (o : Openings F Digest m q) :
++    (verificationLog H T st q hell r seed o).length ≤
++      ∑ j : Fin m, q*(8*(ell-3*j.val+1)+2*(ell-3*(j.val+1)+1)) := by
++  apply flatten_ofFn_length_le
++  intro j
++  calc
++    _ ≤ ∑ _a : Fin q, (8*(ell-3*j.val+1)+2*(ell-3*(j.val+1)+1)) := by
++      apply flatten_ofFn_length_le
++      intro a
++      exact rowRun_length_le H (T.data (3*j.val) (by omega)) (T.data (3*j.val+1) (by omega))
++        (T.data (3*j.val+2) (by omega)) _ _ _ (r j) (roundQueries hell j seed a) (o j a)
++    _ = _ := by simp
++
++omit [Field F] [DecidableEq F] [DecidableEq Digest] in
++/-- All checkpoint roots used by m rounds: m+1 words and m injected inputs.
++This list alone is not a causal declaration schedule; Origins still enforces timing. -/
++def checkpointRoots (st : Checkpoints F Digest) (r : Fin m → F) : List Digest :=
++  (List.ofFn fun n : Fin (m+1) => (st.word n (friPrefix r n (by omega))).2) ++
++    (List.ofFn fun j : Fin m => (st.input j (friPrefix r j (by omega))).2)
++
++omit [Field F] [DecidableEq F] [DecidableEq Digest] in
++theorem checkpointRoots_length (st : Checkpoints F Digest) (r : Fin m → F) :
++    (checkpointRoots st r).length = 2*m+1 := by simp [checkpointRoots]; omega
++
++/-- Appending constructed verification records discharges the existing path-log premise. -/
++theorem verificationLog_append_logged (H : BinaryMerkle.HashSuite F Digest)
++    (T : FoldingTower F (PowerTwoFriLevels ell) (3*m)) (st : Checkpoints F Digest)
++    (q : ℕ) (hell : 3*m ≤ ell) (r : Fin m → F) (seed : Fin q → PowerTwoFriLevels ell 1)
++    (o : Openings F Digest m q) (P : EfficientRootOpening.Log F Digest) :
++    OpeningsLogged H T (P++verificationLog H T st q hell r seed o) q hell seed o := by
++  intro j a
++  have h := verificationLog_logged H T st q hell r seed o j a
++  exact ⟨fun c b d e he => List.mem_append.mpr (Or.inr (h.1 c b d e he)),
++    fun e he => List.mem_append.mpr (Or.inr (h.2.1 e he)),
++    fun e he => List.mem_append.mpr (Or.inr (h.2.2 e he))⟩
++
++omit [Field F] [DecidableEq F] [DecidableEq Digest] in
++theorem checkpointsLogged_append (st : Checkpoints F Digest) (r : Fin m → F)
++    (P L : EfficientRootOpening.Log F Digest) (h : CheckpointsLogged st P r) :
++    CheckpointsLogged st (P++L) r :=
++  ⟨fun n hn e he => List.mem_append.mpr (Or.inl (h.1 n hn e he)),
++    fun j e he => List.mem_append.mpr (Or.inl (h.2 j e he))⟩
++
++end Minidregg.Selvage.SuppliedOpeningTrace
++
++namespace Minidregg.Selvage.SuppliedOpeningTrace.BabyBear
++open ArityEight.Schedule ArityEight.Schedule.BabyBear BabyBearExt4
++variable {Digest : Type} [DecidableEq Digest]
++
++/-- Actual five-round scalar verifier records: 204+174+144+114+84 = 720 per seed. -/
++theorem verificationLog_length_le (H : BinaryMerkle.HashSuite Ext4 Digest) (st : Checkpoints Ext4 Digest)
++    (q : ℕ) (r : Fin 5 → Ext4) (seed : Fin q → PowerTwoFriLevels 20 1) (o : Openings Ext4 Digest 5 q) :
++    (verificationLog H firstFifteen st q (by decide) r seed o).length ≤ 720*q := by
++  have h := SuppliedOpeningTrace.verificationLog_length_le H firstFifteen st q (by decide) r seed o
++  have hb : (∑ j : Fin 5, q*(8*(20-3*j.val+1)+2*(20-3*(j.val+1)+1))) = 720*q := by
++    simp only [Fin.sum_univ_succ]
++    norm_num
++    ring
++  rw [hb] at h
++  exact h
++
++/-- All fresh cache entries are charged either to the prover/preprocessing
++call log or to the actual five-round supplied verifier log. -/
++theorem fresh_count_le_total {Q N R B : ℕ} (A : CommitmentFreshTrace.Strategy Ext4 Q N R)
++    (hf : CommitmentFreshTrace.Fresh A) (c : Fin Q → Fin N)
++    (H : BinaryMerkle.HashSuite Ext4 (Fin N)) (st : Checkpoints Ext4 (Fin N))
++    (q : ℕ) (r : Fin 5 → Ext4) (seed : Fin q → PowerTwoFriLevels 20 1) (o : Openings Ext4 (Fin N) 5 q)
++    (P : EfficientRootOpening.Log Ext4 (Fin N)) (hP : P.length ≤ B)
++    (hcover : ∀ e ∈ CommitmentFreshTrace.entries A c,
++      e ∈ P++verificationLog H firstFifteen st q (by decide) r seed o) : Q ≤ B+720*q := by
++  have h := CommitmentFreshTrace.fresh_count_le_calls A hf c _ hcover
++  have hv := verificationLog_length_le H st q r seed o
++  rw [List.length_append] at h
++  omega
++
++end Minidregg.Selvage.SuppliedOpeningTrace.BabyBear
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_contains' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_contains
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_logged
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.flatten_ofFn_length_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.flatten_ofFn_length_le
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_length_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_length_le
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.checkpointRoots_length' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.checkpointRoots_length
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_append_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.verificationLog_append_logged
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.checkpointsLogged_append' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.checkpointsLogged_append
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.BabyBear.verificationLog_length_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.BabyBear.verificationLog_length_le
++
++/-- info: 'Minidregg.Selvage.SuppliedOpeningTrace.BabyBear.fresh_count_le_total' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.SuppliedOpeningTrace.BabyBear.fresh_count_le_total

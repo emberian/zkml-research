@@ -1,0 +1,82 @@
+{
+  "predecessor_package_sha256": "99a5228336016b7941cddfa914a6b9dd18532541f9b08be1adee8fc0060bcc05",
+  "source_public_request_sha256": "69167d12c0f9fe53847f3172e9c55f91c62bf3809dc8190d68a68511014ec765",
+  "source_public_acceptance_sha256": "91243b8c25522ab66981346f843aa266d236673bb94efbcacd0bdc39ba2f0c48",
+  "copied_files": {
+    "web/package.json": {
+      "bytes": 34,
+      "sha256": "55c40fada2c832d834f915351168d4a46598bde8070f076b72ab6b45d53b3da5",
+      "gzip9_bytes": 52,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/package.json"
+    },
+    "web/pkg/vfhe_browser_verifier.d.ts": {
+      "bytes": 1942,
+      "sha256": "481b151baa99a73ff118ad192d56e67732d15e09ba26de4088be7635a469b054",
+      "gzip9_bytes": 738,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier.d.ts"
+    },
+    "web/pkg/vfhe_browser_verifier.js": {
+      "bytes": 8325,
+      "sha256": "58e31dbd078d6769aea5f7518900d55d93422c6eddf065425b0a00c133102f0e",
+      "gzip9_bytes": 2388,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier.js"
+    },
+    "web/pkg/vfhe_browser_verifier_bg.wasm": {
+      "bytes": 2063586,
+      "sha256": "96137c1ed0ad5fc7584ca72ef006ff70ac1951831408ee12ab22ce3879f6f908",
+      "gzip9_bytes": 311203,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier_bg.wasm"
+    },
+    "web/pkg/vfhe_browser_verifier_bg.wasm.d.ts": {
+      "bytes": 725,
+      "sha256": "9d6af5e8addb975cd6f3534cc6144ccff96c48cbd2aa4e2e399c85c7da67aeac",
+      "gzip9_bytes": 266,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier_bg.wasm.d.ts"
+    },
+    "web/verifier.js": {
+      "bytes": 1122,
+      "sha256": "3f8f73180eac337b0b2210d3490f225dc7691b86b0a2d40db7284847ae524f24",
+      "gzip9_bytes": 585,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/verifier.js"
+    },
+    "fixtures/template.json": {
+      "bytes": 553870,
+      "sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+      "gzip9_bytes": 27239,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/artifacts/template_ir2.json"
+    },
+    "fixtures/request.json": {
+      "bytes": 2174,
+      "sha256": "69167d12c0f9fe53847f3172e9c55f91c62bf3809dc8190d68a68511014ec765",
+      "gzip9_bytes": 947,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/results/gated001/request.json"
+    },
+    "fixtures/class0/public_rows.json": {
+      "bytes": 1355905,
+      "sha256": "3c335d3184f0a5051066bbfab17c6135782f72b12a7ce654fcf35037b682e505",
+      "gzip9_bytes": 462747,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/results/gated001/class0/case/public_rows.json"
+    },
+    "fixtures/class0/proof.bin": {
+      "bytes": 842647,
+      "sha256": "bbd292c8cc76f5d2cadb832f9f380cabd41185b202683940281098f0560cc8a7",
+      "gzip9_bytes": 745222,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/results/gated001/class0/proof/proof.bin"
+    },
+    "fixtures/class1/public_rows.json": {
+      "bytes": 1355855,
+      "sha256": "3d0b5ef3d2b007cb4b9c186e5fdb643cd1645f6f7d4fba65a762dbcf723da2d2",
+      "gzip9_bytes": 462623,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/results/gated001/class1/case/public_rows.json"
+    },
+    "fixtures/class1/proof.bin": {
+      "bytes": 842459,
+      "sha256": "1c49d589330a34544228c1c6b50750187cf71d54b5a57cfefbcbf41cb261f8ef",
+      "gzip9_bytes": 742556,
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/query_gate_successor/results/gated001/class1/proof/proof.bin"
+    }
+  },
+  "wasm_rebuilt": false,
+  "new_proof_generated": false,
+  "private_files_read": 0
+}

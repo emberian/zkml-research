@@ -1,0 +1,19 @@
+Compiler/ProfiledBounds.lean:19:51: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (∑ i ∈ ?s, ?f i) * ?a
+in the target expression
+  ∑ g, matrix g * (p.base ^ p.digits - 1) = (p.base ^ p.digits - 1) * ∑ g, matrix g
+
+p : Layout
+c : ℕ
+matrix x : Fin p.groups → ℕ
+hx : ∀ (g : Fin p.groups), x g < p.base ^ p.digits
+⊢ ∑ g, matrix g * (p.base ^ p.digits - 1) = (p.base ^ p.digits - 1) * ∑ g, matrix g
+Compiler/ProfiledBounds.lean:48:39: error: linarith failed to find a contradiction
+case h
+base cap column carry : ℕ
+hb : 0 < base
+hcarry : carry ≤ cap
+hcolumn : column ≤ (base - 1) * cap
+a✝ : base * cap < column + carry
+⊢ False
+failed

@@ -1,0 +1,38 @@
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_fresh' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_really_uses_answer' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.good_no_bad' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.late_observed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_observed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.empty_origin' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.late_extracted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_extracted' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.collision_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.adaptive_probability' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.future_root_hit' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.Witnesses.future_root_origin_false' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_accepts' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_rejects' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.SuppliedOpeningTrace.Witnesses.instrumented_record_count' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

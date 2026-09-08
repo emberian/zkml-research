@@ -1,0 +1,509 @@
+diff --git a/Compiler/NonlinearRnsProfiled.lean b/Compiler/NonlinearRnsProfiled.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/NonlinearRnsProfiled.lean
+@@ -0,0 +1,131 @@
++import Compiler.ProfiledMatrix
++import Compiler.NonlinearRnsPublicSound
++
++namespace Minidregg.Compiler.NonlinearRnsProfiled
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.DirectedRnsScaler
++open Minidregg.Compiler.NonlinearRnsInstance
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 2000000
++set_option exponentiation.threshold 1000
++
++/-- Compile-time profile emitted by autoLayout, not fitted to runtime witnesses. -/
++def rowLayout : ProfiledMatrix.RowLayout profile.rows where
++  width := ![24,24,24,24,24,24,24,24,24,38,24,38,24,46,24,29,24,29,24,29,24,29,24]
++  carryBits := ![2,2,2,2,2,2,2,2,2,15,2,14,2,16,2,11,2,11,2,11,2,11,2]
++
++def ProfileDerived : Prop := rowLayout=ProfiledMatrix.autoLayout profile rows
++
++theorem profileDerived : ProfileDerived := by
++  apply congrArg₂ (@ProfiledMatrix.RowLayout.mk 23)
++  · funext i; fin_cases i <;> decide
++  · funext i; fin_cases i <;> decide
++
++/-- Only row coefficient capacities are computed; no accepted trace is reduced. -/
++theorem coefficients_fit : ∀ i g,
++    leftCoefficient (rows i) g < 512^(rowLayout.width i-22) ∧
++    rightCoefficient (rows i) g < 512^(rowLayout.width i-22) := by
++  intro i
++  fin_cases i <;>
++    norm_num [rows,forms,profile,rowLayout,inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,
++      params,leftCoefficient,rightCoefficient,linear,SignedMatrix.sum,SignedMatrix.sub,SignedMatrix.add,SignedMatrix.scale,
++      SignedMatrix.var,SignedMatrix.cst,Fin.sum_univ_succ,Minidregg.Theory.CompressedLinearEquation.posPart,
++      Minidregg.Theory.CompressedLinearEquation.negPart,residue,inputSlack,extra,target,List.finRange_succ,Fin.ext_iff,Matrix.cons_val]
++  all_goals intro g; fin_cases g <;>
++    norm_num [rows,forms,profile,rowLayout,inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,
++      params,leftCoefficient,rightCoefficient,linear,SignedMatrix.sum,SignedMatrix.sub,SignedMatrix.add,SignedMatrix.scale,
++      SignedMatrix.var,SignedMatrix.cst,Fin.sum_univ_succ,Minidregg.Theory.CompressedLinearEquation.posPart,
++      Minidregg.Theory.CompressedLinearEquation.negPart,residue,inputSlack,extra,target,List.finRange_succ,Fin.ext_iff,Matrix.cons_val]
++  all_goals decide
++
++theorem constants_fit : ∀ i,leftConstant (rows i) < 512^(rowLayout.width i) ∧
++    rightConstant (rows i) < 512^(rowLayout.width i) := by
++  intro i
++  fin_cases i <;>
++    norm_num [rows,forms,profile,rowLayout,inputRow,gRow,gBound,fRow,fBound,yRow,yBound,targetRow,targetBound,
++      params,leftConstant,rightConstant,linear,SignedMatrix.sum,SignedMatrix.sub,SignedMatrix.add,SignedMatrix.scale,
++      SignedMatrix.var,SignedMatrix.cst,Fin.sum_univ_succ,Minidregg.Theory.CompressedLinearEquation.posPart,
++      Minidregg.Theory.CompressedLinearEquation.negPart,residue,inputSlack,extra,target,List.finRange_succ,Fin.ext_iff,Matrix.cons_val]
++  all_goals decide
++
++theorem capacity : ProfiledMatrix.Capacity profile rowLayout rows := by
++  constructor
++  · decide
++  · intro i; fin_cases i <;> decide
++  · intro i; fin_cases i <;> decide
++  · intro i; fin_cases i <;> decide
++  · exact constants_fit
++  · intro i j
++    have h := coefficients_fit i (groupDigit profile|>.symm j).1
++    have hp : profile.base^(groupDigit profile|>.symm j).2.val ≤ 512^22 :=
++      Nat.pow_le_pow_right (by decide) (by have := (groupDigit profile|>.symm j).2.isLt; change _<23 at this; omega)
++    have hw : 22 ≤ rowLayout.width i := by fin_cases i <;> decide
++    have he : 512^(rowLayout.width i-22)*512^22=profile.base^(rowLayout.width i) := by
++      rw [← pow_add,Nat.sub_add_cancel hw]; rfl
++    constructor
++    · exact lt_of_le_of_lt (Nat.mul_le_mul_left _ hp) (he ▸ Nat.mul_lt_mul_of_pos_right h.1 (by positivity))
++    · exact lt_of_le_of_lt (Nat.mul_le_mul_left _ hp) (he ▸ Nat.mul_lt_mul_of_pos_right h.2 (by positivity))
++
++def source := ProfiledMatrix.system profile rowLayout rows
++def system : ConstraintSystem BabyBear Nat := [vr 88] ++ renameS NonlinearRnsPublic.wireMap source
++def nVars := 89+ProfiledMatrix.nVars profile rowLayout
++
++def RowSound : Prop := ∀ asg,systemAccepts asg system → ∀ i,
++  (NonlinearRnsPublic.publicOutput asg i : Int)=nativeProjectedOutput (NonlinearRnsPublic.publicResidues asg) i
++
++theorem source_balanced (asg : Nat → BabyBear) (hs : systemAccepts asg source) : Balanced params (decoded profile asg) := by
++  intro row hm
++  obtain ⟨i,hi⟩ := List.mem_iff_get.mp hm
++  have h := ProfiledMatrix.sourceSound profile rowLayout rows capacity asg hs ⟨i.val,by change i.val<23 at *; exact i.isLt⟩
++  simpa only [rows,hi] using h
++
++theorem rowSound : RowSound := by
++  intro asg hs i
++  obtain ⟨hz,hs⟩ := (systemAccepts_append asg _ _).mp hs
++  have hz' : asg 88=0 := by simpa [systemAccepts_cons,systemAccepts_nil,accepts,eval_vr] using hz
++  have ha := (systemAccepts_renameS asg NonlinearRnsPublic.wireMap source).mp hs
++  have hb := source_balanced (asg ∘ NonlinearRnsPublic.wireMap) ha
++  have hc := balanced_accepts params paramsValid _ hb
++  have hw := nativeWordRefinement _ hc.1
++  have hout := matrixSound params paramsValid _ hb i
++  rw [← hw,NonlinearRnsPublic.input_public asg hz',congrFun (NonlinearRnsPublic.output_public asg hz') i,
++    canonical_lift_preserves_native] at hout
++  exact hout
++
++theorem simplifiedSource_sound (asg : Nat → BabyBear) (h : systemAccepts asg (AirSimplify.simplifySystem system)) :
++    ∀ i,(NonlinearRnsPublic.publicOutput asg i : Int)=nativeProjectedOutput (NonlinearRnsPublic.publicResidues asg) i :=
++  rowSound asg ((AirSimplify.simplifySystem_accepts_iff asg system).mp h)
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsProfiled.profileDerived' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsProfiled.profileDerived
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsProfiled.coefficients_fit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsProfiled.coefficients_fit
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsProfiled.constants_fit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsProfiled.constants_fit
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsProfiled.capacity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsProfiled.capacity
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsProfiled.source_balanced' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsProfiled.source_balanced
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsProfiled.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsProfiled.rowSound
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsProfiled.simplifiedSource_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsProfiled.simplifiedSource_sound
++
++end Minidregg.Compiler.NonlinearRnsProfiled
+diff --git a/Compiler/ProfiledAgreement.lean b/Compiler/ProfiledAgreement.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/ProfiledAgreement.lean
+@@ -0,0 +1,26 @@
++import Compiler.NonlinearRnsProfiled
++
++namespace Minidregg.Compiler.NonlinearRnsProfiled
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++set_option autoImplicit false
++
++/-- Both compiler layouts force the same complete target tuple on the same input.
++This is output agreement, not an unproved total auxiliary-witness bijection. -/
++def LayoutAgreement : Prop := ∀ old new : Nat → BabyBear,
++  systemAccepts old NonlinearRnsPublic.system → systemAccepts new system →
++  NonlinearRnsPublic.publicResidues old=NonlinearRnsPublic.publicResidues new →
++  NonlinearRnsPublic.publicOutput old=NonlinearRnsPublic.publicOutput new
++
++theorem layoutAgreement : LayoutAgreement := by
++  intro old new ho hn hi
++  funext i
++  have h1 := NonlinearRnsPublic.nativeProjectedRow_sound old ho i
++  have h2 := rowSound new hn i
++  rw [hi] at h1
++  exact_mod_cast h1.trans h2.symm
++
++/-- info: 'Minidregg.Compiler.NonlinearRnsProfiled.layoutAgreement' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.NonlinearRnsProfiled.layoutAgreement
++
++end Minidregg.Compiler.NonlinearRnsProfiled
+diff --git a/Compiler/ProfiledBounds.lean b/Compiler/ProfiledBounds.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/ProfiledBounds.lean
+@@ -0,0 +1,70 @@
++import Compiler.ProfiledMatrix
++
++namespace Minidregg.Compiler.ProfiledMatrix
++open Minidregg.Compiler.SignedMatrix
++open scoped BigOperators
++set_option autoImplicit false
++
++def UnsignedMassBound : Prop := ∀ (p : Layout) c matrix (x : Fin p.groups → Nat),
++  (∀ g,x g < p.base^p.digits) → c+∑ g,matrix g*x g ≤ sideMassBound p c matrix
++
++theorem unsignedMassBound : UnsignedMassBound := by
++  intro p c matrix x hx
++  apply Nat.add_le_add_left
++  calc
++    ∑ g,matrix g*x g ≤ ∑ g,matrix g*(p.base^p.digits-1) := by
++      apply Finset.sum_le_sum
++      intro g _
++      exact Nat.mul_le_mul_left _ (by have := hx g; omega)
++    _ = (p.base^p.digits-1)*∑ g,matrix g := by rw [← Finset.sum_mul,mul_comm]
++
++def WidthSufficient : Prop := ∀ bits mass : Nat,0<bits → mass < (2^bits)^(1+Nat.log2 mass/bits)
++
++theorem widthSufficient : WidthSufficient := by
++  intro bits mass hb
++  have he : Nat.log2 mass+1 ≤ bits*(1+Nat.log2 mass/bits) := by
++    have hr := Nat.mod_lt (Nat.log2 mass) hb
++    have hd := Nat.div_add_mod (Nat.log2 mass) bits
++    nlinarith
++  calc
++    mass < 2^(Nat.log2 mass+1) := Nat.lt_log2_self
++    _ ≤ 2^(bits*(1+Nat.log2 mass/bits)) := Nat.pow_le_pow_right (by decide) he
++    _ = (2^bits)^(1+Nat.log2 mass/bits) := by rw [pow_mul]
++
++/-- The unsigned mass, not a sampled trace, determines every automatic result width. -/
++theorem auto_width_sufficient (p : Layout) (rows : Fin p.rows → Row p.groups) (hb : 0<p.limbBits) (i : Fin p.rows) :
++    sideMassBound p (leftConstant (rows i)) (leftCoefficient (rows i)) < p.base^((autoLayout p rows).width i) ∧
++    sideMassBound p (rightConstant (rows i)) (rightCoefficient (rows i)) < p.base^((autoLayout p rows).width i) := by
++  have h := widthSufficient p.limbBits
++    (max (sideMassBound p (leftConstant (rows i)) (leftCoefficient (rows i)))
++      (sideMassBound p (rightConstant (rows i)) (rightCoefficient (rows i)))) hb
++  exact ⟨lt_of_le_of_lt (le_max_left _ _) h,lt_of_le_of_lt (le_max_right _ _) h⟩
++
++/-- A conventional column recurrence invariant; callers supply a static column
++mass budget, never an assertion that a sampled carry happened to fit. -/
++theorem carry_step_bound (base cap column carry : Nat) (hb : 0<base)
++    (hcarry : carry≤cap) (hcolumn : column≤(base-1)*cap) : (column+carry)/base≤cap := by
++  apply (Nat.div_le_iff_le_mul_add_pred hb).mpr
++  have h : column+carry≤base*cap := by
++    calc
++      column+carry ≤ (base-1)*cap+cap := Nat.add_le_add hcolumn hcarry
++      _ = base*cap := by rw [← add_one_mul]; congr 1; omega
++  omega
++
++/-- info: 'Minidregg.Compiler.ProfiledMatrix.unsignedMassBound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledMatrix.unsignedMassBound
++
++/-- info: 'Minidregg.Compiler.ProfiledMatrix.widthSufficient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledMatrix.widthSufficient
++
++/-- info: 'Minidregg.Compiler.ProfiledMatrix.auto_width_sufficient' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledMatrix.auto_width_sufficient
++
++/-- info: 'Minidregg.Compiler.ProfiledMatrix.carry_step_bound' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledMatrix.carry_step_bound
++
++end Minidregg.Compiler.ProfiledMatrix
+diff --git a/Compiler/ProfiledExhibits.lean b/Compiler/ProfiledExhibits.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/ProfiledExhibits.lean
+@@ -0,0 +1,46 @@
++import Compiler.ProfiledMatrix
++
++namespace Minidregg.Compiler.ProfiledMatrix
++open Minidregg.Compiler Minidregg.Compiler.SignedMatrix Minidregg.Compiler.NativeKernelPlan
++set_option autoImplicit false
++set_option maxRecDepth 10000
++set_option maxHeartbeats 500000
++
++def tiny : Layout := ⟨1,1,1,1,1,1⟩
++def tinyRows : Fin tiny.rows → Row tiny.groups := fun _ => SignedMatrix.sub (SignedMatrix.var ⟨0,by decide⟩) (SignedMatrix.cst 1)
++def tinyProfile : RowLayout tiny.rows := ⟨fun _ => 1,fun _ => 1⟩
++def tinyAssignment (j : Nat) : BabyBear := if j<4 then 1 else 0
++
++def InhabitedCompiler : Prop := Capacity tiny tinyProfile tinyRows ∧
++  systemAccepts tinyAssignment (system tiny tinyProfile tinyRows) ∧ decoded tiny tinyAssignment ⟨0,by decide⟩=1
++
++theorem inhabitedCompiler : InhabitedCompiler := by
++  refine ⟨?_,?_,by decide⟩
++  · constructor <;> decide
++  · unfold systemAccepts
++    decide
++
++/-- Omitting the exact constant-capacity premise admits a real truncated relation:
++constant2 becomes a zero one-bit digit although the integer equation is false. -/
++def MissingCapacityFalsifier : Prop :=
++  systemAccepts (fun _ : Nat => (0 : BabyBear)) (system tiny tinyProfile (fun _ => SignedMatrix.cst 2)) ∧
++  (¬ Capacity tiny tinyProfile (fun _ => SignedMatrix.cst 2)) ∧
++  SignedMatrix.eval (SignedMatrix.cst 2 : Row 1) (fun _ => 0)≠0
++
++theorem missingCapacityFalsifier : MissingCapacityFalsifier := by
++  refine ⟨?_,?_,by decide⟩
++  · unfold systemAccepts
++    decide
++  · intro h
++    have hh := (h.constants ⟨0,by decide⟩).1
++    norm_num [leftConstant,SignedMatrix.cst,Minidregg.Theory.CompressedLinearEquation.posPart,tiny,Layout.base,tinyProfile] at hh
++
++/-- info: 'Minidregg.Compiler.ProfiledMatrix.inhabitedCompiler' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledMatrix.inhabitedCompiler
++
++/-- info: 'Minidregg.Compiler.ProfiledMatrix.missingCapacityFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledMatrix.missingCapacityFalsifier
++
++end Minidregg.Compiler.ProfiledMatrix
+diff --git a/Compiler/ProfiledMatrix.lean b/Compiler/ProfiledMatrix.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/ProfiledMatrix.lean
+@@ -0,0 +1,89 @@
++/- A row-sensitive layout for the same signed matrix. Scalar decompositions are
++shared once; each result/carry chain receives its own compile-time capacity. -/
++import Compiler.SignedMatrixEmit
++
++namespace Minidregg.Compiler.ProfiledMatrix
++open Minidregg.Compiler Minidregg.Compiler.SignedMatrix
++open Minidregg.Compiler.BfvSignedAccumulatorAir Minidregg.Compiler.IntegerCertificateEmission
++open Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open scoped BigOperators
++set_option autoImplicit false
++set_option maxRecDepth 10000
++
++structure RowLayout (rows : Nat) where
++  width : Fin rows → Nat
++  carryBits : Fin rows → Nat
++
++def rowVars {p : Layout} (q : RowLayout p.rows) (i : Fin p.rows) :=
++  q.width i*(1+p.limbBits)+2*(q.width i+1)*(1+q.carryBits i)
++def nVars (p : Layout) (q : RowLayout p.rows) := p.scalars*(1+p.limbBits)+∑ i,rowVars q i
++def resultStart (p : Layout) (q : RowLayout p.rows) (row : Fin p.rows) :=
++  p.scalars*(1+p.limbBits)+∑ i : Fin p.rows,if i.val<row.val then rowVars q i else 0
++
++def rowWires (p : Layout) (q : RowLayout p.rows) (row : Fin p.rows) (right : Bool) :
++    WeightedSumWires Nat (q.width row) p.limbBits (q.carryBits row) :=
++  let start := resultStart p q row
++  let width := q.width row
++  let bits := q.carryBits row
++  let carryStart := start+width*(1+p.limbBits)+(if right then (width+1)*(1+bits) else 0)
++  { result := fun i => start+i.val
++    resultBit := fun i j => start+width+p.limbBits*i.val+j.val
++    carry := fun i => carryStart+i.val
++    carryBit := fun i j => carryStart+(width+1)+bits*i.val+j.val }
++
++def rowSystem (p : Layout) (q : RowLayout p.rows) (rows : Fin p.rows → Row p.groups) (i : Fin p.rows) : ConstraintSystem BabyBear Nat :=
++  weightedSumGadget (leftConstant (rows i)) (digitCoefficient p (leftCoefficient (rows i))) (scalarWire p) (rowWires p q i false) ++
++  weightedSumGadget (rightConstant (rows i)) (digitCoefficient p (rightCoefficient (rows i))) (scalarWire p) (rowWires p q i true)
++
++def system (p : Layout) (q : RowLayout p.rows) (rows : Fin p.rows → Row p.groups) : ConstraintSystem BabyBear Nat :=
++  AirBignum.limbRangeSystem (scalarWire p) (scalarBits p) ++ (List.finRange p.rows).flatMap (rowSystem p q rows)
++
++structure Capacity (p : Layout) (q : RowLayout p.rows) (rows : Fin p.rows → Row p.groups) : Prop where
++  baseField : p.base ≤ babyBearP
++  carryField : ∀ i,2^(q.carryBits i) ≤ babyBearP
++  leftBudget : ∀ i,p.base-1+p.scalars*(p.base-1)*(p.base-1)+(2^(q.carryBits i)-1) < babyBearP
++  rightBudget : ∀ i,p.base-1+p.base*(2^(q.carryBits i)-1) < babyBearP
++  constants : ∀ i,leftConstant (rows i) < p.base^(q.width i) ∧ rightConstant (rows i) < p.base^(q.width i)
++  coefficients : ∀ i j,digitCoefficient p (leftCoefficient (rows i)) j < p.base^(q.width i) ∧
++    digitCoefficient p (rightCoefficient (rows i)) j < p.base^(q.width i)
++
++def SourceSound : Prop := ∀ p q rows,Capacity p q rows → ∀ asg,systemAccepts asg (system p q rows) →
++  ∀ i,SignedMatrix.eval (rows i) (decoded p asg)=0
++
++theorem sourceSound : SourceSound := by
++  intro p q rows cap asg hs i
++  obtain ⟨hr,hh⟩ := (systemAccepts_append asg _ _).mp hs
++  have hrow : systemAccepts asg (rowSystem p q rows i) := by
++    intro t ht
++    exact hh t (List.mem_flatMap.mpr ⟨i,by simp,ht⟩)
++  obtain ⟨hl,hrr⟩ := (systemAccepts_append asg _ _).mp hrow
++  have run (c : Nat) (matrix : Fin p.groups → Nat)
++      (w : WeightedSumWires Nat (q.width i) p.limbBits (q.carryBits i))
++      (hc : c < p.base^(q.width i)) (hm : ∀ j,digitCoefficient p matrix j < p.base^(q.width i))
++      (ha : systemAccepts asg (weightedSumGadget c (digitCoefficient p matrix) (scalarWire p) w)) :
++      Bignum.denoteNat p.base (AirBignum.limbVals asg w.result)=c+∑ g,matrix g*decoded p asg g := by
++    have h := ranged_weighted_sound cap.baseField (cap.carryField i) cap.baseField hc
++      (digitCoefficient p matrix) hm (cap.leftBudget i) (cap.rightBudget i) asg (scalarWire p) (scalarBits p) w hr ha
++    simpa only [digit_linearization] using h
++  have hl' := run _ _ _ (cap.constants i).1 (fun j => (cap.coefficients i j).1) hl
++  have hr' := run _ _ _ (cap.constants i).2 (fun j => (cap.coefficients i j).2) hrr
++  exact (splitSound (rows i) (decoded p asg)).mp (hl'.symm.trans hr')
++
++/-- Worst unsigned mass for bounded scalar groups; it contains no runtime witness. -/
++def sideMassBound (p : Layout) (c : Nat) (matrix : Fin p.groups → Nat) :=
++  c+(p.base^p.digits-1)*∑ g,matrix g
++
++def digitMass (base : Nat) (x : Nat) := (Nat.digits base x).sum
++/-- Conservative carry allocation from all coefficient digits. -/
++def sideCarryBound (p : Layout) (matrix : Fin p.groups → Nat) := 1+∑ g,digitMass p.base (matrix g)
++
++def autoLayout (p : Layout) (rows : Fin p.rows → Row p.groups) : RowLayout p.rows where
++  width := fun i => 1+Nat.log2 (max (sideMassBound p (leftConstant (rows i)) (leftCoefficient (rows i)))
++    (sideMassBound p (rightConstant (rows i)) (rightCoefficient (rows i))))/p.limbBits
++  carryBits := fun i => 1+Nat.log2 (max (sideCarryBound p (leftCoefficient (rows i))) (sideCarryBound p (rightCoefficient (rows i))))
++
++/-- info: 'Minidregg.Compiler.ProfiledMatrix.sourceSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Minidregg.Compiler.ProfiledMatrix.sourceSound
++
++end Minidregg.Compiler.ProfiledMatrix
+diff --git a/Compiler/ProfiledWitness.lean b/Compiler/ProfiledWitness.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/ProfiledWitness.lean
+@@ -0,0 +1,52 @@
++/- The successor changes allocation only. Values, sparse coefficient caches,
++radix installation, and carry evaluation are the frozen generic producer. -/
++import Compiler.NonlinearRnsProfiled
++import Compiler.DirectedRnsWitness
++
++namespace Minidregg.Compiler.ProfiledWitness
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.SignedMatrix Minidregg.Compiler.DirectedRnsWitness
++open Minidregg.Compiler.ProfiledMatrix
++set_option autoImplicit false
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def caches (p : Layout) (q : RowLayout p.rows) (rows : Fin p.rows → Row p.groups) : Array (SideCache × SideCache) :=
++  Array.ofFn fun i => (sideCache {p with width:=q.width i} (leftConstant (rows i)) (leftCoefficient (rows i)),
++    sideCache {p with width:=q.width i} (rightConstant (rows i)) (rightCoefficient (rows i)))
++
++def matrixWitness (p : Layout) (q : RowLayout p.rows) (cache : Array (SideCache × SideCache)) (x : Fin p.groups → Nat) : Array BabyBear := Id.run do
++  let ds := Array.ofFn fun i : Fin p.scalars => digit p.base (x (groupDigit p|>.symm i).1) (groupDigit p|>.symm i).2.val
++  let mut a := install (Array.replicate (nVars p q) 0) 0 p.limbBits ds
++  for row in List.finRange p.rows do
++    let (l,r) := cache[row.val]!
++    let mut total := l.constant
++    for i in [:ds.size] do total := total+l.coefficients[i]!*ds[i]!
++    a := install a (resultStart p q row) p.limbBits ((List.range (q.width row)).toArray.map (digit p.base total))
++    a := install a (resultStart p q row+q.width row*(1+p.limbBits)) (q.carryBits row) (carries p.base l ds)
++    a := install a (resultStart p q row+q.width row*(1+p.limbBits)+(q.width row+1)*(1+q.carryBits row)) (q.carryBits row) (carries p.base r ds)
++  return a
++
++open Minidregg.Compiler.NonlinearRnsInstance Minidregg.Compiler.NonlinearRnsProfiled
++
++def variableArray (cache : Array (SideCache × SideCache)) (row : Array Nat) : Except String (Array BabyBear) := do
++  unless row.size == 88 do throw "wrong public arity"
++  unless row[0]! < babyBearP do throw "row ID outside field"
++  for i in [1:88] do unless row[i]!<512 do throw "noncanonical radix512 digit"
++  let r := NonlinearRnsPublic.readResidues row
++  let x := values params r
++  for i in List.finRange 9 do
++    unless r i < params.sourceBase i do throw "noncanonical source residue"
++  for g in List.finRange 39 do
++    unless x g < profile.base^profile.digits do throw "scalar capacity exceeded"
++  let inner := matrixWitness profile rowLayout cache x
++  let mut a := Array.replicate NonlinearRnsProfiled.nVars (0 : BabyBear)
++  for i in [:88] do a := a.set! i (row[i]! : BabyBear)
++  for j in [:inner.size] do
++    let k := NonlinearRnsPublic.wireMap j
++    if k<89 then
++      unless a[k]! == inner[j]! do throw s!"public/shared alias mismatch {k}"
++    else a := a.set! k inner[j]!
++  return a
++
++end Minidregg.Compiler.ProfiledWitness
+diff --git a/EmitProfiledRns.lean b/EmitProfiledRns.lean
+new file mode 100644
+--- /dev/null
++++ b/EmitProfiledRns.lean
+@@ -0,0 +1,60 @@
++import Compiler.ProfiledWitness
++import Lean.Data.Json
++open Lean (Json toJson)
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan Minidregg.Theory
++open Minidregg.Compiler.AirSimplify Minidregg.Compiler.ProfiledWitness
++open Minidregg.Compiler.NonlinearRnsInstance Minidregg.Compiler.NonlinearRnsProfiled
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++def ir2Alg : Alg (AirSig BabyBear Nat) String := fun op => match op with
++  | .const c => fun _ => "{\"t\":\"const\",\"v\":"++toString c.val++"}"
++  | .var i => fun _ => ir2Var i
++  | .add => fun child => "{\"t\":\"add\",\"l\":"++child false++",\"r\":"++child true++"}"
++  | .mul => fun child => "{\"t\":\"mul\",\"l\":"++child false++",\"r\":"++child true++"}"
++def ir2Template (terms : ConstraintSystem BabyBear Nat) : String :=
++  let arithmetic := terms.map fun t => "{\"t\":\"gate\",\"body\":"++fold ir2Alg t++"}"
++  let lookup := "{\"t\":\"lookup\",\"table\":11,\"tuple\":["++String.intercalate "," ((List.range 88).map ir2Var)++"]}"
++  "{\"name\":\"nonlinear_exact_rescale_profiled_rows\",\"ir\":2,\"trace_width\":"++toString nVars++
++    ",\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":11,\"name\":\"bfv_public_rows\",\"arity\":88,"++
++    "\"sem\":\"exact_public_rows\",\"rows\":[]}],\"constraints\":["++String.intercalate "," (lookup::arithmetic)++"],\"hash_sites\":[],\"ranges\":[]}"
++def u32Bytes (a : Array BabyBear) : ByteArray := Id.run do
++  let mut bytes := ByteArray.emptyWithCapacity (4*a.size)
++  for value in a do
++    for shift in [0,8,16,24] do bytes := bytes.push ((value.val >>> shift).toUInt8)
++  return bytes
++
++def main (args : List String) : IO UInt32 := do
++  let outDir : System.FilePath := args.headD "artifacts"
++  IO.FS.createDirAll outDir
++  IO.println "constructing parameterized directed RNS source"
++  let terms := simplifySystem system
++  IO.FS.writeFile (outDir/"template_ir2.json") (ir2Template terms++"\n")
++  IO.println s!"emitted {terms.length} arithmetic constraints, width {nVars}"
++  let cache := caches profile rowLayout rows
++  let check := fun a : Array BabyBear => terms.all (fun t => eval (fun i => a[i]!) t == 0)
++  let some input := args[1]? | throw (IO.userError "expected public rows path")
++  let parsed ← IO.ofExcept (Json.parse (← IO.FS.readFile (System.FilePath.mk input)))
++  let rows ← IO.ofExcept (Lean.fromJson? parsed : Except String (Array (Array Nat)))
++  IO.FS.withFile (outDir/"trace.leu32") .write fun handle => do
++    for i in [:rows.size] do
++      let row := rows[i]!
++      unless row[0]! == i do throw (IO.userError s!"wrong row ID {i}")
++      let a ← IO.ofExcept (variableArray cache row)
++      unless check a do throw (IO.userError s!"generated source refused actual row {i}")
++      handle.write (u32Bytes a)
++      IO.println s!"produced {i+1}/{rows.size} rows"
++  let wrong := rows[0]!.set! 64 (((rows[0]!)[64]!+1)%512)
++  if let .ok a := variableArray cache wrong then
++    if check a then throw (IO.userError "changed public output accepted")
++  let bad := rows[0]!.set! 1 512
++  if let .ok _ := variableArray cache bad then throw (IO.userError "radix512 admitted")
++  let summary := Json.mkObj [("rows",toJson rows.size),("trace_width",toJson nVars),
++    ("trace_bytes",toJson (rows.size*nVars*4)),("ir2_arithmetic_constraints",toJson terms.length),
++    ("public_arity",toJson (88:Nat)),("changed_public_output_refused",toJson true),
++    ("radix512_refused",toJson true),("all_actual_source_rows_checked",toJson true),
++    ("public_tuple_order",toJson "rowID,product_extended9x7_radix512,output4x6_radix512")]
++  IO.FS.writeFile (outDir/"emission.json") (summary.pretty++"\n")
++  IO.println summary.compress
++  return 0

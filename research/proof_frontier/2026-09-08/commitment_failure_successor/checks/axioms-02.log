@@ -1,0 +1,20 @@
+'Minidregg.Selvage.CommitmentFreshTrace.covered_cached_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.response_collision_cover' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.late_target_cover' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.checkpoint_bad_cover' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_sound' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_none_iff' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.collisionWitness_typed' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.covered_collision_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.collision_candidates' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.lateWitness_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.lateWitness_none_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.schedule_failure_cover' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.schedule_failure_probability' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.oracle_schedule_failure_probability' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

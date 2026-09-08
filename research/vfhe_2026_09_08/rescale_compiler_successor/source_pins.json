@@ -1,0 +1,210 @@
+{
+  "owned_sources": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/NonlinearRnsProfiled.lean",
+      "bytes": 7200,
+      "sha256": "b3be72bb7089497664b74c836f5fd4945735fbd3b795080d0c1d6dbe93420900"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledAgreement.lean",
+      "bytes": 1131,
+      "sha256": "a4811300c0b8263083f63c8c2100da0bbdbf63b0c1ff893f8ccbf7d1b68acdb6"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledBounds.lean",
+      "bytes": 3390,
+      "sha256": "8c035865784110f09b84d210845cb18cbcd7f12bc8f30e2bc34bd8bc37c2da11"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledExhibits.lean",
+      "bytes": 2149,
+      "sha256": "c9393f95dbdc0db19c8d9e192190d1c1b92c6076bc1e3218aeca058cb2680fa2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledMatrix.lean",
+      "bytes": 5327,
+      "sha256": "848c2fb072f6e5e7b1c360fd60c56cc668046c744135860e13b7bbea45c0d51c"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/Compiler/ProfiledWitness.lean",
+      "bytes": 2872,
+      "sha256": "0bc37b059e41c985226a4b47416ff672a61051c094eb82237b76619b22785c58"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/EmitProfiledRns.lean",
+      "bytes": 3727,
+      "sha256": "c2d3820486421ab43c46a64685880ea856ab8ccdd6895451305809e3f9286914"
+    }
+  ],
+  "reused_generic_modules": [
+    {
+      "module": "Compiler.DirectedRnsEmit",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsEmit.lean",
+        "bytes": 1639,
+        "sha256": "6150b38a2ec60a6737505c25535b2a9e79459fcf9b5f79b1e0965803b6803c09"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsEmit.olean",
+        "bytes": 40216,
+        "sha256": "d59035a8d223b8213d7c9343353a01deea32886370083b70a15f51023ec178fc"
+      }
+    },
+    {
+      "module": "Compiler.DirectedRnsExhibits",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsExhibits.lean",
+        "bytes": 1464,
+        "sha256": "c87d90e4e0ce248f56c8acd5dbbe9ce92bdc4b40941afd14e0be3689f2c75107"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsExhibits.olean",
+        "bytes": 129552,
+        "sha256": "8d629c7bb221c9f4e5deb63c763ed9736c6237b3077139a1301091a6bc1f19d7"
+      }
+    },
+    {
+      "module": "Compiler.DirectedRnsScaler",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsScaler.lean",
+        "bytes": 10133,
+        "sha256": "e0afaa5e0fcdb594f8e63c34c8456db638fa07937a79784d1ceb11a0538c0b9a"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsScaler.olean",
+        "bytes": 1066320,
+        "sha256": "bdca226638688903607915d08f66c28226577ed6b2ca8d8144c38f4ea4ba79b0"
+      }
+    },
+    {
+      "module": "Compiler.DirectedRnsWitness",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/DirectedRnsWitness.lean",
+        "bytes": 3498,
+        "sha256": "a79956a8263d4643b1b5a465da3d91ef7a7e57b210e574c683d893f781cdb01d"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/DirectedRnsWitness.olean",
+        "bytes": 447192,
+        "sha256": "52478a97f32ee37559de1ca6c07a64c013827fb1654bed395dcec10da8d92d48"
+      }
+    },
+    {
+      "module": "Compiler.NonlinearRnsInstance",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsInstance.lean",
+        "bytes": 2752,
+        "sha256": "6ec28f0e6aac1ef29e39ab622588927a9bae593939225827ece0b2b1b2f4e277"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsInstance.olean",
+        "bytes": 314576,
+        "sha256": "2ddbc4284e954e84b57570d077f8b38536e5fbd2c28dcc69dbc08a5dab758866"
+      }
+    },
+    {
+      "module": "Compiler.NonlinearRnsNative",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsNative.lean",
+        "bytes": 5680,
+        "sha256": "38fdd174fd58d8ca1df04d50d8632ec0f034cf149e7e0d5d997ec2a5b90fc569"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsNative.olean",
+        "bytes": 869832,
+        "sha256": "18402ba4fe5977ff15bdb6538999033dd7b5dd31478f04c071164aab95686378"
+      }
+    },
+    {
+      "module": "Compiler.NonlinearRnsPublic",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsPublic.lean",
+        "bytes": 1899,
+        "sha256": "ef05bbd066689be7c1f3598bc7d3b1c02554d0c7d63a9a4a12e6e10bb75d7f34"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublic.olean",
+        "bytes": 214376,
+        "sha256": "73c730614f607b72acefe4320e8d5ea9964a7e243810eee41d13c606beb5f0e6"
+      }
+    },
+    {
+      "module": "Compiler.NonlinearRnsPublicSound",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsPublicSound.lean",
+        "bytes": 6049,
+        "sha256": "ae51163e3889141a4aec8e09fb9eb8fdfd2a847172a56b48f7d8dca7863c4486"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsPublicSound.olean",
+        "bytes": 354072,
+        "sha256": "eac8258b589999204d735b2a94e2e04bd88b5ba4f6042ca824d977c0cb3af0b2"
+      }
+    },
+    {
+      "module": "Compiler.NonlinearRnsSound",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/NonlinearRnsSound.lean",
+        "bytes": 5995,
+        "sha256": "210e38dcf4616ffe913319ad18cf6767c6004fc0899b10c0b3513ed7e23965fb"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/NonlinearRnsSound.olean",
+        "bytes": 14252824,
+        "sha256": "4a322bfd8e3dd14c67e660f67f9417078012060c1cc3dc85dca82cc2724fd030"
+      }
+    },
+    {
+      "module": "Compiler.SignedMatrix",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/SignedMatrix.lean",
+        "bytes": 5215,
+        "sha256": "d3f84e321bd1ee5b4deb3bdda3a4ee7cca2ae3da695d37944c283292aecef7d5"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrix.olean",
+        "bytes": 230304,
+        "sha256": "912d6977ee4d9c95ba2bc39453d52b2c1022e6fdc91e8237f4fce61bf44968d9"
+      }
+    },
+    {
+      "module": "Compiler.SignedMatrixEmit",
+      "source": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/Compiler/SignedMatrixEmit.lean",
+        "bytes": 5233,
+        "sha256": "4f165bf1e7d7ba213ac90e40fe2bb311639c061334e95fed68c002d07471ef53"
+      },
+      "olean": {
+        "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/build/Compiler/SignedMatrixEmit.olean",
+        "bytes": 244920,
+        "sha256": "eb4b6ed5ecd5f98154dddaf0a1d60b73b9789f7f7eccdc6fab9da77663a2ac7d"
+      }
+    }
+  ],
+  "predecessor_source_pins": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/source_pins.json",
+    "bytes": 10631,
+    "sha256": "eb83a4fb0dba8bd919700cd7bb905ce8fc364f282c994e28ed0a07ce39bc31e6"
+  },
+  "predecessor_patch": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_rescale_generic/proposal.patch",
+    "bytes": 55105,
+    "sha256": "6bd753e92f39c8acce22d923c6714b0043a89ded7067bdf06e96d4999ed1a021"
+  },
+  "predecessor_manifest": null,
+  "public_rows": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_rescale_generic/results/case001/public_rows.json",
+    "bytes": 10171,
+    "sha256": "0b817b8b538062557a5a6add1d08ba159b1874afda6e3d36ce882993b83f87f7"
+  },
+  "runtime_result": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_cost_runtime/RESULT.json",
+    "bytes": 7076,
+    "sha256": "4147e25da07af5bc8de1748f18581ffcd7ad4f5c806547007fc093a89ed53187"
+  },
+  "runtime_report": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_cost_runtime/REPORT.md",
+    "bytes": 3054,
+    "sha256": "4474e67652e9252db0680e1c3fb97735d9e68f7ae2e21bd3e3eee2fb7c213f9f"
+  }
+}

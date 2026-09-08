@@ -1,0 +1,36 @@
+{
+  "changed_level2_digit_rejected": true,
+  "claim": "EXECUTED fresh joined public proof verification",
+  "error": "\"IR v2 verification failed: InvalidOpeningArgument(InvalidPowWitness)\"",
+  "mutated_coefficient": 1536,
+  "prefix": {
+    "first_nonzero_mask_row": [
+      0,
+      6878,
+      25207,
+      394
+    ],
+    "modulus_switch": {
+      "body_row": [
+        805,
+        56149,
+        55195,
+        862
+      ],
+      "body_row_matches_decoded_pbs_input": true,
+      "proof_sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8",
+      "template_sha256": "7922bc82170a30a377292326277cea85125633aae64021ec291d5603fb25eb31",
+      "verified": true,
+      "verify_ns": 16115417
+    },
+    "rotation_proof_sha256": "619764cbec4153d335a06753d4c4459679ac1eaeea01dc5bf0e05d89edcf2a45",
+    "rotation_template_sha256": "558397bfd2c7c048b7b5b375d607fadcad4150db54f6492e28281eee1a35ecbc",
+    "rotation_verified": true,
+    "rotation_verify_ns": 19026500
+  },
+  "proof_bytes": 363165,
+  "proof_sha256": "6993ca1094c7c96d99c3cab01605dc395dd12153aff2ae2b00c25c01a3db9f34",
+  "verified": false,
+  "verifier_ran": true,
+  "verify_ns": 17066209
+}

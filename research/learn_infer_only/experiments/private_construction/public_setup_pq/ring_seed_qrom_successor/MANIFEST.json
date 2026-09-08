@@ -1,0 +1,95 @@
+{
+  "status": "COMPLETE",
+  "scope": "[DERIVED] Honest fixed-coalition QROM theorem conditional on exact QPT power-basis Ring-LWE and explicit resources/advice; no concrete SHAKE/security-bit claim",
+  "artifacts": {
+    "BOUNDS.json": "206d097161e3d11662988644a12cc7aa76007e587be095a114e964402685c8e8",
+    "COMMANDS.json": "4ee5a5d6c967f218184e2d78e1b4091d39382325bb656d1619ac7c1530696898",
+    "NEXT.md": "84d013ebc61a233ed6a0a2fbcb40656972b8d45e90d7d387457899f0704060f0",
+    "SOURCES.md": "efb3956eb5bdb1c197e82c0eee9bf084bba17a3f6eadf01495caf5826b27f4fb",
+    "STATUS.md": "c69768102932dfe9c42fb483c3f58311b9ef9bf150b3fa15b360bd2d41c38072",
+    "THEOREM.md": "9c038779e494bcbada7875940fba276c3256af60d7dda4b5f94bf565c5d7a73d",
+    "extracts/2020-1361.txt": "7f23a6bb0798f5e65cf0c8a29e20af5368f19d3bb03857a6890ab26cb3fa9918",
+    "price_bounds.py": "a55c8c251e0ed51df84b916823660682573c83d76e69a125a4e65f342b303516",
+    "quantum_simulation/COUNTS.json": "c6f22eb56a81fc010162d496495b6f36836a6010c4e3959c84102193e35259d0",
+    "quantum_simulation/MANIFEST.json": "27c2f8c0ff006c03fa41f68e6fdda4201b4e2b937b01a8233c63210d4c87e15a",
+    "quantum_simulation/NEXT.md": "9f103b0576546b8bb14f8e9b718318bb939f668dad6f5ff95c6a5868db5554cd",
+    "quantum_simulation/PHASE_CHECKS.json": "5314d8f7ed7464981964ce2784569c9132d6642de871b98592d4e1d19debfc05",
+    "quantum_simulation/RUN.log": "d10ffdb31ed60b7aef985e4a63b3c95b7d9d56a291dac11418b1ad0bd0508af5",
+    "quantum_simulation/SIMULATION.md": "9f598fbce07e847400550ffc914e24f4d60cf19b4435344b26f5f1c5b90baf48",
+    "quantum_simulation/SOURCES.md": "2e8bea7eb6921e88fed5bbec11ade5b4f11eb260464bef5e993d82e5992a3d44",
+    "quantum_simulation/STATUS.md": "38cb06689eac257db44272ce432430067d9755872ad1a9a342f8f3b577cbbb8a",
+    "quantum_simulation/extracts/2012-076.txt": "67dc8a8ae38c803b5086ab41ad3c93ed8fd20624d3e6b5a68c8fc80ff9e6ad9b",
+    "quantum_simulation/extracts/2012-182.txt": "b967a8650118a2d813f227a65b2e491a034183dc9f8b21854e03d113fd69c7df",
+    "quantum_simulation/extracts/2012-606.txt": "6101a2636db2b0fbb740f1e66a57fc1eaf268723ec1df1199a00608c9a5a1f16",
+    "quantum_simulation/resource_counts.py": "599b7a70bf762c365c146879fa21d46105aaac428ec9fe9adaa41c02bfa34625",
+    "quantum_simulation/symbolic_phase_checks.py": "df578191f7e7b4d5f68500c11683a37bf38a065c5fb66d1752b601c6aab916be",
+    "seal.py": "49c91f55f556b2072fc7fde4ecd333346a774656abbb49451cdfcd4adb723372"
+  },
+  "public_inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_security_successor/MANIFEST.json": {
+      "sha256": "4323f8e2af04121974d711c8e164d86dd88872f9baf62ac4eb93ae4c21c29702",
+      "frozen_input_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_security_successor/THEOREM.md": {
+      "sha256": "9c333a923f95c00598b5582aed603a4db838da99850b476f2411f0af1d2fb87a",
+      "frozen_input_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_security_successor/transcript_programming/KERNEL.md": {
+      "sha256": "08af89d3facefae4d74553a56a683f9577fc0289481addc48572794e155be109",
+      "frozen_input_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_security_successor/CHECKS.json": {
+      "sha256": "522726e96e83115ee65f7642ca7d00933ea8f7f9f48739fc28aae7f358868152",
+      "frozen_input_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/MANIFEST.json": {
+      "sha256": "2d61addad6b34a65486e9b68d25f7efb5292d97d6bd251e30879ad772764ef24",
+      "frozen_input_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_transport/expansion/public_expander.py": {
+      "sha256": "ab175083b2a38e382776f07a52a0d8b84e8886085f40f083117de273f0d0aba4",
+      "frozen_input_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/RING_REGULARITY.md": {
+      "sha256": "2926555d5842bb71af7b16caec3eef512a9c7cfea99e877b862bcfea79d30e85",
+      "frozen_input_matched": true
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/SPEC.md": {
+      "sha256": "2fef91992b092f93f6023a02b0072008a2f4f46e5601ea8fd71eb8d0972e1576",
+      "frozen_input_matched": true
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2020/1361.pdf": {
+      "sha256": "a185688a1ffd8352f433033545a73c9698539df92de517dbea29342c5fe56e53",
+      "source_scope": "Theorem1/Figure2,Theorem6 proof,AppendixA"
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/076.pdf": {
+      "sha256": "1e79d66de13f4dcfcc5e029ba0d29ab5b2fdf40fe28b19a20c67a128c76b0b53",
+      "source_hash_attributed_to_child_seal": true
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/182.pdf": {
+      "sha256": "f708b04cccaacca5220e444f4f703e68d35a056769b6ac4806ec0b10b0c1cbd3",
+      "source_hash_attributed_to_child_seal": true
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/606.pdf": {
+      "sha256": "401f27345dca5bc5426a05233c75b8888edf288be437eb383734506d0a2b6fe2",
+      "source_hash_attributed_to_child_seal": true
+    }
+  },
+  "actual_seed_bytes_each": 32,
+  "prequery_budget_each_stage": "2^64",
+  "two_world_programming_bound": "2^-94 + 2^-191",
+  "full_bound": "768 epsilon_QR + 2^-94 + 2^-168 + 2^-191",
+  "unimplemented_seed_corollaries_bytes": [
+    48,
+    64
+  ],
+  "search_counts_including_child": {
+    "web_queries": 4,
+    "Scry_SQL": 0,
+    "web_opens": 0,
+    "PDF_downloads": 0
+  },
+  "quantum_or_crypto_executions": 0,
+  "private_reads": 0,
+  "integration": "Root integration; no independent-review queue required"
+}

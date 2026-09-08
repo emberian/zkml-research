@@ -1,0 +1,38 @@
+{
+  "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+  "claim": "EXECUTED complete first CMUX integer input and exact signed decomposition proof",
+  "exact_public_tables": 3,
+  "prefix": {
+    "first_nonzero_mask_row": [
+      0,
+      6878,
+      25207,
+      394
+    ],
+    "modulus_switch": {
+      "body_row": [
+        805,
+        56149,
+        55195,
+        862
+      ],
+      "body_row_matches_decoded_pbs_input": true,
+      "proof_sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8",
+      "template_sha256": "7922bc82170a30a377292326277cea85125633aae64021ec291d5603fb25eb31",
+      "verified": true,
+      "verify_ns": 16112917
+    },
+    "rotation_proof_sha256": "619764cbec4153d335a06753d4c4459679ac1eaeea01dc5bf0e05d89edcf2a45",
+    "rotation_template_sha256": "558397bfd2c7c048b7b5b375d607fadcad4150db54f6492e28281eee1a35ecbc",
+    "rotation_verified": true,
+    "rotation_verify_ns": 17698250
+  },
+  "proof_bytes": 363165,
+  "proof_sha256": "6993ca1094c7c96d99c3cab01605dc395dd12153aff2ae2b00c25c01a3db9f34",
+  "prove_ns": 403139292,
+  "rows": 2048,
+  "self_verify_ns": 27430167,
+  "template_sha256": "d1306386767a9ec8bdfb9bddf3e0b2f831b352feafdbd3b5e2572baa7aa4c52a",
+  "trace_width": 301,
+  "verified": true
+}

@@ -1,0 +1,86 @@
+[
+  {
+    "module": "ProfiledMatrix",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/ProfiledMatrix.olean",
+      "Compiler/ProfiledMatrix.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor",
+    "seconds": 3.0823233127593994,
+    "exit": 0,
+    "log": "results/final_ProfiledMatrix.log",
+    "source_sha256": "848c2fb072f6e5e7b1c360fd60c56cc668046c744135860e13b7bbea45c0d51c"
+  },
+  {
+    "module": "ProfiledBounds",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/ProfiledBounds.olean",
+      "Compiler/ProfiledBounds.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor",
+    "seconds": 2.8622660636901855,
+    "exit": 0,
+    "log": "results/final_ProfiledBounds.log",
+    "source_sha256": "8c035865784110f09b84d210845cb18cbcd7f12bc8f30e2bc34bd8bc37c2da11"
+  },
+  {
+    "module": "NonlinearRnsProfiled",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/NonlinearRnsProfiled.olean",
+      "Compiler/NonlinearRnsProfiled.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor",
+    "seconds": 54.32431101799011,
+    "exit": 0,
+    "log": "results/final_NonlinearRnsProfiled.log",
+    "source_sha256": "b3be72bb7089497664b74c836f5fd4945735fbd3b795080d0c1d6dbe93420900"
+  },
+  {
+    "module": "ProfiledWitness",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/ProfiledWitness.olean",
+      "Compiler/ProfiledWitness.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor",
+    "seconds": 2.930166006088257,
+    "exit": 0,
+    "log": "results/final_ProfiledWitness.log",
+    "source_sha256": "0bc37b059e41c985226a4b47416ff672a61051c094eb82237b76619b22785c58"
+  },
+  {
+    "module": "ProfiledExhibits",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/ProfiledExhibits.olean",
+      "Compiler/ProfiledExhibits.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor",
+    "seconds": 2.7848429679870605,
+    "exit": 0,
+    "log": "results/final_ProfiledExhibits.log",
+    "source_sha256": "c9393f95dbdc0db19c8d9e192190d1c1b92c6076bc1e3218aeca058cb2680fa2"
+  },
+  {
+    "module": "ProfiledAgreement",
+    "command": [
+      "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+      "-o",
+      "build/Compiler/ProfiledAgreement.olean",
+      "Compiler/ProfiledAgreement.lean"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor",
+    "seconds": 2.773634195327759,
+    "exit": 0,
+    "log": "results/final_ProfiledAgreement.log",
+    "source_sha256": "a4811300c0b8263083f63c8c2100da0bbdbf63b0c1ff893f8ccbf7d1b68acdb6"
+  }
+]

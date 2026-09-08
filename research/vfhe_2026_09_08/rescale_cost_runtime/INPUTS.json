@@ -1,0 +1,18 @@
+{
+  "claim": "EXECUTED exact frozen input/runtime pins before successor proof",
+  "files": {
+    "../proved_rescale_generic/target/release/vfhe-proved-rescale-generic": "759902fd6ed3c264db89802b915ecd16d6319b938f8e4d58e32531a3aef6066c",
+    "../rescale_compiler_successor/artifacts/template_ir2.json": "37a02768080e1ca8284fab4bc186b2e5981ad0b97a4af7965472953cdfe4df5a",
+    "../rescale_compiler_successor/artifacts/trace.leu32": "92ceb5ab11ffa4ff2b3032d1658ad0f13a4e70c28bc6d409bedbbcff86c9e591",
+    "../proved_rescale_generic/results/case001/public_rows.json": "0b817b8b538062557a5a6add1d08ba159b1874afda6e3d36ce882993b83f87f7"
+  },
+  "baseline_build": "../proved_rescale_generic/BUILD.json",
+  "baseline_proof_result": "../proved_rescale_generic/results/proof001/proof.json",
+  "case": "../proved_rescale_generic/results/case001",
+  "RAYON_NUM_THREADS": "4",
+  "same_positions": 32,
+  "public_columns": 88,
+  "target_columns": 24575,
+  "target_arithmetic_constraints": 32043,
+  "utc": "2026-09-08T18:15:18.395606+00:00"
+}

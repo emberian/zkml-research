@@ -1,0 +1,49 @@
+{
+  "arithmetic_only": true,
+  "claim_label": "EXECUTED",
+  "command": "python3 -B research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_qrom_successor/quantum_simulation/resource_counts.py",
+  "completed_utc": "2026-09-08 18:25:19 UTC",
+  "crypto_executions": 0,
+  "giant_block_information_theoretic_only": {
+    "A_bits_per_G_value_and_label_register": 1551892480,
+    "A_bytes_per_G_value": 193986560,
+    "GHM_prequery_counts_parent_chronology": "qhat_A=Q_before_A; qhat_missing=Q_before_missing; honest A read is not a missing-oracle query",
+    "missing_bits_per_G_value_and_label_register": 13603307520,
+    "missing_bytes_per_G_value": 1700413440,
+    "queries_to_each_target_G_per_exposed_H_query_via_phase_routing": 1,
+    "separate_independent_family_oracles": true
+  },
+  "ordinary_wrapper": {
+    "address_register_bits_at_illustrative_D": 3737,
+    "advice": "fixed public monic irreducible degree-m binary polynomial; deterministic validation; same allowed nonuniform advice class",
+    "base_quantum_calls_per_exposed_query": 1,
+    "bit_gate_upper_order_per_query": "O(ceil(L/m)*k*m^2 + B*(d+L_chunk) + L*log(L))",
+    "fallback_seed_bits": "k * ceil(L/m) * m",
+    "fallback_seed_bytes_at_example_and_c_base_zero": "75776 * Q",
+    "field_degree_example": 4096,
+    "field_mults_per_exposed_query_compute_uncompute": "148 * (k-1)",
+    "illustrative_input_bound_bytes": 466,
+    "independent_polynomial_lanes_at_L_equals_chunk_bits": 74,
+    "input_bound_qualification": "D must also cover the adversary's declared maximum query length; 466 is only the frozen-format maximum at q289.",
+    "length_tag_bits": 9,
+    "max_valid_frozen_format_address_bytes": 466,
+    "overlay_value_bytes": 1894400000,
+    "packed_overlay_address_bytes_at_illustrative_D": 23356250,
+    "required_independence": "k = 2*Q + c_base; parent case c_base=0"
+  },
+  "primary_web_search_queries": 2,
+  "profile": {
+    "A_rows": 64,
+    "cap_chunks_per_row": 80,
+    "chunk_bits": 303104,
+    "chunk_bytes": 37888,
+    "chunk_words": 1024,
+    "missing_rows": 561,
+    "overlay_entries": 50000,
+    "q_bits": 289,
+    "raw_candidate_bits": 296
+  },
+  "quantum_circuits_executed": 0,
+  "random_samples": 0,
+  "source_sha256": "599b7a70bf762c365c146879fa21d46105aaac428ec9fe9adaa41c02bfa34625"
+}

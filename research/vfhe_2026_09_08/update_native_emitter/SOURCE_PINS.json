@@ -1,0 +1,20 @@
+{
+  "files": {
+    "Compiler/BfvExpiryWitnessPlan.lean": "a0b6afeaa153fcdab8dc41ca262b0f065268a4aa0465fe2e3dd0cb766b025d3d",
+    "EmitExpiryWitnessPlan.lean": "3bf6877b7c67d7152032c043c1cfbf9d5bf76226ecf25adc92b0ee1496973968",
+    "program/witness_plan.json": "328544d069866f9b23571e8b2338ea21c01bdec404dc0ba08df9afd2f09dd88e",
+    "program/template_ir2.json": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+    "emit.py": "e85174ef4d67bcca6cda4186e85286f905743cbad6b50e1f545dabf9f45d5cd9",
+    "run.py": "e6cc1586b761f1307e56652be0cb92d4ea4d8bc1ae98b3befcc35b7e85842105"
+  },
+  "shared_files": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean": "bb91eeb1c1fc46c0e1f498e49de18cc7533f6ab3bf5b7b14efa01382b4f87bb0",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/native/target/release/lean-query-witness": "15102c5f9ae90e30755fb23c4b8091ba4c28b48e0c15a908115c0b0b88991093",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/native/src/main.rs": "942b44f54f9cd50b716a6ef7fff7ce35dc86e636cdaedbf12e61756be3cc6568",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiryLayout.lean": "90a8c1b9e665de22a0f9bad2d9b319b1432696288a47f6f12d2e876bc10665f5",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvExpiry.lean": "518885c19e7910b61886c8e19f00d4cf37fba5ad09a7b7cbb155c418d87d42e6",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/Compiler/BfvLinearCombination.lean": "98fca210c71028639f6fcab9955c7e9869999d00bb40e39b75a7d775a4c999ab",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/vfhe-proved-operation": "dd41ec2eac52bf35ff8a9c6e736fa4dcb7cb4ae41cec6bace5cf593a3cf87cc6"
+  },
+  "scope": "Untrusted producer only; source relation and query native executor unchanged; full event66 byte equality."
+}

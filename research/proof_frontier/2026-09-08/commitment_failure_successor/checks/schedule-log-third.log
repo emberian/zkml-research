@@ -1,0 +1,19 @@
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+Selvage/SuppliedScheduleTrace.lean:117:80: error: unsolved goals
+Digest : Type
+inst✝ : DecidableEq Digest
+H : BinaryMerkle.HashSuite Ext4 Digest
+st : Checkpoints Ext4 Digest
+q : ℕ
+r : Fin 5 → Ext4
+seed : Fin q → PowerTwoFriLevels 20 1
+o : Openings Ext4 Digest 5 q
+h :
+  List.length (verificationLog H firstFifteen st q ⋯ r seed o) ≤
+    ∑ j, q * (8 * (20 - 3 * ↑j + 1) + 2 * (20 - 3 * (↑j + 1) + 1))
+⊢ q * 720 = q * 770

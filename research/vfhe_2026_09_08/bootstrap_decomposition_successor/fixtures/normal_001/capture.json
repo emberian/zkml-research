@@ -1,0 +1,92 @@
+{
+  "base_log": 10,
+  "claim": "EXECUTED existing TFHE integer CMUX input and SignedDecomposer on genuine saved accumulator",
+  "cmux_input_ns": 833,
+  "coefficients": 2048,
+  "decomposition_ns": 91500,
+  "delta_sha256": "91bc6f56fbbb2cc26d22f1978ea8125110ac8e11e75252ca0a6ef89adaa0303d",
+  "fft_calls": 0,
+  "iteration_levels": [
+    2,
+    1
+  ],
+  "levels": 2,
+  "mask_exponent": 394,
+  "new_encryptions": 0,
+  "new_keys": 0,
+  "origins": [
+    {
+      "bytes": 8232,
+      "file": "initial_lut.ct",
+      "origin": "../bootstrap_rotation_successor/fixtures/normal_001/initial_lut.ct",
+      "sha256": "341f66e90fd70193fe9ba240b9d761ad092181e73478e675b0eddcca63ddeb3b"
+    },
+    {
+      "bytes": 8232,
+      "file": "body_rotated_lut.ct",
+      "origin": "../bootstrap_rotation_successor/fixtures/normal_001/body_rotated_lut.ct",
+      "sha256": "34dc3e00c96578b3a7c15abef3cdd06e8e26636f58cd094f7cfa82777129c937"
+    },
+    {
+      "bytes": 3256,
+      "file": "pbs_input.ct",
+      "origin": "../bootstrap_rotation_successor/fixtures/normal_001/pbs_input.ct",
+      "sha256": "12db684dfe5695f6afabde7dc1d55c1f92e13a6d782e4994c49c7a9418fd7114"
+    },
+    {
+      "bytes": 22045,
+      "file": "prior_rows.json",
+      "origin": "../bootstrap_rotation_successor/fixtures/normal_001/prior_rows.json",
+      "sha256": "a328dc5c12625617e1a05afd48f2fb9287cb4edca10cce37a5ab25bf811afe1f"
+    },
+    {
+      "bytes": 11063,
+      "file": "prior_template.json",
+      "origin": "../bootstrap_rotation_successor/fixtures/normal_001/prior_template.json",
+      "sha256": "7922bc82170a30a377292326277cea85125633aae64021ec291d5603fb25eb31"
+    },
+    {
+      "bytes": 233366,
+      "file": "prior_proof.bin",
+      "origin": "../bootstrap_rotation_successor/fixtures/normal_001/prior_proof.bin",
+      "sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8"
+    },
+    {
+      "bytes": 22529,
+      "file": "rotation_template.json",
+      "origin": "../bootstrap_rotation_successor/artifacts/template_ir2.json",
+      "sha256": "558397bfd2c7c048b7b5b375d607fadcad4150db54f6492e28281eee1a35ecbc"
+    },
+    {
+      "bytes": 290448,
+      "file": "rotation_proof.bin",
+      "origin": "../bootstrap_rotation_successor/results/proof001/proof.bin",
+      "sha256": "619764cbec4153d335a06753d4c4459679ac1eaeea01dc5bf0e05d89edcf2a45"
+    }
+  ],
+  "prefix": {
+    "first_nonzero_mask_row": [
+      0,
+      6878,
+      25207,
+      394
+    ],
+    "modulus_switch": {
+      "body_row": [
+        805,
+        56149,
+        55195,
+        862
+      ],
+      "body_row_matches_decoded_pbs_input": true,
+      "proof_sha256": "b0f75e7afd1f61939048e83a45924a09d845aae1b656baabb0c2367a1c683eb8",
+      "template_sha256": "7922bc82170a30a377292326277cea85125633aae64021ec291d5603fb25eb31",
+      "verified": true,
+      "verify_ns": 15970500
+    },
+    "rotation_proof_sha256": "619764cbec4153d335a06753d4c4459679ac1eaeea01dc5bf0e05d89edcf2a45",
+    "rotation_template_sha256": "558397bfd2c7c048b7b5b375d607fadcad4150db54f6492e28281eee1a35ecbc",
+    "rotation_verified": true,
+    "rotation_verify_ns": 25298875
+  }
+}

@@ -1,0 +1,9 @@
+Selvage/CommitmentFailureSoundness.lean:105:83: error: Application type mismatch: The argument
+  hy.right
+has type
+  Accepts E default y.1 y.2
+but is expected to have type
+  SuppliedAccepts H ?m.527 (E.checkpoints y.1) default degree q ?m.534 y.2.1 y.2.2 (E.openings y.1 y.2)
+in the application
+  supplied_cover H ?m.527 (E.checkpoints y.1) default degree q ?m.534 y.2.1 y.2.2 (E.openings y.1 y.2)
+    (executionLog E.strategy E.checkpoints E.proverLog E.openings y.1 y.2) hs ?m.575 hy.right

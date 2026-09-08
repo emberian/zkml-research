@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-commitment-failure-successor-20260908/.lake/build/lib/lean/Selvage/SuppliedScheduleTrace.olean",
+    "Selvage/SuppliedScheduleTrace.lean"
+  ],
+  "cwd": "/tmp/minidregg-commitment-failure-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "761f21138f780f857cae268db86fe9253aa7e842576fdb8602236d6377252249",
+  "source_unchanged": true,
+  "elapsed_s": 4.34614109992981,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/commitment_failure_successor/checks/schedule-log-fourth.log"
+}

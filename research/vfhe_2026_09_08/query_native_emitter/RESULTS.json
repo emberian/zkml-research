@@ -1,0 +1,25 @@
+{
+  "crypto_run": false,
+  "execute_and_write_ns": 454160333,
+  "instructions": 7985,
+  "producer": "Lean-generated witness instructions; native untrusted executor",
+  "registers": 7985,
+  "rows": 8192,
+  "setup_ns": 13741042,
+  "total_ns": 467906792,
+  "trace_bytes": 82214912,
+  "trace_width": 2509,
+  "trace.leu32": {
+    "bytes": 82214912,
+    "sha256": "8f1d1a0ab009f41756e2164c4a0a833494f1d76ad07992f58b767fb495e78cc5",
+    "matches_frozen_bytewise": true
+  },
+  "template_ir2.json": {
+    "bytes": 553870,
+    "sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+    "matches_frozen_bytewise": true
+  },
+  "baseline_emission_seconds": 102.78433162497822,
+  "cached_emission_seconds": 88.16824149998138,
+  "scope": "One native full execution compared against already measured/frozen complete artifact. No new crypto run; universal implementation equivalence is not claimed."
+}

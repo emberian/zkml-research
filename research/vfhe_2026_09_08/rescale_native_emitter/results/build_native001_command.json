@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--offline",
+    "--release",
+    "--manifest-path",
+    "research/vfhe_2026_09_08/rescale_native_emitter/native/Cargo.toml",
+    "--target-dir",
+    "research/vfhe_2026_09_08/rescale_native_emitter/native/target"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research",
+  "exit": 0,
+  "seconds_reported_by_cargo": 2.54,
+  "log": "results/build_native001.log",
+  "log_scope": "tool output transcribed; command and exit observed"
+}

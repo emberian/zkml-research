@@ -1,0 +1,45 @@
+{
+  "claim": "EXECUTED public-only closure",
+  "new_proof_attempts": 1,
+  "fresh_positive_runs": 1,
+  "fresh_changed_digit_runs": 1,
+  "source_pins_recorded_after_run": true,
+  "input_files_rehashed": 53,
+  "all_inputs_unchanged": true,
+  "retained_profile": {
+    "path": "results/export-profile.txt",
+    "bytes": 13012371,
+    "sha256": "6a717659a93b7eabbe4afee1eb4869cf7efd7e9e3d95ad4346897a2e778bc8f7"
+  },
+  "partial_exports": [
+    {
+      "path": "results/emit-001-partial-trace.leu32",
+      "bytes": 372736,
+      "sha256": "1be420c709a0a8c48908c0e3e32c2cc7a4fa4a0cbbf05fe55785ab7f81348d43",
+      "proved": false
+    },
+    {
+      "path": "results/emit-002-partial-trace.leu32",
+      "bytes": 331776,
+      "sha256": "a5c331c2f465fe7adfae63056038cf8c7f0196cf083b1e2a23f6f15ecd623621",
+      "proved": false
+    },
+    {
+      "path": "results/emit-003-partial-trace.leu32",
+      "bytes": 409600,
+      "sha256": "e04a342e80585664e0e97c04b0b50ac4fbe23cee8b6b7a631a13f30b6709e67c",
+      "proved": false
+    }
+  ],
+  "delta_counts": {
+    "0": 1654,
+    "1073741824": 44,
+    "3221225472": 350
+  },
+  "digit_counts": {
+    "(0, 0)": 1654,
+    "(0, 256)": 44,
+    "(0, -256)": 350
+  },
+  "patch_sha256": "e09f445b0c4b6357f7ec2334e74484509b1673d68acf8dc71405ad8502ec70b4"
+}

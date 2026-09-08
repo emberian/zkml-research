@@ -1,0 +1,24 @@
+{
+  "crypto_run": false,
+  "execute_and_write_ns": 186420000,
+  "instructions": 2993,
+  "producer": "Lean-generated witness instructions; native untrusted executor",
+  "registers": 2993,
+  "rows": 8192,
+  "setup_ns": 10715250,
+  "total_ns": 197139625,
+  "trace_bytes": 33325056,
+  "trace_width": 1017,
+  "trace.leu32": {
+    "bytes": 33325056,
+    "sha256": "e118a52e777dbab4b88a309505c74161d7fe837f7b7f26174fdcfb0219e5f1ac",
+    "matches_frozen_bytewise": true
+  },
+  "template_ir2.json": {
+    "bytes": 268925,
+    "sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7",
+    "matches_frozen_bytewise": true
+  },
+  "baseline_production_emission_seconds": 38.50431462499546,
+  "scope": "One complete native event66 execution compared bytewise to the already-proved original artifact. No proof rerun or universal native implementation-equivalence theorem."
+}

@@ -1,0 +1,17 @@
+'Minidregg.Compiler.ProfiledMatrix.sourceSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.ProfiledMatrix.unsignedMassBound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.ProfiledMatrix.widthSufficient' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.ProfiledMatrix.auto_width_sufficient' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.ProfiledMatrix.carry_step_bound' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsProfiled.profileDerived' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsProfiled.coefficients_fit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsProfiled.constants_fit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsProfiled.capacity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsProfiled.source_balanced' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsProfiled.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsProfiled.simplifiedSource_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Compiler.ProfiledMatrix.inhabitedCompiler' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.ProfiledMatrix.missingCapacityFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.NonlinearRnsProfiled.layoutAgreement' depends on axioms: [propext, Classical.choice, Quot.sound]

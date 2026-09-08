@@ -1,0 +1,637 @@
+diff --git a/Compiler/TfheSignedDecomposition.lean b/Compiler/TfheSignedDecomposition.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/TfheSignedDecomposition.lean
+@@ -0,0 +1,364 @@
++import Compiler.TfheInitialRotation
++import Compiler.PredCompile
++
++namespace Minidregg.Compiler.TfheSignedDecomposition
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.DescriptorEval Minidregg.Compiler.AirSimplify
++open Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 2000000
++
++def nVars : Nat := 139
++abbrev W := Fin nVars
++def widths (k : Fin 20) : Nat := #[16,16,10,10,11,11,11,1,4,1,9,1,9,1,1,1,1,1,1,1][k.val]!
++def offsets (k : Fin 20) : Nat := #[22,38,54,64,74,85,96,107,108,112,113,122,123,132,133,134,135,136,137,138][k.val]!
++def value (k : Fin 22) : W := ⟨k.val,by dsimp [nVars]; omega⟩
++def bits (k : Fin 20) (j : Fin (widths k)) : W :=
++  ⟨offsets k+j.val,by
++    have cap : offsets k+widths k ≤ nVars := by fin_cases k <;> decide
++    have hj := j.isLt; omega⟩
++def v (k : Fin 22) : Term (AirSig BabyBear W) := vr (value k)
++def val (asg : W → BabyBear) (k : Fin 22) : Nat := (asg (value k)).val
++def word (asg : W → BabyBear) := val asg 0+65536*val asg 1
++def rounded (x : Nat) := ((x+2048)/4096)%1048576
++def initCarry (r rb : Nat) : Nat := if r > 524288 ∨ (r = 524288 ∧ rb = 1) then 1 else 0
++def digitCarry (l h : Nat) : Nat := if l > 512 ∨ (l = 512 ∧ h ≥ 512) then 1 else 0
++def ranges : ConstraintSystem BabyBear W :=
++  (List.finRange 20).flatMap fun k => rangeGadget (value ⟨k.val,by omega⟩) (bits k)
++def sub (a b : Term (AirSig BabyBear W)) := add' a (mul' (cst (-1)) b)
++def zeros : ConstraintSystem BabyBear W :=
++  Minidregg.Compiler.isZero (add' (v 2) (mul' (cst 1024) (v 10))) (value 14) (value 20) ++
++  Minidregg.Compiler.isZero (v 12) (value 15) (value 21)
++def eq0 := sub (v 0) (add' (add' (v 6) (mul' (cst 2048) (v 7))) (mul' (cst 4096) (v 8)))
++def eq1 := sub (add' (add' (mul' (cst 16) (v 1)) (v 8)) (v 7)) (add' (add' (v 2) (mul' (cst 1024) (v 3))) (mul' (cst 1048576) (v 9)))
++def eq2 := sub (v 3) (add' (v 10) (mul' (cst 512) (v 11)))
++def eq3 := sub (v 2) (add' (v 12) (mul' (cst 512) (v 13)))
++def eq4 := sub (add' (v 16) (mul' (v 14) (v 7))) (v 14)
++def eq5 := sub (add' (v 17) (mul' (v 11) (v 16))) (v 11)
++def eq6 := sub (add' (v 18) (mul' (v 15) (v 11))) (v 15)
++def eq7 := sub (add' (v 19) (mul' (v 13) (v 18))) (v 13)
++def eq8 := sub (add' (v 4) (mul' (cst 1024) (v 19))) (add' (v 2) (cst 512))
++def eq9 := sub (add' (v 5) (mul' (cst 1024) (v 17))) (add' (add' (v 3) (v 19)) (cst 512))
++def equations := [eq0,eq1,eq2,eq3,eq4,eq5,eq6,eq7,eq8,eq9]
++def system : ConstraintSystem BabyBear W := ranges ++ zeros ++ equations
++
++/-- All auxiliary assignments are quantified: exact native rounded word and the two
++balanced digit offsets are forced, including both deployed midpoint conventions. -/
++def RowSound : Prop := ∀ asg : W → BabyBear, systemAccepts asg system →
++  word asg < 4294967296 ∧ val asg 2+1024*val asg 3 = rounded (word asg) ∧
++  val asg 7 = (word asg/2048)%2 ∧
++  val asg 17 = initCarry (rounded (word asg)) ((word asg/2048)%2) ∧
++  val asg 19 = digitCarry (val asg 2) (val asg 3) ∧
++  val asg 4+1024*val asg 19 = val asg 2+512 ∧
++  val asg 5+1024*val asg 17 = val asg 3+val asg 19+512
++
++theorem range_bounds (asg : W → BabyBear) (h : systemAccepts asg ranges) (k : Fin 20) :
++    val asg ⟨k.val,by omega⟩ < 2^(widths k) := by
++  have hp : 2^(widths k) ≤ babyBearP := by fin_cases k <;> decide
++  exact rangeGadget_val_lt hp asg _ (bits k)
++    (fun t ht => h t (List.mem_flatMap.mpr ⟨k,List.mem_finRange k,ht⟩))
++
++theorem field_equations (asg : W → BabyBear) (h : systemAccepts asg equations) :
++    asg (value 0) = ((asg (value 6)+(2048*asg (value 7)))+(4096*asg (value 8))) ∧
++    (((16*asg (value 1))+asg (value 8))+asg (value 7)) = ((asg (value 2)+(1024*asg (value 3)))+(1048576*asg (value 9))) ∧
++    asg (value 3) = (asg (value 10)+(512*asg (value 11))) ∧
++    asg (value 2) = (asg (value 12)+(512*asg (value 13))) ∧
++    (asg (value 16)+(asg (value 14)*asg (value 7))) = asg (value 14) ∧
++    (asg (value 17)+(asg (value 11)*asg (value 16))) = asg (value 11) ∧
++    (asg (value 18)+(asg (value 15)*asg (value 11))) = asg (value 15) ∧
++    (asg (value 19)+(asg (value 13)*asg (value 18))) = asg (value 13) ∧
++    (asg (value 4)+(1024*asg (value 19))) = (asg (value 2)+512) ∧
++    (asg (value 5)+(1024*asg (value 17))) = ((asg (value 3)+asg (value 19))+512) := by
++  simp only [equations,systemAccepts_cons,systemAccepts_nil,and_true,accepts,
++    eq0,eq1,eq2,eq3,eq4,eq5,eq6,eq7,eq8,eq9,sub,v,eval_add',eval_mul',eval_vr,eval_cst] at h
++  rcases h with ⟨h0,h1,h2,h3,h4,h5,h6,h7,h8,h9⟩
++  refine ⟨?_,?_,?_,?_,?_,?_,?_,?_,?_,?_⟩
++  · linear_combination h0
++  · linear_combination h1
++  · linear_combination h2
++  · linear_combination h3
++  · linear_combination h4
++  · linear_combination h5
++  · linear_combination h6
++  · linear_combination h7
++  · linear_combination h8
++  · linear_combination h9
++
++theorem zero_nat (asg : W → BabyBear) (d : Term (AirSig BabyBear W))
++    (b w : W) (n : Nat) (hn : n < babyBearP) (hd : eval asg d = (n : BabyBear))
++    (h : systemAccepts asg (Minidregg.Compiler.isZero d b w)) :
++    (asg b).val = if n = 0 then 1 else 0 := by
++  have hh := Minidregg.Compiler.isZero_forced h
++  have hz : (n : BabyBear) = 0 ↔ n = 0 := by
++    constructor
++    · intro h; exact TfheInitialRotation.small_eq hn (by decide) h
++    · intro h; simp [h]
++  rw [hd] at hh
++  by_cases he : n = 0
++  · simp [he] at hh ⊢; rw [hh]; decide
++  · simp [hz,he] at hh ⊢; rw [hh]
++
++theorem rowSound : RowSound := by
++  intro asg hs
++  obtain ⟨hrz,he⟩ := (systemAccepts_append asg (ranges ++ zeros) equations).mp hs
++  obtain ⟨hr,hz⟩ := (systemAccepts_append asg ranges zeros).mp hrz
++  obtain ⟨hz0,hz1⟩ := (systemAccepts_append asg _ _).mp hz
++  have hb := range_bounds asg hr
++  have b0 := hb 0
++  change val asg 0 < 65536 at b0
++  have b1 := hb 1
++  change val asg 1 < 65536 at b1
++  have b2 := hb 2
++  change val asg 2 < 1024 at b2
++  have b3 := hb 3
++  change val asg 3 < 1024 at b3
++  have b4 := hb 4
++  change val asg 4 < 2048 at b4
++  have b5 := hb 5
++  change val asg 5 < 2048 at b5
++  have b6 := hb 6
++  change val asg 6 < 2048 at b6
++  have b7 := hb 7
++  change val asg 7 < 2 at b7
++  have b8 := hb 8
++  change val asg 8 < 16 at b8
++  have b9 := hb 9
++  change val asg 9 < 2 at b9
++  have b10 := hb 10
++  change val asg 10 < 512 at b10
++  have b11 := hb 11
++  change val asg 11 < 2 at b11
++  have b12 := hb 12
++  change val asg 12 < 512 at b12
++  have b13 := hb 13
++  change val asg 13 < 2 at b13
++  have b14 := hb 14
++  change val asg 14 < 2 at b14
++  have b15 := hb 15
++  change val asg 15 < 2 at b15
++  have b16 := hb 16
++  change val asg 16 < 2 at b16
++  have b17 := hb 17
++  change val asg 17 < 2 at b17
++  have b18 := hb 18
++  change val asg 18 < 2 at b18
++  have b19 := hb 19
++  change val asg 19 < 2 at b19
++  rcases field_equations asg he with ⟨f0,f1,f2,f3,f4,f5,f6,f7,f8,f9⟩
++  have e0 : val asg 0 = ((val asg 6+(2048*val asg 7))+(4096*val asg 8)) := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      omega
++    · norm_num [babyBearP]
++      omega
++    · simpa [val] using f0
++  have e1 : (((16*val asg 1)+val asg 8)+val asg 7) = ((val asg 2+(1024*val asg 3))+(1048576*val asg 9)) := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      omega
++    · norm_num [babyBearP]
++      omega
++    · simpa [val] using f1
++  have e2 : val asg 3 = (val asg 10+(512*val asg 11)) := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      omega
++    · norm_num [babyBearP]
++      omega
++    · simpa [val] using f2
++  have e3 : val asg 2 = (val asg 12+(512*val asg 13)) := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      omega
++    · norm_num [babyBearP]
++      omega
++    · simpa [val] using f3
++  have e4 : (val asg 16+(val asg 14*val asg 7)) = val asg 14 := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      have pp := Nat.mul_le_mul (show val asg 14 ≤ 1 by omega) (show val asg 7 ≤ 1 by omega)
++      omega
++    · norm_num [babyBearP]
++      have pp := Nat.mul_le_mul (show val asg 14 ≤ 1 by omega) (show val asg 7 ≤ 1 by omega)
++      omega
++    · simpa [val] using f4
++  have e5 : (val asg 17+(val asg 11*val asg 16)) = val asg 11 := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      have pp := Nat.mul_le_mul (show val asg 11 ≤ 1 by omega) (show val asg 16 ≤ 1 by omega)
++      omega
++    · norm_num [babyBearP]
++      have pp := Nat.mul_le_mul (show val asg 11 ≤ 1 by omega) (show val asg 16 ≤ 1 by omega)
++      omega
++    · simpa [val] using f5
++  have e6 : (val asg 18+(val asg 15*val asg 11)) = val asg 15 := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      have pp := Nat.mul_le_mul (show val asg 15 ≤ 1 by omega) (show val asg 11 ≤ 1 by omega)
++      omega
++    · norm_num [babyBearP]
++      have pp := Nat.mul_le_mul (show val asg 15 ≤ 1 by omega) (show val asg 11 ≤ 1 by omega)
++      omega
++    · simpa [val] using f6
++  have e7 : (val asg 19+(val asg 13*val asg 18)) = val asg 13 := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      have pp := Nat.mul_le_mul (show val asg 13 ≤ 1 by omega) (show val asg 18 ≤ 1 by omega)
++      omega
++    · norm_num [babyBearP]
++      have pp := Nat.mul_le_mul (show val asg 13 ≤ 1 by omega) (show val asg 18 ≤ 1 by omega)
++      omega
++    · simpa [val] using f7
++  have e8 : (val asg 4+(1024*val asg 19)) = (val asg 2+512) := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      omega
++    · norm_num [babyBearP]
++      omega
++    · simpa [val] using f8
++  have e9 : (val asg 5+(1024*val asg 17)) = ((val asg 3+val asg 19)+512) := by
++    apply TfheInitialRotation.small_eq
++    · norm_num [babyBearP]
++      omega
++    · norm_num [babyBearP]
++      omega
++    · simpa [val] using f9
++  have z0 : val asg 14 = if val asg 2+1024*val asg 10 = 0 then 1 else 0 := by
++    apply zero_nat asg _ _ _ _ (by norm_num [babyBearP]; omega) _ hz0
++    simp [v,val]
++  have z1 : val asg 15 = if val asg 12 = 0 then 1 else 0 := by
++    apply zero_nat asg _ _ _ _ (by norm_num [babyBearP]; omega) _ hz1
++    simp [v,val]
++  have hrnd : val asg 2+1024*val asg 3 = rounded (word asg) := by
++    dsimp [rounded,word]; omega
++  have hrb : val asg 7 = (word asg/2048)%2 := by dsimp [word]; omega
++  have hi : val asg 17 = initCarry (val asg 2+1024*val asg 3) (val asg 7) := by
++    have bt : val asg 11 = 0 ∨ val asg 11 = 1 := by omega
++    rcases bt with bt | bt
++    · rw [bt] at e2 e5; simp only [zero_mul] at e5
++      simp only [initCarry]; split_ifs <;> omega
++    · rw [bt] at e2 e5; simp only [one_mul] at e5
++      by_cases zz : val asg 2+1024*val asg 10 = 0
++      · simp only [zz,ite_true] at z0
++        rw [z0] at e4; simp only [one_mul] at e4
++        simp only [initCarry]; split_ifs <;> omega
++      · simp only [zz,ite_false] at z0
++        rw [z0] at e4; simp only [zero_mul] at e4
++        simp only [initCarry]; split_ifs <;> omega
++  have hc : val asg 19 = digitCarry (val asg 2) (val asg 3) := by
++    have bt : val asg 13 = 0 ∨ val asg 13 = 1 := by omega
++    rcases bt with bt | bt
++    · rw [bt] at e3 e7; simp only [zero_mul] at e7
++      simp only [digitCarry]; split_ifs <;> omega
++    · rw [bt] at e3 e7; simp only [one_mul] at e7
++      by_cases zz : val asg 12 = 0
++      · simp only [zz,ite_true] at z1
++        rw [z1] at e6; simp only [one_mul] at e6
++        simp only [digitCarry]; split_ifs <;> omega
++      · simp only [zz,ite_false] at z1
++        rw [z1] at e6; simp only [zero_mul] at e6
++        simp only [digitCarry]; split_ifs <;> omega
++  exact ⟨by dsimp [word]; omega,hrnd,hrb,by simpa [hrnd,hrb] using hi,hc,e8,e9⟩
++
++/-- Native last decomposition step on its balanced next state preserves the state,
++including the negative and positive half-base ties. -/
++theorem final_step (t : Int) (ht : -512 ≤ t ∧ t ≤ 512) :
++    t%1024-1024*(if t%1024 > 512 ∨ (t%1024 = 512 ∧ (t/1024)%1024 ≥ 512) then 1 else 0) = t := by
++  split_ifs <;> omega
++
++/-- Arithmetic right shift and mask for the balanced 20-bit state have exactly
++these quotient/remainder values; the first carry therefore reads H modulo1024. -/
++theorem initial_state (l h i : Int) (hl : 0 ≤ l ∧ l < 1024) (hh : 0 ≤ h ∧ h < 1024) :
++    (l+1024*h-1048576*i)%1024 = l ∧
++    (l+1024*h-1048576*i)/1024 = h-1024*i ∧
++    ((l+1024*h-1048576*i)/1024)%1024 = h := by omega
++
++/-- Exact source carry choices leave the next signed state in the closed balanced
++range, including both endpoints; final_step therefore applies to its last digit. -/
++theorem next_state_range (l h rb : Nat) (hl : l < 1024) (hh : h < 1024) (hb : rb < 2) :
++    -512 ≤ (h : Int)+(digitCarry l h : Int)-1024*(initCarry (l+1024*h) rb : Int) ∧
++    (h : Int)+(digitCarry l h : Int)-1024*(initCarry (l+1024*h) rb : Int) ≤ 512 := by
++  simp only [initCarry,digitCarry]
++  split_ifs <;> norm_num <;> omega
++
++def variableArray (x l h e2 e1 : Nat) : Array BabyBear := Id.run do
++  let xl := x%65536
++  let rb := x/2048%2
++  let i := initCarry (l+1024*h) rb
++  let c := digitCarry l h
++  let low := l+1024*(h%512)
++  let z0 := if low == 0 then 1 else 0
++  let z1 := if l%512 == 0 then 1 else 0
++  let vals : Array Nat := #[xl,x/65536,l,h,e2,e1,x%2048,rb,xl/4096,(x+2048)/4294967296,
++    h%512,h/512,l%512,l/512,z0,z1,z0*(1-rb),i,z1*(1-h/512),c]
++  let mut a := Array.replicate nVars (0 : BabyBear)
++  for k in [:20] do a := a.set! k (vals[k]! : BabyBear)
++  a := a.set! 20 (if low == 0 then 0 else (low : BabyBear)⁻¹)
++  a := a.set! 21 (if l%512 == 0 then 0 else ((l%512 : Nat) : BabyBear)⁻¹)
++  for k in List.finRange 20 do a := TfheModulusSwitch.setBits a (offsets k) (widths k) vals[k.val]!
++  return a
++
++def canonical (x : Nat) : Array BabyBear :=
++  let r := rounded x; let l := r%1024; let h := r/1024
++  variableArray x l h (l+512-1024*digitCarry l h)
++    (h+digitCarry l h+512-1024*initCarry r (x/2048%2))
++def asgOf (a : Array BabyBear) : W → BabyBear := fun i => a[i.val]!
++def sourceCheck (a : Array BabyBear) : Bool := system.all (fun t => eval (asgOf a) t == 0)
++theorem zero_witness : systemAccepts (asgOf (canonical 0)) system := by decide +kernel
++theorem negative_midpoint_witness : systemAccepts (asgOf (canonical 2147481600)) system := by decide +kernel
++theorem low_digit_tie_witness : systemAccepts (asgOf (canonical 2149580800)) system := by decide +kernel
++
++theorem changed_zero_refused (asg : W → BabyBear) (hx : word asg = 0)
++    (hd : val asg 4 = 513) : ¬ systemAccepts asg system := by
++  intro hs
++  have h := rowSound asg hs
++  have hr := h.2.1
++  have hc := h.2.2.2.2.1
++  have he := h.2.2.2.2.2.1
++  rw [hx] at hr
++  norm_num [rounded] at hr
++  have hl : val asg 2 = 0 := by omega
++  have hh : val asg 3 = 0 := by omega
++  simp [hl,hh,digitCarry] at hc
++  omega
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.initial_state' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms initial_state
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.next_state_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms next_state_range
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.range_bounds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms range_bounds
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.field_equations' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms field_equations
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.zero_nat' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms zero_nat
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms rowSound
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.final_step' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms final_step
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.zero_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms zero_witness
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.negative_midpoint_witness' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms negative_midpoint_witness
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.low_digit_tie_witness' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms low_digit_tie_witness
++/-- info: 'Minidregg.Compiler.TfheSignedDecomposition.changed_zero_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms changed_zero_refused
++end Minidregg.Compiler.TfheSignedDecomposition
+diff --git a/Compiler/TfheCmuxDecomposition.lean b/Compiler/TfheCmuxDecomposition.lean
+new file mode 100644
+--- /dev/null
++++ b/Compiler/TfheCmuxDecomposition.lean
+@@ -0,0 +1,180 @@
++import Compiler.TfheSignedDecomposition
++
++namespace Minidregg.Compiler.TfheCmuxDecomposition
++open Minidregg.Compiler Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.DescriptorEval Minidregg.Compiler.AirSimplify
++open Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 2000000
++
++/- The old rotation and new decomposition systems are reused by the existing
++compiler variable-renaming fold. This file adds only bounded exponent/subtraction
++relations; both complete input reads are tied to exact-public tables by emission. -/
++def nVars : Nat := 301
++abbrev W := Fin nVars
++def rot (i : TfheInitialRotation.W) : W := ⟨i.val,by have h := i.isLt; dsimp [nVars,TfheInitialRotation.nVars] at *; omega⟩
++def dec (i : TfheSignedDecomposition.W) : W := ⟨111+i.val,by have h := i.isLt; dsimp [nVars,TfheSignedDecomposition.nVars] at *; omega⟩
++def widths : Fin 6 → Nat := ![10,16,16,1,1,1]
++def offsets : Fin 6 → Nat := ![256,266,282,298,299,300]
++def value (k : Fin 6) : W := ⟨250+k.val,by dsimp [nVars]; omega⟩
++def bits (k : Fin 6) (j : Fin (widths k)) : W :=
++  ⟨offsets k+j.val,by
++    have cap : offsets k+widths k ≤ nVars := by fin_cases k <;> decide
++    have hj := j.isLt; omega⟩
++def v (k : Fin 6) : Term (AirSig BabyBear W) := vr (value k)
++def val (asg : W → BabyBear) (k : Fin 6) := (asg (value k)).val
++def r (k : Fin 12) : Term (AirSig BabyBear W) := vr (rot (TfheInitialRotation.value k))
++def d (k : Fin 22) : Term (AirSig BabyBear W) := vr (dec (TfheSignedDecomposition.value k))
++def rv (asg : W → BabyBear) (k : Fin 12) := TfheInitialRotation.val (asg ∘ rot) k
++def dv (asg : W → BabyBear) (k : Fin 22) := TfheSignedDecomposition.val (asg ∘ dec) k
++def base (asg : W → BabyBear) := val asg 1+65536*val asg 2
++def delta (asg : W → BabyBear) := dv asg 0+65536*dv asg 1
++def rotated (asg : W → BabyBear) := rv asg 3+65536*rv asg 4
++def ranges : ConstraintSystem BabyBear W :=
++  (List.finRange 6).flatMap fun k => rangeGadget (value k) (bits k)
++def sub (a b : Term (AirSig BabyBear W)) := add' a (mul' (cst (-1)) b)
++def exponentTerm := sub (add' (v 0) (r 2)) (mul' (cst 1024) (v 5))
++def loTerm := sub (add' (d 0) (v 1))
++  (add' (r 3) (mul' (cst 65536) (v 3)))
++def hiTerm := sub (add' (add' (d 1) (v 2)) (v 3))
++  (add' (r 4) (mul' (cst 65536) (v 4)))
++def extras := ranges ++ [exponentTerm,loTerm,hiTerm]
++def system : ConstraintSystem BabyBear W :=
++  renameS rot TfheInitialRotation.system ++ renameS dec TfheSignedDecomposition.system ++ extras
++
++/-- Complete component soundness: both reused component systems remain accepted,
++and the new relations force the positive monomial source/sign and native wrapped
++subtraction. The accepted decomposition is governed by its universal rowSound. -/
++def RowSound : Prop := ∀ asg : W → BabyBear, systemAccepts asg system →
++  systemAccepts (asg ∘ rot) TfheInitialRotation.system ∧
++  systemAccepts (asg ∘ dec) TfheSignedDecomposition.system ∧
++  val asg 0 < 1024 ∧ rv asg 1 < 512 ∧
++  rv asg 5 = (rv asg 1+1024-val asg 0)%512 ∧
++  rv asg 8 = ((rv asg 1+1024-val asg 0)/512)%2 ∧
++  base asg < 4294967296 ∧ delta asg < 4294967296 ∧
++  delta asg = (rotated asg+4294967296-base asg)%4294967296
++
++theorem range_bounds (asg : W → BabyBear) (h : systemAccepts asg ranges) (k : Fin 6) :
++    val asg k < 2^(widths k) := by
++  have hp : 2^(widths k) ≤ babyBearP := by fin_cases k <;> decide
++  exact rangeGadget_val_lt hp asg (value k) (bits k)
++    (fun t ht => h t (List.mem_flatMap.mpr ⟨k,List.mem_finRange k,ht⟩))
++
++theorem field_equations (asg : W → BabyBear) (h : systemAccepts asg [exponentTerm,loTerm,hiTerm]) :
++    asg (value 0)+asg (rot (TfheInitialRotation.value 2)) = 1024*asg (value 5) ∧
++    asg (dec (TfheSignedDecomposition.value 0))+asg (value 1) = asg (rot (TfheInitialRotation.value 3))+65536*asg (value 3) ∧
++    asg (dec (TfheSignedDecomposition.value 1))+asg (value 2)+asg (value 3) = asg (rot (TfheInitialRotation.value 4))+65536*asg (value 4) := by
++  simp only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,exponentTerm,loTerm,hiTerm,
++    sub,v,r,d,eval_add',eval_mul',eval_vr,eval_cst] at h
++  rcases h with ⟨h1,h2,h3⟩
++  refine ⟨?_,?_,?_⟩
++  · linear_combination h1
++  · linear_combination h2
++  · linear_combination h3
++
++theorem rowSound : RowSound := by
++  intro asg hs
++  obtain ⟨hc,he⟩ := (systemAccepts_append asg _ extras).mp hs
++  obtain ⟨hr,hd⟩ := (systemAccepts_append asg _ _).mp hc
++  have hr := (systemAccepts_renameS asg rot TfheInitialRotation.system).mp hr
++  have hd := (systemAccepts_renameS asg dec TfheSignedDecomposition.system).mp hd
++  obtain ⟨hb,he⟩ := (systemAccepts_append asg ranges _).mp he
++  have hrot := TfheInitialRotation.rowSound (asg ∘ rot) hr
++  have hdec := TfheSignedDecomposition.rowSound (asg ∘ dec) hd
++  obtain ⟨hrr,-⟩ := (systemAccepts_append _ TfheInitialRotation.ranges _).mp hr
++  obtain ⟨hdr,-⟩ := (systemAccepts_append _ (TfheSignedDecomposition.ranges ++ TfheSignedDecomposition.zeros) _).mp hd
++  obtain ⟨hdr,-⟩ := (systemAccepts_append _ TfheSignedDecomposition.ranges _).mp hdr
++  have bounds := range_bounds asg hb
++  have b0 := bounds 0; have b1 := bounds 1; have b2 := bounds 2
++  have b3 := bounds 3; have b4 := bounds 4; have b5 := bounds 5
++  change val asg 0 < 1024 at b0
++  change val asg 1 < 65536 at b1
++  change val asg 2 < 65536 at b2
++  change val asg 3 < 2 at b3
++  change val asg 4 < 2 at b4
++  change val asg 5 < 2 at b5
++  have r3 := TfheInitialRotation.range_bounds _ hrr 3
++  have r4 := TfheInitialRotation.range_bounds _ hrr 4
++  have d0 := TfheSignedDecomposition.range_bounds _ hdr 0
++  have d1 := TfheSignedDecomposition.range_bounds _ hdr 1
++  change rv asg 3 < 65536 at r3
++  change rv asg 4 < 65536 at r4
++  change dv asg 0 < 65536 at d0
++  change dv asg 1 < 65536 at d1
++  have r1 : rv asg 1 < 512 := hrot.2.1
++  have r2 : rv asg 2 < 1024 := hrot.2.2.1
++  have rs : rv asg 5 = (rv asg 1+rv asg 2)%512 := hrot.2.2.2.1
++  have rp : rv asg 8 = ((rv asg 1+rv asg 2)/512)%2 := hrot.2.2.2.2.1
++  obtain ⟨f0,f1,f2⟩ := field_equations asg he
++  have e0 : val asg 0+rv asg 2 = 1024*val asg 5 := by
++    apply TfheInitialRotation.small_eq (by norm_num [babyBearP]; omega) (by norm_num [babyBearP]; omega)
++    simpa [val,rv,TfheInitialRotation.val,Function.comp_def] using f0
++  have e1 : dv asg 0+val asg 1 = rv asg 3+65536*val asg 3 := by
++    apply TfheInitialRotation.small_eq (by norm_num [babyBearP]; omega) (by norm_num [babyBearP]; omega)
++    simpa [val,rv,dv,TfheInitialRotation.val,TfheSignedDecomposition.val,Function.comp_def] using f1
++  have e2 : dv asg 1+val asg 2+val asg 3 = rv asg 4+65536*val asg 4 := by
++    apply TfheInitialRotation.small_eq (by norm_num [babyBearP]; omega) (by norm_num [babyBearP]; omega)
++    simpa [val,rv,dv,TfheInitialRotation.val,TfheSignedDecomposition.val,Function.comp_def] using f2
++  refine ⟨hr,hd,b0,r1,?_,?_,by dsimp [base]; omega,by dsimp [delta]; omega,?_⟩
++  · omega
++  · omega
++  · dsimp [delta,rotated,base]; omega
++
++/-- Full source map is a permutation, so every coefficient of each input polynomial
++is bound by the exact-public source table once, in addition to its base read. -/
++theorem source_injective (a j k : Nat) (ha : a < 1024) (hj : j < 512) (hk : k < 512)
++    (h : (j+1024-a)%512 = (k+1024-a)%512) : j = k := by omega
++
++def variableArray (row : Array Nat) (inputs : Array (Array Nat)) : Array BabyBear := Id.run do
++  let a := row[3]!
++  let negA := (1024-a)%1024
++  let source := (row[2]!+negA)%512
++  let inp := inputs[512*row[1]!+source]!
++  let x := inp[2]!+65536*inp[3]!
++  let y := if (row[2]!+negA)/512%2 == 0 then x else (4294967296-x)%4294967296
++  let rr := #[row[0]!,row[1]!,row[2]!,negA,y%65536,y/65536]
++  let ra := TfheInitialRotation.variableArray rr inputs
++  let da := TfheSignedDecomposition.variableArray (row[4]!+65536*row[5]!) row[6]! row[7]! row[8]! row[9]!
++  let orig := inputs[512*row[1]!+row[2]!]!
++  let cl := (row[4]!+orig[2]!)/65536
++  let ch := (row[5]!+orig[3]!+cl)/65536
++  let vals := #[a,orig[2]!,orig[3]!,cl,ch,(a+negA)/1024]
++  let mut out := Array.replicate nVars (0 : BabyBear)
++  for i in [:111] do out := out.set! i ra[i]!
++  for i in [:139] do out := out.set! (111+i) da[i]!
++  for k in [:6] do out := out.set! (250+k) (vals[k]! : BabyBear)
++  for k in List.finRange 6 do out := TfheModulusSwitch.setBits out (offsets k) (widths k) vals[k.val]!
++  return out
++
++def asgOf (a : Array BabyBear) : W → BabyBear := fun i => a[i.val]!
++def sourceCheck (a : Array BabyBear) : Bool := system.all (fun t => eval (asgOf a) t == 0)
++def zeroArray := variableArray #[0,0,0,0,0,0,0,0,512,512] #[#[0,0,0,0]]
++theorem zero_witness : systemAccepts (asgOf zeroArray) system := by decide +kernel
++
++theorem changed_zero_refused (asg : W → BabyBear) (hx : delta asg = 0)
++    (hd : dv asg 4 = 513) : ¬ systemAccepts asg system := by
++  intro h
++  exact TfheSignedDecomposition.changed_zero_refused (asg ∘ dec) hx hd (rowSound asg h).2.1
++
++/-- info: 'Minidregg.Compiler.TfheCmuxDecomposition.range_bounds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms range_bounds
++/-- info: 'Minidregg.Compiler.TfheCmuxDecomposition.field_equations' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms field_equations
++/-- info: 'Minidregg.Compiler.TfheCmuxDecomposition.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms rowSound
++/-- info: 'Minidregg.Compiler.TfheCmuxDecomposition.source_injective' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs in
++#print axioms source_injective
++/-- info: 'Minidregg.Compiler.TfheCmuxDecomposition.zero_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms zero_witness
++/-- info: 'Minidregg.Compiler.TfheCmuxDecomposition.changed_zero_refused' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms changed_zero_refused
++end Minidregg.Compiler.TfheCmuxDecomposition
+diff --git a/EmitTfheCmuxDecomposition.lean b/EmitTfheCmuxDecomposition.lean
+new file mode 100644
+--- /dev/null
++++ b/EmitTfheCmuxDecomposition.lean
+@@ -0,0 +1,78 @@
++import Compiler.TfheCmuxDecomposition
++import Lean.Data.Json
++open Lean (Json toJson)
++open Minidregg.Compiler Minidregg.Compiler.TfheCmuxDecomposition
++open Minidregg.Compiler.NativeKernelPlan Minidregg.Compiler.AirSimplify
++open Minidregg.Theory
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++def ir2Alg : Alg (AirSig BabyBear W) String := fun op =>
++  match op with
++  | .const c => fun _ => "{\"t\":\"const\",\"v\":"++toString c.val++"}"
++  | .var i => fun _ => ir2Var i.val
++  | .add => fun c => "{\"t\":\"add\",\"l\":"++c false++",\"r\":"++c true++"}"
++  | .mul => fun c => "{\"t\":\"mul\",\"l\":"++c false++",\"r\":"++c true++"}"
++def lookup (id : Nat) (cols : List Nat) : String :=
++  "{\"t\":\"lookup\",\"table\":"++toString id++",\"tuple\":["++
++    String.intercalate "," (cols.map ir2Var)++"]}"
++def table (id arity : Nat) : String :=
++  "{\"id\":"++toString id++",\"name\":\"cmux_decomposition_public_"++toString id++
++    "\",\"arity\":"++toString arity++",\"sem\":\"exact_public_rows\",\"rows\":[]}"
++def ir2Template : String :=
++  let arithmetic := (simplifySystem system).map fun t =>
++    "{\"t\":\"gate\",\"body\":"++fold ir2Alg t++"}"
++  "{\"name\":\"tfhe_u32_first_cmux_input_and_signed_decomposition\",\"ir\":2,\"trace_width\":"++toString nVars++
++    ",\"public_input_count\":0,\"challenges\":0,\"tables\":["++table 11 10++","++table 12 4++","++table 13 4++
++    "],\"constraints\":["++String.intercalate "," (lookup 11 [0,1,2,250,111,112,113,114,115,116]::lookup 12 [1,6,7,8]::lookup 13 [1,2,251,252]::arithmetic)++
++    "],\"hash_sites\":[],\"ranges\":[]}"
++def u32Bytes (a : Array BabyBear) : ByteArray := Id.run do
++  let mut bytes := ByteArray.emptyWithCapacity (4*a.size)
++  for value in a do
++    for shift in [0,8,16,24] do bytes := bytes.push ((value.val >>> shift).toUInt8)
++  return bytes
++def main (args : List String) : IO UInt32 := do
++  let sourcePath := System.FilePath.mk (args.headD "fixtures/normal_001/tables.json")
++  let outputPath := System.FilePath.mk (args[1]?.getD "artifacts")
++  IO.FS.createDirAll outputPath
++  let parsed ← IO.ofExcept (Json.parse (← IO.FS.readFile sourcePath))
++  let inputJson ← IO.ofExcept (parsed.getObjVal? "input_rows")
++  let outputJson ← IO.ofExcept (parsed.getObjVal? "output_rows")
++  let inputs ← IO.ofExcept (Lean.fromJson? inputJson : Except String (Array (Array Nat)))
++  let outputs ← IO.ofExcept (Lean.fromJson? outputJson : Except String (Array (Array Nat)))
++  unless inputs.size == 2048 && outputs.size == 2048 do throw (IO.userError "wrong complete accumulator size")
++  for i in [:inputs.size] do
++    let row := inputs[i]!
++    unless row.size == 4 && row[0]! == i/512 && row[1]! == i%512 && row[2]! < 65536 && row[3]! < 65536 do
++      throw (IO.userError "wrong canonical indexed input table")
++  let cachedSystem := system.toArray
++  let check := fun a : Array BabyBear => cachedSystem.all (fun t => eval (asgOf a) t == 0)
++  let changed := outputs[1536]!.set! 4 (((outputs[1536]!)[4]!+1)%65536)
++  if check (variableArray changed inputs) then throw (IO.userError "changed output accepted by generated source")
++  let changedDigit := outputs[1536]!.set! 8 ((outputs[1536]!)[8]!+1)
++  if check (variableArray changedDigit inputs) then throw (IO.userError "changed signed digit accepted")
++  let badDigit := outputs[1536]!.set! 4 65536
++  if check (variableArray badDigit inputs) then throw (IO.userError "out-of-range output limb accepted")
++  let boundaryInputs := #[0,1,2047,2048,2049,2095103,2095104,2097152,2147481599,2147481600,
++    2147481601,2147483648,2147485696,2149580800,4294965247,4294965248,4294967295]
++  for x in boundaryInputs do
++    unless TfheSignedDecomposition.sourceCheck (TfheSignedDecomposition.canonical x) do
++      throw (IO.userError s!"signed decomposition boundary {x} refused")
++  IO.FS.writeFile (outputPath/"template_ir2.json") (ir2Template++"\n")
++  IO.FS.withFile (outputPath/"trace.leu32") .write fun h => do
++    for i in [:outputs.size] do
++      let row := outputs[i]!
++      unless row.size == 10 && row[0]! == i && row[1]! == i/512 && row[2]! == i%512 do
++        throw (IO.userError "wrong public output coverage")
++      let a := variableArray row inputs
++      unless check a do throw (IO.userError s!"native CMUX/decomposition row {i} refused")
++      h.write (u32Bytes a)
++  let report := Json.mkObj [("claim",toJson "EXECUTED compiler-generated complete native CMUX input and exact signed decomposition"),
++    ("rounding_tie_boundaries",toJson boundaryInputs.size),("rows",toJson outputs.size),("trace_width",toJson nVars),("source_constraints",toJson system.length),
++    ("ir2_arithmetic_constraints",toJson (simplifySystem system).length),
++    ("exact_public_tables",toJson 3),("changed_output_refused",toJson true),("changed_signed_digit_refused",toJson true),("out_of_range_limb_refused",toJson true),
++    ("all_native_rows_exported",toJson true),("all_native_rows_source_checked",toJson true),("complete_relation_checked_by_actual_proof",toJson "pending"),("trace_bytes",toJson (outputs.size*nVars*4))]
++  IO.FS.writeFile (outputPath/"emission.json") (report.pretty++"\n")
++  IO.println report.compress
++  return 0

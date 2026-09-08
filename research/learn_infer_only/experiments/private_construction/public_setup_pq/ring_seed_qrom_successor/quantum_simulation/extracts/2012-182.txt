@@ -1,0 +1,1630 @@
+              How to Construct Quantum Random Functions
+                                         Mark Zhandry
+                                     Stanford University, USA
+                                     mzhandry@stanford.edu
+
+
+                                               Abstract
+         In the presence of a quantum adversary, there are two possible definitions of security for a
+     pseudorandom function. The first, which we call standard-security, allows the adversary to be
+     quantum, but requires queries to the function to be classical. The second, quantum-security,
+     allows the adversary to query the function on a quantum superposition of inputs, thereby giving
+     the adversary a superposition of the values of the function at many inputs at once. Existing
+     techniques for proving the security of pseudorandom functions fail when the adversary can
+     make quantum queries. We give the first quantum-security proofs for pseudorandom functions
+     by showing that some classical constructions of pseudorandom functions are quantum-secure.
+     Namely, we show that the standard constructions of pseudorandom functions from pseudorandom
+     generators or pseudorandom synthesizers are secure, even when the adversary can make quantum
+     queries. We also show that a direct construction from lattices is quantum-secure. To prove
+     security, we develop new tools to prove the indistinguishability of distributions under quantum
+     queries.
+         In light of these positive results, one might hope that all standard-secure pseudorandom
+     functions are quantum-secure. To the contrary, we show a separation: under the assumption
+     that standard-secure pseudorandom functions exist, there are pseudorandom functions secure
+     against quantum adversaries making classical queries, but insecure once the adversary can make
+     quantum queries.
+
+     Keywords: Quantum, Pseudorandom Function
+
+
+1    Introduction
+In their seminal paper, Goldreich, Goldwasser, and Micali [GGM86] answer the question of how
+to construct a function that looks random to classical adversaries. Specifically, they define a
+pseudorandom function (PRF) as a function PRF with the following property: no efficient classical
+algorithm, when given oracle access to PRF, can distinguish PRF from a truly random function.
+They then construct such a pseudorandom function from pseudorandom generators. Since then,
+pseudorandom functions have also been built from pseudorandom synthesizers [NR95], as well
+as directly from hard problems [NR97, NRR00, DY05, LW09, BMR10, BPR11]. Pseudorandom
+functions have become an important tool in cryptography: for example, they are used in the
+construction of identification protocols, block ciphers, and message authentication codes.
+    To define pseudorandom functions in the presence of a quantum adversary, two approaches are
+possible. The first is what we call standard-security: the quantum adversary can only make classical
+queries to the function, but all the computation between the queries may be quantum. The second,
+which we call quantum-security, allows the adversary to make quantum queries to the function.
+
+                                                    1
+That is, the adversary can send a quantum superposition of inputs to the function, and receives a
+superposition of the corresponding outputs in return. We call pseudorandom functions that are
+secure against quantum queries Quantum Pseudorandom Functions, or QPRFs. Constructing secure
+QPRFs will be the focus of this paper.
+    Quantum-secure pseudorandom functions (QPRFs) have several applications. Whenever a
+pseudorandom function is used in the presence of a quantum adversary, security against quantum
+queries captures a wider class of attacks. Thus, the conservative approach to cryptosystem design
+would dictate using a quantum-secure pseudorandom function. Further, in any instance where a
+pseudorandom function might be evaluated on a superposition, quantum-security is required. For
+example, classically, pseudorandom functions work as message authentication codes (MACs). In
+the quantum world, however, it may be possible for a quantum adversary to query the MAC on a
+superposition of messages, thus necessitating the use of a quantum-secure pseudorandom function.
+    Lastly, quantum-secure pseudorandom functions can be used to simulate quantum-accessible
+random oracles [BDF+ 11]. Unlike the classical setting, where a random oracle can be simulated on
+the fly, simulating a quantum-accessible random oracle requires defining the entire function up front
+before any queries are made. Zhandry [Zha12] observes that if the number of queries is a-priori
+bounded by q, 2q-wise independent functions are sufficient. However, whenever the number of
+quantum queries is not known in advance, quantum-secure pseudorandom functions seem necessary
+for simulating quantum-accessible random oracles.
+
+1.1   Proving Quantum Security
+Goldreich, Goldwasser, and Micali show how to build a pseudorandom function PRF from any
+length-doubling pseudorandom generator G. This construction is known as the GGM construction.
+Pseudorandom generators can, in turn, be built from any one-way function, as shown by Håstad et
+al. [HILL99]. The security proof of Håstad et al. is entirely black-box, meaning that it carries over
+to the quantum setting immediately if the underlying one-way function is secure against quantum
+adversaries. However, we will now see that the classical proof of security for the GGM construction
+does not hold in the quantum world.
+     At a high level, implicit in the GGM construction is a binary tree of depth n, where each leaf
+corresponds to an input/output pair of PRF. To evaluate PRF, we start at the root, and follow the
+path from root to the leaf corresponding to the input. The security proof consists of two hybrid
+arguments: the first across levels of the tree, and the second across the nodes in a particular level.
+The first step has only polynomially many hybrids since the tree’s depth is a polynomial. For the
+second step, a classical adversary can only query PRF on polynomially many points, so the paths
+used to evaluate PRF only visit polynomially many nodes in each level. Therefore, we only need
+polynomially many hybrids for the second hybrid argument. This allows any adversary A that
+breaks the security of PRF with probability  to be converted into an adversary B that breaks the
+security of G with probability only polynomially smaller that .
+     In the quantum setting, A may query PRF on a superposition of all inputs, so the response to
+even a single query could require visiting all nodes in the tree. Each level of the tree may have
+exponentially many nodes, so the second hybrid argument above would need exponentially many
+hybrids in the quantum setting. This means B breaks the security of G with only exponentially small
+probability. All existing security proofs for pseudorandom functions from standard assumptions
+suffer from similar weaknesses.
+
+
+                                                  2
+1.2   Our Results
+We answer the question of how to construct a function that looks random to quantum adversaries.
+The answer is simple: many of the constructions of standard-secure pseudorandom functions are in
+fact quantum-secure. However, as explained above, new techniques are required to actually prove
+security.
+     We start by showing that, given the existence of a standard-secure pseudorandom function, there
+are standard-secure pseudorandom functions that are not quantum-secure. Thus a standard-secure
+PRF may not be secure as a QPRF.
+     Next, for several classical constructions of pseudorandom functions, we now can show how to
+modify the classical security proof to prove quantum security. Our general technique is as follows:
+first define a seemingly stronger security notion for the underlying cryptographic primitive. Next,
+use ideas from the classical proof to show that any adversary A that breaks the quantum-security
+of the pseudorandom function can be turned into an adversary B that breaks this stronger notion
+of security for the primitive. Lastly, use new techniques to show the equivalence of this stronger
+notion of security and the standard notion of security in the quantum setting.
+     We use this approach to prove the security of the following pseudorandom functions:
+
+   • The construction from length-doubling pseudorandom generators (PRGs) due to Goldreich,
+     Goldwasser, and Micali [GGM86]. Since pseudorandom generators can be built from one-way
+     functions in the quantum setting, this shows that one-way functions secure against quantum
+     adversaries imply quantum-secure pseudorandom functions.
+
+   • The construction from pseudorandom synthesizers due to Naor and Reingold [NR95].
+
+   • The direct construction based on the Learning With Errors problem due to Banerjee, Peikert,
+     and Rosen [BPR11].
+
+1.3   Are Quantum Oracles Better Than Samples?
+In the GGM proof, the first hybrid argument over the levels of the tree essentially transforms an
+adversary for PRF into an algorithm solving the following problem: distinguish a random oracle
+from an oracle whose outputs are random values from the underlying pseudorandom generator. The
+next hybrid argument shows how to use such an algorithm do distinguish a single random value from
+a single output of the pseudorandom generator, thus breaking the security of the pseudorandom
+generator.
+    The first hybrid argument carries over into the quantum setting, but it is this second hybrid
+that causes difficulties for the reasons outlined above. To complete the security proof, we need to
+show that having quantum access to an oracle whose outputs are drawn from a distribution is no
+better than having access to a single sample from the same distribution. We show exactly that:
+
+Theorem 1.1. Let D1 and D2 be efficiently sampleable distributions on a set Y, and let X be some
+other set. Let O1 and O2 be the distributions of functions from X to Y where for each x ∈ X , Oi (x)
+is chosen independently according to Di . Then if A is an efficient quantum algorithm that uses
+quantum queries to distinguish oracles drawn from O1 from oracles drawn from O2 , we can construct
+an efficient quantum algorithm B that distinguishes samples from D1 and D2 .
+
+
+
+                                                 3
+    In the classical case, any algorithm A making q queries to an oracle O only sees q outputs. Thus,
+given q samples from D1 or D2 , we can lazily simulate the oracles O1 or O2 , getting an algorithm
+that distinguishes q samples of D1 from q samples of D2 . A simple hybrid argument shows how to
+get an algorithm that distinguishes one sample.
+    In the quantum setting, any quantum algorithm A making even a single quantum query to Oi
+gets to “see” all the outputs at once, meaning we need exponentially many samples to simulate Oi
+exactly. However, while we cannot lazily simulate the oracles Oi given q samples from Di , we can
+approximately simulate Oi given polynomially many samples from Di . Basically, for each input, set
+the output to be one of the samples, chosen at random from the collection of samples. While not
+quite the oracle Oi , we show that this is sufficiently indistinguishable from Oi . Thus, we can use A
+to distinguish a polynomial number of samples of D1 from the same number of samples of D2 . Like
+in the classical case, a simple hybrid argument shows how to distinguish just one sample.
+
+
+2     Preliminaries and Notation
+We say that  = (n) is negligible if, for all polynomials p(n), (n) < 1/p(n) for large enough n.
+    For an integer k, we will use non-standard notation and write [k] = {0, ..., k − 1} to be the set of
+non-negative integers less than k. We write the set of all n bit strings as [2]n . Let x = x1 ...xn be a
+string of length n. We write x[a,b] to denote the substring xa xa+1 ...xb .
+
+2.1    Functions and Probabilities
+Given two sets X and Y, define Y X as the set of functions f : X → Y. If a function f has maps X
+to Y × Z, we can think of f as two functions: one that maps X to Y and one that maps X to Z. In
+other words, we can equate the sets of functions (Y × Z)X and Y X × Z X .
+    Given f ∈ Y X and g ∈ Z Y , let g ◦ f be the composition of f and g. That is, g ◦ f (x) = g(f (x)).
+If F ⊆ Y X , let g ◦ F be the set of functions g ◦ f for f ∈ F. Similarly, if G ⊆ Z Y , G ◦ f is the set of
+functions f ◦ g where g ∈ G. Define G ◦ F accordingly.
+    Given a distribution D and some event event, we write Prx←D [event] to represent the probability
+that event happens when x is drawn from D. For a given set X , we will sometimes abuse notation
+and write X to denote the uniform distribution on X .
+    Given a distribution D on Y X and a function g ∈ Z Y , define the distribution g ◦ D over Z X
+where we first draw f from D, and output the composition g ◦ f . Given f ∈ Y X and a distribution
+E over Z X , define E ◦ f and E ◦ D accordingly.
+    Given a distribution D on a set Y, and another set X , define DX as the distribution on Y X
+where the output for each input is chosen independently according to D.
+    The distance between two distributions D1 and D2 over a set X is
+                                                 X
+                                  |D1 − D2 | =         |D1 (x) − D2 (x)| .
+                                                 x∈X
+
+    If |D1 − D2 | ≤ , we say D1 and D2 are -close. If |D1 − D2 | ≥ , we say they are -far.
+
+
+
+
+                                                       4
+2.2   Quantum Computation
+Here we state some basic facts about quantum computation needed for the paper, and refer the
+reader to Nielsen and Chuang [NC00] for a more in depth discussion.
+Fact 1. Any classical efficiently computable function f can be implemented efficiently by a quan-
+tum computer. Moreover, f can be implemented as an oracle which can be queried on quantum
+superpositions.
+   The following is a result from Zhandry [Zha12]:
+Fact 2. For any sets X and Y, we can efficiently “construct” a random oracle from X to Y capable
+of handling q quantum queries, where q is a polynomial. More specifically, the behavior of any
+quantum algorithm making at most q queries to a 2q-wise independent function is identical to its
+behavior when the queries are made to a random function.
+    Given an efficiently sampleable distribution D over a set Y, we can also “construct” a random
+function drawn from DX as follows: Let Z be the set of randomness used to sample from D, and
+let f (r) be the element y ∈ Y obtained using randomness r ∈ Z. Then DX = f ◦ Z X , so we first
+construct a random function O0 ∈ Z X , and let O(x) = f (O0 (x)).
+    We will denote a quantum algorithm A given classical oracle access to an oracle O as AO . If A
+has quantum access, we will denote this as A|Oi .
+
+2.3   Cryptographic Primitives
+In this paper, we always assume the adversary is a quantum computer. However, for any particular
+primitive, there may be multiple definitions of security, based on how the adversary is allowed to
+interact with the primitive. Here we define pseudorandom functions and two security notions, as
+well as two definitions of indistinguishability for distributions. The definitions of pseudorandom
+generators and synthesizers appear in the relevant sections.
+Definition 2.1 (PRF). A pseudorandom function is a function PRF : K × X → Y, where K is the
+key-space, and X and Y are the domain and range. K, X , and Y are implicitly functions of the
+security parameter n. We write y = PRFk (x).
+Definition 2.2 (Standard-Security). A pseudorandom function PRF is standard-secure if no efficient
+quantum adversary A making classical queries can distinguish between a truly random function and
+the function PRFk for a random k. That is, for every such A, there exists a negligible function
+ = (n) such that
+                            Pr [APRFk () = 1] − Pr [AO () = 1] <  .
+                            k←K                 O←Y X
+
+Definition 2.3 (Quantum-Security). A pseudorandom function PRF is quantum-secure if no
+efficient quantum adversary A making quantum queries can distinguish between a truly random
+function and the function PRFk for a random k.
+    We call such quantum-secure pseudorandom functions Quantum Random Functions, or QPRFs.
+    We now provide some definitions of indistinguishablility for distributions. The standard notion
+of indistinguishability is that no efficient quantum algorithm can distinguish a sample of one
+distribution from a sample of the other:
+
+                                                5
+Definition 2.4 (Indistinguishability). Two distributions D1 and D2 over a set Y are computationally
+(resp. statistically) indistinguishable if no efficient (resp. computationally unbounded) quantum
+algorithm A can distinguish a sample of D1 from a sample of D2 . That is, for all such A, there is a
+negligible function  such that
+
+                                Pr [A(y) = 1] − Pr [A(y) = 1] <  .
+                              y←D1                  y←D2
+
+   For our work, we will also need a new, seemingly stronger notion of security, which we call
+oracle-indistinguishability. The idea is that no efficient algorithm can distinguish between oracles
+whose outputs are distributed according to either D1 or D2 :
+Definition 2.5 (Oracle-Indistinguishability). Two distributions D1 and D2 over a set Y are
+computationally (resp. statistically) oracle-indistinguishable if, for all sets X , no efficient (resp.
+computationally unbounded) quantum algorithm B can distinguish D1X from D2X using a polynomial
+number of quantum queries. That is, for all such B and X , there is a negligible function  such that
+
+                              Pr [B |Oi () = 1] −    Pr [B |Oi () = 1] <  .
+                            O←D1X                   O←D2X
+
+    For this paper, we will primarily be discussing computationally bounded adversaries, so we
+will normally take indistinguishability and oracle-indistinguishability to mean the computational
+versions.
+    These these definitions of indistinguishability in hand, we can now formulate Theorem 1.1 as
+follows:
+Theorem 1.1. Let D1 and D2 be efficiently sampleable distributions over a set Y. Then D1 and
+D2 are indistinguishable if and only if they are also oracle-indistinguishable.
+
+
+3    Separation Result
+In this section, we show our separation result:
+Theorem 3.1. If secure PRFs exist, then there are standard-secure PRFs that are not QPRFs.
+
+Proof. Let PRF be a standard-secure pseudorandom function with key-space K, domain X , and
+co-domain Y. We will construct a new pseudorandom function that is periodic with some large,
+secret period. Classical adversaries will not be able to detect the period, and thus cannot distinguish
+this new function from random. However, an adversary making quantum queries can detect the
+period, and thus distinguish our new function from random.
+    Interpret X as [N ], where N is the number of elements in X . Assume without loss of generality
+that Y contains at least N 2 elements (if not, we can construct a new pseudorandom function with
+smaller domain but larger range in a standard way). We now construct a new pseudorandom
+function PRF0(k,a) (x) = PRFk (x mod a) where:
+
+    • The key space of PRF0 is K0 = K × A where A is the set of primes between N/2 and N . That
+      is, a key for PRF0 is a pair (k, a) where k is a key for PRF, and a is a prime in the range
+      (N/2, N ].
+
+                                                    6
+    • The domain is X 0 = [N 0 ] where N 0 is the smallest power of 2 greater than 4N 2 .
+
+    The following two claims are proved in Appendix A:
+Claim 1. If PRF is standard-secure, then so is PRF0 .
+Sketch of Proof. Since PRF is a standard-secure pseudorandom function, we can replace it with
+a truly random function in the definition of PRF0 , and no efficient adversary making classical queries
+will notice. But we are then left with a function that has a large random period where every value
+in the period is chosen randomly. This function will look truly random unless the adversary happens
+to query two points that differ by a multiple of the period. But by the birthday bound, this will
+only happen with negligible probability.
+
+Claim 2. If PRF is quantum-secure, then PRF0 is not.
+Sketch of Proof. If we allow quantum queries to PRF0 , we can use the period finding algorithm
+of Boneh and Lipton [BL95] to find a. With a, it is easy to distinguish PRF0 from a random oracle.
+Unfortunately, the period finding algorithm requires PRF0 to have some nice properties, but these
+properties are satisfied if PRF is quantum-secure.
+    Thus one of PRF and PRF0 is standard-secure but not quantum-secure, as desired.
+
+   We have shown that for pseudorandom functions, security against classical queries does not
+imply security against quantum queries. In the next sections, we will show, however, that several of
+the standard constructions in the literature are nevertheless quantum-secure.
+
+
+4    Pseudorandom Functions from Pseudorandom Generators
+We give the construction of pseudorandom functions from pseudorandom generators due to Goldreich,
+Goldwasser, and Micali [GGM86], the so-called GGM construction. We also prove its security in a
+new way that makes sense in the quantum setting. First, we define pseudorandom generators:
+Definition 4.1 (PRG). A pseudorandom generator (PRG) is a function G : X → Y. X and Y are
+implicitly indexed by the security parameter n.
+Definition 4.2 (Standard-Security). A pseudorandom generator G is standard-secure if the distri-
+butions G ◦ X and Y are computationally indistinguishable.
+Construction 1 (GGM-PRF). Let G : K → K2 be a length-doubling pseudorandom generator.
+Write G(x) = (G0 (x), G1 (x)) where G0 , G1 are functions from K to K. Then we define the GGM
+pseudorandom function PRF : K × [2]n → K where
+
+                               PRFk (x) = Gx1 (...Gxn−1 (Gxn (k))...) .
+
+    That is, the function PRF takes a key k in K and an n-bit input string. It first applies G to k.
+It keeps the left or right half of the output depending on whether the last bit of the input is 0 or
+1. What remains is an element in K, so the function applies G again, keeps the left or right half
+depending on the second-to-last bit, and so on.
+    As described in the introduction, the standard proof of security fails to prove quantum-security.
+Using Theorem 1.1, we show how to work around this problem. We defer the proof of Theorem 1.1
+
+                                                  7
+to Section 7, and instead assume it is true. We first define a stronger notion of security for
+pseudorandom generators, which we call oracle-security:
+
+Definition 4.3 (Oracle-Security). A pseudorandom generator G : X → Y is oracle-secure if the
+distributions G ◦ X and Y are oracle-indistinguishable.
+
+   G ◦ X is efficiently sampleable since we can sample a random value in X and apply G to it.
+Then, G ◦ X and Y are both efficiently sampleable, so Theorem 1.1 gives:
+
+Corollary 4.4. If G is a secure PRG, then it is also oracle-secure.
+
+   We now can prove the security of Construction 1.
+
+Theorem 4.5. If G is a standard-secure PRG, then PRF from Construction 1 is a QPRF.
+
+Proof. We adapt the security proof of Goldreich et al. to convert any adversary for PRF into an
+adversary for the oracle-security of G. Then Corollary 4.4 shows that this adversary is impossible
+under the assumption that G is standard-secure.
+    Suppose a quantum adversary A distinguishes PRF from a random oracle with probability .
+                                                               n−i
+Define hybrids Hi as follows: Pick a random function P ← K[2]      (that is, random function from
+(n − i)-bit strings into K) and give A the oracle
+
+                                   Oi (x) = Gx1 (...Gxi (P (x[i+1,n] ))...) .
+                                                                          n−i
+H0 is the case where A’s oracle is random. When i = n, P ← K[2]        is a random function from the
+set containing only the empty string to K, and hence is associated with the image of the empty string,
+a random element in K. Thus Hn is the case where A’s oracle is PRF. Let i be the probability A
+distinguishes Hi from Hi+1 . That is,
+
+                               i = Pr[A|Oi i () = 1] − P r[A|Oi+1 i () = 1] .
+
+   A simple hybrid argument shows that | i i | = .
+                                                  P
+
+   We now construct a quantum algorithm B breaking the oracle-security of G. B is given quantum
+                                                                        [2]n−1            n−1
+access to an oracle P : [2]n−1 → K2 , and distinguishes P ← K2         from P ← G ◦ K[2] . That
+                                                                       2
+is, B is given either a random function from (n − 1)-bit strings into K , or G applied to a random
+function from (n − 1)-bit strings into K, and distinguishes the two cases as follows:
+
+   • Pick a random i in {0, ..., n − 1}
+
+   • Let P (i) : [2]n−i−1 → K2 be the oracle P (i) (x) = P (0i x)
+                       (i)   (i)            (i)
+   • Write P (i) as (P0 , P1 ) where Pb : [2]n−i−1 → K are the left and right halfs of the output
+     of P (i) .
+
+   • Construct the oracle O : [2]n → K where
+
+                                    O(x) = Gx1 (...Gxi (Px(i)
+                                                           i+1
+                                                               (x[i+2,n] ))...) .
+
+   • Simulate A with oracle O, and output whatever A outputs.
+
+                                                       8
+    Notice that each quantum query to O results in one quantum query to P , so B makes the same
+number of queries that A does.
+    Fix i, and let Bi be the algorithm B using this i. In the case where P is truly random, so is P (i) ,
+          (i)        (i)                                                                            n−1
+as are P0 and P1 . Thus O = Oi , the oracle in hybrid Hi . When P is drawn from G ◦ K[2] ,
+                                               n−i−1                        n−i−1
+then P (i) is distributed according to G ◦ K[2]      , and so Pb ← Gb ◦ K[2]      . Thus O = Oi+1 , the
+oracle in hybrid Hi+1 . For fixed i, we then have that the quantity
+                                                 |P i                                |P i
+                                Pr            [Bi () = 1] −             Pr         [Bi () = 1]
+                                      n−1                                    n−1
+                                2 [2]
+                          P ←(K )                                  P ←G◦K[2]
+
+is equal to i . Averaging over all i and taking the absolute value, we have that the distinguishing
+probability of B,
+
+                              Pr             [B |P i () = 1] −         Pr        [B |P i () = 1] ,
+                                       n−1                                 n−1
+                         P ←(K2 )[2]                             P ←G◦K[2]
+
+is equal to
+                                                        1X
+                                                            i = /n .
+                                                        n i
+Thus B breaks the oracle security of G with probability only polynomially smaller than the
+probability A distinguishes PRF from a random oracle.
+
+
+
+5    Pseudorandom Functions from Synthesizers
+In this section, we show that the construction of pseudorandom functions from pseudorandom
+synthesizers due to Naor and Reingold [NR95] is quantum-secure.
+Definition 5.1 (Synthesizer). A pseudorandom synthesizer is a function S : X 2 → Y. X and Y
+are implicitly indexed by the security parameter n.
+Definition 5.2 (Standard-Security). A pseudoreandom synthesizer S : X 2 → Y is standard-secure
+if, for any set Z, no efficient quantum algorithm A making classical queries can distinguish a
+random function from O(z1 , z2 ) = S(O1 (z1 ), O2 (z2 )) where Ob ← X Z . That is, for any such A and
+Z, there exists a negligible function  such that
+
+
+                            Pr [AS(O1 ,O2 ) () = 1] −                Pr       [AO () = 1] <  ,
+                         O1 ←X Z                                   O←Y Z×Z
+                         O2 ←X Z
+
+where S(O1 , O2 ) means the oracle that maps (z1 , z2 ) into S(O1 (z1 ), O2 (z2 )).
+Construction 2 (NR-PRF). Given a pseudorandom synthesizer       S : X 2 → X , let ` be an integer
+                                                                    i
+                                                             
+                                  (`)                       i
+and n = 2` . We let PRFk (x) = PRFk (x) where PRF(i) : X 2×2 × [2]2 → X is defined as
+
+                                PRF(0)
+                                   a1,0 ,a1,1 (x) = a1,x
+                                (i)                                  (i−1)
+                           PRF (i−1)          (i−1)   (x) = S(PRF (i−1) (x[1,2i−1 ] ),
+                                A1       ,A2                         A1
+                                                                      (i−1)
+                                                                PRF (i−1) (x[2i−1 +1,2i ] )) ,
+                                                                      A2
+
+
+
+                                                               9
+where
+                          (i−1)
+                        A1        = (a1,0 , a1,1 , a2,0 , a2,1 , ..., a2i−1 ,0 , a2i−1 ,1 )
+                          (i−1)
+                        A2        = (a2i−1 +1,0 , a2i−1 +1,1 , a2,0 , a2,1 , ..., a2i ,0 , a2i ,1 )
+
+    That is, PRF takes a key k consisting of 2 × 2` elements of X , and takes bit strings x of length
+2` as input. It uses x to select 2` of the elements in the key, and pairs them off. It then applies S
+to each of the pairs, obtaining 2`−1 elements of X . Next, PRF pairs these elements and applies S
+to these pairs again, and continues in this way until there is one element left, which becomes the
+output.
+    The following theorem is proved in Appendix E:
+
+Theorem 5.3. If S is a standard-secure synthesizer, then PRF from Construction 2 is a QPRF.
+
+Sketch of Proof. The proof is very similar to that of the security of the GGM construction: we
+define a new notion of security for synthesizers, called quantum-security, and use the techniques of
+Naor and Reingold to prove that quantum-security implies that Construction 2 is quantum secure.
+Unlike the GGM case, the equivalence of quantum- and standard-security for synthesizers is not an
+immediate consequence of Theorem 1.1. Nevertheless, we prove the equivalence, completing the
+proof of security for Construction 2.
+
+
+6    Direct Construction of Pseudorandom Functions
+In this section, we present the construction of pseudorandom functions from Banerjee, Peikert, and
+Rosen [BPR11]. We show that this construction is quantum-secure.
+    Let p, q be integers with q > p. Let bxep be the map from Zq into Zp defined by first rounding x
+to the nearest multiple of q/p, and then interpreting the result as an element of Zp . More precisely,
+bxep = b(p/q)xe mod p where the multiplication and division in (p/q)x are computed in R.
+
+Construction 3. Let p, q, m, ` be integers with q > p. Let K = Zn×m
+                                                                q   × (Zn×n )` . We define
+PRF : K × [2]` → Zm×n
+                  p   as follows: For a key k = (A, {Si }), let
+
+                                                                     `
+                                                           $                       '
+                                                                           Sxi i
+                                                                     Y
+                                                                 t
+                                          PRFk (x) = A                                 .
+                                                                     i=1           p
+
+   The function PRF uses for a key an n × m matrix A and ` different n × n matrices Si , where
+elements are integers mod q. It uses its `-bit input to select a subset of the Si , which it multiplies
+together. The product is then multiplied by the transpose of A, and the whose result is rounded
+mod p.
+   Next is an informal statement of the security of PRF, whose proof appears in Appendix F:
+
+Theorem 6.1. Let PRF be as in Construction 3. For an appropriate choice of integers p, q, m, `
+and distribution χ on Z, if we draw A ← Zn×mq    and Si ← χn×n and the Learning With Errors
+(LWE) problem is hard for modulus q and distribution χ, then PRF is a QPRF.
+
+
+
+                                                            10
+Sketch of Proof. We follow the ideas from the previous sections and define a new notion of
+hardness for LWE, which we call oracle-hard, and show its equivalence to standard hardness. We
+then show that oracle-hardness implies Construction 3 is quantum-secure. This part is similar to
+the proof of Banerjee et al., with some changes to get it to work in the quantum setting.
+
+
+7     Distinguishing Oracle Distributions
+In this section, we describe some tools for arguing that a quantum algorithm cannot distinguish
+between two oracle distributions, culminating in a proof for Theorem 1.1. Let X and Y be sets. We
+start by recalling two theorems of Zhandry [Zha12]:
+
+Theorem 7.1. Let A be a quantum algorithm making q quantum queries to an oracle H : Y X . If
+we draw H from some distribution D, then for every z, the quantity PrH←D [A|Hi () = z] is a linear
+combination of the quantities PrH←D [H(xi ) = ri ∀i ∈ {1, ..., 2q}] for all possible settings of the xi
+and ri .
+
+Theorem 7.2. Fix q, and let Dλ be a family of distributions on Y X indexed by λ ∈ [0, 1]. Sup-
+pose there is an integer d such that for every 2q pairs (xi , ri ) ∈ X × Y, the function p(λ) =
+PrH←Dλ [H(xi ) = ri ∀i ∈ {1, ..., 2q}] is a polynomial of degree at most d in λ. Then for any quantum
+algorithm A making q quantum queries, the output distributions under Dλ and D0 are 2λd2 -close.
+
+    We now show a similar result:
+
+Theorem 7.3. Fix q, and let Er be a family of distributions on Y X indexed by r ∈ Z+ {∞}.
+                                                                                                 S
+
+Suppose there is an integer d such that for every 2q pairs (xi , ri ) ∈ X × Y, the function p(λ) =
+PrH←E1/λ [H(xi ) = ri ∀i ∈ {1, ..., 2q}] is a polynomial of degree at most d in λ. Then for any
+quantum algorithm A making q quantum queries, the output distributions under Er and E∞ are
+π 2 d3 /3r-close.
+
+Sketch of Proof. Let Dλ = E1/λ . We see that the conditions of Theorems 7.3 and 7.2 are
+identical, with the following exception: Theorem 7.2 requires Dλ to be a distribution for all λ ∈ [0, 1],
+while Theorem 7.3 only requires Dλ to be a distribution when 1/λ is an integer (and when λ = 0).
+The proof is thus similar in flavor to that of Theorem 7.2, with the following exception: the proof of
+Theorem 7.2 uses well-known bounds on polynomials f where f (x) ∈ [0, 1] for all x ∈ [0, 1]. However,
+we need similar bounds on polynomials f where f (x) is only required to be in [0, 1] for x where
+1/x is an integer. Such polynomials are far less understood, and we need to prove suitable bounds
+under these relaxed assumptions. The proof is in Appendix B.
+    In the next section, we apply Theorem 7.3 to a new class of distributions.
+
+7.1    Small-Range Distributions
+We now apply Theorem 7.3 to a new distribution on oracles, which we call small-range distributions.
+Given a distribution D on Y, define SRD
+                                      r (X ) as the following distribution on functions from X to Y:
+
+    • For each i ∈ [r], chose a random value yi ∈ Y according to the distribution D.
+
+    • For each x ∈ X , pick a random i ∈ [r] and set O(x) = yi .
+
+                                                   11
+   We will often omit the domain X when is is clear from context.
+   The following is proved in Appendix C:
+
+Lemma 7.4. Fix k. For any X , the probabilities in each of the marginal distributions of SRD
+                                                                                           r (X )
+over k inputs are polynomials in 1/r of degree k.
+
+     An alternate view of this function is to choose g ← D[r] and f ← [r]X , and output the composition
+g ◦ f . That is, SRD            [r] ◦ [r]X . In other words, we choose a random function f from X to
+                    r (X ) = D
+[r], and compose it with another random function g from [r] to Y, where outputs are distributed
+according to D. We call this distribution a small-range distribution because the set of images of
+any function drawn from the distribution is bounded to at most r points, which for r << Y will
+be a small subset of the co-domain. Notice that, as r goes to infinity, f will be injective with
+probability 1, and hence for each x, g(f (x)) will be distributed independently according to D. That
+is, SRD           X
+       ∞ (X ) = D . We can then use Theorem 7.3 to bound the ability of any quantum algorithm to
+distinguish SRD                 D
+                r (X ) from SR∞ (X ) = D :
+                                              X
+
+
+Corollary 7.5. The output distributions of a quantum algorithm making q quantum queries to an
+oracle either drawn from SRD          X                                2    3        3
+                           r (X ) or D are `(q)/r-close, where `(q) = π (2q) /3 < 27q .
+
+    We observe that this bound is tight: in Appendix D we show that the quantum collision finding
+algorithm of Brassard, Høyer, and Tapp [BHT97] can be used to distinguish SRD             X
+                                                                            r (X ) from D with
+optimal probability. This shows that Theorem 7.3 is tight.
+
+7.2   The Equivalence of Indistinsguishability and Oracle-Indistinguishability
+We now use the above techniques to explore the relationship between indistinguishability and
+oracle-indistinguishability and to prove Theorem 1.1. Clearly, oracle-indistinguishability implies
+standard indistinguishability: if A distinguishes D1 from D2 , then the algorithm B |Oi () that picks
+any x ∈ X and returns A(O(x)) breaks the oracle-indistinguishability.
+    In the other direction, in the classical world, if B makes q queries to O, we can simulate O using
+q samples, and do a hybrid across the samples. This results in an algorithm that breaks the standard
+indistinuishability. However, in the quantum world, each query might be over a superposition of
+exponentially many inputs. Therefore there will be exponentially many hybrids, causing the proof
+to fail.
+    In the statistical setting, this question has been answered by Boneh et al. [BDF+ 11]. They show
+that if a (potentially unbounded) quantum adversary making q queries distinguishes D1X from D2X
+with probability , then D1 and D2 must Ω(2 /q 4 )-far. We now have the tools to extend this result
+to the computational setting (and improve the result for the statistical setting in the process) by
+proving Theorem 1.1.
+Proof of Theorem 1.1. Let B be an (efficient) quantum adversary that distinguishes D1X from
+D2X with non-negligible probability , for distributions D1 and D2 over Y. That is, there is some
+set X such that
+                              Pr [B |Oi () = 1] −    Pr [B |Oi () = 1] =  .
+                            O←D1X                   O←D2X
+
+   Our goal is to construct an (efficient) quantum algorithm A that distinguishes a sample of D1
+from a sample of D2 . To this end, choose r so that `(q)/r = /4, where `(q) is the polynomial from
+
+                                                    12
+Corollary 7.5. That is, r = 4`(q)/. No quantum algorithm can distinguish SRD            X
+                                                                            r (X ) from Di with
+                                                                             i
+
+probability greater than `(q)/r = /4. Thus, it must be that the quantity
+
+                               Pr        [B |Oi () = 1] −        Pr     [B |Oi () = 1]
+                                D                                  D
+                          O←SRr 1 (X )                       O←SRr 2 (X )
+
+is at least /2. We now define r + 1 hybrids Hi as follows: For j = 0, ..., i − 1, draw yj from D1 . For
+j = i, ..., r − 1, draw yj from D2 . Then give B the oracle O where for each x, O(x) is a randomly
+selected yi . Hr is the case where O ← SRD                                            D2
+                                            r , and H0 is the case where O ← SRr . Hence H0 and
+                                             1
+
+Hr are distinguished with probability at least /2. Let
+                            i =      Pr     [B |Oi () = 1] − Pr [B |Oi () = 1]
+                                    O←Hi+1                      O←Hi
+
+be the probability that B distinguishes Hi+1 from Hi . Then | ri=1 i | ≥ /2.
+                                                                            P
+
+    We construct an algorithm A that distinguishes between D1 and D2 with probability /2r. A,
+on inputs y, does the following:
+   • Choose a random i ∈ [r].
+   • Construct a random oracle O0 ← [r]X .
+                                              {0,...,i−1}                   {i+1,...,r−1}
+   • Construct random oracles O1 ← D1                       and O2 ← D2                     .
+   • construct the oracle O where O(x) is defined as follows:
+        – Compute j = O0 (x).
+        – If j = i, output y.
+        – Otherwise, if j < i, output O1 (j) and if j > i, output O2 (j).
+   • Simulate B with the oracle O, and output the output of B.
+   Let Ai be the algorithm A using i. If y ← D1 , B sees hybrid Hi+1 . If y ← D2 , B sees Hi .
+Therefore, we have that
+                           Pr [Ai (y) = 1] − Pr [Ai (y) = 1] = i .
+                              y←D1                     y←D2
+Averaging over all i, we get that A’s distinguishing probability is
+                                                                       r
+                                                                    1X              2
+                     Pr [A(y) = 1] − Pr [A(y) = 1] =                      i ≥    =       .
+                   y←D1                  y←D2                       r i=1      2r   8`(q)
+
+   Thus, A is an (efficient) algorithm that distinguishes D1 from D2 with non-negligible probability.
+Hence, it breaks the indistinguishability of D1 and D2 .
+    Notice that by removing the requirement that B be an efficient algorithm, we get a proof
+for the statistical setting as well, so that if any computationally unbounded quantum algorithm
+making q quantum queries distinguishes D1X from D2X with probability , then D1 and D2 must be
+Ω(2 /`(q)) = Ω(2 /q 3 )-far, improving the result of Boneh et al. by a factor of q.
+    Now that Theorem 1.1 is proved, we have completed the proof of security for the GGM
+construction (Construction 1) in the quantum setting. With some modifications to the proof, we
+can also prove the quantum security for Constructions 2 and 3, as shown in Appendix E and
+Appendix F.
+
+                                                        13
+8    Conclusion
+We have shown that not all pseudorandom functions secure against classical queries are also secure
+against quantum queries. Nevertheless, we demonstrate the security of several constructions of
+pseudorandom functions against quantum queries. Specifically, we show that the construction from
+pseudorandom generators [GGM86], the construction from pseudorandom synthesizers [NR95], and
+the direct construction based on the Learning With Errors problem [BPR11] are all secure against
+quantum algorithms making quantum queries. We accomplish these results by providing more tools
+for bounding the ability of a quantum algorithm to distinguish between two oracle distributions.
+We leave as an open problem proving the quantum security of some classical uses of pseudorandom
+functions. We have two specific instances in mind:
+
+    • Pseudorandom permutations (Block Ciphers) secure against quantum queries. We know how
+      to build pseudorandom permutations from pseudorandom functions in the classical setting
+      ([LR88, NR99]). Classically, the first step to prove security is to replace the pseudorandom
+      functions with truly random functions, which no efficient algorithm can detect. The second
+      step is to prove that no algorithm can distinguish this case from a truly random permutation.
+      For this construction to be secure against quantum queries, a quantum-secure pseudorandom
+      function is clearly needed. However, it is not clear how to transform the second step of the
+      proof to handle quantum queries.
+
+    • Message Authentication Codes (MACs) secure against quantum queries. MACs can be built
+      from pseudorandom functions and proven existentially unforgeable against a classical adaptive
+      chosen message attack. If we allow the adversary to ask for an authentication on a superposition
+      of messages, a new notion of security is required. One possible definition of security is that,
+      after q queries, no adversary can produce q + 1 classical valid message/tag pairs. Given a
+      pseudorandom function secure against quantum queries, proving this form of security reduces
+      to proving the impossibility of the following: After q quantum queries to a random oracle O,
+      output q + 1 input/output pairs of O with non-negligible probability.
+
+
+Acknowledgments
+We would like to thank Dan Boneh for his guidance and many insightful discussions. This work
+was supported by NSF and DARPA. Any opinions, findings, and conclusions or recommendations
+expressed in this material are those of the author(s) and do not necessarily reflect the views of the
+Department of Defense or the U.S. Government.
+
+
+A     Proof of the Separation Result
+Here we finish the counter-example from Section 3 and the proof of Theorem 3.1 by proving Claims
+1 and 2. Recall that we start with a pseudorandom function PRF with key-space K, domain [N ],
+and range Y where |Y| ≥ N 2 . We then construct a new pseudorandom function PRF0 whose keys
+are pairs (k, a) where k ∈ K and a ∈ A where A is the set of primes in (N/2, N ]. We let N 0 be the
+smallest power of 2 greater than 4N 2 , and for x ∈ [N 0 ], define PRF0(k,a) (x) = PRFk (x mod a).
+
+
+
+                                                 14
+Proof of Claim 1. We prove that if PRF is standard-secure, so is PRF0 . Suppose we have a
+quantum adversary A making classical queries that distinguishes PRF0 from a random function with
+non-negligible probability . That is,
+
+                                               PRF0(k,a)
+                                  Pr      [A               () = 1] − Pr [AO () = 1] = 
+                             k←K,a←A                                   O←Y X
+
+   This is equivalent to
+
+                             Pr        [APRFk (·    mod a)
+                                                             () = 1] − Pr [AO () = 1] = 
+                        k←K,a←A                                           O←Y X
+
+   Consider the quantity
+
+                                  Pr       [AO(·      mod a)
+                                                                 () = 1] − Pr [AO () = 1]
+                             O←Y X ,a←A                                       O←Y X
+
+
+    The left hand side is the case where O is a random function in Y X , a is a random prime in
+(N/2, N ], and we give A the oracle O0 (x) = O(x mod a). As long as A never queries its oracle on
+two points x and x0 such that x ≡ x0 mod a, this oracle will look random. If A makes q queries,
+there are 2q possible differences between query points. Each difference is at most 8N 2 , so for large
+N it can only be divisible by at most 2 different moduli a. Notice that |A| ∈ Ω(N/ log N ). Each
+difference thus has a probability at most 2/|A| ∈ O(2 log N/N ) of being divisible by a, so the total
+probability of querying x and x0 such that x ≡ x0 mod a is at most O(q 2 log N/N ). Thus this
+probability, and hence the ability of A to distinguish O0 from a random oracle, is negligible.
+    A simple hybrid argument then shows that
+
+          Pr     [APRFk (·   mod a)
+                                       () = 1] −            Pr        [AO(·   mod a)
+                                                                                       () = 1] ≥  − O(q 2 log N/N )
+       k←K,a←A                                      O←Y X ,a←A
+
+
+   Define a quantum algorithm B which distinguishes PRF from a random oracle. B has an oracle
+O, chooses a random prime a ∈ (N/2, N ], and simulates A with the oracle O0 (x) = O(x mod a).
+When O = PRFk , we get the left side, and when O is random, we get the right side. Thus,
+
+                      Pr [B PRFk () = 1] − Pr [B O () = 1] ≥  − O(q 2 log N/N )
+                      k←K                           O←Y X
+
+   Since N is exponential, B breaks the standard-security of PRF.
+
+Proof of Claim 2. We now show that PRF and PRF0 cannot both be quantum-secure. Suppose
+PRF is quantum secure. We first consider the case where PRF0 is built from a truly random function
+O : [N ] → Y. That is, PRF0a (x) = O(x mod a).
+    Since |Y| ≥ N 2 , the probability that there is a collision (x, x0 ) where O(x) = O(x0 ) is less than
+1/2. In this case, we then notice that PRF0 is periodic with period a, and we can use the results of
+Boneh and Lipton [BL95] to find this period in polynomial time by making quantum queries to the
+oracle. Thus, we get a distinguisher that works as follows, given access to an oracle O0 :
+
+   • Use the period-finding algorithm of Boneh and Lipton to find the period a of O0 .
+
+                                                                 15
+    • If a ∈ (N/2, N ], pick a random x ∈ [N 0 − a], and verify that O0 (x) = O0 (x + a). If so, output
+      1. Otherwise, output 0.
+
+If O0 = O(x mod a), then with probability at least 1/2, O will have no collisions, meaning we
+will find a with probability 1 − o(1). O0 (x) = O0 (x + a) will always be true in this case, so we
+output 1. If O0 is random, then for any x, the probability that there is any x0 ∈ x + (N/2, N ] with
+O0 (x0 ) = O0 (x) is negligible, so the random oracle will fail the test with all but negligible probability.
+Therefore, we distinguish PRF0 from random with probability at least 1/2 − o(1).
+    We now switch to the true definition of PRF0 . That is, we replace the random oracle O with PRF.
+Since PRF is quantum-secure, this only affects the behavior of our distinguisher negligibly. Therefore,
+our distinguisher still distinguishes PRF0 from random with probability at least 1/2 − o(1).
+
+
+B     Proof of Theorem 7.3
+Here we prove Theorem 7.3. We will actually prove a more general version. Recall that we have a
+family of distributions Er over Y X parametrized by r ∈ Z+ {∞}. For any 2q pairs (xi , ri ), suppose
+                                                              S
+
+the function p(λ) = PrH←E1/λ [H(xi ) = ri ∀i ∈ {1, ..., 2q}] satisfies:
+    • p is represented by a polynomial in λ of degree at most d.
+    • p(i) (0), the ith derivative of p at 0, is 0 for each i ∈ {1, ..., ∆ − 1}.
+    Setting ∆ = 1 gives the conditions of the theorem.
+    We will show that any q query quantum algorithm can only distinguish Er from E∞ with
+probability at most 22−∆ ζ(2∆)(1/r)∆ (d)3∆ .
+    Let λ = 1/r. We follow the same proof technique as in Zhandry [Zha12].
+    By Theorem 7.1, for a q-query quantum algorithm A, PrH←Er [AH () = z] is a linear combination
+of the PrH←Er [H(xi ) = ri ∀i ∈ {1, ..., 2q}]. Thus, for any z, PrH←E1/λ [AH () = z] is a polynomial in
+λ of degree d with the first ∆ − 1 derivatives at λ = 0 being 0.
+    Now, suppose that A distinguishes E1/λ from E∞ with probability (λ). That is
+
+                          X
+                                    Pr     [AH () = z] −    Pr [AH () = z] = (λ) .
+                                H←E1/λ                     H←E∞
+                           z
+
+   Let Zλ be the set of z such that z is a more likely output under E1/λ than E∞ . That is,
+PrH←E1/λ [AH () = z] > PrH←E∞ [AH () = z]. It is not difficult to show that
+
+                               Pr   [AH () ∈ Zλ ] −     Pr [AH () ∈ Zλ ] = (λ)/2 .
+                          H←E1/λ                      H←E∞
+
+    Fix λ0 , and consider the quantity
+                                                                 X
+                      pλ0 (λ) ≡       Pr     [AH () ∈ Zλ0 ] =             Pr     [AH () = z] .
+                                    H←E1/λ                              H←E1/λ
+                                                                z∈Zλ0
+
+Then pλ (λ) − pλ (0) = (λ)/2. Further, for each λ0 , pλ0 is a degree-d polynomial in λ such that
+ (i)
+pλ0 (0) = 0 for i ∈ {1, ..., ∆ − 1}. It also lies in the range [0, 1] when λ = 0 or 1/λ ∈ Z+ . Thus, we
+make use of the following theorem:
+
+                                                           16
+Theorem B.1. Let p(λ) be a polynomial in λ of degree d such that p(i) (0) = 0 for i ∈ {1, ..., ∆ − 1},
+0 ≤ p(0) ≤ 1, and 0 ≤ p(1/r) ≤ 1 for all r ∈ Z+ . Then |p(1/r) − p(0)| < 21−∆ ζ(2∆)(1/r)∆ d3∆ for
+all r ∈ Z+ , where ζ is the Riemann Zeta function.
+
+    Before proving this theorem, we use it to finish the proof of Theorem 7.3. For each λ0 , pλ0
+satisfies the conditions of Theorem B.1, so we must have that pλ0 (λ) − pλ0 (0) < 21−∆ ζ(2∆)λ∆ d3∆ .
+But then setting λ0 = λ, we get that
+
+                           (λ) = 2(pλ (λ) − pλ (0)) < 22−∆ ζ(2∆)λ∆ d3∆ .
+
+    Replacing 1/λ with r, we have shown that the output distributions of any q query quantum
+algorithm A under Er and E∞ are 22−∆ ζ(2∆)(1/r)∆ d3∆ -close, as desired.
+Proof of Theorem B.1. We have a polynomial p of degree d with p(i) (0) = 0 for i ∈ {1, ..., ∆ − 1}.
+Further, for r ∈ Z+ ∩ {∞}, 0 ≤ p(1/r) ≤ 1. Now, let s(λ) = p(λ)−p(0)
+                                                               λ∆
+                                                                     . Then s is a d − ∆-degree
+polynomial. We will now interpolate this polynomial at d − ∆ + 1 points: let
+                                                    1
+                                          λi = j (d−∆+1)3 k .
+                                                        2i2
+
+Then we can use the Lagrange interpolating polynomials to interpolate s(λ). Let si = s(λi ). Then:
+                                                  d−∆+1
+                                                   X
+                                        s(λ) =                si `i (λ)
+                                                      i=1
+
+where `i (λ) is the Lagrange polynomial
+                                                d−∆+1
+                                                                           !
+                                                  Y           λ − λj
+                                     `i (λ) =
+                                                j=1,j6=i
+                                                              λi − λj
+
+Then we get
+                                                    d−∆+1
+                                                     X            p(λi ) − p(0)
+                            p(λ) − p(0) = λ∆                                    `i (λ)
+                                                    i=1
+                                                                       λ∆i
+                                                d−∆+1
+                                                 X
+                                          =                ai (λ)(p(λi ) − p(0))
+                                                  i−1
+
+where                                                      ∆
+                                                      λ
+                                                  
+                                       ai (λ) =                 `i (λ) .
+                                                      λi
+   Now, observe that 1/λi are integers, so 0 ≤ p(λi ) ≤ 1 by assumption. Since 0 ≤ p(0) ≤ 1 as well,
+we must have that |p(λi ) − p(0)| ≤ 1. Therefore,
+                                                        d−∆+1
+                                                         X
+                                   |p(λ) − p(0)| =                  |ai (λ)| .
+                                                            i=1
+
+We now need to bound this sum.
+
+                                                      17
+Claim 3. If λ ≤ λi for all i, then                              1−∆ ζ(2∆)λ∆ d3∆
+                                                  i |ai (λ)| < 2
+                                              P
+
+
+   Before proving this claim, we note that it proves Theorem B.1 when λ ≤ λi for all i (equivalently,
+λ ≤ λ1 ). If λ > λ1 , then the bound we are trying to prove is at least
+                                                                            !∆
+                             1−∆           (d − ∆ + 1)3
+                          2        ζ(2∆)                                             > 2ζ(2∆) > 2 .
+                                         b(d − ∆ + 1)3 /2c
+
+    Which is already trivially satisfied by the assumption that p(1/r) ∈ [0, 1].
+
+Proof of Claim 3. First, notice that
+                                       ∆ d−∆+1                         !                 ∆ d−∆+1                    !
+                  ai (λ)          1                        |λ − λj |                 1                       λj
+                                           Y                                                 Y
+                         =                                                  ≤
+                   λ∆             λi         j=1,j6=i
+                                                          |λi − λj |                 λi      j=1,j6=i
+                                                                                                         |λi − λj |
+
+                              2i         2
+    Now, observe that λi ≥ (d−∆+1) 3 and that
+
+                                              $                     %
+                                                  (d − ∆ + 1)3   (d − ∆ + 1)
+                                                                                                    
+                 |λi − λj | = λi λj                       2
+                                                               −
+                                                       2i            2j 2
+                                                                                                                      !
+                                            2i2                   (d − ∆ + 1)3 (d − ∆ + 1)3
+                              ≥                     λj                        −             −1
+                                       (d − ∆ + 1)3                    2i2          2j 2
+
+Which can be simplified to
+                                                                               2i j       2 2
+                                                                  i2 − j 2 − (d−∆+1)3
+                                         |λi − λj | ≥ λj
+                                                                                j2
+We notice that the numerator is minimized by making i and j as large as         possible, which is when
+                                                                                      2
+they are d − ∆ + 1 and d − ∆. In this case, the quantity becomes λj 3 − d−∆+1                /j 2 , which is
+greater than 0 as long as d − ∆ + 1 ≥ 1 (if d − ∆ < 0, then p(λ) is a constant, so the theorem is
+trivial).
+    Thus                                                                      
+                                    ∆ d−∆+1                      2
+                          ai (λ)    1       Y                    j
+                                 ≤                 
+                                                                     2i2 j 2
+                                                                               
+                           λ∆       λi    j=1,j6=i   |i2 − j 2 | −           3              (d−∆+1)
+
+                                                                3 ∆
+                                                                
+                                                      (d−∆+1)
+    The (1/λi )∆ term is bounded by                      2i2
+                                                                      . We now bound the other term:
+
+Claim 4. For all integers D and i such that i ≤ D, αD,i ≤ 2 where
+                                                         D
+                                                                                                 !
+                                                         Y                      j2
+                                         αD,i =                                            2 2
+                                                       j=1,j6=i    |i2 − j 2 | − 2iD3j
+
+Proof. First, rewrite αD,i as
+                                                  D                D
+                                                  Y        j2      Y          1
+                                  αD,i =                 2 − j2|               2i2 j 2
+                                              j=1,j6=i
+                                                       |i        j=1,j6=i 1 − 2 2 3         |i −j |D
+
+
+                                                                   18
+    The first term is
+                                  D                 i−1                 D
+                                  Y        j2       Y        j2        Y          j2
+                                                  =
+                              j=1,j6=i
+                                       |i2 − j 2 | j=1 (i + j)(i − j) j=i+1 (i + j)(j − i)
+                                                                                           2               
+                                                                                     !        D!
+                                                                  ((i − 1)!)2                  i!
+                                                      =
+                                                                                                             
+                                                                 (2i−1)!               (D+i)!                
+                                                                    i!   (i − 1)!          (2i)!   (D − i)!
+                                                                        !                                !
+                                                             2(i!)2                  (D!)2 (2i)!
+                                                      =
+                                                             (2i)!            (i!)2 (D − i)!(D + i)!
+                                                      = 2(D!)2 /(D − i)!(D + i)!
+                                                             2D 
+                                                             D+i
+                                                      =      2D
+                                                              D
+
+We use the fact that
+                                  m            !
+                              d             n
+                        
+                                        log         = ψ (m−1) (k + 1) − (−1)m ψ (m−1) (n − k + 1)
+                             dk             k
+                            `
+                         d
+Where ψ (`) (x) =       dx        log Γ(x) is the polygamma function. This allows us to write:
+
+                                                2D 
+                                                                                i2`
+                                                           P∞
+                                                D+i      −2 `=1 ψ (2`−1) (d+1) (2`)!
+                                                2D  = e
+                                                 D
+
+    Next, we use the fact that ψ (m) (x) ≥ 0 for all odd m and non-negative x, and ψ (1) (x+1) ≤ x1 − 2x12
+to bound                                  2D
+                                                                  (1) (d+1)i2 /2         2 1       1
+                                           D+i
+                                           2D
+                                                     ≤ e−ψ                         ≤ e−i ( d − 2d2 )
+                                            D
+
+    We now bound the second term
+                                                                    D
+                                                                    Y                1
+                                                    βD,i :=                       2i2 j 2
+                                                                 j=1,j6=i 1 − |i2 −j 2 |D3
+
+                           j      2 2
+   First, let xi,j = |i22i
+                        −j 2 |D3
+                                 . Notice that xi,j = xj,i , and that for j < i, xi,j ≤ xi,i−1 . Lastly, notice
+that xi,i−1 ≤ xD,D−1 . Therefore, for all i, j,
+
+                                                             2(D − 1)2     1
+                                                    xi,j ≤             ≤1−
+                                                             D(2D − 1)     D
+
+                               1                             2
+    Now, we use the fact that 1−x ≤ ex+x ln D for all x ≤ 1 − 1/D to bound
+
+                                                                    D
+                                                                    X
+                                                ln βD,i ≤                    xi,j + x2i,j ln D
+                                                                  j=1,j6=i
+
+
+
+                                                                        19
+   Much the same way as we analyzed the first term by breaking the product into cases where
+j < i and j > i, we can do the same for this sum. To simplify notation, we use the generalized
+harmonic numbers:                               n
+                                          (r)
+                                               X   1
+                                        Hn =         r
+                                               j=1
+                                                   j
+                 (1)
+and Hn = Hn . Evaluating the sum in terms of the harmonic number, we can write
+                              i2
+                 ln βD,i ≤        (1 + 4D − 8i + 2i(HD−i − HD+i + 2H2i ))
+                             2D3
+                                i4 ln D                                       (2)    (2)
+                             +          (−3 + 16D + 12i(HD−i − HD+i ) + 4i2 (HD−i + HD+i ))
+                                 4D6
+      Putting together with the first part, we have that
+     αD,i          i2
+            
+  ln             ≤     (1 + 5D − 2D2 − 8i + 2i(HD−i − HD+i + 2H2i ))
+      2           2D3
+                     i4 ln D                                        (2)   (2)
+                  +          (−3 + 16D + 12i(HD−i − HD+i ) + 4i2 (HD−i + HD+i ))
+                      4D6
+                   i2 h          
+                                                                                 (2)  (2)
+                                                                                                 
+                 = 6 −4D5 + 4D3 i(HD−i − HD+i + 2H2i ) + 10D4 − 16D3 i + 4i4 (HD−i + HD+i ) ln D
+                  4D                                                     i
+                  + 2D3 + 16Di2 ln D + 12i3 (HD−i − HD+i ) ln D − 3i2 ln D
+
+    In order to prove the claim, we need to show that the quantity on the left is less than 0. We can
+                                                                                  (2)
+already see that, for large enough D, since 1 ≤ D ≤ i and Hn = O(log n) and Hn = O(1), that the
+−4D5 term will dominate, and therefore the whole quantity will indeed be less than 0. It remains
+to find what D suffices.
+    Let’s first look at the quartic term (where powers of i and D sum to 4):
+                                                                           (2)    (2)
+                  4D3 i(HD−i − HD+i + 2H2i ) + 10D4 − 16D3 i + 4i4 (HD−i + HD+i ) ln D
+                                                                           (2)
+      Let r = i/D. We use the fact that, log n ≤ Hn ≤ log n + 1 and Hn ≤ π 2 /6 to bound this above
+by:
+                                                                              4
+                                                                                             
+           D4 4r(3 + ln(1 − r) − ln(1 + r) + 2 ln(2r) + 2 ln(2D)) + 10 − 16r + π 2 r4 ln D
+                                                                              3
+      Next, we use the fact that ln 2 ≤ 3/4 to bound this as
+                                                       !                           !
+                                           (1 − r)r2               4
+                    D4 4r(2 + ln                  + 2 ln(D)) + 10 + π 2 r4 ln D
+                                             1+r                   3
+                                                                              √
+   In therange r∈ [0, 1], (1 − r)r2 /(1 + r) obtains a maximum value of (5 5 − 11)/2 < 0.1. This
+                2
+means ln (1−r)r
+            1+r    < ln(0.1) < −2. Therefore, we upper bound the quantity as
+
+                                          4
+                                  D4 ((8 + π 2 ) ln D + 10) ≤ D4 (22 ln D + 10)
+                                          3
+      We now bound the cubic term
+2D3 +16Di2 ln D + 12i3 (HD−i −HD+i ) ln D ≤ D3 (2 + 16r2 ln D + 12r3 (1 + ln(1−r)−ln(1 +r)) ln D)
+
+                                                           20
+    Now, 1 + ln(1 − r) − ln(1 + r) ≤ 1 − 2r, allowing us to bound this as
+
+                                          2D3 (1 + 4r2 (2 + 3r − 6r2 ) ln D)
+
+r2 (2 + 3r − 6r2 ) obtains a maximum value less than 3/4, meaning we can bound this even further
+as 2D3 (1 + 3 ln D).
+     Putting this all together, we have that
+
+                        αD,i            r2 
+                                                                                       
+                                                 3     2
+                     ln            ≤         −4D   + D   (22 ln D + 10) + 2D(3 ln D + 1)
+                         2             4D2
+
+    The function −4D4 + D2 (22 ln D + 10) + 2D(3 ln D + 1) is less than 0 for all D ≥ 19. Therefore,
+we have proved αD,i ≤ 2 in this range. The remaining 171 cases for D < 19 can easily (though
+tediously) be verified manually. This completes the proof of the claim.
+
+    With this proved, we can now complete the proof of Claim 3.
+                                                                                          !∆              !∆
+                          ∆+1 d−∆+1
+      ai (λ)         1                                 j2                    (d − ∆ + 1)3             d3
+                                Y
+             ≤                                               2 2
+                                                                       ≤                        ×2≤2
+       λ∆            λi       j=1,j6=i
+                                                             2i j
+                                             |i2 − j 2 | − (d−∆+1) 3
+                                                                                  2i2                 2i2
+
+    This gives
+                                                           1
+                                   |ai (λ)| ≤ λ∆ d3∆ 21−∆ 2∆
+                                                         i
+Summing over all i from 1 to d − ∆ + 1 gives
+                                       d−∆+1                               d−∆+1
+                                        X                                   X       1
+                                                |ai (λ)| ≤ λ∆ d3∆ 21−∆
+                                         i=1                                i=1
+                                                                                   i2∆
+
+The sum on the right hand side is the truncated p series for p = 2∆. This series sums to ζ(p) where
+ζ is the Riemann Zeta function, so the truncation is strictly less than this value. Therefore,
+                                         d−∆+1
+                                          X
+                                                   |ai (λ)| < λ∆ d3∆ 21−∆ ζ(2∆)
+                                             i=1
+
+
+
+
+C     Proof of Lemma 7.4
+In this section, we prove Lemma 7.4.
+Proof of Lemma 7.4. Our goal is to show that, for each of the marginal distributions over k
+inputs to SRD   r , each probability is a polynomial in 1/r of degree at most k.
+    Fix some xi and yi for i ∈ [k]. We consider the probability that O(xi ) = yi for all i ∈ [k]. We can
+assume without loss of generality that the xi are distinct. Otherwise, there are i, j such that xi = xj .
+If yi 6= yj , then the probability is 0 (O is not a function in this case). If yi = yj , the O(xj ) = yj
+condition is redundant and can be removed, reducing this to the k − 1 case. By induction on k, the
+resulting probability is a polynomial of degree at most k − 1 < k.
+
+                                                             21
+    Recall that SRD       [r] ◦ [r]X and D is a distribution on Y. Let O ← [r]X and O ← D [r] . Let
+                   r =D                                                   1               2
+O10 be the restriction of O1 to {x0 , ..., xk−1 }. Each O10 then occurs with probability 1/rk . Now,
+          Pr [O(xi ) = yi ∀i ∈ [k]] =                Pr                  [O2 (O1 (xi )) = yi ∀i ∈ [k]]
+        O←SRD
+            r                               O1 ←[r]X ,O2 ←D[r]
+                                      =                     Pr                        Pr[O2 (O10 (xi )) = yi ∀i ∈ [k]]
+                                            O10 ←[r]{x0 ,...,xk−1 } ,O2 ←D[r]
+                                            1 X
+                                      =             Pr [O2 (O10 (xi )) = yi ∀i ∈ [k]]
+                                            rk 0 O2 ←D[r]
+                                                O1
+
+   We now associate with each O10 a partition P of [k] into r disjoint subsets Pj for j ∈ [r]. The
+elements of Pj are the indicies i such that O10 (xi ) = j. Thus:
+                                                  1 X
+                  Pr [O(xi ) = yi ∀i ∈ [k]] =                Pr[O2 (j) = yi ∀j ∈ [r], ∀i ∈ Pj ]
+                O←SRD
+                    r
+                                                  rk P =(P )
+                                                             j
+
+
+   Since O2 ← D[r] , the distribution of outputs of O2 for each j are independent. Thus the
+probabilities Pr[O2 (j) = yi ∀i ∈ Pj ] are also independently distributed. Thus,
+
+                                                     1 X Y
+                    Pr [O(xi ) = yi ∀i ∈ [k]] =                       Pr[O2 (j) = yi ∀i ∈ Pj ]
+                  O←SRD
+                      r
+                                                     rk P =(P ) j∈[r]
+                                                                     j
+
+   Since there are only k elements, at most k of the Pj s are non-empty. Thus, we can associate to
+each partition P another partition Q of [k] into kQ ≤ k non-empty subsets, and a strictly increasing
+function from fQ from [kQ ] → [r]. The association is as follows: Qj 0 = PfQ (j 0 ) and Pj = ∅ if j has
+no pre-image under fQ . This allows us to write:
+
+                                            1 X X Y
+              Pr [O(xi ) = yi ∀i ∈ [k]] =                         Pr[O2 (fQ (j 0 )) = yi ∀i ∈ Qj 0 ]
+           O←SRD
+               r
+                                            rk Q=(Q ) f j 0 ∈[k ]
+                                                       j0        Q            Q
+
+
+     We now notice that, for fixed j 0 , if the yi are all equal for i ∈ Qj 0 , then since O2 ← D[r] ,
+Pr[O2 (fQ (j 0 )) = yi ∀i ∈ Qj 0 ] = D(yi ) where i is any index in Qj 0 . Otherwise, Pr[O2 (j) = yi ∀i ∈
+Qj 0 ] = 0 since O2 needs to be a function. Thus we can write Pr[O2 (j) = yi ∀i ∈ Qj 0 ] = D(yi )σ(Qj 0 )
+where σ(S) is 1 if yi are all equal for i ∈ S, and 0 otherwise. Thus,
+
+                                                       1 X X Y
+                      Pr [O(xi ) = yi ∀i ∈ [k]] =                            D(yi )σ(Qj 0 )
+                   O←SRD
+                       r
+                                                       rk Q=(Q ) f j 0 ∈[k ]
+                                                                         j0       Q     Q
+
+   The summand does not depend on fQ , so let cQ be the number of fQ . Then we can write
+                                                1 X
+                                                                   Pr[O2 (j 0 ) = yi ∀i ∈ Qj 0 ]
+                                                             Y
+                Pr [O(xi ) = yi ∀i ∈ [k]] =      k
+                                                        cQ
+              O←SRD
+                  r
+                                                r Q=(Q ) j 0 ∈[k ]
+                                                            j0                    Q
+
+The Q we are summing over are independent of r, as is the product in the above expression.            cQ
+is equal to the number of ways of picking kQ distinct elements of [r], which is krQ , and is thus
+                                                                                          
+
+polynomial of degree kQ in r (and hence a polynomial of degree at most k). Therefore, performing
+the sum, PrO←SRD  r
+                    [O(xi ) = yi ∀i ∈ [k]] is a polynomial of degree at most k in r, divided by rk . The
+result is a polynomial of degree at most k in 1/r.
+
+
+
+                                                       22
+D     A Quantum Distinguisher for Small-Range Distributions
+In this section, we give a quantum distinguisher that distinguishes SRY    r from a random function
+with probability (asymptotically) matching the bound of Corollary 7.5. Our algorithm is basically
+the collision finding algorithm of Brassard, Høer, and Tapp [BHT97], with a check at the end to
+verify that a collision is found. The algorithm has oracle access to a function O from X to Y, which
+is either SRY
+            r or a random function. It is given as input the integer r, the number of queries q, and
+operates as follows:
+
+    • Let p = (q − 1)/2. Pick a set S of p points in X at random, and check that there is no collision
+      on S by making p classical queries to O. Sort the elements of S, and store the pairs (s, O(s))
+      as a table for efficient lookup.
+                                      (
+                                       1   if x ∈
+                                                / S and O(x) = O(s) for some s ∈ S
+    • Construct the oracle O0 (x) =
+                                       0    otherwise
+
+    • Run Grover’s algorithm [Gro96] on O0 for p iterations to look for a point x such that O0 (x) = 1.
+
+    • Check that there is an s ∈ S such that O(x) = O(s) by making one more classical query to O.
+
+    Before analyzing this construction, we explain what Grover’s algorithm does. It takes as input
+an oracle O0 mapping some space X into [2], and tries to find an x such that O0 (x) = 1. Specifically,
+if N points map to 1, then after q queries to O0 , Grover’s algorithm will output an x such that
+O0 (x) = 1 with probability Θ(q 2 N/|X |)
+    We now analyze this construction. The first step takes p queries to O. If we find a collision,
+we are done. Otherwise, we have p points that map to p different values. Call this set of values
+T . The oracle O0 outlined in the second step makes exactly one query to O for each query to
+O0 . The number of points in x such that O0 (x) = 1 is the number of points x in X \ S (which is
+|X| − p) such that O(x) ∈ T . In the random oracle case, the probability that O(x) is one of p
+random values is p/|Y|, so the expected number of such x is (|X | − p)p/|Y|. Thus, after p iterations,
+Grover’s algorithm will output such an x with probability Θ(p3 (|X | − p)/|X ||Y|)). In the SRY   r case,
+since there are only r possible outputs, the probability that x maps to T is p/r, so the expected
+number of such x is p(|X | − p)/r. Thus, Grover’s algorithm will output such an x with probability
+Θ(p3 (|X | − p)/r|X |).
+    The difference in these probabilities is Θ(p3 (1/r − 1/|Y|)(|X | − p)/|X |. If we let |Y| be at least
+2r and |X | at least 2p + 1 = q, we see that we distinguish SRY      r from random with probability
+     3          3
+Ω(p /r) = Ω(q /r), thus matching the bound of Corollary 7.5. This shows that the corollary is
+optimal, and hence Theorem 7.3 is optimal for the case ∆ = 0.
+
+
+E     Security Proof for the Synthesizer-Based PRF
+Here, we prove Theorem 5.3 by showing that PRF from Construction 2 is quantum secure if the
+underlying synthesizer S is standard-secure.
+    Recall the definition of standard-security for a synthesizer S : X 2 → Y from Definition 5.2: for
+all sets Z, no efficient quantum algorithm A making classical queries to an oracle O from Z 2 → Y
+can tell if O(z1 , z2 ) = S(O1 (z1 ), O2 (z2 )) for random oracles Oi ← X Z or if O is truly random.
+
+                                                   23
+    Since all queries are classical, and only a polynomial number of queries are possible, a simple
+argument shows that Definition 5.2 is equivalent to the case where |Z| ∈ nO(1) . Further, if Z
+is polynomial in size, we can query the entire set classically, so there is no advantage in having
+quantum queries. Therefore, Definition 5.2 is equivalent to the following:
+Definition E.1 (Standard-Security). A pseudoreandom synthesizer S : X 2 → Y is standard-secure
+if, for any set Z where |Z| ∈ nO(1) , no efficient quantum algorithm A making quantum queries can
+distinguish O(z1 , z2 ) = S(O1 (z1 ), O2 (z2 )) where Ob ← X Z from O ← Y Z×Z .
+
+    Before proving security, we define the quantum-security of a pseudorandom synthesizer. The
+definition is similar to Definition E.1, except that there is no bound on the size of Z:
+Definition E.2 (Quantum-Security). A pseudoreandom synthesizer S : X 2 → Y is quantum-
+secure if, for any set Z, no efficient quantum algorithm A making quantum queries can distinguish
+O(z1 , z2 ) = S(O1 (z1 ), O2 (z2 )) where Ob ← X Z from O ← Y Z×Z
+
+   We now show that the two definitions are equivalent:
+Lemma E.3. If S is standard-secure, then it is also quantum-secure.
+
+Proof. Let’s define a new oracle distribution, which we will denote ARs , which stands for almost
+random. ARs is defined as follows:
+
+   • Pick random oracles P1 and P2 from [s]Z .
+                                              2
+   • Pick a random oracle Q from Y [s] .
+
+   • Output the oracle O(z1 , z2 ) = Q(P1 (z1 ), P2 (z2 )).
+
+Notice that as s goes to ∞, O1 and O2 become injective with probability approaching 1, and thus
+AR∞ is the uniform distribution.
+   Now, let B be an adversary breaking the oracle-security of S with non-negligible probability .
+Define (s) as the following quantity:
+
+                      (s) =           Pr          [B S(O1 ,O2 ) () = 1] − Pr [B O () = 1]
+                                O1 ←X Z ,O2 ←X Z                             O←ARs
+
+
+Then  = lims→∞ (s). Let r be an integer such that `(q)/r = /8 where q in the number of queries
+made by B. We now replace Oi with SRX                                             [s]
+                                        r , and the Pi (as a part of ARs ) with SRr . Each of these
+changes will only change the behavior of A by /8. Thus, a simple argument shows that
+
+                Pr      [B S(O1 ,O2 ) () = 1] −          Pr            [B Q(P1 ,P2 ) () = 1] ≥ (s) − /2
+              Oi ←SRX
+                    r
+                                                        [s]
+                                                  Pi ←SRr ,Q←Y [s]
+                                                                   2
+
+
+
+   Notice that we can think of the oracle Q(P1 , P2 ) as the oracle
+
+                     O0 (z1 , z2 ) = Q(S1 ◦ R1 (z1 ), S2 ◦ R2 (z2 )) = O(R1 (z1 ), R2 (z2 ))
+
+    Where Si ← [s][r] , Ri ← [r]Z , and O(w1 , w2 ) = Q(S1 (w1 ), S2 (w2 )). As s goes to ∞, Si become
+injective with probability converging to one, so O approaches a random function from [r]2 → Y.
+
+                                                           24
+    We now describe a new algorithm A which tries to break the standard-security of S according
+to Definition E.1. A takes as input a quantum-accessible oracle O from [r]2 to Y. A constructs
+two random oracles R1 ← [r]Z and R2 ← [r]Z , gives B the oracle O0 (z1 , z2 ) = O(R1 (z1 ), R2 (z2 )),
+and simulates B. If O = S(T1 , T2 ) for random oracles Ti ← X [r] , then the oracle seen by A is
+O0 (z1 , z2 ) = S(O1 (z1 ), O2 (z2 )), where O1 and O2 are drawn from SRXr . If O is a random oracle, then
+the oracle seen by A is O0 (z1 , z2 ) = O(R1 (z1 ), R2 (z2 )), where Ri ← [r]Z . This corresponds to the
+case where s = ∞, and thus the advantage of A in distinguishing these two cases is (∞) − /2 = /2.
+If  is non-negligible, then there is a polynomial bounding r infinitely often, and in these cases, A
+breaks the standard-security of S.
+
+
+    We are now ready to prove that Construction 2 is quantum-secure:
+Proof of Theorem 5.3. Let A be a quantum adversary breaking the quantum-security of PRF
+with probability . That is,
+
+                                Pr [APRFk () = 1] −           Pr n [AO () = 1] = 
+                               k←X 2n                      O←X [2]
+
+    Let hybrid Hi be the game where the oracle seen by A is PRF, except that each instance of
+                                                         i
+PRF(i) is replaced with a truly random function from [2]2 into X . Since PRF(0) is already a random
+function, H0 is equivalent to the case where the oracle is PRF. Similarly, H` is by definition the
+case where the oracle is truly random. Thus a simple hybrid argument shows that there is an i such
+that A can distinguish Hi from Hi−1 with probability at least /`.
+    We now describe an algorithm B which breaks the quantum-security of S. B is given an oracle
+                         2                                                                       `−i ]
+from P from X × [2`−i ] into X , which is either S(Q1 , Q2 ) for random oracles Qb ← X X ×[2               or
+a truly random oracle. It then constructs oracles
+                                        Py (x1 , x2 ) = P ((x1 , y), (x2 , y))
+Notice that there are 2`−i possible y values, and that for fixed y, Py is either a random oracle from
+X 2 into X , or it is S(Qy,1 , Qy,2 ) for random oracles Qy,b from X to X . We then construct the oracle
+O which is PRF, except that we stop the recursive construction at PRF(i) . There are 2`−i different
+instances of PRF(i) , so we use the 2`−i Py oracles in their place. If P is S(Q1 , Q2 ), this corresponds
+to hybrid Hi−1 , whereas if P is a random oracle, this corresponds to Hi . Thus, B distinguishes the
+two cases with probability /`.
+    However, under the assumption that S is standard-secure, Lemma E.3 shows that it is quantum-
+secure, meaning the algorithm B is impossible. Therefore, PRF is quantum-secure.
+
+
+F    Security Proof for the Direct Construction
+Here we give a precise statement and proof for Theorem 6.1, which state’s that PRF from Construction
+3 is quantum secure for the right parameters. First, we define the Learning With Errors (LWE)
+problem:
+Definition F.1 (Learning With Errors). Let q ≥ 2 an integer, n a security parameter, and
+m = poly(n) and w = poly(n) be integers. For a distribution χ over Z and a secret matrix
+S ∈ Zn×w
+     q   , the LWE distribution LWES,χ is the distribution over Zm×n
+                                                                 q   × Zm×w
+                                                                        q   defined as follows:
+
+                                                         25
+   • Choose a random matrix A ← Zn×m
+                                 q   .
+
+   • Choose a random error matrix E ← χm×w
+
+   • Output (At , Bt = At S + E mod q)
+
+The LWE problem is then to distinguish between a polynomial number of samples from LWES,χ for a
+fixed S ← χn×w mod q from the same number of samples from the uniform distribution. The LWE
+problem is hard if, for all efficient quantum adversaries A, the probability A distinguishes these two
+cases is negligible in n.
+
+   We now define the oracle-LWE problem:
+
+Definition F.2 (Oracle-LWE). The oracle-LWE problem is to distinguish an oracle O whose outputs
+are generated by LWES,χ (for a fixed S ← χn×w mod q) from a truly random oracle O. We say that
+LWE is oracle-hard if, for all efficient adversaries A making quantum queries, A cannot distinguish
+these two distributions with more than negligible probability.
+
+Lemma F.3. If LWE is hard, it is also oracle-hard.
+
+Proof. The proof is very similar to that of Theorem 1.1. Let A be an adversary breaking the
+oracle-hardness of LWE using q quantum queries with probability . Let r be an integer such
+that `(q)/r ≈ /4. We then construct an algorithm B, which takes as input r pairs (Ati , Bti ), and
+distinguishes when the pairs come from LWES,χ for some fixed S ← χn×w from when the pairs are
+random. B works as follows:
+
+   • Construct the oracle O where O(x) is selected at random from (Ati , Bti )
+
+   • Simulate A with oracle O, and output the output of A.
+
+    Using the same analysis as in the proof of Theorem 1.1, we get that B distinguishes the two
+cases with probability /2. If  is non-negligible, then there is a polynomial that bounds r infinitely
+often, and in these cases, the number of samples received by B is a polynomial, and hence B breaks
+the hardness of LWE.
+
+   Next, we need to define the discrete Gaussian distribution:
+
+Definition F.4 (Discrete Gaussian). Let DZ,r denote the discrete Gaussian distribution over Z,
+                                                  2 2
+where the probability of x is proportional to e−πx /r .
+
+    We are now ready to state and prove Theorem 6.1:
+                                               √
+Theorem 6.1. Let χ = DZ,r , and q ≥ p · `(Cr n + `)` nω(1) for some suitable universal constant
+C. Let PRF be as in Construction 3, and suppose each Si is drawn from χn×n . If the LWE problem
+is hard for modulus q and distribution χ, then PRF from Construction 3 is a QPRF.
+
+Proof. The√proof is very similar to that of Banerjee et al. Notice that our theorem requires
+                                                                          √
+q ≥ p · `(Cr n + `)` nω(1) whereas the original only requires q ≥ p · `(Cr n)` nω(1) . We will explain
+
+
+
+
+                                                  26
+why this is later. We first define a class of functions G : K × [2]k → Zm×n
+                                                                        q   to be PRF without
+rounding. That is,
+                                                              `
+                                                                S xi
+                                                              Y
+                                              Gk (x) = At           i
+                                                              i=1
+
+Then PRFk (x) = bGk (x)ep . We also define a related class of functions G̃ where G̃ = G̃(`) and
+
+   • G̃(0) is a function from [2]0 into Zm×n
+                                         q   defined as follows: pick a random A ∈ Zn×m
+                                                                                    q   , and set
+       (0)
+     G̃ () = A .  t
+
+
+   • G̃(i) is a function from [2]i into Zm×n
+                                         q   defined as follows: pick a random G̃(i−1) , pick Si ← χn×n
+                            i−1
+     and for each x0 ∈ [2] , pick Ex0 ← χm×n . Then
+
+                             G̃(i) (x = x0 xi ) = G̃(i−1) (x0 ) · Sxi i + xi · Ex0   mod q
+
+     Let A be an adversary that distinguishes PRF from a random function with probability .
+     First, consider the case where A sees a truly random function U : [2]k → Zm×n
+                                                                                p   . Replace U with
+   0             0                                  k     m×n
+bU ep where U is a truly random function from [2] → Zq . For each input, the bias introduced by
+this rounding is negligible because q ≥ pnω(1) . Thus, by Theorem 1.1, the ability of A to distinguish
+these two cases is negligible.
+                         √
+     Now, let B = `(Cr n + k)` . Let BAD(y) be the event that
+
+                                           y + [−B, B]m×n p 6= {byep }
+                                                             
+
+
+That is, BAD(y) is the event that y is very close to another element in Zq that rounds to a different
+value in Zp . Banerjee et al. show that for each x, the probability that BAD(U 0 (x)) occurs is negligible.
+Therefore, according to Theorem 1.1, BAD(U 0 (x)) as an oracle with outputs in {True, False} is
+indistinguishable from the oracle that always outputs False. Hence, it is impossible for an algorithm
+making quantum queries to U 0 to find an x such that BAD(U 0 (x)) occurs, except with negligible
+probability.
+     The next step is to prove that U 0 and G̃ are oracle-indistinguishable. Once we have accomplished
+this, we replace U 0 with G̃. Then the probability that A detects this change is negligible. Additionally,
+it is also impossible to find an x such that BAD(G̃(x)) occurs, except with negligible probability.
+     Lastly,
+        j     m replace G̃ with G. Banerjee et al. show that as long as BAD(G̃(x)) does not
+             we
+occur, G̃(x) = bGk (x)ep = PRFk (x) with all but negligible probability. Our modification to the
+               p                                  √
+                                        √
+parameters of the theorem (replacing n with n + k) allows us to choose C so that this probability
+is actually 2−` σ for some negligible σ. Summing
+                                             j
+                                                                 `
+                                                   m over all 2 different x, we get that, except with
+negligible overall probability, PRFk (x) = G̃(x) whenever BAD(G̃(x)) does not occur.
+                                                 j      pm
+   Thus, if A distinguishes PRFk (x) from G̃(x)               with non-negligible probability, it must be that
+                                                          p
+the sum over all queries made by A of the sum of the query magnitudes of all the x such that
+BAD(G̃(x)) occurs is non-negligible (Theorems 3.1 and 3.3 of [BBBV97]). But this means we
+can find an x such that BAD(G̃(x)) occurs with non-negligible probability (simply run A, and at
+a randomly chosen query, halt and sample the query). But, as we have already shown, this is
+impossible.
+
+
+                                                       27
+    Hence, we have shown that PRF is indistinguishable from a random function.
+    It remains to show that U 0 and G̃ are oracle-indistinguishable. We show that this is true given
+that the LWE problem is oracle-hard. Using Lemma F.3, we reach the same conclusion assuming
+LWE is hard, thus completing the theorem.
+    Let B be an adversary that distinguishes U 0 from G̃ with probability . Define hybrid Hi as the
+case where B is given the oracle Oi where Oi = G̃, except that, in the recursive definition of G̃, G̃(i)
+is replaced with a truly random function. H0 corresponds to the correct definition of G̃, and Hk
+corresponds to U 0 . Thus, there exists an i such that B distinguishes Hi from Hi−1 with probability
+/`.
+    Construct an adversary C with access to an oracle P : [2]i−1 → Zm×n    q   × Zm×n
+                                                                                   q    . P is either
+a random function or each output is chosen according to the LWE distribution. In other words,
+P (x) = (At , Bt ), where either A(x) and B(x) are chosen at random for all x, or there is a secret
+S ← χn×n and B(x)t = A(x)t S + E(x) mod q where E(x) ← χm×n .
+    For each j > i, C constructs random oracles Qj : [2]j−1 → Zm×n where Qj (x) ← χm×n . C also
+generates Sj ← χn×n for j > i. Then C works as follows:
+                                (
+                                A(x0 )t   if xi = 0
+   • Let G̃(i) (x = x0 xi ) =
+                                B(x0 )t   if xi = 1
+                                             x
+   • Let G̃(j) (x = x0 xj ) = G̃(j−1) (x0 ) · Sj j + xj · Qj (x0 ) mod q for j > i.
+
+   • Let O(x) = G̃(k) (x)
+
+   • Run B with oracle O.
+
+   When P is a random oracle, this corresponds to Hi . When P is the LWE oracle, this corresponds
+to Hi−1 . Thus, C distinguishes these two cases with probability at least /`. Under the assumption
+that LWE is oracle hard, this quantity, and hence , are negligible. We then use Lemma F.3 to
+complete the theorem.
+
+
+
+References
+[BBBV97] Charles H. Bennett, Ethan Bernstein, Gilles Brassard, and Umesh Vazirani. Strengths
+         and Weaknesses of Quantum Computing. SIAM Journal on Computing, 26:1510–1523,
+         1997.
+
+[BDF+ 11] Dan Boneh, Özgür Dagdelen, Marc Fischlin, Anja Lehmann, Christian Schaffner, and
+          Mark Zhandry. Random Oracles in a Quantum World. In Advances in Cryptology —
+          ASIACRYPT 2011, 2011.
+
+[BHT97]    Gilles Brassard, Peter Høyer, and Alain Tapp. Quantum Algorithm for the Collision
+           Problem. ACM SIGACT News (Cryptology Column), 28:14–19, 1997.
+
+[BL95]     Dan Boneh and Richard J. Lipton. Quantum Cryptanalysis of Hidden Linear Functions.
+           Advances in Cryptology — CRYPTO 1995, 1995.
+
+
+                                                      28
+[BMR10] Dan Boneh, Hart Montgomery, and Ananth Raghunathan. Algebraic Pseudorandom
+        Functions with Improved Efficiency from the Augmented Cascade. Proceedings of the
+        17th ACM Conference on Computer and Communications Security (CCS), pages 1–23,
+        2010.
+
+[BPR11]   Abhishek Banerjee, Chris Peikert, and Alon Rosen. Pseudorandom Functions and
+          Lattices. Advances in Cryptology — EUROCRYPT 2012, pages 1–26, 2011.
+
+[DY05]    Yevgeniy Dodis and Aleksandr Yampolskiy. A Verifiable Random Function with Short
+          Proofs and Keys. Public Key Cryptography, 2005.
+
+[GGM86] Oded Goldreich, Shafi Goldwasser, and Silvio Micali. How to Construct Random
+        Functions. Journal of the ACM (JACM), 33(4):792–807, 1986.
+
+[Gro96]   Lov K. Grover. A Fast Quantum Mechanical Algorithm for Database Search. Proceedings
+          of the 28th Annual ACM Symposium on Theory of Computing (STOC), pages 212–219,
+          1996.
+
+[HILL99] Johan Håstad, Russell Impagliazzo, Leonid Levin, and Michael Luby. A pseudorandom
+         generator from any one-way function. SIAM J. Comput., 28(4):1364–1396, 1999.
+
+[LR88]    Michael Luby and Charles Rackoff. How to construct pseudorandom permutations from
+          pseudorandom functions. SIAM J. Comput., 17(2):373–386, April 1988.
+
+[LW09]    Allison B. Lewko and Brent Water. Efficient Pseudorandom Functions From the Decisional
+          Linear Assumption and Weaker Variants. Proceedings of the 16th ACM Conference on
+          Computer and Communications Security (CCS), pages 1–17, 2009.
+
+[NC00]    Michael A. Nielsen and Isaac Chuang. Quantum Computation and Quantum Information.
+          American Journal of Physics, 70(5):558, 2000.
+
+[NR95]    Moni Naor and Omer Reingold. Synthesizers and Their Application to the Parallel
+          Construction of Pseudo-Random Functions. Proceedings of the 36th IEEE Symposium
+          on Foundations of Computer Science (FOCS), 1995.
+
+[NR97]    Moni Naor and Omer Reingold. Number-Theoretic Constructions of Efficient Pseudo-
+          Random Functions. Proceedings of the 38th IEEE Symposium on Foundations of Com-
+          puter Science (FOCS), 51(2):231–262, 1997.
+
+[NR99]    Moni Naor and Omer Reingold. On the Construction of Pseudorandom Permutations :
+          Luby-Rackoff Revisited. Journal of Cryptology, (356):29–66, 1999.
+
+[NRR00]   Moni Naor, Omer Reingold, and Alon Rosen. Pseudo-Random Functions and Factoring.
+          Proceedings of the 32nd Annual ACM Symposium on the Theory of Computing (STOC),
+          pages 1–23, 2000.
+
+[Zha12]   Mark Zhandry. Secure Identity-Based Encryption in the Quantum Random Oracle
+          Model. In Advances in Cryptology — CRYPTO 2012, 2012. Full version available at the
+          Cryptology ePrint Archives: http://eprint.iacr.org/2012/076/.
+
+
+
+                                              29
+

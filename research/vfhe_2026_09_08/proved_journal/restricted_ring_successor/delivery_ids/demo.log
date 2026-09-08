@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "elapsed_seconds": 5.661943375016563,
+  "same_recipient_coordinate": 0,
+  "accepted_revisions_delivered": [
+    4,
+    6
+  ],
+  "distinct_delivery_ids": [
+    "delivery-r4",
+    "delivery-r6"
+  ],
+  "new_recipient_actor_invocations": 2,
+  "scalar_scores_matched": 4,
+  "decisions_matched": 2,
+  "exact_retries": 2,
+  "historical_retry_returns_original_receipt": true,
+  "retry_actor_invocations": 0,
+  "conflicting_request_or_delivery_ids_refused": 2,
+  "fresh_stale_head_refused": true,
+  "public_validations_before_each_recipient": true,
+  "orchestrator_private_payload_reads": 0,
+  "new_setup_key_or_encode_runs": 0,
+  "new_update_recomputations": 0,
+  "frozen_source_and_runtime_pins_unchanged": true,
+  "head_import_scope": "Trusted local transfer of prior accepted receipts, not new verification or new teachings",
+  "crypto_scope": "Same existing registered recipient key; local delivery identity does not cryptographically bind its use to history."
+}

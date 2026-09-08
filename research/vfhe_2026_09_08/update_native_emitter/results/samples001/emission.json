@@ -1,0 +1,12 @@
+{
+  "crypto_run": false,
+  "execute_and_write_ns": 307625,
+  "instructions": 2993,
+  "producer": "Lean-generated witness instructions; native untrusted executor",
+  "registers": 2993,
+  "rows": 4,
+  "setup_ns": 3500083,
+  "total_ns": 3809541,
+  "trace_bytes": 16272,
+  "trace_width": 1017
+}

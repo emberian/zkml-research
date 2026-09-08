@@ -1,0 +1,30 @@
+Selvage/CommitmentTraceWitnesses.lean:25:47: error: Tactic `decide` failed for proposition
+  ¬Bad adaptive good
+because its `Decidable` instance
+  instDecidableNot
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `instDecidableNot` and `Classical.propDecidable`, reduction got stuck at the `Decidable` instance
+  Classical.choice ⋯
+
+Hint: Reduction got stuck on `Classical.choice`, which indicates that a `Decidable` instance is defined using classical reasoning, proving an instance exists rather than giving a concrete construction. The `decide` tactic works by evaluating a decision procedure via reduction, and it cannot make progress with such instances. This can occur due to the `open scoped Classical` command, which enables the instance `Classical.propDecidable`.
+Selvage/CommitmentTraceWitnesses.lean:27:91: error: Tactic `decide` failed for proposition
+  EfficientRootOpening.LateTarget [] (entries adaptive late) 4
+because its `Decidable` instance
+  Classical.propDecidable (EfficientRootOpening.LateTarget [] (entries adaptive late) 4)
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instance `Classical.propDecidable`, reduction got stuck at the `Decidable` instance
+  Classical.choice ⋯
+
+Hint: Reduction got stuck on `Classical.choice`, which indicates that a `Decidable` instance is defined using classical reasoning, proving an instance exists rather than giving a concrete construction. The `decide` tactic works by evaluating a decision procedure via reduction, and it cannot make progress with such instances. This can occur due to the `open scoped Classical` command, which enables the instance `Classical.propDecidable`.
+Selvage/CommitmentTraceWitnesses.lean:29:103: error: Tactic `decide` failed for proposition
+  EfficientRootOpening.ResponseCollision (entries adaptive collision)
+because its `Decidable` instance
+  Classical.propDecidable (EfficientRootOpening.ResponseCollision (entries adaptive collision))
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instance `Classical.propDecidable`, reduction got stuck at the `Decidable` instance
+  Classical.choice ⋯
+
+Hint: Reduction got stuck on `Classical.choice`, which indicates that a `Decidable` instance is defined using classical reasoning, proving an instance exists rather than giving a concrete construction. The `decide` tactic works by evaluating a decision procedure via reduction, and it cannot make progress with such instances. This can occur due to the `open scoped Classical` command, which enables the instance `Classical.propDecidable`.

@@ -1,0 +1,15 @@
+{
+  "name": "commitment_failure_successor",
+  "root": "../proof_frontier/2026-09-08/commitment_failure_successor",
+  "patch": "../proof_frontier/2026-09-08/commitment_failure_successor/commitment-failure.patch",
+  "expected_pins": 74,
+  "source_files": {
+    "Selvage/CommitmentExecutionWitness.lean": "../proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/CommitmentExecutionWitness.lean",
+    "Selvage/CommitmentFailureReduction.lean": "../proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/CommitmentFailureReduction.lean",
+    "Selvage/CommitmentFailureSoundness.lean": "../proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/CommitmentFailureSoundness.lean",
+    "Selvage/CommitmentFreshTrace.lean": "../proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/CommitmentFreshTrace.lean",
+    "Selvage/CommitmentTraceWitnesses.lean": "../proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/CommitmentTraceWitnesses.lean",
+    "Selvage/SuppliedOpeningTrace.lean": "../proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/SuppliedOpeningTrace.lean",
+    "Selvage/SuppliedScheduleTrace.lean": "../proof_frontier/2026-09-08/commitment_failure_successor/src/Selvage/SuppliedScheduleTrace.lean"
+  }
+}

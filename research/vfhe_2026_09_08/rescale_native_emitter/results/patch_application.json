@@ -1,0 +1,14 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/proposal.patch"
+  ],
+  "exit": 0,
+  "scope": "two additive Lean files applied in empty isolated directory and byte-compared",
+  "patch": {
+    "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_native_emitter/proposal.patch",
+    "bytes": 7643,
+    "sha256": "e8a70c96d2f65b10e40cd603825a4986c0b2c6371ceae9dd95fe0f0acd303b10"
+  }
+}

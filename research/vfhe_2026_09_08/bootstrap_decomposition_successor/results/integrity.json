@@ -1,0 +1,7 @@
+{
+  "claim": "EXECUTED public-only input integrity comparison",
+  "execution_pins_sha256": "ba2fed9bc2787b77bed6677bdfe5608d75f0778fb9ecb20dd7ca4d9d5553f86b",
+  "checked_files": 53,
+  "all_unchanged": true,
+  "prior_consumer_prefix_unchanged": true
+}

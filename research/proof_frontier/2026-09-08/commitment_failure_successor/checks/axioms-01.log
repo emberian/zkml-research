@@ -1,0 +1,19 @@
+'Minidregg.Selvage.CommitmentFreshTrace.oracle_answers' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.oracleLog_eq_entries' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.mem_prefixLog_iff' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.mem_entries_iff' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.children_length_le' depends on axioms: [propext]
+'Minidregg.Selvage.CommitmentFreshTrace.children_log_length_le' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.targets_length_le' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.answerOf_of_mem_unique' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.evaluate_cachedSuite' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.cachedSuite_entry' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.fresh_count_le_calls' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.uniform_prefix_event_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.target_hit_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.target_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.CommitmentFreshTrace.bad_probability' depends on axioms: [propext, Classical.choice, Quot.sound]

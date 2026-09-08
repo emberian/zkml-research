@@ -1,0 +1,121 @@
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:25:3: error: unexpected token 'calc'; expected identifier
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:32:6: error: invalid {...} notation, expected type is not known
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:43:46: error: 'calc' expression has type
+  ?m.27 = ?m.27
+of sort `Prop` but is expected to have type
+  Build ?m.25
+of sort `Type`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:43:36: error: 'calc' expression has type
+  ?m.40 = ?m.40
+of sort `Prop` but is expected to have type
+  Build ?m.38
+of sort `Type`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:43:51: error: Function expected at
+  5
+but this term has type
+  ?m.70
+
+Note: Expected a function because this term is being applied to the argument
+  a
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:43:41: error: Function expected at
+  6
+but this term has type
+  ?m.73
+
+Note: Expected a function because this term is being applied to the argument
+  (__do_lift✝)
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:49:14: error: unexpected token 'def'; expected ':='
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:48:19: error: don't know how to synthesize placeholder for argument `α`
+context:
+ds : Array Operand
+value✝ : Operand := ⋯
+i : ℕ
+r✝ : Operand
+value : Operand := r✝
+⊢ Type
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:53:31: error: 'calc' expression has type
+  ?m.19 = ?m.19
+of sort `Prop` but is expected to have type
+  Build ?m.17
+of sort `Type`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:53:21: error: 'calc' expression has type
+  ?m.32 = ?m.32
+of sort `Prop` but is expected to have type
+  Build ?m.30
+of sort `Type`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:53:36: error: Function expected at
+  5
+but this term has type
+  ?m.54
+
+Note: Expected a function because this term is being applied to the argument
+  value
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:53:26: error: Function expected at
+  6
+but this term has type
+  ?m.57
+
+Note: Expected a function because this term is being applied to the argument
+  (__do_lift✝)
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:58:63: error: 'calc' expression has type
+  ?m.45 = ?m.45
+of sort `Prop` but is expected to have type
+  Build ?m.43
+of sort `Type`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:58:44: error: 'calc' expression has type
+  ?m.58 = ?m.58
+of sort `Prop` but is expected to have type
+  Build ?m.56
+of sort `Type`
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:58:68: error: Function expected at
+  2
+but this term has type
+  ?m.105
+
+Note: Expected a function because this term is being applied to the argument
+  a[i]!
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:58:49: error: Function expected at
+  1
+but this term has type
+  ?m.108
+
+Note: Expected a function because this term is being applied to the argument
+  cs[i + j]!
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:79:17: error: unexpected token '←'; expected ':=' or '|'
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:76:10: error: don't know how to synthesize placeholder for argument `α`
+context:
+r✝³ : PUnit.{1}
+l : Fin 2
+r✝² : PUnit.{1}
+q : ℕ := ⋯
+qd : Array Operand := ⋯
+bd : Array Operand := ⋯
+ds✝ : Array (Array Operand) := ⋯
+values✝ : Array Operand := ⋯
+r✝¹ : MProd (Array (Array Operand)) (Array Operand)
+ds : Array (Array Operand)
+values : Array Operand
+numerators : Array Operand := ⋯
+quotients : Array Operand := ⋯
+sign : ℕ
+r✝ : PUnit.{1}
+⊢ Type
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:76:6: error: don't know how to synthesize placeholder for argument `α`
+context:
+r✝³ : PUnit.{1}
+l : Fin 2
+r✝² : PUnit.{1}
+q : ℕ := ⋯
+qd : Array Operand := ⋯
+bd : Array Operand := ⋯
+ds✝ : Array (Array Operand) := ⋯
+values✝ : Array Operand := ⋯
+r✝¹ : MProd (Array (Array Operand)) (Array Operand)
+ds : Array (Array Operand)
+values : Array Operand
+numerators : Array Operand := ⋯
+quotients : Array Operand := ⋯
+sign : ℕ
+r✝ : PUnit.{1}
+⊢ Type
+/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_native_emitter/Compiler/BfvQueryWitnessPlan.lean:142:26: error(lean.unknownIdentifier): Unknown identifier `Minidregg.Compiler.NativeKernelPlan.babyBearP`

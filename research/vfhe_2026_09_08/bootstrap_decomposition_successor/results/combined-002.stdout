@@ -1,0 +1,8 @@
+'Minidregg.Compiler.TfheCmuxDecomposition.range_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheCmuxDecomposition.field_equations' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheCmuxDecomposition.rowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheCmuxDecomposition.source_injective' depends on axioms: [propext, Quot.sound]
+'Minidregg.Compiler.TfheCmuxDecomposition.zero_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.TfheCmuxDecomposition.changed_zero_refused' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

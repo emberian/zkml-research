@@ -1,0 +1,52 @@
+Selvage/CommitmentFreshTrace.lean:55:2: error: unsolved goals
+Value : Type
+Q N R : ℕ
+A : Strategy Value Q N R
+hf : Fresh A
+c : Fin Q → Fin N
+⊢ Prod.snd ∘ entry A c = c
+Selvage/CommitmentFreshTrace.lean:55:18: warning: This simp argument is unused:
+  entry
+
+Hint: Omit it from the simp argument list.
+  simp [entries,̵e̵n̵t̵r̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/CommitmentFreshTrace.lean:61:36: error(lean.unknownIdentifier): Unknown constant `List.zip_ofFn`
+Selvage/CommitmentFreshTrace.lean:59:35: error: unsolved goals
+Value : Type
+Q N R : ℕ
+A : Strategy Value Q N R
+hf : Fresh A
+c : Fin Q → Fin N
+⊢ (List.ofFn (Prod.fst ∘ entry A c)).zip (List.ofFn c) = List.ofFn (entry A c)
+Selvage/CommitmentFreshTrace.lean:61:16: warning: This simp argument is unused:
+  entry
+
+Hint: Omit it from the simp argument list.
+  simp [entries,e̵n̵t̵r̵y̵,̵ ̲List.map_ofFn, ̲List.zip_ofFn]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/CommitmentFreshTrace.lean:100:2: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  g ≥ 0
+  f ≥ 0
+  e ≥ 0
+  d ≥ 0
+  d - f ≤ -1
+  2*d - e ≥ 0
+  c ≥ 0
+  b ≥ 0
+  b - c ≥ 0
+  0 ≤ a ≤ 2
+  a - b + c - 2*d + g ≥ 3
+where
+ a := ↑(EfficientRootOpening.children (A.query t p)).length
+ b := ↑R
+ c := ↑(A.roots t p).length
+ d := ↑↑t
+ e := ↑(List.flatMap (fun e => EfficientRootOpening.children e.1)
+      (List.ofFn fun t_1 => (A.query ⟨↑t_1, ⋯⟩ (friPrefix p ↑t_1 ⋯), p t_1))).length
+ f := ↑Q
+ g := ↑(List.flatMap (fun e => EfficientRootOpening.children e.1) (prefixLog A ↑t ⋯ p)).length
+Selvage/CommitmentFreshTrace.lean:150:2: error: No goals to be solved

@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "case_id": "fast001-new-two-class-query",
+  "copied_files": 16,
+  "query_case_script_sha256": "d5b3af77c7c2cb379714f4e48501484e6d41e225f42f1b93b1824c95d3abc817",
+  "proof_bytes": [
+    842828,
+    842376
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "all_passed": true,
+  "ancillary_label_clears": true,
+  "basis_label_bits": 4,
+  "claim_label": "EXECUTED",
+  "command": "python3 -B research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_seed_qrom_successor/quantum_simulation/symbolic_phase_checks.py",
+  "completed_utc": "2026-09-08 18:29:56 UTC",
+  "omitted_fallback_mask_counterexamples": 736,
+  "prefix_overlay_phase_identity_cases": 5120,
+  "quantum_state_or_circuit_simulations": 0,
+  "random_samples": 0,
+  "scope": "Exact integer parity checks of the stated phase circuit; general coherent proof by linearity is in SIMULATION.md.",
+  "source_sha256": "df578191f7e7b4d5f68500c11683a37bf38a065c5fb66d1752b601c6aab916be",
+  "xor_character_identity_cases": 4096
+}

@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "recipient_id": "recipient_14",
+  "coordinate": 14,
+  "registration_sha256": "ac57e1ae0d5c80e0002c5e59ce452670164676288b56bdc598357ea5f0c63b49",
+  "genesis": "633508aad3cace58d6c768ee791422a97e21b93daefc642f7fa68a62bf46b9a9",
+  "accepted_head_sha256": "74663461614c34e42fb033f6c457d40a0f55375163e29de8836dc99d45a92284",
+  "models_sha256": "fea5b84fafd2d15e16468eff73191a3721a9479b57403d308ade5c4e6e7b1517",
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "private_rows_read": 1,
+  "query_results": [
+    {
+      "revision": 6,
+      "scores": {
+        "card_arrival": 413168,
+        "cash_withdrawal_charge": 471709
+      },
+      "prediction": "cash_withdrawal_charge"
+    }
+  ],
+  "scope": "Service delivered only its current accepted model. This fixed key also works on retained inputs outside the service; no cryptographic history-bound release."
+}

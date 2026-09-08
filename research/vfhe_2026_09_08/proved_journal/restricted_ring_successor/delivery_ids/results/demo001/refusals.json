@@ -1,0 +1,1 @@
+[{"case":"same-request-new-delivery","code":"delivery_id_or_request_conflict"},{"case":"same-delivery-new-request","code":"delivery_id_or_request_conflict"},{"case":"old-head-fresh-ids","code":"delivery_not_current_head"}]

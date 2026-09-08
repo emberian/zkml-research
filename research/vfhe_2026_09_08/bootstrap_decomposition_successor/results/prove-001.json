@@ -1,0 +1,24 @@
+{
+  "command": [
+    "target/release/tfhe-bootstrap-decomposition-proof",
+    "prove",
+    "artifacts/template_ir2.json",
+    "fixtures/normal_001",
+    "artifacts/trace.leu32",
+    "results/proof001"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/bootstrap_decomposition_successor",
+  "timeout_seconds": 180,
+  "exit": 0,
+  "seconds": 0.49516258301446214,
+  "stdout": {
+    "path": "results/prove-001.stdout",
+    "bytes": 1173,
+    "sha256": "e188c1df6b9c4f0c8d91e37b0a41809f5b7468bb7129465e02aad83523b8e8c5"
+  },
+  "stderr": {
+    "path": "results/prove-001.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

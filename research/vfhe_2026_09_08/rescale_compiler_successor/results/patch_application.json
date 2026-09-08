@@ -1,0 +1,11 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/proposal.patch"
+  ],
+  "scope": "empty isolated directory; additive sources byte-equal; predecessor modules reused for per-file checks",
+  "exit": 0,
+  "files": 7,
+  "patch_sha256": "9a79d94aa43a398ef7a57d878d055e7c22b012ce21870a530b51cf668b3aea30"
+}

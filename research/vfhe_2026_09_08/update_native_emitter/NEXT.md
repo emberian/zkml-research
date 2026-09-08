@@ -1,0 +1,1 @@
+Service owner executes the new opt-in native update/query cohort and owns proof-before-private-receive measurements. Do not relabel earlier cohorts or edit frozen sources. Root may integrate expiry-native-plan.patch after the frozen query plan builder. The separate rescale lane can extend the same instruction idea with BigInt execution; this i128 binary stays unchanged.

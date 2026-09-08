@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "role_command": "init",
+  "pid": 24057,
+  "elapsed_seconds": 1.583998457994312,
+  "peak_rss_bytes_macos": 136396800,
+  "uid": 501,
+  "registry_sha256": "295c8feed3bc299e0a97f15b36808fdba1e85e03c3d234e6253d136a5b4778b5",
+  "artifact_reads": [],
+  "artifact_writes": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_journal/restricted_ring_successor/runtime/normal001/public/a.ring",
+      "kind": "a",
+      "bytes": 37880358,
+      "payload_bytes": 37879808,
+      "private": false,
+      "mode": "0o644",
+      "sha256": "76a71770350279b389ba30f968d35966595ae1ec2e561cd97d235127989d6c39"
+    }
+  ],
+  "result": {
+    "actual_private_rows_generated": 0
+  },
+  "error": null
+}

@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "copied_files": 12,
+  "core_wasm_sha256": "96137c1ed0ad5fc7584ca72ef006ff70ac1951831408ee12ab22ce3879f6f908",
+  "copied_uncompressed_bytes": 7028644,
+  "copied_gzip9_bytes": 2756566,
+  "classes": [
+    "card_arrival",
+    "cash_withdrawal_charge"
+  ]
+}

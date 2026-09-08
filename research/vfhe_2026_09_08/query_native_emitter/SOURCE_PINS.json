@@ -1,0 +1,23 @@
+{
+  "files": {
+    "Compiler/BfvQueryWitnessPlan.lean": "bb91eeb1c1fc46c0e1f498e49de18cc7533f6ab3bf5b7b14efa01382b4f87bb0",
+    "EmitQueryWitnessPlan.lean": "253011726934163ac2249835536f78e111f684676b1fea2e76f8b92049586190",
+    "native/src/main.rs": "942b44f54f9cd50b716a6ef7fff7ce35dc86e636cdaedbf12e61756be3cc6568",
+    "native/Cargo.toml": "fd3b5e3b48b18bd9dbcfbbdfb314e8bd100b444cbbf1b9988826086af079a0c7",
+    "native/Cargo.lock": "ec603f4fd7f7a6f75a23146073bba980ead5be6e8e7b7415d51503d8b39bf47b",
+    "native/target/release/lean-query-witness": "15102c5f9ae90e30755fb23c4b8091ba4c28b48e0c15a908115c0b0b88991093",
+    "program/witness_plan.json": "a86422724dc16c22356732178830bcd9eba817c50f10f074c8deb5fb24b81d0b",
+    "program/template_ir2.json": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+    "emit.py": "a129da37e47eb2f6256960335b8b87ada947b5cbf250ba295abc2062ec707d14",
+    "run.py": "989f4ac84720a383dc3c5a8924e26ce7cc79043c9bc2e630d0694236eee292bb"
+  },
+  "frozen_query_sources": {
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryMul.lean": "97883be5e568cc51c369b854012e0e7edffe3f28c54051355b541a1bb54d272e",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryRow.lean": "eb101cab960c6954ee7258a13cf41ea3cf9ebb285f99f410e92f1108efddaa8f",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryTeeth.lean": "68f36ac565f581c48ed54453595523cde07566a669d6858b03ac0b2244ac57a2",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/Compiler/BfvQueryWitness.lean": "860e1a86402d9ee6c816c2725f8e4865008d988044d975308b59df8a2e7081dd",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/query_arithmetic/EmitBfvQuery.lean": "d76ab80472bdc34bab576ebc96d227a2e1766d6996fda67b635f3d76e6b505b7"
+  },
+  "new_theorems": 0,
+  "scope": "Untrusted witness program/executor; arithmetic relation unchanged; full actual-byte equality checked."
+}

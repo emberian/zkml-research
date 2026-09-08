@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/zstd",
+    "-T1",
+    "-3",
+    "--no-progress",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/work/run001/chunk004/trace.leu32",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime/work/run001/chunk004/trace.leu32.zst"
+  ],
+  "started_utc": "2026-09-08T22:17:41.562810+00:00",
+  "cwd": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/whole_rescale_runtime",
+  "timeout_seconds": 300,
+  "pid": 76725,
+  "returncode": 0,
+  "timed_out": false,
+  "finished_utc": "2026-09-08T22:17:41.939220+00:00",
+  "elapsed_seconds": 0.37641304201679304,
+  "user_seconds": 0.37949299999999997,
+  "system_seconds": 0.058632,
+  "max_rss_bytes": 39731200
+}

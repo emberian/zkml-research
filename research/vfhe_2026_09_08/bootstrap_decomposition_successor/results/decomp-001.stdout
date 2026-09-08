@@ -1,0 +1,15 @@
+Compiler/TfheSignedDecomposition.lean:31:2: error(lean.unknownIdentifier): Unknown identifier `PredCompile.isZero`
+Compiler/TfheSignedDecomposition.lean:32:2: error(lean.unknownIdentifier): Unknown identifier `PredCompile.isZero`
+Compiler/TfheSignedDecomposition.lean:90:28: error(lean.unknownIdentifier): Unknown identifier `PredCompile.isZero`
+Compiler/TfheSignedDecomposition.lean:92:13: error(lean.unknownIdentifier): Unknown identifier `PredCompile.isZero_forced`
+Compiler/TfheSignedDecomposition.lean:91:44: error: unsolved goals
+asg : W → BabyBear
+d : Term (AirSig BabyBear W)
+b w : W
+n : ℕ
+hn : n < babyBearP
+hd : eval asg d = ↑n
+h : systemAccepts asg sorry
+⊢ ZMod.val (asg b) = if n = 0 then 1 else 0
+Compiler/TfheSignedDecomposition.lean:229:4: error: `simp` made no progress
+Compiler/TfheSignedDecomposition.lean:232:4: error: `simp` made no progress

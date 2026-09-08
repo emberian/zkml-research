@@ -1,0 +1,1 @@
+Compiler/ProfiledWitness.lean:3:0: error: object file '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/rescale_compiler_successor/build/Compiler/NonlinearRnsProfiled.olean' of module Compiler.NonlinearRnsProfiled does not exist

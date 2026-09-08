@@ -1,0 +1,92 @@
+{
+  "schema": "recorded-two-class-query-node-wasm-execution-v1",
+  "status": "PASS",
+  "claim": "[EXECUTED] Both fast001 recorded class computations accepted by the unchanged IR2 WebAssembly verifier.",
+  "runtime": {
+    "engine": "Node WebAssembly",
+    "node": "v26.8.1",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "wasmSha256": "96137c1ed0ad5fc7584ca72ef006ff70ac1951831408ee12ab22ce3879f6f908",
+  "expectedBackend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+  "genuine": {
+    "verified": true,
+    "stage": "complete",
+    "caseId": "fast001-new-two-class-query",
+    "requestId": "new-two-class-query",
+    "scope": "Both recorded class ciphertext query computations: two signed products and subtraction. No encoder, decryption or authorization proof.",
+    "expectedTemplateSha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+    "publicQuerySha256": "b3d468fd195b2f696ac5c93be3f3c374142e532f04f6af860f6a96fdc035eb39",
+    "recordedModelRoot": "742982ae2402dc944074f0df249d412040ef273df392803810a92c434c807204",
+    "recordedRevision": 2,
+    "cases": [
+      {
+        "label": "card_arrival",
+        "accepted": true,
+        "verificationMs": 1523.818333,
+        "result": {
+          "verified": true,
+          "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+          "public_rows": 8192,
+          "public_width": 57,
+          "proof_bytes": 842828,
+          "template_sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+          "error": null
+        }
+      },
+      {
+        "label": "cash_withdrawal_charge",
+        "accepted": true,
+        "verificationMs": 1468.9253339999998,
+        "result": {
+          "verified": true,
+          "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+          "public_rows": 8192,
+          "public_width": 57,
+          "proof_bytes": 842376,
+          "template_sha256": "f42c5efcaa994656b0c9ef2d1270aa2d6eb7dae0e5ba85938d23dbb3dc46c10d",
+          "error": null
+        }
+      }
+    ],
+    "elapsedMs": 3017.420709
+  },
+  "progress": [
+    {
+      "stage": "loading",
+      "completed": 0,
+      "total": 2
+    },
+    {
+      "stage": "verifying",
+      "label": "card_arrival",
+      "completed": 0,
+      "total": 2
+    },
+    {
+      "stage": "accepted",
+      "label": "card_arrival",
+      "completed": 1,
+      "total": 2
+    },
+    {
+      "stage": "verifying",
+      "label": "cash_withdrawal_charge",
+      "completed": 1,
+      "total": 2
+    },
+    {
+      "stage": "accepted",
+      "label": "cash_withdrawal_charge",
+      "completed": 2,
+      "total": 2
+    }
+  ],
+  "actualProofVerifications": 2,
+  "newProofGenerated": false,
+  "wasmRebuilt": false,
+  "browserExecutionPerformed": false,
+  "privateFilesRead": false,
+  "originalGated001Preserved": true
+}

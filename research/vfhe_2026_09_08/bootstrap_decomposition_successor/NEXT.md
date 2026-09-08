@@ -1,0 +1,5 @@
+[OPEN] The next actual missing PBS component is the first external product's interaction between the decomposed input polynomials and the saved/available bootstrapping-key Fourier representation. It requires the deployed FFT and torus-conversion semantics, or a clearly separate exact arithmetic backend construction. Do not substitute an ideal product and call it the current FFT path.
+
+[DERIVED] Reuse the exact existing public accumulator, mask row and digit bundle and the shared backend/consumer. The present proof is portable as three separate verifications; it is not an aggregation. A compiler-generated native witness instruction plan could improve future larger components. Constant-width metadata should use indexed arrays rather than long interpreted Fin-vector case chains.
+
+[OPEN] Parent owns minidregg integration, commits and site work. The proposal patch contains only this successor's two new compiler modules and exporter, requiring the frozen predecessor overlay and existing PredCompile import. No additional crypto or build campaign is needed for this completed component.
