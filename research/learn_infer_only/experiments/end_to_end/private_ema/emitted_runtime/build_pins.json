@@ -1,0 +1,128 @@
+{
+  "created_utc": "2026-09-08T04:19:12.695018+00:00",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "-Vv"
+      ],
+      "returncode": 0,
+      "stdout": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "-V"
+      ],
+      "returncode": 0,
+      "stdout": "cargo 1.98.0-nightly (a595d0da2 2026-06-20)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "uname",
+        "-a"
+      ],
+      "returncode": 0,
+      "stdout": "Darwin nextop.local 25.6.0 Darwin Kernel Version 25.6.0: Sat Jul 11 15:25:34 PDT 2026; root:xnu-12377.161.13~4/RELEASE_ARM64_T6020 arm64\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "0fd23fcc60959797a73afe27e3b7ec2fa44c1122\n",
+      "stderr": ""
+    }
+  ],
+  "source_files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.toml",
+      "bytes": 219,
+      "sha256": "888637418d68f3688acec178273e8284e6789b6cccc3f1f7eb545523f86eece0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.lock",
+      "bytes": 15444,
+      "sha256": "6a677322ed8b8db7bba5f785148d3c9e0d6cfe46a7e666665b06f22d78065fa5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/lib.rs",
+      "bytes": 4648,
+      "sha256": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/host.rs",
+      "bytes": 1826,
+      "sha256": "f0ba609bdf7d6a2ad2b83298b526d8fecf4d8569f7db28af6c5306c14e159ac2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/setup.rs",
+      "bytes": 1782,
+      "sha256": "34380136654f11a69b71d9a53f3fa64f6d382f28f671c9b0df90cfb184990f98"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/issuer.rs",
+      "bytes": 1958,
+      "sha256": "b9bf8be29a0a38c4578448f0f77214c367595ceb0ef7753ed5298617c1ff01b8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/reader.rs",
+      "bytes": 1561,
+      "sha256": "00313812037bdc8862ec979b7c18e8145654189d84c29ade68c44cb5cf1c0088"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/ciphertext/mod.rs",
+      "bytes": 1537,
+      "sha256": "d2650d683cc9a23de5e8d2f700180c68e793ae038fc6376522f4f1c6e8e5b48a"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/server_key/mod.rs",
+      "bytes": 5428,
+      "sha256": "bf88871068b974a5496f861c076d8ef9714ef193742d57dba96c42f7d0e9f82a"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs",
+      "bytes": 38336,
+      "sha256": "645ca26eab47b80d16c3088b1ab776966462d4bf2b3516567559d3b4234141f5"
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bincode-1.3.3/src/config/mod.rs",
+      "bytes": 13997,
+      "sha256": "d79766ac15a213293e8d684ba639e0968bf883214007ffcab6c9f7128a12bdb6"
+    }
+  ],
+  "environment": {
+    "RUSTFLAGS": null,
+    "RUSTC_WRAPPER": null,
+    "CARGO_BUILD_TARGET": null,
+    "RAYON_NUM_THREADS": null
+  },
+  "build_command": [
+    "cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j",
+    "1"
+  ],
+  "test_command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "-j",
+    "1"
+  ],
+  "dependency_pins": {
+    "tfhe": "1.6.3 boolean only",
+    "bincode": "1.3.3",
+    "serde": "1.0.229",
+    "serde_json": "1.0.151"
+  }
+}

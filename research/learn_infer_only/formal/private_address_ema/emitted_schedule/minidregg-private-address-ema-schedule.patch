@@ -1,0 +1,642 @@
+--- a/Compiler.lean
++++ b/Compiler.lean
+@@ -104,3 +104,5 @@
+ import Compiler.CommittedTerminalController  -- [CT-controller-lanes] the computable controller: check : … → Except Failure (Receipt Root m) with check_accepts by reflection, gateProof_sound_lane, an honest lane prover via residualSum_sparse (readPoly1_laneRound = mleHonest), receipt_complete / receipt_refuses_tamper / receipt_refuses_false_claim — the demo (m = 5) kernel-decided, and STAGE 0 (4,148 residuals, 13 rounds) as a compiled exhibit: the honest (1,2) proof ACCEPTED END TO END with terminal 0, a forged word refused at the root, at a round check, and at the terminal. The existing noncomputable controller is untouched; its obstruction is exhibited (AdjoinRoot.instField on every Receipt field, toExt6 in digestToExt6, the Finsupp aggregate). Remaining, sized: [CT-factored-prover] ~300, [CT-fiat-shamir-lanes] ~200 (the hash is a def), [CT-joint-price] ~60, [CT-sampled], [CT-merkle-profile].
+ import Compiler.CommittedTerminalFiatShamir  -- [CT-fiat-shamir-lanes] + [CT-joint-price]: the Stage-0 receipt made NON-INTERACTIVE under the tree's own keystone, not an invented oracle model. The controller's protocol is a Reduction (k = m+1: the γ round + m sumcheck rounds; verify IS check) with a PROVED RbrKnowledgeSoundness instance (round 0 priced by gammaZero_prob_le, rounds 1..m by one root, card_agreeFinset_lt); gateProof_fs_sound := fsKeystone_proved.sound at this instance, read out as (t + (m+1)) · (0 + (N−1)/|F| + m·(1/|F|)) in gateProof_fs_sound_reading. The deployed oracle is cSHAKE256 over a lawful-codec encoding of the transcript prefix (encodeMove_injective); fsCheck reflects into fiatShamir (fsCheck_ok_fiatShamir); the causal prover fsProve is complete. Demo kernel-decided (accepted; γ+1 refused as challengeMismatch though check accepts it — the fiatShamir_teeth shape); Stage 0 compiled: honest FS receipt accepted, altered challenge refused, a forged word's own FS run refused. THE PRICE, one expression, every term visible: stage0Receipt_price = (t + 14)·(0 + 4147/p⁶ + 13·(1/p⁶)) with S : BindingCommitment named (only S.commit consumed at full word), stage0Price_value = 4160/2013265921⁶ < 2^−173 by norm_num — FULL-WORD label: [CT-sampled] and [CT-merkle-profile] are not in it; "the deployed cSHAKE realizes the oracle" is [FS-ROM].
+ import Compiler.CommittedTerminalFactoredProver  -- [CT-factored-prover]: the honest prover for the seven factored openings — dense bit-corner tables + pairwise fold, check7 / check7_accepts, gateProof7_sound, sumcheck7_prob_le, and the bridge gammaBatched_eq_sum_table; Stage 0 compiled, demo decided (check7_complete_demo). Named, not closed: [CT-factored-prover-honest] (FactoredProverHonest : the fold messages read to factoredRounds), with its consumer factoredProver_complete_of_honest PROVED.
++
++import Compiler.PrivateAddressEmaSchedule
+--- /dev/null
++++ b/Compiler/PrivateAddressEmaSchedule.lean
+@@ -0,0 +1,631 @@
++/-
++[DERIVED statement-first successor] Use the EXISTING compiler signature, fold,
++flatten, emitter and CSE over F2. No new Boolean IR or gate compiler is authored.
++The source declares Boolean word combinators; gates come exclusively from emit.
++The wire format is frozen in SCHEMA.md. Runtime parsing/TFHE stays outside Lean.
++
++Keystone: SharedOutputCorrectness below, universal over source terms and inputs.
++Subject: a nonconstant shared term; falsifier: wrong output at the same input;
++premise inhabitation: original fillAux valuation transfers to the shared gates.
++Application: prove source combinators refine PrivateAddressEma's word laws.
++-/
++import Compiler.DescriptorEval
++import Theory.PrivateAddressEma
++
++namespace Minidregg.Compiler.PrivateAddressEmaSchedule
++open Minidregg.Compiler
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Theory.PrivateAddressEma
++
++set_option autoImplicit false
++set_option maxRecDepth 10000
++set_option maxHeartbeats 2000000
++
++abbrev F2 := ZMod 2
++instance : Hashable F2 := ⟨fun x => hash x.val⟩
++abbrev Expr (m : Nat) := Term (AirSig F2 (Fin m))
++def enc (b : Bool) : F2 := if b then 1 else 0
++def dec (x : F2) : Bool := decide (x = 1)
++def xorE {m : Nat} (a b : Expr m) : Expr m := add' a b
++def andE {m : Nat} (a b : Expr m) : Expr m := mul' a b
++def notE {m : Nat} (a : Expr m) : Expr m := xorE a (cst 1)
++def muxE {m : Nat} (c t f : Expr m) : Expr m := xorE f (andE c (xorE t f))
++def evalB {m : Nat} (inputs : Fin m → Bool) (e : Expr m) : Bool :=
++  dec (eval (fun i => enc (inputs i)) e)
++
++def raw {m : Nat} (es : List (Expr m)) : ConstraintDescriptor F2 := emit Fin.val 0 m es
++def shared {m : Nat} (es : List (Expr m)) : ConstraintDescriptor F2 := cse (raw es)
++
++def SharedOutputCorrectness : Prop :=
++  ∀ (m : Nat) (es : List (Expr m)) (inputs : Fin m → F2) (wv : Nat → F2),
++    (∀ i : Fin m, wv i.val = inputs i) →
++    (∀ g ∈ (shared es).gates, g.holds wv) →
++    (shared es).zeros.map (fun z => z.read wv) = es.map (eval inputs)
++
++theorem enc_dec (x : F2) : enc (dec x) = x := by
++  have hx : x.val < 2 := x.val_lt
++  have h0 : (0 : F2).val = 0 := rfl
++  have h1 : (1 : F2).val = 1 := rfl
++  by_cases h : x.val = 0
++  · have he : x = 0 := ZMod.val_injective 2 (h.trans h0.symm)
++    subst x; decide +kernel
++  · have he : x = 1 := ZMod.val_injective 2 (show x.val = (1 : F2).val by rw [h1]; omega)
++    subst x; decide +kernel
++
++theorem dec_enc (b : Bool) : dec (enc b) = b := by
++  cases b <;> decide +kernel
++
++theorem enc_xor (a b : Bool) : enc (xor a b) = enc a + enc b := by
++  cases a <;> cases b <;> decide +kernel
++
++theorem enc_and (a b : Bool) : enc (a && b) = enc a * enc b := by
++  cases a <;> cases b <;> decide +kernel
++
++theorem eval_xor {m : Nat} (inputs : Fin m → Bool) (a b : Expr m) :
++    evalB inputs (xorE a b) = xor (evalB inputs a) (evalB inputs b) := by
++  unfold evalB xorE
++  rw [eval_add', ← enc_dec (eval _ a), ← enc_dec (eval _ b), ← enc_xor, dec_enc]
++  simp only [dec_enc]
++
++theorem eval_and {m : Nat} (inputs : Fin m → Bool) (a b : Expr m) :
++    evalB inputs (andE a b) = (evalB inputs a && evalB inputs b) := by
++  unfold evalB andE
++  rw [eval_mul', ← enc_dec (eval _ a), ← enc_dec (eval _ b), ← enc_and, dec_enc]
++  simp only [dec_enc]
++
++theorem eval_const {m : Nat} (inputs : Fin m → Bool) (b : Bool) :
++    evalB inputs (cst (enc b)) = b := by
++  simp [evalB, dec_enc]
++
++theorem eval_var {m : Nat} (inputs : Fin m → Bool) (i : Fin m) :
++    evalB inputs (vr i) = inputs i := by
++  simp [evalB, dec_enc]
++
++theorem eval_not {m : Nat} (inputs : Fin m → Bool) (a : Expr m) :
++    evalB inputs (notE a) = !(evalB inputs a) := by
++  rw [notE, eval_xor]
++  have hc : evalB inputs (cst 1) = true := eval_const inputs true
++  rw [hc]
++  cases evalB inputs a <;> rfl
++
++theorem eval_mux {m : Nat} (inputs : Fin m → Bool) (c t f : Expr m) :
++    evalB inputs (muxE c t f) = if evalB inputs c then evalB inputs t else evalB inputs f := by
++  rw [muxE, eval_xor, eval_and, eval_xor]
++  cases evalB inputs c <;> cases evalB inputs t <;> cases evalB inputs f <;> rfl
++
++theorem flattened_outputs {m : Nat} (asg : Fin m → F2) (aux : Nat → F2)
++    (es : List (Expr m)) (n : Nat)
++    (hg : gatesHold asg aux (flattenSystem es n).gates) :
++    (flattenSystem es n).roots.map (fun z => z.read asg aux) = es.map (eval asg) := by
++  induction es generalizing n with
++  | nil => rfl
++  | cons e es ih =>
++    simp only [flattenSystem_cons_gates] at hg
++    have he : gatesHold asg aux (flatten e n).gates :=
++      fun g h => hg g (List.mem_append_left _ h)
++    have hes : gatesHold asg aux (flattenSystem es (flatten e n).next).gates :=
++      fun g h => hg g (List.mem_append_right _ h)
++    simp only [flattenSystem_cons_roots, List.map_cons]
++    rw [flatten_forces asg e n aux he, ih _ hes]
++
++theorem raw_outputs {m : Nat} (es : List (Expr m)) (wv : Nat → F2)
++    (hg : ∀ g ∈ (raw es).gates, g.holds wv) :
++    (raw es).zeros.map (fun z => z.read wv) = es.map (eval (readVars Fin.val wv)) := by
++  have h := (emit_gates_hold_iff Fin.val 0 m es wv).mp hg
++  have hf := flattened_outputs (readVars Fin.val wv) (readAux m wv) es 0 h
++  simpa only [raw, emit, List.map_map, Function.comp_def, emitWire_read] using hf
++
++theorem shared_gates_backward {m : Nat} (es : List (Expr m)) (wv : Nat → F2)
++    (hg : ∀ g ∈ (shared es).gates, g.holds wv) :
++    ∀ g ∈ (raw es).gates, g.holds (fun i => wv (cseSubst (raw es) i)) := by
++  let d : ConstraintDescriptor F2 := { raw es with zeros := [] }
++  have hs : d.SSA := emit_ssa Fin.val 0 m (fun i => i.isLt) es
++  have hd : descriptorHolds (cse d) wv := ⟨hg, by simp [d, cse]⟩
++  exact (holds_of_cse_holds d hs wv hd).1
++
++theorem shared_output_correctness : SharedOutputCorrectness := by
++  intro m es inputs wv hi hg
++  have hr := raw_outputs es (fun i => wv (cseSubst (raw es) i))
++    (shared_gates_backward es wv hg)
++  have hv : readVars Fin.val (fun i => wv (cseSubst (raw es) i)) = inputs := by
++    funext i
++    change wv (cseSubst (raw es) i.val) = inputs i
++    rw [cseSubst_eq_self _ i.val, hi]
++    intro g h
++    have hout := emit_out_ge Fin.val 0 m es g h
++    have := i.isLt
++    omega
++  rw [hv] at hr
++  simpa only [shared, cse_zeros, List.map_map, Function.comp_def,
++    ← DWire.read_subst_comp] using hr
++
++theorem shared_premises_inhabited (m : Nat) (es : List (Expr m)) (inputs : Fin m → F2) :
++    ∃ wv : Nat → F2, (∀ i : Fin m, wv i.val = inputs i) ∧
++      (∀ g ∈ (shared es).gates, g.holds wv) := by
++  let d := raw es
++  let wv : Nat → F2 := fun i => (fillAux d (Array.ofFn inputs)).getD i 0
++  have hs : d.SSA := emit_ssa Fin.val 0 m (fun i => i.isLt) es
++  have hw : d.WellFormed := emit_wellFormed Fin.val 0 m (by omega) (fun i => i.isLt) es
++  have hz : (Array.ofFn inputs).size = d.nVars := Array.size_ofFn
++  have hg := fillAux_gates_hold d (Array.ofFn inputs) hs hw hz
++  have hd : descriptorHolds { d with zeros := [] } wv := ⟨hg, by simp⟩
++  refine ⟨wv, ?_, (cse_holds { d with zeros := [] } wv hd).1⟩
++  intro i
++  change (fillAux d (Array.ofFn inputs)).getD i.val 0 = inputs i
++  rw [fillAux_getD_of_lt d _ hw hz i.isLt, Array.getD_eq_getD_getElem?,
++    Array.getElem?_ofFn, dif_pos i.isLt]
++  rfl
++
++theorem bits_value_testBit (n x : Nat) :
++    bitsValue n (fun i => x.testBit i) = x % 2 ^ n := by
++  induction n with
++  | zero => change 0 = x % 1; omega
++  | succ n ih =>
++    simp only [bitsValue, Finset.sum_range_succ] at ih ⊢
++    rw [ih, Nat.toNat_testBit, Nat.mod_pow_succ]
++
++theorem bits_value_word {n : Nat} (x : BitVec n) :
++    bitsValue n x.getLsbD = x.toNat := by
++  rw [show x.getLsbD = fun i => x.toNat.testBit i from rfl, bits_value_testBit,
++    Nat.mod_eq_of_lt x.isLt]
++
++def carryE {m : Nat} (a b : Nat → Expr m) (c : Expr m) : Nat → Expr m
++  | 0 => c
++  | i + 1 => xorE (andE (a i) (b i)) (andE (xorE (a i) (b i)) (carryE a b c i))
++
++def addE {m : Nat} (a b : Nat → Expr m) (c : Expr m) (i : Nat) : Expr m :=
++  xorE (xorE (a i) (b i)) (carryE a b c i)
++
++def valueB {m : Nat} (n : Nat) (inputs : Fin m → Bool) (v : Nat → Expr m) : BitVec n :=
++  BitVec.ofNat n (bitsValue n (fun i => evalB inputs (v i)))
++
++theorem adder_trace {m : Nat} (n : Nat) (inputs : Fin m → Bool)
++    (a b : Nat → Expr m) (c : Expr m) :
++    RippleTrace n (fun i => evalB inputs (a i)) (fun i => evalB inputs (b i))
++      (fun i => evalB inputs (addE a b c i)) (fun i => evalB inputs (carryE a b c i)) := by
++  intro i hi
++  constructor
++  · simp only [addE, eval_xor]
++  · simp only [carryE, eval_xor, eval_and]
++
++theorem adder_value {m : Nat} (n : Nat) (inputs : Fin m → Bool)
++    (a b : Nat → Expr m) (c : Expr m) :
++    valueB n inputs (addE a b c) = valueB n inputs a + valueB n inputs b +
++      BitVec.ofNat n (evalB inputs c).toNat := by
++  exact ripple_bitvec n _ _ _ _ (adder_trace n inputs a b c)
++
++def pack (n : Nat) (f : Nat → Bool) : BitVec n :=
++  (BitVec.ofBoolListLE (List.ofFn (fun i : Fin n => f i.val))).cast List.length_ofFn
++
++theorem pack_bit (n : Nat) (f : Nat → Bool) (i : Nat) (hi : i < n) :
++    (pack n f).getLsbD i = f i := by
++  simp only [pack, BitVec.getLsbD_cast, BitVec.getLsbD_ofBoolListLE,
++    List.getD_eq_getElem?_getD, List.getElem?_ofFn, dif_pos hi, Option.getD_some]
++
++theorem bits_value_congr (n : Nat) (f g : Nat → Bool) (h : ∀ i, i < n → f i = g i) :
++    bitsValue n f = bitsValue n g := by
++  apply Finset.sum_congr rfl
++  intro i hi
++  rw [h i (Finset.mem_range.mp hi)]
++
++theorem pack_value (n : Nat) (f : Nat → Bool) :
++    BitVec.ofNat n (bitsValue n f) = pack n f := by
++  have he := bits_value_congr n f (pack n f).getLsbD (fun i hi => (pack_bit n f i hi).symm)
++  rw [he, bits_value_word, BitVec.ofNat_toNat]
++  exact BitVec.setWidth_eq _
++
++theorem valueB_bit {m : Nat} (n : Nat) (inputs : Fin m → Bool)
++    (a : Nat → Expr m) (i : Nat) (hi : i < n) :
++    (valueB n inputs a).getLsbD i = evalB inputs (a i) := by
++  rw [valueB, pack_value, pack_bit n _ i hi]
++
++theorem valueB_of_bits {m n : Nat} (inputs : Fin m → Bool)
++    (a : Nat → Expr m) (x : BitVec n)
++    (h : ∀ i, i < n → evalB inputs (a i) = x.getLsbD i) : valueB n inputs a = x := by
++  unfold valueB
++  rw [bits_value_congr n _ _ h, bits_value_word, BitVec.ofNat_toNat]
++  exact BitVec.setWidth_eq _
++
++def signE {m : Nat} (a : Nat → Expr m) (i : Nat) : Expr m :=
++  if i < 8 then a i else a 7
++def eightE {m : Nat} (a : Nat → Expr m) (i : Nat) : Expr m :=
++  if i < 3 then cst 0 else a (i - 3)
++def candidateE {m : Nat} (s u : Nat → Expr m) (i : Nat) : Expr m :=
++  addE (addE (eightE s) (fun j => notE (signE s j)) (cst 1)) (signE u) (cst 0) (i + 3)
++
++theorem signE_value {m : Nat} (inputs : Fin m → Bool) (a : Nat → Expr m) :
++    valueB 11 inputs (signE a) = (valueB 8 inputs a).signExtend 11 := by
++  apply valueB_of_bits
++  intro i hi
++  simp only [signE, BitVec.getLsbD_signExtend]
++  by_cases h : i < 8
++  · simp only [h, hi, ite_true, decide_true, Bool.true_and,
++      valueB_bit 8 inputs a i h]
++  · simp only [h, hi, ite_false, decide_true, Bool.true_and, BitVec.msb_eq_getLsbD_last]
++    exact (valueB_bit 8 inputs a 7 (by decide)).symm
++
++theorem eightE_value {m : Nat} (inputs : Fin m → Bool) (a : Nat → Expr m) :
++    valueB 11 inputs (eightE a) = (valueB 8 inputs a) ++ (0 : BitVec 3) := by
++  apply valueB_of_bits
++  intro i hi
++  simp only [eightE, BitVec.getLsbD_append]
++  by_cases h : i < 3
++  · simp [h, show evalB inputs (cst 0) = false from eval_const inputs false]
++  · simp [h, valueB_bit 8 inputs a (i - 3) (by omega)]
++
++theorem notE_value {m : Nat} (n : Nat) (inputs : Fin m → Bool) (a : Nat → Expr m) :
++    valueB n inputs (fun i => notE (a i)) = ~~~(valueB n inputs a) := by
++  apply valueB_of_bits
++  intro i hi
++  simp only [eval_not, BitVec.getLsbD_not, hi, decide_true, Bool.true_and,
++    valueB_bit n inputs a i hi]
++
++theorem candidateE_value {m : Nat} (inputs : Fin m → Bool) (s u : Nat → Expr m) :
++    valueB 8 inputs (candidateE s u) = candidate (valueB 8 inputs s) (valueB 8 inputs u) := by
++  have hv := adder_value 11 inputs
++    (addE (eightE s) (fun j => notE (signE s j)) (cst 1)) (signE u) (cst 0)
++  have hin := adder_value 11 inputs (eightE s) (fun j => notE (signE s j)) (cst 1)
++  rw [eightE_value, notE_value, signE_value] at hin
++  rw [hin, signE_value] at hv
++  have h0 : evalB inputs (cst 0) = false := eval_const inputs false
++  have h1 : evalB inputs (cst 1) = true := eval_const inputs true
++  rw [h0, h1] at hv
++  have hn : valueB 11 inputs
++      (addE (addE (eightE s) (fun j => notE (signE s j)) (cst 1)) (signE u) (cst 0)) =
++      numerator (valueB 8 inputs s) (valueB 8 inputs u) := by
++    simpa [numerator, eight_s_encoding] using hv
++  apply valueB_of_bits
++  intro i hi
++  rw [candidate, BitVec.getLsbD_extractLsb']
++  simp only [hi, decide_true, Bool.true_and]
++  rw [← hn, valueB_bit 11 inputs _ (3 + i) (by omega)]
++  simp [candidateE, Nat.add_comm]
++
++def selectE {m : Nat} (a0 a1 : Expr m) (j : Fin 4) : Expr m :=
++  andE (if j.val % 2 = 1 then a0 else notE a0)
++    (if j.val / 2 = 1 then a1 else notE a1)
++
++def learnE {m : Nat} (s : Fin 4 → Nat → Expr m) (a0 a1 : Expr m)
++    (u : Nat → Expr m) (j : Fin 4) (i : Nat) : Expr m :=
++  muxE (selectE a0 a1 j) (candidateE (s j) u i) (s j i)
++
++def inferE {m : Nat} (s : Fin 4 → Nat → Expr m) (q0 q1 : Expr m) : Expr m :=
++  muxE q1 (muxE q0 (s 3 7) (s 2 7)) (muxE q0 (s 1 7) (s 0 7))
++
++theorem selectE_eval {m : Nat} (inputs : Fin m → Bool) (a0 a1 : Expr m)
++    (a : Address) (h0 : evalB inputs a0 = a.getLsbD 0)
++    (h1 : evalB inputs a1 = a.getLsbD 1) (j : Fin 4) :
++    evalB inputs (selectE a0 a1 j) = selected a j := by
++  fin_cases j <;> simp [selectE, selected, eval_and, eval_not, h0, h1,
++    BitVec.getLsbD, Nat.testBit_eq_decide_div_mod_eq]
++
++theorem learnE_value {m : Nat} (inputs : Fin m → Bool) (s : Fin 4 → Nat → Expr m)
++    (a0 a1 : Expr m) (u : Nat → Expr m) (a : Address)
++    (h0 : evalB inputs a0 = a.getLsbD 0) (h1 : evalB inputs a1 = a.getLsbD 1) (j : Fin 4) :
++    valueB 8 inputs (learnE s a0 a1 u j) =
++      learn (fun k => valueB 8 inputs (s k)) a (valueB 8 inputs u) j := by
++  apply valueB_of_bits
++  intro i hi
++  rw [learnE, eval_mux, selectE_eval inputs a0 a1 a h0 h1]
++  unfold learn
++  by_cases h : selected a j = true
++  · simp only [h, ite_true]
++    rw [← candidateE_value, valueB_bit 8 inputs _ i hi]
++  · simp only [h]
++    exact (valueB_bit 8 inputs (s j) i hi).symm
++
++theorem inferE_eval {m : Nat} (inputs : Fin m → Bool) (s : Fin 4 → Nat → Expr m)
++    (q0 q1 : Expr m) (q : Address) (h0 : evalB inputs q0 = q.getLsbD 0)
++    (h1 : evalB inputs q1 = q.getLsbD 1) :
++    evalB inputs (inferE s q0 q1) = infer (fun k => valueB 8 inputs (s k)) q := by
++  simp only [inferE, eval_mux, h0, h1, infer, BitVec.msb_eq_getLsbD_last]
++  simp only [show 8 - 1 = 7 from rfl, valueB_bit 8 inputs _ 7 (by decide)]
++
++def stateTerms (m : Nat) (hm : 32 ≤ m) (j : Fin 4) (i : Nat) : Expr m :=
++  if hi : i < 8 then vr ⟨8 * j.val + i, by omega⟩ else cst 0
++
++def labelTerms (i : Nat) : Expr 42 :=
++  if hi : i < 8 then vr ⟨34 + i, by omega⟩ else cst 0
++
++def learnTerms : List (Expr 42) := List.ofFn fun k : Fin 32 =>
++  learnE (stateTerms 42 (by decide)) (vr 32) (vr 33) labelTerms
++    ⟨k.val / 8, by omega⟩ (k.val % 8)
++
++def inferTerms : List (Expr 34) :=
++  [inferE (stateTerms 34 (by decide)) (vr 32) (vr 33)]
++
++def learnSchedule : ConstraintDescriptor F2 := shared learnTerms
++def inferSchedule : ConstraintDescriptor F2 := shared inferTerms
++
++def baseInputs (m : Nat) (_hm : 34 ≤ m) (s : State) (a : Address)
++    (tail : Nat → Bool) (k : Fin m) : Bool :=
++  if h : k.val < 32 then (s ⟨k.val / 8, by omega⟩).getLsbD (k.val % 8)
++  else if k.val < 34 then a.getLsbD (k.val - 32) else tail (k.val - 34)
++
++def learnInputs (s : State) (a : Address) (u : Byte) : Fin 42 → Bool :=
++  baseInputs 42 (by decide) s a u.getLsbD
++def inferInputs (s : State) (a : Address) : Fin 34 → Bool :=
++  baseInputs 34 (by decide) s a (fun _ => false)
++
++theorem input_state_value (m : Nat) (hm : 34 ≤ m) (s : State) (a : Address)
++    (tail : Nat → Bool) (j : Fin 4) :
++    valueB 8 (baseInputs m hm s a tail) (stateTerms m (by omega) j) = s j := by
++  apply valueB_of_bits
++  intro i hi
++  rw [stateTerms, dif_pos hi, eval_var]
++  have hlt : 8 * j.val + i < 32 := by omega
++  have hd : (8 * j.val + i) / 8 = j.val := by omega
++  have hr : (8 * j.val + i) % 8 = i := by omega
++  simp only [baseInputs, dif_pos hlt, hd, hr]
++
++theorem input_label_value (s : State) (a : Address) (u : Byte) :
++    valueB 8 (learnInputs s a u) labelTerms = u := by
++  apply valueB_of_bits
++  intro i hi
++  rw [labelTerms, dif_pos hi, eval_var]
++  simp only [learnInputs, baseInputs]
++  have h32 : ¬34 + i < 32 := by omega
++  have h34 : ¬34 + i < 34 := by omega
++  simp only [h32, h34, dite_false, ite_false, Nat.add_sub_cancel_left]
++
++theorem input_address_zero (m : Nat) (hm : 34 ≤ m) (s : State) (a : Address)
++    (tail : Nat → Bool) :
++    evalB (baseInputs m hm s a tail) (vr ⟨32, by omega⟩) = a.getLsbD 0 := by
++  rw [eval_var]
++  simp [baseInputs]
++
++theorem input_address_one (m : Nat) (hm : 34 ≤ m) (s : State) (a : Address)
++    (tail : Nat → Bool) :
++    evalB (baseInputs m hm s a tail) (vr ⟨33, by omega⟩) = a.getLsbD 1 := by
++  rw [eval_var]
++  simp [baseInputs]
++
++theorem learn_source_byte (s : State) (a : Address) (u : Byte) (j : Fin 4) :
++    valueB 8 (learnInputs s a u)
++      (learnE (stateTerms 42 (by decide)) (vr 32) (vr 33) labelTerms j) = learn s a u j := by
++  have h := learnE_value (learnInputs s a u) (stateTerms 42 (by decide)) (vr 32) (vr 33)
++    labelTerms a (input_address_zero 42 (by decide) s a u.getLsbD)
++    (input_address_one 42 (by decide) s a u.getLsbD) j
++  have hs : (fun k => valueB 8 (learnInputs s a u) (stateTerms 42 (by decide) k)) = s := by
++    funext k
++    exact input_state_value 42 (by decide) s a u.getLsbD k
++  rw [hs, input_label_value] at h
++  exact h
++
++def stateBits (s : State) : List Bool :=
++  List.ofFn fun k : Fin 32 => (s ⟨k.val / 8, by omega⟩).getLsbD (k.val % 8)
++
++def LearnScheduleCorrectness : Prop :=
++  ∀ (s : State) (a : Address) (u : Byte) (wv : Nat → F2),
++    (∀ i : Fin 42, wv i.val = enc (learnInputs s a u i)) →
++    (∀ g ∈ learnSchedule.gates, g.holds wv) →
++    learnSchedule.zeros.map (fun z => dec (z.read wv)) = stateBits (learn s a u)
++
++def InferScheduleCorrectness : Prop :=
++  ∀ (s : State) (a : Address) (wv : Nat → F2),
++    (∀ i : Fin 34, wv i.val = enc (inferInputs s a i)) →
++    (∀ g ∈ inferSchedule.gates, g.holds wv) →
++    inferSchedule.zeros.map (fun z => dec (z.read wv)) = [infer s a]
++
++theorem learn_source_outputs (s : State) (a : Address) (u : Byte) :
++    learnTerms.map (evalB (learnInputs s a u)) = stateBits (learn s a u) := by
++  simp only [learnTerms, List.map_ofFn, stateBits]
++  congr 1
++  funext k
++  have h := learn_source_byte s a u ⟨k.val / 8, by omega⟩
++  have hb := congrArg (fun x : Byte => x.getLsbD (k.val % 8)) h
++  dsimp only at hb
++  rw [valueB_bit 8 _ _ (k.val % 8) (by omega)] at hb
++  exact hb
++
++theorem infer_source_outputs (s : State) (a : Address) :
++    inferTerms.map (evalB (inferInputs s a)) = [infer s a] := by
++  have h := inferE_eval (inferInputs s a) (stateTerms 34 (by decide)) (vr 32) (vr 33) a
++    (input_address_zero 34 (by decide) s a (fun _ => false))
++    (input_address_one 34 (by decide) s a (fun _ => false))
++  have hs : (fun k => valueB 8 (inferInputs s a) (stateTerms 34 (by decide) k)) = s := by
++    funext k
++    exact input_state_value 34 (by decide) s a (fun _ => false) k
++  rw [hs] at h
++  exact congrArg (fun b => [b]) h
++
++theorem learn_schedule_correct : LearnScheduleCorrectness := by
++  intro s a u wv hi hg
++  have h := shared_output_correctness 42 learnTerms (fun i => enc (learnInputs s a u i)) wv hi hg
++  have hd := congrArg (List.map dec) h
++  simp only [List.map_map, Function.comp_def] at hd
++  exact hd.trans (learn_source_outputs s a u)
++
++theorem infer_schedule_correct : InferScheduleCorrectness := by
++  intro s a wv hi hg
++  have h := shared_output_correctness 34 inferTerms (fun i => enc (inferInputs s a i)) wv hi hg
++  have hd := congrArg (List.map dec) h
++  simp only [List.map_map, Function.comp_def] at hd
++  exact hd.trans (infer_source_outputs s a)
++
++theorem learn_premises_inhabited (s : State) (a : Address) (u : Byte) :
++    ∃ wv : Nat → F2, (∀ i : Fin 42, wv i.val = enc (learnInputs s a u i)) ∧
++      (∀ g ∈ learnSchedule.gates, g.holds wv) :=
++  shared_premises_inhabited 42 learnTerms (fun i => enc (learnInputs s a u i))
++
++theorem infer_premises_inhabited (s : State) (a : Address) :
++    ∃ wv : Nat → F2, (∀ i : Fin 34, wv i.val = enc (inferInputs s a i)) ∧
++      (∀ g ∈ inferSchedule.gates, g.holds wv) :=
++  shared_premises_inhabited 34 inferTerms (fun i => enc (inferInputs s a i))
++
++/-- One selected byte changes and an actual shared-gate valuation carries all 32 outputs. -/
++theorem learn_changed_subject :
++    ∃ wv : Nat → F2, (∀ i : Fin 42, wv i.val = enc (learnInputs zeroState 3 (BitVec.ofInt 8 120) i)) ∧
++      (∀ g ∈ learnSchedule.gates, g.holds wv) ∧
++      learnSchedule.zeros.map (fun z => dec (z.read wv)) =
++        stateBits (learn zeroState 3 (BitVec.ofInt 8 120)) ∧
++      learn zeroState 3 (BitVec.ofInt 8 120) 3 ≠ zeroState 3 := by
++  obtain ⟨wv, hi, hg⟩ := learn_premises_inhabited zeroState 3 (BitVec.ofInt 8 120)
++  exact ⟨wv, hi, hg, learn_schedule_correct _ _ _ wv hi hg, by decide +kernel⟩
++
++/-- The output obligation has teeth even though every input admits a gate valuation. -/
++theorem wrong_learn_output_refused (wv : Nat → F2)
++    (hi : ∀ i : Fin 42, wv i.val = enc (learnInputs zeroState 3 (BitVec.ofInt 8 120) i))
++    (hg : ∀ g ∈ learnSchedule.gates, g.holds wv) :
++    learnSchedule.zeros.map (fun z => dec (z.read wv)) ≠ stateBits zeroState := by
++  rw [learn_schedule_correct _ _ _ wv hi hg]
++  decide +kernel
++
++theorem infer_negative_subject :
++    ∃ wv : Nat → F2, (∀ i : Fin 34,
++      wv i.val = enc (inferInputs (fun _ => BitVec.ofInt 8 (-1)) 2 i)) ∧
++      (∀ g ∈ inferSchedule.gates, g.holds wv) ∧
++      inferSchedule.zeros.map (fun z => dec (z.read wv)) = [true] := by
++  obtain ⟨wv, hi, hg⟩ := infer_premises_inhabited (fun _ => BitVec.ofInt 8 (-1)) 2
++  refine ⟨wv, hi, hg, ?_⟩
++  rw [infer_schedule_correct _ _ wv hi hg]
++  rfl
++
++theorem wrong_infer_output_refused (wv : Nat → F2)
++    (hi : ∀ i : Fin 34, wv i.val = enc (inferInputs (fun _ => BitVec.ofInt 8 (-1)) 2 i))
++    (hg : ∀ g ∈ inferSchedule.gates, g.holds wv) :
++    inferSchedule.zeros.map (fun z => dec (z.read wv)) ≠ [false] := by
++  rw [infer_schedule_correct _ _ wv hi hg]
++  decide +kernel
++
++end Minidregg.Compiler.PrivateAddressEmaSchedule
++
++/- Exact axiom dependencies observed in results/lean_008.json. -/
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.enc_dec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.enc_dec
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.dec_enc' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.dec_enc
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.enc_xor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.enc_xor
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.enc_and' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.enc_and
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_xor' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.eval_xor
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_and' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.eval_and
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_const' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.eval_const
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_var' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.eval_var
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_not' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.eval_not
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_mux' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.eval_mux
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.flattened_outputs' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.flattened_outputs
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.raw_outputs' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.raw_outputs
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.shared_gates_backward' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.shared_gates_backward
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.shared_output_correctness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.shared_output_correctness
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.shared_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.shared_premises_inhabited
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_testBit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_testBit
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_word' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_word
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.adder_trace' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.adder_trace
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.adder_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.adder_value
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.pack_bit' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.pack_bit
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_congr' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_congr
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.pack_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.pack_value
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_bit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_bit
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_of_bits' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_of_bits
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.signE_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.signE_value
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eightE_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.eightE_value
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.notE_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.notE_value
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.candidateE_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.candidateE_value
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.selectE_eval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.selectE_eval
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learnE_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.learnE_value
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.inferE_eval' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.inferE_eval
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.input_state_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.input_state_value
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.input_label_value' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.input_label_value
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_zero
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_one
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_byte' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_byte
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_outputs' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_outputs
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.infer_source_outputs' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.infer_source_outputs
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_schedule_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.learn_schedule_correct
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.infer_schedule_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.infer_schedule_correct
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.learn_premises_inhabited
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.infer_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.infer_premises_inhabited
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_changed_subject' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.learn_changed_subject
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_learn_output_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_learn_output_refused
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.infer_negative_subject' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.infer_negative_subject
++
++/-- info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_infer_output_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_infer_output_refused

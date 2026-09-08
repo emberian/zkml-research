@@ -1,0 +1,30 @@
+Algebraic models: delta 1/8 -> 1/5 leaves every error term unchanged
+deployedBudget 55 55.627561009104 grinding True
+secureBudget120 137 137.441342195845 grinding True
+baseGateExt4Fri 16 16.997935119036 sumcheck False
+ext6GateExt4Fri 75 75.627561003730 grinding False
+unifiedExt6 137 137.441342195845 grinding True
+Sampled tower: unchanged m*n/field + (1-tau)^q; old Delta3/10, new Delta2/5
+m 1 ext 4 target 55 challenge_bits 103.627562385300 q_old 235 q_new 171 saved 64
+m 1 ext 4 target 99 challenge_bits 103.627562385300 q_old 423 q_new 308 saved 115
+m 1 ext 4 target 100 challenge_bits 103.627562385300 q_old 428 q_new 312 saved 116
+m 1 ext 6 target 120 challenge_bits 165.441343577951 q_old 512 q_new 373 saved 139
+m 1 ext 6 target 137 challenge_bits 165.441343577951 q_old 585 q_new 426 saved 159
+m 19 ext 4 target 55 challenge_bits 99.379634871857 q_old 4810 q_new 3603 saved 1207
+m 19 ext 4 target 99 challenge_bits 99.379634871857 q_old 8843 q_new 6624 saved 2219
+m 19 ext 4 target 100 challenge_bits 99.379634871857 q_old None q_new None saved impossible
+m 19 ext 6 target 120 challenge_bits 161.193416064507 q_old 10495 q_new 7861 saved 2634
+m 19 ext 6 target 137 challenge_bits 161.193416064507 q_old 11981 q_new 8974 saved 3007
+Fair same-initial-radius Delta2/5 comparison, m19: tau_old1/109, tau_new1/95
+ext 4 target 55 q_old_interior 4137 q_new 3603 old_optimal 4099 optimal_saved 496
+ext 4 target 99 q_old_interior 7605 q_new 6624 old_optimal 7535 optimal_saved 911
+ext 4 target 100 q_old_interior None q_new None old_optimal None optimal_saved impossible
+ext 6 target 120 q_old_interior 9025 q_new 7861 old_optimal 8942 optimal_saved 1081
+ext 6 target 137 q_old_interior 10304 q_new 8974 old_optimal 10209 optimal_saved 1235
+Current UDR ledger already uses full radius: no change
+ir2 34 34.575011552459 100-bit q full/restricted 86 147
+recursionCfg 45 45.542849945192 100-bit q full/restricted 104 173
+prodV1 47 47.542849945192 100-bit q full/restricted 102 169
+lb2Drop 54 54.650098591420 100-bit q full/restricted 124 203
+zkdtvmCore 128 128.324787311778 100-bit q full/restricted 193 305
+All minima verified exactly; preceding q fails. No source premise is asserted Lean-proved by this script.

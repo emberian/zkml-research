@@ -1,0 +1,1599 @@
+{
+  "utc": "2026-09-08T05:21:15.006449+00:00",
+  "all_passed": true,
+  "scope": "Public saved-evidence and source hash verification only; no crypto, private-state inspection or new Lean execution. Manifest booleans are checked records, not independently rerun claims.",
+  "counts": {
+    "experiments/adversarial_review/public_setup_journal/review_manifest.json": 11,
+    "experiments/adversarial_review/fixed_coordinate_qpt/review_manifest.json": 7,
+    "experiments/adversarial_review/emitted_ema/review_manifest.json": 16,
+    "experiments/adversarial_review/public_setup_pq/MANIFEST.json": 7,
+    "experiments/adversarial_review/public_setup_pq/quantitative_regularity/MANIFEST.json": 7,
+    "formal/private_ema_dynamics/manifest.json": 23,
+    "experiments/end_to_end/private_ema/encrypted_successor/manifest.json": 36,
+    "experiments/end_to_end/private_ema/emitted_runtime/freeze.json": 29,
+    "experiments/end_to_end/private_ema/emitted_fixed_fft/freeze.json": 36,
+    "experiments/private_construction/designated_span/public_coin_setup/journal/FINAL_MANIFEST.json": 110
+  },
+  "files": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/review_manifest.json": {
+      "sha256": "c0f5bb1072a2fa9c0a439567a77bdafcbc006462960d2e7d723f82504529a8e6",
+      "bytes": 3378
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/.gitignore": {
+      "sha256": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a",
+      "bytes": 14
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/REPORT.md": {
+      "sha256": "938643ed06518a55478058106e5ad7ab48f56412c92ac5a2f04f9652e905b90f",
+      "bytes": 16616
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/finalize.py": {
+      "sha256": "4a7ae3a8dcf63c433a9a328b4e6d6b39821583d56b5aff7e8dc9dd2ccdb3eae4",
+      "bytes": 3565
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/record_review.json": {
+      "sha256": "5304ac3d529571ff201fa30b9c8132e10b073611456128a3c0175fca943dda15",
+      "bytes": 5797
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/record_review.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/record_review.stdout.txt": {
+      "sha256": "0feb84f36c9564a98bb9c5f40abe611c62721f7880dcea08bd420b66e19731b2",
+      "bytes": 334
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/records.py": {
+      "sha256": "36e0bcbf011a33b13cad108b92a5e2456c767f89b05041684321bf605b684856",
+      "bytes": 13023
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/review.py": {
+      "sha256": "c71e3eb0c0f5596181183044140e7b0123a34657aba17383af60b384722239c8",
+      "bytes": 11033
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/source_review.json": {
+      "sha256": "1bc41664429d617b3d6fb6d212e7960375008ea2239596f3963801fba3a3686e",
+      "bytes": 19103
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/source_review.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_journal/source_review.stdout.txt": {
+      "sha256": "80b2ea0e061cb52818e4756d117d2ae6bfd627d7b46015cb9b6c991cbe0219a9",
+      "bytes": 431
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/review_manifest.json": {
+      "sha256": "b5d446139503493bb9bb88b70e4468496af10c7fc5ac376f992974f79b90871b",
+      "bytes": 2425
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/.gitignore": {
+      "sha256": "1fc884e1dc23be501b54c2be5209caf32c10197807e591162677a0fe4158cfe7",
+      "bytes": 35
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/REPORT.md": {
+      "sha256": "eb9a13c0fb8bcc4bb2147efb15f6e5cb251cfa1dabc541c8aab5165424c2df2d",
+      "bytes": 15269
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/check.py": {
+      "sha256": "85b5040e0813bd0fd9a513005fd8915000e40350678e743ce9fa2bbe25ef6654",
+      "bytes": 6722
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/results.json": {
+      "sha256": "869251d5e17c4b5f49a500aa601806c8092cf85b62b8103c22ceecfdf8ffbf31",
+      "bytes": 4751
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/stdout.txt": {
+      "sha256": "7f7890e06b94512dd59284782b60e54cc662a8bcc084aa224cfdf48ab0ac1f24",
+      "bytes": 784
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/visual_access.json": {
+      "sha256": "193aeadf763d0a0b2e7c3ad0e2576fcc0762cc67ec1b7c7582d7411465c66c5f",
+      "bytes": 793
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/review_manifest.json": {
+      "sha256": "5bf97cf266e4772f31c97eb457bb8f663dba3a2aee4e75765c82f04e8c12d1ef",
+      "bytes": 2141
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/lean_environment.json": {
+      "sha256": "247822ca717b4d63888e7d0f1b79e244015f7de74fbb7c8b621c35d98aef719b",
+      "bytes": 1289
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/lean_schedule_replay.json": {
+      "sha256": "b9f5220d6191ec5d574dbe8bfb20c4c6abb7ce2cbffc81458dcfbbaebe079aa2",
+      "bytes": 533
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/lean_schedule_first_replay.json": {
+      "sha256": "6ce2f1c21aa492553c0ca3abbf81403dabafb0a96a99ae968fd0932d11abc0c4",
+      "bytes": 782
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/formal_source_pins.json": {
+      "sha256": "b0dad73e8061092a7535d27b0662b9d7095ff4acb277caaf618c7876c83eba3b",
+      "bytes": 3766
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/physical_json_link.json": {
+      "sha256": "9fb19aabaacd94fa060c13fb2faa7fde0a5dfe52e2f4fa6c2cabe7c0dc22fb52",
+      "bytes": 309
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/REPORT.md": {
+      "sha256": "9f61b26cf13d0a0ff0d9c8ab85835c534bdb636049d5cafa34df9b7e536d187b",
+      "bytes": 13683
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/NEXT.md": {
+      "sha256": "af0126584335a0adf5d769b5c2c1dc2b0cac124446d8c3a1e32367d341e3bb55",
+      "bytes": 702
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/STATUS.md": {
+      "sha256": "3ab409b94ff25ddc90848ea7aedde6b49d566f0d0d12e507174af3ec1189a88c",
+      "bytes": 923
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/results.json": {
+      "sha256": "5fa8ba7833918da84b10b8716b6e6ef049612a1ce47f25541a2e5c82a1e7926f",
+      "bytes": 20677
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/review.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/review.py": {
+      "sha256": "30755c86f619366a152ec06f028b48446c407efc1fe5c78042f1773fa45fda3c",
+      "bytes": 10692
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/lean_word_dependency.json": {
+      "sha256": "4e0f132dbaa6dce5e49d4ce490a4913d51e9b2cf5b1d0125f956c4b6be2db277",
+      "bytes": 512
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/patch_application.json": {
+      "sha256": "8d68874770a421f2a30fdadad9264614cf3595ea673adee157f2e0dbd6046585",
+      "bytes": 1293
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/import_boundary.json": {
+      "sha256": "ac814d9e9fe6bed8cf4fabcc0bc0bd59d5f182f0add75d4d0345608fba11e00c",
+      "bytes": 344
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/emission_replay.json": {
+      "sha256": "432728304d96cbd36116a044272678cec6f4878c1ce01a3935c309ddbecf79ab",
+      "bytes": 577
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/emitted_ema/review.stdout.txt": {
+      "sha256": "ac67f87ffcf9a5036c934118b32f5ad9bf7e8d60640633f12c4f367d5d7f2d39",
+      "bytes": 4069
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/MANIFEST.json": {
+      "sha256": "0253ed2cebaf684b9d92d67826cf6d493fc49dc3d3c94268af879f155c5a882e",
+      "bytes": 2142
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/REVIEW.md": {
+      "sha256": "464e5665914d958c1b99749728956ab9c350cd3dbe3587b7a6f0d67e05a291b0",
+      "bytes": 13601
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md": {
+      "sha256": "4c43bce409495edf9c9d5b8e4ada0581af5be0ecf6ff949fbd99fdbfd3da62fe",
+      "bytes": 12096
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/checks/public_algebra.py": {
+      "sha256": "9620363c964652d6f1663d508b10397f77a72c5c0d60fae311149761ffbac82c",
+      "bytes": 3838
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/checks/public_algebra_output.json": {
+      "sha256": "7a81022927465d34115131a83b8b1d8c4678b6513c11c3ef2eae18535e066f66",
+      "bytes": 903
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/checks/seal_review.py": {
+      "sha256": "fa3542663cddaa0882abae027649d9bb535ed43739246477bc482c1e97100f5c",
+      "bytes": 2559
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/extracts/page18.png": {
+      "sha256": "7b311ccb07717b382ee299f5eef4d63da97bfe08d6dc2a70a99886174f2ee272",
+      "bytes": 302183
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/extracts/page21.png": {
+      "sha256": "3ce207a76ea0952666a47c0f12217bb530724ebcfe679f5a5db09dad1dc72444",
+      "bytes": 298711
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/MANIFEST.json": {
+      "sha256": "464562f0aa432f629d21fd84bba5c710760bd26e7ccc9b40229a6e318b67d665",
+      "bytes": 1830
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/BOUND.md": {
+      "sha256": "b07d7714ca6078a63bf1281ad8edbd07dc39094d91f6808e1c3868a3503dc2e5",
+      "bytes": 11110
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/INPUTS.json": {
+      "sha256": "300f8060d4befbc52136be55f933af648a910d6804ac634951ff974ac2f9dbc3",
+      "bytes": 1110
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/RESULTS.json": {
+      "sha256": "f59f2f6c93c379bd7c6a14b9f60ed3f926957db0bed68ee6994ec165d173c5ab",
+      "bytes": 8896
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/check_bounds.py": {
+      "sha256": "06ab88b97b7fd287af50b48d5e1c35b8cd00ce67b2b325fadaa1115ece4ebdf5",
+      "bytes": 4320
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/2011-501.txt": {
+      "sha256": "cbedb5cfdbb8b00d5900705a3e0887c465668efbb9f140c5632a314a0c7918ea",
+      "bytes": 172542
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/2007-432.txt": {
+      "sha256": "7417aac227d904ba206575968120f4ab701aa75af5627f49eff17a134479d646",
+      "bytes": 152444
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/als-page33.png": {
+      "sha256": "a5dfe23a1582d8d1d46971bf5ae86a322070d32515fc9c382d07313369301364",
+      "bytes": 377444
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/manifest.json": {
+      "sha256": "a111d370b98ee118e97fa10bfea3ae5287159d0855bc71983a9e91e1fc8b7ed4",
+      "bytes": 3615
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/.gitignore": {
+      "sha256": "03824949a66ab6db1429bd078d10d1bc2d75706aa1b756c547f9a7ff541c77cb",
+      "bytes": 21
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/CONTRACT.md": {
+      "sha256": "f353c33542891d85633bea6cc4fae6203ce203b3cab44aefc784168c31ca1d34",
+      "bytes": 2023
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/NEXT.md": {
+      "sha256": "ed3465018c6c4e0245d54d3d84bcc969e10c02a34fd90a98ce1710d321aab246",
+      "bytes": 561
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/README.md": {
+      "sha256": "14a5a884bf2e6c7e87f66edec9715dff5313188597dd043c45a65867637a98de",
+      "bytes": 4928
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/STATUS.md": {
+      "sha256": "5da8d8b32c91355ecfbf6c3a611c10736ae257bcfc15ddd36ccd946f35ecc6cb",
+      "bytes": 1081
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean": {
+      "sha256": "4cfad9f0326ba5ff7a13e871a6d56a82816d0746592248aa84cda40fcae56bfb",
+      "bytes": 16697
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/check.py": {
+      "sha256": "47426b1f14bc683b5702560c75ffcce13902d5834b80c58d9575eaa61e7d71fa",
+      "bytes": 828
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/integration_entry.json": {
+      "sha256": "f1fc12b71d475ed0527d225701cb9ca1ca877f9a2dd7782d9496b4643052a122",
+      "bytes": 227
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/minidregg-private-ema-dynamics.patch": {
+      "sha256": "da4e1d75e0e7ff2843a598c008ba4126fcc3885ffa2529adb099eaf807ab8e1b",
+      "bytes": 18702
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/package.py": {
+      "sha256": "d37febcd98e9e62da7d41e4d32e2a16e3262c37379ca70b689b46ad9bb14dd8b",
+      "bytes": 4810
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/dependency.json": {
+      "sha256": "6794d4da0d1b7d01b2f5e772908959e6bf944e50ad262037570c9f96cda09d89",
+      "bytes": 647
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/environment.json": {
+      "sha256": "ff0358a8ce874a69307ec2d3851fc898cd37c63d42e2455a3be6e51a355aab2f",
+      "bytes": 1649
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/lean_001.json": {
+      "sha256": "ed22cb53f0c19eff0097dd5d15a5f2f16826bdcb8981f7654b9f74a96f03c6bd",
+      "bytes": 3811
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/lean_002.json": {
+      "sha256": "ad6fe1fab7547ee48b03b941ffb0569b644a90c79c7719172eb95e16807da7b8",
+      "bytes": 493
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/lean_003.json": {
+      "sha256": "a504ffb8f65d39b5943b3b47b678a1f5c8ac7fac8806558502f527109013ca34",
+      "bytes": 493
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/lean_004.json": {
+      "sha256": "3b6757550a72b04da5d68c7dbfcf9362ce03e61535ac0caedcd9950423d47806",
+      "bytes": 3397
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/lean_005.json": {
+      "sha256": "d9711c7045dad2d7d768efe40a0e6b0e839bf0987ed74671136fa322a417c2f2",
+      "bytes": 493
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/lean_006.json": {
+      "sha256": "eab6756a96b0255655120ca94115f694983cf94bd6721f9ebd115c725f46a7fd",
+      "bytes": 1752
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/lean_007.json": {
+      "sha256": "6c2cfffb87d24ffa1247f572be6d5ecbbc8092e67169184c6bdc82063a6d7028",
+      "bytes": 615
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/lean_008.json": {
+      "sha256": "81bac8c5dc9a75b751db2607984a584318663ccb6399983e3062fd259737d6a9",
+      "bytes": 494
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/lean_009.json": {
+      "sha256": "2ff5c4d13e687550398a03c9773e055b82a6fd56b8d2eb00d9371cdb14e99074",
+      "bytes": 494
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/results/verification.json": {
+      "sha256": "52a58c112a57882537440eec33848f52bb23d298c23fb2c99874b4d47afe87b8",
+      "bytes": 22150
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/seal.py": {
+      "sha256": "22019691718a41fb1ef26905e9e8af8a147372e5e1d8ccb1eaa7eb414409748a",
+      "bytes": 1386
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/manifest.json": {
+      "sha256": "921fc2263825a99ac22efc6a2ba88cc8d3c11a092b31a7685aeacef3a870b08d",
+      "bytes": 5385
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/.gitignore": {
+      "sha256": "429a7ff8e3befe5ac528bb832881840115d63940883b125526b582eedcdcb7a9",
+      "bytes": 22
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/CONTRACT.md": {
+      "sha256": "fe1015df3937660158b8d7d756c246855c48bf7f05337ef03291afcb8ad6bb02",
+      "bytes": 5058
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/NEXT.md": {
+      "sha256": "4c6fde26da982affdfe12008e6a4205b92aaac3e7adf1ccec5670f563c93c682",
+      "bytes": 1150
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/REPORT.md": {
+      "sha256": "57055b7035fae9dd117ae7aa55e7b74142e6d7a5c6d8267ec2d805b5b3889b31",
+      "bytes": 5799
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/STATUS.md": {
+      "sha256": "9ecfcf3ca994a93b2d508e3ba3e3fae3dd725af4104cbe2d6a01c024f769be8b",
+      "bytes": 1393
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/analysis/FIXED_LAW.md": {
+      "sha256": "65a28ec2d608775411aad5cff24fc811f7b427e00334646aca4f0c8a0ef5b349",
+      "bytes": 3165
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/analysis/fixed_law.json": {
+      "sha256": "893b6d10f0a30d274b2cf65b3ca59dbd32460f444654614acee956aecb6110b3",
+      "bytes": 4287
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/analysis/fixed_law.py": {
+      "sha256": "04939ae8ba8f0006c1e3bf269d2d196866149fe3d7c08932a0fae940fd7ecbea",
+      "bytes": 2714
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/analysis/fixed_law.stdout": {
+      "sha256": "c5db908f4b488933804d2734f5a7c6795899a254b79103f2feb1a97d10b2463e",
+      "bytes": 1441
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/common.py": {
+      "sha256": "5eaa8a32a7f970e788e137e638cbe51db6250c958dbd594889719e4f89993b52",
+      "bytes": 899
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/costs.csv": {
+      "sha256": "7d8f5a3ca44ef70466bf2c59c80d51a96f2c6a219bcc7d770216d63440b6b1a8",
+      "bytes": 3892
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/drain.py": {
+      "sha256": "be719d50f5e7571ee67306f5403ad04aed0d1a64565358bc024fa0ddfd56e6ed",
+      "bytes": 4491
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/finalize_failure.py": {
+      "sha256": "f8d5e2858345eb9fae28393d6b5aceb74373f9fd0e492f71fdcd3de44274359e",
+      "bytes": 2183
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/freeze.json": {
+      "sha256": "1a47a33cad3e0858a5b2437e3b5edc002cfe3a0fff0a496136b7587604332929",
+      "bytes": 9186
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/freeze.py": {
+      "sha256": "ae82ce48d981d51b3e64cdac280921b464b2426da64f527abc5b4b3bd7e8cd54",
+      "bytes": 1381
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/launch.py": {
+      "sha256": "188aad24500dd79b12a9a2a34befafa5652b53d081d6d70ec1c52779c743acfa",
+      "bytes": 1248
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/launch_started.json": {
+      "sha256": "a73d95c19d3353ccb67a7bfe3a508fafc5bb2fb2a096875066fd3308f3d95309",
+      "bytes": 229
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/events.jsonl": {
+      "sha256": "8aced2acc4cf4ce9a6bf6f99f330b8eca0851c8273e4a36095f74728c3d5f43e",
+      "bytes": 23336
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/failure.json": {
+      "sha256": "9ba0e51862a33624dab8fc7a393f84e9035c8d3c46c8b34fdc89776be2f82524",
+      "bytes": 183
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/progress.json": {
+      "sha256": "778b53deb6e8c90ee57732fecf615f9f0a8d4f2b16b68503fa160cb19846b5e7",
+      "bytes": 266
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/public_failure_audit.json": {
+      "sha256": "c089857dee7190932e8d644d6bf72c9aec60c36c4bd9b8753267cb20aeb9ccf4",
+      "bytes": 40621
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/public_keys.json": {
+      "sha256": "e64fccc55f1896b00d29d993bfddd2240309d0cb4bc46430fd28ccd6bae392bb",
+      "bytes": 656
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/public_operations.jsonl": {
+      "sha256": "8a903413dc7048b23cd0d8c056a039b909e348f0782745a84317138930912c0a",
+      "bytes": 212701
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/replays.jsonl": {
+      "sha256": "62e6b2e1acb1619e594cea7541d5553b54f44fa37c73ad64d46b7904b3468967",
+      "bytes": 21988
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/started.json": {
+      "sha256": "c90af4a5d459069a740776bf44c7e8a918b97856813420430c48d4cb35698c6d",
+      "bytes": 400
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/run.command.json": {
+      "sha256": "44676327c20b3088a362e711cb6189bf5b834c7dc33d8f86c150b073c692719e",
+      "bytes": 265
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/run.py": {
+      "sha256": "7311a8fc433813445705367c5373262c5993c00140cdc18d5f70f82bc565892d",
+      "bytes": 8830
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/run.stderr": {
+      "sha256": "41f24a3cd7eda98cfe8104366ab80bd7edd7e01ada68f5ac07608ba59118f25a",
+      "bytes": 859
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/run.stdout": {
+      "sha256": "673a1fcbef71219e8c1377833dc879a217ee7fc71458622e486efc9ff5c8a256",
+      "bytes": 492
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/seal_public_failure.py": {
+      "sha256": "0a0433b83dbfb502eba3d6b8631fe7711517a95ee18cec731bb55f53563e6470",
+      "bytes": 6940
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/seal_public_failure.stdout": {
+      "sha256": "83c58fdeda4621705f1cd4da07c2040c2a5de07edc67d83ada937ab7f65d80a3",
+      "bytes": 1832
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/source_checkpoint.json": {
+      "sha256": "2cfc101453e3bb9de17f8dd3a95f2a47f93d228beb56c394bd4d00a4f9e8898d",
+      "bytes": 2856
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/sources/2605.27782v1.html": {
+      "sha256": "e2a4817beec8b10fac5a9d4716830a96fea0d7ca865cdf4b4651f48bb8931867",
+      "bytes": 1075835
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/sources/ORIENTATION.md": {
+      "sha256": "4ac1f9cd769754c57a8109d0c7c10b54d59d92d37f940c369c3e5ce78dca73ac",
+      "bytes": 1781
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/sources/access.json": {
+      "sha256": "dcf4d8d7be42b922b66306c20f6d55a23675ca89744cfdcbf022aebca2ba806a",
+      "bytes": 661
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/verify_public.py": {
+      "sha256": "179b17c8758bf71c5cc5d27a42e44e1b990a087e21896e42012fdeaac758c124",
+      "bytes": 4191
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/freeze.json": {
+      "sha256": "b45a38b01838b9b44bf8f8bcdd67c7e908bec0850b0f627d051d3a5e75785b3b",
+      "bytes": 7887
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/Cargo.toml": {
+      "sha256": "1ee257b2a78dbf01f928f04b9746dac82bfd8133bb18b0cb975c25dfd13d6ebe",
+      "bytes": 308
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/Cargo.lock": {
+      "sha256": "37e0e0a6a0570f06663565eb892bed9943868590943c1197375ad471dae58321",
+      "bytes": 16315
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/CONTRACT.md": {
+      "sha256": "83769e454a66ce07810cbbea1c7c7ead434dcf48a53ad1e73848e57772849857",
+      "bytes": 5037
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/build_pins.json": {
+      "sha256": "a634357940f6dcc900f666e5e9659be7b46f9ac334220fc76c86f2e2d863f62b",
+      "bytes": 4214
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/build.log": {
+      "sha256": "0cb41c096d548ecc0881ae3042c0bad9e56a58a892925a60cc22195875dde8b6",
+      "bytes": 1859
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/test.log": {
+      "sha256": "58546daf11f285e156c7ad6534086b642372f59dc3593711a48dd488de990aac",
+      "bytes": 2962
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/compare_plain.py": {
+      "sha256": "b65d5dbc65d1d1002db089f7eeeee26c60eb0dc524867dca4300283c54a106dc",
+      "bytes": 5841
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/freeze.py": {
+      "sha256": "09df32bac2d47975d24698e00afbcae8694d0f16758c6422416ab54dc38c0a2d",
+      "bytes": 3243
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/run_smoke.py": {
+      "sha256": "7b5c1e8cd53924d1088cbb2910c3725e9fae6d08437ea50502df966bf9166931",
+      "bytes": 8475
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/plain/summary.json": {
+      "sha256": "a7e2aab2ae8694e1b885b3447c15135748020b88aa64cfb39e748d1b8c1ce15e",
+      "bytes": 3002
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime": {
+      "sha256": "941f431d7762183bb3f6565d39b93d371331fcf121920c903164b7ff06ef6ab1",
+      "bytes": 1179952
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/src/ciphertext.rs": {
+      "sha256": "17b46813443f47feab647cd269a3789560a9ae589ec2fd1f9b5cc7790629e9f1",
+      "bytes": 4901
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/src/lib.rs": {
+      "sha256": "3c84bbb603e64b5be83a19732ca4783919b49da8016860c8f09ed3dc8eb3b3c0",
+      "bytes": 11435
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/src/main.rs": {
+      "sha256": "6d130c3e878f94922a3f84c34a3b21f2e41dca4db0eeb55f7673f3c7708cf000",
+      "bytes": 3630
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/SCHEMA.md": {
+      "sha256": "13b7fadd20d0e281857f76aab4ea88228e80c1ac7dcfecbd57fa5b1aefe97db1",
+      "bytes": 2823
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json": {
+      "sha256": "94e8369ffc8fcdf57b8351b278d5af90dc49a26d83600d40f0bd6a0da359dde8",
+      "bytes": 28772
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json": {
+      "sha256": "b742ed7710d2680119eceeff0c553d675e1ce187a503981fc500a6a4a683b80c",
+      "bytes": 556
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/CONTRACT.md": {
+      "sha256": "d83c6c39259ae4418c8ac7b3e8b9ccbb365f47804adc1d9c8c1a102db2c13c3a",
+      "bytes": 5606
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.toml": {
+      "sha256": "888637418d68f3688acec178273e8284e6789b6cccc3f1f7eb545523f86eece0",
+      "bytes": 219
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.lock": {
+      "sha256": "6a677322ed8b8db7bba5f785148d3c9e0d6cfe46a7e666665b06f22d78065fa5",
+      "bytes": 15444
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/source_manifest.json": {
+      "sha256": "2dd31102c7ed58a974814f48102ec2a1f9228b984c766c5b5c47ec5d695b2339",
+      "bytes": 8635
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader": {
+      "sha256": "9b952ef674c5d7a7ba8234a939df13875d8bd3e917ec6044eb6f24747c6f6790",
+      "bytes": 536528
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/reader.rs": {
+      "sha256": "00313812037bdc8862ec979b7c18e8145654189d84c29ade68c44cb5cf1c0088",
+      "bytes": 1561
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/lib.rs": {
+      "sha256": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880",
+      "bytes": 4648
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin": {
+      "sha256": "6ac56c1a76a83e45e159cf8ed4619a2c95efc073dbab0b2d8b33fdbe8addae2e",
+      "bytes": 157865796
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_000.ct": {
+      "sha256": "22138ebe23141fc006c4fe90a223688b3f84fc35a43f31ef862ebddcaae3c35d",
+      "bytes": 108441
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_001.ct": {
+      "sha256": "2ee37c564c5283dc98f2420a1b9f45e0740b26d2825ee38ad2533efb8f3b7390",
+      "bytes": 33905
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_002.ct": {
+      "sha256": "245e0c661b28e505d78eddb074b6127470a142d0577f8b6a4d5e0ab83ba2f6be",
+      "bytes": 33905
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct": {
+      "sha256": "cb6fd9970dc46115572b6471cd4e9d457da76f2b04be5372259be54b628cbfd6",
+      "bytes": 6801
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/summary.json": {
+      "sha256": "faf2a04d80185abbc1dd861e1c1f2083ed7d51d8dbaff163a975dc29c995a7d3",
+      "bytes": 3218
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/freeze.json": {
+      "sha256": "b6805534d4aa32d4ea99f7017d71a3a38738a8c60fc84370c471826cfa94077e",
+      "bytes": 9897
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/CONTRACT.md": {
+      "sha256": "36d444f76a3e36b43a2047d502090f00cbeeba4adc0376b842ed73730ca4d7e3",
+      "bytes": 4817
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/Cargo.lock": {
+      "sha256": "37e0e0a6a0570f06663565eb892bed9943868590943c1197375ad471dae58321",
+      "bytes": 16315
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/Cargo.toml": {
+      "sha256": "796e049026014b1b01e97ca7456ac83a9179d25b45a777072d0fcce710657740",
+      "bytes": 344
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/build.events.jsonl": {
+      "sha256": "cc467bd2abc54ad4c2071dca0e51eba0e1ac66aa4bbf25bbd9085e0e02efae0d",
+      "bytes": 73920
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/build.log": {
+      "sha256": "4099fdabcbdf10ccca278c48172b9b52742cc887cdb719bbc181f8911ce07480",
+      "bytes": 1861
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/build_pins.json": {
+      "sha256": "c6a119d437990fb51983755de350507461700a7a971d7385d9b00b1b4b299230",
+      "bytes": 5947
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/feature_source.txt": {
+      "sha256": "e214ef65e6737e8075fe582722988e989f2563869c630a338cc9750306b03f75",
+      "bytes": 11799
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/features.txt": {
+      "sha256": "ba57ea8028b11c43dcfc00210402fd0e2a76ee565f22dbedf50d9fef4a4c27c9",
+      "bytes": 17590
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/freeze.py": {
+      "sha256": "70e09c0a4264f0abc0d26554ad9d5dc3a8b126d32377ffeefab6f78932558aff",
+      "bytes": 2738
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/inputs.json": {
+      "sha256": "f9ab059597d4b61989385fd1334895b2fce74ca24a65e7d766563079593476f0",
+      "bytes": 7952
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/main_source.diff": {
+      "sha256": "1ca381bc2a48a4d9c3decceb5408e3de72c15480500c36304e7c280b64200c2b",
+      "bytes": 1317
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/pin_build.py": {
+      "sha256": "190e392c21b772f8ae5368b08c492261ea23d5eced7026b04859e534aa32a2a6",
+      "bytes": 4653
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/prepare.py": {
+      "sha256": "3abb2d3e15603d3f1f30f751db275128a4e58b9828fb9f8148a4f05bca322b70",
+      "bytes": 2927
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/run_controls.py": {
+      "sha256": "c9cc066f0b8ead292619a21e491cd4df693f2b48cd62bd56ef4d9dfbbd550427",
+      "bytes": 6674
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/ciphertext.rs": {
+      "sha256": "17b46813443f47feab647cd269a3789560a9ae589ec2fd1f9b5cc7790629e9f1",
+      "bytes": 4901
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/lib.rs": {
+      "sha256": "3c84bbb603e64b5be83a19732ca4783919b49da8016860c8f09ed3dc8eb3b3c0",
+      "bytes": 11435
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/main.rs": {
+      "sha256": "3f30f131c68d2a9199eef3c91784baee6cddefa4f5aaf3097b3db96a94b6b7dc",
+      "bytes": 3772
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/src/plan_observation.rs": {
+      "sha256": "23687aae6bc288ceec93fad5556791695b8d5603081d1b78255d08adf006fcdf",
+      "bytes": 2052
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/target/release/resident-emitted-bool-runtime": {
+      "sha256": "6c0954fae626940e720c47bfb535347ecd3c3fc0b19b36d0834b70465b02d197",
+      "bytes": 1199088
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/test.log": {
+      "sha256": "52846be5546f94dc9df0501ee5e965000787b215c22c711e33b3f5bedf79b377",
+      "bytes": 2964
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/validation.json": {
+      "sha256": "70590f3a2e22dc267f829e89ef021e903c8c98d564acb5d011170379c9f3c5f5",
+      "bytes": 1247
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/results.json": {
+      "sha256": "0223a0e6c100d8fc4a30b20dde85e4ec5cc7cf4b2fef2aeaab8240c33a30cb98",
+      "bytes": 32009
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct": {
+      "sha256": "dc45a0e8306c59661bfeca8261571cf3d56fe5bad5b27c65bba9bdf9be1df47d",
+      "bytes": 108441
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_002.ct": {
+      "sha256": "56f72bbb49715f2a8199ef6a528f6428aba264a3dafb78d9ef36ac720451970e",
+      "bytes": 108441
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/runtime/run001/public/h0-e0013.ct": {
+      "sha256": "7251d21b45c0dd2c3530d1b4b50bbf5095da4f4b8c0bacf6fe777a3eea2e28f5",
+      "bytes": 108441
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/runtime/run001/public/h0-e0014.input.ct": {
+      "sha256": "db7c22ab9c525df3af5806b38081b2f010b0c2c7c9c7762ff83a13f3f542a4a3",
+      "bytes": 33905
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/runtime/run001/public/keys/server_key.bin": {
+      "sha256": "2a098a8cb241126ba0218b159a1e092864e1049f9ddc882c03d7bf287a2d2f21",
+      "bytes": 157865796
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/summary.json": {
+      "sha256": "25219f9c1db20d4ff026e46d621def238bf1311a58cafc915375a2c8c2b90a9b",
+      "bytes": 3170
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/FINAL_MANIFEST.json": {
+      "sha256": "1d5901a81cb0056f94878878af3737865bb804bf3cd16533e9a3582bb7d676a9",
+      "bytes": 18162
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/.gitignore": {
+      "sha256": "9b9dc66af90f9ff99fa79101a6e3eb357e4d8b53cafcf51e9a8d2e2e32ca7dbb",
+      "bytes": 28
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/CONTRACT.md": {
+      "sha256": "08e1323e6e3e9f57a45539f616ac19f41d98ef887907fac618a6708e6fba940f",
+      "bytes": 4045
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/COSTS.csv": {
+      "sha256": "6a1b62bc01aea1c691df27b3f7993e729b678fb60ad4c4c8a821245f65307ca2",
+      "bytes": 4462
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/README.md": {
+      "sha256": "ce2323a00e4fffce54feb15043340b2e6c5cd491e0eba8bb4ecae3c7d43d1394",
+      "bytes": 6679
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/SOURCE_PINS.json": {
+      "sha256": "644430692ca1034a832df88b0a0306681cfb4d50475e75e8cfa832e10cbb9136",
+      "bytes": 9163
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/closeout.py": {
+      "sha256": "8bd1c8b8fb39f6f269ad2d3eec6e6dbae15c4803b48aa4d3eac33bd4cbb3c330",
+      "bytes": 8942
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/driver.py": {
+      "sha256": "4273817b1262e97c2e9cb798d576068cf9fb4f16849325fde6dcfd62475b8714",
+      "bytes": 20240
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/private_oracle.py": {
+      "sha256": "3c9ce9b0819817eb2a2f0ff5430a1f4eac5c4253b844c925587885b2914d605f",
+      "bytes": 1811
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/adapter_seal.json": {
+      "sha256": "fc4d190fa34475a888b542398cb29c62ee169205c93f0dda9994b1fc4cf7f42b",
+      "bytes": 1122
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/ATTEMPT.md": {
+      "sha256": "333a1b630b0cc90fe575ff9ac62357d8798456a381a9445074baaf67f6fabf7b",
+      "bytes": 834
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/COMMAND.json": {
+      "sha256": "64cac6e7ecf8be11211d7f222ef1aa27e9e9ec264d060229639fd43b1b215c97",
+      "bytes": 1755
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/commands.jsonl": {
+      "sha256": "4a47bc4ee6b461871ebfc22267b4589cec51e29ecc50fbd70ce6b1812950fa4e",
+      "bytes": 5516
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/execution_pins.json": {
+      "sha256": "fae1d6ac10d50160841b6983e156f90a60084a858f03c04174a03356a3103679",
+      "bytes": 18491
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/failure.json": {
+      "sha256": "17928fc6b282f62d8b3efd21ad14adf0a1b100404734b1d4f34aea1912979ab1",
+      "bytes": 121
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/launched.json": {
+      "sha256": "0633dc69aac2aa782352a6fa6a77148cf8af3cbfea6df0239de1c718bb1e3beb",
+      "bytes": 284
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/CONTRACT.md": {
+      "sha256": "08e1323e6e3e9f57a45539f616ac19f41d98ef887907fac618a6708e6fba940f",
+      "bytes": 4045
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/SOURCE_PINS.json": {
+      "sha256": "644430692ca1034a832df88b0a0306681cfb4d50475e75e8cfa832e10cbb9136",
+      "bytes": 9163
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/driver.py": {
+      "sha256": "4273817b1262e97c2e9cb798d576068cf9fb4f16849325fde6dcfd62475b8714",
+      "bytes": 20240
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/private_oracle.py": {
+      "sha256": "3c9ce9b0819817eb2a2f0ff5430a1f4eac5c4253b844c925587885b2914d605f",
+      "bytes": 1811
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/setup_join.py": {
+      "sha256": "01442bc7360659ed06e31df0f0b1ddc06f0113011bdec76066bda08f668fa31b",
+      "bytes": 9941
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/crypto/crypto.py": {
+      "sha256": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+      "bytes": 23037
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/crypto/group.py": {
+      "sha256": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+      "bytes": 745
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/crypto/native_pow.py": {
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+      "bytes": 2996
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/crypto/rows.json": {
+      "sha256": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0",
+      "bytes": 24189
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/frozen_source/journal/authority.py": {
+      "sha256": "b3567b92520e2d1789d2c2795bf630a49549f0b646ef9de9e2c65953ca456ccf",
+      "bytes": 8262
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/frozen_source/journal/common.py": {
+      "sha256": "559221659ee43582a31310c228c3e60fc8cea40676086a73f0759680aa6719d0",
+      "bytes": 9319
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/frozen_source/journal/drain.py": {
+      "sha256": "c44c272a61165fb41390d4c889adbfef9bd49cd8324e552e5c3678e645d913e6",
+      "bytes": 4240
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/frozen_source/journal/model.py": {
+      "sha256": "34280589fe888e9ff4504af0895cfc3d15f116f4e83e158cd13928c0aef5ce22",
+      "bytes": 4641
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/frozen_source/journal/reader.py": {
+      "sha256": "de997a5446d166af0edd19d5298af3738936148354dde77d779ba42b1337895e",
+      "bytes": 5136
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/frozen_source/journal/roles.py": {
+      "sha256": "4bcb4df20037937607013fb0c76989d86dc7968121eaa591513f44b8cbbb65fd",
+      "bytes": 7841
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/frozen_source/journal/run.py": {
+      "sha256": "cc65219ef4a78d248ad47e9b60d0e2d0a0675ff00014800d3c90c08705f2c6ce",
+      "bytes": 7754
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/frozen_source/verified_reader/service.py": {
+      "sha256": "c784dc02115b72ac16b68c612dae6737efbbf9c50b43f52215a760959decc6a9",
+      "bytes": 9679
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/host.py": {
+      "sha256": "70bbb6338c7600d7e6e5609524d146f9af21bfc01a94d4dfd725933fc5931916",
+      "bytes": 8504
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/host_runtime/source_pins.json": {
+      "sha256": "17402dba697bd73da8aac4e519e6f7cbaeca25ecfce824d8f8cf45004e743bc7",
+      "bytes": 1923
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/journal/authority.py": {
+      "sha256": "b3567b92520e2d1789d2c2795bf630a49549f0b646ef9de9e2c65953ca456ccf",
+      "bytes": 8262
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/journal/common.py": {
+      "sha256": "559221659ee43582a31310c228c3e60fc8cea40676086a73f0759680aa6719d0",
+      "bytes": 9319
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/journal/drain.py": {
+      "sha256": "c44c272a61165fb41390d4c889adbfef9bd49cd8324e552e5c3678e645d913e6",
+      "bytes": 4240
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/journal/model.py": {
+      "sha256": "34280589fe888e9ff4504af0895cfc3d15f116f4e83e158cd13928c0aef5ce22",
+      "bytes": 4641
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/journal/reader.py": {
+      "sha256": "de997a5446d166af0edd19d5298af3738936148354dde77d779ba42b1337895e",
+      "bytes": 5136
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/journal/roles.py": {
+      "sha256": "4bcb4df20037937607013fb0c76989d86dc7968121eaa591513f44b8cbbb65fd",
+      "bytes": 7841
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/journal/run.py": {
+      "sha256": "cc65219ef4a78d248ad47e9b60d0e2d0a0675ff00014800d3c90c08705f2c6ce",
+      "bytes": 7754
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/public_log_audit.py": {
+      "sha256": "f79fca7cb4d4a0cf69a7226b508d2293651a2dc7f7c9aa63e4319d4d637b5d04",
+      "bytes": 2017
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/public_setup/setup.py": {
+      "sha256": "b148a7a86ab22385a7659f9f54c086e52d37f5a715b5415cda5785ee23ff9d2b",
+      "bytes": 10697
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/public_setup/source/crypto/crypto.py": {
+      "sha256": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+      "bytes": 23037
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/public_setup/source/crypto/group.py": {
+      "sha256": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+      "bytes": 745
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/public_setup/source/crypto/native_pow.py": {
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+      "bytes": 2996
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/public_setup/source/crypto/rows.json": {
+      "sha256": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0",
+      "bytes": 24189
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/source_snapshot/source/verified_reader/service.py": {
+      "sha256": "c784dc02115b72ac16b68c612dae6737efbbf9c50b43f52215a760959decc6a9",
+      "bytes": 9679
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/stderr.log": {
+      "sha256": "b985fcbf6a495063344f19982d9b9c59b5a0af077900606fc04e751c31612bc1",
+      "bytes": 1827
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_001/stdout.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/COMMAND.json": {
+      "sha256": "1a9e910b98c6bf02b510b848f14067ba1c4de5b62e4df6186dab1d00cbe61b20",
+      "bytes": 1755
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/accepted_envelopes.json": {
+      "sha256": "efc23ee91f4e083039827817519ab739b5296bd1408f8e2ddbd9ebb886652358",
+      "bytes": 135913
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/authority-server.jsonl.gz": {
+      "sha256": "33171f59375865ab0b6baf24cc458cd9c8d4ad8fc5a296dd01faba505e85f32e",
+      "bytes": 43
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/checkpoint.json": {
+      "sha256": "3525e0fcee88a36c69265b5397a139bc0abbb4ba25faa47b015fb90bb9f4c534",
+      "bytes": 104
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/closeout.stdout.json": {
+      "sha256": "f837e1dd661c3f102c55ab85c2105e21f7d06a592931123f62fd1278e5f74527",
+      "bytes": 156
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/commands.jsonl.gz": {
+      "sha256": "26b2d0539773214a843a08c76d5b5e2f7f74243f5cf2ede2a1330d40479b4832",
+      "bytes": 45699
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/context_validation.json": {
+      "sha256": "f7371662756639666e89c35532532fb2e88c37b59623db8894f0cb4b0ec54ca8",
+      "bytes": 909
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/events.jsonl.gz": {
+      "sha256": "2780079f58d2462929390f2891365b51463a5e543a10945c52c413c4fa8b1a5f",
+      "bytes": 23281
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/execution_pins.json": {
+      "sha256": "12c614b917156b8f8a0e0cba0e3655e09c51e689a4a314dff73eba3819e5c390",
+      "bytes": 18491
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/genesis.json": {
+      "sha256": "70a2a629bc6668f383d27b2dba704a9cfc93da12306ce75b232a617341feb4f2",
+      "bytes": 15887
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/host_worker.jsonl.gz": {
+      "sha256": "ef3963cbe08e22e5453adf818013fc838faba4e1d3a88bdebc289f74c2dbdfe4",
+      "bytes": 2660
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/launched.json": {
+      "sha256": "d58472e4193a1c5ecfba5003b230cb138e749744d1fa99934f7a1dc9f94b8e1e",
+      "bytes": 284
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/orderly_reopen.json": {
+      "sha256": "4d07d5e33349438ec3c4d3293bb7c4f7b9fac2e6a4263d42740b56770022e008",
+      "bytes": 154
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/public_ciphertext_inventory.json": {
+      "sha256": "7e93dc7c4e6a2979e7f23d91f70102156a371d3ba310534a22cbea8535811e15",
+      "bytes": 26714
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/public_complete.json": {
+      "sha256": "d9defca4a105c268e31951098a1f18fc26d7c56e87742f954812a6b81376b278",
+      "bytes": 6169
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/public_context.json": {
+      "sha256": "b060f1ae45ae1df7d3ed31b20364a884aebdc537b8ad27036b817f04cc9757c6",
+      "bytes": 342331
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/public_log_audit.json": {
+      "sha256": "e9c044df8e25b90e968cc98462c5efd5039fcab5501b90bd024afa479da587e7",
+      "bytes": 319
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/public_setup_verification.json": {
+      "sha256": "4f4320819b5d42d2aa98b685354c6ca3c6520683457dda678a763400120a4e1f",
+      "bytes": 493
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/public_transcript.json": {
+      "sha256": "21e1c3ef7de039eef25084d55ad64fbf76dc96ee6b98c8d31b3ab9093b8c62aa",
+      "bytes": 315146
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/reader-server.jsonl.gz": {
+      "sha256": "cfd43fb7a0c528f22990d050d6c043588d901453473527b786e05db00a558632",
+      "bytes": 40
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/registry.json": {
+      "sha256": "592962f5d69b94312da99c54679b9397580946c9a0e70691cc969c45f7279ce2",
+      "bytes": 3006
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/replay.json.gz": {
+      "sha256": "ca6c7ff2e34c4c4f67fbec3924bec202ce6df791c2a94ab8d6684ff985a9fdd4",
+      "bytes": 20478
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/report.json": {
+      "sha256": "9d70fbdde313b91ae732af11d004597dfcf8f6a17a9bbdabd3fb535b0357d791",
+      "bytes": 1310
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/role_calls.jsonl.gz": {
+      "sha256": "a459532402536209c560de7d4190bc4370138aeb62d8001a33cce1ff52ae9b99",
+      "bytes": 11841
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/seal.json": {
+      "sha256": "e9d2716c5ecf48a90a7a02faf860b176b975de0fce4914776debaffcfce8d743",
+      "bytes": 1497
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/server_processes.jsonl.gz": {
+      "sha256": "23df1ee6cbb4d1226c85d714acf61c72d86cd4ab5f9ff8859700c8583fb45a7d",
+      "bytes": 291
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/setup_report.json": {
+      "sha256": "d271efa1c43bd6baa3fb7946c1308133844fb744888d9e6675681d2d4dd074da",
+      "bytes": 690
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/stdout.jsonl": {
+      "sha256": "b34e4729e826e0baaf9d426aad872d9db9f3ef999b13e4e3641274726faef0e5",
+      "bytes": 1294
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/seal.py": {
+      "sha256": "504b72d9c0d76f1ee582306fdf7cdd5f2eb85d46dffdc3984c46ed4061aefc0a",
+      "bytes": 11710
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/seal_adapter.py": {
+      "sha256": "065e7165535ff15de753c0cc8d2e0a839eee579d37443fd1f5780b585bd78e80",
+      "bytes": 6238
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/setup_join.py": {
+      "sha256": "e3dce88d56dec559b2987498bb29a00767ee3a5d8c0eca66b95234ee42387d97",
+      "bytes": 9926
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/crypto/crypto.py": {
+      "sha256": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+      "bytes": 23037
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/crypto/group.py": {
+      "sha256": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+      "bytes": 745
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/crypto/native_pow.py": {
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+      "bytes": 2996
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/crypto/rows.json": {
+      "sha256": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0",
+      "bytes": 24189
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/frozen_source/journal/authority.py": {
+      "sha256": "b3567b92520e2d1789d2c2795bf630a49549f0b646ef9de9e2c65953ca456ccf",
+      "bytes": 8262
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/frozen_source/journal/common.py": {
+      "sha256": "559221659ee43582a31310c228c3e60fc8cea40676086a73f0759680aa6719d0",
+      "bytes": 9319
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/frozen_source/journal/drain.py": {
+      "sha256": "c44c272a61165fb41390d4c889adbfef9bd49cd8324e552e5c3678e645d913e6",
+      "bytes": 4240
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/frozen_source/journal/model.py": {
+      "sha256": "34280589fe888e9ff4504af0895cfc3d15f116f4e83e158cd13928c0aef5ce22",
+      "bytes": 4641
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/frozen_source/journal/reader.py": {
+      "sha256": "de997a5446d166af0edd19d5298af3738936148354dde77d779ba42b1337895e",
+      "bytes": 5136
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/frozen_source/journal/roles.py": {
+      "sha256": "4bcb4df20037937607013fb0c76989d86dc7968121eaa591513f44b8cbbb65fd",
+      "bytes": 7841
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/frozen_source/journal/run.py": {
+      "sha256": "cc65219ef4a78d248ad47e9b60d0e2d0a0675ff00014800d3c90c08705f2c6ce",
+      "bytes": 7754
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/frozen_source/verified_reader/service.py": {
+      "sha256": "c784dc02115b72ac16b68c612dae6737efbbf9c50b43f52215a760959decc6a9",
+      "bytes": 9679
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/host.py": {
+      "sha256": "70bbb6338c7600d7e6e5609524d146f9af21bfc01a94d4dfd725933fc5931916",
+      "bytes": 8504
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/host_runtime/source_pins.json": {
+      "sha256": "17402dba697bd73da8aac4e519e6f7cbaeca25ecfce824d8f8cf45004e743bc7",
+      "bytes": 1923
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/journal/authority.py": {
+      "sha256": "b3567b92520e2d1789d2c2795bf630a49549f0b646ef9de9e2c65953ca456ccf",
+      "bytes": 8262
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/journal/common.py": {
+      "sha256": "559221659ee43582a31310c228c3e60fc8cea40676086a73f0759680aa6719d0",
+      "bytes": 9319
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/journal/drain.py": {
+      "sha256": "c44c272a61165fb41390d4c889adbfef9bd49cd8324e552e5c3678e645d913e6",
+      "bytes": 4240
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/journal/model.py": {
+      "sha256": "34280589fe888e9ff4504af0895cfc3d15f116f4e83e158cd13928c0aef5ce22",
+      "bytes": 4641
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/journal/reader.py": {
+      "sha256": "de997a5446d166af0edd19d5298af3738936148354dde77d779ba42b1337895e",
+      "bytes": 5136
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/journal/roles.py": {
+      "sha256": "4bcb4df20037937607013fb0c76989d86dc7968121eaa591513f44b8cbbb65fd",
+      "bytes": 7841
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/journal/run.py": {
+      "sha256": "cc65219ef4a78d248ad47e9b60d0e2d0a0675ff00014800d3c90c08705f2c6ce",
+      "bytes": 7754
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/public_log_audit.py": {
+      "sha256": "f79fca7cb4d4a0cf69a7226b508d2293651a2dc7f7c9aa63e4319d4d637b5d04",
+      "bytes": 2017
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/public_setup/setup.py": {
+      "sha256": "b148a7a86ab22385a7659f9f54c086e52d37f5a715b5415cda5785ee23ff9d2b",
+      "bytes": 10697
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/public_setup/source/crypto/crypto.py": {
+      "sha256": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+      "bytes": 23037
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/public_setup/source/crypto/group.py": {
+      "sha256": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+      "bytes": 745
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/public_setup/source/crypto/native_pow.py": {
+      "sha256": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+      "bytes": 2996
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/public_setup/source/crypto/rows.json": {
+      "sha256": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0",
+      "bytes": 24189
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/verified_reader/service.py": {
+      "sha256": "c784dc02115b72ac16b68c612dae6737efbbf9c50b43f52215a760959decc6a9",
+      "bytes": 9679
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/adapter/FINAL_MANIFEST.json": {
+      "sha256": "dc6055ba57d5f309216b08b7abe9fca2fbdd93358180030355413fec80da419e",
+      "bytes": 13906
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/notes/SOURCE_MANIFEST.json": {
+      "sha256": "5d30253e638ddde16d384617039a410f829dcb2f1df9f7519c9ea0140e21a104",
+      "bytes": 5572
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf": {
+      "sha256": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0",
+      "bytes": 649148
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/extracts/2015-608.txt": {
+      "sha256": "a1170661edc061a9b011367d43b9b75ed6dfc073cfd0aa477459c20f14d1ecdd",
+      "bytes": 132681
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2021/46.pdf": {
+      "sha256": "8b5a43ee653081a0d7cf94bc7584e80ed60a6a525c41d15fdc61734ea7c6c20f",
+      "bytes": 790009
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/extracts/2021-046.txt": {
+      "sha256": "1c041f582042c6b811ec56c66e84d734c0cee36f7a7823c333b9360ab5fdcf2c",
+      "bytes": 165801
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/395.pdf": {
+      "sha256": "f237f5995505b7c0694af3b7712e42c949bf4c5b488fb46b224231a1ca6f8832",
+      "bytes": 804474
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/extracts/2023-395.txt": {
+      "sha256": "386a594a5b00115437043d5b0f0dba4be6deaf90fde1d99ea562e46161ba7bd0",
+      "bytes": 245090
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/044.pdf": {
+      "sha256": "a63fb6cf45954833ad04a203e43bafe186ecf11b768f4e5a4a4270bb2c894610",
+      "bytes": 1052685
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/extracts/2025-044.txt": {
+      "sha256": "7558f323a5e5345672e8eded26196f7f16836eca803f57ef02c893d73b4ef498",
+      "bytes": 446887
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1572.pdf": {
+      "sha256": "599ad913096bf2c2beb143873052bce619bc34e860b44f1a266ee5fb1c520489",
+      "bytes": 425456
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/extracts/2024-1572.txt": {
+      "sha256": "03be12f6d6be7db2fc8240df52d8d416f0d91e51f33b2b9bc630097ea4653cac",
+      "bytes": 172045
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/836.pdf": {
+      "sha256": "0b17172fc0233f8ad6be096462d4165a14d7b3cae61e1b1ee4383ac2c4ea3874",
+      "bytes": 611926
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/extracts/2025-836.txt": {
+      "sha256": "cc8d1214a53e67b1737a42096aba70d3546e374943e48c464dea5895a28e7f9d",
+      "bytes": 679505
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/967.pdf": {
+      "sha256": "95d71be4daf5545461e0070bce63959e45be3911448bb60e657a10b506eedb2f",
+      "bytes": 825506
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/extracts/2025-967.txt": {
+      "sha256": "e8c49452c28fc9ed28da98213450c86c1f1482d1f580624c8df4ff557af03a5b",
+      "bytes": 541481
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/1039.pdf": {
+      "sha256": "ab7c0e371e8469a89e6de7e940e97d622886c9865b5a3369066cf61f7618ee1e",
+      "bytes": 871025
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/extracts/2025-1039.txt": {
+      "sha256": "40aed955012610542061eb4a3480663b1872baa135b72067bb350a4effd452e6",
+      "bytes": 295494
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/notes/AUDIT.md": {
+      "sha256": "2c6f649fa0891be05dd1f3a1f89c935692091195e71f0b1959d78b5ef9061007",
+      "bytes": 20535
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/notes/CHECKPOINT.md": {
+      "sha256": "a27bc99a0870b1c98da94b7584767ad02b35237f8f3b99fca751c87d7380e30b",
+      "bytes": 2454
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/notes/SOURCES.md": {
+      "sha256": "56799b006bbc50786dd4986d26021392114fa289518ce12e533b4e4371c2553a",
+      "bytes": 7510
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/notes/pin_sources.py": {
+      "sha256": "81e41e96f469684875b7ee02b1941db10e71da1fac01ab87a746da440ca67e19",
+      "bytes": 1797
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/searches/scry_1.json": {
+      "sha256": "ceea7da06d7be0c0747ff03b2d730e157428486183e4b5055993c90d2a57eac1",
+      "bytes": 622
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/searches/scry_1_retry.json": {
+      "sha256": "167f97c7cd5ebf5e97c6970ed2942ab1b245c670eac5330f823f557d860808b2",
+      "bytes": 2019
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/searches/scry_2.json": {
+      "sha256": "d67edc821077e5903adf365016e8278a24b14fdb86ce5b582a75320b42e76650",
+      "bytes": 622
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/searches/scry_2_retry.json": {
+      "sha256": "15780cea678a6f5b06c7fd1c8b2b790f47616ad1121851723e8f98efe571369f",
+      "bytes": 1413
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/COST_MANIFEST.json": {
+      "sha256": "ffb79450d4a202ac199e3bb56706330611a61615c9fd9395325f19a055186909",
+      "bytes": 3270
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/CONTRACT.md": {
+      "sha256": "465d3a0f4eb20f9ce762bf49200e03bb2e918efd5cdd9c563405fe91d6b6c674",
+      "bytes": 7598
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/AUDIT.md": {
+      "sha256": "0f871482f56dbd5177042ebdf7dcf5034dd032cfb45c8b50f37307f0fc7b9458",
+      "bytes": 11803
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/run_estimates.py": {
+      "sha256": "161569fca49e50ac84aaa3eda4c1e1489450883de7d4d26b0c53bd76359f64cf",
+      "bytes": 6624
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/nd.py": {
+      "sha256": "d87fca7bb191a0fb29b24507897e00c8beba784da552b6b90a982c718fc1c459",
+      "bytes": 21177
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2011/501.pdf": {
+      "sha256": "bf1160f088825ed28c343b299f5bc2acdca41cc50293310a03a4506d2fdbdb84",
+      "bytes": 528318
+    },
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/432.pdf": {
+      "sha256": "7e747881cddd16b7dcf82893682cb9b4c788d7cec5712f80aa4193f2bd30a5b3",
+      "bytes": 493626
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/.gitignore": {
+      "sha256": "e497102884eb6b3741652b88a57f49a6582a62f13411eeff69db692c4d094306",
+      "bytes": 88
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/CHECKPOINT.md": {
+      "sha256": "40f5d8b0b5d7b2d11cf5bb050cfde4ee682634ba369469ca2352e305b3c124f3",
+      "bytes": 2151
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md": {
+      "sha256": "037b1b7995dbaec14cc983c7aea639496d1aeeed164f2a207ce3207c3a70372c",
+      "bytes": 15913
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/derive_costs.py": {
+      "sha256": "30e5c04aaa69bce34427d7543a33502d8cdca5479d3aa0be447d4ef690e7e0d1",
+      "bytes": 10659
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/derive_costs.stdout.json": {
+      "sha256": "93783ef7735ace3c7f033dfbe58cae60f5f8fbc74b53ed62b7b6729500533138",
+      "bytes": 13309
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/initial_failure.md": {
+      "sha256": "ff9b72416427af0309fa3ed967e5215a120ac641f81a396a064244109f0bcf94",
+      "bytes": 857
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/pin_costs.py": {
+      "sha256": "4f2c618689711d0d7e5f2c8b5a1882d0ca102a3119899115a25d1c369e362f33",
+      "bytes": 2387
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/results.json": {
+      "sha256": "93783ef7735ace3c7f033dfbe58cae60f5f8fbc74b53ed62b7b6729500533138",
+      "bytes": 13309
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/table.md": {
+      "sha256": "534f6aad418f6a695c2d0d347b1304612f511a692be40cc32d443799beabe78e",
+      "bytes": 588
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/results/verification.json": {
+      "sha256": "05c2c0defbf19ba66d92abb1259fa752b893bd163dfd0eb19d61933f20ac7b05",
+      "bytes": 21663
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": {
+      "sha256": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+      "bytes": 18757
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/minidregg-private-address-ema.patch": {
+      "sha256": "9fabd5d64ab3280dde1bbb1affab9ced9d5835f248f984dd4bb9d0488622ebae",
+      "bytes": 21802
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/check.py": {
+      "sha256": "74f3eed7eb1e193f7cf821ee7c7d1e30af864a2d92c8c9525ab457aca958af73",
+      "bytes": 1059
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/package.py": {
+      "sha256": "19b734c4cd8beaa9dda0065dbf1675c1b9787d74f5b7300feb9ca8ef51f4fa43",
+      "bytes": 4404
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/integration/minidregg-combined-resident-708.patch": {
+      "sha256": "a290120197d9679d9d59060121b7a7b7dc17dc3ccbbef263ac8eac057d77f2c2",
+      "bytes": 699568
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/review/IMPLEMENTATION_REVIEW.md": {
+      "sha256": "3c90ca9f6a54b651a5232c76032bdb5a007df9437f2da7948dc70a6edb054394",
+      "bytes": 8859
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/verification.json": {
+      "sha256": "8bb96831337de9ab9a95b80fa2f59fe9a95fb9e164826e0311a2eaa0b4d44798",
+      "bytes": 37295
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": {
+      "sha256": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+      "bytes": 33862
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/EmitPrivateAddressEma.lean": {
+      "sha256": "ad2d79fcd234112e75b44aec94750caac9fcca564fe99f2e675e329d7f51cecf",
+      "bytes": 1605
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/check.py": {
+      "sha256": "459bd0d1d4f6a09e07a41b15fff1c7cb98b2cda10df34a6184456f41f5ce7b5a",
+      "bytes": 2329
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/package.py": {
+      "sha256": "46591368ebbab5c673ae414be69e192841e79dc29816ac750db06b7b5c77b832",
+      "bytes": 5580
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch": {
+      "sha256": "c96679078731512508994cd3804c111e096e9e8cb14409592154d1d8bf9cbb30",
+      "bytes": 37484
+    },
+    "/Users/ember/dev/minidregg/Compiler/Signature.lean": {
+      "sha256": "c77dd3020ea142d5dec4ad19f74fbd05f0a761ad6012f209a8fdc118ed6e2424",
+      "bytes": 24373
+    },
+    "/Users/ember/dev/minidregg/Compiler/Air.lean": {
+      "sha256": "8bde0e33ab2ed0cb739ddf2f06df299bdbada7ffac81057438f52a1528cfeecb",
+      "bytes": 9799
+    },
+    "/Users/ember/dev/minidregg/Compiler/AirFlatten.lean": {
+      "sha256": "504221deeb50018370b35110c60bcd01d0e0e89677a63ed0f023b80c07fe3f54",
+      "bytes": 30980
+    },
+    "/Users/ember/dev/minidregg/Compiler/Emit.lean": {
+      "sha256": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+      "bytes": 31685
+    },
+    "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": {
+      "sha256": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4",
+      "bytes": 38193
+    },
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": {
+      "sha256": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6",
+      "bytes": 28257
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/manifest.json": {
+      "sha256": "4151a1b24f599cee25b339090028f3680a558906b85f805f53dec2de0a056ecb",
+      "bytes": 21183
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/full-ud.patch": {
+      "sha256": "1e7a4c2292766f8b02a80879ef288915d610b67b5c070d8892db8661a8146cb2",
+      "bytes": 98314
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationMatrix.lean": {
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "bytes": 18641
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationKernel.lean": {
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+      "bytes": 16801
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDStatement.lean": {
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+      "bytes": 3878
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDTeeth.lean": {
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+      "bytes": 4835
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDInterpolation.lean": {
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+      "bytes": 8681
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDBivariate.lean": {
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+      "bytes": 9387
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDCore.lean": {
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+      "bytes": 16935
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/ProximityGapFullUD.lean": {
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "bytes": 6857
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDFriConsumer.lean": {
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+      "bytes": 5228
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDWitnesses.lean": {
+      "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf",
+      "bytes": 3211
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/PolynomialMatrixKernel.lean": {
+      "sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+      "bytes": 25207
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/polynomial-kernel.patch": {
+      "sha256": "83b4a44a855109efbbcc2b467f4531c52faf1374e5a83718c884277b8c275ae4",
+      "bytes": 37767
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluing.lean": {
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+      "bytes": 59780
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluingStatement.lean": {
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+      "bytes": 3348
+    },
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialBivariate.lean": {
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+      "bytes": 11855
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/ema_byte_determinism/REPORT.md": {
+      "sha256": "f4677300d9136f4df509f3f0e65b51c7864f0eafad5e9a2612c4e23a3f4796cb",
+      "bytes": 14444
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/private_address_ema/REPORT.md": {
+      "sha256": "282ee1ab63a55c014da0a39ad64869cdcc3da9f6593426ebfeb48008bc673bc1",
+      "bytes": 11477
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/overnight_2026-09-08_baseline.json": {
+      "sha256": "c3900b2f77cd701412c40622ecf790746722c9cbf96e92fdf53be1e1d5802e9a",
+      "bytes": 7876
+    },
+    "/Users/ember/dev/minidregg/Compiler.lean": {
+      "sha256": "49406fd9d224390e37dee72163ea1635e4f74f7eaaed63e3239c1224d0eaa217",
+      "bytes": 34171
+    },
+    "/Users/ember/dev/minidregg/README.md": {
+      "sha256": "a9020764edadd5653a58fab12064919b5e64e916ec3e88ad50180020c2a81ec0",
+      "bytes": 10616
+    },
+    "/Users/ember/dev/minidregg/native/hyperdocument-link-sqlite-store/Cargo.toml": {
+      "sha256": "f364d457f277c407a5cf9f5a2eba59d29fe5f47b6a4fca9d0c893bde37ae72b7",
+      "bytes": 382
+    },
+    "/Users/ember/dev/minidregg/native/hyperdocument-link-store/Cargo.toml": {
+      "sha256": "63cea3f988c9e916806c9fea65abc9f1564f1a9400989227fc4e5db19e4f075c",
+      "bytes": 450
+    },
+    "/Users/ember/dev/minidregg/prover/Cargo.toml": {
+      "sha256": "40da413907ba133610dede2268bde9b9395a0e46de057224ce385a6e86588e7b",
+      "bytes": 486
+    },
+    "/Users/ember/dev/minidregg/prover/src/lib.rs": {
+      "sha256": "b33bbd082b9b9ad5bdd741ae6a8240a100a6b1ed3948e3edf17df6ed1e201d3c",
+      "bytes": 1552
+    },
+    "/Users/ember/dev/minidregg/Compiler/UwueavePreoProjectionV2.lean": {
+      "sha256": "f43c0944c985495e656bd6477460edc022f8f6810c8bbec46e0ac4a4cb551c38",
+      "bytes": 5169
+    },
+    "/Users/ember/dev/minidregg/LICENSE": {
+      "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+      "bytes": 34523
+    },
+    "/Users/ember/dev/minidregg/LICENSING.md": {
+      "sha256": "facb83c45165bc44ade2720e50a014736b4a316c472184eeff817cf0112d4d5f",
+      "bytes": 3166
+    },
+    "/Users/ember/dev/minidregg/NOTICE": {
+      "sha256": "8be904cf6f83f09e890fc73082d1aa955b1d3f137d7a49a7c8be3de95872c7b9",
+      "bytes": 869
+    },
+    "/Users/ember/dev/minidregg/docs/FORMAL_STATUS_AND_NEXT_PROOFS.md": {
+      "sha256": "1161a72677916a2653b63e4d9d91e6261718e59b53ebe14feea47175e163f9dd",
+      "bytes": 16734
+    },
+    "/Users/ember/dev/minidregg/prover/generated/uwueave_preo_projection_v2.rs": {
+      "sha256": "afe084407b418ebdf149f00c2fb30fae7bc9c2669a21f00110c5b312e8faa68a",
+      "bytes": 7543
+    },
+    "/Users/ember/dev/minidregg/prover/tests/uwueave_preo_projection_v2.rs": {
+      "sha256": "559d43bd3ceae0f9c33ba76ef8a8820b1549f05e7f595fc415912affa8d74ca1",
+      "bytes": 4207
+    },
+    "/Users/ember/dev/breadstuffs/circuit-prove/tests/leaf_vs_recursion_sweep.rs": {
+      "sha256": "22d6cd8336df41a50f03d824f31454f5e0e15fc16552fe3e6236b524c2b81ad3",
+      "bytes": 18967
+    },
+    "/Users/ember/dev/breadstuffs/fhegg-fhe/src/bin/ntt_four_step_bench.rs": {
+      "sha256": "0e98cf63df40efeee5663615cf216d471a79de348a1c9cb159cddbb45c62c670",
+      "bytes": 39816
+    },
+    "/Users/ember/dev/breadstuffs/fhegg-fhe/tests/kpz_encoding_depth.rs": {
+      "sha256": "ed4ed039a76fa78d1146f6fdce3dd3d1976a8f990b467385dc0fa7960dfafc5a",
+      "bytes": 14890
+    },
+    "/Users/ember/dev/breadstuffs/armor_audit.md": {
+      "sha256": "8802f0f5aea936ab9d2db722efe14e10833375987a9623b6d374959d8d3e356f",
+      "bytes": 6011
+    },
+    "/Users/ember/dev/breadstuffs/before-full.png": {
+      "sha256": "b11af0b9d18952a27272942d8a0cbe277847db3fabda7403a35f6d908d39b607",
+      "bytes": 1097859
+    },
+    "/Users/ember/dev/breadstuffs/dp-paper-b64.txt": {
+      "sha256": "3211d3c5f5ab7cb6ae48e2f0f66d930bbabb735abf61f0553da8cf3180be31ce",
+      "bytes": 1417842
+    },
+    "/Users/ember/dev/breadstuffs/eprint2152.json": {
+      "sha256": "4701385fe0b2b6d4570089efbf4fc4091376fe8a5938633a9a77357b91e9a907",
+      "bytes": 1170363
+    },
+    "/Users/ember/dev/breadstuffs/friday_preregister.md": {
+      "sha256": "15c2941c13412f95e469c8de8c7fee044c92c4f4345724fa15dd511963db79f0",
+      "bytes": 2608
+    },
+    "/Users/ember/dev/breadstuffs/gloss-full.png": {
+      "sha256": "0e1c352c5a186ddc5bf3ebc8b7474e7bc26156bdc5b46cc2e21a3a04cc925a78",
+      "bytes": 1253742
+    },
+    "/Users/ember/dev/breadstuffs/iac_listen_guide.md": {
+      "sha256": "5346406f35da907e903e4d09c00ecd198028765d79467c8e0d269cd5a4869ad8",
+      "bytes": 9418
+    },
+    "/Users/ember/dev/breadstuffs/iac_notes_aug20.md": {
+      "sha256": "9a9c6a557aa6e12379869e87f32a2fb175dfa415fc54d55e0abba45c2cd388f2",
+      "bytes": 13012
+    },
+    "/Users/ember/dev/breadstuffs/metatheory/wip/Measure19d.lean": {
+      "sha256": "e661a5440c1fc9f989c9429d0fc2ae0d0432879a83b3b57a3946f0789f4ee549",
+      "bytes": 4669
+    },
+    "/Users/ember/dev/breadstuffs/rack-after-unblock.yml": {
+      "sha256": "95b7378e8a3ceebd70eed34af7cec4243f818ff066db6b5673a02d3e19943f9a",
+      "bytes": 9683
+    }
+  },
+  "companions": {
+    "minidregg": {
+      "head_unchanged": true,
+      "status_unchanged": true,
+      "dirty_file_bytes_unchanged": true
+    },
+    "breadstuffs": {
+      "head_unchanged": true,
+      "status_unchanged": true,
+      "dirty_file_bytes_unchanged": true
+    }
+  }
+}

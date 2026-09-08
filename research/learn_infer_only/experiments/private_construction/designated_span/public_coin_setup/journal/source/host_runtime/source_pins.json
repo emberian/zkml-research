@@ -1,0 +1,48 @@
+{
+  "schema": "designated-host-frozen-sources-v1",
+  "core": {
+    "journal/common.py": {
+      "sha256": "559221659ee43582a31310c228c3e60fc8cea40676086a73f0759680aa6719d0",
+      "bytes": 9319
+    },
+    "journal/model.py": {
+      "sha256": "34280589fe888e9ff4504af0895cfc3d15f116f4e83e158cd13928c0aef5ce22",
+      "bytes": 4641
+    },
+    "journal/roles.py": {
+      "sha256": "4bcb4df20037937607013fb0c76989d86dc7968121eaa591513f44b8cbbb65fd",
+      "bytes": 7841
+    },
+    "journal/authority.py": {
+      "sha256": "b3567b92520e2d1789d2c2795bf630a49549f0b646ef9de9e2c65953ca456ccf",
+      "bytes": 8262
+    },
+    "journal/reader.py": {
+      "sha256": "de997a5446d166af0edd19d5298af3738936148354dde77d779ba42b1337895e",
+      "bytes": 5136
+    },
+    "journal/drain.py": {
+      "sha256": "c44c272a61165fb41390d4c889adbfef9bd49cd8324e552e5c3678e645d913e6",
+      "bytes": 4240
+    },
+    "journal/run.py": {
+      "sha256": "cc65219ef4a78d248ad47e9b60d0e2d0a0675ff00014800d3c90c08705f2c6ce",
+      "bytes": 7754
+    },
+    "verified_reader/service.py": {
+      "sha256": "c784dc02115b72ac16b68c612dae6737efbbf9c50b43f52215a760959decc6a9",
+      "bytes": 9679
+    }
+  },
+  "source_root": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/integration/source",
+  "original_host_adapter": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/host_runtime/host.py",
+    "sha256": "5f4426feebc68cdeea16cd69a20157e080e47aad7459c3741cfde291a64070a9"
+  },
+  "crypto_runtime": {
+    "crypto.py": "d7dfc2f46044ea438e1de548b6f922720cf36418b02bc02dac095cbc5851adb0",
+    "group.py": "80f59f9d5ca909953499adc06d19ca28750c50e33f01a382fcc719ca2f403fac",
+    "native_pow.py": "88f146b24dd3c605231d2a1a2091731725aa1edd2df237534698690da5d242b7",
+    "rows.json": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0"
+  }
+}

@@ -1,0 +1,193 @@
+{
+  "all_passed": true,
+  "instrument": "Python exact signed integers and // 8; independent of BitVec and gate circuit",
+  "scope": "Finite arithmetic and quantifier-boundary controls; no claim to exhaust arbitrary histories",
+  "full_byte_pairs": 65536,
+  "monotonic_adjacent_pairs": 65280,
+  "scaled_residual_histogram": {
+    "-7": 8192,
+    "-6": 8192,
+    "-5": 8192,
+    "-4": 8192,
+    "-3": 8192,
+    "-2": 8192,
+    "-1": 8192,
+    "0": 8192
+  },
+  "horizon": {
+    "-120": {
+      "initial_states": 241,
+      "max_first_correct_step": 6,
+      "five_step_failures": [
+        117,
+        118,
+        119,
+        120
+      ],
+      "six_step_min": -120,
+      "six_step_max": -14,
+      "endpoint_trace": [
+        120,
+        90,
+        63,
+        40,
+        20,
+        2,
+        -14
+      ]
+    },
+    "120": {
+      "initial_states": 241,
+      "max_first_correct_step": 6,
+      "five_step_failures": [
+        -120,
+        -119,
+        -118,
+        -117,
+        -116,
+        -115,
+        -114,
+        -113
+      ],
+      "six_step_min": 11,
+      "six_step_max": 120,
+      "endpoint_trace": [
+        -120,
+        -90,
+        -64,
+        -41,
+        -21,
+        -4,
+        11
+      ]
+    }
+  },
+  "fixed_points": {
+    "-120": {
+      "within120": [
+        -120
+      ],
+      "full_byte": [
+        -127,
+        -126,
+        -125,
+        -124,
+        -123,
+        -122,
+        -121,
+        -120
+      ],
+      "from_zero_after_25": -120
+    },
+    "120": {
+      "within120": [
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120
+      ],
+      "full_byte": [
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120
+      ],
+      "from_zero_after_25": 113
+    }
+  },
+  "one_step_frame_checks": 262144,
+  "invalid_weakenings": {
+    "six_total_events_not_six_target_events": {
+      "initial": [
+        -120,
+        -120,
+        -120,
+        -120
+      ],
+      "events": [
+        [
+          2,
+          120
+        ],
+        [
+          1,
+          120
+        ],
+        [
+          1,
+          120
+        ],
+        [
+          1,
+          120
+        ],
+        [
+          1,
+          120
+        ],
+        [
+          1,
+          120
+        ]
+      ],
+      "final": [
+        -120,
+        -4,
+        -90,
+        -120
+      ],
+      "target": 2,
+      "desired_label": 120
+    },
+    "six_target_events_without_consistency": {
+      "initial": [
+        -120,
+        -120,
+        -120,
+        -120
+      ],
+      "events": [
+        [
+          2,
+          120
+        ],
+        [
+          2,
+          120
+        ],
+        [
+          2,
+          120
+        ],
+        [
+          2,
+          120
+        ],
+        [
+          2,
+          120
+        ],
+        [
+          2,
+          -120
+        ]
+      ],
+      "final": [
+        -120,
+        -120,
+        -19,
+        -120
+      ],
+      "target": 2,
+      "desired_label": 120
+    }
+  }
+}

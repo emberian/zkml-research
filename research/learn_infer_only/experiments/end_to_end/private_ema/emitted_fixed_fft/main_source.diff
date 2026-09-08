@@ -1,0 +1,26 @@
+--- emitted_runtime/src/main.rs
++++ emitted_fixed_fft/src/main.rs
+@@ -3,6 +3,7 @@
+ };
+ use serde_json::json;
+ use std::{env, path::Path, process::ExitCode, time::Instant};
++mod plan_observation;
+ 
+ fn execute(args: &[String]) -> Result<(), String> {
+     let usage = "emitted-bool-runtime validate SCHEDULE | clear SCHEDULE INPUT_BOOL_ROWS_JSON | host SCHEDULE SERVER_KEY PARENT INPUT_OR_QUERY NEW_OUTPUT";
+@@ -38,6 +39,7 @@
+         "host" => {
+             let read_start = Instant::now();
+             let key = read_server_key(Path::new(&args[3]))?;
++            let (key, plan) = plan_observation::observe_and_restore(key)?;
+             let mut inputs = read_bits(Path::new(&args[4]), STATE, 32)?;
+             let (input_kind, input_count, output_kind) = match schedule.operation() {
+                 Operation::Learn => (INPUT, 10, STATE),
+@@ -63,6 +65,7 @@
+                 "read_ns":read_ns, "evaluate_ns":evaluate_ns, "serialize_write_ns":serialize_write_ns,
+                 "work_ns":start.elapsed().as_nanos(), "output_bits":outputs.len(), "serialized_bytes":bytes,
+                 "gate_api_calls":backend.calls, "bootstrap_count_instrumented":false,
++                "fft_plan_observation":plan,
+                 "client_key_read":false, "all_output_bits_encrypted":true})
+             );
+         }

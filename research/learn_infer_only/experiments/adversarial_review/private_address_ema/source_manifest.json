@@ -1,0 +1,17 @@
+{
+  "formal/private_address_ema/Theory/PrivateAddressEma.lean": {
+    "expected_sha256": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "observed_sha256": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "matches": true
+  },
+  "formal/private_address_ema/minidregg-private-address-ema.patch": {
+    "expected_sha256": "9fabd5d64ab3280dde1bbb1affab9ced9d5835f248f984dd4bb9d0488622ebae",
+    "observed_sha256": "9fabd5d64ab3280dde1bbb1affab9ced9d5835f248f984dd4bb9d0488622ebae",
+    "matches": true
+  },
+  "experiments/end_to_end/private_ema/src/lib.rs": {
+    "expected_sha256": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880",
+    "observed_sha256": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880",
+    "matches": true
+  }
+}

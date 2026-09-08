@@ -1,0 +1,85 @@
+{
+  "files": {
+    "CONTRACT.md": {
+      "bytes": 5058,
+      "sha256": "fe1015df3937660158b8d7d756c246855c48bf7f05337ef03291afcb8ad6bb02"
+    },
+    "NEXT.md": {
+      "bytes": 1150,
+      "sha256": "4c6fde26da982affdfe12008e6a4205b92aaac3e7adf1ccec5670f563c93c682"
+    },
+    "REPORT.md": {
+      "bytes": 5799,
+      "sha256": "57055b7035fae9dd117ae7aa55e7b74142e6d7a5c6d8267ec2d805b5b3889b31"
+    },
+    "STATUS.md": {
+      "bytes": 1393,
+      "sha256": "9ecfcf3ca994a93b2d508e3ba3e3fae3dd725af4104cbe2d6a01c024f769be8b"
+    },
+    "analysis/FIXED_LAW.md": {
+      "bytes": 3165,
+      "sha256": "65a28ec2d608775411aad5cff24fc811f7b427e00334646aca4f0c8a0ef5b349"
+    },
+    "analysis/fixed_law.json": {
+      "bytes": 4287,
+      "sha256": "893b6d10f0a30d274b2cf65b3ca59dbd32460f444654614acee956aecb6110b3"
+    },
+    "analysis/fixed_law.py": {
+      "bytes": 2714,
+      "sha256": "04939ae8ba8f0006c1e3bf269d2d196866149fe3d7c08932a0fae940fd7ecbea"
+    },
+    "analysis/fixed_law.stdout": {
+      "bytes": 1441,
+      "sha256": "c5db908f4b488933804d2734f5a7c6795899a254b79103f2feb1a97d10b2463e"
+    },
+    "common.py": {
+      "bytes": 899,
+      "sha256": "5eaa8a32a7f970e788e137e638cbe51db6250c958dbd594889719e4f89993b52"
+    },
+    "drain.py": {
+      "bytes": 4491,
+      "sha256": "be719d50f5e7571ee67306f5403ad04aed0d1a64565358bc024fa0ddfd56e6ed"
+    },
+    "finalize_failure.py": {
+      "bytes": 2183,
+      "sha256": "f8d5e2858345eb9fae28393d6b5aceb74373f9fd0e492f71fdcd3de44274359e"
+    },
+    "freeze.json": {
+      "bytes": 9186,
+      "sha256": "1a47a33cad3e0858a5b2437e3b5edc002cfe3a0fff0a496136b7587604332929"
+    },
+    "freeze.py": {
+      "bytes": 1381,
+      "sha256": "ae82ce48d981d51b3e64cdac280921b464b2426da64f527abc5b4b3bd7e8cd54"
+    },
+    "launch.py": {
+      "bytes": 1248,
+      "sha256": "188aad24500dd79b12a9a2a34befafa5652b53d081d6d70ec1c52779c743acfa"
+    },
+    "run.py": {
+      "bytes": 8830,
+      "sha256": "7311a8fc433813445705367c5373262c5993c00140cdc18d5f70f82bc565892d"
+    },
+    "seal_public_failure.py": {
+      "bytes": 6940,
+      "sha256": "0a0433b83dbfb502eba3d6b8631fe7711517a95ee18cec731bb55f53563e6470"
+    },
+    "sources/2605.27782v1.html": {
+      "bytes": 1075835,
+      "sha256": "e2a4817beec8b10fac5a9d4716830a96fea0d7ca865cdf4b4651f48bb8931867"
+    },
+    "sources/ORIENTATION.md": {
+      "bytes": 1781,
+      "sha256": "4ac1f9cd769754c57a8109d0c7c10b54d59d92d37f940c369c3e5ce78dca73ac"
+    },
+    "sources/access.json": {
+      "bytes": 661,
+      "sha256": "dcf4d8d7be42b922b66306c20f6d55a23675ca89744cfdcbf022aebca2ba806a"
+    },
+    "verify_public.py": {
+      "bytes": 4191,
+      "sha256": "179b17c8758bf71c5cc5d27a42e44e1b990a087e21896e42012fdeaac758c124"
+    }
+  },
+  "scope": "final source checkpoint after first replay failure; supersedes early running source/status snapshot"
+}

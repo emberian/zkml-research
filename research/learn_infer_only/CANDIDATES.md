@@ -244,3 +244,29 @@ recurrence audits are in
 Their conclusions concern inspected syntax and theorem applicability, not a
 field-wide impossibility result. The separate [PQ audit](PQ_COMPOSITION.md)
 retains the conditional average-case-iO assumption and correctness/game gaps.
+
+## Third overnight checkpoint — 2026-09-08
+
+[EXECUTED/DERIVED] The public-coin designated setup now completes the normal
+40-Learn/four-Infer/eight-expiry durable journal, with all44 public replays and
+four deferred integer matches. The constructor computes no scalar master under
+its specified honest sampling algorithm. Recipients retain their full per-input
+span, and accepted-value security excludes instrumented timings and sampler
+tapes. See [journal report](experiments/private_construction/designated_span/public_coin_setup/journal/README.md).
+
+[DERIVED reviewed] A new PQ candidate makes a full invertible basis change,
+lets each prescribed recipient independently sample its own coordinate key,
+and samples unissued public rows uniformly. Its fixed-coordinate QPT argument
+uses polynomial Gaussian widths with explicit advice and residual-dimension
+conditions. [Finite sizing](experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md)
+is expensive and remains uncertified: the n1024 example has84.43MB ciphertext
+and86.46GB public key. A finite regularity bound alone does not establish total
+security. General nonlinear learned-state closure and history-bound release
+are not supplied by scalar-linear same-key updates.
+
+[EXECUTED] The nonlinear FHE branch now consumes a Lean-derived gate schedule
+through a generic runtime. The original long handwritten run failed exact byte
+replay at Learn14 before any private decode. A separate fixed-FFT configuration
+passes five public controls; a new long trajectory is being prepared. The full
+TFHE reader key remains in this branch. These advances do not combine the
+restricted DDH/PQ recipient credentials with the nonlinear learner.

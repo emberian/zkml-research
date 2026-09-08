@@ -1,0 +1,33 @@
+{
+  "scope": "Independent frozen emitted EMA mathematical/source/public-evidence review",
+  "review_command": [
+    "python3",
+    "research/learn_infer_only/experiments/adversarial_review/emitted_ema/review.py"
+  ],
+  "review_exit_code": 0,
+  "source_sha256": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+  "patch_sha256": "c96679078731512508994cd3804c111e096e9e8cb14409592154d1d8bf9cbb30",
+  "physical_json_link": "physical_json_link.json",
+  "kernel_replay": "lean_schedule_replay.json",
+  "public_evidence_check": "results.json",
+  "private_files_opened": 0,
+  "crypto_reruns": 0,
+  "outputs_sha256": {
+    "lean_environment.json": "247822ca717b4d63888e7d0f1b79e244015f7de74fbb7c8b621c35d98aef719b",
+    "lean_schedule_replay.json": "b9f5220d6191ec5d574dbe8bfb20c4c6abb7ce2cbffc81458dcfbbaebe079aa2",
+    "lean_schedule_first_replay.json": "6ce2f1c21aa492553c0ca3abbf81403dabafb0a96a99ae968fd0932d11abc0c4",
+    "formal_source_pins.json": "b0dad73e8061092a7535d27b0662b9d7095ff4acb277caaf618c7876c83eba3b",
+    "physical_json_link.json": "9fb19aabaacd94fa060c13fb2faa7fde0a5dfe52e2f4fa6c2cabe7c0dc22fb52",
+    "REPORT.md": "9f61b26cf13d0a0ff0d9c8ab85835c534bdb636049d5cafa34df9b7e536d187b",
+    "NEXT.md": "af0126584335a0adf5d769b5c2c1dc2b0cac124446d8c3a1e32367d341e3bb55",
+    "STATUS.md": "3ab409b94ff25ddc90848ea7aedde6b49d566f0d0d12e507174af3ec1189a88c",
+    "results.json": "5fa8ba7833918da84b10b8716b6e6ef049612a1ce47f25541a2e5c82a1e7926f",
+    "review.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "review.py": "30755c86f619366a152ec06f028b48446c407efc1fe5c78042f1773fa45fda3c",
+    "lean_word_dependency.json": "4e0f132dbaa6dce5e49d4ce490a4913d51e9b2cf5b1d0125f956c4b6be2db277",
+    "patch_application.json": "8d68874770a421f2a30fdadad9264614cf3595ea673adee157f2e0dbd6046585",
+    "import_boundary.json": "ac814d9e9fe6bed8cf4fabcc0bc0bd59d5f182f0add75d4d0345608fba11e00c",
+    "emission_replay.json": "432728304d96cbd36116a044272678cec6f4878c1ce01a3935c309ddbecf79ab",
+    "review.stdout.txt": "ac67f87ffcf9a5036c934118b32f5ad9bf7e8d60640633f12c4f367d5d7f2d39"
+  }
+}

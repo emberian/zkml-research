@@ -1,0 +1,14 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDBivariate.olean",
+    "Selvage/FullUDBivariate.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-20260908",
+  "exit_code": 0,
+  "elapsed_s": 10.83626389503479,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/bivariate-final-01.log"
+}

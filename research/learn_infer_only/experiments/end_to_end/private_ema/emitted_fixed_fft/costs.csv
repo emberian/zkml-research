@@ -1,0 +1,11 @@
+case,operation,role,wall_seconds,evaluate_seconds,read_seconds,peak_rss_bytes,serialized_bytes,xor_api_calls,and_api_calls,trivial_encrypt_api_calls,actual_plan_debug,polynomial_size,input_and_binary_hashes_stable
+prior_emitted_learn_001,learn,primary,18.258514042,18.057637917,0.138179417,484900864,108441,342,196,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True
+prior_emitted_learn_001,learn,replay,20.055212958,19.820838583,0.189329542,485670912,108441,342,196,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True
+prior_emitted_infer_001,infer,primary,0.5845055,0.338447917,0.2028205,484605952,3413,6,3,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True
+prior_emitted_infer_001,infer,replay,0.570372792,0.345833,0.176187875,484638720,3413,6,3,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True
+prior_emitted_learn_002,learn,primary,17.626691667,17.030096458,0.219078791,485031936,108441,342,196,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True
+prior_emitted_learn_002,learn,replay,16.252242,16.059002917,0.137816833,482885632,108441,342,196,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True
+prior_emitted_infer_002,infer,primary,0.624240959,0.349894833,0.228989333,484605952,3413,6,3,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True
+prior_emitted_infer_002,infer,replay,0.521139167,0.308631083,0.167947334,482934784,3413,6,3,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True
+old_fourteenth_learn_public_inputs,learn,primary,16.8136305,16.587775708,0.197917959,494338048,108441,342,196,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True
+old_fourteenth_learn_public_inputs,learn,replay,17.183131833,16.962272042,0.188216,484933632,108441,342,196,2,"Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }",1024,True

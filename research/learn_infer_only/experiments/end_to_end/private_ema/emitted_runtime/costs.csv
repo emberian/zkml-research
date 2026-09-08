@@ -1,0 +1,13 @@
+name,role,operation,wall_seconds,work_seconds,peak_rss_bytes,evaluate_seconds,serialized_bytes,xor_api_calls,and_api_calls,trivial_encrypt_api_calls,bootstrap_count_instrumented,rayon_num_threads
+learn_001,generic-schedule-host,learn,14.906869583,14.881787125,485163008,14.535056333,108441,342,196,2,False,1
+learn_001_replay,generic-schedule-host,learn,14.963948333,14.940094542,485244928,14.587243959,108441,342,196,2,False,1
+infer_001,generic-schedule-host,infer,0.594722916,0.570279375,482705408,0.305815833,3413,6,3,2,False,1
+infer_001_replay,generic-schedule-host,infer,0.544291708,0.513321,484933632,0.258858291,3413,6,3,2,False,1
+learn_002,generic-schedule-host,learn,13.943847584,13.928757375,485523456,13.675012666,108441,342,196,2,False,1
+learn_002_replay,generic-schedule-host,learn,27.680424708,27.657549042,485015552,27.393839666,108441,342,196,2,False,1
+infer_002,generic-schedule-host,infer,0.696433958,0.657801333,482820096,0.339818,3413,6,3,2,False,1
+infer_002_replay,generic-schedule-host,infer,0.704653958,0.6768885,482820096,0.345349,3413,6,3,2,False,1
+reader_state_001,reader,state,0.019034459,0.00146325,6537216,0.0,,,,,,1
+reader_output_001,reader,output,0.015814834,0.000576417,6160384,0.0,,,,,,1
+reader_state_002,reader,state,0.019112125,0.001638375,6520832,0.0,,,,,,1
+reader_output_002,reader,output,0.020511959,0.000779166,6144000,0.0,,,,,,1

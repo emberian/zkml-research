@@ -1,0 +1,73 @@
+Selvage/FullUDCore.lean:20:8: warning: automatically included section variable(s) unused in theorem `_private.Selvage.FullUDCore.0.Minidregg.Selvage.rs_nearby_polynomial`:
+  [DecidableEq ι]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq ι] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Selvage/FullUDCore.lean:82:14: error: `simp` made no progress
+Selvage/FullUDCore.lean:137:8: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  q ≥ 0
+  p ≥ 0
+  p - q ≥ 1
+  o ≥ 0
+  m ≥ 0
+  m - p ≥ 0
+  m + o ≥ 1
+  m + o - p ≥ 0
+  l ≥ 0
+  k ≥ 0
+  j ≥ 0
+  j - k ≥ 0
+  i ≥ 0
+  h ≥ 0
+  h - i ≥ 0
+  g ≥ 0
+  g - m - o + p ≤ 1
+  f ≥ 0
+  d ≥ 0
+  d - f ≥ 0
+  d - l - m - o + p ≥ 0
+  d - 2*m - 2*o + p ≤ -1
+  d - m - o + p ≥ 0
+  d - p ≤ -1
+  d ≥ 0
+  c ≥ 0
+  c - m - o + p ≤ 0
+  b ≥ 0
+  b - m - o + p ≤ 0
+  a ≥ 1
+  a - m - o ≥ 1
+where
+ a := ↑(#good)
+ b := ↑(degreeX A)
+ c := ↑(natDegreeY A)
+ d := ↑(e + deg - 1)
+ f := ↑(degreeX B)
+ g := ↑(natDegreeY B)
+ h := ↑(#P_x)
+ i := ↑↑⟨n, hn_pos⟩
+ j := ↑(#P_y)
+ k := ↑↑⟨#good, hgood_pos⟩
+ l := ↑Pz.natDegree
+ m := ↑(#{i | (u 0 + z • u 1) i = eval (domain i) Pz})
+ o := ↑(#{a | ¬(u 0 + z • u 1) a = eval (domain a) Pz})
+ p := ↑(Fintype.card ι - e)
+ q := ↑(#{i | u 0 i + z * u 1 i = eval (domain i) Pz})
+Selvage/FullUDCore.lean:34:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/FullUDCore.lean:134:29: warning: This simp argument is unused:
+  Function.comp_def
+
+Hint: Omit it from the simp argument list.
+  simp [hammingDist,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵d̵e̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Minidregg.Selvage.fullUDCardCore' does not depend on any axioms
+Selvage/FullUDCore.lean:331:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Selvage.fullUDCardCore' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.Selvage.fullUDCardCore' does not depend on any axioms

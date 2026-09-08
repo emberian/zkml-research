@@ -1,0 +1,120 @@
+{
+  "entries": [
+    {
+      "bytes": 21,
+      "path": ".gitignore",
+      "sha256": "03824949a66ab6db1429bd078d10d1bc2d75706aa1b756c547f9a7ff541c77cb"
+    },
+    {
+      "bytes": 2023,
+      "path": "CONTRACT.md",
+      "sha256": "f353c33542891d85633bea6cc4fae6203ce203b3cab44aefc784168c31ca1d34"
+    },
+    {
+      "bytes": 561,
+      "path": "NEXT.md",
+      "sha256": "ed3465018c6c4e0245d54d3d84bcc969e10c02a34fd90a98ce1710d321aab246"
+    },
+    {
+      "bytes": 4928,
+      "path": "README.md",
+      "sha256": "14a5a884bf2e6c7e87f66edec9715dff5313188597dd043c45a65867637a98de"
+    },
+    {
+      "bytes": 1081,
+      "path": "STATUS.md",
+      "sha256": "5da8d8b32c91355ecfbf6c3a611c10736ae257bcfc15ddd36ccd946f35ecc6cb"
+    },
+    {
+      "bytes": 16697,
+      "path": "Theory/PrivateEmaDynamics.lean",
+      "sha256": "4cfad9f0326ba5ff7a13e871a6d56a82816d0746592248aa84cda40fcae56bfb"
+    },
+    {
+      "bytes": 828,
+      "path": "check.py",
+      "sha256": "47426b1f14bc683b5702560c75ffcce13902d5834b80c58d9575eaa61e7d71fa"
+    },
+    {
+      "bytes": 227,
+      "path": "integration_entry.json",
+      "sha256": "f1fc12b71d475ed0527d225701cb9ca1ca877f9a2dd7782d9496b4643052a122"
+    },
+    {
+      "bytes": 18702,
+      "path": "minidregg-private-ema-dynamics.patch",
+      "sha256": "da4e1d75e0e7ff2843a598c008ba4126fcc3885ffa2529adb099eaf807ab8e1b"
+    },
+    {
+      "bytes": 4810,
+      "path": "package.py",
+      "sha256": "d37febcd98e9e62da7d41e4d32e2a16e3262c37379ca70b689b46ad9bb14dd8b"
+    },
+    {
+      "bytes": 647,
+      "path": "results/dependency.json",
+      "sha256": "6794d4da0d1b7d01b2f5e772908959e6bf944e50ad262037570c9f96cda09d89"
+    },
+    {
+      "bytes": 1649,
+      "path": "results/environment.json",
+      "sha256": "ff0358a8ce874a69307ec2d3851fc898cd37c63d42e2455a3be6e51a355aab2f"
+    },
+    {
+      "bytes": 3811,
+      "path": "results/lean_001.json",
+      "sha256": "ed22cb53f0c19eff0097dd5d15a5f2f16826bdcb8981f7654b9f74a96f03c6bd"
+    },
+    {
+      "bytes": 493,
+      "path": "results/lean_002.json",
+      "sha256": "ad6fe1fab7547ee48b03b941ffb0569b644a90c79c7719172eb95e16807da7b8"
+    },
+    {
+      "bytes": 493,
+      "path": "results/lean_003.json",
+      "sha256": "a504ffb8f65d39b5943b3b47b678a1f5c8ac7fac8806558502f527109013ca34"
+    },
+    {
+      "bytes": 3397,
+      "path": "results/lean_004.json",
+      "sha256": "3b6757550a72b04da5d68c7dbfcf9362ce03e61535ac0caedcd9950423d47806"
+    },
+    {
+      "bytes": 493,
+      "path": "results/lean_005.json",
+      "sha256": "d9711c7045dad2d7d768efe40a0e6b0e839bf0987ed74671136fa322a417c2f2"
+    },
+    {
+      "bytes": 1752,
+      "path": "results/lean_006.json",
+      "sha256": "eab6756a96b0255655120ca94115f694983cf94bd6721f9ebd115c725f46a7fd"
+    },
+    {
+      "bytes": 615,
+      "path": "results/lean_007.json",
+      "sha256": "6c2cfffb87d24ffa1247f572be6d5ecbbc8092e67169184c6bdc82063a6d7028"
+    },
+    {
+      "bytes": 494,
+      "path": "results/lean_008.json",
+      "sha256": "81bac8c5dc9a75b751db2607984a584318663ccb6399983e3062fd259737d6a9"
+    },
+    {
+      "bytes": 494,
+      "path": "results/lean_009.json",
+      "sha256": "2ff5c4d13e687550398a03c9773e055b82a6fd56b8d2eb00d9371cdb14e99074"
+    },
+    {
+      "bytes": 22150,
+      "path": "results/verification.json",
+      "sha256": "52a58c112a57882537440eec33848f52bb23d298c23fb2c99874b4d47afe87b8"
+    },
+    {
+      "bytes": 1386,
+      "path": "seal.py",
+      "sha256": "22019691718a41fb1ef26905e9e8af8a147372e5e1d8ccb1eaa7eb414409748a"
+    }
+  ],
+  "scope": "isolated checked dynamics extension; no whole-tree integration"
+}

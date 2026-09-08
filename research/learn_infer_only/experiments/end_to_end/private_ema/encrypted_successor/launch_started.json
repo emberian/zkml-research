@@ -1,0 +1,10 @@
+{
+  "freeze_sha256": "1a47a33cad3e0858a5b2437e3b5edc002cfe3a0fff0a496136b7587604332929",
+  "pid": 38570,
+  "script_stages": [
+    "run",
+    "verify_public",
+    "drain"
+  ],
+  "started_utc": "2026-09-08T04:12:26.264507+00:00"
+}

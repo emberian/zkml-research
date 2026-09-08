@@ -1,0 +1,348 @@
+/-
+[DERIVED statement-first] Consequences of the existing word-level EMA, never a
+second learner. Keystone SixConsistentSign below is declared before proofs.
+Within120 zero/endpoint states, either actual ±120 byte and six target events
+inhabit the premises. Five repeated positive labels from -120 leave -4; five
+negative labels from +120 leave +2. Other addresses may interleave freely.
+This inherits PrivateAddressEma's explicit Rust/TFHE refinement boundary.
+-/
+import Theory.PrivateAddressEma
+
+namespace Minidregg.Theory.PrivateEmaDynamics
+
+open Minidregg.Theory.PrivateAddressEma
+
+set_option autoImplicit false
+set_option maxRecDepth 10000
+set_option maxHeartbeats 1000000
+
+def positive : Byte := BitVec.ofInt 8 120
+def negative : Byte := BitVec.ofInt 8 (-120)
+
+/-- Iteration of the existing candidate, not an alternative update law. -/
+def advance (u : Byte) (n : Nat) (s : Byte) : Byte :=
+  (fun b => candidate b u)^[n] s
+
+def targetCount (a : Address) (events : List (Address × Byte)) : Nat :=
+  events.countP (fun e => decide (addressIndex e.1 = addressIndex a))
+
+def ConsistentAt (a : Address) (u : Byte) (events : List (Address × Byte)) : Prop :=
+  ∀ e ∈ events, addressIndex e.1 = addressIndex a → e.2 = u
+
+def SixConsistentSign : Prop :=
+  ∀ (s : State) (a : Address) (u : Byte) (events : List (Address × Byte)),
+    Within120 s → AllowedLabel u → ConsistentAt a u events →
+    6 ≤ targetCount a events →
+    infer (history s events) a = decide (u.toInt < 0)
+
+def UntargetedRetention : Prop :=
+  ∀ (s : State) (events : List (Address × Byte)) (j : Fin 4),
+    (∀ e ∈ events, j ≠ addressIndex e.1) → history s events j = s j
+
+def ConstantFixedPoints : Prop :=
+  ∀ s : Byte, -120 ≤ s.toInt → s.toInt ≤ 120 →
+    (candidate s positive = s ↔ 113 ≤ s.toInt ∧ s.toInt ≤ 120) ∧
+    (candidate s negative = s ↔ s.toInt = -120)
+
+theorem advance_zero (u s : Byte) : advance u 0 s = s := rfl
+
+theorem advance_succ (u s : Byte) (n : Nat) :
+    advance u (n + 1) s = candidate (advance u n s) u := by
+  simp [advance, Function.iterate_succ_apply']
+
+theorem advance_succ_input (u s : Byte) (n : Nat) :
+    advance u (n + 1) s = advance u n (candidate s u) := by
+  simp [advance, Function.iterate_succ_apply]
+
+theorem candidate_monotone (u s t : Byte) (hst : s.toInt ≤ t.toInt) :
+    (candidate s u).toInt ≤ (candidate t u).toInt := by
+  rw [candidate_exact, candidate_exact]
+  omega
+
+theorem advance_monotone (u s t : Byte) (n : Nat) (hst : s.toInt ≤ t.toInt) :
+    (advance u n s).toInt ≤ (advance u n t).toInt := by
+  induction n with
+  | zero => exact hst
+  | succ n ih =>
+    rw [advance_succ, advance_succ]
+    exact candidate_monotone u _ _ ih
+
+theorem positive_sign_preserved (s : Byte) (hs : 0 ≤ s.toInt) :
+    0 ≤ (candidate s positive).toInt := by
+  rw [candidate_exact]
+  have hp : positive.toInt = 120 := rfl
+  rw [hp]
+  omega
+
+theorem negative_sign_preserved (s : Byte) (hs : s.toInt < 0) :
+    (candidate s negative).toInt < 0 := by
+  rw [candidate_exact]
+  have hn : negative.toInt = -120 := rfl
+  rw [hn]
+  omega
+
+theorem six_positive_endpoint : (advance positive 6 negative).toInt = 11 := by
+  decide +kernel
+
+theorem six_negative_endpoint : (advance negative 6 positive).toInt = -14 := by
+  decide +kernel
+
+theorem six_positive (s : Byte) (hs : -120 ≤ s.toInt) :
+    0 ≤ (advance positive 6 s).toInt := by
+  have hm := advance_monotone positive negative s 6 hs
+  rw [six_positive_endpoint] at hm
+  omega
+
+theorem six_negative (s : Byte) (hs : s.toInt ≤ 120) :
+    (advance negative 6 s).toInt < 0 := by
+  have hm := advance_monotone negative s positive 6 hs
+  rw [six_negative_endpoint] at hm
+  omega
+
+theorem after_six_positive (s : Byte) (n : Nat) (hs : -120 ≤ s.toInt) (hn : 6 ≤ n) :
+    0 ≤ (advance positive n s).toInt := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hn
+  clear hn
+  induction k with
+  | zero => simpa using six_positive s hs
+  | succ k ih =>
+    rw [Nat.add_succ, advance_succ]
+    exact positive_sign_preserved _ ih
+
+theorem after_six_negative (s : Byte) (n : Nat) (hs : s.toInt ≤ 120) (hn : 6 ≤ n) :
+    (advance negative n s).toInt < 0 := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hn
+  clear hn
+  induction k with
+  | zero => simpa using six_negative s hs
+  | succ k ih =>
+    rw [Nat.add_succ, advance_succ]
+    exact negative_sign_preserved _ ih
+
+theorem history_target_subsequence (s : State) (a : Address) (u : Byte)
+    (events : List (Address × Byte)) (hc : ConsistentAt a u events) :
+    history s events (addressIndex a) = advance u (targetCount a events) (s (addressIndex a)) := by
+  induction events generalizing s with
+  | nil => rfl
+  | cons e es ih =>
+    have ht : ConsistentAt a u es := by
+      intro e' he' ha
+      exact hc e' (List.mem_cons_of_mem e he') ha
+    change history (learn s e.1 e.2) es (addressIndex a) = _
+    rw [ih _ ht]
+    by_cases he : addressIndex e.1 = addressIndex a
+    · have hu := hc e (List.mem_cons_self ..) he
+      have hstep : learn s e.1 e.2 (addressIndex a) = candidate (s (addressIndex a)) u := by
+        rw [← he, learn_selected, hu]
+      rw [hstep]
+      simpa [targetCount, he, Nat.add_comm] using
+        (advance_succ_input u (s (addressIndex a)) (targetCount a es)).symm
+    · have hstep := learn_untouched s e.1 e.2 (addressIndex a) (Ne.symm he)
+      rw [hstep]
+      simp [targetCount, he]
+
+theorem untargeted_retention : UntargetedRetention := by
+  intro s events j hj
+  induction events generalizing s with
+  | nil => rfl
+  | cons e es ih =>
+    change history (learn s e.1 e.2) es j = _
+    rw [ih]
+    · exact learn_untouched s e.1 e.2 j (hj e (List.mem_cons_self ..))
+    · intro e' he'
+      exact hj e' (List.mem_cons_of_mem e he')
+
+theorem allowed_label_cases (u : Byte) (hu : AllowedLabel u) : u = negative ∨ u = positive := by
+  rcases hu with hu | hu
+  · left; apply BitVec.eq_of_toInt_eq; exact hu
+  · right; apply BitVec.eq_of_toInt_eq; exact hu
+
+theorem six_consistent_sign : SixConsistentSign := by
+  intro s a u events hs hu hc hn
+  have heq := history_target_subsequence s a u events hc
+  rcases allowed_label_cases u hu with rfl | rfl
+  · have hneg := after_six_negative (s (addressIndex a)) (targetCount a events) (hs _).2 hn
+    rw [← heq] at hneg
+    have hsign := (infer_negative (history s events) a).mpr hneg
+    exact hsign
+  · have hpos := after_six_positive (s (addressIndex a)) (targetCount a events) (hs _).1 hn
+    rw [← heq] at hpos
+    have hnot : infer (history s events) a ≠ true := by
+      intro h
+      have := (infer_negative (history s events) a).mp h
+      omega
+    simpa using Bool.eq_false_iff.mpr hnot
+
+/-- Earlier allowed observations may be arbitrary; only the final segment is consistent. -/
+theorem consistent_suffix_sign (s : State) (earlier later : List (Address × Byte))
+    (a : Address) (u : Byte) (hs : Within120 s) (hp : AllowedHistory earlier)
+    (hu : AllowedLabel u) (hc : ConsistentAt a u later) (hn : 6 ≤ targetCount a later) :
+    infer (history s (earlier ++ later)) a = decide (u.toInt < 0) := by
+  have h := six_consistent_sign (history s earlier) a u later
+    (history_invariant s earlier hs hp) hu hc hn
+  simpa only [history, List.foldl_append] using h
+
+theorem fixed_points : ConstantFixedPoints := by
+  intro s hlo hhi
+  have hp : positive.toInt = 120 := rfl
+  have hn : negative.toInt = -120 := rfl
+  constructor
+  · constructor
+    · intro h
+      have hval := congrArg BitVec.toInt h
+      rw [candidate_exact, hp] at hval
+      omega
+    · intro hs
+      apply BitVec.eq_of_toInt_eq
+      rw [candidate_exact, hp]
+      omega
+  · constructor
+    · intro h
+      have hval := congrArg BitVec.toInt h
+      rw [candidate_exact, hn] at hval
+      omega
+    · intro hs
+      apply BitVec.eq_of_toInt_eq
+      rw [candidate_exact, hn]
+      omega
+
+/-- Exact scaled residual, avoiding any floating-point approximation premise. -/
+theorem floor_residual (s u : Byte) :
+    -7 ≤ 8 * (candidate s u).toInt - (7 * s.toInt + u.toInt) ∧
+    8 * (candidate s u).toInt - (7 * s.toInt + u.toInt) ≤ 0 := by
+  rw [candidate_exact]
+  omega
+
+theorem five_positive_falsifier : (advance positive 5 negative).toInt = -4 := by decide +kernel
+theorem five_negative_falsifier : (advance negative 5 positive).toInt = 2 := by decide +kernel
+
+theorem five_inference_falsifiers :
+    infer (history (fun _ => negative) (List.replicate 5 (2, positive))) 2 = true ∧
+    infer (history (fun _ => positive) (List.replicate 5 (2, negative))) 2 = false := by
+  decide +kernel
+
+theorem positive_fixed_point_witness :
+    candidate (BitVec.ofInt 8 113) positive = BitVec.ofInt 8 113 := by decide +kernel
+
+theorem asymmetric_fixed_points :
+    (advance positive 25 (0 : Byte)).toInt = 113 ∧
+    (advance negative 25 (0 : Byte)).toInt = -120 ∧
+    candidate (advance positive 25 (0 : Byte)) positive = advance positive 25 (0 : Byte) ∧
+    candidate (advance negative 25 (0 : Byte)) negative = advance negative 25 (0 : Byte) := by
+  decide +kernel
+
+theorem six_step_premises_inhabited :
+    ∃ (s : State) (a : Address) (u : Byte) (events : List (Address × Byte)),
+      Within120 s ∧ AllowedLabel u ∧ ConsistentAt a u events ∧ 6 ≤ targetCount a events := by
+  refine ⟨zeroState, 2, positive, List.replicate 6 (2, positive), ?_, ?_, ?_, ?_⟩
+  · intro j
+    change -120 ≤ (0 : Byte).toInt ∧ (0 : Byte).toInt ≤ 120
+    decide +kernel
+  · unfold AllowedLabel; decide +kernel
+  · intro e he _
+    have heq := List.eq_of_mem_replicate he
+    simp [heq]
+  · decide +kernel
+
+/-- A nonempty six-step history learns a negative sign while an unrelated cell stays zero. -/
+theorem satisfying_subject :
+    infer (history zeroState (List.replicate 6 (2, negative))) 2 = true ∧
+    history zeroState (List.replicate 6 (2, negative)) 0 = 0 ∧
+    history zeroState (List.replicate 6 (2, negative)) 2 ≠ 0 := by
+  decide +kernel
+
+theorem interleaved_satisfying_subject :
+    let es := (List.replicate 6 [(2, negative), (1, positive)]).flatten
+    targetCount 2 es = 6 ∧
+    infer (history zeroState es) 2 = true ∧
+    infer (history zeroState es) 1 = false ∧
+    history zeroState es 0 = 0 := by
+  decide +kernel
+
+end Minidregg.Theory.PrivateEmaDynamics
+
+/- Exact axiom dependencies observed in results/lean_004.json and results/lean_007.json. -/
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.advance_zero' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.advance_zero
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.advance_succ' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.advance_succ
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.advance_succ_input' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.advance_succ_input
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.candidate_monotone' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.candidate_monotone
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.advance_monotone' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.advance_monotone
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.positive_sign_preserved' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.positive_sign_preserved
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.negative_sign_preserved' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.negative_sign_preserved
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.six_positive_endpoint' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.six_positive_endpoint
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.six_negative_endpoint' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.six_negative_endpoint
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.six_positive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.six_positive
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.six_negative' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.six_negative
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.after_six_positive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.after_six_positive
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.after_six_negative' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.after_six_negative
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.history_target_subsequence' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.history_target_subsequence
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.untargeted_retention' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.untargeted_retention
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.allowed_label_cases' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.allowed_label_cases
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.six_consistent_sign' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.six_consistent_sign
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.fixed_points' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.fixed_points
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.floor_residual' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.floor_residual
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.five_positive_falsifier' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.five_positive_falsifier
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.five_negative_falsifier' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.five_negative_falsifier
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.five_inference_falsifiers' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.five_inference_falsifiers
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.positive_fixed_point_witness' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.positive_fixed_point_witness
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.asymmetric_fixed_points' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.asymmetric_fixed_points
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.six_step_premises_inhabited' depends on axioms: [propext] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.six_step_premises_inhabited
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.satisfying_subject' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.satisfying_subject
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.interleaved_satisfying_subject' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.interleaved_satisfying_subject
+
+/-- info: 'Minidregg.Theory.PrivateEmaDynamics.consistent_suffix_sign' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateEmaDynamics.consistent_suffix_sign

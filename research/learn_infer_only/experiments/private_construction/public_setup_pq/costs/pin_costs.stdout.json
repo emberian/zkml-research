@@ -1,0 +1,39 @@
+{
+  "scope": "public arithmetic and provenance only; no cryptographic runtime or estimator",
+  "accounting_command": "python3 research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/derive_costs.py",
+  "accounting_exit_code": 0,
+  "first_failed_attempt_preserved_in": "initial_failure.md",
+  "saved_stdout_exactly_matches_results": true,
+  "all_recorded_input_hashes_match": true,
+  "frozen_audit_unchanged": true,
+  "additional_sources_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/CONTRACT.md": "465d3a0f4eb20f9ce762bf49200e03bb2e918efd5cdd9c563405fe91d6b6c674",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/AUDIT.md": "0f871482f56dbd5177042ebdf7dcf5034dd032cfb45c8b50f37307f0fc7b9458",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/run_estimates.py": "161569fca49e50ac84aaa3eda4c1e1489450883de7d4d26b0c53bd76359f64cf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/nd.py": "d87fca7bb191a0fb29b24507897e00c8beba784da552b6b90a982c718fc1c459",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md": "4c43bce409495edf9c9d5b8e4ada0581af5be0ecf6ff949fbd99fdbfd3da62fe",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/BOUND.md": "b07d7714ca6078a63bf1281ad8edbd07dc39094d91f6808e1c3868a3503dc2e5",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/RESULTS.json": "f59f2f6c93c379bd7c6a14b9f60ed3f926957db0bed68ee6994ec165d173c5ab",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2011/501.pdf": "bf1160f088825ed28c343b299f5bc2acdca41cc50293310a03a4506d2fdbdb84",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/432.pdf": "7e747881cddd16b7dcf82893682cb9b4c788d7cec5712f80aa4193f2bd30a5b3"
+  },
+  "artifact_sha256": {
+    ".gitignore": "e497102884eb6b3741652b88a57f49a6582a62f13411eeff69db692c4d094306",
+    "CHECKPOINT.md": "40f5d8b0b5d7b2d11cf5bb050cfde4ee682634ba369469ca2352e305b3c124f3",
+    "FEASIBILITY.md": "037b1b7995dbaec14cc983c7aea639496d1aeeed164f2a207ce3207c3a70372c",
+    "derive_costs.py": "30e5c04aaa69bce34427d7543a33502d8cdca5479d3aa0be447d4ef690e7e0d1",
+    "derive_costs.stdout.json": "93783ef7735ace3c7f033dfbe58cae60f5f8fbc74b53ed62b7b6729500533138",
+    "initial_failure.md": "ff9b72416427af0309fa3ed967e5215a120ac641f81a396a064244109f0bcf94",
+    "pin_costs.py": "4f2c618689711d0d7e5f2c8b5a1882d0ca102a3119899115a25d1c369e362f33",
+    "results.json": "93783ef7735ace3c7f033dfbe58cae60f5f8fbc74b53ed62b7b6729500533138",
+    "table.md": "534f6aad418f6a695c2d0d347b1304612f511a692be40cc32d443799beabe78e"
+  },
+  "new_source_discovery_counts": {
+    "web_search": 0,
+    "scry_SQL": 0,
+    "scry_schema": 0,
+    "Kagi": 0,
+    "PDF_downloads": 0
+  },
+  "source_page_renders": "pdftoppm -f 18 -l 18 -singlefile -scale-to 1800 / 3200 -png [pinned 2015/608.pdf] [source-page18 / source-page18-hi]"
+}

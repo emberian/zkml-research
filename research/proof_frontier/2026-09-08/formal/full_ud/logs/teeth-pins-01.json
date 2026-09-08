@@ -1,0 +1,14 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDTeeth.olean",
+    "Selvage/FullUDTeeth.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-20260908",
+  "exit_code": 0,
+  "elapsed_s": 25.367611169815063,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/teeth-pins-01.log"
+}

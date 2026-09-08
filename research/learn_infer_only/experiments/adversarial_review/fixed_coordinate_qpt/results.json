@@ -1,0 +1,82 @@
+{
+  "claim_kind": "EXECUTED",
+  "source_pins": {
+    "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md": "4c43bce409495edf9c9d5b8e4ada0581af5be0ecf6ff949fbd99fdbfd3da62fe",
+    "research/learn_infer_only/experiments/private_construction/public_setup_pq/notes/AUDIT.md": "2c6f649fa0891be05dd1f3a1f89c935692091195e71f0b1959d78b5ef9061007",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/extracts/2015-608.txt": "a1170661edc061a9b011367d43b9b75ed6dfc073cfd0aa477459c20f14d1ecdd"
+  },
+  "finite_probability_controls": [
+    {
+      "modulus": 2,
+      "matrices": 16,
+      "translation_checks": 64,
+      "joint_one_row_SD": "21/64",
+      "joint_two_rows_SD": "123/256",
+      "conditioned_zero_matrix_SD": "3/4",
+      "independent_exposed_row_preserves_SD": true
+    },
+    {
+      "modulus": 3,
+      "matrices": 81,
+      "translation_checks": 729,
+      "joint_one_row_SD": "200/729",
+      "joint_two_rows_SD": "2384/6561",
+      "conditioned_zero_matrix_SD": "8/9",
+      "independent_exposed_row_preserves_SD": true
+    }
+  ],
+  "nonvacuity": {
+    "whole_coalition_equal_output_distinct_state_pairs": 160,
+    "injective_restricted_image_control_points": 38
+  },
+  "parameter_controls": {
+    "scope": "Ratios for explicit unit-constant controls; unknown source constants and hardness are not certified",
+    "rows": [
+      {
+        "log2_n": 16,
+        "C": 128,
+        "augmented_width_passes": true,
+        "unit_constant_only_ratios": {
+          "sigma1_squared_over_M_n_ceillogM": "2097152/27",
+          "M_over_n_ceillog_sigma1n": "128/3",
+          "sigma2_squared_over_n5_M_sigma1fourth_ceillogcubed": "2097152/205379",
+          "xi_squared_over_n_M_sigma2_squared": "2097152",
+          "sigma1_squared_over_nplus1_ceillogM": "4611686018427387904/16391",
+          "betaq_squared_over_n": "5575186299632655785383929568162090376495104",
+          "inverse_alpha_over_correctness_sufficient_RHS": "6427752177035961102167848369364650410088811975131171341205504/1461501637330902918203684832716283019656200978433"
+        }
+      },
+      {
+        "log2_n": 32,
+        "C": 128,
+        "augmented_width_passes": true,
+        "unit_constant_only_ratios": {
+          "sigma1_squared_over_M_n_ceillogM": "1125899906842624/11",
+          "M_over_n_ceillog_sigma1n": "128/3",
+          "sigma2_squared_over_n5_M_sigma1fourth_ceillogcubed": "70368744177664/19683",
+          "xi_squared_over_n_M_sigma2_squared": "4503599627370496",
+          "sigma1_squared_over_nplus1_ceillogM": "340282366920938463463374607431768211456/4294967341",
+          "betaq_squared_over_n": "124330809102446660538845562036705210025114037699336929360115994223289874253133343883264",
+          "inverse_alpha_over_correctness_sufficient_RHS": "1322111937580497197903830616065542079656809365928562438569297590548811582472622691650378420879430569695182424050046716608512/130370302485407109521180524058200202307293977194619920040712988758680403184853584380109520897"
+        }
+      },
+      {
+        "log2_n": 64,
+        "C": 128,
+        "augmented_width_passes": true,
+        "unit_constant_only_ratios": {
+          "sigma1_squared_over_M_n_ceillogM": "41538374868278621028243970633760768/77",
+          "M_over_n_ceillog_sigma1n": "128/3",
+          "sigma2_squared_over_n5_M_sigma1fourth_ceillogcubed": "41538374868278621028243970633760768/8615125",
+          "xi_squared_over_n_M_sigma2_squared": "41538374868278621028243970633760768",
+          "sigma1_squared_over_nplus1_ceillogM": "57896044618658097711785492504343953926634992332820282019728792003956564819968/9223372036854775847",
+          "betaq_squared_over_n": "61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174784",
+          "inverse_alpha_over_correctness_sufficient_RHS": "111870718431542817204760874740917337854381793641291611443130662899652593770909781872442516663377454591520935582886717656540612737332317877736113382974861639142628415265543797274479692427652260844707187532155254872952853725026318685997495262134665216/259344723055062059907025491480697571938277889515152306249728583105665800713306759149981690559193987143012367913206299323899696942213235956742929677132122730743555317616251638906881"
+        }
+      }
+    ]
+  },
+  "scope": "Public mathematical controls only; no Gaussian sampling, key generation, ciphertexts, crypto/runtime imports, private data or attack experiment",
+  "network_queries": 0
+}

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_h9biv1pp/olean/Compiler/PrivateAddressEmaSchedule.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule",
+  "exit_code": 1,
+  "source_sha256": "29c6298937d7d4d551c6ce201d9b8689b119c5a5b18d719109a6b565e1d70c6d",
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean:36:71: error(lean.synthInstanceFailed): failed to synthesize instance of type class\n  Hashable F2\n\nHint: Adding the command `deriving instance Hashable for Minidregg.Compiler.PrivateAddressEmaSchedule.F2` may allow Lean to derive the missing instance.\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean:46:77: error: unsolved goals\ncase a\nx : F2\nh : ZMod.val x = 1\nhx : 1 < 2\n\u22a2 1 = ZMod.val 1\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean:61:71: error: unsolved goals\nm : \u2115\ninputs : Fin m \u2192 Bool\na b : Expr m\n\u22a2 (dec (eval (fun i => enc (inputs i)) a) ^^ dec (eval (fun i => enc (inputs i)) b)) =\n    (dec (enc (dec (eval (fun i => enc (inputs i)) a))) ^^ dec (enc (dec (eval (fun i => enc (inputs i)) b))))\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean:66:68: error: unsolved goals\nm : \u2115\ninputs : Fin m \u2192 Bool\na b : Expr m\n\u22a2 (dec (eval (fun i => enc (inputs i)) a) && dec (eval (fun i => enc (inputs i)) b)) =\n    (dec (enc (dec (eval (fun i => enc (inputs i)) a))) && dec (enc (dec (eval (fun i => enc (inputs i)) b))))\n",
+  "stderr": ""
+}

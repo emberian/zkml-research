@@ -1,0 +1,69 @@
+{
+  "decision": "Accepted for the exact scoped finite-history dynamics claims; no blocking issue found.",
+  "files": {
+    "REVIEW.md": {
+      "sha256": "8fba2b4bf9e79566e735a28ff22691e4f0d1542ef025ee668f32472090ffcbe7",
+      "bytes": 7708
+    },
+    "audit.py": {
+      "sha256": "35c2b0cea4a3e8717be56c1bdd863ac421c376819f77e06cd25e301b719ad72d",
+      "bytes": 5607
+    },
+    "integer_controls.py": {
+      "sha256": "0f340631d3d63005ef9d24ec6949680b7400ee248515441f70d8eaa396225588",
+      "bytes": 4173
+    },
+    "run_001/axiom_census.json": {
+      "sha256": "cb25ef10a289d0625179f8df0ec73fc737e3d4dbdd815793d83139a5795e3cd7",
+      "bytes": 16840
+    },
+    "run_001/command_01.json": {
+      "sha256": "a12e63c65917f89a8da865d91a4b8a480c41297613a4a99f6f7cc21ec32b128c",
+      "bytes": 237
+    },
+    "run_001/command_02.json": {
+      "sha256": "ed6d603786067d611b99bc54725c3bcac7492251dfa8913c72eb23100f0eca38",
+      "bytes": 370
+    },
+    "run_001/command_03.json": {
+      "sha256": "09ccd6bba13eeb6ae5b8474a72dc0611d24f7e870b9a5236652b536ba24a5611",
+      "bytes": 355
+    },
+    "run_001/command_04.json": {
+      "sha256": "e75c1c8dd37ffc2cca5476297513dcf05126f1843a1ddb2fa7c687b259a38b6d",
+      "bytes": 373
+    },
+    "run_001/command_05.json": {
+      "sha256": "de16ac7f675b78b0377325f4d8ec2c0c039c8343a189c59a767977fff24f6a64",
+      "bytes": 357
+    },
+    "run_001/command_06.json": {
+      "sha256": "e0ad28c99f1a8ab0345e9a593a764fa9a19b3ae451b67aa0fb2fa9e5ba343aea",
+      "bytes": 499
+    },
+    "run_001/command_07.json": {
+      "sha256": "f7fdb97e0f7afd25bc380cc9b329226f7585c7c6cd066e81db6e48d4eeef0153",
+      "bytes": 524
+    },
+    "run_001/command_08.json": {
+      "sha256": "01106172320c6671c01b94469fe80f6c5046f1c2e5a0d6ed64dcf6a8fabb62a1",
+      "bytes": 525
+    },
+    "run_001/inputs_after.json": {
+      "sha256": "c80b26053b6cc76d8cfd6c2d3470efff305c6724acd2f2b96d793777998ea1f3",
+      "bytes": 4877
+    },
+    "run_001/inputs_before.json": {
+      "sha256": "c80b26053b6cc76d8cfd6c2d3470efff305c6724acd2f2b96d793777998ea1f3",
+      "bytes": 4877
+    },
+    "run_001/integer_controls.json": {
+      "sha256": "0d0dbc4d9733713550d6978256436139d143b733f24820cce680d8e8a43068f8",
+      "bytes": 3033
+    },
+    "run_001/report.json": {
+      "sha256": "1d5cb19e3d228b654925b79b9b1ebcd20e40717a660fcb783ce8002af1e267b4",
+      "bytes": 2435
+    }
+  }
+}

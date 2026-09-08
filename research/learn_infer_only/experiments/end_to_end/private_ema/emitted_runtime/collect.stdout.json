@@ -1,0 +1,93 @@
+{
+  "claim": "EXECUTED",
+  "success": true,
+  "freeze_sha256": "b45a38b01838b9b44bf8f8bcdd67c7e908bec0850b0f627d051d3a5e75785b3b",
+  "logical_learn": 2,
+  "logical_infer": 2,
+  "exact_byte_replay_pairs": 4,
+  "all_replay_pairs_equal": true,
+  "private_oracle_audits": [
+    {
+      "step": 1,
+      "all_registers_match_integer_oracle": true,
+      "unselected_registers_unchanged": true,
+      "private_sign_matches": true
+    },
+    {
+      "step": 2,
+      "all_registers_match_integer_oracle": true,
+      "unselected_registers_unchanged": true,
+      "private_sign_matches": true
+    }
+  ],
+  "public_artifacts": [
+    {
+      "path": "reports/smoke/artifacts/state_001.ct",
+      "bytes": 108441,
+      "sha256": "dc45a0e8306c59661bfeca8261571cf3d56fe5bad5b27c65bba9bdf9be1df47d"
+    },
+    {
+      "path": "reports/smoke/artifacts/learn_001_replay.ct",
+      "bytes": 108441,
+      "sha256": "dc45a0e8306c59661bfeca8261571cf3d56fe5bad5b27c65bba9bdf9be1df47d"
+    },
+    {
+      "path": "reports/smoke/artifacts/output_001.ct",
+      "bytes": 3413,
+      "sha256": "b29eaa5aabf115c4969f8817e3600d5fb279b53015f10aaa12b494a701cc3b8c"
+    },
+    {
+      "path": "reports/smoke/artifacts/infer_001_replay.ct",
+      "bytes": 3413,
+      "sha256": "b29eaa5aabf115c4969f8817e3600d5fb279b53015f10aaa12b494a701cc3b8c"
+    },
+    {
+      "path": "reports/smoke/artifacts/state_002.ct",
+      "bytes": 108441,
+      "sha256": "56f72bbb49715f2a8199ef6a528f6428aba264a3dafb78d9ef36ac720451970e"
+    },
+    {
+      "path": "reports/smoke/artifacts/learn_002_replay.ct",
+      "bytes": 108441,
+      "sha256": "56f72bbb49715f2a8199ef6a528f6428aba264a3dafb78d9ef36ac720451970e"
+    },
+    {
+      "path": "reports/smoke/artifacts/output_002.ct",
+      "bytes": 3413,
+      "sha256": "7392d8e66ce96df6f8d27bd3efdaff2239f773fbc04080175b7a51cb63239f39"
+    },
+    {
+      "path": "reports/smoke/artifacts/infer_002_replay.ct",
+      "bytes": 3413,
+      "sha256": "7392d8e66ce96df6f8d27bd3efdaff2239f773fbc04080175b7a51cb63239f39"
+    }
+  ],
+  "plain_rows": {
+    "learn": 25600,
+    "infer": 49152
+  },
+  "wall_and_evaluate_ranges": {
+    "learn": {
+      "processes": 4,
+      "wall_seconds_min": 13.943847584,
+      "wall_seconds_max": 27.680424708,
+      "wall_seconds_median": 14.935408958,
+      "evaluate_seconds_min": 13.675012666,
+      "evaluate_seconds_max": 27.393839666,
+      "peak_rss_bytes_max": 485523456
+    },
+    "infer": {
+      "processes": 4,
+      "wall_seconds_min": 0.544291708,
+      "wall_seconds_max": 0.704653958,
+      "wall_seconds_median": 0.645578437,
+      "evaluate_seconds_min": 0.258858291,
+      "evaluate_seconds_max": 0.345349,
+      "peak_rss_bytes_max": 484933632
+    }
+  },
+  "timing_limit": "contended single-host-process sample; concurrent workloads changed during execution",
+  "private_audit_timing": "all prerequisite public operations/replays/result checks completed first; one additional final frozen-file integrity recheck occurred after private audit",
+  "contract_wording_deviation": "frozen contract said all frozen-file hash checks precede private audit; driver also performs a final read-only integrity recheck after it",
+  "no_universal_rust_tfhe_or_replay_claim": true
+}

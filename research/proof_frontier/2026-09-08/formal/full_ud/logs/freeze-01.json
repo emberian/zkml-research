@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Theory/PolynomialMatrixKernel.olean",
+    "Theory/PolynomialMatrixKernel.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-20260908",
+  "exit_code": 0,
+  "source_sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+  "source_unchanged": true,
+  "elapsed_s": 19.048081874847412,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-01.log"
+}

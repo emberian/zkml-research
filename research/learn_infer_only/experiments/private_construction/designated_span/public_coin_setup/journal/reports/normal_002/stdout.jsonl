@@ -1,0 +1,8 @@
+{"phase": "public", "stage": "setup_complete", "public_elapsed_ns": 60477294292, "genesis": "0c81dbc0158b6703c3cc50b1ba4b6ed4e4ad07aed2e7acd8b9c98909deb9e8d3", "context_id": "b060f1ae45ae1df7d3ed31b20364a884aebdc537b8ad27036b817f04cc9757c6"}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 267410498375, "learns": 10, "infers": 1, "expiries": 0, "revision": 11}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 529215514917, "learns": 20, "infers": 2, "expiries": 0, "revision": 22}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 927064142167, "learns": 30, "infers": 3, "expiries": 0, "revision": 33}
+{"phase": "public", "stage": "events", "public_elapsed_ns": 1253381641334, "learns": 40, "infers": 4, "expiries": 8, "revision": 44}
+{"phase": "public", "stage": "full_public_replay_started", "public_elapsed_ns": 1253748938584, "revision": 44}
+{"phase": "public_complete", "learns": 40, "infers": 4, "expiries": 8, "all_services_closed": true, "public_seconds": 1629.627796334}
+{"ok": true, "report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/report.json", "learns": 40, "infers": 4, "expiries": 8, "all_private_integer_comparisons_match": true}

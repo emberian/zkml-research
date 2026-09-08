@@ -1,0 +1,59 @@
+{
+  "artifacts": [
+    {
+      "bytes": 11110,
+      "path": "BOUND.md",
+      "sha256": "b07d7714ca6078a63bf1281ad8edbd07dc39094d91f6808e1c3868a3503dc2e5"
+    },
+    {
+      "bytes": 1110,
+      "path": "INPUTS.json",
+      "sha256": "300f8060d4befbc52136be55f933af648a910d6804ac634951ff974ac2f9dbc3"
+    },
+    {
+      "bytes": 8896,
+      "path": "RESULTS.json",
+      "sha256": "f59f2f6c93c379bd7c6a14b9f60ed3f926957db0bed68ee6994ec165d173c5ab"
+    },
+    {
+      "bytes": 4320,
+      "path": "check_bounds.py",
+      "sha256": "06ab88b97b7fd287af50b48d5e1c35b8cd00ce67b2b325fadaa1115ece4ebdf5"
+    },
+    {
+      "bytes": 172542,
+      "path": "extracts/2011-501.txt",
+      "sha256": "cbedb5cfdbb8b00d5900705a3e0887c465668efbb9f140c5632a314a0c7918ea"
+    },
+    {
+      "bytes": 152444,
+      "path": "extracts/2007-432.txt",
+      "sha256": "7417aac227d904ba206575968120f4ab701aa75af5627f49eff17a134479d646"
+    },
+    {
+      "bytes": 377444,
+      "path": "extracts/als-page33.png",
+      "sha256": "a5dfe23a1582d8d1d46971bf5ae86a322070d32515fc9c382d07313369301364"
+    }
+  ],
+  "pdf_downloads": 0,
+  "scope": "Explicit finite Gaussian syndrome regularity; source and public mathematical bounds only",
+  "scry_schema": 0,
+  "scry_sql": 0,
+  "source_pins": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf",
+      "sha256": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2011/501.pdf",
+      "sha256": "bf1160f088825ed28c343b299f5bc2acdca41cc50293310a03a4506d2fdbdb84"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/432.pdf",
+      "sha256": "7e747881cddd16b7dcf82893682cb9b4c788d7cec5712f80aa4193f2bd30a5b3"
+    }
+  ],
+  "web_opens": 0,
+  "web_search_queries": 2
+}

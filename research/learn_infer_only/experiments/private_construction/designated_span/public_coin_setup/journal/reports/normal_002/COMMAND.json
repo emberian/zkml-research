@@ -1,0 +1,18 @@
+{
+  "status": "executed",
+  "cwd": "/Users/ember/dev/zkml-research",
+  "argv": [
+    "python3",
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/driver.py",
+    "run",
+    "--root",
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/runtime/normal_002",
+    "--reports",
+    "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002"
+  ],
+  "shell_command": "python3 research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/driver.py run --root research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/runtime/normal_002 --reports research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002 > research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/stdout.jsonl 2> research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/stderr.log",
+  "stdout": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/stdout.jsonl",
+  "stderr": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/reports/normal_002/stderr.log",
+  "normalized_runtime": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/runtime/normal_002",
+  "scope": "normal positive path only; no adversarial controls; parent authorized normal40/4/8"
+}

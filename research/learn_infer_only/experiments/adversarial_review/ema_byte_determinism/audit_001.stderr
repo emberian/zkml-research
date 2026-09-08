@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/ema_byte_determinism/audit.py", line 183, in <module>
+    main()
+    ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/ema_byte_determinism/audit.py", line 171, in main
+    assert 1 <= start <= end <= len(lines)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

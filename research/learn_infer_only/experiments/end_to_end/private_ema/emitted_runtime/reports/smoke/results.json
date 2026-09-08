@@ -1,0 +1,706 @@
+{
+  "schema": "emitted-bool-runtime-positive-smoke-v1",
+  "claim": "EXECUTED",
+  "freeze_sha256": "b45a38b01838b9b44bf8f8bcdd67c7e908bec0850b0f627d051d3a5e75785b3b",
+  "started_utc": "2026-09-08T04:26:36.344712+00:00",
+  "operations": [
+    {
+      "name": "learn_001",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime",
+        "host",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_000.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/learn_001.time.txt"
+      ],
+      "wrapper_pid": 60493,
+      "wall_ns": 14906869583,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 485163008,
+      "reported": {
+        "all_output_bits_encrypted": true,
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 14535056333,
+        "gate_api_calls": {
+          "and": 196,
+          "trivial_encrypt": 2,
+          "xor": 342
+        },
+        "operation": "learn",
+        "output_bits": 32,
+        "read_ns": 336905375,
+        "role": "generic-schedule-host",
+        "schedule": {
+          "and": 196,
+          "nGates": 538,
+          "nInputs": 42,
+          "nOutputs": 32,
+          "nWires": 11562,
+          "operation": "learn",
+          "schema": "private-address-ema-bool-schedule-v1",
+          "unusedWireSlots": 10982,
+          "xor": 342
+        },
+        "schedule_validation_ns": 1246083,
+        "serialize_write_ns": 8568750,
+        "serialized_bytes": 108441,
+        "work_ns": 14881787125
+      }
+    },
+    {
+      "name": "learn_001_replay",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime",
+        "host",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_000.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/learn_001_replay.ct"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/learn_001_replay.time.txt"
+      ],
+      "wrapper_pid": 60771,
+      "wall_ns": 14963948333,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 485244928,
+      "reported": {
+        "all_output_bits_encrypted": true,
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 14587243959,
+        "gate_api_calls": {
+          "and": 196,
+          "trivial_encrypt": 2,
+          "xor": 342
+        },
+        "operation": "learn",
+        "output_bits": 32,
+        "read_ns": 343303375,
+        "role": "generic-schedule-host",
+        "schedule": {
+          "and": 196,
+          "nGates": 538,
+          "nInputs": 42,
+          "nOutputs": 32,
+          "nWires": 11562,
+          "operation": "learn",
+          "schema": "private-address-ema-bool-schedule-v1",
+          "unusedWireSlots": 10982,
+          "xor": 342
+        },
+        "schedule_validation_ns": 1311292,
+        "serialize_write_ns": 8229042,
+        "serialized_bytes": 108441,
+        "work_ns": 14940094542
+      }
+    },
+    {
+      "name": "infer_001",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime",
+        "host",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/output_001.ct"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/infer_001.time.txt"
+      ],
+      "wrapper_pid": 60933,
+      "wall_ns": 594722916,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 482705408,
+      "reported": {
+        "all_output_bits_encrypted": true,
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 305815833,
+        "gate_api_calls": {
+          "and": 3,
+          "trivial_encrypt": 2,
+          "xor": 6
+        },
+        "operation": "infer",
+        "output_bits": 1,
+        "read_ns": 257593292,
+        "role": "generic-schedule-host",
+        "schedule": {
+          "and": 3,
+          "nGates": 9,
+          "nInputs": 34,
+          "nOutputs": 1,
+          "nWires": 46,
+          "operation": "infer",
+          "schema": "private-address-ema-bool-schedule-v1",
+          "unusedWireSlots": 3,
+          "xor": 6
+        },
+        "schedule_validation_ns": 256000,
+        "serialize_write_ns": 6609125,
+        "serialized_bytes": 3413,
+        "work_ns": 570279375
+      }
+    },
+    {
+      "name": "infer_001_replay",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime",
+        "host",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/infer_001_replay.ct"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/infer_001_replay.time.txt"
+      ],
+      "wrapper_pid": 60936,
+      "wall_ns": 544291708,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 484933632,
+      "reported": {
+        "all_output_bits_encrypted": true,
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 258858291,
+        "gate_api_calls": {
+          "and": 3,
+          "trivial_encrypt": 2,
+          "xor": 6
+        },
+        "operation": "infer",
+        "output_bits": 1,
+        "read_ns": 248052750,
+        "role": "generic-schedule-host",
+        "schedule": {
+          "and": 3,
+          "nGates": 9,
+          "nInputs": 34,
+          "nOutputs": 1,
+          "nWires": 46,
+          "operation": "infer",
+          "schema": "private-address-ema-bool-schedule-v1",
+          "unusedWireSlots": 3,
+          "xor": 6
+        },
+        "schedule_validation_ns": 97917,
+        "serialize_write_ns": 6307208,
+        "serialized_bytes": 3413,
+        "work_ns": 513321000
+      }
+    },
+    {
+      "name": "learn_002",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime",
+        "host",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_002.ct"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/learn_002.time.txt"
+      ],
+      "wrapper_pid": 60970,
+      "wall_ns": 13943847584,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 485523456,
+      "reported": {
+        "all_output_bits_encrypted": true,
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 13675012666,
+        "gate_api_calls": {
+          "and": 196,
+          "trivial_encrypt": 2,
+          "xor": 342
+        },
+        "operation": "learn",
+        "output_bits": 32,
+        "read_ns": 239123917,
+        "role": "generic-schedule-host",
+        "schedule": {
+          "and": 196,
+          "nGates": 538,
+          "nInputs": 42,
+          "nOutputs": 32,
+          "nWires": 11562,
+          "operation": "learn",
+          "schema": "private-address-ema-bool-schedule-v1",
+          "unusedWireSlots": 10982,
+          "xor": 342
+        },
+        "schedule_validation_ns": 318958,
+        "serialize_write_ns": 14290042,
+        "serialized_bytes": 108441,
+        "work_ns": 13928757375
+      }
+    },
+    {
+      "name": "learn_002_replay",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime",
+        "host",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/learn_002_replay.ct"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/learn_002_replay.time.txt"
+      ],
+      "wrapper_pid": 61262,
+      "wall_ns": 27680424708,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 485015552,
+      "reported": {
+        "all_output_bits_encrypted": true,
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 27393839666,
+        "gate_api_calls": {
+          "and": 196,
+          "trivial_encrypt": 2,
+          "xor": 342
+        },
+        "operation": "learn",
+        "output_bits": 32,
+        "read_ns": 252291625,
+        "role": "generic-schedule-host",
+        "schedule": {
+          "and": 196,
+          "nGates": 538,
+          "nInputs": 42,
+          "nOutputs": 32,
+          "nWires": 11562,
+          "operation": "learn",
+          "schema": "private-address-ema-bool-schedule-v1",
+          "unusedWireSlots": 10982,
+          "xor": 342
+        },
+        "schedule_validation_ns": 335542,
+        "serialize_write_ns": 11067375,
+        "serialized_bytes": 108441,
+        "work_ns": 27657549042
+      }
+    },
+    {
+      "name": "infer_002",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime",
+        "host",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/output_002.ct"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/infer_002.time.txt"
+      ],
+      "wrapper_pid": 65085,
+      "wall_ns": 696433958,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 482820096,
+      "reported": {
+        "all_output_bits_encrypted": true,
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 339818000,
+        "gate_api_calls": {
+          "and": 3,
+          "trivial_encrypt": 2,
+          "xor": 6
+        },
+        "operation": "infer",
+        "output_bits": 1,
+        "read_ns": 302830500,
+        "role": "generic-schedule-host",
+        "schedule": {
+          "and": 3,
+          "nGates": 9,
+          "nInputs": 34,
+          "nOutputs": 1,
+          "nWires": 46,
+          "operation": "infer",
+          "schema": "private-address-ema-bool-schedule-v1",
+          "unusedWireSlots": 3,
+          "xor": 6
+        },
+        "schedule_validation_ns": 484458,
+        "serialize_write_ns": 14657750,
+        "serialized_bytes": 3413,
+        "work_ns": 657801333
+      }
+    },
+    {
+      "name": "infer_002_replay",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime",
+        "host",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/infer_002_replay.ct"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/infer_002_replay.time.txt"
+      ],
+      "wrapper_pid": 65104,
+      "wall_ns": 704653958,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 482820096,
+      "reported": {
+        "all_output_bits_encrypted": true,
+        "bootstrap_count_instrumented": false,
+        "client_key_read": false,
+        "evaluate_ns": 345349000,
+        "gate_api_calls": {
+          "and": 3,
+          "trivial_encrypt": 2,
+          "xor": 6
+        },
+        "operation": "infer",
+        "output_bits": 1,
+        "read_ns": 317257792,
+        "role": "generic-schedule-host",
+        "schedule": {
+          "and": 3,
+          "nGates": 9,
+          "nInputs": 34,
+          "nOutputs": 1,
+          "nWires": 46,
+          "operation": "infer",
+          "schema": "private-address-ema-bool-schedule-v1",
+          "unusedWireSlots": 3,
+          "xor": 6
+        },
+        "schedule_validation_ns": 80917,
+        "serialize_write_ns": 14193334,
+        "serialized_bytes": 3413,
+        "work_ns": 676888500
+      }
+    },
+    {
+      "name": "reader_state_001",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader",
+        "state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader/client_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/private/state_001.json"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/reader_state_001.time.txt"
+      ],
+      "wrapper_pid": 65106,
+      "wall_ns": 19034459,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 6537216,
+      "reported": {
+        "role": "reader",
+        "operation": "state",
+        "decrypt_ns": 10416,
+        "work_ns": 1463250,
+        "decrypted_bits": 32,
+        "plaintext_report_private": true,
+        "read_all_client_key_retained": true
+      }
+    },
+    {
+      "name": "reader_output_001",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader",
+        "output",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader/client_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/output_001.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/private/output_001.json"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/reader_output_001.time.txt"
+      ],
+      "wrapper_pid": 65108,
+      "wall_ns": 15814834,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 6160384,
+      "reported": {
+        "role": "reader",
+        "operation": "output",
+        "decrypt_ns": 7375,
+        "work_ns": 576417,
+        "decrypted_bits": 1,
+        "plaintext_report_private": true,
+        "read_all_client_key_retained": true
+      }
+    },
+    {
+      "name": "reader_state_002",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader",
+        "state",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader/client_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/private/state_002.json"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/reader_state_002.time.txt"
+      ],
+      "wrapper_pid": 65111,
+      "wall_ns": 19112125,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 6520832,
+      "reported": {
+        "role": "reader",
+        "operation": "state",
+        "decrypt_ns": 154209,
+        "work_ns": 1638375,
+        "decrypted_bits": 32,
+        "plaintext_report_private": true,
+        "read_all_client_key_retained": true
+      }
+    },
+    {
+      "name": "reader_output_002",
+      "argv": [
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/reader",
+        "output",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/private/reader/client_key.bin",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/output_002.ct",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/private/output_002.json"
+      ],
+      "measurement_argv_prefix": [
+        "/usr/bin/time",
+        "-l",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/reports/smoke/reader_output_002.time.txt"
+      ],
+      "wrapper_pid": 65114,
+      "wall_ns": 20511959,
+      "returncode": 0,
+      "timed_out": false,
+      "peak_rss_bytes": 6144000,
+      "reported": {
+        "role": "reader",
+        "operation": "output",
+        "decrypt_ns": 9250,
+        "work_ns": 779166,
+        "decrypted_bits": 1,
+        "plaintext_report_private": true,
+        "read_all_client_key_retained": true
+      }
+    }
+  ],
+  "replays": [
+    {
+      "operation": "learn",
+      "step": "001",
+      "complete_serialized_bytes_equal": true,
+      "same_serialized_read_arguments": true,
+      "input_hashes": {
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json": "94e8369ffc8fcdf57b8351b278d5af90dc49a26d83600d40f0bd6a0da359dde8",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin": "6ac56c1a76a83e45e159cf8ed4619a2c95efc073dbab0b2d8b33fdbe8addae2e",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/state_000.ct": "22138ebe23141fc006c4fe90a223688b3f84fc35a43f31ef862ebddcaae3c35d",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_001.ct": "2ee37c564c5283dc98f2420a1b9f45e0740b26d2825ee38ad2533efb8f3b7390"
+      },
+      "input_hashes_unchanged_after_pair": true,
+      "separate_wrapper_pids": [
+        60493,
+        60771
+      ],
+      "first_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct",
+      "replay_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/learn_001_replay.ct",
+      "first_sha256": "dc45a0e8306c59661bfeca8261571cf3d56fe5bad5b27c65bba9bdf9be1df47d",
+      "replay_sha256": "dc45a0e8306c59661bfeca8261571cf3d56fe5bad5b27c65bba9bdf9be1df47d",
+      "bytes": 108441
+    },
+    {
+      "operation": "infer",
+      "step": "001",
+      "complete_serialized_bytes_equal": true,
+      "same_serialized_read_arguments": true,
+      "input_hashes": {
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json": "b742ed7710d2680119eceeff0c553d675e1ce187a503981fc500a6a4a683b80c",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin": "6ac56c1a76a83e45e159cf8ed4619a2c95efc073dbab0b2d8b33fdbe8addae2e",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct": "dc45a0e8306c59661bfeca8261571cf3d56fe5bad5b27c65bba9bdf9be1df47d",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct": "cb6fd9970dc46115572b6471cd4e9d457da76f2b04be5372259be54b628cbfd6"
+      },
+      "input_hashes_unchanged_after_pair": true,
+      "separate_wrapper_pids": [
+        60933,
+        60936
+      ],
+      "first_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/output_001.ct",
+      "replay_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/infer_001_replay.ct",
+      "first_sha256": "b29eaa5aabf115c4969f8817e3600d5fb279b53015f10aaa12b494a701cc3b8c",
+      "replay_sha256": "b29eaa5aabf115c4969f8817e3600d5fb279b53015f10aaa12b494a701cc3b8c",
+      "bytes": 3413
+    },
+    {
+      "operation": "learn",
+      "step": "002",
+      "complete_serialized_bytes_equal": true,
+      "same_serialized_read_arguments": true,
+      "input_hashes": {
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json": "94e8369ffc8fcdf57b8351b278d5af90dc49a26d83600d40f0bd6a0da359dde8",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin": "6ac56c1a76a83e45e159cf8ed4619a2c95efc073dbab0b2d8b33fdbe8addae2e",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_001.ct": "dc45a0e8306c59661bfeca8261571cf3d56fe5bad5b27c65bba9bdf9be1df47d",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/input_002.ct": "245e0c661b28e505d78eddb074b6127470a142d0577f8b6a4d5e0ab83ba2f6be"
+      },
+      "input_hashes_unchanged_after_pair": true,
+      "separate_wrapper_pids": [
+        60970,
+        61262
+      ],
+      "first_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_002.ct",
+      "replay_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/learn_002_replay.ct",
+      "first_sha256": "56f72bbb49715f2a8199ef6a528f6428aba264a3dafb78d9ef36ac720451970e",
+      "replay_sha256": "56f72bbb49715f2a8199ef6a528f6428aba264a3dafb78d9ef36ac720451970e",
+      "bytes": 108441
+    },
+    {
+      "operation": "infer",
+      "step": "002",
+      "complete_serialized_bytes_equal": true,
+      "same_serialized_read_arguments": true,
+      "input_hashes": {
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json": "b742ed7710d2680119eceeff0c553d675e1ce187a503981fc500a6a4a683b80c",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/keys/server_key.bin": "6ac56c1a76a83e45e159cf8ed4619a2c95efc073dbab0b2d8b33fdbe8addae2e",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/state_002.ct": "56f72bbb49715f2a8199ef6a528f6428aba264a3dafb78d9ef36ac720451970e",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/runs/run_001/public/query_001.ct": "cb6fd9970dc46115572b6471cd4e9d457da76f2b04be5372259be54b628cbfd6"
+      },
+      "input_hashes_unchanged_after_pair": true,
+      "separate_wrapper_pids": [
+        65085,
+        65104
+      ],
+      "first_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/output_002.ct",
+      "replay_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/runs/smoke/public/infer_002_replay.ct",
+      "first_sha256": "7392d8e66ce96df6f8d27bd3efdaff2239f773fbc04080175b7a51cb63239f39",
+      "replay_sha256": "7392d8e66ce96df6f8d27bd3efdaff2239f773fbc04080175b7a51cb63239f39",
+      "bytes": 3413
+    }
+  ],
+  "public_hash_checks": [
+    {
+      "stage": "before_public_evaluations",
+      "files_matched": 29,
+      "checked_utc": "2026-09-08T04:26:36.508408+00:00"
+    },
+    {
+      "stage": "before_learn_001",
+      "files_matched": 29,
+      "checked_utc": "2026-09-08T04:26:36.647248+00:00"
+    },
+    {
+      "stage": "before_infer_001",
+      "files_matched": 29,
+      "checked_utc": "2026-09-08T04:27:06.874568+00:00"
+    },
+    {
+      "stage": "before_learn_002",
+      "files_matched": 29,
+      "checked_utc": "2026-09-08T04:27:08.361133+00:00"
+    },
+    {
+      "stage": "before_infer_002",
+      "files_matched": 29,
+      "checked_utc": "2026-09-08T04:27:50.349836+00:00"
+    },
+    {
+      "stage": "after_all_public_evaluations_before_private_audit",
+      "files_matched": 29,
+      "checked_utc": "2026-09-08T04:27:52.141528+00:00"
+    },
+    {
+      "stage": "after_private_audit",
+      "files_matched": 29,
+      "checked_utc": "2026-09-08T04:27:52.360754+00:00"
+    }
+  ],
+  "private_audits": [
+    {
+      "step": 1,
+      "all_registers_match_integer_oracle": true,
+      "unselected_registers_unchanged": true,
+      "private_sign_matches": true
+    },
+    {
+      "step": 2,
+      "all_registers_match_integer_oracle": true,
+      "unselected_registers_unchanged": true,
+      "private_sign_matches": true
+    }
+  ],
+  "full_read_all_client_key_retained": true,
+  "roles_share_os_account": true,
+  "private_key_read_or_hashed_by_host_or_coordinator": false,
+  "host_concurrency": 1,
+  "rayon_num_threads": "1",
+  "contention": "root reports existing one-thread long EMA utility and short setup/journal work; wall timings are contended",
+  "universal_rust_tfhe_semantics_or_replay_theorem": false,
+  "success": true,
+  "error": null,
+  "all_public_result_hashes_rechecked_before_private_audit": true,
+  "public_execution_complete_before_private_audit": true,
+  "public_execution_complete_utc": "2026-09-08T04:27:52.144872+00:00",
+  "ended_utc": "2026-09-08T04:27:52.361626+00:00"
+}

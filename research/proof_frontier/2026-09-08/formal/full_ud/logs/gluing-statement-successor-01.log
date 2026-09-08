@@ -1,0 +1,3 @@
+Theory/PolynomialGluingStatement.lean:83:2: warning: Try `simp at h0` instead of `simpa using h0`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`

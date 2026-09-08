@@ -1,0 +1,1 @@
+PASS: git apply --check; git apply; all ten source files byte-identical in a clean temporary tree.

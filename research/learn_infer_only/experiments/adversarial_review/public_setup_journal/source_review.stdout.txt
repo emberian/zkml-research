@@ -1,0 +1,13 @@
+{
+  "identical_dependency_copies": 28,
+  "execution_source_pins": 33,
+  "signature_implementation_pins": 79,
+  "environment_binaries": 2,
+  "public_setup_genesis_bindings": "passed",
+  "independent_integer_pivot_determinant": -812032080,
+  "registration_slots": 16,
+  "matrix_dimension": 577,
+  "exact_recipient_token_and_query_bindings": 16,
+  "public_bounded_integer_no_wrap": "passed",
+  "source_and_public_record_only": true
+}

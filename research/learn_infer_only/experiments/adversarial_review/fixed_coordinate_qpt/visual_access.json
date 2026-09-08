@@ -1,0 +1,16 @@
+{
+  "claim_kind": "EXECUTED",
+  "source_pdf_sha256": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0",
+  "printed_pages": [
+    21,
+    22,
+    34
+  ],
+  "inspected": "Entire rendered pages; square-root scopes in Lemmas 4/5/10 and single-call reduction interface",
+  "render_command_template": "pdftoppm -f START -l END -scale-to 1800 -png /Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/renders/als",
+  "renders_sha256": {
+    "als-21.png": "940611c9885273fd3054308daa487933f999a40e71c1d7e5749e13f1b341fb28",
+    "als-22.png": "6fc88529fa39a9184e1b63c0883fa39d069f0bec3edce2cd79f5d3b7a0c0ad31",
+    "als-34.png": "b58841e514390c64b53f9bf7ff1d8d870fadafed6c889eb1e727d729ab3e62fe"
+  }
+}

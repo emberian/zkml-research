@@ -1,0 +1,67 @@
+{
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": {
+    "expected": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+    "observed": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+    "matches": true
+  },
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/EmitPrivateAddressEma.lean": {
+    "expected": "ad2d79fcd234112e75b44aec94750caac9fcca564fe99f2e675e329d7f51cecf",
+    "observed": "ad2d79fcd234112e75b44aec94750caac9fcca564fe99f2e675e329d7f51cecf",
+    "matches": true
+  },
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/check.py": {
+    "expected": "459bd0d1d4f6a09e07a41b15fff1c7cb98b2cda10df34a6184456f41f5ce7b5a",
+    "observed": "459bd0d1d4f6a09e07a41b15fff1c7cb98b2cda10df34a6184456f41f5ce7b5a",
+    "matches": true
+  },
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/package.py": {
+    "expected": "46591368ebbab5c673ae414be69e192841e79dc29816ac750db06b7b5c77b832",
+    "observed": "46591368ebbab5c673ae414be69e192841e79dc29816ac750db06b7b5c77b832",
+    "matches": true
+  },
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/SCHEMA.md": {
+    "expected": "13b7fadd20d0e281857f76aab4ea88228e80c1ac7dcfecbd57fa5b1aefe97db1",
+    "observed": "13b7fadd20d0e281857f76aab4ea88228e80c1ac7dcfecbd57fa5b1aefe97db1",
+    "matches": true
+  },
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": {
+    "expected": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "observed": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "matches": true
+  },
+  "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch": {
+    "expected": "c96679078731512508994cd3804c111e096e9e8cb14409592154d1d8bf9cbb30",
+    "observed": "c96679078731512508994cd3804c111e096e9e8cb14409592154d1d8bf9cbb30",
+    "matches": true
+  },
+  "/Users/ember/dev/minidregg/Compiler/Signature.lean": {
+    "expected": "c77dd3020ea142d5dec4ad19f74fbd05f0a761ad6012f209a8fdc118ed6e2424",
+    "observed": "c77dd3020ea142d5dec4ad19f74fbd05f0a761ad6012f209a8fdc118ed6e2424",
+    "matches": true
+  },
+  "/Users/ember/dev/minidregg/Compiler/Air.lean": {
+    "expected": "8bde0e33ab2ed0cb739ddf2f06df299bdbada7ffac81057438f52a1528cfeecb",
+    "observed": "8bde0e33ab2ed0cb739ddf2f06df299bdbada7ffac81057438f52a1528cfeecb",
+    "matches": true
+  },
+  "/Users/ember/dev/minidregg/Compiler/AirFlatten.lean": {
+    "expected": "504221deeb50018370b35110c60bcd01d0e0e89677a63ed0f023b80c07fe3f54",
+    "observed": "504221deeb50018370b35110c60bcd01d0e0e89677a63ed0f023b80c07fe3f54",
+    "matches": true
+  },
+  "/Users/ember/dev/minidregg/Compiler/Emit.lean": {
+    "expected": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+    "observed": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+    "matches": true
+  },
+  "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": {
+    "expected": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4",
+    "observed": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4",
+    "matches": true
+  },
+  "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": {
+    "expected": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6",
+    "observed": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6",
+    "matches": true
+  }
+}

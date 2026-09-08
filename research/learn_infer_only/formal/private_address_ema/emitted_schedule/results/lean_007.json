@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_h9biv1pp/olean/Compiler/PrivateAddressEmaSchedule.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule",
+  "exit_code": 0,
+  "source_sha256": "3f502243703b81acd37a3609ea2bb54a7d5f75067b07159ec8b2599f21ce9837",
+  "source_sha256_after": "3f502243703b81acd37a3609ea2bb54a7d5f75067b07159ec8b2599f21ce9837",
+  "source_unchanged": true,
+  "stdout": "",
+  "stderr": ""
+}

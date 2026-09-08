@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_h9biv1pp/olean/Compiler/PrivateAddressEmaSchedule.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule",
+  "exit_code": 0,
+  "source_sha256": "e971939542040a4b19e88ffaea0b0fca44bac8aa86fb7349360049456ed6b6ee",
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean:314:18: warning: This simp argument is unused:\n  ite_false\n\nHint: Omit it from the simp argument list.\n  simp only [h,\u0335 \u0335i\u0335t\u0335e\u0335_\u0335f\u0335a\u0335l\u0335s\u0335e\u0335]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n",
+  "stderr": ""
+}

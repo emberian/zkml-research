@@ -1,0 +1,81 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling serde_core v1.0.229
+   Compiling version_check v0.9.5
+   Compiling syn v3.0.5
+   Compiling serde v1.0.229
+   Compiling serde_derive v1.0.229
+   Compiling autocfg v1.5.1
+   Compiling num-traits v0.2.19
+   Compiling syn v2.0.119
+   Compiling bytemuck v1.25.2
+   Compiling equator-macro v0.4.2
+   Compiling generic-array v0.14.7
+   Compiling crossbeam-utils v0.8.22
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.189
+   Compiling equator v0.4.2
+   Compiling num-complex v0.4.6
+   Compiling crossbeam-epoch v0.9.20
+   Compiling typenum v1.20.1
+   Compiling aligned-vec v0.6.4
+   Compiling paste v1.0.15
+   Compiling crossbeam-deque v0.8.7
+   Compiling libm v0.2.16
+   Compiling pulp v0.22.3
+   Compiling rayon-core v1.13.0
+   Compiling crypto-common v0.1.7
+   Compiling inout v0.1.4
+   Compiling tfhe-versionable-derive v0.8.0
+   Compiling pulp-wasm-simd-flag v0.1.1
+   Compiling reborrow v0.5.5
+   Compiling either v1.18.0
+   Compiling tfhe-versionable v0.8.0
+   Compiling cipher v0.4.4
+   Compiling getrandom v0.2.17
+   Compiling cpufeatures v0.2.17
+   Compiling dyn-stack-macros v0.1.3
+   Compiling zmij v1.0.23
+   Compiling dyn-stack v0.13.2
+   Compiling aes v0.8.4
+   Compiling rayon v1.12.0
+   Compiling bincode v1.3.3
+   Compiling tfhe v1.6.3
+   Compiling serde_json v1.0.151
+   Compiling tfhe-safe-serialize v0.1.1
+   Compiling tfhe-csprng v0.9.1
+   Compiling tfhe-fft v0.10.1
+   Compiling rand_core v0.6.4
+   Compiling tfhe-ntt v0.7.1
+   Compiling itertools v0.14.0
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling resident-emitted-bool-runtime v0.1.0 (/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 19s
+     Running unittests src/lib.rs (target/debug/deps/resident_emitted_bool_runtime-8dfc81aca5e0f1a5)
+
+running 8 tests
+test ciphertext::tests::public_constants_cannot_be_artifact_outputs ... ok
+test ciphertext::tests::generic_bincode_compatibility_and_trailing_rejection ... ok
+test tests::gaps_unused_top_wire_and_gate_truth_table ... ok
+test tests::constant_outputs_valid_in_schedule_and_input_length_checked ... ok
+test tests::duplicate_fields_and_trailing_json_rejected ... ok
+test tests::output_write_rules ... ok
+test tests::all_references_must_be_initialized ... ok
+test tests::strict_schema_and_reference_types ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/resident_emitted_bool_runtime-1004e99d81e920ea)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests resident_emitted_bool_runtime
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,5 @@
+[OPEN] Root/proof_frontier: use the fullUD consumer once its complete checked proof and positive-degree premises are available. Instantiate HalfThresholdFriCoherent.friAdaptive_coherent_sampled_sound with `radius(0)=2/5`, `radius(j)=(19-j)/95` for `1<=j<=19`, `foldRadius(0)=1/5` and preserving-tail `foldRadius(j)=radius(j)`. Prove all gap/fold/domain assumptions on the actual tower. The arithmetic candidate `q=3,603` targets the ideal sampled 55-bit event only.
+
+[OPEN] Preserve current ErrorBudget and TwoRegimeQueryBudget labels: the radius port changes no summand or current UDR formula. A deployment claim additionally needs the exact farness reduction, commitment and FS/shared-execution transfers. Use the same-initial-radius optimized rows in fixed_initial.csv; the source-example 4,810→3,603 row changes a premise and must not be presented as the intrinsic saving.
+
+[OPEN] If a 100-bit ideal nineteen-round target is required over BabyBear4, this fixed common-bound challenge term already fails it. Improving sampled query count alone cannot repair that row. Any sharper challenge accounting or field change must be a separate proved/priced modification.

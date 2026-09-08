@@ -1,0 +1,6 @@
+{
+  "name": "private_address_ema_schedule",
+  "root": "formal/private_address_ema/emitted_schedule",
+  "patch": "formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch",
+  "expected_pins": 46
+}

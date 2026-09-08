@@ -1,0 +1,14 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Theory/PolynomialMatrixKernel.lean"
+  ],
+  "cwd": "/private/tmp/minidregg-polynomial-all-pins-20260908",
+  "elapsed_seconds": 14.005356792011298,
+  "exit_code": 0,
+  "source_sha256": "dc790c2737e7ed342b4dbd71551e1b2274c75dc69e88c3d382467cd895d31103",
+  "stdout": "'PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det' depends on axioms: [propext, Classical.choice, Quot.sound]\n'PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'PolynomialMatrixKernel.Source.adjugate_updateRow_same_col' depends on axioms: [propext, Classical.choice, Quot.sound]\n'PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": ""
+}

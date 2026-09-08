@@ -5,6 +5,32 @@ Root owns shared ledgers, named commits and final integration. Read
 [the current brief](../../swarm/OVERNIGHT-2026-09-08.md). The earlier paused-goal
 paragraphs below are historical recovery records, not the current goal state.
 
+## Current second-wave ownership — 2026-09-08 05:21 UTC
+
+[EXECUTED] Public-coin journal, emitted EMA smoke/fixed-plan controls, full-UD
+core and first PQ finite sizing are complete. The failed long handwritten
+TFHE attempt is sealed and must not be retried or privately decoded.
+
+| Owner | Current next artifact |
+|---|---|
+| root |915-pin combined Lean overlay; named evidence checkpoint; central ledgers and source-linked Pages refresh. |
+| emitted_runtime | New emitted_long_run/:384 Learn/96 Infer, one public byte replay per event, fixed observed FFT plan; six-hour cap and hard15:00UTC cutoff; all public work before private drain. |
+| proof_frontier | Separate concrete BabyBearExt4 carrier/cardinality/full-UD application; frozen core unchanged. |
+| polynomial_gluing | Derive shrinking round radii and feed actual coherent sampled-query consumer; exact conditional query arithmetic. |
+| polynomial_kernel | Independent full-UD proof/consumer/premise review. |
+| formal_runtime_bridge | Adaptation-dynamics independent review complete; root collects. |
+| independent_review | Independent finite PQ regularity/correctness/cost accounting review. |
+| pq_setup_review | Explicit finite constants and errors for remaining ALS reduction steps, or precise source blocker. |
+| release_construction | Primary-source alternatives that reduce fixed-coordinate public-coin setup costs. |
+| nonlinear_utility + public_setup_journal | Tiny live semantic BFV successor, independently reviewed actual public-before-decryption ordering; frozen model/text selection. |
+| research_site | Refresh existing public cards with completed journal, failure, emitted controls and qualified PQ sizes; root commits/publishes. |
+
+[OPEN] Preserve accepted-value versus instrumented-timing scope, full reader
+credentials, trusted plaintext semantic issuer and synthetic utility limits.
+No prior safety-stopped task is resumed. Stop launching work at15:00UTC.
+
+## First-wave ownership (historical)
+
 | Lane | Current bounded output |
 |---|---|
 | public_setup_journal | Seal prior public-coin positive evidence; new normal40/four/eight journal join with all public work before private drain. |

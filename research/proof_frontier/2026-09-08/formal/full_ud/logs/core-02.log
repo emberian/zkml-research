@@ -1,0 +1,27 @@
+Selvage/FullUDCore.lean:37:69: error: unexpected token 'set_option'; expected 'lemma'
+Selvage/FullUDCore.lean:287:28: error: Application type mismatch: The argument
+  h_card_Px
+has type
+  ↑⟨n, hn_pos⟩ ≤ card.{u_1} P_x
+but is expected to have type
+  ↑⟨n, hn_pos⟩ ≤ card.{0} ?m.2245
+in the application
+  polishchuk_spielman e e (e + deg - 1) (e + 1) ⟨n, hn_pos⟩ ⟨#good, hgood_pos⟩ ?m.2236 ?m.2237 ?m.2238 ?m.2239 ?m.2240
+    ?m.2241 ?m.2242 ?m.2243 ?m.2244 ?m.2245 ?m.2246 ?m.2250 ?m.2252 h_card_Px
+Selvage/FullUDCore.lean:39:0: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (2000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Selvage/FullUDCore.lean:137:29: warning: This simp argument is unused:
+  Function.comp_def
+
+Hint: Omit it from the simp argument list.
+  simp [hammingDist,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵d̵e̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Minidregg.Selvage.fullUDCardCore' does not depend on any axioms
+Selvage/FullUDCore.lean:337:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Selvage.fullUDCardCore' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.Selvage.fullUDCardCore' does not depend on any axioms

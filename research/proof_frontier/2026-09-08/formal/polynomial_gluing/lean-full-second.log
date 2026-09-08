@@ -1,0 +1,43 @@
+Theory/PolynomialGluing.lean:581:30: error: unsolved goals
+F : Type
+inst✝ : Field F
+A B : F[X][Y]
+n : ℕ
+hn : natDegreeY B ≤ n
+hA0 : A ≠ 0
+hrel : IsRelPrime A B
+m : ℕ := natDegreeY A
+hm : m = natDegreeY A
+hres : B.resultant A n m = 0
+v : Fin (n + m) → F[X]
+hv0 : v ≠ 0
+hv : B.sylvester A n m *ᵥ v = 0
+P : F[X][Y] := ∑ j, (monomial ↑j) (v (Fin.castAdd m j))
+Q : F[X][Y] := ∑ j, (monomial ↑j) (v (Fin.natAdd n j))
+hP_ofFn : P = (ofFn n) fun j => v (Fin.castAdd m j)
+hQ_ofFn : Q = (ofFn m) fun j => v (Fin.natAdd n j)
+hvcoeff : ∀ (i : Fin (n + m)), (A * P + B * Q).coeff ↑i = 0
+hnmpos : 0 < n + m
+hA_nd : A.natDegree = m
+k : ℕ
+hk : ¬k < n + m
+hdegAP : (A * P).natDegree < n + m
+hm0 : m = 0
+⊢ ∑ j, (monomial ↑j) (v (Fin.natAdd n j)) = 0
+Theory/PolynomialGluing.lean:581:42: warning: This simp argument is unused:
+  hm0
+
+Hint: Omit it from the simp argument list.
+  simp [Q,̵ ̵h̵m̵0̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'polishchuk_spielman' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+Theory/PolynomialGluing.lean:1028:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'polishchuk_spielman' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'polishchuk_spielman' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'polynomialGluing' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+Theory/PolynomialGluing.lean:1031:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'polynomialGluing' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'polynomialGluing' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

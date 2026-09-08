@@ -1,0 +1,33 @@
+Selvage/ProximityGapFullUD.lean:99:4: error: linarith failed to find a contradiction
+case h
+ι : Type u_1
+inst✝⁵ : Fintype ι
+inst✝⁴ : DecidableEq ι
+F : Type u_2
+inst✝³ : Field F
+inst✝² : DecidableEq F
+inst✝¹ : Nonempty ι
+inst✝ : Fintype F
+dom : ι ↪ F
+d : ℕ
+hd : 1 ≤ d
+hn : 0 < ↑(Fintype.card ι)
+h :
+  HasMutualCorrelatedAgreement (affineGenerator F) (reedSolomonCode dom d)
+    (max (1 - (1 - (↑d - 1) / ↑(Fintype.card ι)) / 2) ((1 + ↑d / ↑(Fintype.card ι)) / 2)) fun x =>
+    ↑(Fintype.card ι) / ↑(Fintype.card F)
+h1n : 0 < 1 / ↑(Fintype.card ι)
+a✝ : (1 + ↑d / ↑(Fintype.card ι)) / 2 < 1 - (1 / 2 - (↑d - 1) / ↑(Fintype.card ι) / 2)
+⊢ False
+failed
+'Minidregg.Selvage.hasMutualCorrelatedAgreement_fullUD' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+Selvage/ProximityGapFullUD.lean:119:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Selvage.hasMutualCorrelatedAgreement_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.Selvage.hasMutualCorrelatedAgreement_fullUD' depends on axioms: [propext,
++  sorryAx,
++  Classical.choice,
++  Quot.sound]

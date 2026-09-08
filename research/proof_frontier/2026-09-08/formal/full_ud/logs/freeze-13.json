@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDFriConsumer.olean",
+    "Selvage/FullUDFriConsumer.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-20260908",
+  "exit_code": 0,
+  "source_sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+  "source_unchanged": true,
+  "elapsed_s": 9.343991041183472,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-13.log"
+}

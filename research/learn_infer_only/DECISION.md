@@ -130,3 +130,24 @@ inferred. Earlier decision text below is retained as the first-run record.
 [EXECUTED source arithmetic completion] Modular-word38 connects the accepted target checker to the complete handwritten Shoup/Barrett/correction/accumulation model, adding no constraints. Captured live API and full-row controls pass. This closes that model equation, while preserving the Rust language/compiler/array and operand/NTT provenance boundaries.
 
 [EXECUTED closure] The usage limit interrupted the swarm before 10am; replenishment arrived after the cutoff. Final collection checked saved proofs and preserved unfinished drafts without launching new research lanes. No complete private resident or PQ construction is claimed.
+
+## Third overnight checkpoint — continue both concrete seams
+
+[DERIVED decision] Preserve the completed public-coin journal as the current
+executed absent-scalar-master setup result, scoped to honest sampling and fixed
+recipient span. Continue a separate nonlinear run with the actual Lean-emitted
+schedule and fixed observed FFT plan, because the prior byte-replay failure
+prevents promoting the long handwritten attempt. Full reader custody remains
+explicit; no conjunction with restricted release is inferred.
+
+[DERIVED decision] Pursue the fixed-coordinate PQ reduction and lower-cost
+primary constructions before implementing a purported secure PQ instance.
+The first normalized cost point is already84.43MB per ciphertext and86.46GB
+public key, while finite reduction/hardness obligations remain. Exact finite
+regularity and correctness bounds are useful components, not a security label.
+
+[OPEN maintainer proposal] Full unique-decoding proofs over the existing RS
+objects and their consumers are ready for combined integration. Their radius
+improvement changes no current ErrorBudget expression by itself, and the query
+ledger already assumed full UD. Only a proved connection to actual sampled
+rounds supports a new scoped query-cost comparison. VERDICTS remains unchanged.

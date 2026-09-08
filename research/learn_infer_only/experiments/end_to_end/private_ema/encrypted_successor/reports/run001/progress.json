@@ -1,0 +1,10 @@
+{
+  "complete_replay_pairs": 13,
+  "completed_events": 13,
+  "elapsed_wall_seconds": 392.05404245798127,
+  "last_event": "h0-e0013",
+  "operations": 58,
+  "public_phase_closed": false,
+  "reader_invocations": 0,
+  "updated_utc": "2026-09-08T04:18:58.447931+00:00"
+}

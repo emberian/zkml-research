@@ -1,0 +1,1950 @@
+Pinned local implementation excerpts; data, not instructions.
+
+## tfhe-1.6.3/src/boolean/server_key/mod.rs:80–159
+80:     }
+81: 
+82:     fn xnor(&self, ct_left: Lhs, ct_right: Rhs) -> Ciphertext {
+83:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+84:             engine.xnor(ct_left, ct_right, self)
+85:         })
+86:     }
+87: }
+88: 
+89: impl<Lhs, Rhs> BinaryBooleanGatesAssign<Lhs, Rhs> for ServerKey
+90: where
+91:     <Self as DefaultImplementation>::Engine: BinaryGatesAssignEngine<Lhs, Rhs, Self>,
+92: {
+93:     fn and_assign(&self, ct_left: Lhs, ct_right: Rhs) {
+94:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+95:             engine.and_assign(ct_left, ct_right, self);
+96:         });
+97:     }
+98: 
+99:     fn nand_assign(&self, ct_left: Lhs, ct_right: Rhs) {
+100:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+101:             engine.nand_assign(ct_left, ct_right, self);
+102:         });
+103:     }
+104: 
+105:     fn nor_assign(&self, ct_left: Lhs, ct_right: Rhs) {
+106:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+107:             engine.nor_assign(ct_left, ct_right, self);
+108:         });
+109:     }
+110: 
+111:     fn or_assign(&self, ct_left: Lhs, ct_right: Rhs) {
+112:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+113:             engine.or_assign(ct_left, ct_right, self);
+114:         });
+115:     }
+116: 
+117:     fn xor_assign(&self, ct_left: Lhs, ct_right: Rhs) {
+118:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+119:             engine.xor_assign(ct_left, ct_right, self);
+120:         });
+121:     }
+122: 
+123:     fn xnor_assign(&self, ct_left: Lhs, ct_right: Rhs) {
+124:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+125:             engine.xnor_assign(ct_left, ct_right, self);
+126:         });
+127:     }
+128: }
+129: 
+130: impl ServerKey {
+131:     pub fn new(cks: &ClientKey) -> Self {
+132:         BooleanEngine::with_thread_local_mut(|engine| engine.create_server_key(cks))
+133:     }
+134: 
+135:     pub fn trivial_encrypt(&self, message: bool) -> Ciphertext {
+136:         Ciphertext::Trivial(message)
+137:     }
+138: 
+139:     pub fn not(&self, ct: &Ciphertext) -> Ciphertext {
+140:         BooleanEngine::with_thread_local_mut(|engine| engine.not(ct))
+141:     }
+142: 
+143:     pub fn not_assign(&self, ct: &mut Ciphertext) {
+144:         BooleanEngine::with_thread_local_mut(|engine| engine.not_assign(ct));
+145:     }
+146: 
+147:     pub fn mux(
+148:         &self,
+149:         ct_condition: &Ciphertext,
+150:         ct_then: &Ciphertext,
+151:         ct_else: &Ciphertext,
+152:     ) -> Ciphertext {
+153:         BooleanEngine::with_thread_local_mut(|engine| {
+154:             engine.mux(ct_condition, ct_then, ct_else, self)
+155:         })
+156:     }
+157: }
+158: 
+159: impl CompressedServerKey {
+
+## tfhe-1.6.3/src/boolean/ciphertext/mod.rs:1–20
+1: //! An encryption of a boolean message.
+2: //!
+3: //! This module implements the ciphertext structure containing an encryption of a Boolean message.
+4: 
+5: use crate::core_crypto::entities::*;
+6: use serde::{Deserialize, Serialize};
+7: use tfhe_versionable::Versionize;
+8: 
+9: use super::backward_compatibility::ciphertext::{CiphertextVersions, CompressedCiphertextVersions};
+10: 
+11: /// A structure containing a ciphertext, meant to encrypt a Boolean message.
+12: ///
+13: /// It is used to evaluate a Boolean circuits homomorphically.
+14: #[derive(Clone, Debug, Serialize, Deserialize, Versionize)]
+15: #[versionize(CiphertextVersions)]
+16: pub enum Ciphertext {
+17:     Encrypted(LweCiphertextOwned<u32>),
+18:     Trivial(bool),
+19: }
+20: 
+
+## tfhe-1.6.3/src/boolean/engine/mod.rs:203–280
+203:             &lwe_sk2,
+204:             params.ks_base_log,
+205:             params.ks_level,
+206:             cks2.parameters.lwe_noise_distribution,
+207:             CiphertextModulus::new_native(),
+208:             &mut self.encryption_generator,
+209:         )
+210:     }
+211: 
+212:     pub fn trivial_encrypt(&self, message: bool) -> Ciphertext {
+213:         Ciphertext::Trivial(message)
+214:     }
+215: 
+216:     pub fn encrypt(&mut self, message: bool, cks: &ClientKey) -> Ciphertext {
+217:         // encode the boolean message
+218:         let plain: Plaintext<u32> = if message {
+219:             Plaintext(PLAINTEXT_TRUE)
+220:         } else {
+221:             Plaintext(PLAINTEXT_FALSE)
+222:         };
+223: 
+224:         let (lwe_sk, encryption_noise) = cks.encryption_key_and_noise();
+225:         let ct = allocate_and_encrypt_new_lwe_ciphertext(
+226:             &lwe_sk,
+227:             plain,
+228:             encryption_noise,
+229:             CiphertextModulus::new_native(),
+230:             &mut self.encryption_generator,
+231:         );
+232: 
+233:         Ciphertext::Encrypted(ct)
+234:     }
+235: 
+236:     pub fn encrypt_compressed(&mut self, message: bool, cks: &ClientKey) -> CompressedCiphertext {
+237:         // encode the boolean message
+238:         let plain: Plaintext<u32> = if message {
+239:             Plaintext(PLAINTEXT_TRUE)
+240:         } else {
+241:             Plaintext(PLAINTEXT_FALSE)
+242:         };
+243: 
+244:         let (lwe_sk, encryption_noise) = cks.encryption_key_and_noise();
+245: 
+246:         let ct = allocate_and_encrypt_new_seeded_lwe_ciphertext(
+247:             &lwe_sk,
+248:             plain,
+249:             encryption_noise,
+250:             CiphertextModulus::new_native(),
+251:             &mut self.bootstrapper.seeder,
+252:         );
+253: 
+254:         CompressedCiphertext { ciphertext: ct }
+255:     }
+256: 
+257:     pub fn encrypt_with_public_key(&mut self, message: bool, pks: &PublicKey) -> Ciphertext {
+258:         // encode the boolean message
+259:         let plain: Plaintext<u32> = if message {
+260:             Plaintext(PLAINTEXT_TRUE)
+261:         } else {
+262:             Plaintext(PLAINTEXT_FALSE)
+263:         };
+264: 
+265:         let mut output = LweCiphertext::new(
+266:             0u32,
+267:             pks.lwe_public_key.lwe_size(),
+268:             CiphertextModulus::new_native(),
+269:         );
+270: 
+271:         encrypt_lwe_ciphertext_with_public_key(
+272:             &pks.lwe_public_key,
+273:             &mut output,
+274:             plain,
+275:             &mut self.secret_generator,
+276:         );
+277: 
+278:         Ciphertext::Encrypted(output)
+279:     }
+280:     pub fn encrypt_with_compressed_public_key(
+
+## tfhe-1.6.3/src/boolean/engine/mod.rs:325–349
+325:     }
+326: 
+327:     pub fn not(&self, ct: &Ciphertext) -> Ciphertext {
+328:         match ct {
+329:             Ciphertext::Trivial(message) => Ciphertext::Trivial(!*message),
+330:             Ciphertext::Encrypted(ct_ct) => {
+331:                 // Compute the linear combination for NOT: -ct
+332:                 let mut ct_res = ct_ct.clone();
+333:                 lwe_ciphertext_opposite_assign(&mut ct_res);
+334: 
+335:                 // Output the result:
+336:                 Ciphertext::Encrypted(ct_res)
+337:             }
+338:         }
+339:     }
+340: 
+341:     pub fn not_assign(&self, ct: &mut Ciphertext) {
+342:         match ct {
+343:             Ciphertext::Trivial(message) => *message = !*message,
+344:             Ciphertext::Encrypted(ct_ct) => {
+345:                 lwe_ciphertext_opposite_assign(ct_ct); // compute the negation
+346:             }
+347:         }
+348:     }
+349: }
+
+## tfhe-1.6.3/src/boolean/engine/mod.rs:389–410
+389:     pub fn new() -> Self {
+390:         let mut root_seeder = new_seeder();
+391: 
+392:         Self::new_from_seeder(root_seeder.as_mut())
+393:     }
+394: 
+395:     pub fn new_from_seeder(root_seeder: &mut dyn Seeder) -> Self {
+396:         let mut deterministic_seeder =
+397:             DeterministicSeeder::<DefaultRandomGenerator>::new(root_seeder.seed());
+398: 
+399:         // Note that the operands are evaluated from left to right for Rust Struct expressions
+400:         // See: https://doc.rust-lang.org/stable/reference/expressions.html?highlight=left#evaluation-order-of-operands
+401:         Self {
+402:             secret_generator: SecretRandomGenerator::<_>::new(deterministic_seeder.seed()),
+403:             encryption_generator: EncryptionRandomGenerator::<_>::new(
+404:                 deterministic_seeder.seed(),
+405:                 &mut deterministic_seeder,
+406:             ),
+407:             bootstrapper: Bootstrapper::new(&mut deterministic_seeder),
+408:         }
+409:     }
+410: 
+
+## tfhe-1.6.3/src/boolean/engine/mod.rs:411–553
+411:     pub fn mux(
+412:         &mut self,
+413:         ct_condition: &Ciphertext,
+414:         ct_then: &Ciphertext,
+415:         ct_else: &Ciphertext,
+416:         server_key: &ServerKey,
+417:     ) -> Ciphertext {
+418:         // In theory MUX gate = (ct_condition AND ct_then) + (!ct_condition AND ct_else)
+419: 
+420:         match ct_condition {
+421:             // in the case of the condition is trivially encrypted
+422:             Ciphertext::Trivial(message_condition) => {
+423:                 if *message_condition {
+424:                     ct_then.clone()
+425:                 } else {
+426:                     ct_else.clone()
+427:                 }
+428:             }
+429:             Ciphertext::Encrypted(ct_condition_ct) => {
+430:                 // condition is actually encrypted
+431: 
+432:                 // take a shortcut if ct_then is trivially encrypted
+433:                 if let Ciphertext::Trivial(message_then) = ct_then {
+434:                     return if *message_then {
+435:                         self.or(ct_condition, ct_else, server_key)
+436:                     } else {
+437:                         let ct_not_condition = self.not(ct_condition);
+438:                         self.and(&ct_not_condition, ct_else, server_key)
+439:                     };
+440:                 }
+441: 
+442:                 // take a shortcut if ct_else is trivially encrypted
+443:                 if let Ciphertext::Trivial(message_else) = ct_else {
+444:                     return if *message_else {
+445:                         let ct_not_condition = self.not(ct_condition);
+446:                         self.or(ct_then, &ct_not_condition, server_key)
+447:                     } else {
+448:                         self.and(ct_condition, ct_then, server_key)
+449:                     };
+450:                 }
+451: 
+452:                 // convert inputs into LweCiphertextOwned<u32>
+453:                 let ct_then_ct = convert_into_lwe_ciphertext_32(ct_then, server_key);
+454:                 let ct_else_ct = convert_into_lwe_ciphertext_32(ct_else, server_key);
+455: 
+456:                 let mut buffer_lwe_before_pbs_o = LweCiphertext::new(
+457:                     0u32,
+458:                     ct_condition_ct.lwe_size(),
+459:                     ct_condition_ct.ciphertext_modulus(),
+460:                 );
+461: 
+462:                 let buffer_lwe_before_pbs = &mut buffer_lwe_before_pbs_o;
+463:                 let bootstrapper = &mut self.bootstrapper;
+464: 
+465:                 // Compute the linear combination for first AND: ct_condition + ct_then +
+466:                 // (0,...,0,-1/8)
+467:                 lwe_ciphertext_add(buffer_lwe_before_pbs, ct_condition_ct, &ct_then_ct);
+468:                 let cst = Plaintext(PLAINTEXT_FALSE);
+469:                 lwe_ciphertext_plaintext_add_assign(buffer_lwe_before_pbs, cst); // - 1/8
+470: 
+471:                 // Compute the linear combination for second AND: - ct_condition + ct_else +
+472:                 // (0,...,0,-1/8)
+473:                 let mut ct_temp_2 = ct_condition_ct.clone(); // ct_condition
+474:                 lwe_ciphertext_opposite_assign(&mut ct_temp_2); // compute the negation
+475:                 lwe_ciphertext_add_assign(&mut ct_temp_2, &ct_else_ct); // + ct_else
+476:                 let cst = Plaintext(PLAINTEXT_FALSE);
+477:                 lwe_ciphertext_plaintext_add_assign(&mut ct_temp_2, cst); // - 1/8
+478: 
+479:                 match server_key.pbs_order {
+480:                     PBSOrder::KeyswitchBootstrap => {
+481:                         let ct_ks_1 = server_key.keyswitch(buffer_lwe_before_pbs);
+482: 
+483:                         // Compute the first programmable bootstrapping with fixed test polynomial:
+484:                         let mut ct_pbs_1 = bootstrapper.bootstrap(&ct_ks_1, server_key);
+485: 
+486:                         let ct_ks_2 = server_key.keyswitch(&ct_temp_2);
+487:                         let ct_pbs_2 = bootstrapper.bootstrap(&ct_ks_2, server_key);
+488: 
+489:                         // Compute the linear combination to add the two results:
+490:                         // buffer_lwe_pbs + ct_pbs_2 + (0,...,0, +1/8)
+491:                         lwe_ciphertext_add_assign(&mut ct_pbs_1, &ct_pbs_2); // + buffer_lwe_pbs
+492:                         let cst = Plaintext(PLAINTEXT_TRUE);
+493:                         lwe_ciphertext_plaintext_add_assign(&mut ct_pbs_1, cst); // + 1/8
+494: 
+495:                         // Output the result:
+496:                         Ciphertext::Encrypted(ct_pbs_1)
+497:                     }
+498:                     PBSOrder::BootstrapKeyswitch => {
+499:                         // Compute the first programmable bootstrapping with fixed test polynomial:
+500:                         let mut ct_pbs_1 =
+501:                             bootstrapper.bootstrap(buffer_lwe_before_pbs, server_key);
+502: 
+503:                         let ct_pbs_2 = bootstrapper.bootstrap(&ct_temp_2, server_key);
+504: 
+505:                         // Compute the linear combination to add the two results:
+506:                         // buffer_lwe_pbs + ct_pbs_2 + (0,...,0, +1/8)
+507:                         lwe_ciphertext_add_assign(&mut ct_pbs_1, &ct_pbs_2); // + buffer_lwe_pbs
+508:                         let cst = Plaintext(PLAINTEXT_TRUE);
+509:                         lwe_ciphertext_plaintext_add_assign(&mut ct_pbs_1, cst); // + 1/8
+510: 
+511:                         let ct_ks = server_key.keyswitch(&ct_pbs_1);
+512: 
+513:                         // Output the result:
+514:                         Ciphertext::Encrypted(ct_ks)
+515:                     }
+516:                 }
+517:             }
+518:         }
+519:     }
+520: }
+521: 
+522: /// convert into an actual LWE ciphertext even when trivial
+523: fn convert_into_lwe_ciphertext_32(
+524:     ct: &Ciphertext,
+525:     server_key: &ServerKey,
+526: ) -> LweCiphertextOwned<u32> {
+527:     match ct {
+528:         Ciphertext::Encrypted(ct_ct) => ct_ct.clone(),
+529:         Ciphertext::Trivial(message) => {
+530:             // encode the boolean message
+531:             let plain: Plaintext<u32> = if *message {
+532:                 Plaintext(PLAINTEXT_TRUE)
+533:             } else {
+534:                 Plaintext(PLAINTEXT_FALSE)
+535:             };
+536: 
+537:             let lwe_size = match server_key.pbs_order {
+538:                 PBSOrder::KeyswitchBootstrap => server_key
+539:                     .key_switching_key
+540:                     .input_key_lwe_dimension()
+541:                     .to_lwe_size(),
+542:                 PBSOrder::BootstrapKeyswitch => server_key
+543:                     .bootstrapping_key
+544:                     .input_lwe_dimension()
+545:                     .to_lwe_size(),
+546:             };
+547: 
+548:             allocate_and_trivially_encrypt_new_lwe_ciphertext(
+549:                 lwe_size,
+550:                 plain,
+551:                 CiphertextModulus::new_native(),
+552:             )
+553:         }
+
+## tfhe-1.6.3/src/boolean/engine/mod.rs:558–596
+558:     fn and(
+559:         &mut self,
+560:         ct_left: &Ciphertext,
+561:         ct_right: &Ciphertext,
+562:         server_key: &ServerKey,
+563:     ) -> Ciphertext {
+564:         match (ct_left, ct_right) {
+565:             (Ciphertext::Trivial(message_left), Ciphertext::Trivial(message_right)) => {
+566:                 Ciphertext::Trivial(*message_left && *message_right)
+567:             }
+568:             (Ciphertext::Encrypted(_), Ciphertext::Trivial(message_right)) => {
+569:                 self.and(ct_left, *message_right, server_key)
+570:             }
+571:             (Ciphertext::Trivial(message_left), Ciphertext::Encrypted(_)) => {
+572:                 self.and(*message_left, ct_right, server_key)
+573:             }
+574:             (Ciphertext::Encrypted(ct_left_ct), Ciphertext::Encrypted(ct_right_ct)) => {
+575:                 let mut buffer_lwe_before_pbs = LweCiphertext::new(
+576:                     0u32,
+577:                     ct_left_ct.lwe_size(),
+578:                     ct_left_ct.ciphertext_modulus(),
+579:                 );
+580: 
+581:                 let bootstrapper = &mut self.bootstrapper;
+582: 
+583:                 // compute the linear combination for AND: ct_left + ct_right + (0,...,0,-1/8)
+584:                 // ct_left + ct_right
+585:                 lwe_ciphertext_add(&mut buffer_lwe_before_pbs, ct_left_ct, ct_right_ct);
+586:                 let cst = Plaintext(PLAINTEXT_FALSE);
+587:                 // - 1/8
+588:                 lwe_ciphertext_plaintext_add_assign(&mut buffer_lwe_before_pbs, cst);
+589: 
+590:                 // compute the bootstrap and the key switch
+591:                 bootstrapper.apply_bootstrapping_pattern(buffer_lwe_before_pbs, server_key)
+592:             }
+593:         }
+594:     }
+595: 
+596:     fn nand(
+
+## tfhe-1.6.3/src/boolean/engine/mod.rs:710–748
+710:     fn xor(
+711:         &mut self,
+712:         ct_left: &Ciphertext,
+713:         ct_right: &Ciphertext,
+714:         server_key: &ServerKey,
+715:     ) -> Ciphertext {
+716:         match (ct_left, ct_right) {
+717:             (Ciphertext::Trivial(message_left), Ciphertext::Trivial(message_right)) => {
+718:                 Ciphertext::Trivial(*message_left ^ *message_right)
+719:             }
+720:             (Ciphertext::Encrypted(_), Ciphertext::Trivial(message_right)) => {
+721:                 self.xor(ct_left, *message_right, server_key)
+722:             }
+723:             (Ciphertext::Trivial(message_left), Ciphertext::Encrypted(_)) => {
+724:                 self.xor(*message_left, ct_right, server_key)
+725:             }
+726:             (Ciphertext::Encrypted(ct_left_ct), Ciphertext::Encrypted(ct_right_ct)) => {
+727:                 let mut buffer_lwe_before_pbs = LweCiphertext::new(
+728:                     0u32,
+729:                     ct_left_ct.lwe_size(),
+730:                     ct_left_ct.ciphertext_modulus(),
+731:                 );
+732:                 let bootstrapper = &mut self.bootstrapper;
+733: 
+734:                 // Compute the linear combination for XOR: 2*(ct_left + ct_right) + (0,...,0,1/4)
+735:                 // ct_left + ct_right
+736:                 lwe_ciphertext_add(&mut buffer_lwe_before_pbs, ct_left_ct, ct_right_ct);
+737:                 let cst_add = Plaintext(PLAINTEXT_TRUE);
+738:                 // + 1/8
+739:                 lwe_ciphertext_plaintext_add_assign(&mut buffer_lwe_before_pbs, cst_add);
+740:                 let cst_mul = Cleartext(2u32);
+741:                 //* 2
+742:                 lwe_ciphertext_cleartext_mul_assign(&mut buffer_lwe_before_pbs, cst_mul);
+743: 
+744:                 // compute the bootstrap and the key switch
+745:                 bootstrapper.apply_bootstrapping_pattern(buffer_lwe_before_pbs, server_key)
+746:             }
+747:         }
+748:     }
+
+## tfhe-1.6.3/src/boolean/engine/bootstrapping.rs:325–386
+325: /// Perform ciphertext bootstraps on the CPU
+326: pub(crate) struct Bootstrapper {
+327:     memory: Memory,
+328:     /// A structure containing two CSPRNGs to generate material for encryption like public masks
+329:     /// and secret errors.
+330:     ///
+331:     /// The [`EncryptionRandomGenerator`] contains two CSPRNGs, one publicly seeded used to
+332:     /// generate mask coefficients and one privately seeded used to generate errors during
+333:     /// encryption.
+334:     pub(crate) encryption_generator: EncryptionRandomGenerator<DefaultRandomGenerator>,
+335:     pub(crate) computation_buffers: ComputationBuffers,
+336:     pub(crate) seeder: DeterministicSeeder<DefaultRandomGenerator>,
+337: }
+338: 
+339: impl Bootstrapper {
+340:     pub fn new(seeder: &mut dyn Seeder) -> Self {
+341:         Self {
+342:             memory: Memory::default(),
+343:             encryption_generator: EncryptionRandomGenerator::<_>::new(seeder.seed(), seeder),
+344:             computation_buffers: ComputationBuffers::default(),
+345:             seeder: DeterministicSeeder::<_>::new(seeder.seed()),
+346:         }
+347:     }
+348: 
+349:     pub(crate) fn new_server_key(&mut self, cks: &ClientKey) -> ServerKey {
+350:         let standard_bootstrapping_key: LweBootstrapKeyOwned<u32> =
+351:             par_allocate_and_generate_new_lwe_bootstrap_key(
+352:                 &cks.lwe_secret_key,
+353:                 &cks.glwe_secret_key,
+354:                 cks.parameters.pbs_base_log,
+355:                 cks.parameters.pbs_level,
+356:                 cks.parameters.glwe_noise_distribution,
+357:                 CiphertextModulus::new_native(),
+358:                 &mut self.encryption_generator,
+359:             );
+360: 
+361:         // creation of the bootstrapping key in the Fourier domain
+362:         let mut fourier_bsk = FourierLweBootstrapKey::new(
+363:             standard_bootstrapping_key.input_lwe_dimension(),
+364:             standard_bootstrapping_key.glwe_size(),
+365:             standard_bootstrapping_key.polynomial_size(),
+366:             standard_bootstrapping_key.decomposition_base_log(),
+367:             standard_bootstrapping_key.decomposition_level_count(),
+368:         );
+369: 
+370:         let fft = Fft::new(standard_bootstrapping_key.polynomial_size());
+371:         let fft = fft.as_view();
+372:         self.computation_buffers.resize(
+373:             convert_standard_lwe_bootstrap_key_to_fourier_mem_optimized_requirement(fft)
+374:                 .unaligned_bytes_required(),
+375:         );
+376: 
+377:         // Conversion to fourier domain
+378:         par_convert_standard_lwe_bootstrap_key_to_fourier(
+379:             &standard_bootstrapping_key,
+380:             &mut fourier_bsk,
+381:         );
+382: 
+383:         // Convert the GLWE secret key into an LWE secret key:
+384:         let big_lwe_secret_key = cks.glwe_secret_key.clone().into_lwe_secret_key();
+385: 
+386:         // creation of the key switching key
+
+## tfhe-1.6.3/src/boolean/engine/bootstrapping.rs:445–604
+445:     }
+446: 
+447:     pub(crate) fn bootstrap(
+448:         &mut self,
+449:         input: &LweCiphertextOwned<u32>,
+450:         server_key: &ServerKey,
+451:     ) -> LweCiphertextOwned<u32> {
+452:         let BuffersRef {
+453:             lookup_table: accumulator,
+454:             mut buffer_lwe_after_pbs,
+455:             ..
+456:         } = self.memory.as_buffers(server_key);
+457: 
+458:         let fourier_bsk = &server_key.bootstrapping_key;
+459: 
+460:         let fft = Fft::new(fourier_bsk.polynomial_size());
+461:         let fft = fft.as_view();
+462: 
+463:         self.computation_buffers.resize(
+464:             programmable_bootstrap_lwe_ciphertext_mem_optimized_requirement::<u64>(
+465:                 fourier_bsk.glwe_size(),
+466:                 fourier_bsk.polynomial_size(),
+467:                 fft,
+468:             )
+469:             .unaligned_bytes_required(),
+470:         );
+471:         let stack = self.computation_buffers.stack();
+472: 
+473:         programmable_bootstrap_lwe_ciphertext_mem_optimized(
+474:             input,
+475:             &mut buffer_lwe_after_pbs,
+476:             &accumulator,
+477:             fourier_bsk,
+478:             fft,
+479:             stack,
+480:         );
+481: 
+482:         LweCiphertext::from_container(
+483:             buffer_lwe_after_pbs.as_ref().to_owned(),
+484:             input.ciphertext_modulus(),
+485:         )
+486:     }
+487: 
+488:     pub(crate) fn bootstrap_keyswitch(
+489:         &mut self,
+490:         mut ciphertext: LweCiphertextOwned<u32>,
+491:         server_key: &ServerKey,
+492:     ) -> Ciphertext {
+493:         let BuffersRef {
+494:             lookup_table,
+495:             mut buffer_lwe_after_pbs,
+496:             ..
+497:         } = self.memory.as_buffers(server_key);
+498: 
+499:         let fourier_bsk = &server_key.bootstrapping_key;
+500: 
+501:         let fft = Fft::new(fourier_bsk.polynomial_size());
+502:         let fft = fft.as_view();
+503: 
+504:         self.computation_buffers.resize(
+505:             programmable_bootstrap_lwe_ciphertext_mem_optimized_requirement::<u64>(
+506:                 fourier_bsk.glwe_size(),
+507:                 fourier_bsk.polynomial_size(),
+508:                 fft,
+509:             )
+510:             .unaligned_bytes_required(),
+511:         );
+512:         let stack = self.computation_buffers.stack();
+513: 
+514:         // Compute a bootstrap
+515:         programmable_bootstrap_lwe_ciphertext_mem_optimized(
+516:             &ciphertext,
+517:             &mut buffer_lwe_after_pbs,
+518:             &lookup_table,
+519:             fourier_bsk,
+520:             fft,
+521:             stack,
+522:         );
+523: 
+524:         // Compute a key switch to get back to input key
+525:         keyswitch_lwe_ciphertext(
+526:             &server_key.key_switching_key,
+527:             &buffer_lwe_after_pbs,
+528:             &mut ciphertext,
+529:         );
+530: 
+531:         Ciphertext::Encrypted(ciphertext)
+532:     }
+533: 
+534:     pub(crate) fn keyswitch_bootstrap(
+535:         &mut self,
+536:         mut ciphertext: LweCiphertextOwned<u32>,
+537:         server_key: &ServerKey,
+538:     ) -> Ciphertext {
+539:         let BuffersRef {
+540:             lookup_table,
+541:             mut buffer_lwe_after_ks,
+542:             ..
+543:         } = self.memory.as_buffers(server_key);
+544: 
+545:         let fourier_bsk = &server_key.bootstrapping_key;
+546: 
+547:         let fft = Fft::new(fourier_bsk.polynomial_size());
+548:         let fft = fft.as_view();
+549: 
+550:         self.computation_buffers.resize(
+551:             programmable_bootstrap_lwe_ciphertext_mem_optimized_requirement::<u64>(
+552:                 fourier_bsk.glwe_size(),
+553:                 fourier_bsk.polynomial_size(),
+554:                 fft,
+555:             )
+556:             .unaligned_bytes_required(),
+557:         );
+558:         let stack = self.computation_buffers.stack();
+559: 
+560:         // Keyswitch from large LWE key to the small one
+561:         keyswitch_lwe_ciphertext(
+562:             &server_key.key_switching_key,
+563:             &ciphertext,
+564:             &mut buffer_lwe_after_ks,
+565:         );
+566: 
+567:         // Compute a bootstrap
+568:         programmable_bootstrap_lwe_ciphertext_mem_optimized(
+569:             &buffer_lwe_after_ks,
+570:             &mut ciphertext,
+571:             &lookup_table,
+572:             fourier_bsk,
+573:             fft,
+574:             stack,
+575:         );
+576: 
+577:         Ciphertext::Encrypted(ciphertext)
+578:     }
+579:     pub(crate) fn apply_bootstrapping_pattern(
+580:         &mut self,
+581:         ct: LweCiphertextOwned<u32>,
+582:         server_key: &ServerKey,
+583:     ) -> Ciphertext {
+584:         match server_key.pbs_order {
+585:             PBSOrder::KeyswitchBootstrap => self.keyswitch_bootstrap(ct, server_key),
+586:             PBSOrder::BootstrapKeyswitch => self.bootstrap_keyswitch(ct, server_key),
+587:         }
+588:     }
+589: }
+590: 
+591: impl ServerKey {
+592:     pub(crate) fn keyswitch(&self, input: &LweCiphertextOwned<u32>) -> LweCiphertextOwned<u32> {
+593:         // Allocate the output of the KS
+594:         let mut output = LweCiphertext::new(
+595:             0u32,
+596:             self.bootstrapping_key.input_lwe_dimension().to_lwe_size(),
+597:             input.ciphertext_modulus(),
+598:         );
+599: 
+600:         keyswitch_lwe_ciphertext(&self.key_switching_key, input, &mut output);
+601: 
+602:         output
+603:     }
+604: }
+
+## tfhe-1.6.3/src/boolean/parameters/params.rs:45–63
+45: // p-fail = 2^-165.434, algorithmic cost ~ 117, 2-norm = 2.8284271247461903
+46: pub const PARAMETERS_ERROR_PROB_2_POW_MINUS_165: BooleanParameters = BooleanParameters {
+47:     lwe_dimension: LweDimension(837),
+48:     glwe_dimension: GlweDimension(2),
+49:     polynomial_size: PolynomialSize(1024),
+50:     #[allow(clippy::excessive_precision)]
+51:     lwe_noise_distribution: DynamicDistribution::new_gaussian_from_std_dev(StandardDev(
+52:         3.374714376692653e-06,
+53:     )),
+54:     glwe_noise_distribution: DynamicDistribution::new_gaussian_from_std_dev(StandardDev(
+55:         9.313225746198247e-10,
+56:     )),
+57:     pbs_base_log: DecompositionBaseLog(10),
+58:     pbs_level: DecompositionLevelCount(2),
+59:     ks_base_log: DecompositionBaseLog(3),
+60:     ks_level: DecompositionLevelCount(5),
+61:     encryption_key_choice: EncryptionKeyChoice::Small,
+62: };
+63: // p-fail = 2^-166.826, algorithmic cost ~ 108, 2-norm = 2.8284271247461903
+
+## tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs:60–119
+60:     /// # Panics
+61:     ///
+62:     /// Panics if `n` is not a power of two.
+63:     pub fn new(n: usize) -> Self {
+64:         debug_assert!(n.is_power_of_two());
+65:         let mut re = avec![0.0; n].into_boxed_slice();
+66:         let mut im = avec![0.0; n].into_boxed_slice();
+67: 
+68:         let unit = core::f64::consts::PI / (2.0 * n as f64);
+69:         for (i, (re, im)) in izip_eq!(&mut *re, &mut *im).enumerate() {
+70:             (*im, *re) = (i as f64 * unit).sin_cos();
+71:         }
+72: 
+73:         Self { re, im }
+74:     }
+75: }
+76: 
+77: /// Negacyclic Fast Fourier Transform. See [`FftView`] for transform functions.
+78: ///
+79: /// This structure contains the twisting factors as well as the
+80: /// FFT plan needed for the negacyclic convolution over the reals.
+81: #[derive(Clone, Debug)]
+82: pub struct Fft {
+83:     plan: Arc<(Twisties, Plan)>,
+84: }
+85: 
+86: /// View type for [`Fft`].
+87: #[derive(Clone, Copy, Debug)]
+88: pub struct FftView<'a> {
+89:     plan: &'a Plan,
+90:     twisties: TwistiesView<'a>,
+91: }
+92: 
+93: impl Fft {
+94:     #[inline]
+95:     pub fn as_view(&self) -> FftView<'_> {
+96:         FftView {
+97:             plan: &self.plan.1,
+98:             twisties: self.plan.0.as_view(),
+99:         }
+100:     }
+101: }
+102: 
+103: type PlanMap = GenericPlanMap<PolynomialSize, (Twisties, Plan)>;
+104: 
+105: pub(crate) static PLANS: OnceLock<PlanMap> = OnceLock::new();
+106: fn plans() -> &'static PlanMap {
+107:     PLANS.get_or_init(GenericPlanMap::new)
+108: }
+109: 
+110: pub fn setup_custom_fft_plan(plan: Plan) {
+111:     let base_n = FourierPolynomialSize(plan.fft_size());
+112:     let n = base_n.to_standard_polynomial_size();
+113: 
+114:     let plan = Arc::new((Twisties::new(base_n.0), plan));
+115: 
+116:     let global_plans = plans();
+117: 
+118:     global_plans.set(n, plan);
+119: }
+
+## tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs:161–197
+161: impl Fft {
+162:     /// Real polynomial of size `size`.
+163:     pub fn new(polynomial_size: PolynomialSize) -> Self {
+164:         let global_plans = plans();
+165: 
+166:         let new = |polynomial_size: PolynomialSize| {
+167:             let fourier_polynomial_size = polynomial_size.to_fourier_polynomial_size().0;
+168: 
+169:             #[cfg(not(feature = "experimental-force_fft_algo_dif4"))]
+170:             {
+171:                 (
+172:                     Twisties::new(fourier_polynomial_size),
+173:                     Plan::new(
+174:                         fourier_polynomial_size,
+175:                         Method::Measure(Duration::from_millis(10)),
+176:                     ),
+177:                 )
+178:             }
+179:             #[cfg(feature = "experimental-force_fft_algo_dif4")]
+180:             {
+181:                 (
+182:                     Twisties::new(fourier_polynomial_size),
+183:                     Plan::new(
+184:                         fourier_polynomial_size,
+185:                         Method::UserProvided {
+186:                             base_algo: tfhe_fft::ordered::FftAlgo::Dif4,
+187:                             base_n: fourier_polynomial_size,
+188:                         },
+189:                     ),
+190:                 )
+191:             }
+192:         };
+193: 
+194:         let plan = global_plans.get_or_init(polynomial_size, new);
+195: 
+196:         Self { plan }
+197:     }
+
+## tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs:268–330
+268: fn convert_backward_torus<Scalar: UnsignedTorus>(
+269:     out_re: &mut [Scalar],
+270:     out_im: &mut [Scalar],
+271:     inp: &[c64],
+272:     twisties: TwistiesView<'_>,
+273: ) {
+274:     let normalization = 1.0 / inp.len() as f64;
+275:     izip_eq!(out_re, out_im, inp, twisties.re, twisties.im).for_each(
+276:         |(out_re, out_im, inp, w_re, w_im)| {
+277:             let tmp = inp
+278:                 * (c64 {
+279:                     re: *w_re,
+280:                     im: -*w_im,
+281:                 } * normalization);
+282: 
+283:             *out_re = Scalar::from_torus(tmp.re);
+284:             *out_im = Scalar::from_torus(tmp.im);
+285:         },
+286:     );
+287: }
+288: 
+289: fn convert_add_backward_torus_scalar<Scalar: UnsignedTorus>(
+290:     out_re: &mut [Scalar],
+291:     out_im: &mut [Scalar],
+292:     inp: &[c64],
+293:     twisties: TwistiesView<'_>,
+294: ) {
+295:     let normalization = 1.0 / inp.len() as f64;
+296:     izip_eq!(out_re, out_im, inp, twisties.re, twisties.im).for_each(
+297:         |(out_re, out_im, inp, w_re, w_im)| {
+298:             let tmp = inp
+299:                 * (c64 {
+300:                     re: *w_re,
+301:                     im: -*w_im,
+302:                 } * normalization);
+303: 
+304:             *out_re = Scalar::wrapping_add(*out_re, Scalar::from_torus(tmp.re));
+305:             *out_im = Scalar::wrapping_add(*out_im, Scalar::from_torus(tmp.im));
+306:         },
+307:     );
+308: }
+309: 
+310: #[cfg_attr(feature = "__profiling", inline(never))]
+311: fn convert_add_backward_torus<Scalar: UnsignedTorus>(
+312:     out_re: &mut [Scalar],
+313:     out_im: &mut [Scalar],
+314:     inp: &[c64],
+315:     twisties: TwistiesView<'_>,
+316: ) {
+317:     #[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
+318:     {
+319:         if Scalar::BITS == 32 {
+320:             x86::convert_add_backward_torus_u32(id_mut(out_re), id_mut(out_im), inp, twisties);
+321:         } else if Scalar::BITS == 64 {
+322:             x86::convert_add_backward_torus_u64(id_mut(out_re), id_mut(out_im), inp, twisties);
+323:         } else {
+324:             unreachable!();
+325:         }
+326:     }
+327: 
+328:     #[cfg(not(any(target_arch = "x86_64", target_arch = "x86")))]
+329:     convert_add_backward_torus_scalar::<Scalar>(out_re, out_im, inp, twisties);
+330: }
+
+## tfhe-1.6.3/src/core_crypto/fft_impl/fft64/crypto/bootstrap.rs:294–366
+294:     pub fn blind_rotate_assign<OutputScalar>(
+295:         self,
+296:         mut lut: GlweCiphertextMutView<'_, OutputScalar>,
+297:         msed_lwe: &impl ModulusSwitchedLweCiphertext<usize>,
+298:         fft: FftView<'_>,
+299:         stack: &mut PodStack,
+300:     ) where
+301:         OutputScalar: UnsignedTorus,
+302:     {
+303:         let lut_poly_size = lut.polynomial_size();
+304:         let ciphertext_modulus = lut.ciphertext_modulus();
+305:         assert!(ciphertext_modulus.is_compatible_with_native_modulus());
+306: 
+307:         assert_eq!(
+308:             msed_lwe.log_modulus(),
+309:             lut_poly_size.to_blind_rotation_input_modulus_log()
+310:         );
+311: 
+312:         let msed_lwe_mask = msed_lwe.mask();
+313: 
+314:         let msed_lwe_body = msed_lwe.body();
+315: 
+316:         let monomial_degree = MonomialDegree(msed_lwe_body.cast_into());
+317: 
+318:         lut.as_mut_polynomial_list()
+319:             .iter_mut()
+320:             .for_each(|mut poly| {
+321:                 let (tmp_poly, _) = stack.make_aligned_raw(poly.as_ref().len(), CACHELINE_ALIGN);
+322: 
+323:                 let mut tmp_poly = Polynomial::from_container(&mut *tmp_poly);
+324:                 tmp_poly.as_mut().copy_from_slice(poly.as_ref());
+325:                 polynomial_wrapping_monic_monomial_div(&mut poly, &tmp_poly, monomial_degree);
+326:             });
+327: 
+328:         // We initialize the ct_0 used for the successive cmuxes
+329:         let mut ct0 = lut;
+330:         let (ct1, stack) = stack.make_aligned_raw(ct0.as_ref().len(), CACHELINE_ALIGN);
+331:         let mut ct1 =
+332:             GlweCiphertextMutView::from_container(&mut *ct1, lut_poly_size, ciphertext_modulus);
+333: 
+334:         for (lwe_mask_element, bootstrap_key_ggsw) in izip_eq!(msed_lwe_mask, self.into_ggsw_iter())
+335:         {
+336:             if lwe_mask_element != 0 {
+337:                 let monomial_degree = MonomialDegree(lwe_mask_element);
+338: 
+339:                 // we effectively inline the body of cmux here, merging the initial subtraction
+340:                 // operation with the monic polynomial multiplication, then performing the external
+341:                 // product manually
+342: 
+343:                 // We rotate ct_1 and subtract ct_0 (first step of cmux) by performing
+344:                 // ct_1 <- (ct_0 * X^{a_hat}) - ct_0
+345:                 for (mut ct1_poly, ct0_poly) in izip_eq!(
+346:                     ct1.as_mut_polynomial_list().iter_mut(),
+347:                     ct0.as_polynomial_list().iter(),
+348:                 ) {
+349:                     polynomial_wrapping_monic_monomial_mul_and_subtract(
+350:                         &mut ct1_poly,
+351:                         &ct0_poly,
+352:                         monomial_degree,
+353:                     );
+354:                 }
+355: 
+356:                 // as_mut_view is required to keep borrow rules consistent
+357:                 // second step of cmux
+358:                 add_external_product_assign(
+359:                     ct0.as_mut_view(),
+360:                     bootstrap_key_ggsw,
+361:                     ct1.as_view(),
+362:                     fft,
+363:                     stack,
+364:                 );
+365:             }
+366:         }
+
+## tfhe-1.6.3/src/core_crypto/fft_impl/fft64/crypto/bootstrap.rs:481–519
+481:     pub fn bootstrap<InputScalar, OutputScalar>(
+482:         self,
+483:         mut lwe_out: LweCiphertextMutView<'_, OutputScalar>,
+484:         lwe_in: LweCiphertextView<'_, InputScalar>,
+485:         accumulator: GlweCiphertextView<'_, OutputScalar>,
+486:         fft: FftView<'_>,
+487:         stack: &mut PodStack,
+488:     ) where
+489:         // CastInto required for PBS modulus switch which returns a usize
+490:         InputScalar: UnsignedTorus + CastInto<usize>,
+491:         OutputScalar: UnsignedTorus,
+492:     {
+493:         assert!(lwe_in.ciphertext_modulus().is_power_of_two());
+494:         assert!(lwe_out.ciphertext_modulus().is_power_of_two());
+495:         assert_eq!(
+496:             lwe_out.ciphertext_modulus(),
+497:             accumulator.ciphertext_modulus()
+498:         );
+499: 
+500:         let (local_accumulator_data, stack) =
+501:             stack.collect_aligned(CACHELINE_ALIGN, accumulator.as_ref().iter().copied());
+502:         let mut local_accumulator = GlweCiphertextMutView::from_container(
+503:             &mut *local_accumulator_data,
+504:             accumulator.polynomial_size(),
+505:             accumulator.ciphertext_modulus(),
+506:         );
+507: 
+508:         let log_modulus = accumulator
+509:             .polynomial_size()
+510:             .to_blind_rotation_input_modulus_log();
+511: 
+512:         let msed = lwe_ciphertext_modulus_switch(lwe_in.as_view(), log_modulus);
+513: 
+514:         self.blind_rotate_assign(local_accumulator.as_mut_view(), &msed, fft, stack);
+515: 
+516:         extract_lwe_sample_from_glwe_ciphertext(
+517:             &local_accumulator,
+518:             &mut lwe_out,
+519:             MonomialDegree(0),
+
+## tfhe-1.6.3/src/core_crypto/fft_impl/fft64/crypto/ggsw.rs:483–611
+483: pub fn add_external_product_assign<Scalar>(
+484:     mut out: GlweCiphertextMutView<'_, Scalar>,
+485:     ggsw: FourierGgswCiphertextView<'_>,
+486:     glwe: GlweCiphertextView<Scalar>,
+487:     fft: FftView<'_>,
+488:     stack: &mut PodStack,
+489: ) where
+490:     Scalar: UnsignedTorus,
+491: {
+492:     // we check that the polynomial sizes match
+493:     debug_assert_eq!(ggsw.polynomial_size(), glwe.polynomial_size());
+494:     debug_assert_eq!(ggsw.polynomial_size(), out.polynomial_size());
+495:     // we check that the glwe sizes match
+496:     debug_assert_eq!(ggsw.glwe_size(), glwe.glwe_size());
+497:     debug_assert_eq!(ggsw.glwe_size(), out.glwe_size());
+498: 
+499:     let align = CACHELINE_ALIGN;
+500:     let fourier_poly_size = ggsw.polynomial_size().to_fourier_polynomial_size().0;
+501: 
+502:     // we round the input mask and body
+503:     let decomposer = SignedDecomposer::<Scalar>::new(
+504:         ggsw.decomposition_base_log(),
+505:         ggsw.decomposition_level_count(),
+506:     );
+507: 
+508:     let (output_fft_buffer, substack0) =
+509:         stack.make_aligned_raw::<c64>(fourier_poly_size * ggsw.glwe_size().0, align);
+510:     // output_fft_buffer is initially uninitialized, considered to be implicitly zero, to avoid
+511:     // the cost of filling it up with zeros. `is_output_uninit` is set to `false` once
+512:     // it has been fully initialized for the first time.
+513:     let output_fft_buffer = &mut *output_fft_buffer;
+514:     let mut is_output_uninit = true;
+515: 
+516:     {
+517:         // ------------------------------------------------------ EXTERNAL PRODUCT IN FOURIER DOMAIN
+518:         // In this section, we perform the external product in the fourier domain, and accumulate
+519:         // the result in the output_fft_buffer variable.
+520:         let (mut decomposition, substack1) = TensorSignedDecompositionLendingIter::new(
+521:             glwe.as_ref()
+522:                 .iter()
+523:                 .map(|s| decomposer.init_decomposer_state(*s)),
+524:             DecompositionBaseLog(decomposer.base_log),
+525:             DecompositionLevelCount(decomposer.level_count),
+526:             substack0,
+527:         );
+528: 
+529:         // We loop through the levels (we reverse to match the order of the decomposition iterator.)
+530:         ggsw.into_levels().for_each(|ggsw_decomp_matrix| {
+531:             // We retrieve the decomposition of this level.
+532:             let (glwe_level, glwe_decomp_term, substack2) =
+533:                 collect_next_term(&mut decomposition, substack1, align);
+534:             let glwe_decomp_term = GlweCiphertextView::from_container(
+535:                 &*glwe_decomp_term,
+536:                 ggsw.polynomial_size(),
+537:                 out.ciphertext_modulus(),
+538:             );
+539:             debug_assert_eq!(ggsw_decomp_matrix.decomposition_level(), glwe_level);
+540: 
+541:             // For each level we have to add the result of the vector-matrix product between the
+542:             // decomposition of the glwe, and the ggsw level matrix to the output. To do so, we
+543:             // iteratively add to the output, the product between every line of the matrix, and
+544:             // the corresponding (scalar) polynomial in the glwe decomposition:
+545:             //
+546:             //                ggsw_mat                        ggsw_mat
+547:             //   glwe_dec   | - - - - | <        glwe_dec   | - - - - |
+548:             //  | - - - | x | - - - - |         | - - - | x | - - - - | <
+549:             //    ^         | - - - - |             ^       | - - - - |
+550:             //
+551:             //        t = 1                           t = 2                     ...
+552: 
+553:             izip_eq!(
+554:                 ggsw_decomp_matrix.into_rows(),
+555:                 glwe_decomp_term.as_polynomial_list().iter()
+556:             )
+557:             .for_each(|(ggsw_row, glwe_poly)| {
+558:                 let (fourier, substack3) =
+559:                     substack2.make_aligned_raw::<c64>(fourier_poly_size, align);
+560:                 // We perform the forward fft transform for the glwe polynomial
+561:                 let fourier = fft
+562:                     .forward_as_integer(
+563:                         FourierPolynomialMutView { data: fourier },
+564:                         glwe_poly,
+565:                         substack3,
+566:                     )
+567:                     .data;
+568:                 // Now we loop through the polynomials of the output, and add the
+569:                 // corresponding product of polynomials.
+570: 
+571:                 update_with_fmadd(
+572:                     output_fft_buffer,
+573:                     ggsw_row.data(),
+574:                     fourier,
+575:                     is_output_uninit,
+576:                     fourier_poly_size,
+577:                 );
+578: 
+579:                 // we initialized `output_fft_buffer, so we can set this to false
+580:                 is_output_uninit = false;
+581:             });
+582:         });
+583:     }
+584: 
+585:     // --------------------------------------------  TRANSFORMATION OF RESULT TO STANDARD DOMAIN
+586:     // In this section, we bring the result from the fourier domain, back to the standard
+587:     // domain, and add it to the output.
+588:     //
+589:     // We iterate over the polynomials in the output.
+590:     if !is_output_uninit {
+591:         izip_eq!(
+592:             out.as_mut_polynomial_list().iter_mut(),
+593:             output_fft_buffer
+594:                 .into_chunks(fourier_poly_size)
+595:                 .map(|slice| FourierPolynomialMutView { data: slice }),
+596:         )
+597:         .for_each(|(out, fourier)| {
+598:             // The fourier buffer is not re-used afterwards so we can use the in-place version of
+599:             // the add_backward_as_torus function
+600:             fft.add_backward_in_place_as_torus(out, fourier, substack0);
+601:         });
+602:     }
+603: }
+604: 
+605: #[cfg_attr(feature = "__profiling", inline(never))]
+606: pub(crate) fn collect_next_term<'a, Scalar: UnsignedTorus>(
+607:     decomposition: &mut TensorSignedDecompositionLendingIter<'_, Scalar>,
+608:     substack1: &'a mut PodStack,
+609:     align: usize,
+610: ) -> (DecompositionLevel, &'a mut [Scalar], &'a mut PodStack) {
+611:     let (glwe_level, _, glwe_decomp_term) = decomposition.next_term().unwrap();
+
+## tfhe-1.6.3/src/core_crypto/fft_impl/fft64/crypto/ggsw.rs:616–698
+616: #[cfg_attr(feature = "__profiling", inline(never))]
+617: pub(crate) fn update_with_fmadd(
+618:     output_fft_buffer: &mut [c64],
+619:     lhs_polynomial_list: &[c64],
+620:     fourier: &[c64],
+621:     is_output_uninit: bool,
+622:     fourier_poly_size: usize,
+623: ) {
+624:     struct Impl<'a> {
+625:         output_fft_buffer: &'a mut [c64],
+626:         lhs_polynomial_list: &'a [c64],
+627:         fourier: &'a [c64],
+628:         is_output_uninit: bool,
+629:         fourier_poly_size: usize,
+630:     }
+631: 
+632:     impl pulp::WithSimd for Impl<'_> {
+633:         type Output = ();
+634: 
+635:         #[inline(always)]
+636:         fn with_simd<S: pulp::Simd>(self, simd: S) -> Self::Output {
+637:             // Introducing a function boundary here means that the slices
+638:             // get `noalias` markers, possibly allowing better optimizations from LLVM.
+639:             //
+640:             // see:
+641:             // https://github.com/rust-lang/rust/blob/56e1aaadb31542b32953292001be2312810e88fd/library/core/src/slice/mod.rs#L960-L966
+642:             #[inline(always)]
+643:             fn implementation<S: pulp::Simd>(
+644:                 simd: S,
+645:                 output_fft_buffer: &mut [c64],
+646:                 lhs_polynomial_list: &[c64],
+647:                 fourier: &[c64],
+648:                 is_output_uninit: bool,
+649:                 fourier_poly_size: usize,
+650:             ) {
+651:                 let rhs = S::as_simd_c64s(fourier).0;
+652: 
+653:                 if is_output_uninit {
+654:                     for (output_fourier, ggsw_poly) in izip_eq!(
+655:                         output_fft_buffer.into_chunks(fourier_poly_size),
+656:                         lhs_polynomial_list.into_chunks(fourier_poly_size)
+657:                     ) {
+658:                         let out = S::as_mut_simd_c64s(output_fourier).0;
+659:                         let lhs = S::as_simd_c64s(ggsw_poly).0;
+660: 
+661:                         for (out, lhs, rhs) in izip_eq!(out, lhs, rhs) {
+662:                             *out = simd.mul_c64s(*lhs, *rhs);
+663:                         }
+664:                     }
+665:                 } else {
+666:                     for (output_fourier, ggsw_poly) in izip_eq!(
+667:                         output_fft_buffer.into_chunks(fourier_poly_size),
+668:                         lhs_polynomial_list.into_chunks(fourier_poly_size)
+669:                     ) {
+670:                         let out = S::as_mut_simd_c64s(output_fourier).0;
+671:                         let lhs = S::as_simd_c64s(ggsw_poly).0;
+672: 
+673:                         for (out, lhs, rhs) in izip_eq!(out, lhs, rhs) {
+674:                             *out = simd.mul_add_c64s(*lhs, *rhs, *out);
+675:                         }
+676:                     }
+677:                 }
+678:             }
+679: 
+680:             implementation(
+681:                 simd,
+682:                 self.output_fft_buffer,
+683:                 self.lhs_polynomial_list,
+684:                 self.fourier,
+685:                 self.is_output_uninit,
+686:                 self.fourier_poly_size,
+687:             );
+688:         }
+689:     }
+690: 
+691:     pulp::Arch::new().dispatch(Impl {
+692:         output_fft_buffer,
+693:         lhs_polynomial_list,
+694:         fourier,
+695:         is_output_uninit,
+696:         fourier_poly_size,
+697:     });
+698: }
+
+## tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/fft64_pbs.rs:984–1040
+984: pub fn programmable_bootstrap_lwe_ciphertext_mem_optimized<
+985:     InputScalar,
+986:     OutputScalar,
+987:     InputCont,
+988:     OutputCont,
+989:     AccCont,
+990:     KeyCont,
+991: >(
+992:     input: &LweCiphertext<InputCont>,
+993:     output: &mut LweCiphertext<OutputCont>,
+994:     accumulator: &GlweCiphertext<AccCont>,
+995:     fourier_bsk: &FourierLweBootstrapKey<KeyCont>,
+996:     fft: FftView<'_>,
+997:     stack: &mut PodStack,
+998: ) where
+999:     // CastInto required for PBS modulus switch which returns a usize
+1000:     InputScalar: UnsignedTorus + CastInto<usize>,
+1001:     OutputScalar: UnsignedTorus,
+1002:     InputCont: Container<Element = InputScalar>,
+1003:     OutputCont: ContainerMut<Element = OutputScalar>,
+1004:     AccCont: Container<Element = OutputScalar>,
+1005:     KeyCont: Container<Element = c64>,
+1006: {
+1007:     assert_eq!(
+1008:         accumulator.ciphertext_modulus(),
+1009:         output.ciphertext_modulus(),
+1010:         "Mismatched moduli between accumulator ({:?}) and output ({:?})",
+1011:         accumulator.ciphertext_modulus(),
+1012:         output.ciphertext_modulus()
+1013:     );
+1014: 
+1015:     assert_eq!(
+1016:         fourier_bsk.input_lwe_dimension(),
+1017:         input.lwe_size().to_lwe_dimension(),
+1018:         "Mismatched input LweDimension. \
+1019:         FourierLweBootstrapKey input LweDimension: {:?}, input LweCiphertext LweDimension {:?}.",
+1020:         fourier_bsk.input_lwe_dimension(),
+1021:         input.lwe_size().to_lwe_dimension(),
+1022:     );
+1023:     assert_eq!(
+1024:         fourier_bsk.output_lwe_dimension(),
+1025:         output.lwe_size().to_lwe_dimension(),
+1026:         "Mismatched output LweDimension. \
+1027:         FourierLweBootstrapKey input LweDimension: {:?}, input LweCiphertext LweDimension {:?}.",
+1028:         fourier_bsk.output_lwe_dimension(),
+1029:         output.lwe_size().to_lwe_dimension(),
+1030:     );
+1031: 
+1032:     fourier_bsk.as_view().bootstrap(
+1033:         output.as_mut_view(),
+1034:         input.as_view(),
+1035:         accumulator.as_view(),
+1036:         fft,
+1037:         stack,
+1038:     );
+1039: }
+1040: 
+
+## tfhe-1.6.3/src/core_crypto/algorithms/lwe_keyswitch.rs:103–134
+103: pub fn keyswitch_lwe_ciphertext<Scalar, KSKCont, InputCont, OutputCont>(
+104:     lwe_keyswitch_key: &LweKeyswitchKey<KSKCont>,
+105:     input_lwe_ciphertext: &LweCiphertext<InputCont>,
+106:     output_lwe_ciphertext: &mut LweCiphertext<OutputCont>,
+107: ) where
+108:     Scalar: UnsignedInteger,
+109:     KSKCont: Container<Element = Scalar>,
+110:     InputCont: Container<Element = Scalar>,
+111:     OutputCont: ContainerMut<Element = Scalar>,
+112: {
+113:     let ciphertext_modulus = lwe_keyswitch_key.ciphertext_modulus();
+114: 
+115:     if ciphertext_modulus.is_compatible_with_native_modulus() {
+116:         keyswitch_lwe_ciphertext_native_mod_compatible(
+117:             lwe_keyswitch_key,
+118:             input_lwe_ciphertext,
+119:             output_lwe_ciphertext,
+120:         )
+121:     } else {
+122:         keyswitch_lwe_ciphertext_other_mod(
+123:             lwe_keyswitch_key,
+124:             input_lwe_ciphertext,
+125:             output_lwe_ciphertext,
+126:         )
+127:     }
+128: }
+129: 
+130: /// Specialized implementation of an LWE keyswitch when inputs have power of two moduli.
+131: ///
+132: /// # Panics
+133: ///
+134: /// Panics if the modulus of the inputs are not power of twos.
+
+## tfhe-1.6.3/src/core_crypto/algorithms/lwe_keyswitch.rs:189–228
+189:     // Copy the input body to the output ciphertext
+190:     *output_lwe_ciphertext.get_mut_body().data = *input_lwe_ciphertext.get_body().data;
+191: 
+192:     // If the moduli are not the same, we need to round the body in the output ciphertext
+193:     if output_ciphertext_modulus != input_ciphertext_modulus
+194:         && !output_ciphertext_modulus.is_native_modulus()
+195:     {
+196:         let modulus_bits = output_ciphertext_modulus.get_custom_modulus().ilog2() as usize;
+197:         let output_decomposer = SignedDecomposer::new(
+198:             DecompositionBaseLog(modulus_bits),
+199:             DecompositionLevelCount(1),
+200:         );
+201: 
+202:         *output_lwe_ciphertext.get_mut_body().data =
+203:             output_decomposer.closest_representable(*output_lwe_ciphertext.get_mut_body().data);
+204:     }
+205: 
+206:     // We instantiate a decomposer
+207:     let decomposer = SignedDecomposer::new(
+208:         lwe_keyswitch_key.decomposition_base_log(),
+209:         lwe_keyswitch_key.decomposition_level_count(),
+210:     );
+211: 
+212:     for (keyswitch_key_block, &input_mask_element) in lwe_keyswitch_key
+213:         .iter()
+214:         .zip(input_lwe_ciphertext.get_mask().as_ref())
+215:     {
+216:         let decomposition_iter = decomposer.decompose(input_mask_element);
+217:         // Loop over the levels
+218:         for (level_key_ciphertext, decomposed) in keyswitch_key_block.iter().zip(decomposition_iter)
+219:         {
+220:             slice_wrapping_sub_scalar_mul_assign(
+221:                 output_lwe_ciphertext.as_mut(),
+222:                 level_key_ciphertext.as_ref(),
+223:                 decomposed.value(),
+224:             );
+225:         }
+226:     }
+227: }
+228: 
+
+## tfhe-1.6.3/src/core_crypto/commons/math/torus/mod.rs:66–79
+66:         impl<F> FromTorus<F> for $Type
+67:         where
+68:             F: FloatingPoint + CastInto<Self> + CastInto<Self::Signed>,
+69:             Self: CastInto<F>,
+70:         {
+71:             #[inline]
+72:             fn from_torus(input: F) -> Self {
+73:                 let mut fract = input - F::round(input);
+74:                 fract *= F::TWO.powi(<Self as Numeric>::BITS as i32);
+75:                 fract = F::round(fract);
+76:                 let signed: Self::Signed = fract.cast_into();
+77:                 return signed.cast_into();
+78:             }
+79:             #[inline]
+
+## tfhe-1.6.3/src/core_crypto/entities/lwe_ciphertext.rs:533–544
+533: #[versionize(LweCiphertextVersions)]
+534: pub struct LweCiphertext<C: Container>
+535: where
+536:     C::Element: UnsignedInteger,
+537: {
+538:     data: C,
+539:     ciphertext_modulus: CiphertextModulus<C::Element>,
+540: }
+541: 
+542: impl<T: UnsignedInteger, C: Container<Element = T>> AsRef<[T]> for LweCiphertext<C> {
+543:     fn as_ref(&self) -> &[T] {
+544:         self.data.as_ref()
+
+## tfhe-1.6.3/src/core_crypto/commons/ciphertext_modulus.rs:25–54
+25: #[derive(Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize, Versionize, Hash)]
+26: #[serde(
+27:     try_from = "SerializableCiphertextModulus",
+28:     into = "SerializableCiphertextModulus"
+29: )]
+30: #[versionize(
+31:     SerializableCiphertextModulusVersions,
+32:     try_from = "SerializableCiphertextModulus",
+33:     into = "SerializableCiphertextModulus"
+34: )]
+35: /// Structure representing a [`CiphertextModulus`] often noted $q$.
+36: pub struct CiphertextModulus<Scalar: UnsignedInteger> {
+37:     inner: CiphertextModulusInner,
+38:     _scalar: PhantomData<Scalar>,
+39: }
+40: 
+41: #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+42: pub enum CiphertextModulusKind {
+43:     Native,
+44:     NonNativePowerOfTwo,
+45:     Other,
+46: }
+47: 
+48: #[derive(serde::Serialize, serde::Deserialize, Versionize)]
+49: #[versionize(SerializableCiphertextModulusVersions)]
+50: /// Actual serialized modulus to be able to carry the UnsignedInteger bitwidth information
+51: pub struct SerializableCiphertextModulus {
+52:     pub modulus: u128,
+53:     pub scalar_bits: usize,
+54: }
+
+## tfhe-1.6.3/src/core_crypto/commons/ciphertext_modulus.rs:79–92
+79: impl std::error::Error for CiphertextModulusDeserializationError {}
+80: 
+81: impl<Scalar: UnsignedInteger> From<CiphertextModulus<Scalar>> for SerializableCiphertextModulus {
+82:     fn from(value: CiphertextModulus<Scalar>) -> Self {
+83:         let modulus = match value.inner {
+84:             CiphertextModulusInner::Native => 0,
+85:             CiphertextModulusInner::Custom(modulus) => modulus.get(),
+86:         };
+87: 
+88:         Self {
+89:             modulus,
+90:             scalar_bits: Scalar::BITS,
+91:         }
+92:     }
+
+## tfhe-1.6.3/Cargo.toml:62–100
+62: [features]
+63: __c_api = ["dep:cbindgen"]
+64: __force_skip_cbindgen = []
+65: __profiling = []
+66: __wasm_api = [
+67:     "dep:wasm-bindgen",
+68:     "dep:js-sys",
+69:     "dep:console_error_panic_hook",
+70:     "dep:serde-wasm-bindgen",
+71:     "dep:getrandom",
+72:     "getrandom/js",
+73:     "dep:wasm-bindgen-futures",
+74: ]
+75: avx512 = [
+76:     "tfhe-fft/avx512",
+77:     "tfhe-ntt/avx512",
+78:     "pulp/x86-v4",
+79: ]
+80: boolean = []
+81: boolean-c-api = [
+82:     "boolean",
+83:     "__c_api",
+84: ]
+85: boolean-client-js-wasm-api = [
+86:     "boolean",
+87:     "__wasm_api",
+88: ]
+89: cross-origin-wasm-api = [
+90:     "dep:wasm-par-mq",
+91:     "tfhe-zk-pok?/cross-origin-wasm",
+92: ]
+93: default = ["avx512"]
+94: experimental = []
+95: experimental-force_fft_algo_dif4 = []
+96: extended-types = []
+97: gpu = [
+98:     "dep:tfhe-cuda-backend",
+99:     "shortint",
+100: ]
+
+## tfhe-1.6.3/Cargo.toml:365–371
+365: [dependencies.tfhe-fft]
+366: version = "0.10.1"
+367: features = [
+368:     "serde",
+369:     "fft128",
+370: ]
+371: 
+
+## tfhe-fft-0.10.1/src/ordered.rs:1–59
+1: //! Ordered FFT module.
+2: //!
+3: //! This FFT is currently based on the Stockham algorithm, and was ported from the
+4: //! [OTFFT](http://wwwa.pikara.ne.jp/okojisan/otfft-en/) C++ library by Takuya OKAHISA.
+5: //!
+6: //! This module computes the forward or inverse FFT in standard ordering.
+7: //! This means that given a buffer of complex numbers $[x_0, \dots, x_{n-1}]$,
+8: //! the forward FFT $[X_0, \dots, X_{n-1}]$ is given by
+9: //! $$X_p = \sum_{q = 0}^{n-1} \exp\left(-\frac{i 2\pi pq}{n}\right),$$
+10: //! and the inverse FFT $[Y_0, \dots, Y_{n-1}]$ is given by
+11: //! $$Y_p = \sum_{q = 0}^{n-1} \exp\left(\frac{i 2\pi pq}{n}\right).$$
+12: 
+13: use crate::{dif2::split_2, *};
+14: use aligned_vec::{avec, ABox, CACHELINE_ALIGN};
+15: 
+16: #[cfg(feature = "std")]
+17: use core::time::Duration;
+18: #[cfg(feature = "std")]
+19: use dyn_stack::PodBuffer;
+20: use dyn_stack::{PodStack, StackReq};
+21: 
+22: /// Internal FFT algorithm.
+23: ///
+24: /// The FFT can use a decimation-in-frequency (DIF) or decimation-in-time (DIT) approach.
+25: /// And the FFT radix can be any of 2, 4, 8, 16.
+26: #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+27: #[non_exhaustive]
+28: pub enum FftAlgo {
+29:     /// Decimation in frequency with radix 2
+30:     Dif2,
+31:     /// Decimation in time with radix 2
+32:     Dit2,
+33:     /// Decimation in frequency with radix 4
+34:     Dif4,
+35:     /// Decimation in time with radix 4
+36:     Dit4,
+37:     /// Decimation in frequency with radix 8
+38:     Dif8,
+39:     /// Decimation in time with radix 8
+40:     Dit8,
+41:     /// Decimation in frequency with radix 16
+42:     Dif16,
+43:     /// Decimation in time with radix 16
+44:     Dit16,
+45: }
+46: 
+47: /// Method for selecting the ordered FFT plan.
+48: #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+49: #[non_exhaustive]
+50: pub enum Method {
+51:     /// Select the FFT plan by manually providing the underlying algorithm.
+52:     UserProvided(FftAlgo),
+53:     /// Select the FFT plan by measuring the running time of all the possible plans and selecting
+54:     /// the fastest one. The provided duration specifies how long the benchmark of each plan should
+55:     /// last.
+56:     #[cfg(feature = "std")]
+57:     #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+58:     Measure(Duration),
+59: }
+
+## tfhe-fft-0.10.1/src/ordered.rs:62–83
+62: fn measure_n_runs(
+63:     n_runs: u128,
+64:     algo: FftAlgo,
+65:     buf: &mut [c64],
+66:     twiddles_init: &[c64],
+67:     twiddles: &[c64],
+68:     stack: &mut PodStack,
+69: ) -> Duration {
+70:     let n = buf.len();
+71:     let (scratch, _) = stack.make_aligned_raw::<c64>(n, CACHELINE_ALIGN);
+72:     let [fwd, _] = get_fn_ptr(algo, n);
+73: 
+74:     // For wasm we have a dedicated implementation going through js-sys
+75:     use crate::time::Instant;
+76:     let now = Instant::now();
+77: 
+78:     for _ in 0..n_runs {
+79:         fwd(buf, scratch, twiddles, twiddles_init);
+80:     }
+81: 
+82:     now.elapsed()
+83: }
+
+## tfhe-fft-0.10.1/src/ordered.rs:99–178
+99: pub(crate) fn measure_fastest(
+100:     min_bench_duration_per_algo: Duration,
+101:     n: usize,
+102:     stack: &mut PodStack,
+103: ) -> (FftAlgo, Duration) {
+104:     const N_ALGOS: usize = 8;
+105:     const MIN_DURATION: Duration = if cfg!(target_arch = "wasm32") {
+106:         // This is to account for the fact the js-sys based time measurement has a resolution of 1ms
+107:         // on chrome, this will slow down the fft benchmarking somewhat, but it's barely noticeable
+108:         Duration::from_millis(10)
+109:     } else {
+110:         Duration::from_millis(1)
+111:     };
+112: 
+113:     assert!(n.is_power_of_two());
+114: 
+115:     let align = CACHELINE_ALIGN;
+116: 
+117:     let f = |_| c64 { re: 0.0, im: 0.0 };
+118: 
+119:     let (twiddles, stack) = stack.make_aligned_with::<c64>(2 * n, align, f);
+120:     let twiddles_init = &twiddles[..n];
+121:     let twiddles = &twiddles[n..];
+122:     let (buf, stack) = stack.make_aligned_with::<c64>(n, align, f);
+123: 
+124:     {
+125:         // initialize scratch to load it in the cpu cache
+126:         drop(stack.make_aligned_with::<c64>(n, align, f));
+127:     }
+128: 
+129:     let mut avg_durations = [Duration::ZERO; N_ALGOS];
+130: 
+131:     let discriminant_to_algo = |i: usize| -> FftAlgo {
+132:         match i {
+133:             0 => FftAlgo::Dif2,
+134:             1 => FftAlgo::Dit2,
+135:             2 => FftAlgo::Dif4,
+136:             3 => FftAlgo::Dit4,
+137:             4 => FftAlgo::Dif8,
+138:             5 => FftAlgo::Dit8,
+139:             6 => FftAlgo::Dif16,
+140:             7 => FftAlgo::Dit16,
+141:             _ => unreachable!(),
+142:         }
+143:     };
+144: 
+145:     for (i, avg) in (0..N_ALGOS).zip(&mut avg_durations) {
+146:         let algo = discriminant_to_algo(i);
+147: 
+148:         let (init_n_runs, approx_duration) = {
+149:             let mut n_runs: u128 = 1;
+150: 
+151:             loop {
+152:                 let duration = measure_n_runs(n_runs, algo, buf, twiddles_init, twiddles, stack);
+153: 
+154:                 if duration < MIN_DURATION {
+155:                     n_runs *= 2;
+156:                 } else {
+157:                     break (n_runs, duration_div_f64(duration, n_runs as f64));
+158:                 }
+159:             }
+160:         };
+161: 
+162:         let n_runs = (min_bench_duration_per_algo.as_secs_f64() / approx_duration.as_secs_f64())
+163:             .ceil() as u128;
+164:         *avg = if n_runs <= init_n_runs {
+165:             approx_duration
+166:         } else {
+167:             let duration = measure_n_runs(n_runs, algo, buf, twiddles_init, twiddles, stack);
+168:             duration_div_f64(duration, n_runs as f64)
+169:         };
+170:     }
+171: 
+172:     let best_time = avg_durations.iter().min().unwrap();
+173:     let best_index = avg_durations
+174:         .iter()
+175:         .position(|elem| elem == best_time)
+176:         .unwrap();
+177:     (discriminant_to_algo(best_index), *best_time)
+178: }
+
+## tfhe-fft-0.10.1/src/ordered.rs:204–223
+204: pub(crate) fn get_fn_ptr(
+205:     algo: FftAlgo,
+206:     n: usize,
+207: ) -> [fn(&mut [c64], &mut [c64], &[c64], &[c64]); 2] {
+208:     if n == 1 {
+209:         return [do_nothing; 2];
+210:     }
+211:     use FftAlgo::*;
+212:     match algo {
+213:         Dif2 => dif2::fft_impl_dispatch(n),
+214:         Dit2 => dit2::fft_impl_dispatch(n),
+215:         Dif4 => dif4::fft_impl_dispatch(n),
+216:         Dit4 => dit4::fft_impl_dispatch(n),
+217:         Dif8 => dif8::fft_impl_dispatch(n),
+218:         Dit8 => dit8::fft_impl_dispatch(n),
+219:         Dif16 => dif16::fft_impl_dispatch(n),
+220:         Dit16 => dit16::fft_impl_dispatch(n),
+221:     }
+222: }
+223: 
+
+## tfhe-fft-0.10.1/src/unordered.rs:490–635
+490: 
+491: /// Unordered FFT plan.
+492: ///
+493: /// This type holds a forward and inverse FFT plan and twiddling factors for a specific size.
+494: /// The size must be a power of two.
+495: #[derive(Clone)]
+496: pub struct Plan {
+497:     monomial_twiddles: ABox<[c64]>,
+498:     indices: ABox<[usize]>,
+499:     twiddles: ABox<[c64]>,
+500:     twiddles_inv: ABox<[c64]>,
+501:     fwd_process_x2: fn(&mut [c64], &[c64]),
+502:     fwd_process_x4: fn(&mut [c64], &[c64]),
+503:     fwd_process_x8: fn(&mut [c64], &[c64]),
+504:     inv_process_x2: fn(&mut [c64], &[c64]),
+505:     inv_process_x4: fn(&mut [c64], &[c64]),
+506:     inv_process_x8: fn(&mut [c64], &[c64]),
+507:     base_n: usize,
+508:     base_fn_fwd: fn(&mut [c64], &mut [c64], &[c64], &[c64]),
+509:     base_fn_inv: fn(&mut [c64], &mut [c64], &[c64], &[c64]),
+510:     base_algo: FftAlgo,
+511:     n: usize,
+512: }
+513: 
+514: impl core::fmt::Debug for Plan {
+515:     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+516:         f.debug_struct("Plan")
+517:             .field("base_algo", &self.base_algo)
+518:             .field("base_size", &self.base_n)
+519:             .field("fft_size", &self.fft_size())
+520:             .finish()
+521:     }
+522: }
+523: 
+524: /// Method for selecting the unordered FFT plan.
+525: #[derive(Clone, Copy, Debug)]
+526: pub enum Method {
+527:     /// Select the FFT plan by manually providing the underlying algorithm.
+528:     /// The unordered FFT works by using an internal ordered FFT plan, whose size and algorithm can
+529:     /// be specified by the user.
+530:     UserProvided { base_algo: FftAlgo, base_n: usize },
+531:     /// Select the FFT plan by measuring the running time of all the possible plans and selecting
+532:     /// the fastest one. The provided duration specifies how long the benchmark of each plan should
+533:     /// last.
+534:     #[cfg(feature = "std")]
+535:     #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+536:     Measure(Duration),
+537: }
+538: 
+539: #[cfg(feature = "std")]
+540: fn measure_fastest_scratch(n: usize) -> StackReq {
+541:     if n <= 512 {
+542:         crate::ordered::measure_fastest_scratch(n)
+543:     } else {
+544:         let base_n = 4096;
+545:         crate::ordered::measure_fastest_scratch(base_n)
+546:             .and(StackReq::new_aligned::<c64>(n + base_n, CACHELINE_ALIGN)) // twiddles
+547:             .and(StackReq::new_aligned::<c64>(n, CACHELINE_ALIGN)) // buf
+548:             .and(StackReq::new_aligned::<c64>(base_n, CACHELINE_ALIGN)) // scratch
+549:     }
+550: }
+551: 
+552: #[cfg(feature = "std")]
+553: fn measure_fastest(
+554:     mut min_bench_duration_per_algo: Duration,
+555:     n: usize,
+556:     stack: &mut PodStack,
+557: ) -> (FftAlgo, usize, Duration) {
+558:     const MIN_DURATION: Duration = Duration::from_millis(1);
+559:     min_bench_duration_per_algo = min_bench_duration_per_algo.max(MIN_DURATION);
+560: 
+561:     if n <= 256 {
+562:         let (algo, duration) =
+563:             crate::ordered::measure_fastest(min_bench_duration_per_algo, n, stack);
+564:         (algo, n, duration)
+565:     } else {
+566:         // bench
+567: 
+568:         let bases = [512, 1024];
+569:         let mut algos: [Option<FftAlgo>; 4] = [None; 4];
+570:         let mut avg_durations: [Option<Duration>; 4] = [None; 4];
+571:         let fwd_process_x2 = get_fwd_process_x2();
+572:         let fwd_process_x4 = get_fwd_process_x4();
+573:         let fwd_process_x8 = get_fwd_process_x8();
+574: 
+575:         let mut n_algos = 0;
+576:         for (i, base_n) in bases.into_iter().enumerate() {
+577:             if n < base_n {
+578:                 break;
+579:             }
+580: 
+581:             n_algos += 1;
+582: 
+583:             // we'll measure the corresponding plan
+584:             let (base_algo, duration) =
+585:                 crate::ordered::measure_fastest(min_bench_duration_per_algo, base_n, stack);
+586: 
+587:             algos[i] = Some(base_algo);
+588: 
+589:             if n == base_n {
+590:                 avg_durations[i] = Some(duration);
+591:                 continue;
+592:             }
+593: 
+594:             // get the forward base algo
+595:             let base_fn = crate::ordered::get_fn_ptr(base_algo, base_n)[0];
+596: 
+597:             let f = |_| c64 { re: 0.0, im: 0.0 };
+598:             let align = CACHELINE_ALIGN;
+599:             let (w, stack) = stack.make_aligned_with::<c64>(n + base_n, align, f);
+600:             let (scratch, stack) = stack.make_aligned_with::<c64>(base_n, align, f);
+601:             let (z, _) = stack.make_aligned_with::<c64>(n, align, f);
+602: 
+603:             let n_runs = min_bench_duration_per_algo.as_secs_f64()
+604:                 / (duration.as_secs_f64() * (n / base_n) as f64);
+605: 
+606:             let n_runs = n_runs.ceil() as u32;
+607: 
+608:             // For wasm we have a dedicated implementation going through js-sys
+609:             use crate::time::Instant;
+610:             let now = Instant::now();
+611:             for _ in 0..n_runs {
+612:                 fwd_depth(
+613:                     z,
+614:                     w,
+615:                     base_fn,
+616:                     base_n,
+617:                     scratch,
+618:                     fwd_process_x2,
+619:                     fwd_process_x4,
+620:                     fwd_process_x8,
+621:                 );
+622:             }
+623:             let duration = now.elapsed();
+624:             avg_durations[i] = Some(duration / n_runs);
+625:         }
+626: 
+627:         let best_time = avg_durations[..n_algos].iter().min().unwrap().unwrap();
+628:         let best_index = avg_durations[..n_algos]
+629:             .iter()
+630:             .position(|elem| elem.unwrap() == best_time)
+631:             .unwrap();
+632: 
+633:         (algos[best_index].unwrap(), bases[best_index], best_time)
+634:     }
+635: }
+
+## tfhe-fft-0.10.1/src/unordered.rs:654–700
+654:     pub fn new(n: usize, method: Method) -> Self {
+655:         assert!(n.is_power_of_two());
+656: 
+657:         let (base_algo, base_n) = match method {
+658:             Method::UserProvided { base_algo, base_n } => {
+659:                 assert!(base_n.is_power_of_two());
+660:                 assert!(base_n <= n);
+661:                 if base_n != n {
+662:                     assert!(base_n >= 32);
+663:                 }
+664:                 assert!(base_n.trailing_zeros() <= 10);
+665:                 (base_algo, base_n)
+666:             }
+667: 
+668:             #[cfg(feature = "std")]
+669:             Method::Measure(duration) => {
+670:                 let mut buf = PodBuffer::try_new(measure_fastest_scratch(n)).unwrap();
+671:                 let (algo, base_n, _) = measure_fastest(duration, n, PodStack::new(&mut buf));
+672:                 (algo, base_n)
+673:             }
+674:         };
+675: 
+676:         let [base_fn_fwd, base_fn_inv] = crate::ordered::get_fn_ptr(base_algo, base_n);
+677: 
+678:         let nan = c64 {
+679:             re: f64::NAN,
+680:             im: f64::NAN,
+681:         };
+682:         let mut twiddles = avec![nan; n + base_n].into_boxed_slice();
+683:         let mut twiddles_inv = avec![nan; n + base_n].into_boxed_slice();
+684: 
+685:         use crate::ordered::FftAlgo::*;
+686:         let base_r = match base_algo {
+687:             Dif2 | Dit2 => 2,
+688:             Dif4 | Dit4 => 4,
+689:             Dif8 | Dit8 => 8,
+690:             Dif16 | Dit16 => 16,
+691:         };
+692: 
+693:         init_twiddles(
+694:             n,
+695:             get_complex_per_reg(),
+696:             base_n,
+697:             base_r,
+698:             &mut twiddles,
+699:             &mut twiddles_inv,
+700:         );
+
+## bincode-1.3.3/src/lib.rs:99–117
+99: 
+100: /// Serializes a serializable object into a `Vec` of bytes using the default configuration.
+101: ///
+102: /// **Warning:** the default configuration used by this function is not
+103: /// the same as that used by the `DefaultOptions` struct. See the
+104: /// [config](config/index.html#options-struct-vs-bincode-functions)
+105: /// module for more details
+106: pub fn serialize<T: ?Sized>(value: &T) -> Result<Vec<u8>>
+107: where
+108:     T: serde::Serialize,
+109: {
+110:     DefaultOptions::new()
+111:         .with_fixint_encoding()
+112:         .allow_trailing_bytes()
+113:         .serialize(value)
+114: }
+115: 
+116: /// Deserializes an object directly from a `Read`er using the default configuration.
+117: ///
+
+## bincode-1.3.3/src/ser/mod.rs:149–180
+149:     fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq> {
+150:         let len = len.ok_or(ErrorKind::SequenceMustHaveLength)?;
+151:         O::IntEncoding::serialize_len(self, len)?;
+152:         Ok(Compound { ser: self })
+153:     }
+154: 
+155:     fn serialize_tuple(self, _len: usize) -> Result<Self::SerializeTuple> {
+156:         Ok(Compound { ser: self })
+157:     }
+158: 
+159:     fn serialize_tuple_struct(
+160:         self,
+161:         _name: &'static str,
+162:         _len: usize,
+163:     ) -> Result<Self::SerializeTupleStruct> {
+164:         Ok(Compound { ser: self })
+165:     }
+166: 
+167:     fn serialize_tuple_variant(
+168:         self,
+169:         _name: &'static str,
+170:         variant_index: u32,
+171:         _variant: &'static str,
+172:         _len: usize,
+173:     ) -> Result<Self::SerializeTupleVariant> {
+174:         O::IntEncoding::serialize_u32(self, variant_index)?;
+175:         Ok(Compound { ser: self })
+176:     }
+177: 
+178:     fn serialize_map(self, len: Option<usize>) -> Result<Self::SerializeMap> {
+179:         let len = len.ok_or(ErrorKind::SequenceMustHaveLength)?;
+180:         O::IntEncoding::serialize_len(self, len)?;
+
+## bincode-1.3.3/src/ser/mod.rs:184–197
+184:     fn serialize_struct(self, _name: &'static str, _len: usize) -> Result<Self::SerializeStruct> {
+185:         Ok(Compound { ser: self })
+186:     }
+187: 
+188:     fn serialize_struct_variant(
+189:         self,
+190:         _name: &'static str,
+191:         variant_index: u32,
+192:         _variant: &'static str,
+193:         _len: usize,
+194:     ) -> Result<Self::SerializeStructVariant> {
+195:         O::IntEncoding::serialize_u32(self, variant_index)?;
+196:         Ok(Compound { ser: self })
+197:     }
+
+## bincode-1.3.3/src/config/mod.rs:55–74
+55: ///
+56: /// ### Defaults
+57: /// By default bincode will use little-endian encoding for multi-byte integers, and will not
+58: /// limit the number of serialized/deserialized bytes.
+59: ///
+60: /// ### Configuring `DefaultOptions`
+61: ///
+62: /// `DefaultOptions` implements the [Options] trait, which means it exposes functions to change the behavior of bincode.
+63: ///
+64: /// For example, if you wanted to limit the bincode deserializer to 1 kilobyte of user input:
+65: ///
+66: /// ```rust
+67: /// use bincode::Options;
+68: /// let my_options = bincode::DefaultOptions::new().with_limit(1024);
+69: /// ```
+70: ///
+71: /// ### DefaultOptions struct vs. functions
+72: ///
+73: /// The default configuration used by this struct is not the same as that used by the bincode
+74: /// helper functions in the root of this crate. See the

@@ -1,0 +1,26 @@
+label,role,command,count,seconds,source,scope
+EXECUTED,whole_public_phase,normal40/4/8,1,1629.627796334,reports/normal_002/public_complete.json:whole_public_phase_ns,"setup,public operations,full replay,audits,exports,shutdown; private drain excluded"
+EXECUTED,setup,honest_public_setup_and_genesis,1,55.352910125,reports/normal_002/public_complete.json:setup.setup_elapsed_ns,"timer starts after params; includes registry,public construction/verification,finalization,queries,genesis/config"
+EXECUTED,independent_public_replay,all44transitions,44,375.318291250,reports/normal_002/public_complete.json:public_replay_ns,full public ciphertext recomputation and state/history checks
+EXECUTED,authority,host-infer,4,7.800889166,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,authority,host-learn,40,157.286506420,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,authority,inspect,107,190.804830209,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,honest_public_setup,auth-init,1,0.101447625,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,honest_public_setup,public-build,1,22.409958250,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,honest_public_setup,recipient-init,16,1.699776415,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,honest_public_setup,verify-public,1,22.581381167,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,honest_setup,encode-query,16,1.857653750,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,honest_setup,params,1,0.109393416,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,honest_setup,recipient-finalize,16,1.845583168,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,honest_setup,validate-context,1,4.604987000,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,host,host-infer,4,7.984002916,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,host,host-learn,40,140.788348124,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,host,inspect,84,135.418947797,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,independent_public_replay,host-infer,4,9.704378668,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,independent_public_replay,host-learn,40,189.659573707,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,independent_public_replay,inspect,84,174.214350171,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,issuer,issuer-encrypt,40,67.530851504,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,public_transport,inspect,84,131.921593248,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,reader,host-infer,4,9.939778666,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,reader,host-learn,40,146.402682375,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers
+EXECUTED,reader,inspect,107,186.429437254,reports/normal_002/public_complete.json:role_command_costs,child process wall times; not additive with containing timers

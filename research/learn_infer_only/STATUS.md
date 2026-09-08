@@ -15,7 +15,64 @@ and interrupted PQ proof reviews; and a public research site. Root integrates,
 reviews and checkpoints named artifacts. No prior completed384/96 workload is
 rerun merely to restart, and prior safety-stopped tasks remain stopped.
 
-## Third-run first checkpoint — 2026-09-08 04:21 UTC
+## Third-run second checkpoint — 2026-09-08 05:21 UTC
+
+[EXECUTED] `experiments/end_to_end/overnight_checkpoint_002.py` rehashes392
+public source/evidence files across ten inventories, checks the saved frozen
+proof/source records and confirms both companions' starting HEAD/status and
+preexisting dirty file bytes. It executes no cryptography and reads no private
+runtime state. Private comparison results below are attributed to their saved
+executed reports.
+
+[EXECUTED] The public research site is live at
+https://emberian.github.io/zkml-research/ . Its initial deployment passed
+GitHub Actions, served-byte comparison and browser inspection. Source links
+identify immutable committed evidence. A further evidence refresh is in progress.
+
+- [EXECUTED reviewed journal] The public-coin setup now joins the durable
+  designated journal:40 Learn/four Infer/eight expiries, all44 complete public
+  replays, orderly reopen and two exact historical retries pass. Both services
+  and public checks close before the four private integer comparisons, which
+  pass. Public phase:1,629.627796334seconds. Honest direct sampling/registration,
+  recipients' full per-input query span and shared-OS assumptions remain.
+  The accepted-value DDH proof does not cover the instrumented timing transcript.
+  [Report](experiments/private_construction/designated_span/public_coin_setup/journal/README.md).
+- [EXECUTED failed long TFHE attempt] The handwritten384/96 successor stopped
+  at Learn14 after13 passing byte pairs: identical input hashes, different
+  ciphertext bytes. Zero Infer and zero private decode occurred. The failure
+  is sealed; it is neither a semantic-correctness refutation nor a completed
+  workload. Independent source review identifies measured FFT planning as a
+  candidate cause; the failed processes did not log their plans.
+  [Failure](experiments/end_to_end/private_ema/encrypted_successor/REPORT.md).
+- [EXECUTED separate successors] Lean-derived schedules now drive a generic
+  Boolean Rust interpreter. All25,600 pure Learn and49,152 pure Infer checks,
+  then a two-Learn/two-Infer encrypted sample pass. A separate fixed-Dif4 build
+  passes five public replay pairs, including the old failure's input tuple;
+  all10 processes log the expected plan. These are finite samples, not general
+  determinism. A new frozen384/96 chained run is being prepared, retaining
+  the full reader key and deferred private audit.
+  [Fixed-build controls](experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md).
+- [EXECUTED proposed proofs] The word, emitted-schedule and adaptation-dynamics
+  packages have28,46 and28 checked pins, respectively. Independent reviews
+  accept their stated scope. Six consistent selected-bin updates suffice;
+  arbitrary semantic accuracy or TFHE correctness does not follow. Full-UD
+  core plus polynomial dependencies adds105 pins over existing RS definitions.
+  Root's915-pin combined integration is running after two packaging-checker
+  failures, both retained; no combined-build success is claimed yet.
+- [DERIVED reviewed PQ construction] Fixed-coordinate public-coin ALS setup
+  admits a conditional QPT argument with polynomial Gaussian widths. A finite
+  regularity certificate and cost scripts are saved. Restricted n1024 sizing
+  gives84.43MB ciphertext/86.46GB public key; these are illustrative sizes,
+  not certified security parameters. Remaining reduction constants/losses,
+  concrete LWE hardness and sampler accuracy remain explicit. A fresh
+  independent finite-cost review and lower-cost source audit are underway.
+  [Feasibility](experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md).
+
+[OPEN] The operator-private, useful, nonlinear, post-quantum resident with no
+equivalent unrestricted credential remains unconstructed. The current lanes
+strengthen distinct components; no result above establishes their conjunction.
+
+## Third-run first checkpoint — 2026-09-08 04:21 UTC (historical)
 
 [EXECUTED] `experiments/end_to_end/overnight_checkpoint_001.py` verified 122
 saved file hashes, including both independent PQ reviews, the fixed EMA utility

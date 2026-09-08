@@ -1,0 +1,45 @@
+'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_eq_zero_of_ge' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Theory/RSInterpolationMatrix.lean:355:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_eq_zero_of_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_eq_zero_of_ge' depends on axioms: [propext,
++  Classical.choice,
++  Quot.sound]
+'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_le_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Theory/RSInterpolationMatrix.lean:359:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_le_one' depends on axioms: [propext,
++  Classical.choice,
++  Quot.sound]
+'Minidregg.RSInterpolation.BW_homMatrix_det_submatrix_natDegree_le_e_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Theory/RSInterpolationMatrix.lean:375:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.RSInterpolation.BW_homMatrix_det_submatrix_natDegree_le_e_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.RSInterpolation.BW_homMatrix_det_submatrix_natDegree_le_e_add_one' depends on axioms: [propext,
++  Classical.choice,
++  Quot.sound]
+'Minidregg.RSInterpolation.RS_isUnit_det_vandermonde_C_of_injective' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Theory/RSInterpolationMatrix.lean:379:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.RSInterpolation.RS_isUnit_det_vandermonde_C_of_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.RSInterpolation.RS_isUnit_det_vandermonde_C_of_injective' depends on axioms: [propext,
++  Classical.choice,
++  Quot.sound]
+'Minidregg.RSInterpolation.RS_natDegree_inv_neg_vandermonde_C_eq_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Theory/RSInterpolationMatrix.lean:387:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.RSInterpolation.RS_natDegree_inv_neg_vandermonde_C_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.RSInterpolation.RS_natDegree_inv_neg_vandermonde_C_eq_zero' depends on axioms: [propext,
++  Classical.choice,
++  Quot.sound]

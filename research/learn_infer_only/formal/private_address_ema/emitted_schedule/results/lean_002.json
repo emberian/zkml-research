@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_h9biv1pp/olean/Compiler/PrivateAddressEmaSchedule.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule",
+  "exit_code": 1,
+  "source_sha256": "cabda430e7f31cd502e326d346e006b9dba612a64bb4486514b13e3bcebc389a",
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean:47:77: error: unsolved goals\ncase a\nx : F2\nh : ZMod.val x = 1\nhx : 1 < 2\n\u22a2 1 = ZMod.val 1\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean:120:64: warning: This simp argument is unused:\n  descriptorHolds\n\nHint: Omit it from the simp argument list.\n  simp [d, cse,\u0335 \u0335d\u0335e\u0335s\u0335c\u0335r\u0335i\u0335p\u0335t\u0335o\u0335r\u0335H\u0335o\u0335l\u0335d\u0335s\u0335]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean:130:8: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern\n  cseSubst ?m.47 \u2191i\nin the target expression\n  (fun i => wv (cseSubst (raw es) i)) \u2191i = inputs i\n\ncase h\nm : \u2115\nes : List (Expr m)\ninputs : Fin m \u2192 F2\nwv : \u2115 \u2192 F2\nhi : \u2200 (i : Fin m), wv \u2191i = inputs i\nhg : \u2200 g \u2208 (shared es).gates, DGate.holds wv g\nhr :\n  List.map (fun z => DWire.read (fun i => wv (cseSubst (raw es) i)) z) (raw es).zeros =\n    List.map (eval (readVars Fin.val fun i => wv (cseSubst (raw es) i))) es\ni : Fin m\n\u22a2 (fun i => wv (cseSubst (raw es) i)) \u2191i = inputs i\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean:159:9: error: unsolved goals\ncase zero\nx : \u2115\n\u22a2 0 = x % 1\n",
+  "stderr": ""
+}

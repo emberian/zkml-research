@@ -1,0 +1,22 @@
+{
+  "bytes": 1075835,
+  "direct_html_archive_fetches": 1,
+  "pdf_downloads": 0,
+  "read_scope": [
+    "Introduction role model",
+    "Theorem 3.3 statement and Appendix A proof sketch",
+    "Remark 5.4",
+    "Section 7 experimental setup and Tables 1/2",
+    "Appendix F Algorithm 5"
+  ],
+  "retrieved_utc": "2026-09-08T04:14:49.100268+00:00",
+  "root_prior_search_queries_not_charged_here": 2,
+  "scry_schema": 0,
+  "scry_sql": 0,
+  "sha256": "e2a4817beec8b10fac5a9d4716830a96fea0d7ca865cdf4b4651f48bb8931867",
+  "url": "https://arxiv.org/html/2605.27782v1",
+  "web_find_actions": 4,
+  "web_open_actions": 3,
+  "web_search_queries": 0,
+  "web_tool_calls": 3
+}

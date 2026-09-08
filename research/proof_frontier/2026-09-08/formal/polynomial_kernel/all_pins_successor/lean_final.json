@@ -1,0 +1,14 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Theory/PolynomialMatrixKernel.lean"
+  ],
+  "cwd": "/private/tmp/minidregg-polynomial-all-pins-20260908",
+  "elapsed_seconds": 21.101041582995094,
+  "exit_code": 0,
+  "source_sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+  "stdout": "",
+  "stderr": ""
+}

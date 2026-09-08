@@ -1,0 +1,54 @@
+[
+  {
+    "path": "/Users/ember/dev/minidregg/Assurance/ErrorBudget.lean",
+    "sha256": "cea8a98902a965b6028027bd00f6f99ddcb7d4e7bf2f69f5c3e56a3e0198c9f0"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Assurance/ErrorBudget120.lean",
+    "sha256": "24ff52a298f36e8ee668cae0a050518993af84dc4a896f952c0f1bd26ac67e2e"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Assurance/MixedFieldBudget.lean",
+    "sha256": "37e832f0d96a8da337e2629cffcbfd3ebe2f7b764ed962d48c006b24cf5e3468"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Assurance/TwoRegimeQueryBudget.lean",
+    "sha256": "0648b74bbee85ba4769deb435bc76e1219160600e4303d99f58edb525f4eea36"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ProximityGapUD.lean",
+    "sha256": "a43f8c847d9a22173aeb6e82d6f1c12b9490089cf7d58e07c8153f0a89e51b5b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTower.lean",
+    "sha256": "ac97c5f6450f927c7b48deaa883c5737309a0cede63d8a905e900e31d2f9dc64"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean",
+    "sha256": "9dbb34989ea4af684802075717f8b3fe5602bc5d128b796b851a5efa9d28e432"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean",
+    "sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean",
+    "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b"
+  },
+  {
+    "path": "/Users/ember/dev/minidregg/Selvage/ReedSolomon.lean",
+    "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c"
+  },
+  {
+    "path": "/Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs",
+    "sha256": "596a450e77a8b905626e8c8b7b68dcffadd07b9bd9bcb71a040f009e8f77fb89"
+  },
+  {
+    "path": "/Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs",
+    "sha256": "cddf287418459b37cc6e529d014ff110f0d0a902edb0d53bec6e41d38d37d6d4"
+  },
+  {
+    "path": "/Users/ember/dev/breadstuffs/recursion-verify/src/config.rs",
+    "sha256": "492454c41d057c2e4bdf70b7718645fbb1582b49054051d079cb66ed38d10e67"
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/minidregg-private-address-ema.patch"
+    ],
+    "cwd": "/tmp/minidregg-ema-review-20260908",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/minidregg-private-address-ema.patch"
+    ],
+    "cwd": "/tmp/minidregg-ema-review-20260908",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "cwd": "/tmp/minidregg-ema-review-20260908",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  }
+]

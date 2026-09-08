@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics",
+  "exit_code": 0,
+  "elapsed_seconds": 11.415044499997748,
+  "source_sha256": "aa648e7bf347e0cdc58bfa7c95150c0deedbfac0ace2dfbfb8b7020afee58845",
+  "stdout": "",
+  "stderr": ""
+}

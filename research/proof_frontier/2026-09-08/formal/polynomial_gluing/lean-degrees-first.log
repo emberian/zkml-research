@@ -1,0 +1,17 @@
+Theory/PolynomialGluing.lean:156:25: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  B.coeff m
+in the target expression
+  eval x ({ toFinsupp := B.toFinsupp.coeff }.coeff m) = 0
+
+case refine_1
+F : Type
+inst✝ : Field F
+B : F[X][Y]
+hB : B ≠ 0
+P_x : Finset F
+hcard : #P_x > degreeX B
+x : F
+hx : x ∈ P_x ∧ eval x (B.coeff (natDegreeY B)) ≠ 0
+m : ℕ
+hm : natDegreeY B < m
+⊢ eval x ({ toFinsupp := B.toFinsupp.coeff }.coeff m) = 0

@@ -1,0 +1,291 @@
+resident-emitted-bool-runtime v0.1.0 (/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft)
+├── bincode feature "default"
+│   └── bincode v1.3.3
+│       └── serde feature "default"
+│           ├── serde v1.0.229
+│           │   ├── serde_core feature "result"
+│           │   │   └── serde_core v1.0.229
+│           │   └── serde_derive feature "default"
+│           │       └── serde_derive v1.0.229 (proc-macro)
+│           │           ├── proc-macro2 feature "proc-macro"
+│           │           │   └── proc-macro2 v1.0.107
+│           │           │       └── unicode-ident feature "default"
+│           │           │           └── unicode-ident v1.0.24
+│           │           ├── quote feature "proc-macro"
+│           │           │   ├── quote v1.0.47
+│           │           │   │   └── proc-macro2 v1.0.107 (*)
+│           │           │   └── proc-macro2 feature "proc-macro" (*)
+│           │           ├── syn feature "clone-impls"
+│           │           │   └── syn v3.0.5
+│           │           │       ├── proc-macro2 v1.0.107 (*)
+│           │           │       ├── quote v1.0.47 (*)
+│           │           │       └── unicode-ident feature "default" (*)
+│           │           ├── syn feature "derive"
+│           │           │   └── syn v3.0.5 (*)
+│           │           ├── syn feature "parsing"
+│           │           │   └── syn v3.0.5 (*)
+│           │           ├── syn feature "printing"
+│           │           │   └── syn v3.0.5 (*)
+│           │           └── syn feature "proc-macro"
+│           │               ├── syn v3.0.5 (*)
+│           │               ├── proc-macro2 feature "proc-macro" (*)
+│           │               └── quote feature "proc-macro" (*)
+│           └── serde feature "std"
+│               ├── serde v1.0.229 (*)
+│               └── serde_core feature "std"
+│                   └── serde_core v1.0.229
+├── serde feature "default" (*)
+├── serde feature "derive"
+│   ├── serde v1.0.229 (*)
+│   └── serde feature "serde_derive"
+│       └── serde v1.0.229 (*)
+├── serde_json feature "default"
+│   ├── serde_json v1.0.151
+│   │   ├── memchr v2.8.3
+│   │   ├── serde_core v1.0.229
+│   │   ├── itoa feature "default"
+│   │   │   └── itoa v1.0.18
+│   │   └── zmij feature "default"
+│   │       └── zmij v1.0.23
+│   └── serde_json feature "std"
+│       ├── serde_json v1.0.151 (*)
+│       ├── serde_core feature "std" (*)
+│       └── memchr feature "std"
+│           ├── memchr v2.8.3
+│           └── memchr feature "alloc"
+│               └── memchr v2.8.3
+├── tfhe feature "boolean"
+│   └── tfhe v1.6.3
+│       ├── bincode feature "default" (*)
+│       ├── serde feature "default" (*)
+│       ├── serde feature "derive" (*)
+│       ├── aligned-vec feature "default"
+│       │   ├── aligned-vec v0.6.4
+│       │   │   ├── serde v1.0.229 (*)
+│       │   │   └── equator feature "default"
+│       │   │       └── equator v0.4.2
+│       │   │           └── equator-macro feature "default"
+│       │   │               └── equator-macro v0.4.2 (proc-macro)
+│       │   │                   ├── proc-macro2 feature "default"
+│       │   │                   │   ├── proc-macro2 v1.0.107 (*)
+│       │   │                   │   └── proc-macro2 feature "proc-macro" (*)
+│       │   │                   ├── quote feature "default"
+│       │   │                   │   ├── quote v1.0.47 (*)
+│       │   │                   │   └── quote feature "proc-macro" (*)
+│       │   │                   ├── syn feature "default"
+│       │   │                   │   ├── syn v2.0.119
+│       │   │                   │   │   ├── proc-macro2 v1.0.107 (*)
+│       │   │                   │   │   ├── quote v1.0.47 (*)
+│       │   │                   │   │   └── unicode-ident feature "default" (*)
+│       │   │                   │   ├── syn feature "clone-impls"
+│       │   │                   │   │   └── syn v2.0.119 (*)
+│       │   │                   │   ├── syn feature "derive"
+│       │   │                   │   │   └── syn v2.0.119 (*)
+│       │   │                   │   ├── syn feature "parsing"
+│       │   │                   │   │   └── syn v2.0.119 (*)
+│       │   │                   │   ├── syn feature "printing"
+│       │   │                   │   │   └── syn v2.0.119 (*)
+│       │   │                   │   └── syn feature "proc-macro"
+│       │   │                   │       ├── syn v2.0.119 (*)
+│       │   │                   │       ├── proc-macro2 feature "proc-macro" (*)
+│       │   │                   │       └── quote feature "proc-macro" (*)
+│       │   │                   └── syn feature "full"
+│       │   │                       └── syn v2.0.119 (*)
+│       │   └── aligned-vec feature "std"
+│       │       └── aligned-vec v0.6.4 (*)
+│       ├── aligned-vec feature "serde"
+│       │   └── aligned-vec v0.6.4 (*)
+│       ├── bytemuck feature "default"
+│       │   └── bytemuck v1.25.2
+│       ├── dyn-stack feature "default"
+│       │   ├── dyn-stack v0.13.2
+│       │   │   ├── bytemuck feature "default" (*)
+│       │   │   └── dyn-stack-macros feature "default"
+│       │   │       └── dyn-stack-macros v0.1.3 (proc-macro)
+│       │   ├── dyn-stack feature "alloc"
+│       │   │   └── dyn-stack v0.13.2 (*)
+│       │   └── dyn-stack feature "std"
+│       │       └── dyn-stack v0.13.2 (*)
+│       ├── itertools feature "default"
+│       │   ├── itertools v0.14.0
+│       │   │   └── either v1.18.0
+│       │   └── itertools feature "use_std"
+│       │       ├── itertools v0.14.0 (*)
+│       │       ├── itertools feature "use_alloc"
+│       │       │   └── itertools v0.14.0 (*)
+│       │       └── either feature "use_std"
+│       │           ├── either v1.18.0
+│       │           └── either feature "std"
+│       │               └── either v1.18.0
+│       ├── paste feature "default"
+│       │   └── paste v1.0.15 (proc-macro)
+│       ├── pulp feature "default"
+│       │   ├── pulp v0.22.3
+│       │   │   ├── libm v0.2.16
+│       │   │   ├── pulp-wasm-simd-flag v0.1.1
+│       │   │   ├── bytemuck feature "aarch64_simd"
+│       │   │   │   └── bytemuck v1.25.2
+│       │   │   ├── bytemuck feature "default" (*)
+│       │   │   ├── bytemuck feature "wasm_simd"
+│       │   │   │   └── bytemuck v1.25.2
+│       │   │   ├── paste feature "default" (*)
+│       │   │   ├── cfg-if feature "default"
+│       │   │   │   └── cfg-if v1.0.4
+│       │   │   ├── num-complex feature "bytemuck"
+│       │   │   │   └── num-complex v0.4.6
+│       │   │   │       ├── serde v1.0.229 (*)
+│       │   │   │       ├── bytemuck feature "default" (*)
+│       │   │   │       └── num-traits feature "i128"
+│       │   │   │           └── num-traits v0.2.19
+│       │   │   │               [build-dependencies]
+│       │   │   │               └── autocfg feature "default"
+│       │   │   │                   └── autocfg v1.5.1
+│       │   │   └── reborrow feature "default"
+│       │   │       └── reborrow v0.5.5
+│       │   │   [build-dependencies]
+│       │   │   └── version_check feature "default"
+│       │   │       └── version_check v0.9.5
+│       │   ├── pulp feature "relaxed-simd"
+│       │   │   ├── pulp v0.22.3 (*)
+│       │   │   └── pulp-wasm-simd-flag feature "relaxed-simd"
+│       │   │       └── pulp-wasm-simd-flag v0.1.1
+│       │   ├── pulp feature "std"
+│       │   │   └── pulp v0.22.3 (*)
+│       │   └── pulp feature "x86-v3"
+│       │       └── pulp v0.22.3 (*)
+│       ├── rand_core feature "default"
+│       │   └── rand_core v0.6.4
+│       │       └── getrandom feature "default"
+│       │           └── getrandom v0.2.17
+│       │               ├── libc v0.2.189
+│       │               └── cfg-if feature "default" (*)
+│       ├── rand_core feature "std"
+│       │   ├── rand_core v0.6.4 (*)
+│       │   ├── rand_core feature "alloc"
+│       │   │   └── rand_core v0.6.4 (*)
+│       │   ├── rand_core feature "getrandom"
+│       │   │   └── rand_core v0.6.4 (*)
+│       │   └── getrandom feature "std"
+│       │       └── getrandom v0.2.17 (*)
+│       ├── rayon feature "default"
+│       │   └── rayon v1.12.0
+│       │       ├── either v1.18.0
+│       │       └── rayon-core feature "default"
+│       │           └── rayon-core v1.13.0
+│       │               ├── crossbeam-deque feature "default"
+│       │               │   ├── crossbeam-deque v0.8.7
+│       │               │   │   ├── crossbeam-epoch v0.9.20
+│       │               │   │   │   └── crossbeam-utils v0.8.22
+│       │               │   │   └── crossbeam-utils v0.8.22
+│       │               │   └── crossbeam-deque feature "std"
+│       │               │       ├── crossbeam-deque v0.8.7 (*)
+│       │               │       ├── crossbeam-epoch feature "std"
+│       │               │       │   ├── crossbeam-epoch v0.9.20 (*)
+│       │               │       │   ├── crossbeam-epoch feature "alloc"
+│       │               │       │   │   └── crossbeam-epoch v0.9.20 (*)
+│       │               │       │   └── crossbeam-utils feature "std"
+│       │               │       │       └── crossbeam-utils v0.8.22
+│       │               │       └── crossbeam-utils feature "std" (*)
+│       │               └── crossbeam-utils feature "default"
+│       │                   ├── crossbeam-utils v0.8.22
+│       │                   └── crossbeam-utils feature "std" (*)
+│       ├── tfhe-csprng feature "default"
+│       │   └── tfhe-csprng v0.9.1
+│       │       ├── serde feature "default" (*)
+│       │       ├── getrandom feature "default" (*)
+│       │       ├── libc feature "default"
+│       │       │   ├── libc v0.2.189
+│       │       │   └── libc feature "std"
+│       │       │       └── libc v0.2.189
+│       │       ├── rayon feature "default" (*)
+│       │       ├── aes feature "default"
+│       │       │   └── aes v0.8.4
+│       │       │       ├── cfg-if feature "default" (*)
+│       │       │       ├── cipher feature "default"
+│       │       │       │   └── cipher v0.4.4
+│       │       │       │       ├── crypto-common feature "default"
+│       │       │       │       │   └── crypto-common v0.1.7
+│       │       │       │       │       ├── generic-array feature "default"
+│       │       │       │       │       │   └── generic-array v0.14.7
+│       │       │       │       │       │       └── typenum feature "default"
+│       │       │       │       │       │           └── typenum v1.20.1
+│       │       │       │       │       │       [build-dependencies]
+│       │       │       │       │       │       └── version_check feature "default" (*)
+│       │       │       │       │       ├── generic-array feature "more_lengths"
+│       │       │       │       │       │   └── generic-array v0.14.7 (*)
+│       │       │       │       │       └── typenum feature "default" (*)
+│       │       │       │       └── inout feature "default"
+│       │       │       │           └── inout v0.1.4
+│       │       │       │               └── generic-array feature "default" (*)
+│       │       │       └── cpufeatures feature "default"
+│       │       │           └── cpufeatures v0.2.17
+│       │       │               └── libc v0.2.189
+│       │       └── tfhe-versionable feature "default"
+│       │           └── tfhe-versionable v0.8.0
+│       │               ├── serde feature "default" (*)
+│       │               ├── serde feature "derive" (*)
+│       │               ├── aligned-vec feature "default" (*)
+│       │               ├── aligned-vec feature "serde" (*)
+│       │               ├── num-complex feature "default"
+│       │               │   ├── num-complex v0.4.6 (*)
+│       │               │   └── num-complex feature "std"
+│       │               │       ├── num-complex v0.4.6 (*)
+│       │               │       └── num-traits feature "std"
+│       │               │           └── num-traits v0.2.19 (*)
+│       │               ├── num-complex feature "serde"
+│       │               │   └── num-complex v0.4.6 (*)
+│       │               └── tfhe-versionable-derive feature "default"
+│       │                   └── tfhe-versionable-derive v0.8.0 (proc-macro)
+│       │                       ├── proc-macro2 feature "default" (*)
+│       │                       ├── quote feature "default" (*)
+│       │                       ├── syn feature "default" (*)
+│       │                       └── syn feature "full" (*)
+│       ├── tfhe-csprng feature "parallel"
+│       │   ├── tfhe-csprng v0.9.1 (*)
+│       │   └── tfhe-csprng feature "rayon"
+│       │       └── tfhe-csprng v0.9.1 (*)
+│       ├── tfhe-versionable feature "default" (*)
+│       ├── tfhe-fft feature "default"
+│       │   ├── tfhe-fft v0.10.1
+│       │   │   ├── aligned-vec v0.6.4 (*)
+│       │   │   ├── dyn-stack v0.13.2 (*)
+│       │   │   ├── pulp v0.22.3 (*)
+│       │   │   ├── serde v1.0.229 (*)
+│       │   │   ├── bytemuck feature "default" (*)
+│       │   │   ├── num-complex feature "bytemuck" (*)
+│       │   │   └── num-complex feature "default" (*)
+│       │   ├── tfhe-fft feature "avx512"
+│       │   │   ├── tfhe-fft v0.10.1 (*)
+│       │   │   └── pulp feature "x86-v4"
+│       │   │       ├── pulp v0.22.3 (*)
+│       │   │       └── bytemuck feature "avx512_simd"
+│       │   │           └── bytemuck v1.25.2
+│       │   └── tfhe-fft feature "std"
+│       │       ├── tfhe-fft v0.10.1 (*)
+│       │       ├── dyn-stack feature "alloc" (*)
+│       │       ├── dyn-stack feature "std" (*)
+│       │       └── pulp feature "std" (*)
+│       ├── tfhe-fft feature "fft128"
+│       │   └── tfhe-fft v0.10.1 (*)
+│       ├── tfhe-fft feature "serde"
+│       │   ├── tfhe-fft v0.10.1 (*)
+│       │   └── num-complex feature "serde" (*)
+│       ├── tfhe-ntt feature "default"
+│       │   ├── tfhe-ntt v0.7.1
+│       │   │   ├── aligned-vec v0.6.4 (*)
+│       │   │   ├── pulp v0.22.3 (*)
+│       │   │   └── bytemuck feature "default" (*)
+│       │   ├── tfhe-ntt feature "avx512"
+│       │   │   ├── tfhe-ntt v0.7.1 (*)
+│       │   │   └── pulp feature "x86-v4" (*)
+│       │   └── tfhe-ntt feature "std"
+│       │       ├── tfhe-ntt v0.7.1 (*)
+│       │       ├── aligned-vec feature "std" (*)
+│       │       └── pulp feature "std" (*)
+│       └── tfhe-safe-serialize feature "default"
+│           └── tfhe-safe-serialize v0.1.1
+│               ├── serde v1.0.229 (*)
+│               ├── bincode feature "default" (*)
+│               └── tfhe-versionable feature "default" (*)
+└── tfhe feature "experimental-force_fft_algo_dif4"
+    └── tfhe v1.6.3 (*)

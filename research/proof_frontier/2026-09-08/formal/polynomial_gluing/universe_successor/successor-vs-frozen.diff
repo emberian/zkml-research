@@ -1,0 +1,554 @@
+--- /Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/PolynomialBivariate.lean	2026-09-08 00:27:08
++++ Theory/PolynomialBivariate.lean	2026-09-08 00:41:40
+@@ -238,3 +238,45 @@
+ 
+ end
+ end Polynomial.Bivariate
++
++/-! Complete declaration axiom census, pinned for integration. -/
++
++/-- info: 'Polynomial.Bivariate.leadingCoeffY_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.leadingCoeffY_eq_zero
++
++/-- info: 'Polynomial.Bivariate.leadingCoeffY_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.leadingCoeffY_ne_zero
++
++/-- info: 'Polynomial.Bivariate.degreeY_mul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.degreeY_mul
++
++/-- info: 'Polynomial.Bivariate.coeff_natDegree_le_degreeX' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.coeff_natDegree_le_degreeX
++
++/-- info: 'Polynomial.Bivariate.evalX_eq_map' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.evalX_eq_map
++
++/-- info: 'Polynomial.Bivariate.degreeX_swap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.degreeX_swap
++
++/-- info: 'Polynomial.Bivariate.evalY_eq_evalX_swap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.evalY_eq_evalX_swap
++
++/-- info: 'Polynomial.Bivariate.natDegreeY_swap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.natDegreeY_swap
++
++/-- info: 'Polynomial.Bivariate.degreeX_mul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.degreeX_mul
++
++/-- info: 'Polynomial.Bivariate.evalX_mul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms Polynomial.Bivariate.evalX_mul
+--- /Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/PolynomialGluingStatement.lean	2026-09-08 00:27:08
++++ Theory/PolynomialGluingStatement.lean	2026-09-08 00:41:40
+@@ -9,7 +9,7 @@
+ 
+ open Polynomial.Bivariate Polynomial
+ 
+-structure PolynomialGluingData (F : Type) [Field F] where
++structure PolynomialGluingData (F : Type*) [Field F] where
+   ax : ℕ
+   ay : ℕ
+   bx : ℕ
+@@ -25,7 +25,7 @@
+ 
+ namespace PolynomialGluingData
+ 
+-def Admissible {F : Type} [Field F] (d : PolynomialGluingData F) : Prop :=
++def Admissible {F : Type*} [Field F] (d : PolynomialGluingData F) : Prop :=
+   d.ax ≤ d.bx ∧ d.ay ≤ d.by_ ∧ d.A ≠ 0 ∧
+   degreeX d.A ≤ d.ax ∧ degreeX d.B ≤ d.bx ∧
+   natDegreeY d.A ≤ d.ay ∧ natDegreeY d.B ≤ d.by_ ∧
+@@ -36,7 +36,7 @@
+     evalX x d.B = d.quotY x * evalX x d.A) ∧
+   (d.bx : ℚ) / (d.nx : ℚ) + (d.by_ : ℚ) / (d.ny : ℚ) < 1
+ 
+-def Glues {F : Type} [Field F] (d : PolynomialGluingData F) : Prop :=
++def Glues {F : Type*} [Field F] (d : PolynomialGluingData F) : Prop :=
+   ∃ P : F[X][Y], d.B = P * d.A ∧
+     degreeX P ≤ d.bx - d.ax ∧ natDegreeY P ≤ d.by_ - d.ay ∧
+     (∃ Qx : Finset F, (d.nx : ℕ) - d.ax ≤ Qx.card ∧ Qx ⊆ d.Px ∧
+@@ -47,7 +47,7 @@
+ end PolynomialGluingData
+ 
+ /-- Every admissible local quotient grid has a global quotient with the stated bounds. -/
+-def PolynomialGluing (F : Type) [Field F] : Prop :=
++def PolynomialGluing (F : Type*) [Field F] : Prop :=
+   ∀ d : PolynomialGluingData F, d.Admissible → d.Glues
+ 
+ noncomputable def polynomialGluingWitness : PolynomialGluingData ℚ where
+--- /Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/PolynomialGluing.lean	2026-09-08 00:27:08
++++ Theory/PolynomialGluing.lean	2026-09-08 00:48:30
+@@ -7,7 +7,8 @@
+ /- Adapted 2026-09-08 for minidregg, Lean 4.30.0, from ArkLib revision
+ 22dbd4e836c15a21f68889afa69b7130da04abbb. This module consolidates the
+ PolishchukSpielman Degrees, Resultant, Existence and main theorem modules.
+-The public polishchuk_spielman signature is unchanged. Proof-only adaptations:
++The public polishchuk_spielman signature is unchanged apart from the
++universe-polymorphic successor generalization Type to Type*. Proof-only adaptations:
+ reuse ordinary bivariate swap lemmas, avoid coefficient-representation unfolding,
+ use the Lean 4.30 triangular-determinant name, and explicitly eliminate Fin 0.
+ Apache-2.0 notices and source authorship are retained below. -/
+@@ -60,7 +61,7 @@
+       mul_div_cancel₀ (b_y : ℚ) (show (n_y : ℚ) ≠ 0 by positivity),
+       show (n_x : ℚ) > 0 by positivity, show (n_y : ℚ) > 0 by positivity] : (b_y : ℚ) < n_y)
+ 
+-lemma ps_card_eval_x_eq_zero_le_degree_x {F : Type} [Field F] [DecidableEq F]
++lemma ps_card_eval_x_eq_zero_le_degree_x {F : Type*} [Field F] [DecidableEq F]
+     (A : F[X][Y]) (hA : A ≠ 0) (P : Finset F) :
+     (P.filter (fun x ↦ evalX x A = 0)).card ≤ degreeX A := by
+   by_contra! h_contra;
+@@ -82,7 +83,7 @@
+     (by exact not_le.mpr <| lt_of_le_of_lt (Multiset.toFinset_card_le _) <|
+       Nat.lt_of_le_of_lt (card_roots' _) <| by aesop)
+ 
+-lemma ps_card_eval_y_eq_zero_le_nat_degree_y {F : Type} [Field F] [DecidableEq F]
++lemma ps_card_eval_y_eq_zero_le_nat_degree_y {F : Type*} [Field F] [DecidableEq F]
+     (A : F[X][Y]) (hA : A ≠ 0) (P : Finset F) :
+     (P.filter (fun y ↦ evalY y A = 0)).card ≤ natDegreeY A := by
+   set A_poly : Polynomial (Polynomial F) := A
+@@ -97,14 +98,14 @@
+   rw [Finset.card_image_of_injective _ fun x y hxy ↦ by simpa using hxy] at h_roots
+   aesop
+ 
+-lemma ps_coeff_mul_monomial_ite {R : Type} [Semiring R]
++lemma ps_coeff_mul_monomial_ite {R : Type*} [Semiring R]
+     (A : R[X]) (j i : ℕ) (r : R) :
+     (A * Polynomial.monomial j r).coeff i =
+       if j ≤ i then A.coeff (i - j) * r else 0 := by
+   classical
+   simp [← C_mul_X_pow_eq_monomial, ← mul_assoc, coeff_mul_X_pow', coeff_mul_C]
+ 
+-lemma ps_coeff_mul_sum_monomial {R : Type} [CommRing R]
++lemma ps_coeff_mul_sum_monomial {R : Type*} [CommRing R]
+     (A : R[X]) (m n : ℕ) (hm : A.natDegree ≤ m)
+     (c : Fin n → R) (i : ℕ) :
+     (A * (∑ j : Fin n, Polynomial.monomial (j : ℕ) (c j))).coeff i =
+@@ -116,17 +117,17 @@
+   simp [Finset.mul_sum, finsetSum_coeff, ps_coeff_mul_monomial_ite]
+   grind only [cases Or]
+ 
+-lemma ps_degree_x_swap {F : Type} [CommRing F] (f : F[X][Y]) :
++lemma ps_degree_x_swap {F : Type*} [CommRing F] (f : F[X][Y]) :
+     degreeX (swap f) = natDegreeY f := degreeX_swap f
+ 
+-lemma ps_descend_eval_x {F : Type} [Field F]
++lemma ps_descend_eval_x {F : Type*} [Field F]
+     {A B G A1 B1 : F[X][Y]} (hA : A = G * A1) (hB : B = G * B1)
+     (x : F) (hx : evalX x G ≠ 0) (q : F[X]) (h : evalX x B = q * evalX x A) :
+     evalX x B1 = q * evalX x A1 := by
+   simp_all only [evalX_eq_map, ne_eq, Polynomial.map_mul]
+   exact mul_left_cancel₀ hx <| by linear_combination h;
+ 
+-lemma ps_descend_eval_y {F : Type} [Field F]
++lemma ps_descend_eval_y {F : Type*} [Field F]
+     {A B G A1 B1 : F[X][Y]} (hA : A = G * A1) (hB : B = G * B1)
+     (y : F) (hy : evalY y G ≠ 0) (q : F[X]) (h : evalY y B = q * evalY y A) :
+     evalY y B1 = q * evalY y A1 := by
+@@ -134,13 +135,13 @@
+   simp_all only [ne_eq, eval_mul]
+   exact mul_left_cancel₀ hy <| by linear_combination h
+ 
+-lemma ps_eval_x_eq_map {F : Type} [CommSemiring F]
++lemma ps_eval_x_eq_map {F : Type*} [CommSemiring F]
+     (x : F) (f : F[X][Y]) : evalX x f = f.map (evalRingHom x) := evalX_eq_map x f
+ 
+-lemma ps_eval_y_eq_eval_x_swap {F : Type} [CommRing F]
++lemma ps_eval_y_eq_eval_x_swap {F : Type*} [CommRing F]
+     (y : F) (f : F[X][Y]) : evalY y f = evalX y (swap f) := evalY_eq_evalX_swap y f
+ 
+-lemma ps_exists_x_preserve_nat_degree_y {F : Type} [Field F]
++lemma ps_exists_x_preserve_nat_degree_y {F : Type*} [Field F]
+     (B : F[X][Y]) (hB : B ≠ 0) (P_x : Finset F)
+     (hcard : P_x.card > degreeX B) :
+     ∃ x ∈ P_x, (evalX x B).natDegree = natDegreeY B := by
+@@ -162,7 +163,7 @@
+   · refine le_natDegree_of_ne_zero ?_
+     convert hx.2 using 1
+ 
+-lemma ps_exists_y_preserve_degree_x {F : Type} [Field F]
++lemma ps_exists_y_preserve_degree_x {F : Type*} [Field F]
+     (B : F[X][Y]) (hB : B ≠ 0) (P_y : Finset F) (hcard : P_y.card > natDegreeY B) :
+     ∃ y ∈ P_y, (evalY y B).natDegree = degreeX B := by
+   have hB' : swap B ≠ 0 := fun h => hB (swap.injective (by simpa using h))
+@@ -170,7 +171,7 @@
+     (by simpa [degreeX_swap] using hcard)
+   exact ⟨y, hy, by simpa [evalY_eq_evalX_swap, natDegreeY_swap] using heq⟩
+ 
+-lemma ps_filter_nonzero_card_y {F : Type} [Field F] [DecidableEq F]
++lemma ps_filter_nonzero_card_y {F : Type*} [Field F] [DecidableEq F]
+     (A : F[X][Y]) (hA : A ≠ 0) (P_y : Finset F) (bound : ℕ)
+     (h_bound_ge : bound ≥ natDegreeY A)
+     (h_card_gt : P_y.card > bound) :
+@@ -179,7 +180,7 @@
+   simp_all only [ne_eq, ge_iff_le, gt_iff_lt, Finset.filter_not, Finset.card_sdiff]
+   rw [Finset.inter_eq_left.mpr (Finset.filter_subset _ _)]; omega
+ 
+-lemma ps_filter_nonzero_card_x {F : Type} [Field F] [DecidableEq F]
++lemma ps_filter_nonzero_card_x {F : Type*} [Field F] [DecidableEq F]
+     (A : F[X][Y]) (hA : A ≠ 0) (P_x : Finset F) (bound : ℕ)
+     (h_bound_ge : bound ≥ degreeX A)
+     (h_card_gt : P_x.card > bound) :
+@@ -190,7 +191,7 @@
+   linarith [ps_card_eval_x_eq_zero_le_degree_x A hA P_x,
+     Nat.sub_add_cancel (show degreeX A ≤ bound from h_bound_ge)]
+ 
+-lemma ps_degX_bound {F : Type} [Field F]
++lemma ps_degX_bound {F : Type*} [Field F]
+     {A B P : F[X][Y]} (hA : A ≠ 0) (hP : P ≠ 0) (hBA : B = P * A)
+     (b_x b_y a_x a_y : ℕ) (n_y : ℕ+) (h_by_ge_ay : b_y ≥ a_y)
+     (h_f_degY : a_y ≥ natDegreeY A) (h_g_degY : b_y ≥ natDegreeY B)
+@@ -213,7 +214,7 @@
+   simp_all
+   linarith
+ 
+-lemma ps_degY_bound {F : Type} [Field F]
++lemma ps_degY_bound {F : Type*} [Field F]
+     {A B P : F[X][Y]} (hA : A ≠ 0) (hP : P ≠ 0) (hBA : B = P * A)
+     (b_x b_y a_x a_y : ℕ) (n_x : ℕ+) (h_bx_ge_ax : b_x ≥ a_x)
+     (h_f_degX : a_x ≥ degreeX A) (h_g_degY : b_y ≥ natDegreeY B)
+@@ -235,7 +236,7 @@
+       linear_combination h_evalX_P.symm.trans (h_quot_y x hx.1 |>.2)
+   exact hx.2.2 ▸ h_evalX_P ▸ h_quot_y x hx.1 |>.1
+ 
+-lemma ps_degree_bounds_of_mul {F : Type} [Field F]
++lemma ps_degree_bounds_of_mul {F : Type*} [Field F]
+     (a_x a_y b_x b_y : ℕ) (n_x n_y : ℕ+)
+     (h_bx_ge_ax : b_x ≥ a_x) (h_by_ge_ay : b_y ≥ a_y)
+     {A B P : F[X][Y]} (hA : A ≠ 0) (hBA : B = P * A)
+@@ -262,7 +263,7 @@
+     exact ⟨hdegX, ps_degY_bound hA hP hBA b_x b_y a_x a_y n_x h_bx_ge_ax
+       h_f_degX h_g_degY P_x h_card_Px quot_y h_quot_y (ps_bx_lt_nx h_le_1) hdegX⟩
+ 
+-lemma ps_gcd_decompose {F : Type} [Field F]
++lemma ps_gcd_decompose {F : Type*} [Field F]
+     {A B : F[X][Y]} (hA : A ≠ 0) (hB : B ≠ 0) :
+     ∃ G A1 B1 : F[X][Y],
+       A = G * A1 ∧ B = G * B1 ∧ IsRelPrime A1 B1 ∧ A1 ≠ 0 ∧ B1 ≠ 0 := by
+@@ -282,7 +283,7 @@
+     exact ⟨k, mul_left_cancel₀ hA.1 <| by linear_combination hk⟩)
+   all_goals push Not
+ 
+-lemma ps_is_rel_prime_swap {F : Type} [CommRing F] {A B : F[X][Y]}
++lemma ps_is_rel_prime_swap {F : Type*} [CommRing F] {A B : F[X][Y]}
+     (h : IsRelPrime A B) : IsRelPrime (swap A) (swap B) := by
+   classical
+   let f : F[X][Y] ≃+* F[X][Y] := swap.toRingEquiv
+@@ -293,7 +294,7 @@
+   have : IsUnit (f (f.symm d)) := f.toRingHom.isUnit_map hunit
+   simpa [f] using this
+ 
+-lemma ps_nat_degree_y_swap {F : Type} [CommRing F]
++lemma ps_nat_degree_y_swap {F : Type*} [CommRing F]
+     (f : F[X][Y]) : natDegreeY (swap f) = degreeX f := by
+   have h := ps_degree_x_swap (swap f)
+   have hs : swap (swap f) = f := swap.left_inv f
+@@ -331,7 +332,7 @@
+ open scoped BigOperators
+ 
+ /-- The degree of `Q * X ^ j` is at most `n - 1` when `deg Q ≤ n - m` and `j < m ≤ n`. -/
+-lemma ps_nat_degree_mul_x_pow_le {F : Type} [Semiring F] [Nontrivial F]
++lemma ps_nat_degree_mul_x_pow_le {F : Type*} [Semiring F] [Nontrivial F]
+     (Q : F[X]) {m n : ℕ} (j : Fin m)
+     (hmn : m ≤ n) (hQdeg : Q.natDegree ≤ n - m) :
+     (Q * X ^ (j : ℕ)).natDegree ≤ n - 1 := by
+@@ -340,7 +341,7 @@
+   simpa [Nat.sub_add_cancel hmn] using Nat.add_lt_add_left j.isLt (n - m)
+ 
+ /-- The degree of `resultant(B, A, n, m)` is at most `m · degX(B) + n · degX(A)`. -/
+-lemma ps_nat_degree_resultant_le {F : Type} [Field F]
++lemma ps_nat_degree_resultant_le {F : Type*} [Field F]
+     (A B : F[X][Y]) (m n : ℕ) :
+     (resultant B A n m).natDegree ≤
+       m * (degreeX B) + n * (degreeX A) := by
+@@ -390,7 +391,7 @@
+     Nat.mul_left_comm, Nat.mul_assoc] using hdet
+ 
+ /-- The resultant commutes with ring homomorphisms. -/
+-lemma ps_resultant_map {R S : Type} [CommRing R] [CommRing S]
++lemma ps_resultant_map {R S : Type*} [CommRing R] [CommRing S]
+     (f : R →+* S) (p q : R[X]) (m n : ℕ) :
+     f (resultant p q m n) = resultant (p.map f) (q.map f) m n := by
+   classical
+@@ -403,14 +404,14 @@
+       simp [sylvester, of_apply, coeff_map, h]
+ 
+ /-- The resultant evaluated at `x` equals the resultant of the evaluated polynomials. -/
+-lemma ps_resultant_eval_x {F : Type} [Field F]
++lemma ps_resultant_eval_x {F : Type*} [Field F]
+     (x : F) (A B : F[X][Y]) (m n : ℕ) :
+     (evalRingHom x) (resultant B A n m) =
+       resultant (B.map (evalRingHom x)) (A.map (evalRingHom x)) n m := by
+   simp only [coe_evalRingHom, resultant_map_map]
+ 
+ /-- The Sylvester matrix commutes with ring homomorphisms. -/
+-lemma ps_sylvester_map {R S : Type} [CommRing R] [CommRing S]
++lemma ps_sylvester_map {R S : Type*} [CommRing R] [CommRing S]
+     (f : R →+* S) (A B : R[X]) (m n : ℕ) :
+     (sylvester B A n m).map f = sylvester (B.map f) (A.map f) n m := by
+   ext i j
+@@ -423,7 +424,7 @@
+       simp [sylvester, of_apply, coeff_map, h]
+ 
+ /-- The Sylvester matrix–vector product gives coefficients of `A * P + B * Q`. -/
+-lemma ps_sylvester_mul_vec_eq_coeff_add {R : Type} [CommRing R]
++lemma ps_sylvester_mul_vec_eq_coeff_add {R : Type*} [CommRing R]
+     (A B : R[X]) (m n : ℕ)
+     (hm : A.natDegree ≤ m) (hn : B.natDegree ≤ n)
+     (v : Fin (n + m) → R) :
+@@ -438,7 +439,7 @@
+     ps_coeff_mul_sum_monomial B n m hn (fun j ↦ v (Fin.natAdd n j)) (i : ℕ), add_comm]
+ 
+ /-- If `B(x, Y) = Q · A(x, Y)`, then `(X - x)^(natDegreeY A)` divides `resultant(B, A)`. -/
+-lemma ps_resultant_dvd_pow_eval_x {F : Type} [Field F]
++lemma ps_resultant_dvd_pow_eval_x {F : Type*} [Field F]
+     (A B : F[X][Y]) (x : F) (Q : F[X]) (n : ℕ)
+     (hmn : natDegreeY A ≤ n) (hn : natDegreeY B ≤ n)
+     (hQdeg : Q.natDegree ≤ n - natDegreeY A)
+@@ -530,7 +531,7 @@
+   simpa [p, m, hm, natDegreeY, resultant, M0] using (hdet1 ▸ hdivM1)
+ 
+ /-- If `B(X, y) = Q · A(X, y)`, then `(X - y)^(degreeX A)` divides the swapped resultant. -/
+-lemma ps_resultant_dvd_pow_eval_y {F : Type} [Field F]
++lemma ps_resultant_dvd_pow_eval_y {F : Type*} [Field F]
+     (A B : F[X][Y]) (y : F) (Q : F[X]) (n : ℕ)
+     (hmn : degreeX A ≤ n) (hn : degreeX B ≤ n)
+     (hQdeg : Q.natDegree ≤ n - degreeX A)
+@@ -546,7 +547,7 @@
+       (by simpa [ps_eval_y_eq_eval_x_swap] using hQ)
+ 
+ /-- The resultant of relatively prime polynomials is nonzero. -/
+-lemma ps_resultant_ne_zero_of_is_rel_prime {F : Type} [Field F]
++lemma ps_resultant_ne_zero_of_is_rel_prime {F : Type*} [Field F]
+     (A B : F[X][Y]) (n : ℕ)
+     (hn : natDegreeY B ≤ n) (hA0 : A ≠ 0) (hrel : IsRelPrime A B) :
+     resultant B A n (natDegreeY A) ≠ 0 := by
+@@ -650,7 +651,7 @@
+ 
+ 
+ /-- A bivariate polynomial of degree zero in both variables divides every polynomial. -/
+-lemma ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero {F : Type} [Field F]
++lemma ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero {F : Type*} [Field F]
+     {A B : F[X][Y]} (hA0 : A ≠ 0)
+     (hdegX : degreeX A = 0) (hdegY : natDegreeY A = 0) :
+     ∃ P : F[X][Y], B = P * A := by
+@@ -662,7 +663,7 @@
+   exact ⟨B * C (C a⁻¹), by ext n m : 2; simp [coeff_mul_C, inv_mul_cancel_right₀ hA0]⟩
+ 
+ /-- After cancellation in X, a large subset of evaluation points witnesses `P = quot_y`. -/
+-lemma ps_exists_qx_of_cancel {F : Type} [Field F]
++lemma ps_exists_qx_of_cancel {F : Type*} [Field F]
+     (a_x : ℕ) (n_x : ℕ+) {A B P : F[X][Y]} (hA : A ≠ 0) (hBA : B = P * A)
+     (P_x : Finset F) (h_card_Px : n_x ≤ P_x.card) (quot_y : F → F[X])
+     (h_quot_y : ∀ x ∈ P_x, evalX x B = (quot_y x) * (evalX x A))
+@@ -680,7 +681,7 @@
+       (by rw [← evalX_mul, ← hBA]; exact h_quot_y x (Finset.mem_of_mem_filter x hx))
+ 
+ /-- After cancellation in Y, a large subset of evaluation points witnesses `P = quot_x`. -/
+-lemma ps_exists_qy_of_cancel {F : Type} [Field F]
++lemma ps_exists_qy_of_cancel {F : Type*} [Field F]
+     (a_y : ℕ) (n_y : ℕ+) {A B P : F[X][Y]} (hA : A ≠ 0) (hBA : B = P * A)
+     (P_y : Finset F) (h_card_Py : n_y ≤ P_y.card) (quot_x : F → F[X])
+     (h_quot_x : ∀ y ∈ P_y, evalY y B = (quot_x y) * (evalY y A))
+@@ -699,7 +700,7 @@
+       exact h_quot_x y (Finset.mem_filter.mp hy).1)
+ 
+ /-- If `A` and `B` are coprime and agree on sufficiently many lines, then `A` is constant. -/
+-lemma ps_coprime_case_constant {F : Type} [Field F]
++lemma ps_coprime_case_constant {F : Type*} [Field F]
+     (a_x a_y b_x b_y : ℕ) (n_x n_y : ℕ+)
+     (h_bx_ge_ax : b_x ≥ a_x) (h_by_ge_ay : b_y ≥ a_y)
+     (A B : F[X][Y]) (hA0 : A ≠ 0) (hB0 : B ≠ 0) (hrel : IsRelPrime A B)
+@@ -787,7 +788,7 @@
+     (show 0 < D by positivity)]
+ 
+ /-- Existence of `P` with `B = P * A` when both `A` and `B` are nonzero. -/
+-lemma ps_exists_p_nonzero {F : Type} [Field F]
++lemma ps_exists_p_nonzero {F : Type*} [Field F]
+     (a_x a_y b_x b_y : ℕ) (n_x n_y : ℕ+)
+     (h_bx_ge_ax : b_x ≥ a_x) (h_by_ge_ay : b_y ≥ a_y)
+     (A B : F[X][Y]) (hA0 : A ≠ 0) (hB0 : B ≠ 0)
+@@ -892,7 +893,7 @@
+   exact ⟨P1, by rw [hB, hB1fac, hA]; ring⟩
+ 
+ /-- Main existence: if `B/A` agrees with low-degree quotients on enough lines, then `A ∣ B`. -/
+-lemma ps_exists_p {F : Type} [Field F]
++lemma ps_exists_p {F : Type*} [Field F]
+     (a_x a_y b_x b_y : ℕ) (n_x n_y : ℕ+)
+     (h_bx_ge_ax : b_x ≥ a_x) (h_by_ge_ay : b_y ≥ a_y)
+     (A B : F[X][Y])
+@@ -965,7 +966,7 @@
+ open Polynomial.Bivariate Polynomial Matrix
+ open scoped BigOperators
+ 
+-theorem polishchuk_spielman {F : Type} [Field F]
++theorem polishchuk_spielman {F : Type*} [Field F]
+     (a_x a_y b_x b_y : ℕ) (n_x n_y : ℕ+)
+     (h_bx_ge_ax : b_x ≥ a_x) (h_by_ge_ay : b_y ≥ a_y)
+     (A B : F[X][Y])
+@@ -1025,7 +1026,7 @@
+   · exact ⟨Q_y, hQy_card, hQy_sub, hQy_eval⟩
+ 
+ /-- Discharge the statement-first contract using the full gluing theorem. -/
+-theorem polynomialGluing {F : Type} [Field F] : PolynomialGluing F := by
++theorem polynomialGluing {F : Type*} [Field F] : PolynomialGluing F := by
+   intro d hd
+   rcases hd with ⟨hax, hay, hA, hdax, hdbx, hday, hdby, hnx, hny, hqx, hqy, hfrac⟩
+   have hx : d.Px.Nonempty := Finset.card_pos.mp (lt_of_lt_of_le d.nx.pos hnx)
+@@ -1041,3 +1042,149 @@
+ /-- info: 'polynomialGluing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+ #guard_msgs in
+ #print axioms polynomialGluing
++
++/-! Complete declaration axiom census, pinned for integration. -/
++
++/-- info: 'ps_bx_lt_nx' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_bx_lt_nx
++
++/-- info: 'ps_by_lt_ny' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_by_lt_ny
++
++/-- info: 'ps_card_eval_x_eq_zero_le_degree_x' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_card_eval_x_eq_zero_le_degree_x
++
++/-- info: 'ps_card_eval_y_eq_zero_le_nat_degree_y' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_card_eval_y_eq_zero_le_nat_degree_y
++
++/-- info: 'ps_coeff_mul_monomial_ite' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_coeff_mul_monomial_ite
++
++/-- info: 'ps_coeff_mul_sum_monomial' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_coeff_mul_sum_monomial
++
++/-- info: 'ps_degree_x_swap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_degree_x_swap
++
++/-- info: 'ps_descend_eval_x' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_descend_eval_x
++
++/-- info: 'ps_descend_eval_y' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_descend_eval_y
++
++/-- info: 'ps_eval_x_eq_map' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_eval_x_eq_map
++
++/-- info: 'ps_eval_y_eq_eval_x_swap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_eval_y_eq_eval_x_swap
++
++/-- info: 'ps_exists_x_preserve_nat_degree_y' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_exists_x_preserve_nat_degree_y
++
++/-- info: 'ps_exists_y_preserve_degree_x' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_exists_y_preserve_degree_x
++
++/-- info: 'ps_filter_nonzero_card_y' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_filter_nonzero_card_y
++
++/-- info: 'ps_filter_nonzero_card_x' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_filter_nonzero_card_x
++
++/-- info: 'ps_degX_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_degX_bound
++
++/-- info: 'ps_degY_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_degY_bound
++
++/-- info: 'ps_degree_bounds_of_mul' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_degree_bounds_of_mul
++
++/-- info: 'ps_gcd_decompose' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_gcd_decompose
++
++/-- info: 'ps_is_rel_prime_swap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_is_rel_prime_swap
++
++/-- info: 'ps_nat_degree_y_swap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_nat_degree_y_swap
++
++/-- info: 'ps_nat_degree_mul_x_pow_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_nat_degree_mul_x_pow_le
++
++/-- info: 'ps_nat_degree_resultant_le' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_nat_degree_resultant_le
++
++/-- info: 'ps_resultant_map' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_resultant_map
++
++/-- info: 'ps_resultant_eval_x' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_resultant_eval_x
++
++/-- info: 'ps_sylvester_map' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_sylvester_map
++
++/-- info: 'ps_sylvester_mul_vec_eq_coeff_add' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_sylvester_mul_vec_eq_coeff_add
++
++/-- info: 'ps_resultant_dvd_pow_eval_x' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_resultant_dvd_pow_eval_x
++
++/-- info: 'ps_resultant_dvd_pow_eval_y' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_resultant_dvd_pow_eval_y
++
++/-- info: 'ps_resultant_ne_zero_of_is_rel_prime' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_resultant_ne_zero_of_is_rel_prime
++
++/-- info: 'ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero
++
++/-- info: 'ps_exists_qx_of_cancel' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_exists_qx_of_cancel
++
++/-- info: 'ps_exists_qy_of_cancel' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_exists_qy_of_cancel
++
++/-- info: 'ps_coprime_case_constant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_coprime_case_constant
++
++/-- info: 'ps_exists_p_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_exists_p_nonzero
++
++/-- info: 'ps_exists_p' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms ps_exists_p

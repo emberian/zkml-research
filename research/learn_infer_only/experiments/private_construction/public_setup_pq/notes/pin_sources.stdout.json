@@ -1,0 +1,144 @@
+{
+  "scope": "local primary-source provenance only; no crypto execution",
+  "source_rows": [
+    {
+      "id": "2015/608",
+      "pdf_absolute_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf",
+      "pdf_sha256": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0",
+      "text_relative_path": "extracts/2015-608.txt",
+      "text_sha256": "a1170661edc061a9b011367d43b9b75ed6dfc073cfd0aa477459c20f14d1ecdd",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "matches_saved_text": true,
+      "stderr": ""
+    },
+    {
+      "id": "2021/046",
+      "pdf_absolute_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2021/46.pdf",
+      "pdf_sha256": "8b5a43ee653081a0d7cf94bc7584e80ed60a6a525c41d15fdc61734ea7c6c20f",
+      "text_relative_path": "extracts/2021-046.txt",
+      "text_sha256": "1c041f582042c6b811ec56c66e84d734c0cee36f7a7823c333b9360ab5fdcf2c",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2021/46.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "matches_saved_text": true,
+      "stderr": ""
+    },
+    {
+      "id": "2023/395",
+      "pdf_absolute_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/395.pdf",
+      "pdf_sha256": "f237f5995505b7c0694af3b7712e42c949bf4c5b488fb46b224231a1ca6f8832",
+      "text_relative_path": "extracts/2023-395.txt",
+      "text_sha256": "386a594a5b00115437043d5b0f0dba4be6deaf90fde1d99ea562e46161ba7bd0",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2023/395.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "matches_saved_text": true,
+      "stderr": ""
+    },
+    {
+      "id": "2025/044",
+      "pdf_absolute_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/044.pdf",
+      "pdf_sha256": "a63fb6cf45954833ad04a203e43bafe186ecf11b768f4e5a4a4270bb2c894610",
+      "text_relative_path": "extracts/2025-044.txt",
+      "text_sha256": "7558f323a5e5345672e8eded26196f7f16836eca803f57ef02c893d73b4ef498",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/044.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "matches_saved_text": true,
+      "stderr": ""
+    },
+    {
+      "id": "2024/1572",
+      "pdf_absolute_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1572.pdf",
+      "pdf_sha256": "599ad913096bf2c2beb143873052bce619bc34e860b44f1a266ee5fb1c520489",
+      "text_relative_path": "extracts/2024-1572.txt",
+      "text_sha256": "03be12f6d6be7db2fc8240df52d8d416f0d91e51f33b2b9bc630097ea4653cac",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2024/1572.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "matches_saved_text": true,
+      "stderr": ""
+    },
+    {
+      "id": "2025/836",
+      "pdf_absolute_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/836.pdf",
+      "pdf_sha256": "0b17172fc0233f8ad6be096462d4165a14d7b3cae61e1b1ee4383ac2c4ea3874",
+      "text_relative_path": "extracts/2025-836.txt",
+      "text_sha256": "cc8d1214a53e67b1737a42096aba70d3546e374943e48c464dea5895a28e7f9d",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/836.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "matches_saved_text": true,
+      "stderr": ""
+    },
+    {
+      "id": "2025/967",
+      "pdf_absolute_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/967.pdf",
+      "pdf_sha256": "95d71be4daf5545461e0070bce63959e45be3911448bb60e657a10b506eedb2f",
+      "text_relative_path": "extracts/2025-967.txt",
+      "text_sha256": "e8c49452c28fc9ed28da98213450c86c1f1482d1f580624c8df4ff557af03a5b",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/967.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "matches_saved_text": true,
+      "stderr": ""
+    },
+    {
+      "id": "2025/1039",
+      "pdf_absolute_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/1039.pdf",
+      "pdf_sha256": "ab7c0e371e8469a89e6de7e940e97d622886c9865b5a3369066cf61f7618ee1e",
+      "text_relative_path": "extracts/2025-1039.txt",
+      "text_sha256": "40aed955012610542061eb4a3480663b1872baa135b72067bb350a4effd452e6",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/1039.pdf",
+        "-"
+      ],
+      "exit_code": 0,
+      "matches_saved_text": true,
+      "stderr": ""
+    }
+  ],
+  "artifact_hashes": {
+    "notes/AUDIT.md": "2c6f649fa0891be05dd1f3a1f89c935692091195e71f0b1959d78b5ef9061007",
+    "notes/CHECKPOINT.md": "a27bc99a0870b1c98da94b7584767ad02b35237f8f3b99fca751c87d7380e30b",
+    "notes/SOURCES.md": "56799b006bbc50786dd4986d26021392114fa289518ce12e533b4e4371c2553a",
+    "notes/pin_sources.py": "81e41e96f469684875b7ee02b1941db10e71da1fac01ab87a746da440ca67e19",
+    "searches/scry_1.json": "ceea7da06d7be0c0747ff03b2d730e157428486183e4b5055993c90d2a57eac1",
+    "searches/scry_1_retry.json": "167f97c7cd5ebf5e97c6970ed2942ab1b245c670eac5330f823f557d860808b2",
+    "searches/scry_2.json": "d67edc821077e5903adf365016e8278a24b14fdb86ce5b582a75320b42e76650",
+    "searches/scry_2_retry.json": "15780cea678a6f5b06c7fd1c8b2b790f47616ad1121851723e8f98efe571369f"
+  },
+  "all_source_extractions_match": true
+}

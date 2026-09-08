@@ -1,0 +1,32 @@
+{
+  "original_source_sha256": "aa04f65f81689b1a70dd897177623f3f6f25705b36043ad5ae6d138d220cd3ac",
+  "original_patch_sha256": "d1f1a5a025ace7edc410af8f53209a2e43627e16a612658dcc63396eede594a1",
+  "source_sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+  "patch_sha256": "83b4a44a855109efbbcc2b467f4531c52faf1374e5a83718c884277b8c275ae4",
+  "license_sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+  "checkout": "/tmp/minidregg-polynomial-all-pins-20260908",
+  "minidregg_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "arklib_commit": "22dbd4e836c15a21f68889afa69b7130da04abbb",
+  "mathlib_commit": "1c2b90b13009c65b090d95a83c98e248deafb6f1",
+  "change": "Append eight exact helper axiom guards; original full source is an unchanged prefix",
+  "theorem_count": 16,
+  "pin_count": 16,
+  "integration_census": "integration_census.json",
+  "kernel_validation": "lean_final.json",
+  "patch_import_validation": "patch_and_import_checks.json",
+  "outputs_sha256": {
+    "proof_body_preservation.json": "ff3e443dd76cd71cfc89dbfd3e8a818e2eff0113e31b61282615c28879244b2e",
+    "ArkLib-Apache-2.0.txt": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+    "support_file_entry.json": "0efa1531f8e84d8b3f1c5f04da3f037923d18ed4e1a21bd447e0c6627274d1ae",
+    "NEXT.md": "dfbe99104a385c1b188ba27b486da8fb6e78e1fd865d8755dd5fb157fe5573a3",
+    "STATUS.md": "6cb416fed3532bd81b4b423cc854a4b55e23653a7f3fe3c4bfbc36dac768f4af",
+    "PolynomialMatrixKernel.lean": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+    "lean_final.json": "8cf5933fcec5bce849536e9410faa09de2e921d106e1cbde4de4f5cd4d62e669",
+    "polynomial-kernel.patch": "83b4a44a855109efbbcc2b467f4531c52faf1374e5a83718c884277b8c275ae4",
+    "integration_census.json": "65c80593f81fb8c41040215a39ab0f4f399e63a9d1ef2af5d9b03f19b26413cb",
+    "census_before.json": "f8a52e4faca1b53b5497d2c6cae371cf7ab4e6c06917a4a219e4991d84a757b7",
+    "helper_axioms_observed.json": "1ae0c495e5bf9dd5f8fb1e88e4768562383797efb08894a2a5c33b08bcc4d633",
+    "integration_entry.json": "8793895053b97225d0ec44a536d547d1b12f284fcef828bfbad9a6bd74fea130",
+    "patch_and_import_checks.json": "4068755a0c436a2a9ad8103266cfcaa7d27061d3dc02a3b5018c558df087ef46"
+  }
+}

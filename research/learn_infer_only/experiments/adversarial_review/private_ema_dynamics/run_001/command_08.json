@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/review_ema_dynamics_1ie0om48/olean/Theory/PrivateEmaDynamics.olean",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/review_ema_dynamics_1ie0om48/Theory/PrivateEmaDynamics.lean"
+  ],
+  "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/review_ema_dynamics_1ie0om48",
+  "exit_code": 0,
+  "elapsed_seconds": 5.368335375009337,
+  "stdout": "",
+  "stderr": ""
+}

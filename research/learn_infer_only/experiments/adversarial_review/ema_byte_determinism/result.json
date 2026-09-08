@@ -1,0 +1,61 @@
+{
+  "scope": "Public bytes/framing/log/source inspection only; no crypto or plaintext decoding",
+  "event_id": "h0-e0014",
+  "preceding_equal_pairs": 13,
+  "primary": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/runtime/run001/public/h0-e0014.ct",
+    "bytes": 108441,
+    "sha256": "f1b421cedb055ed3d9878af7e9ed48fd369eed7681b227b5f89b9ae185be6172"
+  },
+  "replay": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/runtime/run001/public/h0-e0014.replay.ct",
+    "bytes": 108441,
+    "sha256": "30a459affe867f22834b345822331d3e27661bbc4947f4bc702f3581a97fdaf6"
+  },
+  "envelope_bytes_each": 108441,
+  "changed_bytes": 10015,
+  "first_changed_byte_zero_based": 71185,
+  "last_changed_byte_zero_based": 81312,
+  "changed_records": [
+    {
+      "record_index": 21,
+      "register": 2,
+      "lsb_bit": 5,
+      "changed_coefficients": 838,
+      "changed_bytes": 3340
+    },
+    {
+      "record_index": 22,
+      "register": 2,
+      "lsb_bit": 6,
+      "changed_coefficients": 838,
+      "changed_bytes": 3339
+    },
+    {
+      "record_index": 23,
+      "register": 2,
+      "lsb_bit": 7,
+      "changed_coefficients": 838,
+      "changed_bytes": 3336
+    }
+  ],
+  "equal_records": 29,
+  "all_record_metadata_equal": true,
+  "input_hashes_rechecked": 3,
+  "pair_exit_codes": [
+    0,
+    0
+  ],
+  "gate_calls_equal": true,
+  "thread_environment": {
+    "OMP_NUM_THREADS": null,
+    "RAYON_NUM_THREADS": null
+  },
+  "private_drain_executed": false,
+  "owner_seal_hashes_match": {
+    "manifest.json": "921fc2263825a99ac22efc6a2ba88cc8d3c11a092b31a7685aeacef3a870b08d",
+    "source_checkpoint.json": "2cfc101453e3bb9de17f8dd3a95f2a47f93d228beb56c394bd4d00a4f9e8898d"
+  },
+  "local_build_features": "[\"boolean\"]",
+  "local_build_rustflags": []
+}

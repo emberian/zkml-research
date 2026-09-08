@@ -1,0 +1,8 @@
+{
+  "completed_events": 13,
+  "elapsed_seconds": 424.50991083297413,
+  "error": "AssertionError('h0-e0014')",
+  "operations": 61,
+  "private_drain_executed": false,
+  "replays": 14
+}

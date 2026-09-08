@@ -1,0 +1,9 @@
+{
+  "name": "polynomial_matrix_kernel_all_pins",
+  "root": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor",
+  "patch": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/polynomial-kernel.patch",
+  "expected_pins": 16,
+  "source_files": {
+    "Theory/PolynomialMatrixKernel.lean": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/PolynomialMatrixKernel.lean"
+  }
+}
