@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "monomial_pairs": 85,
+  "schoolbook_matvec_shapes": 4,
+  "direct_domain_checks": 8,
+  "timings_ms": [
+    {
+      "n": 64,
+      "duplicate": 33.692,
+      "long": 4.237,
+      "split": 4.253
+    },
+    {
+      "n": 256,
+      "duplicate": 165.743,
+      "long": 23.625,
+      "split": 21.108
+    },
+    {
+      "n": 1024,
+      "duplicate": 896.898,
+      "long": 269.82,
+      "split": 115.442
+    },
+    {
+      "n": 4096,
+      "duplicate": 2884.706,
+      "long": 372.935,
+      "split": 350.787
+    }
+  ]
+}

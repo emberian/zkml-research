@@ -1,0 +1,369 @@
+diff --git a/src/protocol/mod.rs b/src/protocol/mod.rs
+--- a/src/protocol/mod.rs
++++ b/src/protocol/mod.rs
+@@ -8,6 +8,7 @@
+ 
+ pub mod pcs;
+ pub mod prover;
++mod ring_contraction;
+ pub mod sumcheck;
+ pub mod transcript;
+ mod utils;
+diff --git a/src/protocol/prover/mod.rs b/src/protocol/prover/mod.rs
+--- a/src/protocol/prover/mod.rs
++++ b/src/protocol/prover/mod.rs
+@@ -7,10 +7,11 @@
+     arith::{cyclotomic_ring::CyclotomicRing, linalg::Matrix, polynomial_ring::PolynomialRing, fused_matvec::FusedMatvec},
+     protocol::{
+         Proof,
++        ring_contraction::contract_remainder_quotient,
+         pcs::whir::Whir,
+         sumcheck::{multilinear::MultilinearPolynomial, prove},
+         transcript::Blake3Transcript,
+-        utils::{build_eq_poly, sum_over_boolean_hypercube},
++        utils::build_eq_poly,
+     },
+     rand::get_rng,
+     rlwe::RLWE,
+@@ -179,6 +180,14 @@
+             })
+             .collect();
+ 
++        // Y and Q are already fixed/committed before alpha. Contract their
++        // actual coefficients once, sharing the existing row and power bases.
++        let mut row_weights = Vec::with_capacity(y.len());
++        build_eq_poly(&vec_tau, &mut row_weights);
++        let (y_eval, q_eval) = contract_remainder_quotient::<D, F>(
++            &y, &vec_quotients, &powers_of_alpha, &row_weights, &beta,
++        );
++
+         let mut z1_mles = compute_z1_mles(
+             &m_rq,
+             &m_mle,
+@@ -189,7 +198,10 @@
+             &vec_tau,
+         );
+ 
+-        let z1_claim = sum_over_boolean_hypercube(&z1_mles);
++        // The fused product supplies S = Y + (X^D + 1)Q. Only the honest
++        // prover's total computation changes; all round polynomials are still
++        // computed from z1_mles, and the verifier retains both sumcheck chains.
++        let z1_claim = y_eval + (alpha * powers_of_alpha[D - 1] + F::ONE) * q_eval;
+ 
+         let (z1_sumcheck_proof, z1_challenges) =
+             prove(z1_claim, &mut z1_mles, z1_num_vars, transcript);
+@@ -204,7 +216,7 @@
+             &vec_tau,
+         );
+ 
+-        let z3_claim = sum_over_boolean_hypercube(&z3_mles);
++        let z3_claim = q_eval;
+ 
+         let (z3_sumcheck_proof, z3_challenges) =
+             prove(z3_claim, &mut z3_mles, z3_num_vars, transcript);
+@@ -380,3 +392,6 @@
+ 
+     vec![eq_tau_mle, batched_r_mle, alpha_mle]
+ }
++
++#[cfg(test)]
++mod ring_contraction_tests;
+diff --git a/src/protocol/ring_contraction.rs b/src/protocol/ring_contraction.rs
+new file mode 100644
+--- /dev/null
++++ b/src/protocol/ring_contraction.rs
+@@ -0,0 +1,50 @@
++//! Shared-point evaluation of the actual quotient and remainder vectors.
++//! This is prover arithmetic; commitments and the sumcheck verifier are unchanged.
++use crate::{
++    arith::{cyclotomic_ring::CyclotomicRing, polynomial_ring::PolynomialRing},
++    rlwe::RLWE,
++};
++use ark_ff::Field;
++
++/// Evaluate both row/component/coefficient tensors with the same outer weights.
++/// `powers[t] = alpha^t`; `row_weights` uses the caller's existing eq convention.
++/// Component weights are in RLWE order: mask components, then body.
++///
++/// The quotient representation has 2D storage; its existing committed MLE uses
++/// the low D coefficients, which this helper consumes in the identical order.
++/// Nothing constructs a second field-sized MLE table or recomputes a basis per
++/// coefficient. Multiplying by component and row weights after each dot product
++/// is distributivity in the existing field.
++pub(crate) fn contract_remainder_quotient<const D: usize, F: Field>(
++    y: &[RLWE<CyclotomicRing<D, F::BasePrimeField>>],
++    q: &[Vec<PolynomialRing<D, F::BasePrimeField>>],
++    powers: &[F],
++    row_weights: &[F],
++    component_weights: &[F],
++) -> (F, F) {
++    assert!(D > 0);
++    assert_eq!(powers.len(), D);
++    assert_eq!(y.len(), q.len());
++    assert_eq!(y.len(), row_weights.len());
++    let (mut y_eval, mut q_eval) = (F::ZERO, F::ZERO);
++    for ((yi, qi), &row_weight) in y.iter().zip(q).zip(row_weights) {
++        assert_eq!(yi.rank() + 1, component_weights.len());
++        assert_eq!(qi.len(), component_weights.len());
++        let (mut row_y, mut row_q) = (F::ZERO, F::ZERO);
++        for (k, &beta) in component_weights.iter().enumerate() {
++            let yk = yi.get_ring_element(k).expect("validated component shape");
++            assert_eq!(yk.coeffs.len(), D);
++            assert_eq!(qi[k].coeffs.len(), 2 * D);
++            let (mut component_y, mut component_q) = (F::ZERO, F::ZERO);
++            for (t, power) in powers.iter().enumerate() {
++                component_y += power.mul_by_base_prime_field(&yk.coeffs[t]);
++                component_q += power.mul_by_base_prime_field(&qi[k].coeffs[t]);
++            }
++            row_y += beta * component_y;
++            row_q += beta * component_q;
++        }
++        y_eval += row_weight * row_y;
++        q_eval += row_weight * row_q;
++    }
++    (y_eval, q_eval)
++}
+diff --git a/src/protocol/prover/ring_contraction_tests.rs b/src/protocol/prover/ring_contraction_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/src/protocol/prover/ring_contraction_tests.rs
+@@ -0,0 +1,239 @@
++use super::*;
++use crate::{
++    arith::field::{Field64, Field64_2},
++    protocol::{utils::sum_over_boolean_hypercube, verifier::Verifier},
++};
++use ark_ff::AdditiveGroup;
++use std::{hint::black_box, time::Instant};
++
++type B = Field64;
++type E = Field64_2;
++
++fn extension(a: u64, b: u64) -> E {
++    E::new(B::from(a), B::from(b))
++}
++
++// All data are deterministic public field elements, with distinct row,
++// component and coefficient patterns. No encryption or secret key is needed.
++fn fixture<const D: usize>() -> (Matrix<B>, Vec<RLWE<CyclotomicRing<D, B>>>) {
++    let matrix = Matrix::from_vec(
++        (0..4 * 2 * D)
++            .map(|t| B::from((3 + 17 * (t / D) + t * t) as u64))
++            .collect(),
++        2 * D,
++    );
++    let x = (0..2)
++        .map(|j| {
++            RLWE::from_ring_elements(
++                (0..2)
++                    .map(|k| {
++                        CyclotomicRing::from_coeffs(
++                            &(0..D)
++                                .map(|t| B::from((5 + j * 11 + k * 13 + t * t * t) as u64))
++                                .collect::<Vec<_>>(),
++                        )
++                    })
++                    .collect(),
++            )
++        })
++        .collect();
++    (matrix, x)
++}
++
++fn powers<const D: usize>(alpha: E) -> Vec<E> {
++    (0..D)
++        .scan(E::ONE, |a, _| {
++            let out = *a;
++            *a *= alpha;
++            Some(out)
++        })
++        .collect()
++}
++
++#[test]
++fn contracts_actual_fused_tensors_into_existing_sumchecks() {
++    const D: usize = 32;
++    let (matrix, x) = fixture::<D>();
++    let (m, cache, m_mle, _, nv, _) = Prover::<D, E>::preprocess(&matrix);
++    let (y, q) = cache.evaluate(&x);
++    let (r0, r1) = compute_r_bpf_mle_evals::<D, E>(&q);
++    let beta0 = extension(7, 11);
++    let beta = vec![beta0, beta0 * beta0];
++    let tau = vec![extension(3, 5), extension(13, 17)];
++    let mut rows = vec![];
++    build_eq_poly(&tau, &mut rows);
++
++    for alpha in [E::ZERO, E::ONE, -E::ONE, extension(19, 23)] {
++        let powers = powers::<D>(alpha);
++        let z1 = compute_z1_mles(&m, &m_mle, &x, nv, &beta, &powers, &tau);
++        let z3 = compute_z3_mles::<D, E>(&powers, &r0, &r1, &beta, nv - 1, &tau);
++        let (ye, qe) = contract_remainder_quotient::<D, E>(&y, &q, &powers, &rows, &beta);
++        let claims = [ye + (alpha * powers[D - 1] + E::ONE) * qe, qe];
++        for (mles, claim, vars) in [(z1, claims[0], nv), (z3, claims[1], nv - 1)] {
++            let old_claim = sum_over_boolean_hypercube(&mles);
++            assert_eq!(claim, old_claim);
++            let degree = mles.len();
++            let mut old_tables = mles.clone();
++            let mut new_tables = mles.clone();
++            let mut old_t = Blake3Transcript::new();
++            let mut new_t = old_t.clone();
++            let (old_proof, old_challenges) = prove(old_claim, &mut old_tables, vars, &mut old_t);
++            let (new_proof, new_challenges) = prove(claim, &mut new_tables, vars, &mut new_t);
++            assert_eq!(old_challenges, new_challenges);
++            assert_eq!(old_t.squeeze(2), new_t.squeeze(2));
++            let old_result = old_proof.verify(vars, degree, &mut Blake3Transcript::new());
++            let new_result = new_proof.verify(vars, degree, &mut Blake3Transcript::new());
++            assert!(old_result.is_ok());
++            assert_eq!(old_result, new_result);
++            let terminal = new_tables.iter().map(|p| p.evals()[0]).product::<E>();
++            assert_eq!(terminal, new_result.unwrap().1);
++        }
++    }
++
++    // Concrete controls: the helper cannot silently swap rows/components,
++    // drop the quotient factor, or hide a modified committed coefficient.
++    let alpha = extension(19, 23);
++    let powers = powers::<D>(alpha);
++    let (ye, qe) = contract_remainder_quotient::<D, E>(&y, &q, &powers, &rows, &beta);
++    let total = ye + (alpha * powers[D - 1] + E::ONE) * qe;
++    assert_ne!(qe, E::ZERO);
++    assert_ne!(total, ye);
++    let mut wrong_rows = rows.clone();
++    wrong_rows.swap(0, 1);
++    assert_ne!(
++        contract_remainder_quotient::<D, E>(&y, &q, &powers, &wrong_rows, &beta),
++        (ye, qe)
++    );
++    let mut wrong_beta = beta.clone();
++    wrong_beta.swap(0, 1);
++    assert_ne!(
++        contract_remainder_quotient::<D, E>(&y, &q, &powers, &rows, &wrong_beta),
++        (ye, qe)
++    );
++    let mut corrupted_q = q.clone();
++    corrupted_q[0][1].coeffs[0] += B::ONE;
++    let (_, bad_qe) = contract_remainder_quotient::<D, E>(&y, &corrupted_q, &powers, &rows, &beta);
++    assert_ne!(bad_qe, qe);
++    let mut z3 = compute_z3_mles::<D, E>(&powers, &r0, &r1, &beta, nv - 1, &tau);
++    let (bad_proof, _) = prove(bad_qe, &mut z3, nv - 1, &mut Blake3Transcript::new());
++    assert_eq!(
++        bad_proof.verify(nv - 1, 3, &mut Blake3Transcript::new()),
++        Err(0)
++    );
++}
++
++#[test]
++#[should_panic(expected = "assertion `left == right` failed")]
++fn rejects_truncated_committed_quotient_shape() {
++    let (matrix, x) = fixture::<32>();
++    let (m, _, _, _, _, _) = Prover::<32, E>::preprocess(&matrix);
++    let (y, mut q) = FusedMatvec::new(&m).evaluate(&x);
++    q[0][0].coeffs.pop();
++    contract_remainder_quotient::<32, E>(
++        &y,
++        &q,
++        &vec![E::ONE; 32],
++        &vec![E::ONE; 4],
++        &vec![E::ONE; 2],
++    );
++}
++
++// One consumer workload, invoked explicitly in release mode. The scan timings
++// exclude shared table construction (the tables are still used by sumcheck).
++#[test]
++#[ignore = "explicit public release workload with PCS enabled"]
++fn ring_claim_workload_and_real_pcs_consumer() {
++    const D: usize = 1024;
++    let (matrix, x) = fixture::<D>();
++    let (m, cache, mle, base_mle, nv, mut transcript) = Prover::<D, E>::preprocess(&matrix);
++    let (y, q) = cache.evaluate(&x);
++    let (r0, r1) = compute_r_bpf_mle_evals::<D, E>(&q);
++    let alpha = extension(19, 23);
++    let beta0 = extension(7, 11);
++    let beta = vec![beta0, beta0 * beta0];
++    let tau = vec![extension(3, 5), extension(13, 17)];
++    let powers = powers::<D>(alpha);
++    let z1 = compute_z1_mles(&m, &mle, &x, nv, &beta, &powers, &tau);
++    let z3 = compute_z3_mles::<D, E>(&powers, &r0, &r1, &beta, nv - 1, &tau);
++    let old = || {
++        (
++            sum_over_boolean_hypercube(black_box(&z1)),
++            sum_over_boolean_hypercube(black_box(&z3)),
++        )
++    };
++    let new = || {
++        let mut rows = Vec::with_capacity(y.len());
++        build_eq_poly(black_box(&tau), &mut rows);
++        let (ye, qe) =
++            contract_remainder_quotient::<D, E>(black_box(&y), &q, &powers, &rows, &beta);
++        (ye + (alpha * powers[D - 1] + E::ONE) * qe, qe)
++    };
++    assert_eq!(old(), new());
++    for _ in 0..4 {
++        black_box(old());
++        black_box(new());
++    }
++    let mut samples = vec![];
++    for sample in 0..9 {
++        let time = |f: &dyn Fn() -> (E, E)| {
++            let start = Instant::now();
++            for _ in 0..32 {
++                black_box(f());
++            }
++            start.elapsed().as_nanos() / 32
++        };
++        let (old_ns, new_ns) = if sample % 2 == 0 {
++            (time(&old), time(&new))
++        } else {
++            let new_ns = time(&new);
++            (time(&old), new_ns)
++        };
++        samples.push((old_ns, new_ns));
++        println!(
++            "{{\"phase\":\"claim_totals\",\"sample\":{sample},\"old_ns\":{old_ns},\"new_ns\":{new_ns}}}"
++        );
++    }
++    let mut old_ns: Vec<_> = samples.iter().map(|x| x.0).collect();
++    let mut new_ns: Vec<_> = samples.iter().map(|x| x.1).collect();
++    old_ns.sort();
++    new_ns.sort();
++    println!(
++        "{{\"phase\":\"claim_medians\",\"ring_degree\":{D},\"rows\":4,\"inner\":2,\"components\":2,\"old_ns\":{},\"new_ns\":{}}}",
++        old_ns[4], new_ns[4]
++    );
++
++    // This calls the modified production method; all three existing PCS
++    // openings remain enabled and the unchanged public verifier consumes it.
++    let start = Instant::now();
++    let proof = Prover::<D, E>::prove(&m, &cache, &mle, &base_mle, nv, &mut transcript, &x, true);
++    let prove_ns = start.elapsed().as_nanos();
++    assert!(
++        proof.r0_mle_proof.is_some() && proof.r1_mle_proof.is_some() && proof.m_mle_proof.is_some()
++    );
++    let (vm, vnv, mut vt) = Verifier::<D, E>::preprocess(&matrix);
++    let verify_start = Instant::now();
++    assert!(Verifier::<D, E>::verify(&vm, vnv, &mut vt, &x, &proof).is_ok());
++    let verify_ns = verify_start.elapsed().as_nanos();
++    for (actual, expected) in proof.y.iter().zip(&y) {
++        for k in 0..2 {
++            assert_eq!(
++                actual.get_ring_element(k).unwrap().coeffs,
++                expected.get_ring_element(k).unwrap().coeffs
++            );
++        }
++    }
++    let mut wrong = proof.clone();
++    let mut row: Vec<_> = wrong.y[0].get_ring_elements().into_iter().cloned().collect();
++    row[0].coeffs[0] += B::ONE;
++    wrong.y[0] = RLWE::from_ring_elements(row);
++    let (_, _, mut wt) = Verifier::<D, E>::preprocess(&matrix);
++    // The existing verifier uses unwrap/assert at several refusal points.
++    // Count either Err or its existing panic as refusal, not a clean-error API.
++    let refusal = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
++        Verifier::<D, E>::verify(&vm, vnv, &mut wt, &x, &wrong)
++    }));
++    assert!(!matches!(refusal, Ok(Ok(_))));
++    println!(
++        "{{\"phase\":\"actual_consumer\",\"pcs_enabled\":true,\"verifier_accepted\":true,\"modified_output_refused\":true,\"output_coefficients_matched\":8192,\"prove_ns\":{prove_ns},\"verify_ns\":{verify_ns}}}"
++    );
++}

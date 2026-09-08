@@ -1,0 +1,32 @@
+{
+  "CONTRACT.md": {
+    "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/journal/CONTRACT.md",
+    "original_sha256": "61b093868ae333e67862b8dd4d51cda09f1849e9e95ccbe74160e59a3520f6b7",
+    "scope": "Prepared predecessor preserved; executable successor wrapper"
+  },
+  "driver.py": {
+    "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/journal/driver.py",
+    "original_sha256": "ecd4d77ad186d81d2c31479b95993932b5b3be9a98a448b24d9c44236435b36c",
+    "scope": "Prepared predecessor preserved; executable successor wrapper"
+  },
+  "launch.py": {
+    "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/journal/launch.py",
+    "original_sha256": "929828abf82da3fd3914ef69df60b3b4b5bdf844cc6e71a7730b775fb102cb0e",
+    "scope": "Prepared predecessor preserved; executable successor wrapper"
+  },
+  "private_oracle.py": {
+    "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/journal/private_oracle.py",
+    "original_sha256": "5e384c9cacd8d7f5e232f1231a5215bd1ef03aa4016b0903f2b6c0d37f4f34c0",
+    "scope": "Prepared predecessor preserved; executable successor wrapper"
+  },
+  "public_close.py": {
+    "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/journal/public_close.py",
+    "original_sha256": "a23f8b5af1a8ed9f21535cd911917e2742262f453a86deed1b82260dcb94a3a1",
+    "scope": "Prepared predecessor preserved; executable successor wrapper"
+  },
+  "setup_join.py": {
+    "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/journal/setup_join.py",
+    "original_sha256": "080536e9cc416a5f7fb9dcc33eeeebe185fa697c1d36c8d14fc7a4d3c186cff5",
+    "scope": "Prepared predecessor preserved; executable successor wrapper"
+  }
+}

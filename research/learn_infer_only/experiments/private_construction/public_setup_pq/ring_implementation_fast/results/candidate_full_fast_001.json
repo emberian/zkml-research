@@ -1,0 +1,179 @@
+{
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "flint_version": "0.9.0",
+  "argv": [
+    "run.py",
+    "--profile",
+    "candidate_full",
+    "--inputs",
+    "3",
+    "--output",
+    "results/candidate_full_fast_001.json"
+  ],
+  "source_sha256": {
+    "ring.py": "18c503120c8a2f44ade190ca9c68f5b4a6c7aca6e54c13210172788d6e54f567",
+    "run.py": "e7632e4eccccec16354ecfbbf541a23e96d8f8f803465c7de62a63eff522f698",
+    "sampling/sampler.py": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8",
+    "sampling/proposal_screen.c": "cb295627adeedbcb62f26fdb5acc4ede4fb9de2673efd38d55c7e08601174ac4",
+    "sampling/reference.py": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd",
+    "sampling/__init__.py": "fc59e7cad5c5944a09e0d73efb6fb1a4d7a4fa46751d4633f16aab80119350d1"
+  },
+  "controls": {
+    "independent_naive_negacyclic_cases": 6,
+    "pass": true
+  },
+  "arithmetic_bench": [
+    {
+      "N": 64,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.0032587090390734375,
+      "one_constant_product_seconds": 2.4999957531690598e-05
+    },
+    {
+      "N": 1024,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.01957199996104464,
+      "one_constant_product_seconds": 0.00023679202422499657
+    },
+    {
+      "N": 4096,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.00742616702336818,
+      "one_constant_product_seconds": 0.0011045000283047557
+    },
+    {
+      "N": 16384,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.03173908399185166,
+      "one_constant_product_seconds": 0.0042388750007376075
+    }
+  ],
+  "run": {
+    "profile": "candidate_full",
+    "status": "PASS",
+    "parameters": {
+      "N": 16384,
+      "w": 64,
+      "d": 577,
+      "recipients": 16,
+      "p": 28439893,
+      "q": 497323290947860672931310292648754779192460749687510494957169639477681564739617435942913,
+      "sigma_key": 33554432,
+      "sigma_error": 1024,
+      "flood": 226156424291633194186662080095093570025917938800079226639565593765455331328,
+      "W": 32,
+      "denominator": 8204908842
+    },
+    "decoder": "shared ciphertext extraction plus exact FLINT integer-matrix product",
+    "native_sampler": {
+      "library_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so",
+      "library_sha256": "f630be6ba5df516d40d838a82aff1cf175eece088648723566d772fb94ec6d5b",
+      "build_command": [
+        "/usr/bin/cc",
+        "-O3",
+        "-std=c11",
+        "-fPIC",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-dynamiclib",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/proposal_screen.c",
+        "-o",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/sampling/_build/proposal_screen_5cdfdc21e1c23e3dca8e.so"
+      ]
+    },
+    "classification": "full repaired algebraic dimensions; conditional security assumptions remain",
+    "timings_seconds": {
+      "sampler_table_build": 0.4737018750165589,
+      "public_A": 3.5790552090038545,
+      "recipient_keygen_and_publish": 62.6506704170024,
+      "missing_public_rows": 13.546397667028941,
+      "recipient_batch_prepare": 2.3372288329992443,
+      "signed_combine": 0.5262683749897406,
+      "signed_all_recipient_decode": 1.4607327919802628
+    },
+    "encodes": [
+      {
+        "step": 0,
+        "encode_seconds": 7.389717083016876,
+        "all_recipient_decode_seconds": 1.6575092910206877,
+        "encode_error_sampler_seconds": 1.3628824120387435,
+        "encode_other_seconds": 6.026834670978133,
+        "window_update_seconds": 0.037007124978117645,
+        "window_all_recipient_decode_seconds": 1.4128300840384327,
+        "fresh_recipients_matched": 16,
+        "window_recipients_matched": 16,
+        "live_window_size": 1,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 1,
+        "encode_seconds": 6.851455416996032,
+        "all_recipient_decode_seconds": 1.5572720830095932,
+        "encode_error_sampler_seconds": 1.319311332772486,
+        "encode_other_seconds": 5.532144084223546,
+        "window_update_seconds": 0.1444091250305064,
+        "window_all_recipient_decode_seconds": 1.9568772499915212,
+        "fresh_recipients_matched": 16,
+        "window_recipients_matched": 16,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 2,
+        "encode_seconds": 7.301637333002873,
+        "all_recipient_decode_seconds": 1.278270041977521,
+        "encode_error_sampler_seconds": 1.502195585751906,
+        "encode_other_seconds": 5.799441747250967,
+        "window_update_seconds": 0.17257474997313693,
+        "window_all_recipient_decode_seconds": 1.394995792012196,
+        "fresh_recipients_matched": 16,
+        "window_recipients_matched": 16,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      }
+    ],
+    "sampler": {
+      "33554432": {
+        "count": 16777216,
+        "seconds": 24.663973528891802,
+        "proposals": 268479579,
+        "direct_threshold_evaluations": 65280,
+        "cap_fallbacks": 0,
+        "os_random_bytes_requested": 2150173312,
+        "native_calls": 70598
+      },
+      "1024": {
+        "count": 3145728,
+        "seconds": 4.1843893305631354,
+        "proposals": 50334836,
+        "direct_threshold_evaluations": 12485,
+        "cap_fallbacks": 0,
+        "os_random_bytes_requested": 302367168,
+        "native_calls": 13458
+      }
+    },
+    "fresh_inputs_executed": 3,
+    "candidate_theorem_T": 384,
+    "T384_executed": false,
+    "actual_recipient_rows_generated": 16,
+    "absent_recipient_rows_generated": 0,
+    "signed_combination_recipients_matched": 16,
+    "oversized_combination_rejected": true,
+    "packed_sizes_bytes": {
+      "ciphertext": 37900653,
+      "public_A_P": 379389952,
+      "one_key_cutoff": 3801088
+    },
+    "packing_implemented": false,
+    "peak_process_rss_native": 2380447744,
+    "rss_native_unit": "bytes on macOS; KiB on Linux",
+    "raw_keys_coins_inputs_or_ciphertext_persisted": false,
+    "privacy_or_hardness_tested": false,
+    "timing_side_channel_claim": false
+  },
+  "source_unchanged": true,
+  "elapsed_seconds": 117.1286172500113,
+  "status": "PASS"
+}

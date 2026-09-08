@@ -1,0 +1,7 @@
+__pycache__/
+paper_*.txt
+implementation/cargo_home/
+implementation/matvecmul/target/
+implementation/matvecmul/
+scaled/matvecmul/
+scaled/patch_replay/

@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "scope": "Matched synthetic workload, parameters and semantics; independent OS randomness; saved single runs on a shared machine",
+  "baseline": {
+    "elapsed_seconds": 265.73834695800906,
+    "setup_including_cache_seconds": 184.8964244989911,
+    "recipient_keygen_publish_seconds": 172.52720191603294,
+    "key_sampler_seconds": 146.71184111962793,
+    "three_error_sampler_seconds": 23.758439661178272,
+    "mean_encode_seconds": 11.43397591666629,
+    "mean_all_recipient_fresh_decode_seconds": 6.474318735689546,
+    "mean_window_update_seconds": 0.11987193031624581,
+    "signed_all_recipient_decode_seconds": 6.361533541989047,
+    "peak_rss_bytes": 2188001280,
+    "gaussian_coefficients": 19922944,
+    "matched_reads": 112
+  },
+  "successor": {
+    "elapsed_seconds": 117.1286172500113,
+    "setup_including_cache_seconds": 82.587054001051,
+    "recipient_keygen_publish_seconds": 62.6506704170024,
+    "key_sampler_seconds": 24.663973528891802,
+    "three_error_sampler_seconds": 4.1843893305631354,
+    "mean_encode_seconds": 7.180936611005261,
+    "mean_all_recipient_fresh_decode_seconds": 1.497683805335934,
+    "mean_window_update_seconds": 0.11799699999392033,
+    "signed_all_recipient_decode_seconds": 1.4607327919802628,
+    "peak_rss_bytes": 2380447744,
+    "gaussian_coefficients": 19922944,
+    "matched_reads": 112
+  },
+  "baseline_over_successor_time": {
+    "elapsed_seconds": 2.268773876078379,
+    "setup_including_cache_seconds": 2.238806393271252,
+    "recipient_keygen_publish_seconds": 2.7537965797922537,
+    "key_sampler_seconds": 5.9484267994273985,
+    "three_error_sampler_seconds": 5.677875021725299,
+    "mean_encode_seconds": 1.5922680474776738,
+    "mean_all_recipient_fresh_decode_seconds": 4.322887589905762,
+    "mean_window_update_seconds": 1.015889643994526,
+    "signed_all_recipient_decode_seconds": 4.355028912142751
+  },
+  "rss_successor_over_baseline": 1.0879553708487775,
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation/results/candidate_full_001.json": "04926801a131ede24f325f3feb63f98b5d02eb7d376c0cadafab345973f9ce88",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_implementation_fast/results/candidate_full_fast_001.json": "1888a4bb672a22c590a9b582fe1d98413a380baa7117794fc5790dfc18acc6c9"
+  },
+  "new_crypto_runs": 0
+}

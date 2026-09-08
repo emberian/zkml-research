@@ -1,0 +1,183 @@
+{
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "flint_version": "0.9.0",
+  "argv": [
+    "run.py",
+    "--profile",
+    "toy",
+    "--inputs",
+    "5",
+    "--output",
+    "results/shared_decode_toy_001.json"
+  ],
+  "source_sha256": {
+    "ring.py": "18c503120c8a2f44ade190ca9c68f5b4a6c7aca6e54c13210172788d6e54f567",
+    "run.py": "75fb01cb5be1eb0621c2c075799d518b72a8ade27e2aea1fa8785875c0bac780",
+    "sampling/sampler.py": "5fcd4bc7fe3d2cb3c70911582b2a12aec23322ea69ed6d443e0abf1940e01de8"
+  },
+  "controls": {
+    "independent_naive_negacyclic_cases": 6,
+    "pass": true
+  },
+  "arithmetic_bench": [
+    {
+      "N": 64,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.0006752079934813082,
+      "one_constant_product_seconds": 2.274999860674143e-05
+    },
+    {
+      "N": 1024,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.0029386249952949584,
+      "one_constant_product_seconds": 0.00026041700039058924
+    },
+    {
+      "N": 4096,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.006258708948735148,
+      "one_constant_product_seconds": 0.0008872500038705766
+    },
+    {
+      "N": 16384,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.027989249967504293,
+      "one_constant_product_seconds": 0.003341833013109863
+    }
+  ],
+  "run": {
+    "profile": "toy",
+    "status": "PASS",
+    "parameters": {
+      "N": 64,
+      "w": 4,
+      "d": 9,
+      "recipients": 2,
+      "p": 257,
+      "q": 2013265921,
+      "sigma_key": 2,
+      "sigma_error": 1,
+      "flood": 1024,
+      "W": 8,
+      "denominator": null
+    },
+    "decoder": "shared ciphertext extraction plus exact FLINT integer-matrix product",
+    "classification": "toy or reduced-dimension execution; no security inference",
+    "timings_seconds": {
+      "sampler_table_build": 0.31511095800669864,
+      "public_A": 0.0001212499919347465,
+      "recipient_keygen_and_publish": 0.0007346670026890934,
+      "missing_public_rows": 0.0001402500201947987,
+      "recipient_batch_prepare": 0.0003857080009765923,
+      "signed_combine": 1.3749988283962011e-05,
+      "signed_all_recipient_decode": 6.879097782075405e-05
+    },
+    "encodes": [
+      {
+        "step": 0,
+        "encode_seconds": 0.00035391695564612746,
+        "all_recipient_decode_seconds": 0.0006362500134855509,
+        "encode_error_sampler_seconds": 0.00016104202950373292,
+        "encode_other_seconds": 0.00019287492614239454,
+        "window_update_seconds": 2.212502295151353e-05,
+        "window_all_recipient_decode_seconds": 8.925003930926323e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 1,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 1,
+        "encode_seconds": 0.000346040993463248,
+        "all_recipient_decode_seconds": 7.60830007493496e-05,
+        "encode_error_sampler_seconds": 0.00016316602705046535,
+        "encode_other_seconds": 0.00018287496641278267,
+        "window_update_seconds": 1.53339933604002e-05,
+        "window_all_recipient_decode_seconds": 7.162499241530895e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 2,
+        "encode_seconds": 0.0004201669944450259,
+        "all_recipient_decode_seconds": 7.312500383704901e-05,
+        "encode_error_sampler_seconds": 0.0002542508882470429,
+        "encode_other_seconds": 0.00016591610619798303,
+        "window_update_seconds": 2.1874962840229273e-05,
+        "window_all_recipient_decode_seconds": 9.066599886864424e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 3,
+        "encode_seconds": 0.00042266701348125935,
+        "all_recipient_decode_seconds": 7.595802890136838e-05,
+        "encode_error_sampler_seconds": 0.00024183205096051097,
+        "encode_other_seconds": 0.00018083496252074838,
+        "window_update_seconds": 2.3874978069216013e-05,
+        "window_all_recipient_decode_seconds": 6.941601168364286e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 4,
+        "encode_seconds": 0.00038016599137336016,
+        "all_recipient_decode_seconds": 7.362500764429569e-05,
+        "encode_error_sampler_seconds": 0.00020795798627659678,
+        "encode_other_seconds": 0.00017220800509676337,
+        "window_update_seconds": 2.0332983694970608e-05,
+        "window_all_recipient_decode_seconds": 7.12500186637044e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      }
+    ],
+    "sampler": {
+      "2": {
+        "count": 512,
+        "seconds": 0.0004222920397296548,
+        "proposals": 8513,
+        "direct_threshold_evaluations": 1,
+        "cap_fallbacks": 0,
+        "os_random_bytes_requested": 43920
+      },
+      "1": {
+        "count": 1280,
+        "seconds": 0.001028248982038349,
+        "proposals": 19541,
+        "direct_threshold_evaluations": 2,
+        "cap_fallbacks": 0,
+        "os_random_bytes_requested": 105760
+      }
+    },
+    "fresh_inputs_executed": 5,
+    "candidate_theorem_T": 384,
+    "T384_executed": false,
+    "actual_recipient_rows_generated": 2,
+    "absent_recipient_rows_generated": 0,
+    "signed_combination_recipients_matched": 2,
+    "oversized_combination_rejected": true,
+    "packed_sizes_bytes": {
+      "ciphertext": 1027,
+      "public_A_P": 3224,
+      "one_key_cutoff": 160
+    },
+    "packing_implemented": false,
+    "peak_process_rss_native": 79314944,
+    "rss_native_unit": "bytes on macOS; KiB on Linux",
+    "raw_keys_coins_inputs_or_ciphertext_persisted": false,
+    "privacy_or_hardness_tested": false,
+    "timing_side_channel_claim": false
+  },
+  "source_unchanged": true,
+  "elapsed_seconds": 0.4640539580141194,
+  "status": "PASS"
+}

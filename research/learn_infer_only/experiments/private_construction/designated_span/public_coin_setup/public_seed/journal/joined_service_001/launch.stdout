@@ -1,0 +1,3 @@
+{"phase": "public_start", "cap_seconds": 2700}
+{"phase": "public_closed", "elapsed_seconds": 981.5806510000257}
+{"ok": true, "report": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/public_seed/journal/joined_service_001/reports/normal_001/report.json"}
