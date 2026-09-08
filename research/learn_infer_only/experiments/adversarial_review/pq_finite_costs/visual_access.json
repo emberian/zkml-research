@@ -1,0 +1,32 @@
+{
+  "claim_kind": "EXECUTED",
+  "read_and_rendered": {
+    "MP2011/501": [
+      12,
+      13,
+      14
+    ],
+    "GPV2007/432": [
+      10,
+      11,
+      12,
+      18
+    ]
+  },
+  "inspected": "Full rendered pages; smoothing convention, expectation bound and proof, quotient corollary, subgaussian lemma and tail calculation",
+  "render_command_template": "pdftoppm -f START -l END -scale-to 1800 -png /Users/ember/dev/gh/forks/IACR-eprint-mirror/YEAR/ID.pdf research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/renders/PREFIX",
+  "extract_command_template": "pdftotext -layout /Users/ember/dev/gh/forks/IACR-eprint-mirror/YEAR/ID.pdf research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/extracts/YEAR-ID.txt",
+  "extracts_sha256": {
+    "2007-432.txt": "7417aac227d904ba206575968120f4ab701aa75af5627f49eff17a134479d646",
+    "2011-501.txt": "cbedb5cfdbb8b00d5900705a3e0887c465668efbb9f140c5632a314a0c7918ea"
+  },
+  "renders_sha256": {
+    "gpv-10.png": "6ca8a6e09a8586361cb1bee5b25b3628c957577a29d2e9b35185ec7e5813e612",
+    "gpv-11.png": "8f7127e31106d9f07192db5a6129e2c8c144bfca0d97ddfeef6e93a1362e546a",
+    "gpv-12.png": "882c7a9fa64ecc86247b5c7bce7dc761b0a2a50ab41f3717b41e601b393398b5",
+    "gpv-18.png": "a81cea890903a9db3712e056dc6b95722e63d929cf47695a626f0122cc991ea7",
+    "mp-12.png": "98a32557457ed17fd806fe18dc2b6dbf7ab5604c8193fa387c457a31485a8ea8",
+    "mp-13.png": "82a0ac163499ded0ead9279750255278debedb0020a7cad37a00ff37bd21233d",
+    "mp-14.png": "a533cc10e1193b3551cf09a345001f7ced685b1971d5aa9941931d45c0990973"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "source_modules": 2,
+  "theorems": 37,
+  "pins": 37,
+  "checked_dependency_source_and_object_pairs": 8,
+  "new_lean_builds": 0,
+  "hashes": {
+    "Selvage.FullUDSamplingBudget": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+    "Selvage.BabyBearFullUD": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978"
+  }
+}

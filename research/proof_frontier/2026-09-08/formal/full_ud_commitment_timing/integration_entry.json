@@ -1,0 +1,13 @@
+{
+  "name": "full_ud_commitment_timing",
+  "root": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing",
+  "patch": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/full-ud-commitment-timing.patch",
+  "expected_pins": 36,
+  "source_files": {
+    "Selvage/OpeningResolution.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/OpeningResolution.lean",
+    "Selvage/FriRootResolution.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/FriRootResolution.lean",
+    "Selvage/FriRootResolutionSoundness.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/FriRootResolutionSoundness.lean",
+    "Selvage/FriRootResolutionWitnesses.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/FriRootResolutionWitnesses.lean",
+    "Selvage/BabyBearFriRootResolution.lean": "../proof_frontier/2026-09-08/formal/full_ud_commitment_timing/src/Selvage/BabyBearFriRootResolution.lean"
+  }
+}

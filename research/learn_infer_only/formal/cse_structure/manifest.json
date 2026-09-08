@@ -1,0 +1,22 @@
+{
+  "source_sha256": "9828878c2ac7b175c9d9928348b0a858573ad951a569a90997684732e0289608",
+  "patch_sha256": "ca0d13b93fba0e685800535c5f84ffa64f4d74c276fd6ec40a8c4cba315a155d",
+  "frozen_input_count": 81,
+  "frozen_inputs_unchanged": true,
+  "files": {
+    "Compiler/CseStructure.lean": "9828878c2ac7b175c9d9928348b0a858573ad951a569a90997684732e0289608",
+    "README.md": "3bb9c6059ac33c72cfca31a190368e4adc317696eac2f695ebd3ddaaa32c3952",
+    "check.py": "cfb578fa1dd738120794aea84a7f552a392e6625004d95d49f7cacb7a942d71b",
+    "integration_entry.json": "928b86442f65610c7a69b6da12a38edec80463a5c2b409eb20509c7e4d8d3210",
+    "minidregg-cse-structure.patch": "ca0d13b93fba0e685800535c5f84ffa64f4d74c276fd6ec40a8c4cba315a155d",
+    "package.py": "0c834f3570a9399a0ca30fffc8e34d5e220403058c696127b831621b14d09ccb",
+    "results/baseline.json": "db4e401fa274d4deafb1eda532909b2b2147bfa5a39605d54a92b754de7df0e5",
+    "results/environment.json": "e940476addd572135d03fb0f10aca48de461c607f7b59b1c7a3171256bc47ed3",
+    "results/lean_001.json": "312a70fe953f8341c45c858cd1acc8e266d19e3d15cc14ff745f4bc5f4379017",
+    "results/lean_002.json": "c4d5ebe71a4c5ffbf6d0803ce57552756f47d019092f69e999b580f20239e2e7",
+    "results/lean_003.json": "6861aeba08f323474aad8dedd408be942362f12fc87d5dd4ff786262d54ffffd",
+    "results/lean_004.json": "0d280b9a7eebb9a384f6b5455ba1463d9c8dc973dc9d6945fb23b89192810a04",
+    "results/lean_005.json": "3ec3e2e3932959a61737d9e66c8301b2e38e01f40b46838f7d1e2bd709c74e82",
+    "results/verification.json": "681f0e16db0ae5a736250b060bfa43103a438374adf2ef0dc5c050f607761261"
+  }
+}

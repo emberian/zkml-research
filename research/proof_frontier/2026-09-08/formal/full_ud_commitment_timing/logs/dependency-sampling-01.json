@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-commitment-timing-20260908/.lake/build/lib/lean/Selvage/FullUDSamplingBudget.olean",
+    "Selvage/FullUDSamplingBudget.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-commitment-timing-20260908",
+  "exit_code": 0,
+  "source_sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+  "source_unchanged": true,
+  "elapsed_s": 11.504624843597412,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/logs/dependency-sampling-01.log"
+}

@@ -1,0 +1,35 @@
+{
+  "scope": "named read-only source dependencies; no private or stopped-task files",
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/PROPOSAL.md",
+      "sha256": "4d30d6013642666081ebecfbcc4dbb0446afeda1e58d94f294202507a20f71c9",
+      "bytes": 7414
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md",
+      "sha256": "ba063f308c66794a348517ef6ebc20e06ba1da4c76d35d35cd60d79c753cc04b",
+      "bytes": 15178
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/review/REVIEW.md",
+      "sha256": "a5e199591179cf81a4eb9b3754108eb68a7b1b3d8ba921c4d8b84fb42278d840",
+      "bytes": 20435
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/fixed_span/scaling/GENERAL_FIXED_SPAN.md",
+      "sha256": "5d99740f9f329e0a45f9c45bcd0db684b49f66660db567d81bfc169dbca4edb9",
+      "bytes": 10521
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/sources/PRIOR_ART.md",
+      "sha256": "1b4751e2d1b3c0e441cd53e26ed2039345b4573cd12656cd31c13345e1c01f64",
+      "bytes": 10376
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2009/340.pdf",
+      "sha256": "24b0c2f944eb369311616bedfbe64255e405ccc84fa38e3ca163ba5c3d652e7b",
+      "bytes": 372167
+    }
+  ]
+}

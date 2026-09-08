@@ -1,0 +1,36 @@
+{
+  "estimator_commit": "53da5982597709ba0fdf94ea37a84d822310fd84",
+  "sage_version": "10.8",
+  "python": "3.12.14 (main, Sep  3 2026, 03:46:19) [Clang 21.1.8 ]",
+  "invocation": [
+    "research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/hardness/run_repair_estimates.py",
+    "--n",
+    "8192",
+    "16384",
+    "20480",
+    "24576",
+    "--m",
+    "262144",
+    "--q",
+    "low",
+    "--models",
+    "MATZOV_classical",
+    "ADPS16_quantum_core_svp",
+    "--attacks",
+    "dual",
+    "usvp",
+    "bdd",
+    "--output",
+    "repair_grid.jsonl"
+  ],
+  "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator",
+  "red_shape_model": "gsa",
+  "source_hashes": {
+    "nd.py": "d87fca7bb191a0fb29b24507897e00c8beba784da552b6b90a982c718fc1c459",
+    "lwe_parameters.py": "72bde0ae3bdd89a4de02b249a1da144256b8d84d009b28b59bde6364b0bc8ecc",
+    "lwe_dual.py": "8f6a077589393f907fbcc87b9ef812beafc73bf5cc78abc4f857924b80a21a8b",
+    "lwe_primal.py": "f46e682a3eb0b7e3b175c326f96244caee5df6f07df78974cdb834e1d6f006d1",
+    "reduction.py": "b1354702c88a8309f78d373ae7f4b0b4347799abfd1a13c07e0fa75bf87bd59a"
+  },
+  "scope": "Heuristic parameter estimator only. No cryptographic instance or attack execution."
+}

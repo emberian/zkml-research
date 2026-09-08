@@ -1,0 +1,15 @@
+{
+  "accepted": true,
+  "author_manifest_sha256": "9e04634c8e7346697035372e363de4fb6a1abd5efd92e552eef6e1e6f86dce9f",
+  "author_report_sha256": "75d9d0f94c078767f923d651141d87993a21bcd97b02da86efe9f830c399e1d8",
+  "freeze_sha256": "a9f07b896f637f553819d4e0a2d6db78a443cb0194d1c4f4f54f41ec27eca882",
+  "manifest_check_sha256": "53f39acbee647fa5ce24dc406c3b5f91e76c248b6490edac0e93aa9584bc437f",
+  "model_or_crypto_imports": 0,
+  "private_file_reads": 0,
+  "public_check_sha256": "0c3bc2efa97f97d4477bdaf702b9be46803506fa7f4ec1bb38b962beb4128b24",
+  "repair_or_rerun_required": false,
+  "review_report_sha256": "da56ca09ee6fe77837adbc2cfd19a7ad17b5e3182a19d78b5a6d3f3c8f48bae2",
+  "schema": "live-semantic-independent-final-review-v1",
+  "scope": "Accept exact source and ordinary normal integration evidence. Private model/answer/freshness/omission results attributed; full-key issuer/recipient and score-disclosure limitations retained.",
+  "source_review_gate_sha256": "e7ac9e537bcedf6cf788f4ca605a168ea9edec6765cf5f9b8a72c3a09743f9f8"
+}

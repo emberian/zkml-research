@@ -1,0 +1,202 @@
+{
+  "scope": "public exact arithmetic, deterministic matrix identities and finite rank enumeration; no crypto, Gaussian sampling, estimator or private runtime",
+  "status": "PASS",
+  "reviewed_theorem_sha256": "7ae20bc50552283e4688466b966c7e2d1265613f4fb8a49c2909aaeb77bd7bd4",
+  "author_inputs_sha256": "24286ceca502dcca865e9f0bb617e6e6730d82e38d7f0b3c3991b5c7a0f0dfcf",
+  "author_results_sha256": "a6d4ff5dae146a7fb1c736de64e70b6ac65387f21d0b0b0c97bc30ac3f3b801b",
+  "script_sha256": "9957c59ef055a40a4e1d90c335ee52443e7344bb3f3f5e130d9cec33722dbadb",
+  "rank_controls": [
+    {
+      "p": 2,
+      "k": 1,
+      "n": 3,
+      "d": 1,
+      "matrices": 8,
+      "failures": 1,
+      "exact_probability": "1/8",
+      "geometric_upper_bound": "1/8",
+      "image_surjectivity_matches_mod_p_rank": true
+    },
+    {
+      "p": 2,
+      "k": 1,
+      "n": 3,
+      "d": 2,
+      "matrices": 64,
+      "failures": 22,
+      "exact_probability": "11/32",
+      "geometric_upper_bound": "3/8",
+      "image_surjectivity_matches_mod_p_rank": true
+    },
+    {
+      "p": 2,
+      "k": 2,
+      "n": 3,
+      "d": 2,
+      "matrices": 4096,
+      "failures": 1408,
+      "exact_probability": "11/32",
+      "geometric_upper_bound": "3/8",
+      "image_surjectivity_matches_mod_p_rank": true
+    },
+    {
+      "p": 3,
+      "k": 1,
+      "n": 3,
+      "d": 2,
+      "matrices": 729,
+      "failures": 105,
+      "exact_probability": "35/243",
+      "geometric_upper_bound": "4/27",
+      "image_surjectivity_matches_mod_p_rank": true
+    },
+    {
+      "p": 3,
+      "k": 2,
+      "n": 2,
+      "d": 1,
+      "matrices": 81,
+      "failures": 9,
+      "exact_probability": "1/9",
+      "geometric_upper_bound": "1/9",
+      "image_surjectivity_matches_mod_p_rank": true
+    },
+    {
+      "p": 2,
+      "k": 3,
+      "n": 2,
+      "d": 1,
+      "matrices": 64,
+      "failures": 16,
+      "exact_probability": "1/4",
+      "geometric_upper_bound": "1/4",
+      "image_surjectivity_matches_mod_p_rank": true
+    }
+  ],
+  "rank_matrices_total": 5042,
+  "matrix_identity": {
+    "dimensions": [
+      2,
+      3,
+      4
+    ],
+    "det_H": "1",
+    "H_times_P_equals_E": true
+  },
+  "gaussian_parameter_covariance": {
+    "printed_diagonal": [
+      12,
+      13,
+      13
+    ],
+    "repaired_diagonal": [
+      16,
+      16,
+      16
+    ],
+    "target_diagonal": [
+      16,
+      16,
+      16
+    ]
+  },
+  "integrality_counterexample": {
+    "Zbprime": "5/2",
+    "h": "0",
+    "corrected_identity": true
+  },
+  "tail_constant_squared_rational_upper": "2673/57344",
+  "profiles": [
+    {
+      "name": "original_full",
+      "pass": false,
+      "failed_checks": [
+        "AR_strict_M",
+        "operator_norm_xi"
+      ],
+      "xi_min_pow2": 50953,
+      "sigma2_min_pow2": 33933,
+      "base_LWE_error_width_pow2": 5,
+      "regularity_pass": [
+        true,
+        true
+      ],
+      "prior_power_of_two_xi_fails": true
+    },
+    {
+      "name": "original_fixed_1024",
+      "pass": false,
+      "failed_checks": [
+        "operator_norm_xi"
+      ],
+      "xi_min_pow2": 153,
+      "sigma2_min_pow2": 80,
+      "base_LWE_error_width_pow2": 71,
+      "regularity_pass": [
+        true,
+        true
+      ],
+      "prior_power_of_two_xi_fails": true
+    },
+    {
+      "name": "original_fixed_4096",
+      "pass": false,
+      "failed_checks": [
+        "AR_strict_M",
+        "operator_norm_xi"
+      ],
+      "xi_min_pow2": 177,
+      "sigma2_min_pow2": 92,
+      "base_LWE_error_width_pow2": 71,
+      "regularity_pass": [
+        true,
+        true
+      ],
+      "prior_power_of_two_xi_fails": true
+    },
+    {
+      "name": "finite_fixed_1024",
+      "pass": true,
+      "failed_checks": [],
+      "xi_min_pow2": 153,
+      "sigma2_min_pow2": 80,
+      "base_LWE_error_width_pow2": 18,
+      "regularity_pass": [
+        true,
+        true
+      ],
+      "prior_power_of_two_xi_fails": true
+    },
+    {
+      "name": "finite_fixed_4096",
+      "pass": true,
+      "failed_checks": [],
+      "xi_min_pow2": 178,
+      "sigma2_min_pow2": 92,
+      "base_LWE_error_width_pow2": 13,
+      "regularity_pass": [
+        true,
+        true
+      ],
+      "prior_power_of_two_xi_fails": true
+    }
+  ],
+  "ledger": {
+    "0": {
+      "LWE_multiplier": 768,
+      "statistical_numerator": 1803144,
+      "denominator_pow2": 160,
+      "strictly_below_2_pow_minus_139": true
+    },
+    "16": {
+      "LWE_multiplier": 768,
+      "statistical_numerator": 1753992,
+      "denominator_pow2": 160,
+      "strictly_below_2_pow_minus_139": true
+    }
+  },
+  "error_coefficients": {
+    "ideal_reduction": 32,
+    "with_sampler_bound": 34
+  }
+}

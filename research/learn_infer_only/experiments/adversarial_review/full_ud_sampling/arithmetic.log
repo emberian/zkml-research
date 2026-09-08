@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "query_boundaries": [
+    [
+      3603,
+      "1/95",
+      true
+    ],
+    [
+      3602,
+      "1/95",
+      false
+    ],
+    [
+      4099,
+      "8191/884736",
+      true
+    ],
+    [
+      4098,
+      "1/108",
+      false
+    ],
+    [
+      4098,
+      "8191/884736",
+      false
+    ]
+  ],
+  "savings": 496,
+  "fixed_initial_rows": 5,
+  "algebra_models": 5,
+  "query_ledger_rows": 5,
+  "carrier_arithmetic": {
+    "modulus": 2013265921,
+    "prime_by_trial_division": true,
+    "eleven_euler": 2013265920,
+    "negative_eleven_euler": 2013265920,
+    "extension_degree": 4,
+    "field_cardinality": 16428751811598850197311699254593454081,
+    "consecutive_domain_card": 1048576,
+    "injective_base_domain_possible": true,
+    "base_field_cardinality_falsifier": true,
+    "bad_pair_max_agreement": 524288,
+    "required_agreement": "4194304/5"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "command": "python3 research/learn_infer_only/experiments/adversarial_review/full_ud_root_resolution/check.py > research/learn_infer_only/experiments/adversarial_review/full_ud_root_resolution/check.log 2>&1",
+  "exit_code": 0,
+  "final_source_hashes_unchanged": true,
+  "results_match_log": true,
+  "local_links_checked": 5,
+  "lean_runs": 0,
+  "crypto_runs": 0,
+  "private_files_read": 0,
+  "scope": "Source/statement audit and bounded finite semantics; author kernel-check records inspected, root owns full integration build."
+}

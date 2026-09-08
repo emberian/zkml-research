@@ -1,0 +1,16 @@
+{
+  "status": "COMPLETE",
+  "inputs_unchanged_at_freeze": true,
+  "files": {
+    "NEXT.md": "5a8636826d3ffbd56ade5c5ec86ad66193cecb099bfcd4865e9d9f057e71ddf6",
+    "REPORT.md": "d665fc454eb2b041968cde7c94838ad3a48be7a232edeb8abd015f4978fec9b5",
+    "STATUS.md": "f20112b01f6cb5b4a7e14b6c5a2bb49652d5315b003576e1eaf6d1a4c8153e85",
+    "arithmetic.json": "1e734747505a8c436884410898c74ac7a3421b09b607caaf709c98e064591213",
+    "arithmetic.log": "771b822007653fcace14e2130c907584c0117b7f9be4dc56221d75ac6141580a",
+    "arithmetic_review.py": "11b520479995f51abd34414ba7b640281cdb98cbe96db15308c120b8fe4eb9cd",
+    "census.json": "418c627cf973b1ab89355b5e17413ea7cf18a065b8a90b78945aeb8f1e225426",
+    "source.log": "7d49c96a6a00234b3334c64b25f33aa5308311f2e390926bdb0384a33863bd04",
+    "source_review.py": "72f03daa0f0a2d6e6d7f09e10272249e592ebf3985fd6ff37c915721ad5b368d",
+    "source_verification.json": "f4e4d41f8d30f90c6b3f3d0624dd95594cd2ac44b9ac540a9ba5b4d9f2e1fd46"
+  }
+}

@@ -1,0 +1,429 @@
+{
+  "all_package_checks_passed": true,
+  "source_sha256": "9828878c2ac7b175c9d9928348b0a858573ad951a569a90997684732e0289608",
+  "patch_sha256": "ca0d13b93fba0e685800535c5f84ffa64f4d74c276fd6ec40a8c4cba315a155d",
+  "census": {
+    "theorems": [
+      "subst_bounded",
+      "bounded_up",
+      "insert_subst_le",
+      "insert_signature_kept",
+      "cseGo_good",
+      "empty_good",
+      "cse_structure_preservation",
+      "raw_premises_inhabited",
+      "shared_structure",
+      "shared_execution_total",
+      "learn_execution_total",
+      "infer_execution_total",
+      "learn_total_subject",
+      "wrong_learn_answer_refused",
+      "subst_empty",
+      "singleton_cse",
+      "missing_ssa_refused",
+      "missing_bounds_refused"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "subst_bounded",
+        "qualified_name": "Minidregg.Compiler.CseStructure.subst_bounded",
+        "private": false,
+        "line": 46
+      },
+      {
+        "name": "bounded_up",
+        "qualified_name": "Minidregg.Compiler.CseStructure.bounded_up",
+        "private": false,
+        "line": 54
+      },
+      {
+        "name": "insert_subst_le",
+        "qualified_name": "Minidregg.Compiler.CseStructure.insert_subst_le",
+        "private": false,
+        "line": 60
+      },
+      {
+        "name": "insert_signature_kept",
+        "qualified_name": "Minidregg.Compiler.CseStructure.insert_signature_kept",
+        "private": false,
+        "line": 70
+      },
+      {
+        "name": "cseGo_good",
+        "qualified_name": "Minidregg.Compiler.CseStructure.cseGo_good",
+        "private": false,
+        "line": 87
+      },
+      {
+        "name": "empty_good",
+        "qualified_name": "Minidregg.Compiler.CseStructure.empty_good",
+        "private": false,
+        "line": 130
+      },
+      {
+        "name": "cse_structure_preservation",
+        "qualified_name": "Minidregg.Compiler.CseStructure.cse_structure_preservation",
+        "private": false,
+        "line": 141
+      },
+      {
+        "name": "raw_premises_inhabited",
+        "qualified_name": "Minidregg.Compiler.CseStructure.raw_premises_inhabited",
+        "private": false,
+        "line": 162
+      },
+      {
+        "name": "shared_structure",
+        "qualified_name": "Minidregg.Compiler.CseStructure.shared_structure",
+        "private": false,
+        "line": 167
+      },
+      {
+        "name": "shared_execution_total",
+        "qualified_name": "Minidregg.Compiler.CseStructure.shared_execution_total",
+        "private": false,
+        "line": 172
+      },
+      {
+        "name": "learn_execution_total",
+        "qualified_name": "Minidregg.Compiler.CseStructure.learn_execution_total",
+        "private": false,
+        "line": 185
+      },
+      {
+        "name": "infer_execution_total",
+        "qualified_name": "Minidregg.Compiler.CseStructure.infer_execution_total",
+        "private": false,
+        "line": 193
+      },
+      {
+        "name": "learn_total_subject",
+        "qualified_name": "Minidregg.Compiler.CseStructure.learn_total_subject",
+        "private": false,
+        "line": 200
+      },
+      {
+        "name": "wrong_learn_answer_refused",
+        "qualified_name": "Minidregg.Compiler.CseStructure.wrong_learn_answer_refused",
+        "private": false,
+        "line": 206
+      },
+      {
+        "name": "subst_empty",
+        "qualified_name": "Minidregg.Compiler.CseStructure.subst_empty",
+        "private": false,
+        "line": 213
+      },
+      {
+        "name": "singleton_cse",
+        "qualified_name": "Minidregg.Compiler.CseStructure.singleton_cse",
+        "private": false,
+        "line": 216
+      },
+      {
+        "name": "missing_ssa_refused",
+        "qualified_name": "Minidregg.Compiler.CseStructure.missing_ssa_refused",
+        "private": false,
+        "line": 230
+      },
+      {
+        "name": "missing_bounds_refused",
+        "qualified_name": "Minidregg.Compiler.CseStructure.missing_bounds_refused",
+        "private": false,
+        "line": 246
+      }
+    ],
+    "theorem_count": 18,
+    "pin_count": 18,
+    "pins": [
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.subst_bounded",
+        "requested_name": "subst_bounded",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 256,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.subst_bounded' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.subst_bounded"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.bounded_up",
+        "requested_name": "bounded_up",
+        "axioms": [],
+        "line": 258,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.bounded_up' does not depend on any axioms",
+        "declaration_name": "Minidregg.Compiler.CseStructure.bounded_up"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.insert_subst_le",
+        "requested_name": "insert_subst_le",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 260,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.insert_subst_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.insert_subst_le"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.insert_signature_kept",
+        "requested_name": "insert_signature_kept",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 262,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.insert_signature_kept' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.insert_signature_kept"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.cseGo_good",
+        "requested_name": "cseGo_good",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 264,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.cseGo_good' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.cseGo_good"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.empty_good",
+        "requested_name": "empty_good",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 266,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.empty_good' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.empty_good"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.cse_structure_preservation",
+        "requested_name": "cse_structure_preservation",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 268,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.cse_structure_preservation' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.cse_structure_preservation"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.raw_premises_inhabited",
+        "requested_name": "raw_premises_inhabited",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 270,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.raw_premises_inhabited' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.raw_premises_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.shared_structure",
+        "requested_name": "shared_structure",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 272,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.shared_structure' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.shared_structure"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.shared_execution_total",
+        "requested_name": "shared_execution_total",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 274,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.shared_execution_total' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.shared_execution_total"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.learn_execution_total",
+        "requested_name": "learn_execution_total",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 276,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.learn_execution_total' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.learn_execution_total"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.infer_execution_total",
+        "requested_name": "infer_execution_total",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 278,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.infer_execution_total' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.infer_execution_total"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.learn_total_subject",
+        "requested_name": "learn_total_subject",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 280,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.learn_total_subject' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.learn_total_subject"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.wrong_learn_answer_refused",
+        "requested_name": "wrong_learn_answer_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 282,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.wrong_learn_answer_refused' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.wrong_learn_answer_refused"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.subst_empty",
+        "requested_name": "subst_empty",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 284,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.subst_empty' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.subst_empty"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.singleton_cse",
+        "requested_name": "singleton_cse",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 286,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.singleton_cse' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.singleton_cse"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.missing_ssa_refused",
+        "requested_name": "missing_ssa_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 288,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.missing_ssa_refused' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.missing_ssa_refused"
+      },
+      {
+        "theorem": "Minidregg.Compiler.CseStructure.missing_bounds_refused",
+        "requested_name": "missing_bounds_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 290,
+        "expected_message": "info: 'Minidregg.Compiler.CseStructure.missing_bounds_refused' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.CseStructure.missing_bounds_refused"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "checks": [
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_structure_package_mb411a5d",
+      "exit_code": 0,
+      "seconds": 0.06424195799627341,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/minidregg-cse-structure.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_structure_package_mb411a5d",
+      "exit_code": 0,
+      "seconds": 0.04543287499109283,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/minidregg-cse-structure.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_structure_package_mb411a5d",
+      "exit_code": 0,
+      "seconds": 0.058675624983152375,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_structure_package_mb411a5d/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_structure_package_mb411a5d",
+      "exit_code": 0,
+      "seconds": 0.19812037498923019,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "seconds": 0.13113004199112765,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    }
+  ],
+  "lean_check": "results/lean_005.json",
+  "frozen_files_unchanged": true,
+  "frozen_file_count": 81,
+  "companion_head_unchanged": true,
+  "companion_status_unchanged": true,
+  "dependency_source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/Compiler/EmittedScheduleExecution.lean": "37d9b62f5a0b0b3b80fa7b2de2f8322e71c92b4635710f64eb848f573bffb077"
+  },
+  "reused_source_sha256": {
+    "/Users/ember/dev/minidregg/Compiler/Emit.lean": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+    "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4",
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6"
+  },
+  "scope": "Kernel-checked generic CSE SSA/WellFormed preservation and unconditional existing Lean evaluator/source-output equality, including exact Learn/Infer. No initialized-reference theorem or Rust/TFHE language refinement. Fresh three proposal dependency oleans with cached external dependencies. Root owns full umbrella build."
+}

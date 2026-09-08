@@ -1,0 +1,223 @@
+{
+  "status": "PASS; finite public distribution checks only",
+  "proposal_sha256": "ec9af914cb349e0bc6881bd8a5b99fd493e43b106a869a44eb58edf758083ab3",
+  "script_sha256": "b4f8670b33cf2ad80522ea9bb7f8bfbac9e8e1b89417048484d8a9519e40f783",
+  "finite_tape_cases": [
+    {
+      "width": 2,
+      "allowed": [
+        0,
+        1,
+        2
+      ],
+      "cap": 1,
+      "output_tapes": 4,
+      "preimages_per_tape": 3,
+      "failure_probability": "1/4"
+    },
+    {
+      "width": 2,
+      "allowed": [
+        0,
+        1,
+        2
+      ],
+      "cap": 2,
+      "output_tapes": 16,
+      "preimages_per_tape": 3,
+      "failure_probability": "1/16"
+    },
+    {
+      "width": 2,
+      "allowed": [
+        0,
+        1,
+        2
+      ],
+      "cap": 3,
+      "output_tapes": 64,
+      "preimages_per_tape": 3,
+      "failure_probability": "1/64"
+    },
+    {
+      "width": 3,
+      "allowed": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "cap": 1,
+      "output_tapes": 8,
+      "preimages_per_tape": 6,
+      "failure_probability": "1/4"
+    },
+    {
+      "width": 3,
+      "allowed": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "cap": 2,
+      "output_tapes": 64,
+      "preimages_per_tape": 6,
+      "failure_probability": "1/16"
+    },
+    {
+      "width": 3,
+      "allowed": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "cap": 3,
+      "output_tapes": 512,
+      "preimages_per_tape": 6,
+      "failure_probability": "1/64"
+    },
+    {
+      "width": 3,
+      "allowed": [
+        0,
+        3,
+        7
+      ],
+      "cap": 1,
+      "output_tapes": 8,
+      "preimages_per_tape": 3,
+      "failure_probability": "5/8"
+    },
+    {
+      "width": 3,
+      "allowed": [
+        0,
+        3,
+        7
+      ],
+      "cap": 2,
+      "output_tapes": 64,
+      "preimages_per_tape": 3,
+      "failure_probability": "25/64"
+    },
+    {
+      "width": 3,
+      "allowed": [
+        0,
+        3,
+        7
+      ],
+      "cap": 3,
+      "output_tapes": 512,
+      "preimages_per_tape": 3,
+      "failure_probability": "125/512"
+    }
+  ],
+  "rank_two_joint_atoms": 486,
+  "cap_two_registry_tapes": 3072,
+  "cap_two_choices": 55296,
+  "cap_two_preimages_per_transcript": 18,
+  "cap_two_failure": "31/256",
+  "adaptive_three_seed_experiment": {
+    "p": 7,
+    "q": 3,
+    "m": 1,
+    "d": 2,
+    "cap": 1,
+    "padded_N": 4,
+    "real_random_choices": 98304,
+    "real_successes": 83016,
+    "failures": {
+      "3": 15288
+    },
+    "checks": [
+      {
+        "guessed_ordinal": 1,
+        "real_success_count": 18432,
+        "matched_transcript_atoms": 576,
+        "simulator_preimage_factor": 18,
+        "exact_selected_event_identity": true
+      },
+      {
+        "guessed_ordinal": 2,
+        "real_success_count": 44928,
+        "matched_transcript_atoms": 1404,
+        "simulator_preimage_factor": 18,
+        "exact_selected_event_identity": true
+      },
+      {
+        "guessed_ordinal": 3,
+        "real_success_count": 19656,
+        "matched_transcript_atoms": 19656,
+        "simulator_preimage_factor": 18,
+        "exact_selected_event_identity": true
+      }
+    ],
+    "padded_ordinal4_always_aborts": true,
+    "selected_event_probability_sum": "3459/4096",
+    "average_guess_success_probability": "3459/16384"
+  },
+  "prequery_checks": [
+    {
+      "m": 2,
+      "q": 3,
+      "queries": 0,
+      "exact_bad_probability": "0",
+      "bound": "0"
+    },
+    {
+      "m": 2,
+      "q": 3,
+      "queries": 1,
+      "exact_bad_probability": "1/9",
+      "bound": "1/9"
+    },
+    {
+      "m": 2,
+      "q": 3,
+      "queries": 3,
+      "exact_bad_probability": "1/3",
+      "bound": "1/3"
+    },
+    {
+      "m": 2,
+      "q": 3,
+      "queries": 9,
+      "exact_bad_probability": "1",
+      "bound": "1"
+    },
+    {
+      "m": 2,
+      "q": 3,
+      "queries": 12,
+      "exact_bad_probability": "1",
+      "bound": "1"
+    }
+  ],
+  "identity_one_seed": "1/3",
+  "identity_two_seed_selection": "5/9",
+  "deterministic_root_support": 3,
+  "random_sign_root_support": 6,
+  "distinct_equal_projection_witness": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      2
+    ]
+  ],
+  "source_script_executed": false,
+  "new_crypto_runs": 0,
+  "private_files_read": 0,
+  "web_queries": 0
+}

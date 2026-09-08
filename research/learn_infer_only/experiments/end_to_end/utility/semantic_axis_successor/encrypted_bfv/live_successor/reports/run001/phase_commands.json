@@ -1,0 +1,63 @@
+[
+  {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/runtime/e2e/verified_reader/live_driver.py",
+      "--worker",
+      "--input",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/runtime/.private/input.json",
+      "--runtime",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/runtime",
+      "--reports",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/reports/run001",
+      "--binary",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/runtime/e2e/resident-crypto"
+    ],
+    "group_cleanup_escalated": false,
+    "phase": "public_phase",
+    "process_group_absent": true,
+    "returncode": 0,
+    "timed_out": false,
+    "wall_ns": 19676214542
+  },
+  {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/public_verify.py"
+    ],
+    "group_cleanup_escalated": false,
+    "phase": "public_verify",
+    "process_group_absent": true,
+    "returncode": 0,
+    "timed_out": false,
+    "wall_ns": 3889736208
+  },
+  {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/drain.py"
+    ],
+    "group_cleanup_escalated": false,
+    "phase": "private_drain",
+    "process_group_absent": true,
+    "returncode": 0,
+    "timed_out": false,
+    "wall_ns": 203700459
+  },
+  {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/validate.py"
+    ],
+    "group_cleanup_escalated": false,
+    "phase": "validate",
+    "process_group_absent": true,
+    "returncode": 0,
+    "timed_out": false,
+    "wall_ns": 202328125
+  }
+]

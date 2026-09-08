@@ -1,0 +1,96 @@
+{
+  "scope": "Public arithmetic only. Derived conditional tuple; no security level or crypto execution.",
+  "fixture": {
+    "d": 577,
+    "r": 16,
+    "window": 32,
+    "issued_inputs": 384,
+    "p": 28439893,
+    "centered_coordinate_bound": 14219946,
+    "window_centered_sum_bound": 455038272,
+    "scale_denominator": 8204908842
+  },
+  "derived": {
+    "n": 1024,
+    "l": 16384,
+    "q_prime_interval_exponents": [
+      288,
+      289
+    ],
+    "q_bit_upper": 289,
+    "sigma_K_exponent": 32,
+    "sigma_LWE_exponent": 10,
+    "flood_exponent": 244,
+    "key_tail_cut": 8,
+    "error_tail_cut": 8,
+    "BK": 34359738368,
+    "BL": 8192,
+    "delta_lower": 60612889915856866768512264739530769804554539229742208687473919517454584904032,
+    "individual_phase_error_bound": 28269553036454149273332760011886696253239742350009903334557385239109304320,
+    "correctness_2WE_less_delta": true,
+    "regularity_S_exponent_upper": {
+      "1024": -179200,
+      "1025": -178911
+    },
+    "regularity_total_numerator_over_2pow189": 444258,
+    "smudge_total_numerator": 443136,
+    "smudge_total_denominator_power": 183,
+    "statistical_total_less_2pow_minus163": true,
+    "LWE_advantage_multiplier": 768,
+    "ciphertext_entries": 16961,
+    "public_key_entries": 17368064,
+    "ciphertext_byte_upper": 612717,
+    "public_key_byte_upper": 627421312,
+    "recipient_key_high_probability_bytes": 73728,
+    "all_recipient_keys_high_probability_bytes": 1179648,
+    "encryption_modular_products": 17368064,
+    "decryption_modular_products_per_coordinate": 16384,
+    "scalar_add_residue_additions": 16961,
+    "live_66_ciphertexts_byte_upper": 40439322,
+    "T384_ciphertexts_byte_upper": 235283328
+  },
+  "source_table_mechanical_profiles_not_security_parameters": [
+    {
+      "sqrt_lambda": 16,
+      "lambda": 256,
+      "n": 2816,
+      "l": 65536,
+      "l_prime": 65024,
+      "theorem3_required_l_prime_lower": 630784,
+      "q_bit_upper": 113,
+      "theorem3_required_l_prime_upper": 636416,
+      "theorem3_sufficient_check": false,
+      "single_block_ciphertext_byte_upper": 933847,
+      "single_block_public_key_byte_upper": 2629710688,
+      "single_block_encrypt_products": 186174208
+    },
+    {
+      "sqrt_lambda": 32,
+      "lambda": 1024,
+      "n": 11264,
+      "l": 1048576,
+      "l_prime": 1046528,
+      "theorem3_required_l_prime_lower": 5046272,
+      "q_bit_upper": 225,
+      "theorem3_required_l_prime_upper": 5068800,
+      "theorem3_sufficient_check": false,
+      "single_block_ciphertext_byte_upper": 29507429,
+      "single_block_public_key_byte_upper": 332371670400,
+      "single_block_encrypt_products": 11817659392
+    },
+    {
+      "sqrt_lambda": 155,
+      "lambda": 24025,
+      "n": 264275,
+      "l": 577200625,
+      "l_prime": 577152575,
+      "theorem3_required_l_prime_lower": 573476750,
+      "q_bit_upper": 1086,
+      "theorem3_required_l_prime_upper": 574005300,
+      "theorem3_sufficient_check": true,
+      "single_block_ciphertext_byte_upper": 78355063172,
+      "single_block_public_key_byte_upper": 20707284319648163,
+      "single_block_encrypt_products": 152539847658550
+    }
+  ]
+}

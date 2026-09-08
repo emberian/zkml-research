@@ -1,0 +1,48 @@
+{
+  "OpeningResolution": [
+    "Minidregg.Selvage.OpeningResolution.word_openable",
+    "Minidregg.Selvage.OpeningResolution.correctness",
+    "Minidregg.Selvage.OpeningResolution.eq_word_of_no_double",
+    "Minidregg.Selvage.OpeningResolution.no_double_of_binding",
+    "Minidregg.Selvage.OpeningResolution.word_commit",
+    "Minidregg.Selvage.OpeningResolution.transparent_no_double",
+    "Minidregg.Selvage.OpeningResolution.word_transparent",
+    "Minidregg.Selvage.OpeningResolution.transparent_double_original",
+    "Minidregg.Selvage.OpeningResolution.transparent_binding",
+    "Minidregg.Selvage.OpeningResolution.binaryMerkle_double_implies_collision",
+    "Minidregg.Selvage.OpeningResolution.honest_image_falsifier",
+    "Minidregg.Selvage.OpeningResolution.off_image_resolution_witness",
+    "Minidregg.Selvage.OpeningResolution.binding_removal_falsifier",
+    "Minidregg.Selvage.OpeningResolution.double_opening_inhabited"
+  ],
+  "FriRootResolution": [
+    "Minidregg.Selvage.FriRootResolution.resolved_word_prefix",
+    "Minidregg.Selvage.FriRootResolution.terminal_resolves",
+    "Minidregg.Selvage.FriRootResolution.round_resolves",
+    "Minidregg.Selvage.FriRootResolution.sound_reduction",
+    "Minidregg.Selvage.FriRootResolution.no_bad_of_binding",
+    "Minidregg.Selvage.FriRootResolution.transparent_terminal"
+  ],
+  "FriRootResolutionSoundness": [
+    "Minidregg.Selvage.FriRootResolution.coherent_probability_reduction",
+    "Minidregg.Selvage.FriRootResolution.coherent_sound",
+    "Minidregg.Selvage.FriRootResolution.coherent_sound_binding"
+  ],
+  "FriRootResolutionWitnesses": [
+    "Minidregg.Selvage.FriRootResolution.Witnesses.initial_root_off_image",
+    "Minidregg.Selvage.FriRootResolution.Witnesses.fold_x_challenge",
+    "Minidregg.Selvage.FriRootResolution.Witnesses.adaptive_word_witness",
+    "Minidregg.Selvage.FriRootResolution.Witnesses.fixed_transcript_falsifier",
+    "Minidregg.Selvage.FriRootResolution.Witnesses.future_challenge_falsifier",
+    "Minidregg.Selvage.FriRootResolution.Witnesses.sampled_acceptance_inhabited",
+    "Minidregg.Selvage.FriRootResolution.Witnesses.scheme_binding",
+    "Minidregg.Selvage.FriRootResolution.Witnesses.witness_no_bad",
+    "Minidregg.Selvage.FriRootResolution.Witnesses.reduction_inhabited",
+    "Minidregg.Selvage.FriRootResolution.Witnesses.ideal_acceptance_witness"
+  ],
+  "BabyBearFriRootResolution": [
+    "Minidregg.Selvage.FriRootResolution.fullUD_coherent_sound",
+    "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound",
+    "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound_binding"
+  ]
+}

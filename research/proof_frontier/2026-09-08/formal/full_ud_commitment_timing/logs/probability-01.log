@@ -1,0 +1,48 @@
+Selvage/FriRootResolutionSoundness.lean:39:38: error: Invalid projection: Type of
+  x
+is not known; cannot resolve projection `1`
+Selvage/FriRootResolutionSoundness.lean:40:38: error: Invalid projection: Type of
+  x
+is not known; cannot resolve projection `2`
+Selvage/FriRootResolutionSoundness.lean:37:47: error: unsolved goals
+F : Type
+inst✝² : Field F
+inst✝¹ : Fintype F
+inst✝ : DecidableEq F
+Root Op : ℕ → Type
+ell m : ℕ
+S : (n : ℕ) → OpeningScheme (Root n) F (PowerTwoFriLevels ell n) (Op n)
+T : FoldingTower F (PowerTwoFriLevels ell) m
+deg : ℕ → ℕ
+st : Strategy F Root
+hmell : m ≤ ell
+qCount : ℕ
+⊢ (uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1)) fun x =>
+      CoherentAccepts S T deg st hmell qCount x.1 x.2) ≤
+    (uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1)) fun x =>
+        FriAdaptiveCoherentAccepts (fun n => idealCommitment F (PowerTwoFriLevels ell n)) T deg
+          (resolvedTranscript S st) hmell qCount x.1 x.2) +
+      uniformProb (Fin m → F) (BadRoots S st)
+Selvage/FriRootResolutionSoundness.lean:71:4: error: Application type mismatch: The argument
+  add_le_add_right
+    (friAdaptive_coherent_sampled_sound (fun n => idealCommitment F (PowerTwoFriLevels ell n)) T deg
+      (resolvedTranscript S st) hmell radius foldRadius qCount htau hfinal hgap hfold hfar0)
+    ?m.161
+has type
+  (?m.161 +
+      uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1)) fun x =>
+        FriAdaptiveCoherentAccepts (fun n => idealCommitment F (PowerTwoFriLevels ell n)) T deg
+          (resolvedTranscript S st) hmell qCount x.1 x.2) ≤
+    ?m.161 + (↑m * ↑b / ↑(Fintype.card F) + (1 - tau) ^ qCount)
+but is expected to have type
+  (uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1)) fun x =>
+        FriAdaptiveCoherentAccepts (fun n => idealCommitment F (PowerTwoFriLevels ell n)) T deg
+          (resolvedTranscript S st) hmell qCount x.1 x.2) +
+      uniformProb (Fin m → F) (BadRoots S st) ≤
+    ↑m * ↑b / ↑(Fintype.card F) + (1 - tau) ^ qCount + uniformProb (Fin m → F) (BadRoots S st)
+in the application
+  le_trans (coherent_probability_reduction S T deg st hmell qCount)
+    (add_le_add_right
+      (friAdaptive_coherent_sampled_sound (fun n => idealCommitment F (PowerTwoFriLevels ell n)) T deg
+        (resolvedTranscript S st) hmell radius foldRadius qCount htau hfinal hgap hfold hfar0)
+      ?m.161)

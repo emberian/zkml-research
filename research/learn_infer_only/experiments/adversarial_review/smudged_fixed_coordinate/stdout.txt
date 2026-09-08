@@ -1,0 +1,102 @@
+{
+  "status": "PASS",
+  "scope": "Independent exact public arithmetic; no keys, ciphertexts, Gaussian/flood samples, crypto or estimator execution.",
+  "subject_pins": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/SMUDGED_FIXED_COORDINATE.md",
+      "bytes": 13252,
+      "sha256": "a7f98b9f17b0e9b37537ca763697f7a9235df498364df4e0dd774f293d9b9327"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/AUDIT.md",
+      "bytes": 13657,
+      "sha256": "593faaffcd84f2bade468d9e570a3e2dd3d11eafc76b46ec71b046d22d884307"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/results.json",
+      "bytes": 3148,
+      "sha256": "75d69f3c18d502a2761a9b4acab3924c0d18bbd38ca16375ee98dab3b63aae54"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/MANIFEST.json",
+      "bytes": 6453,
+      "sha256": "0bf70a6a12442a02f3fced956a456722985d8279ee651e299a501fdff3741654"
+    }
+  ],
+  "author_linked_pins_verified": 25,
+  "linked_pins_by_section": {
+    "source_pdfs": 6,
+    "reused_frozen_public_inputs": 5,
+    "owned_artifacts": 14
+  },
+  "interval_TV_cases": 328,
+  "product_interval_TV_cases": 363,
+  "decoder_grid_cases": 1273,
+  "decoded_integer_points": 38005,
+  "source_generic_endpoint_control": {
+    "q": 97,
+    "D": 10,
+    "delta": 9,
+    "received": 8,
+    "distinct_integers": [
+      -10,
+      1
+    ],
+    "errors": [
+      1,
+      -1
+    ]
+  },
+  "regularity_exponents": {
+    "1024": {
+      "S_exponent_upper": -179200,
+      "rank_exponent_upper": -4423680
+    },
+    "1025": {
+      "S_exponent_upper": -178911,
+      "rank_exponent_upper": -4423392
+    }
+  },
+  "regularity_total_numerator_over_2pow189": 444258,
+  "smudge_total_numerator_over_2pow183": 443136,
+  "statistical_total_less_2pow_minus163": true,
+  "correctness_all_T_upper_less_2pow_minus198": true,
+  "author_derived_fields_matched": 31,
+  "author_source_table_fields_matched": 36,
+  "naive_source_lambda128": {
+    "l_prime": 16128,
+    "required_lower_bound": 216832,
+    "fails_height": true
+  },
+  "ambient_kernel_witness": {
+    "p": 28439893,
+    "nonzero_first_17_coordinates": [
+      28019783,
+      8699885,
+      20365251,
+      7911571,
+      8222781,
+      21763884,
+      9120383,
+      13156523,
+      11666186,
+      16649383,
+      445772,
+      1142834,
+      4477097,
+      415417,
+      18637379,
+      6790445,
+      1
+    ],
+    "remaining_coordinates_zero": 560,
+    "all_16_policy_products_zero": true,
+    "semantic_encoder_image_claim": false
+  },
+  "searches": {
+    "remote": 0,
+    "local_PDF_downloads": 0,
+    "new_source_discovery": 0
+  },
+  "author_files_unchanged_after_check": true
+}

@@ -1,0 +1,1 @@
+PASS: clean git apply --check, git apply, exact source byte equality.

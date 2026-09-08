@@ -1,0 +1,13 @@
+{
+  "frozen": true,
+  "verdict": "Accept generic CSE preservation and unconditional Lean EMA execution; no blocking source defect found",
+  "source_sha256": "9828878c2ac7b175c9d9928348b0a858573ad951a569a90997684732e0289608",
+  "patch_sha256": "ca0d13b93fba0e685800535c5f84ffa64f4d74c276fd6ec40a8c4cba315a155d",
+  "files": {
+    "NEXT.md": "5535711bfc6116a6984366714c7966b0a31cd73ad5e50e1f23b74871b86bd862",
+    "REPORT.md": "97cade85451a4e76128a9eacda0c775889e17a1104ffbbfbab88241dff3ae0b9",
+    "RESULTS.json": "d528e290d4b1613d04bee9783fed485b70c8ab3a91ad0218e5ddc525e2d5bd72",
+    "STATUS.md": "1a75da542e4cacc6e800c715c72fbbb908a1762a3ef5f982ee77ed17531358be",
+    "check.py": "d10c24cc2407f8667f0a87aa7f7ac4a7b21076af1caf7a835ef6036db16a3bcb"
+  }
+}

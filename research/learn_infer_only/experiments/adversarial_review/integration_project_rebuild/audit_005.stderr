@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/integration_project_rebuild/audit.py", line 334, in <module>
+    main()
+    ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/integration_project_rebuild/audit.py", line 324, in main
+    assert result['checker_unchanged_during_review']
+           ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

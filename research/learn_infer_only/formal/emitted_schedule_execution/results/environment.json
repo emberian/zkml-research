@@ -1,0 +1,35 @@
+{
+  "lean": "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+  "lean_path": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_6mhz9_g7/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "overlay": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_6mhz9_g7/olean",
+  "dependencies": [
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_6mhz9_g7/olean/Theory/PrivateAddressEma.olean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema",
+      "sha256": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 9.693152958003338
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-o",
+        "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_6mhz9_g7/olean/Compiler/PrivateAddressEmaSchedule.olean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule",
+      "sha256": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 9.772844500024803
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "scope": "exact public integer and rational inequalities; no key, ciphertext, Gaussian or attack execution",
+  "kappa": 160,
+  "inputs_sha256": "24286ceca502dcca865e9f0bb617e6e6730d82e38d7f0b3c3991b5c7a0f0dfcf",
+  "profiles": [
+    {
+      "name": "original_full",
+      "origin": "copied from pinned public costs/results.json",
+      "n": 1024,
+      "d": 577,
+      "source_LWE_secret_dimension": 447,
+      "M": 268435456,
+      "L": 268435456,
+      "m": 536870912,
+      "q_representation": "28439893^2748",
+      "q_bits": 68045,
+      "sigma1_pow2": 16942,
+      "sigma2_pow2": 33945,
+      "encryption_error_width_pow2": 33970,
+      "least_integer_certificate_xi_pow2": 50953,
+      "used_xi_pow2": 33964,
+      "base_LWE_error_width_pow2": 5,
+      "AR_M_strict_floor": 520765440,
+      "least_integer_certificate_sigma2_pow2": 33933,
+      "clog2_Q1": 16950,
+      "clog2_Q2": 16,
+      "clog2_A": 16964,
+      "checks": {
+        "n_at_least_100_and_kappa": true,
+        "n_minus_d_at_least_kappa": true,
+        "L_ge_M_gt_n": true,
+        "AR_sigma1": true,
+        "AR_strict_M": false,
+        "Gaussian_image_sigma2": true,
+        "gadget_norm_tail": true,
+        "operator_norm_xi": false,
+        "discrete_continuous_smoothing": true,
+        "final_discretizer_smoothing": true,
+        "alpha_between_zero_and_one": true
+      },
+      "finite_distribution_certificate_pass": false,
+      "regularity": [
+        {
+          "columns": 1024,
+          "row_count": true,
+          "width": true
+        },
+        {
+          "columns": 1025,
+          "row_count": true,
+          "width": true
+        }
+      ],
+      "sampler_discrepancy_requirement": "per-world total variation <= 2^-160",
+      "sampler_implementation_status": "not implemented or certified"
+    },
+    {
+      "name": "original_fixed_1024",
+      "origin": "copied from pinned public costs/results.json",
+      "n": 1024,
+      "d": 577,
+      "source_LWE_secret_dimension": 447,
+      "M": 1048576,
+      "L": 1048576,
+      "m": 2097152,
+      "q_representation": "28439893^13",
+      "q_bits": 322,
+      "sigma1_pow2": 20,
+      "sigma2_pow2": 83,
+      "encryption_error_width_pow2": 172,
+      "least_integer_certificate_xi_pow2": 153,
+      "used_xi_pow2": 100,
+      "base_LWE_error_width_pow2": 71,
+      "AR_M_strict_floor": 921600,
+      "least_integer_certificate_sigma2_pow2": 80,
+      "clog2_Q1": 28,
+      "clog2_Q2": 11,
+      "clog2_A": 38,
+      "checks": {
+        "n_at_least_100_and_kappa": true,
+        "n_minus_d_at_least_kappa": true,
+        "L_ge_M_gt_n": true,
+        "AR_sigma1": true,
+        "AR_strict_M": true,
+        "Gaussian_image_sigma2": true,
+        "gadget_norm_tail": true,
+        "operator_norm_xi": false,
+        "discrete_continuous_smoothing": true,
+        "final_discretizer_smoothing": true,
+        "alpha_between_zero_and_one": true
+      },
+      "finite_distribution_certificate_pass": false,
+      "regularity": [
+        {
+          "columns": 1024,
+          "row_count": true,
+          "width": true
+        },
+        {
+          "columns": 1025,
+          "row_count": true,
+          "width": true
+        }
+      ],
+      "sampler_discrepancy_requirement": "per-world total variation <= 2^-160",
+      "sampler_implementation_status": "not implemented or certified"
+    },
+    {
+      "name": "original_fixed_4096",
+      "origin": "copied from pinned public costs/results.json",
+      "n": 4096,
+      "d": 577,
+      "source_LWE_secret_dimension": 3519,
+      "M": 4194304,
+      "L": 4194304,
+      "m": 8388608,
+      "q_representation": "28439893^15",
+      "q_bits": 372,
+      "sigma1_pow2": 24,
+      "sigma2_pow2": 98,
+      "encryption_error_width_pow2": 192,
+      "least_integer_certificate_xi_pow2": 177,
+      "used_xi_pow2": 120,
+      "base_LWE_error_width_pow2": 71,
+      "AR_M_strict_floor": 4423680,
+      "least_integer_certificate_sigma2_pow2": 92,
+      "clog2_Q1": 33,
+      "clog2_Q2": 13,
+      "clog2_A": 44,
+      "checks": {
+        "n_at_least_100_and_kappa": true,
+        "n_minus_d_at_least_kappa": true,
+        "L_ge_M_gt_n": true,
+        "AR_sigma1": true,
+        "AR_strict_M": false,
+        "Gaussian_image_sigma2": true,
+        "gadget_norm_tail": true,
+        "operator_norm_xi": false,
+        "discrete_continuous_smoothing": true,
+        "final_discretizer_smoothing": true,
+        "alpha_between_zero_and_one": true
+      },
+      "finite_distribution_certificate_pass": false,
+      "regularity": [
+        {
+          "columns": 4096,
+          "row_count": true,
+          "width": true
+        },
+        {
+          "columns": 4097,
+          "row_count": true,
+          "width": true
+        }
+      ],
+      "sampler_discrepancy_requirement": "per-world total variation <= 2^-160",
+      "sampler_implementation_status": "not implemented or certified"
+    },
+    {
+      "name": "finite_fixed_1024",
+      "origin": "derived finite-certificate adjustment; not an original cost row",
+      "n": 1024,
+      "d": 577,
+      "source_LWE_secret_dimension": 447,
+      "M": 1048576,
+      "L": 1048576,
+      "m": 2097152,
+      "q_representation": "28439893^13",
+      "q_bits": 322,
+      "sigma1_pow2": 20,
+      "sigma2_pow2": 83,
+      "encryption_error_width_pow2": 172,
+      "least_integer_certificate_xi_pow2": 153,
+      "used_xi_pow2": 153,
+      "base_LWE_error_width_pow2": 18,
+      "AR_M_strict_floor": 921600,
+      "least_integer_certificate_sigma2_pow2": 80,
+      "clog2_Q1": 28,
+      "clog2_Q2": 11,
+      "clog2_A": 38,
+      "checks": {
+        "n_at_least_100_and_kappa": true,
+        "n_minus_d_at_least_kappa": true,
+        "L_ge_M_gt_n": true,
+        "AR_sigma1": true,
+        "AR_strict_M": true,
+        "Gaussian_image_sigma2": true,
+        "gadget_norm_tail": true,
+        "operator_norm_xi": true,
+        "discrete_continuous_smoothing": true,
+        "final_discretizer_smoothing": true,
+        "alpha_between_zero_and_one": true
+      },
+      "finite_distribution_certificate_pass": true,
+      "regularity": [
+        {
+          "columns": 1024,
+          "row_count": true,
+          "width": true
+        },
+        {
+          "columns": 1025,
+          "row_count": true,
+          "width": true
+        }
+      ],
+      "sampler_discrepancy_requirement": "per-world total variation <= 2^-160",
+      "sampler_implementation_status": "not implemented or certified"
+    },
+    {
+      "name": "finite_fixed_4096",
+      "origin": "derived finite-certificate adjustment; not an original cost row",
+      "n": 4096,
+      "d": 577,
+      "source_LWE_secret_dimension": 3519,
+      "M": 8388608,
+      "L": 8388608,
+      "m": 16777216,
+      "q_representation": "28439893^15",
+      "q_bits": 372,
+      "sigma1_pow2": 24,
+      "sigma2_pow2": 98,
+      "encryption_error_width_pow2": 192,
+      "least_integer_certificate_xi_pow2": 178,
+      "used_xi_pow2": 178,
+      "base_LWE_error_width_pow2": 13,
+      "AR_M_strict_floor": 4423680,
+      "least_integer_certificate_sigma2_pow2": 92,
+      "clog2_Q1": 33,
+      "clog2_Q2": 13,
+      "clog2_A": 44,
+      "checks": {
+        "n_at_least_100_and_kappa": true,
+        "n_minus_d_at_least_kappa": true,
+        "L_ge_M_gt_n": true,
+        "AR_sigma1": true,
+        "AR_strict_M": true,
+        "Gaussian_image_sigma2": true,
+        "gadget_norm_tail": true,
+        "operator_norm_xi": true,
+        "discrete_continuous_smoothing": true,
+        "final_discretizer_smoothing": true,
+        "alpha_between_zero_and_one": true
+      },
+      "finite_distribution_certificate_pass": true,
+      "regularity": [
+        {
+          "columns": 4096,
+          "row_count": true,
+          "width": true
+        },
+        {
+          "columns": 4097,
+          "row_count": true,
+          "width": true
+        }
+      ],
+      "sampler_discrepancy_requirement": "per-world total variation <= 2^-160",
+      "sampler_implementation_status": "not implemented or certified"
+    }
+  ],
+  "privacy_ledger": {
+    "0": {
+      "regularity_numerator_over_2_pow_kappa": 1777032,
+      "reduction_numerator_over_2_pow_kappa": 26112,
+      "total_numerator_over_2_pow_kappa": 1803144,
+      "statistical_bound_if_sampler_requirement_met": "< 2^-139",
+      "LWE_advantage_multiplier": 768
+    },
+    "16": {
+      "regularity_numerator_over_2_pow_kappa": 1727880,
+      "reduction_numerator_over_2_pow_kappa": 26112,
+      "total_numerator_over_2_pow_kappa": 1753992,
+      "statistical_bound_if_sampler_requirement_met": "< 2^-139",
+      "LWE_advantage_multiplier": 768
+    }
+  },
+  "status": "PASS: expected original/adjusted classifications and all regularity certificates"
+}

@@ -1,0 +1,439 @@
+diff --git a/Selvage/FullUDSamplingBudget.lean b/Selvage/FullUDSamplingBudget.lean
+new file mode 100644
+index 0000000..c7fbe0e
+--- /dev/null
++++ b/Selvage/FullUDSamplingBudget.lean
+@@ -0,0 +1,433 @@
++/-
++# A decreasing-radius full-UD schedule for the existing coherent FRI verifier
++
++The radii and all round inequalities are derived here. The protocol objects
++are the existing FoldingTower, BindingCommitment and FriAdaptiveTranscript.
++The final probability is in their ideal-binding, uniform challenge/query model.
++-/
++import Selvage.FullUDFriConsumer
++import Selvage.HalfThresholdFriCoherent
++import Selvage.BabyBearFullUD
++
++namespace Minidregg.Selvage
++
++/-- Arithmetic contract consumed by the actual coherent query theorem, with
++positive full-UD tail inputs and the first half-threshold output made explicit. -/
++def FullUDSamplingRoundConditions (radius : ℕ → ℝ)
++    (foldRadius : Fin 19 → ℝ) (tau : ℝ) : Prop :=
++  radius 0 = 2/5 ∧ radius 19 = 0 ∧ 0 < tau ∧ tau ≤ 1 ∧
++  foldRadius 0 = radius 0 / 2 ∧
++  (∀ j : Fin 19, radius (j+1) + tau ≤ foldRadius j) ∧
++  ∀ j : Fin 19, 0 < (j : ℕ) →
++    foldRadius j = radius j ∧ 0 < radius j ∧ radius j < 1/4
++
++noncomputable def fullUDSamplingRadius (j : ℕ) : ℝ :=
++  if j = 0 then 2/5 else (19 - (j : ℝ))/95
++
++noncomputable def fullUDSamplingFoldRadius (j : Fin 19) : ℝ :=
++  if (j : ℕ) = 0 then 1/5 else fullUDSamplingRadius j
++
++def fullUDSamplingDegree (j : ℕ) : ℕ := 2 ^ (19 - j)
++
++/-- Every round inequality follows from the explicit affine tail sequence. -/
++theorem fullUDSampling_round_conditions :
++    FullUDSamplingRoundConditions fullUDSamplingRadius
++      fullUDSamplingFoldRadius (1/95) := by
++  refine ⟨by norm_num [fullUDSamplingRadius],
++    by norm_num [fullUDSamplingRadius], by norm_num, by norm_num,
++    by norm_num [fullUDSamplingFoldRadius, fullUDSamplingRadius], ?_, ?_⟩
++  · intro j
++    by_cases h : (j : ℕ) = 0
++    · simp [fullUDSamplingFoldRadius, fullUDSamplingRadius, h]
++      norm_num
++    · simp only [fullUDSamplingFoldRadius, h, ↓reduceIte,
++        fullUDSamplingRadius, Nat.add_eq_zero_iff, one_ne_zero, and_false,
++        ↓reduceIte, Nat.cast_add, Nat.cast_one]
++      linarith
++  · intro j hj
++    have hj0 : (j : ℕ) ≠ 0 := Nat.ne_of_gt hj
++    have hlt : (j : ℝ) < 19 := by exact_mod_cast j.isLt
++    have hpos : (0 : ℝ) < j := by exact_mod_cast hj
++    simp only [fullUDSamplingFoldRadius, hj0, ↓reduceIte,
++      fullUDSamplingRadius]
++    constructor
++    · trivial
++    constructor <;> linarith
++
++/-- The arithmetic contract is inhabited by the proposed concrete schedule. -/
++theorem fullUDSampling_premise_inhabited :
++    ∃ radius foldRadius, FullUDSamplingRoundConditions radius foldRadius (1/95) :=
++  ⟨fullUDSamplingRadius, fullUDSamplingFoldRadius, fullUDSampling_round_conditions⟩
++
++/-- A strictly positive query gap is realized, rather than assumed in a consumer. -/
++theorem fullUDSampling_satisfiable :
++    ∃ tau : ℝ, 0 < tau ∧ FullUDSamplingRoundConditions
++      fullUDSamplingRadius fullUDSamplingFoldRadius tau :=
++  ⟨1/95, by norm_num, fullUDSampling_round_conditions⟩
++
++/-- Increasing the claimed gap while keeping the schedule fixed is rejected. -/
++theorem fullUDSampling_teeth :
++    ¬ FullUDSamplingRoundConditions fullUDSamplingRadius
++      fullUDSamplingFoldRadius (2/95) := by
++  intro h
++  have hlast := h.2.2.2.2.2.1 (18 : Fin 19)
++  norm_num [fullUDSamplingRadius, fullUDSamplingFoldRadius] at hlast
++
++/-- Exact degree halving is derived from the concrete degree sequence. -/
++theorem fullUDSampling_degree_halves (j : ℕ) (hj : j < 19) :
++    fullUDSamplingDegree j = 2 * fullUDSamplingDegree (j+1) := by
++  have hexp : 19-j = (19-(j+1))+1 := by omega
++  simp only [fullUDSamplingDegree, hexp, pow_succ]
++  omega
++
++/-- The final degree is positive, including at the last transition. -/
++theorem fullUDSampling_degree_positive (j : ℕ) :
++    1 ≤ fullUDSamplingDegree j := by
++  exact Nat.one_le_pow _ _ (by decide)
++
++/-- The actual power-of-two index types have rate exactly one half. -/
++theorem fullUDSampling_rate (j : ℕ) (hj : j ≤ 19) :
++    (fullUDSamplingDegree j : ℝ) /
++      (Fintype.card (PowerTwoFriLevels 20 j) : ℝ) = 1/2 := by
++  have hexp : 20-j = (19-j)+1 := by omega
++  simp only [fullUDSamplingDegree, PowerTwoFriLevels, Fintype.card_fin,
++    hexp, pow_succ, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat]
++  field_simp
++
++/-- A uniform tail gap consumes its budget in every tail round. -/
++theorem fullUDSampling_tail_gap_sum (radius : ℕ → ℝ) (tau : ℝ)
++    (hgap : ∀ j : Fin 19, 0 < (j : ℕ) → radius (j+1)+tau ≤ radius j) :
++    18*tau + radius 19 ≤ radius 1 := by
++  have h : ∀ k : ℕ, k ≤ 18 → (k : ℝ)*tau + radius 19 ≤ radius (19-k) := by
++    intro k
++    induction k with
++    | zero => intro _; simp
++    | succ k ih =>
++      intro hk
++      have hi := ih (by omega)
++      have hh := hgap (⟨18-k, by omega⟩ : Fin 19) (by simp; omega)
++      have heq : 18-k+1 = 19-k := by omega
++      have heq' : 19-(k+1) = 18-k := by omega
++      simp only [heq] at hh
++      rw [heq']
++      push_cast
++      linarith
++  simpa using h 18 (by decide)
++
++/-- For the fixed initial radius, the new gap is maximal in this uniform-gap
++half-threshold/preserving-tail schedule; the old open band forces tau<1/108. -/
++theorem fullUDSampling_uniform_gap_bounds (radius : ℕ → ℝ) (tau : ℝ)
++    (hfinal : 0 ≤ radius 19) (hfirst : radius 1+tau ≤ 1/5)
++    (hgap : ∀ j : Fin 19, 0 < (j : ℕ) → radius (j+1)+tau ≤ radius j) :
++    tau ≤ 1/95 ∧ (radius 1 < 1/6 → tau < 1/108) := by
++  have h := fullUDSampling_tail_gap_sum radius tau hgap
++  constructor
++  · linarith
++  · intro hband
++    linarith
++
++set_option maxRecDepth 10000
++set_option exponentiation.threshold 10000
++set_option maxHeartbeats 4000000
++
++def FullUDSamplingNumericalBudget (q : ℕ) (tau : ℝ) : Prop :=
++  19 * (2^20 : ℝ) / (2013265921 : ℝ)^4 + (1-tau)^q ≤ 1/(2^55 : ℝ)
++
++theorem fullUDSampling_3603_suffices : FullUDSamplingNumericalBudget 3603 (1/95) := by
++  norm_num [FullUDSamplingNumericalBudget]
++
++theorem fullUDSampling_3602_fails : ¬ FullUDSamplingNumericalBudget 3602 (1/95) := by
++  norm_num [FullUDSamplingNumericalBudget]
++
++theorem fullUDSampling_old_4099_suffices :
++    FullUDSamplingNumericalBudget 4099 (8191/884736) := by
++  norm_num [FullUDSamplingNumericalBudget]
++
++theorem fullUDSampling_old_limit_4098_fails :
++    ¬ FullUDSamplingNumericalBudget 4098 (1/108) := by
++  norm_num [FullUDSamplingNumericalBudget]
++
++/-- Increasing the query count decreases the same fixed error expression. -/
++theorem fullUDSampling_budget_mono_queries {q q' : ℕ} (hqq : q ≤ q')
++    {tau : ℝ} (htau : 0 ≤ tau) (htau1 : tau ≤ 1)
++    (h : FullUDSamplingNumericalBudget q tau) :
++    FullUDSamplingNumericalBudget q' tau := by
++  unfold FullUDSamplingNumericalBudget at h ⊢
++  have hp : (1-tau)^q' ≤ (1-tau)^q :=
++    pow_le_pow_of_le_one (by linarith) (by linarith) hqq
++  linarith
++
++/-- Increasing the proven query gap decreases the same fixed error expression. -/
++theorem fullUDSampling_budget_mono_gap {q : ℕ} {tau tau' : ℝ}
++    (htau : tau ≤ tau') (htau1 : tau' ≤ 1)
++    (h : FullUDSamplingNumericalBudget q tau) :
++    FullUDSamplingNumericalBudget q tau' := by
++  unfold FullUDSamplingNumericalBudget at h ⊢
++  have hp : (1-tau')^q ≤ (1-tau)^q :=
++    pow_le_pow_left₀ (by linarith) (by linarith) q
++  linarith
++
++/-- Exact minimum for the new gap, including every smaller query count. -/
++theorem fullUDSampling_3603_minimum :
++    FullUDSamplingNumericalBudget 3603 (1/95) ∧
++    ∀ q, FullUDSamplingNumericalBudget q (1/95) → 3603 ≤ q := by
++  refine ⟨fullUDSampling_3603_suffices, ?_⟩
++  intro q h
++  by_contra hq
++  exact fullUDSampling_3602_fails
++    (fullUDSampling_budget_mono_queries (by omega) (by norm_num) (by norm_num) h)
++
++/-- No admissible old uniform gap can use fewer than 4099 samples in this
++unchanged expression; even its optimistic closed endpoint fails at 4098. -/
++theorem fullUDSampling_old_minimum_lower_bound {tau : ℝ}
++    (htau : tau ≤ 1/108) (q : ℕ)
++    (h : FullUDSamplingNumericalBudget q tau) : 4099 ≤ q := by
++  have h' := fullUDSampling_budget_mono_gap htau (by norm_num) h
++  by_contra hq
++  exact fullUDSampling_old_limit_4098_fails
++    (fullUDSampling_budget_mono_queries (by omega) (by norm_num) (by norm_num) h')
++
++/-- The complete numerical comparison is inhabited with a strictly interior
++old gap; neither point uses the open old endpoint as an admissible radius. -/
++theorem fullUDSampling_numerical_premise_inhabited :
++    ∃ tau : ℝ, 0 < tau ∧ tau < 1/108 ∧
++      FullUDSamplingNumericalBudget 4099 tau ∧
++      FullUDSamplingNumericalBudget 3603 (1/95) :=
++  ⟨8191/884736, by norm_num, by norm_num,
++    fullUDSampling_old_4099_suffices, fullUDSampling_3603_suffices⟩
++
++noncomputable def fullUDSamplingOldRadius (j : ℕ) : ℝ :=
++  if j = 0 then 2/5 else (19-(j : ℝ)) * (8191/884736)
++
++noncomputable def fullUDSamplingOldFoldRadius (j : Fin 19) : ℝ :=
++  if (j : ℕ) = 0 then 1/5 else fullUDSamplingOldRadius j
++
++/-- The old numerical witness has an actual admissible radius sequence,
++with the same initial farness, all 19 gaps, and every tail radius below 1/6. -/
++theorem fullUDSampling_old_schedule_inhabited :
++    FullUDSamplingRoundConditions fullUDSamplingOldRadius
++      fullUDSamplingOldFoldRadius (8191/884736) ∧
++    ∀ j : Fin 19, 0 < (j : ℕ) → fullUDSamplingOldRadius j < 1/6 := by
++  have htail : ∀ j : Fin 19, 0 < (j : ℕ) →
++      fullUDSamplingOldFoldRadius j = fullUDSamplingOldRadius j ∧
++      0 < fullUDSamplingOldRadius j ∧ fullUDSamplingOldRadius j < 1/6 := by
++    intro j hj
++    have hj0 : (j : ℕ) ≠ 0 := Nat.ne_of_gt hj
++    have hlt : (j : ℝ) < 19 := by exact_mod_cast j.isLt
++    have hpos : (1 : ℝ) ≤ j := by exact_mod_cast hj
++    simp only [fullUDSamplingOldFoldRadius, fullUDSamplingOldRadius, hj0, ↓reduceIte]
++    refine ⟨by trivial, ?_, ?_⟩ <;> linarith
++  refine ⟨?_, fun j hj => (htail j hj).2.2⟩
++  refine ⟨by norm_num [fullUDSamplingOldRadius],
++    by norm_num [fullUDSamplingOldRadius], by norm_num, by norm_num,
++    by norm_num [fullUDSamplingOldFoldRadius, fullUDSamplingOldRadius], ?_, ?_⟩
++  · intro j
++    by_cases h : (j : ℕ) = 0
++    · norm_num [fullUDSamplingOldFoldRadius, fullUDSamplingOldRadius, h]
++    · simp only [fullUDSamplingOldFoldRadius, fullUDSamplingOldRadius, h,
++        ↓reduceIte, Nat.add_eq_zero_iff, one_ne_zero, and_false,
++        Nat.cast_add, Nat.cast_one]
++      linarith
++  · intro j hj
++    have h := htail j hj
++    exact ⟨h.1, h.2.1, by linarith [h.2.2]⟩
++
++section ActualConsumer
++variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
++
++/-- Discharge every folding premise of the sampled verifier using the actual
++half-threshold theorem and full-UD realizer; no gap or transition is a premise. -/
++theorem fullUDSampling_transitions
++    (T : FoldingTower F (PowerTwoFriLevels 20) 19) (j : Fin 19) :
++    FoldDistanceTransition (T.data j j.isLt)
++      (fullUDSamplingDegree j) (fullUDSamplingDegree (j+1))
++      (fullUDSamplingRadius j) (fullUDSamplingFoldRadius j) (2^20) := by
++  letI : Nonempty (PowerTwoFriLevels 20 j) := ⟨⟨0, by positivity⟩⟩
++  letI : Nonempty (PowerTwoFriLevels 20 (j+1)) := ⟨⟨0, by positivity⟩⟩
++  by_cases hzero : (j : ℕ) = 0
++  · have hfirst := foldDistanceTransition_halfThreshold (T.data j j.isLt)
++      (fullUDSamplingDegree (j+1)) (fullUDSamplingRadius j)
++    have hfirst' : FoldDistanceTransition (T.data j j.isLt)
++        (fullUDSamplingDegree j) (fullUDSamplingDegree (j+1))
++        (fullUDSamplingRadius j) (fullUDSamplingFoldRadius j) 1 := by
++      convert hfirst using 1 <;>
++        norm_num [fullUDSamplingDegree, fullUDSamplingFoldRadius,
++          fullUDSamplingRadius, hzero]
++    exact hfirst'.mono_bad (by norm_num)
++  · have hjpos : 0 < (j : ℕ) := Nat.pos_of_ne_zero hzero
++    have hc := fullUDSampling_round_conditions.2.2.2.2.2.2 j hjpos
++    have hp := foldDistancePreserving_fullUD (T.data j j.isLt)
++      (fullUDSamplingDegree (j+1)) (fullUDSampling_degree_positive _) hc.2.1
++      (by rw [fullUDSampling_rate (j+1) (by omega)]; norm_num; exact hc.2.2)
++    have hp' : FoldDistanceTransition (T.data j j.isLt)
++        (fullUDSamplingDegree j) (fullUDSamplingDegree (j+1))
++        (fullUDSamplingRadius j) (fullUDSamplingFoldRadius j)
++        (Fintype.card (PowerTwoFriLevels 20 (j+1))) := by
++      simpa [fullUDSampling_degree_halves j j.isLt, hc.1] using
++        foldDistanceTransition_of_preserving hp
++    apply hp'.mono_bad
++    simpa [PowerTwoFriLevels] using T.card_level_le_zero (j+1) (by omega)
++
++/-- The same concrete dimensions also instantiate the frozen all-position
++consumer directly; its challenge numerator is unchanged. -/
++theorem fullUDSampling_wholeWord_sound
++    (T : FoldingTower F (PowerTwoFriLevels 20) 19)
++    {f : PowerTwoFriLevels 20 0 → F}
++    (hfar : ¬ close (2/5 : ℝ)
++      (reedSolomonCode (T.dom 0) (fullUDSamplingDegree 0)) f) :
++    (acceptSet T fullUDSamplingDegree f).card ≤
++      19 * (2^20 * Fintype.card F^18) := by
++  have h := proximity_sound_rateHalf_twoFifths_fullUD T fullUDSamplingDegree
++    (by decide) (fun _ _ => ⟨⟨0, by positivity⟩⟩)
++    fullUDSampling_degree_halves
++    (fun j hj _ => fullUDSampling_rate (j+1) (by omega)) hfar
++  simpa [PowerTwoFriLevels] using h
++
++variable {Root Op : ℕ → Type}
++
++/-- The existing coherent sampled verifier at the concrete decreasing radii.
++Only the actual tower, ideal-binding transcript and initial farness remain. -/
++theorem fullUDSampling_coherent_sound
++    (S : ∀ n, BindingCommitment (Root n) F (PowerTwoFriLevels 20 n) (Op n))
++    (T : FoldingTower F (PowerTwoFriLevels 20) 19)
++    (st : FriAdaptiveTranscript S) (qCount : ℕ)
++    (hfar0 : ¬ close (2/5 : ℝ)
++      (reedSolomonCode (T.dom 0) (fullUDSamplingDegree 0))
++      (st.word 0 (fun i => i.elim0))) :
++    uniformProb ((Fin 19 → F) × (Fin qCount → PowerTwoFriLevels 20 1))
++      (fun x => FriAdaptiveCoherentAccepts S T fullUDSamplingDegree st
++        (by decide) qCount x.1 x.2) ≤
++      (19 : ℝ) * (2^20 : ℕ) / (Fintype.card F : ℝ) + (94/95 : ℝ)^qCount := by
++  have hc := fullUDSampling_round_conditions
++  have h := friAdaptive_coherent_sampled_sound S T fullUDSamplingDegree st
++    (by decide) fullUDSamplingRadius fullUDSamplingFoldRadius qCount
++    hc.2.2.2.1 (by rw [hc.2.1]) hc.2.2.2.2.2.1
++    (fullUDSampling_transitions T) (by simpa [fullUDSamplingRadius] using hfar0)
++  norm_num at h ⊢
++  exact h
++
++end ActualConsumer
++/-- The new minimum also lower-bounds every smaller uniform gap. -/
++theorem fullUDSampling_new_minimum_lower_bound {tau : ℝ}
++    (htau : tau ≤ 1/95) (q : ℕ)
++    (h : FullUDSamplingNumericalBudget q tau) : 3603 ≤ q :=
++  fullUDSampling_3603_minimum.2 q
++    (fullUDSampling_budget_mono_gap htau (by norm_num) h)
++
++/-- The unchanged challenge term alone prevents 100 bits at these field,
++domain and round dimensions, regardless of the query count. -/
++theorem fullUDSampling_challenge_blocks100 (q : ℕ) {tau : ℝ}
++    (htau : tau ≤ 1) :
++    1/(2^100 : ℝ) <
++      19*(2^20 : ℝ)/(2013265921 : ℝ)^4 + (1-tau)^q := by
++  have hp : 0 ≤ (1-tau)^q := pow_nonneg (by linarith) _
++  have hc : 1/(2^100 : ℝ) < 19*(2^20 : ℝ)/(2013265921 : ℝ)^4 := by norm_num
++  linarith
++
++section ActualBabyBear
++variable {Root Op : ℕ → Type}
++
++/-- A concrete 55-bit ideal coherent-sampling head on the existing X^4-11
++BabyBear extension carrier. This does not realize a tower, binding commitment,
++farness reduction, or Fiat--Shamir execution; those protocol premises stay visible. -/
++theorem fullUDSampling_babyBear_55
++    (S : ∀ n, BindingCommitment (Root n) BabyBearExt4.Ext4
++      (PowerTwoFriLevels 20 n) (Op n))
++    (T : FoldingTower BabyBearExt4.Ext4 (PowerTwoFriLevels 20) 19)
++    (st : FriAdaptiveTranscript S)
++    (hfar0 : ¬ close (2/5 : ℝ)
++      (reedSolomonCode (T.dom 0) (fullUDSamplingDegree 0))
++      (st.word 0 (fun i => i.elim0))) :
++    uniformProb
++      ((Fin 19 → BabyBearExt4.Ext4) × (Fin 3603 → PowerTwoFriLevels 20 1))
++      (fun x => FriAdaptiveCoherentAccepts S T fullUDSamplingDegree st
++        (by decide) 3603 x.1 x.2) ≤ 1/(2^55 : ℝ) := by
++  apply (fullUDSampling_coherent_sound S T st 3603 hfar0).trans
++  have hc : Fintype.card BabyBearExt4.Ext4 = BabyBearExt4.modulus^4 :=
++    BabyBearExt4.ext4_card
++  rw [hc]
++  have hnum : 19*(2^20 : ℝ)/(2013265921 : ℝ)^4 + (94/95 : ℝ)^3603 ≤
++      1/(2^55 : ℝ) := by
++    simpa only [FullUDSamplingNumericalBudget,
++      show (1 : ℝ)-1/95 = 94/95 by norm_num] using fullUDSampling_3603_suffices
++  simpa only [BabyBearExt4.modulus, Nat.cast_pow, Nat.cast_ofNat] using hnum
++
++end ActualBabyBear
++
++/-- info: 'Minidregg.Selvage.fullUDSampling_round_conditions' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_round_conditions
++/-- info: 'Minidregg.Selvage.fullUDSampling_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_premise_inhabited
++/-- info: 'Minidregg.Selvage.fullUDSampling_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_satisfiable
++/-- info: 'Minidregg.Selvage.fullUDSampling_teeth' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_teeth
++/-- info: 'Minidregg.Selvage.fullUDSampling_degree_halves' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_degree_halves
++/-- info: 'Minidregg.Selvage.fullUDSampling_degree_positive' depends on axioms: [propext] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_degree_positive
++/-- info: 'Minidregg.Selvage.fullUDSampling_rate' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_rate
++/-- info: 'Minidregg.Selvage.fullUDSampling_tail_gap_sum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_tail_gap_sum
++/-- info: 'Minidregg.Selvage.fullUDSampling_uniform_gap_bounds' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_uniform_gap_bounds
++/-- info: 'Minidregg.Selvage.fullUDSampling_3603_suffices' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_3603_suffices
++/-- info: 'Minidregg.Selvage.fullUDSampling_3602_fails' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_3602_fails
++/-- info: 'Minidregg.Selvage.fullUDSampling_old_4099_suffices' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_old_4099_suffices
++/-- info: 'Minidregg.Selvage.fullUDSampling_old_limit_4098_fails' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_old_limit_4098_fails
++/-- info: 'Minidregg.Selvage.fullUDSampling_budget_mono_queries' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_budget_mono_queries
++/-- info: 'Minidregg.Selvage.fullUDSampling_budget_mono_gap' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_budget_mono_gap
++/-- info: 'Minidregg.Selvage.fullUDSampling_3603_minimum' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_3603_minimum
++/-- info: 'Minidregg.Selvage.fullUDSampling_old_minimum_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_old_minimum_lower_bound
++/-- info: 'Minidregg.Selvage.fullUDSampling_numerical_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_numerical_premise_inhabited
++/-- info: 'Minidregg.Selvage.fullUDSampling_old_schedule_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_old_schedule_inhabited
++/-- info: 'Minidregg.Selvage.fullUDSampling_transitions' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_transitions
++/-- info: 'Minidregg.Selvage.fullUDSampling_wholeWord_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_wholeWord_sound
++/-- info: 'Minidregg.Selvage.fullUDSampling_coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_coherent_sound
++/-- info: 'Minidregg.Selvage.fullUDSampling_new_minimum_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_new_minimum_lower_bound
++/-- info: 'Minidregg.Selvage.fullUDSampling_challenge_blocks100' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_challenge_blocks100
++/-- info: 'Minidregg.Selvage.fullUDSampling_babyBear_55' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDSampling_babyBear_55
++
++end Minidregg.Selvage

@@ -1,0 +1,23 @@
+Selvage/BabyBearFullUD.lean:131:48: error: Type mismatch: After simplification, term
+  hpr
+ has type
+  2 ^ 20 / ↑modulus ^ 4 < (affineGenerator Ext4).pr fun r => close 5⁻¹ (reedSolomonCode dom 524288) (comb r f)
+but is expected to have type
+  1048576 / ↑modulus ^ 4 < (affineGenerator Ext4).pr fun r => close 5⁻¹ (reedSolomonCode dom 524288) (comb r f)
+Selvage/BabyBearFullUD.lean:172:2: error: linarith failed to find a contradiction
+S : Finset (Fin (2 ^ 20))
+hjoint : ∀ (i : Fin 2), ∃ u ∈ reedSolomonCode domain (2 ^ 19), AgreesOn S (badPair i) u
+w : Fin (2 ^ 20) → Ext4
+hw : w ∈ reedSolomonCode domain (2 ^ 19)
+hAg : AgreesOn S (badPair 0) w
+p : Polynomial Ext4
+hp : p.degree < ↑(2 ^ 19)
+heval : ∀ (i : Fin (2 ^ 20)), w i = Polynomial.eval (domain i) p
+hpow_ne : Polynomial.X ^ 2 ^ 19 ≠ p
+hcard : {i | Polynomial.eval (domain i) (Polynomial.X ^ 2 ^ 19) = Polynomial.eval (domain i) p}.card < 2 ^ 19 + 1
+hsub : S ⊆ {i | Polynomial.eval (domain i) (Polynomial.X ^ 2 ^ 19) = Polynomial.eval (domain i) p}
+hSle : S.card ≤ 2 ^ 19
+hScard : 4194304 / 5 ≤ ↑S.card
+hSle' : S.card ≤ 524288
+⊢ False
+failed

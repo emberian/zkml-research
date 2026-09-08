@@ -1,0 +1,70 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution",
+  "source_sha256": "a88038831e7fb5d30fa29d3ada9cfb009401d356dcd5ba090b6b6739db22a171",
+  "exit_code": -15,
+  "seconds": 12.341156667011091,
+  "stopped_by": "rss_cap",
+  "seconds_cap": 45,
+  "rss_cap_kib": 1048576,
+  "max_sampled_rss_kib": 1064624,
+  "samples": [
+    {
+      "seconds": 0.0030742500093765557,
+      "rss_kib": 704
+    },
+    {
+      "seconds": 1.0212064590014052,
+      "rss_kib": 101600
+    },
+    {
+      "seconds": 2.03976937502739,
+      "rss_kib": 158624
+    },
+    {
+      "seconds": 3.0531390420219395,
+      "rss_kib": 214880
+    },
+    {
+      "seconds": 4.069279500021366,
+      "rss_kib": 272656
+    },
+    {
+      "seconds": 5.09587950000423,
+      "rss_kib": 318512
+    },
+    {
+      "seconds": 6.111335459019756,
+      "rss_kib": 357744
+    },
+    {
+      "seconds": 7.133925334026571,
+      "rss_kib": 400864
+    },
+    {
+      "seconds": 8.152320709021296,
+      "rss_kib": 455248
+    },
+    {
+      "seconds": 9.166667042009067,
+      "rss_kib": 514256
+    },
+    {
+      "seconds": 10.178880084014963,
+      "rss_kib": 603440
+    },
+    {
+      "seconds": 11.190424708998762,
+      "rss_kib": 857488
+    },
+    {
+      "seconds": 12.20233658401412,
+      "rss_kib": 1064624
+    }
+  ],
+  "stdout": "",
+  "stderr": ""
+}

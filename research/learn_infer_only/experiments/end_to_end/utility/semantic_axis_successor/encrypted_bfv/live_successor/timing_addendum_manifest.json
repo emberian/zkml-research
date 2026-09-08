@@ -1,0 +1,15 @@
+{
+  "file_count": 2,
+  "files": {
+    "TIMING_ADDENDUM.md": {
+      "bytes": 1385,
+      "sha256": "399aa670643ce974f7b00f8e1c56ef1e1645834931fc6434ffe8017b8a97efaf"
+    },
+    "timing_addendum.json": {
+      "bytes": 1430,
+      "sha256": "7bf523f27973d83497afa60a2005f795103637ee083a2d8636c323afc281b46f"
+    }
+  },
+  "original_manifest_sha256": "9e04634c8e7346697035372e363de4fb6a1abd5efd92e552eef6e1e6f86dce9f",
+  "scope": "Supplement to the preserved original 67-file author manifest"
+}

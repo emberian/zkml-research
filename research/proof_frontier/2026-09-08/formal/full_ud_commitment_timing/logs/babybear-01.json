@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-commitment-timing-20260908/.lake/build/lib/lean/Selvage/BabyBearFriRootResolution.olean",
+    "Selvage/BabyBearFriRootResolution.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-commitment-timing-20260908",
+  "exit_code": 0,
+  "source_sha256": "5cf4d740c03f4d5069a6a7034893dfb1dbf32512432d729e892ae03416ab907f",
+  "source_unchanged": true,
+  "elapsed_s": 12.712906837463379,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/logs/babybear-01.log"
+}

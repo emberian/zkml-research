@@ -1,0 +1,13 @@
+{
+  "frozen": true,
+  "verdict": "Accept conditional Lean execution theorem; no blocking source defect found",
+  "source_sha256": "37d9b62f5a0b0b3b80fa7b2de2f8322e71c92b4635710f64eb848f573bffb077",
+  "patch_sha256": "057672fd7654df79812d5071bd0c00497ef7c462b53c0314a62c97fcc219d72c",
+  "files": {
+    "NEXT.md": "1adb8846070b901d54db5a6a9d96072188b6a95b7720ef2883daceed799b723b",
+    "REPORT.md": "84fb1577069fee7f9888362bc26cc05753122a3eda8fdc3cfdff7662f08bf028",
+    "RESULTS.json": "282de249f0c8816b4dd840fda7adc629c7be546cdd0f9c85869dc14ed299079a",
+    "STATUS.md": "4635794e6539b47887be9f8f1167ed34b8faefd9a39d7363c34cf0cd98b549ad",
+    "check.py": "dbc55ea7bdc5809a1f861f13aee5bb1b826f01765434cb6d71f82cb40ee09672"
+  }
+}

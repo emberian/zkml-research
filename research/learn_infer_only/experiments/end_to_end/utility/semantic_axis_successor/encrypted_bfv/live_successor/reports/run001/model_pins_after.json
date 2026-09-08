@@ -1,0 +1,11 @@
+{
+  "chat_template.jinja": "3e0e275a527f249670056e0078e474eadbdd007c134b4fdfae5a7b3089702814",
+  "config.json": "c72b1031274ff4626e434d0019e88e95a767460135db9ee492eb80652b786af1",
+  "generation_config.json": "3458d62b3f9654f4bbe285223b0f4e5a1e67cae61c92bb6aeaadf04468bf9e01",
+  "model-00001-of-00002.safetensors": "e5eed4113a925264c33e3cdf76cd9f547c06a207ef2270914a7274a2bf685ffd",
+  "model-00002-of-00002.safetensors": "6c3ad90646457295723e4da5ee8afac47006e20407b122df5174693dd8d68a43",
+  "model.safetensors.index.json": "e3a7254c086c4a78f95ad5864f435d165ffed1ed8998326ce5107b4423c15b76",
+  "special_tokens_map.json": "12403efb970f069ba62ddf3b66166a27254be4a198166b61ad1ee604bd3a4515",
+  "tokenizer.json": "7b6a500b662a34eb3f0374db856ba4ad7de4c81040571d78dc0d357238930005",
+  "tokenizer_config.json": "59a64b39f05ee0acf7479bbccf99a44d9e481c1a4a494eb03838ae3c35eb29be"
+}

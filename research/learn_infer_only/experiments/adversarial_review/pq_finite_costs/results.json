@@ -1,0 +1,145 @@
+{
+  "claim_kind": "EXECUTED",
+  "scope": "Independent exact public arithmetic and source hashes; no estimator, cryptographic implementation, private files or Gaussian sampling",
+  "fixture": {
+    "p": 28439893,
+    "determinant": -812032080,
+    "max_score": 14219936
+  },
+  "profiles": [
+    {
+      "label": "full_source_prescription_normalized",
+      "n": 1024,
+      "cost_fields_verified": 23,
+      "original_tz_te": [
+        93,
+        93
+      ],
+      "new_tz_tphase": [
+        6,
+        5
+      ],
+      "improved_E_is_at_least_this_factor_smaller": 4723507,
+      "old_E_log2": 67956.07831762222,
+      "improved_E_log2": 67933.90689059561,
+      "old_m": 536870912,
+      "unrounded_even_m": 278984500,
+      "m_reduction_fraction": "64471603/134217728",
+      "unrounded_ciphertext_bytes": 2372942445559,
+      "regularity_numerators_j0_jr": [
+        1777032,
+        1727880
+      ]
+    },
+    {
+      "label": "fixed_coordinate_polynomial_family",
+      "n": 1024,
+      "cost_fields_verified": 23,
+      "original_tz_te": [
+        7,
+        9
+      ],
+      "new_tz_tphase": [
+        5,
+        5
+      ],
+      "improved_E_is_at_least_this_factor_smaller": 2580,
+      "old_E_log2": 280.9772799234999,
+      "improved_E_log2": 269.64385618977474,
+      "old_m": 2097152,
+      "unrounded_even_m": 1320200,
+      "m_reduction_fraction": "97119/262144",
+      "unrounded_ciphertext_bytes": 53161275,
+      "regularity_numerators_j0_jr": [
+        1777032,
+        1727880
+      ]
+    },
+    {
+      "label": "fixed_coordinate_polynomial_family",
+      "n": 4096,
+      "cost_fields_verified": 23,
+      "original_tz_te": [
+        8,
+        9
+      ],
+      "new_tz_tphase": [
+        5,
+        5
+      ],
+      "improved_E_is_at_least_this_factor_smaller": 5898,
+      "old_E_log2": 318.1699250014423,
+      "improved_E_log2": 305.64385618977474,
+      "old_m": 8388608,
+      "unrounded_even_m": 6096336,
+      "m_reduction_fraction": "143267/524288",
+      "unrounded_ciphertext_bytes": 283506455,
+      "regularity_numerators_j0_jr": [
+        1777032,
+        1727880
+      ]
+    }
+  ],
+  "rank_failure_controls": [
+    {
+      "p": 2,
+      "M": 2,
+      "N": 2,
+      "matrices": 16,
+      "rank_failure": "5/8"
+    },
+    {
+      "p": 2,
+      "M": 3,
+      "N": 2,
+      "matrices": 64,
+      "rank_failure": "11/32"
+    },
+    {
+      "p": 3,
+      "M": 2,
+      "N": 2,
+      "matrices": 81,
+      "rank_failure": "11/27"
+    },
+    {
+      "p": 3,
+      "M": 3,
+      "N": 2,
+      "matrices": 729,
+      "rank_failure": "35/243"
+    }
+  ],
+  "source_and_author_hashes": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md": "037b1b7995dbaec14cc983c7aea639496d1aeeed164f2a207ce3207c3a70372c",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/BOUND.md": "b07d7714ca6078a63bf1281ad8edbd07dc39094d91f6808e1c3868a3503dc2e5",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/COST_MANIFEST.json": "ffb79450d4a202ac199e3bb56706330611a61615c9fd9395325f19a055186909",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/MANIFEST.json": "464562f0aa432f629d21fd84bba5c710760bd26e7ccc9b40229a6e318b67d665",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/.gitignore": "e497102884eb6b3741652b88a57f49a6582a62f13411eeff69db692c4d094306",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/CHECKPOINT.md": "40f5d8b0b5d7b2d11cf5bb050cfde4ee682634ba369469ca2352e305b3c124f3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/derive_costs.py": "30e5c04aaa69bce34427d7543a33502d8cdca5479d3aa0be447d4ef690e7e0d1",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/derive_costs.stdout.json": "93783ef7735ace3c7f033dfbe58cae60f5f8fbc74b53ed62b7b6729500533138",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/initial_failure.md": "ff9b72416427af0309fa3ed967e5215a120ac641f81a396a064244109f0bcf94",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/pin_costs.py": "4f2c618689711d0d7e5f2c8b5a1882d0ca102a3119899115a25d1c369e362f33",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/results.json": "93783ef7735ace3c7f033dfbe58cae60f5f8fbc74b53ed62b7b6729500533138",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/table.md": "534f6aad418f6a695c2d0d347b1304612f511a692be40cc32d443799beabe78e",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/INPUTS.json": "300f8060d4befbc52136be55f933af648a910d6804ac634951ff974ac2f9dbc3",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/RESULTS.json": "f59f2f6c93c379bd7c6a14b9f60ed3f926957db0bed68ee6994ec165d173c5ab",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/check_bounds.py": "06ab88b97b7fd287af50b48d5e1c35b8cd00ce67b2b325fadaa1115ece4ebdf5",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/2011-501.txt": "cbedb5cfdbb8b00d5900705a3e0887c465668efbb9f140c5632a314a0c7918ea",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/2007-432.txt": "7417aac227d904ba206575968120f4ab701aa75af5627f49eff17a134479d646",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/als-page33.png": "a5dfe23a1582d8d1d46971bf5ae86a322070d32515fc9c382d07313369301364",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/CONTRACT.md": "465d3a0f4eb20f9ce762bf49200e03bb2e918efd5cdd9c563405fe91d6b6c674",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/AUDIT.md": "0f871482f56dbd5177042ebdf7dcf5034dd032cfb45c8b50f37307f0fc7b9458",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/run_estimates.py": "161569fca49e50ac84aaa3eda4c1e1489450883de7d4d26b0c53bd76359f64cf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/he_closure_costs/estimator/runtime/pinned-estimator/estimator/nd.py": "d87fca7bb191a0fb29b24507897e00c8beba784da552b6b90a982c718fc1c459",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md": "4c43bce409495edf9c9d5b8e4ada0581af5be0ecf6ff949fbd99fdbfd3da62fe",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2011/501.pdf": "bf1160f088825ed28c343b299f5bc2acdca41cc50293310a03a4506d2fdbdb84",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2007/432.pdf": "7e747881cddd16b7dcf82893682cb9b4c788d7cec5712f80aa4193f2bd30a5b3",
+    "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/crypto/rows.json": "33cbd907a0499ccad3cd5fc1a23570daccec616c7598b05d456fa1a59998fae0",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/report.json": "0e7c4bc2d115066aaa8a4d2dedf3e1099f98035bc087a6df1218c72b1a963c55",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/notes/AUDIT.md": "2c6f649fa0891be05dd1f3a1f89c935692091195e71f0b1959d78b5ef9061007"
+  },
+  "improvement_scope": "Conditional finite correctness bounds and arithmetic sizing only; source constants and total QPT security remain uncertified"
+}

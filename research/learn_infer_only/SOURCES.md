@@ -223,3 +223,25 @@ one Scry SQL/two schema,11 direct web operations and nine GitHub API reads.
 Finite regularity:two web discovery queries, zero Scry. Later alternatives and
 finite-reduction lanes are still active and keep their own counters; these
 figures are not a final nightly aggregate. No eprint PDF was downloaded.
+
+[EXECUTED third checkpoint] `experiments/end_to_end/overnight_checkpoint_003.py/json`
+checks 708 public files, 33 inventories and 36 fixed anchors. Run017's original
+harness was reconstructed and accepted only after its complete SHA-256 matched
+the hash already retained by the run; the recovery record is explicit. The
+collector reads neither mutable long-run outputs nor private runtime state.
+
+[SOURCE/DERIVED] The smudged alternative audits the construction of Han, Yi,
+Liu and Gu, local eprint2025/1613, and gives a separate fixed-coordinate proof.
+Its source register distinguishes construction/theorem/table inspection from
+the new derivation. The hardness package pins the lattice-estimator source
+archive and Gaussian/sample normalization, retaining failed and excluded
+calls. The independent review executes arithmetic checks only, not another
+estimator run. See `private_construction/public_setup_pq/alternatives/` and
+`adversarial_review/smudged_hardness/` under experiments.
+
+[SOURCE/DERIVED] The finite ALS reduction packet audits MP/GPV regularity,
+BLPRS Gaussian replacement and the normal-form step with explicit finite
+errors. An independently confirmed Gaussian normalization correction is
+recorded against the source equations; it is scoped to that derivation.
+Full paper-page inspection images and extracted texts remain local rather
+than being republished. Each source lane retains its own metered query count.

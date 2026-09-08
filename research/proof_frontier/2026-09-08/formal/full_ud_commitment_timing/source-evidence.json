@@ -1,0 +1,104 @@
+{
+  "sources": {
+    "/Users/ember/dev/minidregg/Selvage/Commitment.lean": {
+      "lines": [
+        98,
+        113,
+        122,
+        209
+      ],
+      "seen": "OpeningScheme completeness, position binding, idealCommitment",
+      "sha256": "be5b6088d0a367be6effee618cb502d724bedcfe30cb00cbfb2d69de6c6a059a",
+      "source_label": "SOURCE",
+      "instrument": "local file read (sed/rg), not execution equivalence proof"
+    },
+    "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean": {
+      "lines": [
+        35,
+        69,
+        208,
+        439
+      ],
+      "seen": "fixed committed statement, OpenedFriQuery, selected-query predicate, all-position committed acceptance",
+      "sha256": "9dbb34989ea4af684802075717f8b3fe5602bc5d128b796b851a5efa9d28e432",
+      "source_label": "SOURCE",
+      "instrument": "local file read (sed/rg), not execution equivalence proof"
+    },
+    "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean": {
+      "lines": [
+        32,
+        40,
+        95,
+        122
+      ],
+      "seen": "prefix transcript with honest-image equation; existing adaptive query event",
+      "sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9",
+      "source_label": "SOURCE",
+      "instrument": "local file read (sed/rg), not execution equivalence proof"
+    },
+    "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean": {
+      "lines": [
+        203,
+        217
+      ],
+      "seen": "coherent modulo query event and finite uniform soundness",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "source_label": "SOURCE",
+      "instrument": "local file read (sed/rg), not execution equivalence proof"
+    },
+    "/Users/ember/dev/minidregg/Selvage/BinaryMerkle.lean": {
+      "lines": [
+        257,
+        286
+      ],
+      "seen": "two accepted unequal values imply leaf or node collision",
+      "sha256": "55e3a1a0053102b52e62aab393e1fe91743bcd6c8091c2843f5c85eef66c7137",
+      "source_label": "SOURCE",
+      "instrument": "local file read (sed/rg), not execution equivalence proof"
+    },
+    "/Users/ember/dev/breadstuffs/Cargo.toml": {
+      "lines": [
+        247,
+        250
+      ],
+      "seen": "active vendored p3-fri patch",
+      "sha256": "1c3572d9d73d88899c3652488b69b2e3d1e1faa2309b6c7338128c9eb3bc96a8",
+      "source_label": "SOURCE",
+      "instrument": "local file read (sed/rg), not execution equivalence proof"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs": {
+      "lines": [
+        111,
+        218,
+        219,
+        228,
+        233,
+        257
+      ],
+      "seen": "root observation then challenge then fold; terminal polynomial observed before queries",
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4",
+      "source_label": "SOURCE",
+      "instrument": "local file read (sed/rg), not execution equivalence proof"
+    },
+    "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs": {
+      "lines": [
+        213,
+        221,
+        225,
+        230,
+        238,
+        268,
+        319,
+        323,
+        447
+      ],
+      "seen": "verifier replays root/challenge order, checks final coefficient length, evaluates final polynomial and compares carried fold",
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412",
+      "source_label": "SOURCE",
+      "instrument": "local file read (sed/rg), not execution equivalence proof"
+    }
+  },
+  "web_queries": 0,
+  "scry_sql_queries": 0,
+  "scope": "No external searches in commitment-timing follow-on. Frozen earlier orientation query ledger unchanged."
+}

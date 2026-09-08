@@ -1,0 +1,13 @@
+/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer_3g.lean:7:2: error: Tactic `decide` failed for proposition
+  validCheck inferSchedule = true
+because its `Decidable` instance
+  instDecidableEqBool (validCheck inferSchedule) true
+did not reduce to `isTrue` or `isFalse`.
+
+Reduction got stuck at the `Decidable` instance
+  match validCheck inferSchedule, true with
+  | false, false => isTrue ⋯
+  | false, true => isFalse ⋯
+  | true, false => isFalse ⋯
+  | true, true => isTrue ⋯
+'infer_valid_kernel' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

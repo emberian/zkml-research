@@ -1,0 +1,12 @@
+Selvage/FriRootResolution.lean:140:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Selvage.FriRootResolution.no_bad_of_binding`:
+  [Field F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Field F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+'Minidregg.Selvage.FriRootResolution.resolved_word_prefix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.FriRootResolution.terminal_resolves' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.FriRootResolution.round_resolves' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.FriRootResolution.sound_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.FriRootResolution.no_bad_of_binding' depends on axioms: [propext, Quot.sound]
+'Minidregg.Selvage.FriRootResolution.transparent_terminal' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_6mhz9_g7/olean/Compiler/EmittedScheduleExecution.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/Compiler/EmittedScheduleExecution.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution",
+  "exit_code": 0,
+  "source_sha256": "f00919dddf7e03c5b0c55af9f0618c1f00c58a03caff1051dc19e800e5376e31",
+  "source_sha256_after": "f00919dddf7e03c5b0c55af9f0618c1f00c58a03caff1051dc19e800e5376e31",
+  "source_unchanged": true,
+  "stdout": "'Minidregg.Compiler.EmittedScheduleExecution.validCheck_iff' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.ready_bounded' does not depend on any axioms\n'Minidregg.Compiler.EmittedScheduleExecution.forwardGates_shape' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.bounded_mono' does not depend on any axioms\n'Minidregg.Compiler.EmittedScheduleExecution.valid_implies_shape' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.execution_soundness' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.executed_inputs' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.shared_execution_correctness' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.learn_execution_correct' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.infer_execution_correct' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.decoded_gate_operations' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.sparse_premises_inhabited' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.sparse_subject' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.sparse_nonconstant' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.wrong_answer_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.forward_read_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.hole_read_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.input_write_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'Minidregg.Compiler.EmittedScheduleExecution.decreasing_output_refused' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "stderr": "",
+  "seconds": 8.858479125017766
+}

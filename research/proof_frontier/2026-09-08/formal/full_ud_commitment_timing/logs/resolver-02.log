@@ -1,0 +1,16 @@
+Selvage/OpeningResolution.lean:67:41: error: Application type mismatch: The argument
+  (↑S).verifyOpen_commit w i
+has type
+  (↑S).verifyOpen ((↑S).commit w) i (w i) ((↑S).openAt w i)
+but is expected to have type
+  OpeningScheme.verifyOpen ?m.30 ?m.31 ?m.32 ?m.57 ?m.34
+in the application
+  eq_word_of_no_double ?m.30 default ?m.46 ((↑S).verifyOpen_commit w i)
+Selvage/OpeningResolution.lean:145:73: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.41 = ?m.41
+but is expected to have type
+  OpeningScheme.verifyOpen ?m.24 ?m.25 ?m.26 ?m.44 ()
+in the application
+  eq_word_of_no_double ?m.24 default ?m.39 rfl

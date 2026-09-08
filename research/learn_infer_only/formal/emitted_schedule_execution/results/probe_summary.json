@@ -1,0 +1,52 @@
+{
+  "kernel_instance_proof_obtained": false,
+  "attempts": {
+    "infer": {
+      "exit_code": -15,
+      "seconds": 12.341156667011091,
+      "stopped_by": "rss_cap",
+      "seconds_cap": 45,
+      "rss_cap_kib": 1048576,
+      "max_sampled_rss_kib": 1064624,
+      "source_sha256": "a88038831e7fb5d30fa29d3ada9cfb009401d356dcd5ba090b6b6739db22a171"
+    },
+    "learn": {
+      "exit_code": -15,
+      "seconds": 7.23983637499623,
+      "stopped_by": "rss_cap",
+      "seconds_cap": 120,
+      "rss_cap_kib": 1048576,
+      "max_sampled_rss_kib": 1175216,
+      "source_sha256": "c3579aac18d8709c6f143642456fc15b2ce7568790cec6988023e446ee3e9a1c"
+    },
+    "baseline": {
+      "exit_code": -15,
+      "seconds": 8.21998366600019,
+      "stopped_by": "rss_cap",
+      "seconds_cap": 45,
+      "rss_cap_kib": 1048576,
+      "max_sampled_rss_kib": 1085200,
+      "source_sha256": "ace4b3adc91eed5e12dbafc4c2294f3ecd09af88ea38f20a2d86c2f7a242cf6e"
+    },
+    "infer_3g": {
+      "exit_code": 1,
+      "seconds": 10.119329791981727,
+      "stopped_by": null,
+      "seconds_cap": 120,
+      "rss_cap_kib": 3145728,
+      "max_sampled_rss_kib": 2947312,
+      "source_sha256": "a88038831e7fb5d30fa29d3ada9cfb009401d356dcd5ba090b6b6739db22a171"
+    },
+    "learn_3g": {
+      "exit_code": -15,
+      "seconds": 14.407289208989823,
+      "stopped_by": "rss_cap",
+      "seconds_cap": 120,
+      "rss_cap_kib": 3145728,
+      "max_sampled_rss_kib": 3220976,
+      "source_sha256": "c3579aac18d8709c6f143642456fc15b2ce7568790cec6988023e446ee3e9a1c"
+    }
+  },
+  "attribution": "1 GiB empty-import control also resource-stopped; these first stops do not establish kernel infeasibility. The 3 GiB Infer probe failed definitional reduction; Learn hit the resource cap. No accepted theorem from any probe.",
+  "authorization": "Root allowed one new 3 GiB/120 s probe per descriptor after measuring96 GiB RAM and44% memory availability; no later escalation or retry."
+}

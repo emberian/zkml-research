@@ -1,0 +1,18 @@
+{
+  "label": "lean_Theory_PolynomialGluing",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/olean/Theory/PolynomialGluing.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/source/Theory/PolynomialGluing.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/source",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsed_seconds": 16.888847833004547,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/source/Theory/PolynomialGluing.lean",
+  "source_sha256_before": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+  "source_sha256_after": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41"
+}

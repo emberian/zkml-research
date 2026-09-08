@@ -1,0 +1,111 @@
+{
+  "fixture": {
+    "p": 28439893,
+    "determinant": -812032080,
+    "max_score": 14219936
+  },
+  "profiles": [
+    {
+      "label": "full_source_prescription_normalized",
+      "n": 1024,
+      "cost_fields_verified": 23,
+      "original_tz_te": [
+        93,
+        93
+      ],
+      "new_tz_tphase": [
+        6,
+        5
+      ],
+      "improved_E_is_at_least_this_factor_smaller": 4723507,
+      "old_E_log2": 67956.07831762222,
+      "improved_E_log2": 67933.90689059561,
+      "old_m": 536870912,
+      "unrounded_even_m": 278984500,
+      "m_reduction_fraction": "64471603/134217728",
+      "unrounded_ciphertext_bytes": 2372942445559,
+      "regularity_numerators_j0_jr": [
+        1777032,
+        1727880
+      ]
+    },
+    {
+      "label": "fixed_coordinate_polynomial_family",
+      "n": 1024,
+      "cost_fields_verified": 23,
+      "original_tz_te": [
+        7,
+        9
+      ],
+      "new_tz_tphase": [
+        5,
+        5
+      ],
+      "improved_E_is_at_least_this_factor_smaller": 2580,
+      "old_E_log2": 280.9772799234999,
+      "improved_E_log2": 269.64385618977474,
+      "old_m": 2097152,
+      "unrounded_even_m": 1320200,
+      "m_reduction_fraction": "97119/262144",
+      "unrounded_ciphertext_bytes": 53161275,
+      "regularity_numerators_j0_jr": [
+        1777032,
+        1727880
+      ]
+    },
+    {
+      "label": "fixed_coordinate_polynomial_family",
+      "n": 4096,
+      "cost_fields_verified": 23,
+      "original_tz_te": [
+        8,
+        9
+      ],
+      "new_tz_tphase": [
+        5,
+        5
+      ],
+      "improved_E_is_at_least_this_factor_smaller": 5898,
+      "old_E_log2": 318.1699250014423,
+      "improved_E_log2": 305.64385618977474,
+      "old_m": 8388608,
+      "unrounded_even_m": 6096336,
+      "m_reduction_fraction": "143267/524288",
+      "unrounded_ciphertext_bytes": 283506455,
+      "regularity_numerators_j0_jr": [
+        1777032,
+        1727880
+      ]
+    }
+  ],
+  "rank_failure_controls": [
+    {
+      "p": 2,
+      "M": 2,
+      "N": 2,
+      "matrices": 16,
+      "rank_failure": "5/8"
+    },
+    {
+      "p": 2,
+      "M": 3,
+      "N": 2,
+      "matrices": 64,
+      "rank_failure": "11/32"
+    },
+    {
+      "p": 3,
+      "M": 2,
+      "N": 2,
+      "matrices": 81,
+      "rank_failure": "11/27"
+    },
+    {
+      "p": 3,
+      "M": 3,
+      "N": 2,
+      "matrices": 729,
+      "rank_failure": "35/243"
+    }
+  ]
+}

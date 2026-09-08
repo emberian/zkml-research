@@ -1,5 +1,7 @@
 # Evidence-update handoff and published-site maintenance
 
+[EXECUTED current] The11-card update is published and its served bytes/source hashes verified. Root is collecting the915-pin formal checkpoint and matching card/excerpt update. Later source-closure builds and underway encrypted workloads need their own completed evidence before further card changes.
+
 [EXECUTED prepared update] Eleven cards and 25 excerpt locks pass the local
 preview checks in STATUS.md. The public-coin journal, emitted nonlinear sample,
 preserved long-run failure, fixed-FFT controls and conditional PQ costs have been

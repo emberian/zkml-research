@@ -1,0 +1,37 @@
+{
+  "scope": "Formula arithmetic; empirical shape is unproved, no LLL execution.",
+  "endpoint_formula_evaluations": [
+    {
+      "log2q_endpoint": 288,
+      "n": 1024,
+      "m": 16384,
+      "sigma_width_exponent": 10,
+      "empirical_LLL_delta": 1.0219,
+      "heuristic_optimal_k": 3072,
+      "heuristic_log2_dual_norm": 192.01236624537847,
+      "sufficient_norm_log2_upper": 272,
+      "margin_bits_below_sufficient_norm": 79.98763375462153,
+      "modeled_log2_LLL_d3": 34.75488750216347,
+      "modeled_log2_LLL_d3_B2": 51.094737505048094,
+      "worst_case_LLL_optimal_k": 1086,
+      "worst_case_LLL_log2_norm_bound": 542.8080110497237,
+      "worst_case_bound_proves_sufficient_condition": false
+    },
+    {
+      "log2q_endpoint": 289,
+      "n": 1024,
+      "m": 16384,
+      "sigma_width_exponent": 10,
+      "empirical_LLL_delta": 1.0219,
+      "heuristic_optimal_k": 3077,
+      "heuristic_log2_dual_norm": 192.34543195284147,
+      "sufficient_norm_log2_upper": 273,
+      "margin_bits_below_sufficient_norm": 80.65456804715853,
+      "modeled_log2_LLL_d3": 34.76192618500063,
+      "modeled_log2_LLL_d3_B2": 51.11177755000199,
+      "worst_case_LLL_optimal_k": 1088,
+      "worst_case_LLL_log2_norm_bound": 543.75,
+      "worst_case_bound_proves_sufficient_condition": false
+    }
+  ]
+}

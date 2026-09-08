@@ -1,0 +1,18 @@
+{
+  "authority_pending_infers": 2,
+  "ok": true,
+  "parent_entries_preserved": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_selection": 34,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor": 53,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv": 54,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/materialized": 30
+  },
+  "private_text_prompt_and_raw_score_artifacts_omitted": true,
+  "public_query_dictionary_contains_possible_feature_rows": true,
+  "runtime_gitignored": true,
+  "scope": "Normal authorized result/omission audit; output-change boolean deliberately reveals selected after-score.",
+  "secret_files_scanned_raw_hex_base64": 4,
+  "selected_feature_binding_fields_omitted": true,
+  "selected_score_secrecy_claim": false,
+  "source_model_query_and_parent_pins_match": true
+}

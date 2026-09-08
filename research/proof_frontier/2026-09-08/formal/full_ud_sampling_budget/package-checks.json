@@ -1,0 +1,32 @@
+[
+  {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "--cached",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/full-ud-sampling-budget.patch"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "--reverse",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/full-ud-sampling-budget.patch"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "exit_code": 0,
+    "output": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n"
+  }
+]

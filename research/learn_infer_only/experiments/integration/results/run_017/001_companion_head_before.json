@@ -1,0 +1,13 @@
+{
+  "label": "companion_head_before",
+  "command": [
+    "git",
+    "rev-parse",
+    "HEAD"
+  ],
+  "cwd": "/Users/ember/dev/minidregg",
+  "exit_code": 0,
+  "stdout": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+  "stderr": "",
+  "elapsed_seconds": 0.03787908298545517
+}

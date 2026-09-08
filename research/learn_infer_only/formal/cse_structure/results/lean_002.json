@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_structure_vzh3kl4b/olean/Compiler/CseStructure.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure",
+  "exit_code": 1,
+  "source_sha256": "b59ae440dacbaa19ba28dc5a754c0871ff3ee677686fac7b244a773df29e9415",
+  "source_sha256_after": "b59ae440dacbaa19ba28dc5a754c0871ff3ee677686fac7b244a773df29e9415",
+  "source_unchanged": true,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean:217:84: error: unsolved goals\nF : Type u\ninst\u271d\u00b9 : DecidableEq F\ninst\u271d : Hashable F\nnp nv nw : \u2115\ng : DGate F\nzs : List (DWire F)\n\u22a2 List.map (DWire.subst \u2205) zs = zs\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean:218:20: warning: This simp argument is unused:\n  Std.HashMap.getElem?_empty\n\nHint: Omit it from the simp argument list.\n  simp [cse, cseGo, S\u0335t\u0335d\u0335.\u0335H\u0335a\u0335s\u0335h\u0335M\u0335a\u0335p\u0335.\u0335g\u0335e\u0335t\u0335E\u0335l\u0335e\u0335m\u0335?\u0335_\u0335e\u0335m\u0335p\u0335t\u0335y\u0335,\u0335 \u0335subst_empty]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean:235:6: error: failed to synthesize\n  Decidable\n    (DWire.bounded selfRead.nWires { op := GateOp.add, a := DWire.wire 0, b := DWire.cnst 0, out := 0 }.a \u2227\n      DWire.bounded selfRead.nWires { op := GateOp.add, a := DWire.wire 0, b := DWire.cnst 0, out := 0 }.b \u2227\n        selfRead.nVars \u2264 { op := GateOp.add, a := DWire.wire 0, b := DWire.cnst 0, out := 0 }.out \u2227\n          { op := GateOp.add, a := DWire.wire 0, b := DWire.cnst 0, out := 0 }.out < selfRead.nWires)\n\nHint: Additional diagnostic information may be available using the `set_option diagnostics true` command.\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean:239:6: error: failed to synthesize\n  Decidable (DWire.bounded selfRead.nWires (DWire.wire 0))\n\nHint: Additional diagnostic information may be available using the `set_option diagnostics true` command.\n",
+  "stderr": "",
+  "seconds": 6.308431334007764
+}

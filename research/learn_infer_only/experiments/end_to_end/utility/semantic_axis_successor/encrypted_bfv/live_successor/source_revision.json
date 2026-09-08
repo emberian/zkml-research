@@ -1,0 +1,16 @@
+{
+  "changed_sources": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/CONTRACT.md",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/public_verify.py",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/run.py",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/validate.py"
+  ],
+  "crypto_calls": 0,
+  "freeze_sha256": "a9f07b896f637f553819d4e0a2d6db78a443cb0194d1c4f4f54f41ec27eca882",
+  "model_forwards": 0,
+  "ok": true,
+  "previous_freeze_sha256": "2e55a1def29dbe624711606d62df9aeb931779d9d4934491ec1406d70379d02f",
+  "public_source_dependencies": 56,
+  "same_private_input_and_prompts": true,
+  "source_revision": 2
+}

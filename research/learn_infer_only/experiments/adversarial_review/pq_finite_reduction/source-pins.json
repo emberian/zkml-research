@@ -1,0 +1,77 @@
+{
+  "sources": [
+    {
+      "name": "ALS",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf",
+      "pdf_sha256": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/extracts/2015-608.txt",
+      "extract_sha256": "a1170661edc061a9b011367d43b9b75ed6dfc073cfd0aa477459c20f14d1ecdd",
+      "extract_command": "pdftotext -layout SOURCE.pdf DESTINATION.txt",
+      "seen": "Definition3 p9; Lemmas3\u20135 pp21\u201322; Lemma3 proof pp34\u201335",
+      "primary_metadata_url": "https://eprint.iacr.org/2015/608"
+    },
+    {
+      "name": "LPSS",
+      "pdf_path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/494.pdf",
+      "pdf_sha256": "b7715df4acca8bd615c0a8a885d781300f9d80d371cc820da53b9e3004de358d",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/finite_reduction/extracts/2014-494.txt",
+      "extract_sha256": "2523afef700715c60349aaaf893cfb63f890c3db2cf37fe92d39f65d58882c9f",
+      "extract_command": "pdftotext -layout SOURCE.pdf DESTINATION.txt",
+      "seen": "Unrestricted variant permission p8; Lemma16 and Theorem17 pp12\u201313",
+      "primary_metadata_url": "https://eprint.iacr.org/2014/494"
+    },
+    {
+      "name": "AR",
+      "pdf_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/finite_reduction/extracts/arxiv-1308.2405v2.pdf",
+      "pdf_sha256": "8bfc622e6b03fbbb2671238a30a4d8403660442af0132026a46fdf2a572779d7",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/finite_reduction/extracts/arxiv-1308.2405v2.txt",
+      "extract_sha256": "8d96d03f2bfd37e610ec14057f05f0371bef89d37c35b4f14dd9b8a673efbb99",
+      "extract_command": "pdftotext -layout SOURCE.pdf DESTINATION.txt",
+      "seen": "Conventions p4; Lemma2.1/Definition3.1 p5; Theorem3.2 p6; Lemma4.2 pp8\u201310",
+      "primary_metadata_url": "https://arxiv.org/abs/1308.2405"
+    },
+    {
+      "name": "BLPRS",
+      "pdf_path": "/Users/ember/paperbin/blprs-classical-hardness-lwe-arxiv-1306.0281.pdf",
+      "pdf_sha256": "1d2b27f2969f59610257cb2498a73a66b2a8ee142780ac6200a45ca9f86dbf9d",
+      "extract_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/finite_reduction/extracts/blprs-1306.0281.txt",
+      "extract_sha256": "91a7c979f674ec3216fb63aa8cac8251785c78f42eddca6e0a0119eafeea6569",
+      "extract_command": "pdftotext -layout SOURCE.pdf DESTINATION.txt",
+      "seen": "Lemmas2.3/2.5/2.8/2.10 pp6\u20137; source reduction Lemma4.7 pp17\u201318",
+      "primary_metadata_url": "https://arxiv.org/abs/1306.0281"
+    }
+  ],
+  "review_network_counts": {
+    "web_queries": 0,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0,
+    "pdf_downloads": 0
+  },
+  "visual_inspections": [
+    {
+      "file": "als-p22.png",
+      "sha256": "6fc88529fa39a9184e1b63c0883fa39d069f0bec3edce2cd79f5d3b7a0c0ad31"
+    },
+    {
+      "file": "ar-05.png",
+      "sha256": "d65e3820f134cf5bcf5bcd9e4bb01068d35929ecc9d834806ebf1f79843a8b60"
+    },
+    {
+      "file": "ar-06.png",
+      "sha256": "dee2fc3ee49481a5745d7da38991c1b6441de612f04a808e3c03f3f2b6222998"
+    },
+    {
+      "file": "ar-p8.png",
+      "sha256": "c647ebb01dbc2def2f1bc682046cfeec50e63c68bf115cffa164f2a5cae9c80d"
+    },
+    {
+      "file": "blprs-p7.png",
+      "sha256": "2252145bb78bc9d95d14c41d5c047cd34765271b012be3445b2abc94ee6799be"
+    },
+    {
+      "file": "lpss-p13.png",
+      "sha256": "0fa4de7524fbdb65e5ce0d390099d1e18a3cafda9256d4eb0457f6650e7c2e29"
+    }
+  ]
+}

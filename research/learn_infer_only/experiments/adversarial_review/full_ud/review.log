@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "patch_sha256": "1e7a4c2292766f8b02a80879ef288915d610b67b5c070d8892db8661a8146cb2",
+  "source_modules": 14,
+  "owned_modules": 10,
+  "owned_theorems": 38,
+  "all_theorems": 105,
+  "all_pins": 105,
+  "project_import_closure_modules": 45,
+  "new_lean_builds": 0,
+  "external_queries": 0,
+  "instrumentation_sha256": "42d9ba6f2b064d8d2896e5c7d02f2732019388f1d13e82fddf1a78b1258b45b9",
+  "review_script_sha256": "4c1882ffc34f1baac04bea8db7f79cd80c729b7b5bfceeddb4152eb311719fb9",
+  "finite_checks_sha256": "1dd1160eb29501895976fcce191169bcf8c20d0eb467f56d57ea212d268b3cf6"
+}

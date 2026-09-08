@@ -1,0 +1,758 @@
+diff --git a/Selvage/OpeningResolution.lean b/Selvage/OpeningResolution.lean
+new file mode 100644
+index 0000000..7e0323e
+--- /dev/null
++++ b/Selvage/OpeningResolution.lean
+@@ -0,0 +1,209 @@
++/-
++# Canonical opening resolution for arbitrary roots
++
++A root need not lie in `commit`'s image. Resolve each position from any accepted
++opening, with an explicit default if no opening exists. Resolution is semantic
++(Classical.choose), not an efficient extraction algorithm. A mismatch retains
++two actual accepted openings, so no collision/security price is hidden.
++-/
++import Selvage.BinaryMerkle
++
++namespace Minidregg.Selvage
++namespace OpeningResolution
++
++variable {Root F ι Op : Type*}
++
++/-- An arbitrary root admits two different accepted values at one position. -/
++def DoubleOpening (S : OpeningScheme Root F ι Op) (rt : Root) : Prop :=
++  ∃ i v v' o o', S.verifyOpen rt i v o ∧ S.verifyOpen rt i v' o' ∧ v ≠ v'
++
++/-- Resolve from the root alone, including roots outside the honest image. -/
++noncomputable def word (S : OpeningScheme Root F ι Op) (default : F)
++    (rt : Root) (i : ι) : F := by
++  classical
++  exact if h : ∃ v, ∃ o, S.verifyOpen rt i v o then Classical.choose h else default
++
++/-- Statement-first contract. Every accepted value either agrees with the
++root's canonical word or retains a concrete double-opening witness. -/
++def Correctness (S : OpeningScheme Root F ι Op) (default : F) : Prop :=
++  ∀ rt i v o, S.verifyOpen rt i v o →
++    v = word S default rt i ∨ DoubleOpening S rt
++
++/-- A canonical value at an openable position comes with an accepted path. -/
++theorem word_openable (S : OpeningScheme Root F ι Op) (default : F)
++    {rt : Root} {i : ι} (h : ∃ v, ∃ o, S.verifyOpen rt i v o) :
++    ∃ o, S.verifyOpen rt i (word S default rt i) o := by
++  unfold word
++  rw [dif_pos h]
++  exact Classical.choose_spec h
++
++/-- The statement-first resolver contract, without a binding assumption. -/
++theorem correctness (S : OpeningScheme Root F ι Op) (default : F) :
++    Correctness S default := by
++  intro rt i v o hv
++  by_cases heq : v = word S default rt i
++  · exact Or.inl heq
++  · obtain ⟨o', ho'⟩ := word_openable S default ⟨v, o, hv⟩
++    exact Or.inr ⟨i, v, word S default rt i, o, o', hv, ho', heq⟩
++
++/-- Local absence of double openings pins every accepted value. -/
++theorem eq_word_of_no_double (S : OpeningScheme Root F ι Op) (default : F)
++    {rt : Root} {i : ι} {v : F} {o : Op}
++    (hfree : ¬ DoubleOpening S rt) (hv : S.verifyOpen rt i v o) :
++    v = word S default rt i :=
++  (correctness S default rt i v o hv).resolve_right hfree
++
++/-- Perfect position binding is sufficient for the local condition. -/
++theorem no_double_of_binding (S : OpeningScheme Root F ι Op)
++    (hb : S.PositionBinding) (rt : Root) : ¬ DoubleOpening S rt := by
++  rintro ⟨i, v, v', o, o', hv, hv', hne⟩
++  exact hne (hb rt i v v' o o' hv hv')
++
++/-- On honest roots, canonical resolution recovers the original word. -/
++theorem word_commit (S : BindingCommitment Root F ι Op) (default : F)
++    (w : ι → F) : word S.toOpeningScheme default (S.commit w) = w := by
++  funext i
++  exact (eq_word_of_no_double S.toOpeningScheme default
++    (no_double_of_binding S.toOpeningScheme S.binding _) (S.verifyOpen_commit w i)).symm
++
++/-- Adjoin transparent word roots to a raw opening scheme. A transparent
++root is the final polynomial's evaluation word; its opening is equality.
++Ordinary roots and paths keep the original verifier unchanged. -/
++def transparent (S : OpeningScheme Root F ι Op) :
++    OpeningScheme (Root ⊕ (ι → F)) F ι (Option Op) where
++  commit w := Sum.inl (S.commit w)
++  openAt w i := some (S.openAt w i)
++  verifyOpen rt i v op := match rt, op with
++    | Sum.inl rt, some op => S.verifyOpen rt i v op
++    | Sum.inl _, none => False
++    | Sum.inr w, _ => w i = v
++  verifyOpen_commit := S.verifyOpen_commit
++
++/-- Transparent roots cannot equivocate, independently of the raw scheme. -/
++theorem transparent_no_double (S : OpeningScheme Root F ι Op) (w : ι → F) :
++    ¬ DoubleOpening (transparent S) (Sum.inr w) := by
++  rintro ⟨i, v, v', o, o', hv, hv', hne⟩
++  exact hne (hv.symm.trans hv')
++
++/-- Canonical resolution of a transparent terminal word is exact. -/
++theorem word_transparent (S : OpeningScheme Root F ι Op) (default : F)
++    (w : ι → F) : word (transparent S) default (Sum.inr w) = w := by
++  funext i
++  exact (eq_word_of_no_double (transparent S) default
++    (transparent_no_double S w) (o := none) rfl).symm
++
++/-- An ordinary-root double opening in the extension retains two paths
++accepted by the original scheme. -/
++theorem transparent_double_original (S : OpeningScheme Root F ι Op)
++    {rt : Root} (h : DoubleOpening (transparent S) (Sum.inl rt)) :
++    DoubleOpening S rt := by
++  obtain ⟨i, v, v', o, o', hv, hv', hne⟩ := h
++  cases o with
++  | none => exact False.elim hv
++  | some o =>
++    cases o' with
++    | none => exact False.elim hv'
++    | some o' => exact ⟨i, v, v', o, o', hv, hv', hne⟩
++
++/-- Transparent terminal roots preserve a proved binding property of the raw scheme. -/
++theorem transparent_binding (S : OpeningScheme Root F ι Op)
++    (hb : S.PositionBinding) : (transparent S).PositionBinding := by
++  intro rt i v v' o o' hv hv'
++  by_contra hne
++  have hd : DoubleOpening (transparent S) rt := ⟨i, v, v', o, o', hv, hv', hne⟩
++  cases rt with
++  | inl rt => exact no_double_of_binding S hb rt (transparent_double_original S hd)
++  | inr w => exact transparent_no_double S w hd
++
++/-- The retained resolver obstruction reduces to the existing exact binary
++Merkle leaf-or-ordered-node collision event. No collision probability is set. -/
++theorem binaryMerkle_double_implies_collision {Value Digest : Type*}
++    (H : BinaryMerkle.HashSuite Value Digest) (k : ℕ) {rt : Digest}
++    (h : DoubleOpening (BinaryMerkle.openingScheme H k) rt) :
++    BinaryMerkle.Collision H := by
++  obtain ⟨i, v, v', o, o', hv, hv', hne⟩ := h
++  exact BinaryMerkle.accepted_different_values_imply_collision
++    H k rt i v v' o o' hv hv' hne
++
++/-! ## Witnesses, teeth, and premise inhabitation -/
++
++/-- A binding scheme with duplicate root tags. Its `true` roots all lie
++outside the honest commit image but admit complete, unique openings. -/
++def tagged (F ι : Type*) : BindingCommitment ((ι → F) × Bool) F ι Unit where
++  commit w := (w, false)
++  openAt _ _ := ()
++  verifyOpen rt i v _ := rt.1 i = v
++  verifyOpen_commit _ _ := rfl
++  binding _ _ _ _ _ _ h h' := h.symm.trans h'
++
++/-- False: binding plus full openability implies an honest root preimage. -/
++theorem honest_image_falsifier :
++    let S := tagged Bool Unit
++    let rt := ((fun _ : Unit => true), true)
++    (∀ i, ∃ v o, S.verifyOpen rt i v o) ∧
++      ¬ ∃ w, rt = S.commit w := by
++  refine ⟨fun _ => ⟨true, (), rfl⟩, ?_⟩
++  rintro ⟨w, h⟩
++  have htag := congrArg Prod.snd h
++  cases htag
++
++/-- The resolver contract is inhabited on an actually off-image root. -/
++theorem off_image_resolution_witness (F ι : Type*) (default : F) (w : ι → F) :
++    word (tagged F ι).toOpeningScheme default (w, true) = w := by
++  funext i
++  exact (eq_word_of_no_double (tagged F ι).toOpeningScheme default
++    (no_double_of_binding (tagged F ι).toOpeningScheme (tagged F ι).binding _) (o := ()) rfl).symm
++
++/-- A complete but nonbinding scheme for the binding-removal falsifier. -/
++def permissive : OpeningScheme Unit Bool Unit Unit where
++  commit _ := ()
++  openAt _ _ := ()
++  verifyOpen _ _ _ _ := True
++  verifyOpen_commit _ _ := trivial
++
++/-- Dropping binding cannot force every accepted value to one word. -/
++theorem binding_removal_falsifier :
++    ¬ ∀ v : Bool, permissive.verifyOpen () () v () →
++      v = word permissive false () () := by
++  intro h
++  have hfalse := h false trivial
++  have htrue := h true trivial
++  have := hfalse.trans htrue.symm
++  cases this
++
++/-- A concrete conflicting-opening witness inhabits the retained bad event. -/
++theorem double_opening_inhabited : DoubleOpening permissive () := by
++  exact ⟨(), false, true, (), (), trivial, trivial, by decide⟩
++
++end OpeningResolution
++end Minidregg.Selvage
++
++/-! ## Exact theorem dependency reports -/
++/-- info: 'Minidregg.Selvage.OpeningResolution.word_openable' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.word_openable
++/-- info: 'Minidregg.Selvage.OpeningResolution.correctness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.correctness
++/-- info: 'Minidregg.Selvage.OpeningResolution.eq_word_of_no_double' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.eq_word_of_no_double
++/-- info: 'Minidregg.Selvage.OpeningResolution.no_double_of_binding' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.no_double_of_binding
++/-- info: 'Minidregg.Selvage.OpeningResolution.word_commit' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.word_commit
++/-- info: 'Minidregg.Selvage.OpeningResolution.transparent_no_double' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.transparent_no_double
++/-- info: 'Minidregg.Selvage.OpeningResolution.word_transparent' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.word_transparent
++/-- info: 'Minidregg.Selvage.OpeningResolution.transparent_double_original' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.transparent_double_original
++/-- info: 'Minidregg.Selvage.OpeningResolution.transparent_binding' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.transparent_binding
++/-- info: 'Minidregg.Selvage.OpeningResolution.binaryMerkle_double_implies_collision' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.binaryMerkle_double_implies_collision
++/-- info: 'Minidregg.Selvage.OpeningResolution.honest_image_falsifier' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.honest_image_falsifier
++/-- info: 'Minidregg.Selvage.OpeningResolution.off_image_resolution_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.off_image_resolution_witness
++/-- info: 'Minidregg.Selvage.OpeningResolution.binding_removal_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.binding_removal_falsifier
++/-- info: 'Minidregg.Selvage.OpeningResolution.double_opening_inhabited' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.OpeningResolution.double_opening_inhabited
+diff --git a/Selvage/FriRootResolution.lean b/Selvage/FriRootResolution.lean
+new file mode 100644
+index 0000000..5d1b725
+--- /dev/null
++++ b/Selvage/FriRootResolution.lean
+@@ -0,0 +1,182 @@
++/-
++# Prefix-selected malicious roots reduce to the existing adaptive FRI consumer
++
++Root strategies choose level n using exactly the first n challenges, before
++queries. No honest root preimage or committed word is supplied. Canonical
++opening resolution produces an existing ideal `FriAdaptiveTranscript`.
++Accepted raw queries imply ideal acceptance or an explicit two-opening event.
++Transparent terminal roots represent a revealed final evaluation word.
++
++This is a finite semantic reduction. The classical resolver is not claimed to
++be efficient; the double-opening event has no asserted cryptographic price.
++-/
++import Selvage.OpeningResolution
++import Selvage.HalfThresholdFriCoherent
++
++namespace Minidregg.Selvage
++namespace FriRootResolution
++
++open OpeningResolution
++
++variable {F : Type*} [Field F]
++variable {ι Root Op : ℕ → Type*} {m : ℕ}
++
++/-- Level-n roots depend on exactly n past challenges, with no query seed. -/
++abbrev Strategy (F : Type*) (Root : ℕ → Type*) :=
++  ∀ n, (Fin n → F) → Root n
++
++/-- Select one strategy root from a full challenge tuple. -/
++def rootAt (st : Strategy F Root) (r : Fin m → F) (n : ℕ) (hn : n ≤ m) : Root n :=
++  st n (friPrefix r n hn)
++
++/-- No image premise: resolve each prefix-selected root and commit its word
++under the existing ideal identity scheme. Original roots remain in the raw event. -/
++noncomputable def resolvedTranscript
++    (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n)) (st : Strategy F Root) :
++    FriAdaptiveTranscript (fun n => idealCommitment F (ι n)) where
++  word n p := word (S n) 0 (st n p)
++  root n p := word (S n) 0 (st n p)
++  root_eq_commit _ _ := rfl
++
++/-- A binding failure is retained at a root actually selected by this
++challenge execution. It may use two alternative accepted opening paths. -/
++def BadRoots (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (st : Strategy F Root) (r : Fin m → F) : Prop :=
++  ∃ n, ∃ hn : n ≤ m, DoubleOpening (S n) (rootAt st r n hn)
++
++/-- The terminal word is in the existing Reed--Solomon code and is fully
++attributed to the final root. For a transparent final root, equality supplies
++these openings; no final Merkle commitment is needed. -/
++def TerminalAccepts (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (st : Strategy F Root) (r : Fin m → F) (dom : ι m ↪ F) (d : ℕ) : Prop :=
++  ∃ w, w ∈ reedSolomonCode dom d ∧
++    ∀ i, ∃ o, (S m).verifyOpen (rootAt st r m le_rfl) i (w i) o
++
++/-- Existing opened-query verification, with raw prefix-selected roots. -/
++def RoundAccepts (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (T : FoldingTower F ι m) (st : Strategy F Root) (r : Fin m → F)
++    (j : Fin m) {qCount : ℕ} (q : Fin qCount → ι (j + 1)) : Prop :=
++  FriRoundQueriesAccept (S j) (S (j + 1)) (T.data j j.isLt)
++    (rootAt st r j (Nat.le_of_lt j.isLt))
++    (rootAt st r (j + 1) (Nat.succ_le_iff.mpr j.isLt)) (r j) q
++
++/-- Raw sampled acceptance keeps opening witnesses and terminal attribution. -/
++def SampledAccepts (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (T : FoldingTower F ι m) (deg : ℕ → ℕ) (st : Strategy F Root)
++    (qCount : ℕ) (r : Fin m → F) (Q : FriIndependentQuerySchedule ι m qCount) : Prop :=
++  (∀ j, RoundAccepts S T st r j (Q j)) ∧ TerminalAccepts S st r (T.dom m) (deg m)
++
++/-- Statement-first: raw acceptance reduces to the existing adaptive
++consumer or a retained binding failure, with no committed-word premise. -/
++def SoundReduction (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (T : FoldingTower F ι m) (deg : ℕ → ℕ) (st : Strategy F Root) : Prop :=
++  ∀ qCount r Q, SampledAccepts S T deg st qCount r Q →
++    FriAdaptiveSampledAccepts (fun n => idealCommitment F (ι n)) T deg
++      (resolvedTranscript S st) qCount r Q ∨ BadRoots S st r
++
++/-- Canonical words obey the existing prefix-measurability theorem. No
++future challenge or query index is used in their construction. -/
++theorem resolved_word_prefix (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (st : Strategy F Root) {r r' : Fin m → F} {n : ℕ} {hn hn' : n ≤ m}
++    (h : ∀ j : Fin m, (j : ℕ) < n → r j = r' j) :
++    (resolvedTranscript S st).wordAt r n hn =
++      (resolvedTranscript S st).wordAt r' n hn' :=
++  FriAdaptiveTranscript.wordAt_congr _ h
++
++/-- Terminal attribution fixes the final resolved word whenever that root
++has no double opening. -/
++theorem terminal_resolves (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (st : Strategy F Root) (r : Fin m → F) (dom : ι m ↪ F) (d : ℕ)
++    (hfree : ¬ BadRoots S st r) (hterm : TerminalAccepts S st r dom d) :
++    (resolvedTranscript S st).wordAt r m le_rfl ∈ reedSolomonCode dom d := by
++  obtain ⟨w, hw, hopen⟩ := hterm
++  have heq : (resolvedTranscript S st).wordAt r m le_rfl = w := by
++    funext i
++    obtain ⟨o, ho⟩ := hopen i
++    exact (eq_word_of_no_double (S m) 0
++      (fun h => hfree ⟨m, le_rfl, h⟩) ho).symm
++  rw [heq]
++  exact hw
++
++/-- Each accepted raw fibre gives an accepted existing ideal fibre unless
++one of its roots admits two accepted values at the same position. -/
++theorem round_resolves (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (T : FoldingTower F ι m) (st : Strategy F Root) (r : Fin m → F)
++    (j : Fin m) {qCount : ℕ} (q : Fin qCount → ι (j + 1))
++    (hfree : ¬ BadRoots S st r) (hopen : RoundAccepts S T st r j q) :
++    FriAdaptiveRoundQueriesAccept (fun n => idealCommitment F (ι n)) T
++      (resolvedTranscript S st) r j q := by
++  obtain ⟨o, ho⟩ := hopen
++  let resolvedOpening (a : Fin qCount) : FriQueryOpening F Unit Unit := {
++    left := (o a).left
++    right := (o a).right
++    next := (o a).next
++    leftPath := ()
++    rightPath := ()
++    nextPath := () }
++  refine ⟨resolvedOpening, fun a => ?_⟩
++  obtain ⟨hl, hr, hn, heq⟩ := ho a
++  have hbig : ¬ DoubleOpening (S j) (rootAt st r j (Nat.le_of_lt j.isLt)) :=
++    fun h => hfree ⟨j, Nat.le_of_lt j.isLt, h⟩
++  have hsmall : ¬ DoubleOpening (S (j + 1))
++      (rootAt st r (j + 1) (Nat.succ_le_iff.mpr j.isLt)) :=
++    fun h => hfree ⟨j + 1, Nat.succ_le_iff.mpr j.isLt, h⟩
++  exact ⟨(eq_word_of_no_double (S j) 0 hbig hl).symm,
++    (eq_word_of_no_double (S j) 0 hbig hr).symm,
++    (eq_word_of_no_double (S (j + 1)) 0 hsmall hn).symm, heq⟩
++
++/-- The raw-to-ideal adaptive reduction consumes the existing verifier. -/
++theorem sound_reduction (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (T : FoldingTower F ι m) (deg : ℕ → ℕ) (st : Strategy F Root) :
++    SoundReduction S T deg st := by
++  intro qCount r Q hraw
++  by_cases hbad : BadRoots S st r
++  · exact Or.inr hbad
++  · exact Or.inl ⟨fun j => round_resolves S T st r j (Q j) hbad (hraw.1 j),
++      terminal_resolves S st r (T.dom m) (deg m) hbad hraw.2⟩
++
++omit [Field F] in
++/-- Perfect binding removes the bad-root branch without requiring roots
++in the honest image. -/
++theorem no_bad_of_binding (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (hb : ∀ n, (S n).PositionBinding) (st : Strategy F Root) (r : Fin m → F) :
++    ¬ BadRoots S st r := by
++  rintro ⟨n, hn, h⟩
++  exact no_double_of_binding (S n) (hb n) _ h
++
++/-! ## Transparent terminal specialization -/
++
++/-- A transparent terminal word satisfies attribution exactly when it passes
++its Reed--Solomon check. Only the equality of the revealed word is consumed. -/
++theorem transparent_terminal (S : ∀ n, OpeningScheme (Root n) F (ι n) (Op n))
++    (st : Strategy F (fun n => Root n ⊕ (ι n → F))) (r : Fin m → F)
++    (dom : ι m ↪ F) (d : ℕ) (w : ι m → F)
++    (hrt : rootAt st r m le_rfl = Sum.inr w) :
++    TerminalAccepts (fun n => transparent (S n)) st r dom d ↔
++      w ∈ reedSolomonCode dom d := by
++  constructor
++  · rintro ⟨v, hv, hopen⟩
++    have heq : w = v := by
++      funext i
++      obtain ⟨o, ho⟩ := hopen i
++      simpa [hrt, transparent] using ho
++    rwa [heq]
++  · intro hw
++    exact ⟨w, hw, fun i => ⟨none, by simp [hrt, transparent]⟩⟩
++
++end FriRootResolution
++end Minidregg.Selvage
++
++/-! ## Exact theorem dependency reports -/
++/-- info: 'Minidregg.Selvage.FriRootResolution.resolved_word_prefix' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.resolved_word_prefix
++/-- info: 'Minidregg.Selvage.FriRootResolution.terminal_resolves' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.terminal_resolves
++/-- info: 'Minidregg.Selvage.FriRootResolution.round_resolves' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.round_resolves
++/-- info: 'Minidregg.Selvage.FriRootResolution.sound_reduction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.sound_reduction
++/-- info: 'Minidregg.Selvage.FriRootResolution.no_bad_of_binding' does not depend on any axioms -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.no_bad_of_binding
++/-- info: 'Minidregg.Selvage.FriRootResolution.transparent_terminal' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.transparent_terminal
+diff --git a/Selvage/FriRootResolutionSoundness.lean b/Selvage/FriRootResolutionSoundness.lean
+new file mode 100644
+index 0000000..ccbf4cf
+--- /dev/null
++++ b/Selvage/FriRootResolutionSoundness.lean
+@@ -0,0 +1,110 @@
++/-
++# Finite coherent-query soundness for arbitrary prefix-selected roots
++
++The additional term is the probability that a root selected in this execution
++admits two accepted values. It is deliberately unpriced and uses semantic
++canonical resolution, not an efficient cryptographic extractor. The FRI
++challenge/query term is exactly the existing coherent consumer's bound.
++-/
++import Selvage.FriRootResolution
++
++namespace Minidregg.Selvage
++namespace FriRootResolution
++
++variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
++variable {Root Op : ℕ → Type} {ell m : ℕ}
++
++/-- Raw acceptance with the existing coherent modulo query schedule. -/
++def CoherentAccepts
++    (S : ∀ n, OpeningScheme (Root n) F (PowerTwoFriLevels ell n) (Op n))
++    (T : FoldingTower F (PowerTwoFriLevels ell) m) (deg : ℕ → ℕ)
++    (st : Strategy F Root) (hmell : m ≤ ell) (qCount : ℕ)
++    (r : Fin m → F) (seed : Fin qCount → PowerTwoFriLevels ell 1) : Prop :=
++  SampledAccepts S T deg st qCount r (powerTwoCoherentSchedule hmell seed)
++
++omit [DecidableEq F] in
++/-- Lossless finite event reduction, before inserting any proximity or
++binding estimate. Original opening witnesses are retained by the raw event. -/
++theorem coherent_probability_reduction
++    (S : ∀ n, OpeningScheme (Root n) F (PowerTwoFriLevels ell n) (Op n))
++    (T : FoldingTower F (PowerTwoFriLevels ell) m) (deg : ℕ → ℕ)
++    (st : Strategy F Root) (hmell : m ≤ ell) (qCount : ℕ) :
++    uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
++      (fun x => CoherentAccepts S T deg st hmell qCount x.1 x.2) ≤
++    uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
++      (fun x => FriAdaptiveCoherentAccepts
++        (fun n => idealCommitment F (PowerTwoFriLevels ell n)) T deg
++        (resolvedTranscript S st) hmell qCount x.1 x.2) +
++    uniformProb (Fin m → F) (BadRoots S st) := by
++  have hsplit := le_trans (uniformProb_mono fun (x : (Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1)) hx =>
++    sound_reduction S T deg st qCount x.1
++      (powerTwoCoherentSchedule hmell x.2) hx) (uniformProb_or_le _ _)
++  have hbad : uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
++      (fun x => BadRoots S st x.1) = uniformProb (Fin m → F) (BadRoots S st) := by
++    let e := Equiv.prodComm (Fin m → F) (Fin qCount → PowerTwoFriLevels ell 1)
++    calc
++      _ = uniformProb ((Fin qCount → PowerTwoFriLevels ell 1) × (Fin m → F))
++          (fun x => BadRoots S st x.2) := by
++        simpa [e] using uniformProb_equiv e (fun x => BadRoots S st x.2)
++      _ = _ := uniformProb_prod_snd _
++  simpa only [hbad] using hsplit
++
++/-- Existing coherent FRI soundness plus the explicit selected-root binding
++failure probability. No honest-image or future-independent-word premise. -/
++theorem coherent_sound
++    (S : ∀ n, OpeningScheme (Root n) F (PowerTwoFriLevels ell n) (Op n))
++    (T : FoldingTower F (PowerTwoFriLevels ell) m) (deg : ℕ → ℕ)
++    (st : Strategy F Root) (hmell : m ≤ ell)
++    (radius : ℕ → ℝ) (foldRadius : Fin m → ℝ)
++    (qCount : ℕ) {tau : ℝ} {b : ℕ}
++    (htau : tau ≤ 1) (hfinal : 0 ≤ radius m)
++    (hgap : ∀ j : Fin m, radius (j + 1) + tau ≤ foldRadius j)
++    (hfold : ∀ j : Fin m,
++      FoldDistanceTransition (T.data j j.isLt) (deg j) (deg (j + 1))
++        (radius j) (foldRadius j) b)
++    (hfar0 : ¬ close (radius 0) (reedSolomonCode (T.dom 0) (deg 0))
++      (OpeningResolution.word (S 0) 0 (st 0 (fun i => i.elim0)))) :
++    uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
++      (fun x => CoherentAccepts S T deg st hmell qCount x.1 x.2) ≤
++      (m : ℝ) * (b : ℝ) / (Fintype.card F : ℝ) + (1 - tau) ^ qCount +
++        uniformProb (Fin m → F) (BadRoots S st) := by
++  exact le_trans (coherent_probability_reduction S T deg st hmell qCount)
++    (add_le_add (friAdaptive_coherent_sampled_sound
++      (fun n => idealCommitment F (PowerTwoFriLevels ell n)) T deg
++      (resolvedTranscript S st) hmell radius foldRadius qCount
++      htau hfinal hgap hfold hfar0) le_rfl)
++
++/-- Under exact position binding, arbitrary malicious roots carry the same
++finite challenge/query bound as the existing committed-word consumer. -/
++theorem coherent_sound_binding
++    (S : ∀ n, OpeningScheme (Root n) F (PowerTwoFriLevels ell n) (Op n))
++    (hb : ∀ n, (S n).PositionBinding)
++    (T : FoldingTower F (PowerTwoFriLevels ell) m) (deg : ℕ → ℕ)
++    (st : Strategy F Root) (hmell : m ≤ ell)
++    (radius : ℕ → ℝ) (foldRadius : Fin m → ℝ)
++    (qCount : ℕ) {tau : ℝ} {b : ℕ}
++    (htau : tau ≤ 1) (hfinal : 0 ≤ radius m)
++    (hgap : ∀ j : Fin m, radius (j + 1) + tau ≤ foldRadius j)
++    (hfold : ∀ j : Fin m,
++      FoldDistanceTransition (T.data j j.isLt) (deg j) (deg (j + 1))
++        (radius j) (foldRadius j) b)
++    (hfar0 : ¬ close (radius 0) (reedSolomonCode (T.dom 0) (deg 0))
++      (OpeningResolution.word (S 0) 0 (st 0 (fun i => i.elim0)))) :
++    uniformProb ((Fin m → F) × (Fin qCount → PowerTwoFriLevels ell 1))
++      (fun x => CoherentAccepts S T deg st hmell qCount x.1 x.2) ≤
++      (m : ℝ) * (b : ℝ) / (Fintype.card F : ℝ) + (1 - tau) ^ qCount := by
++  have hbad : uniformProb (Fin m → F) (BadRoots S st) = 0 :=
++    uniformProb_false (no_bad_of_binding S hb st)
++  simpa only [hbad, add_zero] using coherent_sound S T deg st hmell
++    radius foldRadius qCount htau hfinal hgap hfold hfar0
++
++end FriRootResolution
++end Minidregg.Selvage
++
++/-! ## Exact theorem dependency reports -/
++/-- info: 'Minidregg.Selvage.FriRootResolution.coherent_probability_reduction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.coherent_probability_reduction
++/-- info: 'Minidregg.Selvage.FriRootResolution.coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.coherent_sound
++/-- info: 'Minidregg.Selvage.FriRootResolution.coherent_sound_binding' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.coherent_sound_binding
+diff --git a/Selvage/FriRootResolutionWitnesses.lean b/Selvage/FriRootResolutionWitnesses.lean
+new file mode 100644
+index 0000000..a769291
+--- /dev/null
++++ b/Selvage/FriRootResolutionWitnesses.lean
+@@ -0,0 +1,135 @@
++/- Statement witnesses for arbitrary roots, real prefix adaptation, and timing teeth. -/
++import Selvage.FriRootResolutionSoundness
++
++namespace Minidregg.Selvage
++namespace FriRootResolution
++namespace Witnesses
++
++set_option maxHeartbeats 800000
++
++open OpeningResolution ProximityExample
++
++abbrev WitnessRoot (n : ℕ) :=
++  ((levels n → ZMod 5) × Bool) ⊕ (levels n → ZMod 5)
++
++def scheme (n : ℕ) : OpeningScheme (WitnessRoot n) (ZMod 5) (levels n) (Option Unit) :=
++  transparent (tagged (ZMod 5) (levels n)).toOpeningScheme
++
++/-- A genuinely adaptive strategy: the initial off-image root contains X,
++while the transparent terminal word is the challenge itself. -/
++def strategy : Strategy (ZMod 5) WitnessRoot
++  | 0, _ => Sum.inl (xWord, true)
++  | 1, p => Sum.inr (fun _ => p 0)
++  | _ + 2, _ => Sum.inr (fun i => i.elim0)
++
++/-- The initial ordinary root has no preimage under the raw tagged commit. -/
++theorem initial_root_off_image :
++    ¬ ∃ w, (xWord, true) = (tagged (ZMod 5) (levels 0)).commit w := by
++  rintro ⟨w, hw⟩
++  have htag := congrArg Prod.snd hw
++  cases htag
++
++/-- The existing multiplicative folding data folds X to the challenge. -/
++theorem fold_x_challenge (a : ZMod 5) : fold data0 xWord a = fun _ => a := by
++  have heven : foldEven data0 xWord = fun _ => 0 := by decide
++  have hodd : foldOdd data0 xWord = fun _ => 1 := by decide
++  funext k
++  simp [fold, heven, hodd]
++
++/-- A final word chosen after the first challenge varies with that challenge. -/
++theorem adaptive_word_witness (p : Fin 1 → ZMod 5) :
++    (resolvedTranscript scheme strategy).word 1 p = fun _ => p 0 := by
++  exact word_transparent _ _ _
++
++/-- The adaptive witness is not representable by a single fixed final word. -/
++theorem fixed_transcript_falsifier :
++    ¬ ∃ w : levels 1 → ZMod 5, ∀ p : Fin 1 → ZMod 5,
++      (resolvedTranscript scheme strategy).word 1 p = w := by
++  rintro ⟨w, hw⟩
++  have hzero := hw (fun _ => 0)
++  have hone := hw (fun _ => 1)
++  rw [adaptive_word_witness] at hzero hone
++  have h := congrFun (hzero.trans hone.symm) (⟨0, by decide⟩ : levels 1)
++  norm_num at h
++
++/-- A root selected before any challenge cannot equal that future challenge
++on every execution. This refutes moving level zero past challenge zero. -/
++theorem future_challenge_falsifier :
++    ¬ ∃ w : Unit → ZMod 5, ∀ r : Fin 1 → ZMod 5, w () = r 0 := by
++  rintro ⟨w, hw⟩
++  have h := (hw (fun _ => 0)).symm.trans (hw (fun _ => 1))
++  norm_num at h
++
++/-- The raw verifier premise is inhabited with one actual FRI round, arbitrary
++positive or zero query count, an off-image root, and adaptive transparent final word. -/
++theorem sampled_acceptance_inhabited (qCount : ℕ) (r : Fin 1 → ZMod 5)
++    (Q : FriIndependentQuerySchedule levels 1 qCount) :
++    SampledAccepts scheme ldtTower degSched strategy qCount r Q := by
++  constructor
++  · intro j
++    fin_cases j
++    let w := fold data0 xWord (r 0)
++    refine ⟨fun a => {
++      left := xWord (data0.sec (Q 0 a))
++      right := xWord (data0.neg (data0.sec (Q 0 a)))
++      next := w (Q 0 a)
++      leftPath := some ()
++      rightPath := some ()
++      nextPath := none }, fun a => ?_⟩
++    refine ⟨rfl, rfl, ?_, rfl⟩
++    change r 0 = fold data0 xWord (r 0) (Q 0 a)
++    rw [fold_x_challenge]
++  · refine ⟨(fun _ => r 0), ?_, fun _ => ⟨none, rfl⟩⟩
++    change (fun _ => r 0) ∈ reedSolomonCode dom1 1
++    rw [← fold_x_challenge (r 0)]
++    exact fold_preserves_code (d := 1) data0 xWord_mem (r 0)
++
++/-- The witness schemes have proved position binding, including transparent roots. -/
++theorem scheme_binding (n : ℕ) : (scheme n).PositionBinding :=
++  transparent_binding _ (tagged (ZMod 5) (levels n)).binding
++
++/-- No collision branch is needed for the concrete adaptive witness. -/
++theorem witness_no_bad (r : Fin 1 → ZMod 5) : ¬ BadRoots scheme strategy r :=
++  no_bad_of_binding scheme scheme_binding strategy r
++
++/-- The proved reduction fires on the actual accepted off-image/adaptive witness. -/
++theorem reduction_inhabited (qCount : ℕ) (r : Fin 1 → ZMod 5)
++    (Q : FriIndependentQuerySchedule levels 1 qCount) :
++    FriAdaptiveSampledAccepts (fun n => idealCommitment (ZMod 5) (levels n))
++      ldtTower degSched (resolvedTranscript scheme strategy) qCount r Q ∨
++        BadRoots scheme strategy r :=
++  sound_reduction scheme ldtTower degSched strategy qCount r Q
++    (sampled_acceptance_inhabited qCount r Q)
++
++/-- The reduction actually reaches ideal acceptance on the admitted witness. -/
++theorem ideal_acceptance_witness (qCount : ℕ) (r : Fin 1 → ZMod 5)
++    (Q : FriIndependentQuerySchedule levels 1 qCount) :
++    FriAdaptiveSampledAccepts (fun n => idealCommitment (ZMod 5) (levels n))
++      ldtTower degSched (resolvedTranscript scheme strategy) qCount r Q :=
++  (reduction_inhabited qCount r Q).resolve_right (witness_no_bad r)
++
++end Witnesses
++end FriRootResolution
++end Minidregg.Selvage
++
++/-! ## Exact theorem dependency reports -/
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.initial_root_off_image' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.initial_root_off_image
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.fold_x_challenge' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.fold_x_challenge
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.adaptive_word_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.adaptive_word_witness
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.fixed_transcript_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.fixed_transcript_falsifier
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.future_challenge_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.future_challenge_falsifier
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.sampled_acceptance_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.sampled_acceptance_inhabited
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.scheme_binding' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.scheme_binding
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.witness_no_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.witness_no_bad
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.reduction_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.reduction_inhabited
++/-- info: 'Minidregg.Selvage.FriRootResolution.Witnesses.ideal_acceptance_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.Witnesses.ideal_acceptance_witness
+diff --git a/Selvage/BabyBearFriRootResolution.lean b/Selvage/BabyBearFriRootResolution.lean
+new file mode 100644
+index 0000000..36c61ea
+--- /dev/null
++++ b/Selvage/BabyBearFriRootResolution.lean
+@@ -0,0 +1,92 @@
++/-
++# The full-UD coherent budget with arbitrary prefix-selected roots
++
++Reuses the frozen full-UD schedule and actual BabyBear extension carrier.
++The additional selected-root double-opening probability remains explicit.
++No new numerical security claim or efficient extraction claim is made.
++-/
++import Selvage.FriRootResolutionSoundness
++import Selvage.FullUDSamplingBudget
++
++namespace Minidregg.Selvage
++namespace FriRootResolution
++
++section Generic
++variable {F : Type} [Field F] [Fintype F] [DecidableEq F]
++variable {Root Op : ℕ → Type}
++
++/-- The full-UD schedule discharges every gap/fold premise for the raw-root
++verifier while preserving the exact binding-failure event. -/
++theorem fullUD_coherent_sound
++    (S : ∀ n, OpeningScheme (Root n) F (PowerTwoFriLevels 20 n) (Op n))
++    (T : FoldingTower F (PowerTwoFriLevels 20) 19)
++    (st : Strategy F Root) (qCount : ℕ)
++    (hfar0 : ¬ close (2/5 : ℝ)
++      (reedSolomonCode (T.dom 0) (fullUDSamplingDegree 0))
++      (OpeningResolution.word (S 0) 0 (st 0 (fun i => i.elim0)))) :
++    uniformProb ((Fin 19 → F) × (Fin qCount → PowerTwoFriLevels 20 1))
++      (fun x => CoherentAccepts S T fullUDSamplingDegree st
++        (by decide) qCount x.1 x.2) ≤
++      (19 : ℝ) * (2^20 : ℕ) / (Fintype.card F : ℝ) + (94/95 : ℝ)^qCount +
++        uniformProb (Fin 19 → F) (BadRoots S st) := by
++  exact le_trans (coherent_probability_reduction S T fullUDSamplingDegree st
++    (by decide) qCount)
++    (add_le_add (fullUDSampling_coherent_sound
++      (fun n => idealCommitment F (PowerTwoFriLevels 20 n)) T
++      (resolvedTranscript S st) qCount hfar0) le_rfl)
++end Generic
++
++section ActualBabyBear
++variable {Root Op : ℕ → Type}
++
++/-- The existing concrete carrier/query budget transfers with an explicit,
++unpriced binding-event probability. The theorem does not assert total 55-bit security. -/
++theorem babyBear_coherent_sound
++    (S : ∀ n, OpeningScheme (Root n) BabyBearExt4.Ext4
++      (PowerTwoFriLevels 20 n) (Op n))
++    (T : FoldingTower BabyBearExt4.Ext4 (PowerTwoFriLevels 20) 19)
++    (st : Strategy BabyBearExt4.Ext4 Root)
++    (hfar0 : ¬ close (2/5 : ℝ)
++      (reedSolomonCode (T.dom 0) (fullUDSamplingDegree 0))
++      (OpeningResolution.word (S 0) 0 (st 0 (fun i => i.elim0)))) :
++    uniformProb
++      ((Fin 19 → BabyBearExt4.Ext4) × (Fin 3603 → PowerTwoFriLevels 20 1))
++      (fun x => CoherentAccepts S T fullUDSamplingDegree st
++        (by decide) 3603 x.1 x.2) ≤ 1/(2^55 : ℝ) +
++      uniformProb (Fin 19 → BabyBearExt4.Ext4) (BadRoots S st) := by
++  exact le_trans (coherent_probability_reduction S T fullUDSamplingDegree st
++    (by decide) 3603)
++    (add_le_add (fullUDSampling_babyBear_55
++      (fun n => idealCommitment BabyBearExt4.Ext4 (PowerTwoFriLevels 20 n))
++      T (resolvedTranscript S st) hfar0) le_rfl)
++
++/-- The corresponding exact-position-binding specialization needs no
++honest-image equation for any level root. Deployment binding remains separate. -/
++theorem babyBear_coherent_sound_binding
++    (S : ∀ n, OpeningScheme (Root n) BabyBearExt4.Ext4
++      (PowerTwoFriLevels 20 n) (Op n))
++    (hb : ∀ n, (S n).PositionBinding)
++    (T : FoldingTower BabyBearExt4.Ext4 (PowerTwoFriLevels 20) 19)
++    (st : Strategy BabyBearExt4.Ext4 Root)
++    (hfar0 : ¬ close (2/5 : ℝ)
++      (reedSolomonCode (T.dom 0) (fullUDSamplingDegree 0))
++      (OpeningResolution.word (S 0) 0 (st 0 (fun i => i.elim0)))) :
++    uniformProb
++      ((Fin 19 → BabyBearExt4.Ext4) × (Fin 3603 → PowerTwoFriLevels 20 1))
++      (fun x => CoherentAccepts S T fullUDSamplingDegree st
++        (by decide) 3603 x.1 x.2) ≤ 1/(2^55 : ℝ) := by
++  have hbad : uniformProb (Fin 19 → BabyBearExt4.Ext4) (BadRoots S st) = 0 :=
++    uniformProb_false (no_bad_of_binding S hb st)
++  simpa only [hbad, add_zero] using babyBear_coherent_sound S T st hfar0
++end ActualBabyBear
++
++end FriRootResolution
++end Minidregg.Selvage
++
++/-! ## Exact theorem dependency reports -/
++/-- info: 'Minidregg.Selvage.FriRootResolution.fullUD_coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.fullUD_coherent_sound
++/-- info: 'Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound
++/-- info: 'Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound_binding' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in #print axioms Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound_binding

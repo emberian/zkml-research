@@ -1,0 +1,3 @@
+[DERIVED — complete] Deliver REPORT.md and manifest.json to root for integration review. Frozen author sources require no mathematical correction; root owns the combined Lean build and any ledger update.
+
+[OPEN — separate work] Efficient reachable-transcript extraction is needed to price the existential double-opening event. A runtime adapter must handle p3 variable arity, MMCS row/index layout, multi-height beta^arity input injection, terminal coefficients and challenger/PoW/Fiat–Shamir composition. Initial PCS/IOP farness and the actual BabyBear tower remain distinct premises. This audit authorizes no runtime/private/crypto execution.

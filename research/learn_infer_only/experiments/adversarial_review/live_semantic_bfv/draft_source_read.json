@@ -1,0 +1,35 @@
+{
+  "status": "inherited draft read; exact successor freeze pending",
+  "files": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/verified_reader/live_driver.py": {
+      "sha256": "b0d450fda66aa126bb647d98a041d66447afbef9ab2c6805a24a3df0ef103d65",
+      "bytes": 21754
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/CONTRACT.md": {
+      "sha256": "2a9d982c218954814cdb5a271ffee2f9429421123ae492f24d9ed70dd0ed6792",
+      "bytes": 4261
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/prepare.py": {
+      "sha256": "4b3700964d7be7b5a4d2a8620d83da618b45b124428d87b7e471b71b8e468af7",
+      "bytes": 10339
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/run.py": {
+      "sha256": "ce4c6a17dd413e88a6e8f9700f14efc319f7146881993cd09e6d8221bd500486",
+      "bytes": 2816
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/issue_semantic_text.py": {
+      "sha256": "0b07be81604f46d1a6b4dab46f7a4ccb00580cf8156ab49f9290e259317d7b69",
+      "bytes": 4196
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/encoder/score.py": {
+      "sha256": "b66e4deddfd7ef42c5b1a0aa8976270d53ade73886548239afd2193d2ed1e8f3",
+      "bytes": 5928
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live/encoder/common.py": {
+      "sha256": "13527d5fcd0ffa444faae29ac5b1f76f5d71f8a0a766d9f43613211674be6546",
+      "bytes": 1676
+    }
+  },
+  "model_or_crypto_execution": 0,
+  "private_file_reads": 0
+}

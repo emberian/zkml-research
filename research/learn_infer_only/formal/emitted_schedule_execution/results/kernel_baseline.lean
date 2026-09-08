@@ -1,0 +1,5 @@
+import Compiler.EmittedScheduleExecution
+open Minidregg.Compiler.PrivateAddressEmaSchedule
+open Minidregg.Compiler.EmittedScheduleExecution
+set_option maxRecDepth 100000
+set_option maxHeartbeats 5000000

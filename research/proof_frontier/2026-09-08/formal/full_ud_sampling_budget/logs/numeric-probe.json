@@ -1,0 +1,15 @@
+{
+  "command": [
+    "lean",
+    "-o",
+    "/tmp/minidregg-polynomial-gluing-20260908/.lake/build/lib/lean/Selvage/FullUDSamplingNumerics.olean",
+    "Selvage/FullUDSamplingNumerics.lean"
+  ],
+  "cwd": "/tmp/minidregg-polynomial-gluing-20260908",
+  "lean_path": "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/private/tmp/minidregg-polynomial-gluing-20260908/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "exit_code": 1,
+  "source_sha256": "f5a4902dabff54bd12b4b22bd13896827bec1b93eae89927993457cb7cd9300c",
+  "source_unchanged": true,
+  "elapsed_s": 30.324482917785645,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/logs/numeric-probe.log"
+}

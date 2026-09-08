@@ -1,0 +1,189 @@
+{
+  "status": "PASS; source/census and finite semantics only",
+  "patch_sha256": "449608f151061051d3c2567d86d6b505c86ecf03906f990ffb7a5238995e4756",
+  "script_sha256": "321aaba20a87fbf7b90d4ac42e2dc741ae79af1aa30c3dbcc5ddeffb2549d51c",
+  "modules": [
+    {
+      "path": "Selvage/OpeningResolution.lean",
+      "sha256": "1233c1c49f79e7d3581151b8151aac3aa2ae7e61f688bb316a30671e405710d4",
+      "declarations": 14,
+      "exact_guarded_pins": 14,
+      "saved_final_check_exit": 0,
+      "saved_log_bytes": 0,
+      "patch_reconstructs_exact_source": true
+    },
+    {
+      "path": "Selvage/FriRootResolution.lean",
+      "sha256": "547338388ba7e6b8671056deaf7f75d1292034fede46e4a0f85fb8170f7218ef",
+      "declarations": 6,
+      "exact_guarded_pins": 6,
+      "saved_final_check_exit": 0,
+      "saved_log_bytes": 0,
+      "patch_reconstructs_exact_source": true
+    },
+    {
+      "path": "Selvage/FriRootResolutionSoundness.lean",
+      "sha256": "12d283184598a1239457fcba9ddf74b5b523e0f1d005728d14745c79aec9468b",
+      "declarations": 3,
+      "exact_guarded_pins": 3,
+      "saved_final_check_exit": 0,
+      "saved_log_bytes": 0,
+      "patch_reconstructs_exact_source": true
+    },
+    {
+      "path": "Selvage/FriRootResolutionWitnesses.lean",
+      "sha256": "dc43a2edb8b18e281e9dd5c9f43373e2a586715d4705d048ec3350dce8c199f0",
+      "declarations": 10,
+      "exact_guarded_pins": 10,
+      "saved_final_check_exit": 0,
+      "saved_log_bytes": 0,
+      "patch_reconstructs_exact_source": true
+    },
+    {
+      "path": "Selvage/BabyBearFriRootResolution.lean",
+      "sha256": "88c696ef983143d22ce9720b3cada9efa06d63930b343e3b99280ed4cbc5c60c",
+      "declarations": 3,
+      "exact_guarded_pins": 3,
+      "saved_final_check_exit": 0,
+      "saved_log_bytes": 0,
+      "patch_reconstructs_exact_source": true
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/Commitment.lean",
+      "sha256": "be5b6088d0a367be6effee618cb502d724bedcfe30cb00cbfb2d69de6c6a059a",
+      "access": "named public source read at cited regions"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean",
+      "sha256": "9dbb34989ea4af684802075717f8b3fe5602bc5d128b796b851a5efa9d28e432",
+      "access": "named public source read at cited regions"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean",
+      "sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9",
+      "access": "named public source read at cited regions"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "access": "named public source read at cited regions"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/BinaryMerkle.lean",
+      "sha256": "55e3a1a0053102b52e62aab393e1fe91743bcd6c8091c2843f5c85eef66c7137",
+      "access": "named public source read at cited regions"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/Cargo.toml",
+      "sha256": "1c3572d9d73d88899c3652488b69b2e3d1e1faa2309b6c7338128c9eb3bc96a8",
+      "access": "named public source read at cited regions"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/prover.rs",
+      "sha256": "d4a55e0ee532f53de571daffafa6a005c12797fff257108b48c5655679d92cf4",
+      "access": "named public source read at cited regions"
+    },
+    {
+      "path": "/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73/src/verifier.rs",
+      "sha256": "137ca8419424d0aec23a1baa4a54c94533a9ef72e3119b10428c16a3f2089412",
+      "access": "named public source read at cited regions"
+    }
+  ],
+  "dependency_pins": [
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Theory/RSInterpolationMatrix.lean",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Theory/RSInterpolationKernel.lean",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/FullUDStatement.lean",
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/FullUDTeeth.lean",
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/FullUDInterpolation.lean",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/FullUDBivariate.lean",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/FullUDCore.lean",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/ProximityGapFullUD.lean",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/FullUDFriConsumer.lean",
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/FullUDWitnesses.lean",
+      "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Theory/PolynomialMatrixKernel.lean",
+      "sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Theory/PolynomialBivariate.lean",
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Theory/PolynomialGluingStatement.lean",
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Theory/PolynomialGluing.lean",
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/BabyBearFullUD.lean",
+      "sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-commitment-timing-20260908/Selvage/FullUDSamplingBudget.lean",
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+      "access": "read-only source hash; mathematical dependencies audited previously"
+    }
+  ],
+  "resolver_relations": 16,
+  "all_permitted_resolver_choices": 25,
+  "accepted_value_checks": 60,
+  "F5_source_witness_challenge_batches": 35,
+  "F5_far_initial_word_distance": "1/2",
+  "F5_far_prefix_selected_terminal_acceptance": "1/2",
+  "query_dependent_terminal_falsifier_acceptance": "1",
+  "semantic_double_opening_without_observed_conflict": true,
+  "lean_runs": 0,
+  "crypto_runs": 0,
+  "private_files_read": 0,
+  "web_queries": 0,
+  "scope": "No efficient extractor, collision advantage or runtime/Fiat-Shamir equivalence is established."
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/BabyBearFullUD.olean",
+    "Selvage/BabyBearFullUD.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-babybear-20260908",
+  "exit_code": 0,
+  "source_sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+  "source_unchanged": true,
+  "elapsed_s": 19.644994735717773,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/logs/bridge-pins-01.log"
+}

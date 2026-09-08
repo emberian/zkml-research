@@ -270,3 +270,26 @@ replay at Learn14 before any private decode. A separate fixed-FFT configuration
 passes five public controls; a new long trajectory is being prepared. The full
 TFHE reader key remains in this branch. These advances do not combine the
 restricted DDH/PQ recipient credentials with the nonlinear learner.
+
+## Finite smudged setup and public-seed refinement — 2026-09-08
+
+[DERIVED reviewed] The fixed-coordinate smudged construction uses ordinary
+QPT LWE, independent Gaussian recipient rows and uniformly sampled absent
+public rows. A scalar flood masks the joint key/error shift; augmented-matrix
+regularity handles exposed recipient keys. The finite proof includes repeated
+input hybrids and sampling tails. The original compact sizing point fails
+valid primal hardness sanity checks. A coupled larger point meets the named
+heuristic cost comparisons and finite inequalities at a public-matrix cost of
+157,649,414,144 bytes. This is a conditional mathematical candidate, without
+an implemented sampler or certified security level.
+[Independent proof review](experiments/adversarial_review/smudged_fixed_coordinate/REPORT.md),
+[independent hardness review](experiments/adversarial_review/smudged_hardness/REPORT.md).
+
+[DERIVED reviewed] A separate classical programmable-ROM proof replaces the
+honest public sampler in the DDH setup with a deterministic public-seed tape.
+It binds a fresh independent recipient registry before seed choice and charges
+pre-registration guesses and adaptive seed selection. Its capped rejection
+sampler models failed tapes explicitly. Concrete XOF execution and quantum
+oracle security do not follow from that proof. A fresh adapter is in preparation.
+[Proposal](experiments/private_construction/designated_span/public_coin_setup/public_seed/PROPOSAL.md),
+[independent review](experiments/adversarial_review/public_seed_setup/REPORT.md).

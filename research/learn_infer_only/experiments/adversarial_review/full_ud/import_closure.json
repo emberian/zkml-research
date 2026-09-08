@@ -1,0 +1,487 @@
+{
+  "Theory.RSInterpolationMatrix": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationMatrix.lean",
+    "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+    "imports": [
+      "Mathlib.Algebra.Polynomial.BigOperators",
+      "Mathlib.Algebra.Polynomial.RingDivision",
+      "Mathlib.Data.Fin.Tuple.Basic",
+      "Mathlib.LinearAlgebra.Vandermonde",
+      "Mathlib.LinearAlgebra.Matrix.SchurComplement",
+      "Mathlib.Tactic"
+    ],
+    "frozen_proposal": true
+  },
+  "Theory.RSInterpolationKernel": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationKernel.lean",
+    "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+    "imports": [
+      "Theory.RSInterpolationMatrix",
+      "Theory.PolynomialMatrixKernel"
+    ],
+    "frozen_proposal": true
+  },
+  "Theory.PolynomialMatrixKernel": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/PolynomialMatrixKernel.lean",
+    "sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+    "imports": [
+      "Mathlib.Algebra.Polynomial.BigOperators",
+      "Mathlib.Data.Fin.Tuple.Embedding",
+      "Mathlib.Data.Fintype.EquivFin",
+      "Mathlib.Data.Nat.Find",
+      "Mathlib.LinearAlgebra.Matrix.Adjugate",
+      "Mathlib.Tactic.FinCases"
+    ],
+    "frozen_proposal": true
+  },
+  "Selvage.FullUDStatement": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDStatement.lean",
+    "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+    "imports": [
+      "Selvage.Proximity"
+    ],
+    "frozen_proposal": true
+  },
+  "Selvage.Proximity": {
+    "path": "/Users/ember/dev/minidregg/Selvage/Proximity.lean",
+    "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f",
+    "imports": [
+      "Mathlib.RingTheory.Polynomial.Basic",
+      "Mathlib.Data.ZMod.Basic",
+      "Mathlib.Algebra.Field.ZMod",
+      "Selvage.ReedSolomon"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.ReedSolomon": {
+    "path": "/Users/ember/dev/minidregg/Selvage/ReedSolomon.lean",
+    "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c",
+    "imports": [
+      "Mathlib.RingTheory.Polynomial.Basic",
+      "Mathlib.Algebra.Polynomial.Roots",
+      "Mathlib.Algebra.Polynomial.Eval.SMul",
+      "Mathlib.LinearAlgebra.Lagrange",
+      "Mathlib.Data.Real.Sqrt",
+      "Mathlib.Data.ZMod.Basic",
+      "Mathlib.Algebra.Field.ZMod",
+      "Selvage.CorrelatedAgreement"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.CorrelatedAgreement": {
+    "path": "/Users/ember/dev/minidregg/Selvage/CorrelatedAgreement.lean",
+    "sha256": "1f93c645e77154fdd969855f17d153b9ffb9e2c147f997dbb704dce71876b70e",
+    "imports": [
+      "Mathlib.InformationTheory.Hamming",
+      "Mathlib.Algebra.BigOperators.Fin",
+      "Mathlib.Algebra.Module.Submodule.Basic",
+      "Mathlib.Algebra.Module.Submodule.Lattice",
+      "Mathlib.Data.Finset.Max",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fin.VecNotation",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.FieldSimp",
+      "Mathlib.Tactic.Positivity"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.FullUDTeeth": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDTeeth.lean",
+    "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+    "imports": [
+      "Selvage.FullUDStatement",
+      "Mathlib.Algebra.Polynomial.Degree.SmallDegree"
+    ],
+    "frozen_proposal": true
+  },
+  "Selvage.FullUDInterpolation": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDInterpolation.lean",
+    "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+    "imports": [
+      "Selvage.FullUDStatement",
+      "Theory.RSInterpolationKernel"
+    ],
+    "frozen_proposal": true
+  },
+  "Selvage.FullUDBivariate": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDBivariate.lean",
+    "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+    "imports": [
+      "Selvage.FullUDInterpolation",
+      "Theory.PolynomialBivariate"
+    ],
+    "frozen_proposal": true
+  },
+  "Theory.PolynomialBivariate": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialBivariate.lean",
+    "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+    "imports": [
+      "Mathlib.Algebra.Polynomial.Bivariate",
+      "Mathlib.Algebra.Polynomial.BigOperators",
+      "Mathlib.Algebra.Polynomial.Roots",
+      "Mathlib.Tactic"
+    ],
+    "frozen_proposal": true
+  },
+  "Selvage.FullUDCore": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDCore.lean",
+    "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+    "imports": [
+      "Selvage.FullUDBivariate",
+      "Theory.PolynomialGluing"
+    ],
+    "frozen_proposal": true
+  },
+  "Theory.PolynomialGluing": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluing.lean",
+    "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+    "imports": [
+      "Theory.PolynomialGluingStatement",
+      "Mathlib.Analysis.Normed.Field.Lemmas",
+      "Mathlib.LinearAlgebra.Lagrange",
+      "Mathlib.RingTheory.Polynomial.UniqueFactorization",
+      "Mathlib.RingTheory.Polynomial.Resultant.Basic",
+      "Mathlib.Algebra.Polynomial.OfFn"
+    ],
+    "frozen_proposal": true
+  },
+  "Theory.PolynomialGluingStatement": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluingStatement.lean",
+    "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+    "imports": [
+      "Theory.PolynomialBivariate"
+    ],
+    "frozen_proposal": true
+  },
+  "Selvage.ProximityGapFullUD": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/ProximityGapFullUD.lean",
+    "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+    "imports": [
+      "Selvage.FullUDCore",
+      "Selvage.FullUDTeeth"
+    ],
+    "frozen_proposal": true
+  },
+  "Selvage.FullUDFriConsumer": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDFriConsumer.lean",
+    "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+    "imports": [
+      "Selvage.ProximityGapFullUD",
+      "Selvage.HalfThresholdFriTranscript"
+    ],
+    "frozen_proposal": true
+  },
+  "Selvage.HalfThresholdFriTranscript": {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean",
+    "sha256": "9dbb34989ea4af684802075717f8b3fe5602bc5d128b796b851a5efa9d28e432",
+    "imports": [
+      "Selvage.HalfThresholdFriTower",
+      "Selvage.Commitment",
+      "Selvage.FiatShamir"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.HalfThresholdFriTower": {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTower.lean",
+    "sha256": "ac97c5f6450f927c7b48deaa883c5737309a0cede63d8a905e900e31d2f9dc64",
+    "imports": [
+      "Selvage.HalfThresholdFri"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.HalfThresholdFri": {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFri.lean",
+    "sha256": "82a829919ce580e6e6f168feb7437d03409e3ccdb1d1a8f22b56607dc65f2918",
+    "imports": [
+      "Selvage.HalfThresholdRegime"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.HalfThresholdRegime": {
+    "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdRegime.lean",
+    "sha256": "6eb08782ca3494dc07d633698f118fdd177062f4834460f5c6ca73f948d254c8",
+    "imports": [
+      "Selvage.JohnsonRegime"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.JohnsonRegime": {
+    "path": "/Users/ember/dev/minidregg/Selvage/JohnsonRegime.lean",
+    "sha256": "ad0d57012c60138902608c40026e144a6bb89df8b4a1cae154e33ecf569df3d8",
+    "imports": [
+      "Mathlib.Algebra.Order.Chebyshev",
+      "Selvage.CorrelatedAgreement",
+      "Selvage.ReedSolomon",
+      "Selvage.ProximityGapUD",
+      "Selvage.SubUdSeam"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.ProximityGapUD": {
+    "path": "/Users/ember/dev/minidregg/Selvage/ProximityGapUD.lean",
+    "sha256": "a43f8c847d9a22173aeb6e82d6f1c12b9490089cf7d58e07c8153f0a89e51b5b",
+    "imports": [
+      "Mathlib.Tactic.LinearCombination",
+      "Selvage.CorrelatedAgreement",
+      "Selvage.ReedSolomon",
+      "Selvage.Proximity"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.SubUdSeam": {
+    "path": "/Users/ember/dev/minidregg/Selvage/SubUdSeam.lean",
+    "sha256": "c2ac021958d56a1fecaf3fec9af9be42ba817ba245f01ceac5b42001ee1c6097",
+    "imports": [
+      "Selvage.ZkExtraction",
+      "Selvage.CorrelatedAgreement",
+      "Selvage.Erasure",
+      "Selvage.ReedSolomon"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.ZkExtraction": {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZkExtraction.lean",
+    "sha256": "80ab89f008540632dd11480fc5a2abee248ec6e2df17728b6097dacaafa96a9a",
+    "imports": [
+      "Selvage.RbrZeroKnowledge",
+      "Selvage.ZkTriangular",
+      "Selvage.AccExtractChain",
+      "Selvage.AccExtract",
+      "Selvage.Erasure"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.RbrZeroKnowledge": {
+    "path": "/Users/ember/dev/minidregg/Selvage/RbrZeroKnowledge.lean",
+    "sha256": "79311bff1697c4937c9aa3813d2fbeebe1acb736393dceb0c7908ce00b49b412",
+    "imports": [
+      "Selvage.ZkArgument",
+      "Selvage.Rbr",
+      "Selvage.AccExtractChain",
+      "Selvage.AccSoundRbr",
+      "Selvage.FiatShamir"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.ZkArgument": {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZkArgument.lean",
+    "sha256": "e92505c9c7088045a20404e292b24d14c7b8bc883189db7ef5460f846fa4ef03",
+    "imports": [
+      "Selvage.ZKHiding",
+      "Selvage.ZK",
+      "Selvage.AccExtract",
+      "Selvage.ConstrainedMask"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.ZKHiding": {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZKHiding.lean",
+    "sha256": "2dbcae3d7f1fb82a399438b5591168e565b23d2385114f4d1ff08cea494c93fb",
+    "imports": [
+      "Mathlib.Data.Set.Card",
+      "Mathlib.LinearAlgebra.Lagrange",
+      "Selvage.Accumulator",
+      "Selvage.ZK"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.Accumulator": {
+    "path": "/Users/ember/dev/minidregg/Selvage/Accumulator.lean",
+    "sha256": "ac7a711e2c2d240f2a1c416625fa3d07921061eb8b4f21b7be6b25f1b55df746",
+    "imports": [
+      "Mathlib.LinearAlgebra.Pi",
+      "Mathlib.Algebra.BigOperators.Fin",
+      "Mathlib.Data.Fin.VecNotation",
+      "Mathlib.Tactic.LinearCombination",
+      "Selvage.ReedSolomon",
+      "Selvage.ConstrainedCode"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.ConstrainedCode": {
+    "path": "/Users/ember/dev/minidregg/Selvage/ConstrainedCode.lean",
+    "sha256": "0aa4b77f54c13ec29838112b7537270217ced31a32c2d03e828e47e5f7f6de37",
+    "imports": [
+      "Mathlib.RingTheory.Polynomial.Basic",
+      "Mathlib.Algebra.Polynomial.Roots",
+      "Mathlib.Algebra.BigOperators.Pi",
+      "Mathlib.Data.ZMod.Basic",
+      "Mathlib.Algebra.Field.ZMod",
+      "Selvage.ReedSolomon"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.ZK": {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZK.lean",
+    "sha256": "a6b567b6b372ebd65799eb2b8f7773a48b9d7e2fcb841a9728c354b8acb2712b",
+    "imports": [
+      "Mathlib.Data.Set.Card",
+      "Selvage.Accumulator"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.AccExtract": {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccExtract.lean",
+    "sha256": "80f0ce153b510586f2413384de73c203636a3bad093870cfd6bccd01005c3141",
+    "imports": [
+      "Mathlib.LinearAlgebra.Pi",
+      "Mathlib.Tactic.LinearCombination",
+      "Selvage.Accumulator",
+      "Selvage.Depth"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.Depth": {
+    "path": "/Users/ember/dev/minidregg/Selvage/Depth.lean",
+    "sha256": "65d0c2ca25ddd2a9f13deadc20c4f72c59ceb255103520a9a603751d760d6d2b",
+    "imports": [
+      "Mathlib.Algebra.Order.Field.Basic",
+      "Mathlib.Algebra.BigOperators.Field",
+      "Mathlib.Algebra.BigOperators.Fin",
+      "Mathlib.Algebra.Order.BigOperators.Group.Finset",
+      "Mathlib.Data.Fintype.BigOperators",
+      "Mathlib.Data.Set.Card",
+      "Mathlib.Tactic.Linarith",
+      "Mathlib.Tactic.NormNum",
+      "Mathlib.Tactic.Ring",
+      "Mathlib.Tactic.GCongr",
+      "Selvage.Rbr"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.Rbr": {
+    "path": "/Users/ember/dev/minidregg/Selvage/Rbr.lean",
+    "sha256": "9ecc85f4449a1430e3f0efcc6863d731fd70bd00d1d5ab640af0f17e55d83d63",
+    "imports": [
+      "Mathlib.Data.Real.Basic",
+      "Mathlib.Data.Fintype.Pi",
+      "Mathlib.Data.Fintype.Prod",
+      "Mathlib.Data.List.FinRange",
+      "Mathlib.SetTheory.Cardinal.Finite",
+      "Mathlib.Order.Interval.Set.Defs"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.ConstrainedMask": {
+    "path": "/Users/ember/dev/minidregg/Selvage/ConstrainedMask.lean",
+    "sha256": "c3278cd7c3c0fce46eabaa55410bc1b604b3e47821a1a501b19c7273ea0a6f72",
+    "imports": [
+      "Mathlib.LinearAlgebra.Lagrange",
+      "Selvage.ZKHiding",
+      "Selvage.ConstrainedCode",
+      "Selvage.ReedSolomon"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.AccExtractChain": {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccExtractChain.lean",
+    "sha256": "e2a6989b15125f732146a8a49e2e0d83730d362ec08c542dc81c97ca1f702ae4",
+    "imports": [
+      "Mathlib.Data.ZMod.Basic",
+      "Mathlib.Algebra.Field.ZMod",
+      "Selvage.AccExtract",
+      "Selvage.LightClientSound",
+      "Selvage.Depth"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.LightClientSound": {
+    "path": "/Users/ember/dev/minidregg/Selvage/LightClientSound.lean",
+    "sha256": "3ed381ce17096727810c89aa3d429f2ed516f8660b81688a6cf71ac8f94f340c",
+    "imports": [
+      "Mathlib.Data.ZMod.Basic",
+      "Mathlib.Algebra.Field.ZMod",
+      "Selvage.LightClient",
+      "Selvage.AccSound",
+      "Selvage.Depth"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.LightClient": {
+    "path": "/Users/ember/dev/minidregg/Selvage/LightClient.lean",
+    "sha256": "c7d290c7c06a11e81d06f737a26fc48c3b09eb89eb1f359a535d34379bc90717",
+    "imports": [
+      "Mathlib.Data.List.Chain",
+      "Mathlib.Data.List.Forall2",
+      "Selvage.Accumulator"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.AccSound": {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccSound.lean",
+    "sha256": "c71915ae76bdca9df2e8c1fecd20701d2f05f3eedd28293788b44df77d2c8976",
+    "imports": [
+      "Mathlib.Data.ZMod.Basic",
+      "Mathlib.Algebra.Field.ZMod",
+      "Selvage.Accumulator",
+      "Selvage.ConstrainedCode",
+      "Selvage.CorrelatedAgreement",
+      "Selvage.Rbr"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.AccSoundRbr": {
+    "path": "/Users/ember/dev/minidregg/Selvage/AccSoundRbr.lean",
+    "sha256": "c1c3c5e8df1e87666de7d33b7787f9e73a31e6e347122b890371748ceaced2f6",
+    "imports": [
+      "Selvage.AccSound",
+      "Selvage.Rbr",
+      "Selvage.FiatShamir"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.FiatShamir": {
+    "path": "/Users/ember/dev/minidregg/Selvage/FiatShamir.lean",
+    "sha256": "00c79a6cf33f270551b6c4a95ee9e6b0e93caa43af0d84146e803ef18d242587",
+    "imports": [
+      "Mathlib.Order.Interval.Set.Defs",
+      "Selvage.Depth"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.ZkTriangular": {
+    "path": "/Users/ember/dev/minidregg/Selvage/ZkTriangular.lean",
+    "sha256": "439c2ec37afb19707cefda115f5dbedd811a5addd6b2dc7e804311b2f8c6d426",
+    "imports": [
+      "Selvage.ZK",
+      "Selvage.ZKHiding",
+      "Selvage.RbrZeroKnowledge"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.Erasure": {
+    "path": "/Users/ember/dev/minidregg/Selvage/Erasure.lean",
+    "sha256": "780a552f45c1d3ddac2c4814edb02eae4e4c32ad244ba1d93eb5c9216651a072",
+    "imports": [
+      "Selvage.ZKHiding",
+      "Selvage.Commitment"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.Commitment": {
+    "path": "/Users/ember/dev/minidregg/Selvage/Commitment.lean",
+    "sha256": "be5b6088d0a367be6effee618cb502d724bedcfe30cb00cbfb2d69de6c6a059a",
+    "imports": [
+      "Selvage.Accumulator",
+      "Selvage.Decider"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.Decider": {
+    "path": "/Users/ember/dev/minidregg/Selvage/Decider.lean",
+    "sha256": "8975fdf4afff2a10511de6154420f233893b668be2023ff161921574244e8e2a",
+    "imports": [
+      "Selvage.ConstrainedCode",
+      "Selvage.Accumulator"
+    ],
+    "frozen_proposal": false
+  },
+  "Selvage.FullUDWitnesses": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDWitnesses.lean",
+    "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf",
+    "imports": [
+      "Selvage.ProximityGapFullUD"
+    ],
+    "frozen_proposal": true
+  }
+}

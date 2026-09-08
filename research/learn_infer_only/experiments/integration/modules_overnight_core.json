@@ -1,0 +1,235 @@
+{
+  "schema": 1,
+  "expected_theorem_pins": 915,
+  "scope": "Third overnight tranche: prior 708 pins, word EMA 28, Lean-derived schedule 46, dynamics 28, and full unique-decoding closure 105. Reused dependency artifacts; exact selected-source and umbrella compilation, not a clean whole-tree build. Apache upstream license carried explicitly.",
+  "lanes": [
+    {
+      "name": "resident",
+      "root": "formal",
+      "patch": "formal/minidregg-resident-release.patch",
+      "expected_pins": 31
+    },
+    {
+      "name": "policy",
+      "root": "formal/recovery_policy",
+      "patch": "formal/recovery_policy/minidregg-private-policy-evolution.patch",
+      "expected_pins": 15
+    },
+    {
+      "name": "durable",
+      "root": "formal/durable_integration",
+      "patch": "formal/durable_integration/minidregg-durable-integration.patch",
+      "expected_pins": 45
+    },
+    {
+      "name": "randomness",
+      "root": "formal/randomness_composition",
+      "patch": "formal/randomness_composition/minidregg-randomness-selection.patch",
+      "expected_pins": 13
+    },
+    {
+      "name": "adaptive",
+      "root": "formal/randomness_composition",
+      "patch": "formal/randomness_composition/minidregg-adaptive-context.patch",
+      "expected_pins": 13
+    },
+    {
+      "name": "schedule",
+      "root": "formal/randomness_composition",
+      "patch": "formal/randomness_composition/minidregg-multi-receipt-schedule.patch",
+      "expected_pins": 20
+    },
+    {
+      "name": "bfv_lift",
+      "root": "formal/bfv_lift_refinement",
+      "patch": "formal/bfv_lift_refinement/minidregg-bfv-lift-refinement.patch",
+      "expected_pins": 27
+    },
+    {
+      "name": "bfv_engine",
+      "root": "formal/bfv_lift_refinement/engine_refinement",
+      "patch": "formal/bfv_lift_refinement/engine_refinement/minidregg-fhe-rns-scale-decomposition.patch",
+      "expected_pins": 33
+    },
+    {
+      "name": "integer",
+      "root": "formal/integer_certificate_emission",
+      "patch": "formal/integer_certificate_emission/minidregg-integer-certificate-emission.patch",
+      "expected_pins": 20
+    },
+    {
+      "name": "ema",
+      "root": "formal/durable_integration",
+      "patch": "formal/durable_integration/minidregg-ema-semantic-bridge.patch",
+      "expected_pins": 48
+    },
+    {
+      "name": "generic_contextual_ema",
+      "root": "formal/randomness_composition/generic",
+      "patch": "formal/randomness_composition/generic/minidregg-contextual-gate-ema.patch",
+      "expected_pins": 42
+    },
+    {
+      "name": "distribution_budget",
+      "root": "formal/recovery_policy",
+      "patch": "formal/recovery_policy/minidregg-private-distribution-budget.patch",
+      "expected_pins": 14
+    },
+    {
+      "name": "air_simplification",
+      "root": "formal/integer_certificate_emission/optimization",
+      "patch": "formal/integer_certificate_emission/optimization/minidregg-air-simplification.patch",
+      "expected_pins": 27
+    },
+    {
+      "name": "bfv_source_certificate",
+      "root": "formal/bfv_lift_refinement/source_certificate",
+      "patch": "formal/bfv_lift_refinement/source_certificate/minidregg-fhe-source-certificate.patch",
+      "expected_pins": 23
+    },
+    {
+      "name": "ciphertext_window",
+      "root": "formal/durable_integration/bfv_window",
+      "patch": "formal/durable_integration/bfv_window/minidregg-ciphertext-window.patch",
+      "expected_pins": 44
+    },
+    {
+      "name": "window_noise",
+      "root": "formal/he_closure_costs",
+      "patch": "experiments/he_closure_costs/window_formal/proposed_minidregg.patch",
+      "expected_pins": 62
+    },
+    {
+      "name": "bfv_target_projection",
+      "root": "formal/bfv_lift_refinement/target_projection",
+      "patch": "formal/bfv_lift_refinement/target_projection/minidregg-fhe-target-projection.patch",
+      "expected_pins": 22
+    },
+    {
+      "name": "mixed_oracle_phases",
+      "root": "formal/randomness_composition/mixed",
+      "patch": "formal/randomness_composition/mixed/minidregg-mixed-oracle-phases.patch",
+      "expected_pins": 29
+    },
+    {
+      "name": "horizon_arithmetic",
+      "root": "formal/horizon_composition",
+      "patch": "formal/horizon_composition/minidregg-horizon-arithmetic.patch",
+      "expected_pins": 40
+    },
+    {
+      "name": "bfv_source_phase",
+      "root": "formal/he_closure_costs/source_phase",
+      "patch": "formal/he_closure_costs/source_phase/minidregg-bfv-source-phase.patch",
+      "expected_pins": 45
+    },
+    {
+      "name": "bfv_modular_words",
+      "root": "formal/bfv_lift_refinement/modular_lowering",
+      "patch": "formal/bfv_lift_refinement/modular_lowering/minidregg-fhe-modular-lowering.patch",
+      "expected_pins": 38
+    },
+    {
+      "name": "window_frame",
+      "root": "formal/durable_integration/window_frame",
+      "patch": "formal/durable_integration/window_frame/minidregg-window-frame.patch",
+      "expected_pins": 23
+    },
+    {
+      "name": "bfv_source_window",
+      "root": "formal/he_closure_costs/source_phase",
+      "patch": "formal/he_closure_costs/source_phase/noise_window/minidregg-bfv-source-window.patch",
+      "expected_pins": 34
+    },
+    {
+      "name": "private_address_ema",
+      "root": "formal/private_address_ema",
+      "patch": "formal/private_address_ema/minidregg-private-address-ema.patch",
+      "expected_pins": 28
+    },
+    {
+      "name": "private_address_ema_schedule",
+      "root": "formal/private_address_ema/emitted_schedule",
+      "patch": "formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch",
+      "expected_pins": 46
+    },
+    {
+      "expected_pins": 28,
+      "name": "private_ema_dynamics",
+      "patch": "formal/private_ema_dynamics/minidregg-private-ema-dynamics.patch",
+      "requires": [
+        "private_address_ema"
+      ],
+      "root": "formal/private_ema_dynamics"
+    },
+    {
+      "name": "polynomial_matrix_kernel_all_pins",
+      "root": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor",
+      "patch": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/polynomial-kernel.patch",
+      "expected_pins": 16,
+      "source_files": {
+        "Theory/PolynomialMatrixKernel.lean": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/PolynomialMatrixKernel.lean"
+      }
+    },
+    {
+      "name": "polynomial_gluing_universe",
+      "root": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor",
+      "patch": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/polynomial-gluing-universe.patch",
+      "expected_pins": 51,
+      "source_files": {
+        "Theory/PolynomialBivariate.lean": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialBivariate.lean",
+        "Theory/PolynomialGluingStatement.lean": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluingStatement.lean",
+        "Theory/PolynomialGluing.lean": "../proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluing.lean"
+      }
+    },
+    {
+      "name": "full_unique_decoding",
+      "root": "../proof_frontier/2026-09-08/formal/full_ud/src",
+      "patch": "../proof_frontier/2026-09-08/formal/full_ud/full-ud.patch",
+      "expected_pins": 38
+    },
+    {
+      "name": "overnight_full_ud_umbrella_wiring",
+      "root": "formal/integration",
+      "patch": "formal/integration/overnight_umbrella_wiring.patch",
+      "expected_pins": 0
+    }
+  ],
+  "checks": [
+    "formal/integer_certificate_emission/Compiler/IntegerCertificateEmissionChecks.lean",
+    "formal/integer_certificate_emission/Compiler/LargeIntegerCertificateEmissionChecks.lean"
+  ],
+  "excluded": [
+    {
+      "glob": "experiments/adversarial_review/**/*.lean",
+      "reason": "Independent review witnesses and snapshots are not proposed umbrella modules."
+    },
+    {
+      "glob": "formal/**/build/**",
+      "reason": "Generated overlays are not source-discovery inputs."
+    },
+    {
+      "glob": "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateChecks.lean",
+      "reason": "Executable IO check runner; not part of the six proposed library modules."
+    },
+    {
+      "glob": "formal/bfv_lift_refinement/source_certificate/Compiler/FheSourceCertificateRetain.lean",
+      "reason": "Executable IO retention runner; not an umbrella import."
+    },
+    {
+      "glob": "formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionChecks.lean",
+      "reason": "Executable IO runner is not one of the five proposed library modules."
+    },
+    {
+      "glob": "formal/bfv_lift_refinement/target_projection/Compiler/FheTargetProjectionAxiomReport.lean",
+      "reason": "Auxiliary report runner is not a rooted proposed library module."
+    }
+  ],
+  "support_files": [
+    {
+      "source": "../proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/ArkLib-Apache-2.0.txt",
+      "destination": "LICENSES/ArkLib-Apache-2.0.txt",
+      "sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+Selvage/FriRootResolutionWitnesses.lean:33:75: error: unsolved goals
+case h.«0»
+a : ZMod 5
+⊢ (1 + ![1, 2, 3, 4] 3) / 2 + a * ((1 - ![1, 2, 3, 4] 3) / 2) = a
+
+case h.«1»
+a : ZMod 5
+⊢ (2 + ![1, 2, 3, 4] 2) / 2 + a * ((2 - ![1, 2, 3, 4] 2) / 4) = a

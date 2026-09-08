@@ -1,0 +1,9 @@
+{
+  "name": "full_ud_babybear",
+  "root": "../proof_frontier/2026-09-08/formal/full_ud_babybear",
+  "patch": "../proof_frontier/2026-09-08/formal/full_ud_babybear/babybear-full-ud.patch",
+  "expected_pins": 12,
+  "source_files": {
+    "Selvage/BabyBearFullUD.lean": "../proof_frontier/2026-09-08/formal/full_ud_babybear/BabyBearFullUD.lean"
+  }
+}

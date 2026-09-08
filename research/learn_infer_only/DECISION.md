@@ -151,3 +151,19 @@ objects and their consumers are ready for combined integration. Their radius
 improvement changes no current ErrorBudget expression by itself, and the query
 ledger already assumed full UD. Only a proved connection to actual sampled
 rounds supports a new scoped query-cost comparison. VERDICTS remains unchanged.
+
+[DERIVED updated decision, 2026-09-08 06:30 UTC] Keep the original compact
+smudged sizing point rejected: its low relative noise produces weak valid
+primal estimates. Retain the coupled repair as a measured cost frontier,
+not an implementation target or a certified security claim. The next useful
+comparison is a structured ring construction with its own regularity proof
+and exact sample/noise accounting; scalar-LWE estimates cannot simply certify
+that construction. The completed live model/BFV example demonstrates one
+ordinary path, while the trusted plaintext issuer and full reader remain.
+
+[DERIVED updated proof decision] Preserve the reviewed 915-pin snapshot while
+the complete project-source closure rebuild runs. The later execution/CSE
+proofs remove concrete Lean-model premises, and the root-resolution package
+removes a committed-word preimage premise. Neither change silently proves
+Rust execution or efficient collision extraction. Integrate these only with
+their separate residuals and independent reviews.

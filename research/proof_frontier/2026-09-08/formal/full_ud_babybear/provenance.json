@@ -1,0 +1,57 @@
+{
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "checkout": "/tmp/minidregg-full-ud-babybear-20260908",
+  "source_file": "Selvage/BabyBearFullUD.lean",
+  "source_sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+  "lines": 233,
+  "declarations": [
+    "ext4_card",
+    "base_field_cardinality_falsifier",
+    "x_mem",
+    "one_mem",
+    "line_pr_one",
+    "premise_inhabited",
+    "former_band_falsifier",
+    "isProximityGenerator_fullUD",
+    "rateHalf_probability_bound",
+    "good_line_correlatedAgreement",
+    "bad_pair_not_correlatedAgreement",
+    "bad_pair_probability_bound"
+  ],
+  "pins": [
+    "ext4_card",
+    "base_field_cardinality_falsifier",
+    "isProximityGenerator_fullUD",
+    "rateHalf_probability_bound",
+    "FullUDInstantiation.x_mem",
+    "FullUDInstantiation.one_mem",
+    "FullUDInstantiation.line_pr_one",
+    "FullUDInstantiation.premise_inhabited",
+    "FullUDInstantiation.former_band_falsifier",
+    "FullUDInstantiation.good_line_correlatedAgreement",
+    "FullUDInstantiation.bad_pair_not_correlatedAgreement",
+    "FullUDInstantiation.bad_pair_probability_bound"
+  ],
+  "expected_pins": 12,
+  "patch_sha256": "fa8a815069f628ef4ae34a1eda2c91989fd3af87c55ccc8f4056aa78d9bc6e25",
+  "check": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-o",
+      "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/BabyBearFullUD.olean",
+      "Selvage/BabyBearFullUD.lean"
+    ],
+    "cwd": "/tmp/minidregg-full-ud-babybear-20260908",
+    "exit_code": 0,
+    "source_sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+    "source_unchanged": true,
+    "elapsed_s": 19.644994735717773,
+    "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/logs/bridge-pins-01.log"
+  },
+  "field_source_sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+  "core_manifest_sha256": "4151a1b24f599cee25b339090028f3680a558906b85f805f53dec2de0a056ecb",
+  "frozen_core_all_14_hashes_unchanged": true,
+  "external_queries": 0
+}

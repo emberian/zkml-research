@@ -1,0 +1,3 @@
+extensionPolynomial_irreducible : Irreducible extensionPolynomial
+root_pow_four : root extensionPolynomial ^ 4 = (algebraMap BabyBear Ext4) 11
+ext4_finrank : Module.finrank BabyBear Ext4 = 4

@@ -1,0 +1,18 @@
+{
+  "label": "lean_Theory_RSInterpolationMatrix",
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/olean/Theory/RSInterpolationMatrix.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/source/Theory/RSInterpolationMatrix.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/source",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsed_seconds": 9.033473000017693,
+  "lean_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/olean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build/run_017/source/Theory/RSInterpolationMatrix.lean",
+  "source_sha256_before": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+  "source_sha256_after": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f"
+}

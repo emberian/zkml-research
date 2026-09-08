@@ -1,0 +1,5 @@
+'Minidregg.Selvage.FriRootResolution.no_bad_of_binding' does not depend on any axioms
+Selvage/FriRootResolution.lean:180:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Selvage.FriRootResolution.no_bad_of_binding' depends on axioms: [propext, Quot.sound]
++ info: 'Minidregg.Selvage.FriRootResolution.no_bad_of_binding' does not depend on any axioms

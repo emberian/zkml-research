@@ -1,0 +1,803 @@
+{
+  "all_package_checks_passed": true,
+  "source_sha256": "37d9b62f5a0b0b3b80fa7b2de2f8322e71c92b4635710f64eb848f573bffb077",
+  "patch_sha256": "057672fd7654df79812d5071bd0c00497ef7c462b53c0314a62c97fcc219d72c",
+  "census": {
+    "theorems": [
+      "validCheck_iff",
+      "ready_bounded",
+      "forwardGates_shape",
+      "bounded_mono",
+      "valid_implies_shape",
+      "execution_soundness",
+      "executed_inputs",
+      "shared_execution_correctness",
+      "learn_execution_correct",
+      "infer_execution_correct",
+      "decoded_gate_operations",
+      "sparse_premises_inhabited",
+      "sparse_subject",
+      "sparse_nonconstant",
+      "wrong_answer_refused",
+      "forward_read_refused",
+      "hole_read_refused",
+      "input_write_refused",
+      "decreasing_output_refused"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "validCheck_iff",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.validCheck_iff",
+        "private": false,
+        "line": 75
+      },
+      {
+        "name": "ready_bounded",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.ready_bounded",
+        "private": false,
+        "line": 78
+      },
+      {
+        "name": "forwardGates_shape",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.forwardGates_shape",
+        "private": false,
+        "line": 84
+      },
+      {
+        "name": "bounded_mono",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.bounded_mono",
+        "private": false,
+        "line": 111
+      },
+      {
+        "name": "valid_implies_shape",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.valid_implies_shape",
+        "private": false,
+        "line": 117
+      },
+      {
+        "name": "execution_soundness",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.execution_soundness",
+        "private": false,
+        "line": 135
+      },
+      {
+        "name": "executed_inputs",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.executed_inputs",
+        "private": false,
+        "line": 141
+      },
+      {
+        "name": "shared_execution_correctness",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.shared_execution_correctness",
+        "private": false,
+        "line": 149
+      },
+      {
+        "name": "learn_execution_correct",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.learn_execution_correct",
+        "private": false,
+        "line": 157
+      },
+      {
+        "name": "infer_execution_correct",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.infer_execution_correct",
+        "private": false,
+        "line": 166
+      },
+      {
+        "name": "decoded_gate_operations",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.decoded_gate_operations",
+        "private": false,
+        "line": 176
+      },
+      {
+        "name": "sparse_premises_inhabited",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.sparse_premises_inhabited",
+        "private": false,
+        "line": 188
+      },
+      {
+        "name": "sparse_subject",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.sparse_subject",
+        "private": false,
+        "line": 192
+      },
+      {
+        "name": "sparse_nonconstant",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.sparse_nonconstant",
+        "private": false,
+        "line": 194
+      },
+      {
+        "name": "wrong_answer_refused",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.wrong_answer_refused",
+        "private": false,
+        "line": 196
+      },
+      {
+        "name": "forward_read_refused",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.forward_read_refused",
+        "private": false,
+        "line": 198
+      },
+      {
+        "name": "hole_read_refused",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.hole_read_refused",
+        "private": false,
+        "line": 203
+      },
+      {
+        "name": "input_write_refused",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.input_write_refused",
+        "private": false,
+        "line": 206
+      },
+      {
+        "name": "decreasing_output_refused",
+        "qualified_name": "Minidregg.Compiler.EmittedScheduleExecution.decreasing_output_refused",
+        "private": false,
+        "line": 212
+      }
+    ],
+    "theorem_count": 19,
+    "pin_count": 19,
+    "pins": [
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.validCheck_iff",
+        "requested_name": "validCheck_iff",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 217,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.validCheck_iff' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.validCheck_iff"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.ready_bounded",
+        "requested_name": "ready_bounded",
+        "axioms": [],
+        "line": 219,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.ready_bounded' does not depend on any axioms",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.ready_bounded"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.forwardGates_shape",
+        "requested_name": "forwardGates_shape",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 221,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.forwardGates_shape' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.forwardGates_shape"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.bounded_mono",
+        "requested_name": "bounded_mono",
+        "axioms": [],
+        "line": 223,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.bounded_mono' does not depend on any axioms",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.bounded_mono"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.valid_implies_shape",
+        "requested_name": "valid_implies_shape",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 225,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.valid_implies_shape' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.valid_implies_shape"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.execution_soundness",
+        "requested_name": "execution_soundness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 227,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.execution_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.execution_soundness"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.executed_inputs",
+        "requested_name": "executed_inputs",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 229,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.executed_inputs' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.executed_inputs"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.shared_execution_correctness",
+        "requested_name": "shared_execution_correctness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 231,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.shared_execution_correctness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.shared_execution_correctness"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.learn_execution_correct",
+        "requested_name": "learn_execution_correct",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 233,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.learn_execution_correct' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.learn_execution_correct"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.infer_execution_correct",
+        "requested_name": "infer_execution_correct",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 235,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.infer_execution_correct' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.infer_execution_correct"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.decoded_gate_operations",
+        "requested_name": "decoded_gate_operations",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 237,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.decoded_gate_operations' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.decoded_gate_operations"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.sparse_premises_inhabited",
+        "requested_name": "sparse_premises_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 239,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.sparse_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.sparse_premises_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.sparse_subject",
+        "requested_name": "sparse_subject",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 241,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.sparse_subject' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.sparse_subject"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.sparse_nonconstant",
+        "requested_name": "sparse_nonconstant",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 243,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.sparse_nonconstant' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.sparse_nonconstant"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.wrong_answer_refused",
+        "requested_name": "wrong_answer_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 245,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.wrong_answer_refused' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.wrong_answer_refused"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.forward_read_refused",
+        "requested_name": "forward_read_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 247,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.forward_read_refused' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.forward_read_refused"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.hole_read_refused",
+        "requested_name": "hole_read_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 249,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.hole_read_refused' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.hole_read_refused"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.input_write_refused",
+        "requested_name": "input_write_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 251,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.input_write_refused' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.input_write_refused"
+      },
+      {
+        "theorem": "Minidregg.Compiler.EmittedScheduleExecution.decreasing_output_refused",
+        "requested_name": "decreasing_output_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 253,
+        "expected_message": "info: 'Minidregg.Compiler.EmittedScheduleExecution.decreasing_output_refused' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Compiler.EmittedScheduleExecution.decreasing_output_refused"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "checks": [
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_package_nl_cemoo",
+      "exit_code": 0,
+      "seconds": 0.026244625012623146,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/minidregg-emitted-schedule-execution.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_package_nl_cemoo",
+      "exit_code": 0,
+      "seconds": 0.017925541993463412,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/minidregg-emitted-schedule-execution.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_package_nl_cemoo",
+      "exit_code": 0,
+      "seconds": 0.01781108300201595,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_package_nl_cemoo/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_package_nl_cemoo",
+      "exit_code": 0,
+      "seconds": 0.07937258298625238,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "seconds": 0.08574045798741281,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "--run",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/EmitPrivateAddressEma.lean"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_package_nl_cemoo/emission",
+      "exit_code": 0,
+      "seconds": 4.5730976249906234,
+      "stdout": "{\"infer\":{\"gates\":9,\"nInputs\":34,\"nWires\":46,\"outputs\":1},\"learn\":{\"gates\":538,\"nInputs\":42,\"nWires\":11562,\"outputs\":32}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "--run",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/CheckScheduleStructure.lean"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_package_nl_cemoo",
+      "exit_code": 0,
+      "seconds": 3.3184189580206294,
+      "stdout": "[{\"gates\":538,\"nInputs\":42,\"nWires\":11562,\"operation\":\"learn\",\"outputs\":32,\"structurallyValid\":true},{\"gates\":9,\"nInputs\":34,\"nWires\":46,\"operation\":\"infer\",\"outputs\":1,\"structurallyValid\":true}]\n",
+      "stderr": ""
+    }
+  ],
+  "lean_check": "results/lean_006.json",
+  "compiled_structural_checks": [
+    {
+      "gates": 538,
+      "nInputs": 42,
+      "nWires": 11562,
+      "operation": "learn",
+      "outputs": 32,
+      "structurallyValid": true
+    },
+    {
+      "gates": 9,
+      "nInputs": 34,
+      "nWires": 46,
+      "operation": "infer",
+      "outputs": 1,
+      "structurallyValid": true
+    }
+  ],
+  "frozen_json_sha256": {
+    "learn.json": "94e8369ffc8fcdf57b8351b278d5af90dc49a26d83600d40f0bd6a0da359dde8",
+    "infer.json": "b742ed7710d2680119eceeff0c553d675e1ce187a503981fc500a6a4a683b80c"
+  },
+  "actual_validity_kernel_proved": false,
+  "kernel_probes": {
+    "infer": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution",
+      "source_sha256": "a88038831e7fb5d30fa29d3ada9cfb009401d356dcd5ba090b6b6739db22a171",
+      "exit_code": -15,
+      "seconds": 12.341156667011091,
+      "stopped_by": "rss_cap",
+      "seconds_cap": 45,
+      "rss_cap_kib": 1048576,
+      "max_sampled_rss_kib": 1064624,
+      "samples": [
+        {
+          "seconds": 0.0030742500093765557,
+          "rss_kib": 704
+        },
+        {
+          "seconds": 1.0212064590014052,
+          "rss_kib": 101600
+        },
+        {
+          "seconds": 2.03976937502739,
+          "rss_kib": 158624
+        },
+        {
+          "seconds": 3.0531390420219395,
+          "rss_kib": 214880
+        },
+        {
+          "seconds": 4.069279500021366,
+          "rss_kib": 272656
+        },
+        {
+          "seconds": 5.09587950000423,
+          "rss_kib": 318512
+        },
+        {
+          "seconds": 6.111335459019756,
+          "rss_kib": 357744
+        },
+        {
+          "seconds": 7.133925334026571,
+          "rss_kib": 400864
+        },
+        {
+          "seconds": 8.152320709021296,
+          "rss_kib": 455248
+        },
+        {
+          "seconds": 9.166667042009067,
+          "rss_kib": 514256
+        },
+        {
+          "seconds": 10.178880084014963,
+          "rss_kib": 603440
+        },
+        {
+          "seconds": 11.190424708998762,
+          "rss_kib": 857488
+        },
+        {
+          "seconds": 12.20233658401412,
+          "rss_kib": 1064624
+        }
+      ],
+      "stdout": "",
+      "stderr": ""
+    },
+    "learn": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution",
+      "source_sha256": "c3579aac18d8709c6f143642456fc15b2ce7568790cec6988023e446ee3e9a1c",
+      "exit_code": -15,
+      "seconds": 7.23983637499623,
+      "stopped_by": "rss_cap",
+      "seconds_cap": 120,
+      "rss_cap_kib": 1048576,
+      "max_sampled_rss_kib": 1175216,
+      "samples": [
+        {
+          "seconds": 0.002975458017317578,
+          "rss_kib": 1952
+        },
+        {
+          "seconds": 1.0169163749960717,
+          "rss_kib": 155120
+        },
+        {
+          "seconds": 2.0311384160013404,
+          "rss_kib": 253472
+        },
+        {
+          "seconds": 3.047059000004083,
+          "rss_kib": 304848
+        },
+        {
+          "seconds": 4.067130500014173,
+          "rss_kib": 341680
+        },
+        {
+          "seconds": 5.102485250012251,
+          "rss_kib": 406688
+        },
+        {
+          "seconds": 6.10951004101662,
+          "rss_kib": 490368
+        },
+        {
+          "seconds": 7.116152500006137,
+          "rss_kib": 1175216
+        }
+      ],
+      "stdout": "",
+      "stderr": ""
+    },
+    "baseline": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_baseline.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution",
+      "source_sha256": "ace4b3adc91eed5e12dbafc4c2294f3ecd09af88ea38f20a2d86c2f7a242cf6e",
+      "exit_code": -15,
+      "seconds": 8.21998366600019,
+      "stopped_by": "rss_cap",
+      "seconds_cap": 45,
+      "rss_cap_kib": 1048576,
+      "max_sampled_rss_kib": 1085200,
+      "samples": [
+        {
+          "seconds": 0.003368333011167124,
+          "rss_kib": 336
+        },
+        {
+          "seconds": 1.0234478749916889,
+          "rss_kib": 107344
+        },
+        {
+          "seconds": 2.0377165829995647,
+          "rss_kib": 195056
+        },
+        {
+          "seconds": 3.0479874160082545,
+          "rss_kib": 292624
+        },
+        {
+          "seconds": 4.055868374998681,
+          "rss_kib": 358320
+        },
+        {
+          "seconds": 5.06665204098681,
+          "rss_kib": 420640
+        },
+        {
+          "seconds": 6.076574208011152,
+          "rss_kib": 489184
+        },
+        {
+          "seconds": 7.084356790990569,
+          "rss_kib": 617712
+        },
+        {
+          "seconds": 8.0919339999964,
+          "rss_kib": 1085200
+        }
+      ],
+      "stdout": "",
+      "stderr": ""
+    },
+    "infer_3g": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer_3g.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution",
+      "source_sha256": "a88038831e7fb5d30fa29d3ada9cfb009401d356dcd5ba090b6b6739db22a171",
+      "exit_code": 1,
+      "seconds": 10.119329791981727,
+      "stopped_by": null,
+      "seconds_cap": 120,
+      "rss_cap_kib": 3145728,
+      "max_sampled_rss_kib": 2947312,
+      "samples": [
+        {
+          "seconds": 0.0032436669862363487,
+          "rss_kib": 320
+        },
+        {
+          "seconds": 1.0190724169951864,
+          "rss_kib": 204192
+        },
+        {
+          "seconds": 2.025155458977679,
+          "rss_kib": 369744
+        },
+        {
+          "seconds": 3.0316714590007905,
+          "rss_kib": 469504
+        },
+        {
+          "seconds": 4.048502583988011,
+          "rss_kib": 526816
+        },
+        {
+          "seconds": 5.058983333990909,
+          "rss_kib": 1936944
+        },
+        {
+          "seconds": 6.070259083993733,
+          "rss_kib": 2530832
+        },
+        {
+          "seconds": 7.08508512499975,
+          "rss_kib": 2757392
+        },
+        {
+          "seconds": 8.094194499979494,
+          "rss_kib": 2814816
+        },
+        {
+          "seconds": 9.110037916980218,
+          "rss_kib": 2947312
+        }
+      ],
+      "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer_3g.lean:7:2: error: Tactic `decide` failed for proposition\n  validCheck inferSchedule = true\nbecause its `Decidable` instance\n  instDecidableEqBool (validCheck inferSchedule) true\ndid not reduce to `isTrue` or `isFalse`.\n\nReduction got stuck at the `Decidable` instance\n  match validCheck inferSchedule, true with\n  | false, false => isTrue \u22ef\n  | false, true => isFalse \u22ef\n  | true, false => isFalse \u22ef\n  | true, true => isTrue \u22ef\n'infer_valid_kernel' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n",
+      "stderr": ""
+    },
+    "learn_3g": {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn_3g.lean"
+      ],
+      "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution",
+      "source_sha256": "c3579aac18d8709c6f143642456fc15b2ce7568790cec6988023e446ee3e9a1c",
+      "exit_code": -15,
+      "seconds": 14.407289208989823,
+      "stopped_by": "rss_cap",
+      "seconds_cap": 120,
+      "rss_cap_kib": 3145728,
+      "max_sampled_rss_kib": 3220976,
+      "samples": [
+        {
+          "seconds": 0.0023928339942358434,
+          "rss_kib": 352
+        },
+        {
+          "seconds": 1.0119476669933647,
+          "rss_kib": 133600
+        },
+        {
+          "seconds": 2.0234246669861022,
+          "rss_kib": 218032
+        },
+        {
+          "seconds": 3.030398917006096,
+          "rss_kib": 315552
+        },
+        {
+          "seconds": 4.036117292009294,
+          "rss_kib": 396288
+        },
+        {
+          "seconds": 5.051963042002171,
+          "rss_kib": 478624
+        },
+        {
+          "seconds": 6.057945375010604,
+          "rss_kib": 572400
+        },
+        {
+          "seconds": 7.070454708999023,
+          "rss_kib": 1195984
+        },
+        {
+          "seconds": 8.08067941700574,
+          "rss_kib": 1607888
+        },
+        {
+          "seconds": 9.18591629198636,
+          "rss_kib": 1888832
+        },
+        {
+          "seconds": 10.1993967499875,
+          "rss_kib": 2190592
+        },
+        {
+          "seconds": 11.211120916996151,
+          "rss_kib": 2499344
+        },
+        {
+          "seconds": 12.224780749995261,
+          "rss_kib": 2773216
+        },
+        {
+          "seconds": 13.235355334007181,
+          "rss_kib": 2938816
+        },
+        {
+          "seconds": 14.253849166998407,
+          "rss_kib": 3220976
+        }
+      ],
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "frozen_files_unchanged": true,
+  "frozen_file_count": 41,
+  "companion_head_unchanged": true,
+  "companion_status_unchanged": true,
+  "dependency_source_sha256": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b"
+  },
+  "reused_source_sha256": {
+    "/Users/ember/dev/minidregg/Compiler/Emit.lean": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+    "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4",
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6"
+  },
+  "scope": "Kernel-checked universal conditional execution theorem; actual descriptor shape is compiled evidence only. Source patch/import checks; fresh proposal dependency oleans with cached external dependencies. Root owns the full umbrella build. No Rust/TFHE refinement."
+}

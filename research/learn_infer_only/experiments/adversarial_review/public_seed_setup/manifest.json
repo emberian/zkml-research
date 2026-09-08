@@ -1,0 +1,46 @@
+{
+  "frozen_proposal_sha256": "ec9af914cb349e0bc6881bd8a5b99fd493e43b106a869a44eb58edf758083ab3",
+  "verdict": "accepted exact stated classical-ROM game; no correction requested",
+  "files": [
+    {
+      "path": "NEXT.md",
+      "sha256": "e2d0b0bb45831e8fe25accc7c18905f0b112782ff2730fa6af432e439665198c",
+      "bytes": 559
+    },
+    {
+      "path": "REPORT.md",
+      "sha256": "387c53f581c6adda25dc0a5da5ab91257000e59e1d016bd5e78dce3459e7b90d",
+      "bytes": 12821
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "257170c55dfdc46c43c77e6cc60c56438a50e40b7ac517eb91a4f3acc195dd7b",
+      "bytes": 988
+    },
+    {
+      "path": "finite.log",
+      "sha256": "6c672f8a4488c7b6520ced47b0f791751dfefa7a47ac204fb6d38cd369ef52f8",
+      "bytes": 4336
+    },
+    {
+      "path": "finite_results.json",
+      "sha256": "6c672f8a4488c7b6520ced47b0f791751dfefa7a47ac204fb6d38cd369ef52f8",
+      "bytes": 4336
+    },
+    {
+      "path": "finite_review.py",
+      "sha256": "b4f8670b33cf2ad80522ea9bb7f8bfbac9e8e1b89417048484d8a9519e40f783",
+      "bytes": 9076
+    },
+    {
+      "path": "source_pins.json",
+      "sha256": "104001e41b8c23f47cb4c09d2a47d13eda16e8d46b9d55e009e55c6df6853450",
+      "bytes": 2970
+    },
+    {
+      "path": "verification.json",
+      "sha256": "f358694ff7598c60404eb380e98ed745a18b3cda76ef6b7f27d601885b12bed4",
+      "bytes": 541
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "accepted": true,
+  "author_timing_addendum_manifest_sha256": "f1226c40feeab45bdf51554200c9a70f5da4c5ac20410efcef7b6e4c1edf0453",
+  "original_manifest_sha256": "5857158dba63a63a0a15e0fcb0dc965658c5be07b6f362ffab28aa9d602e6140",
+  "original_review_sha256": "0642c6a47b1af496931ff289c22f91ef3a6f311a44eaa5a6562c35d807ac59ef",
+  "prior_integration_acceptance_unchanged": true,
+  "schema": "live-semantic-independent-final-review-v2",
+  "scope": "Additive timing attribution correction; original review and author seals preserved. No new model/crypto/private execution.",
+  "timing_addendum_sha256": "91fef85ce2eaf1eba43b680730b3aaf9b43789237389419ad38b2b353e7a6b6a",
+  "timing_check_sha256": "da958e5abf359d72f395b66081cb2ae3996cc9738f7af0267cc202669a9dbcd0"
+}

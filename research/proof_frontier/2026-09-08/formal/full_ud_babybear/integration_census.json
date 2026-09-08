@@ -1,0 +1,244 @@
+{
+  "checker_sha256": "42d9ba6f2b064d8d2896e5c7d02f2732019388f1d13e82fddf1a78b1258b45b9",
+  "census": {
+    "theorems": [
+      "ext4_card",
+      "base_field_cardinality_falsifier",
+      "x_mem",
+      "one_mem",
+      "line_pr_one",
+      "premise_inhabited",
+      "former_band_falsifier",
+      "isProximityGenerator_fullUD",
+      "rateHalf_probability_bound",
+      "good_line_correlatedAgreement",
+      "bad_pair_not_correlatedAgreement",
+      "bad_pair_probability_bound"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "ext4_card",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.ext4_card",
+        "private": false,
+        "line": 33
+      },
+      {
+        "name": "base_field_cardinality_falsifier",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.base_field_cardinality_falsifier",
+        "private": false,
+        "line": 39
+      },
+      {
+        "name": "x_mem",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.x_mem",
+        "private": false,
+        "line": 72
+      },
+      {
+        "name": "one_mem",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.one_mem",
+        "private": false,
+        "line": 76
+      },
+      {
+        "name": "line_pr_one",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.line_pr_one",
+        "private": false,
+        "line": 81
+      },
+      {
+        "name": "premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.premise_inhabited",
+        "private": false,
+        "line": 99
+      },
+      {
+        "name": "former_band_falsifier",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.former_band_falsifier",
+        "private": false,
+        "line": 105
+      },
+      {
+        "name": "isProximityGenerator_fullUD",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.isProximityGenerator_fullUD",
+        "private": false,
+        "line": 112
+      },
+      {
+        "name": "rateHalf_probability_bound",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.rateHalf_probability_bound",
+        "private": false,
+        "line": 122
+      },
+      {
+        "name": "good_line_correlatedAgreement",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.good_line_correlatedAgreement",
+        "private": false,
+        "line": 136
+      },
+      {
+        "name": "bad_pair_not_correlatedAgreement",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_not_correlatedAgreement",
+        "private": false,
+        "line": 148
+      },
+      {
+        "name": "bad_pair_probability_bound",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_probability_bound",
+        "private": false,
+        "line": 176
+      }
+    ],
+    "theorem_count": 12,
+    "pin_count": 12,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.ext4_card",
+        "requested_name": "ext4_card",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 184,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.ext4_card' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.ext4_card"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.base_field_cardinality_falsifier",
+        "requested_name": "base_field_cardinality_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 188,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.base_field_cardinality_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.base_field_cardinality_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.isProximityGenerator_fullUD",
+        "requested_name": "isProximityGenerator_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 192,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.isProximityGenerator_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.isProximityGenerator_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.rateHalf_probability_bound",
+        "requested_name": "rateHalf_probability_bound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 196,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.rateHalf_probability_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.rateHalf_probability_bound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.x_mem",
+        "requested_name": "FullUDInstantiation.x_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 200,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.x_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.x_mem"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.one_mem",
+        "requested_name": "FullUDInstantiation.one_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 204,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.one_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.one_mem"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.line_pr_one",
+        "requested_name": "FullUDInstantiation.line_pr_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 208,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.line_pr_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.line_pr_one"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.premise_inhabited",
+        "requested_name": "FullUDInstantiation.premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 212,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.former_band_falsifier",
+        "requested_name": "FullUDInstantiation.former_band_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 216,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.former_band_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.former_band_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.good_line_correlatedAgreement",
+        "requested_name": "FullUDInstantiation.good_line_correlatedAgreement",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 220,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.good_line_correlatedAgreement' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.good_line_correlatedAgreement"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_not_correlatedAgreement",
+        "requested_name": "FullUDInstantiation.bad_pair_not_correlatedAgreement",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 224,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_not_correlatedAgreement' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_not_correlatedAgreement"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_probability_bound",
+        "requested_name": "FullUDInstantiation.bad_pair_probability_bound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 228,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_probability_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_probability_bound"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  }
+}

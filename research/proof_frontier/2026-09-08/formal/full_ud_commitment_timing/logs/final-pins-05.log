@@ -1,0 +1,5 @@
+'Minidregg.Selvage.FriRootResolution.fullUD_coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound_binding' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

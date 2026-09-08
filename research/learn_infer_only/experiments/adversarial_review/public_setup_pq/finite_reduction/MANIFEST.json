@@ -1,0 +1,60 @@
+{
+  "scope": "[EXECUTED] Provenance only; no crypto, estimator, Gaussian or attack execution",
+  "status": "PASS",
+  "four_fresh_source_extractions_match": [
+    {
+      "name": "ALS",
+      "pdf_sha256": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0",
+      "extract_sha256": "a1170661edc061a9b011367d43b9b75ed6dfc073cfd0aa477459c20f14d1ecdd",
+      "fresh_layout_extraction_matches": true
+    },
+    {
+      "name": "LPSS",
+      "pdf_sha256": "b7715df4acca8bd615c0a8a885d781300f9d80d371cc820da53b9e3004de358d",
+      "extract_sha256": "2523afef700715c60349aaaf893cfb63f890c3db2cf37fe92d39f65d58882c9f",
+      "fresh_layout_extraction_matches": true
+    },
+    {
+      "name": "AR",
+      "pdf_sha256": "8bfc622e6b03fbbb2671238a30a4d8403660442af0132026a46fdf2a572779d7",
+      "extract_sha256": "8d96d03f2bfd37e610ec14057f05f0371bef89d37c35b4f14dd9b8a673efbb99",
+      "fresh_layout_extraction_matches": true
+    },
+    {
+      "name": "BLPRS",
+      "pdf_sha256": "1d2b27f2969f59610257cb2498a73a66b2a8ee142780ac6200a45ca9f86dbf9d",
+      "extract_sha256": "91a7c979f674ec3216fb63aa8cac8251785c78f42eddca6e0a0119eafeea6569",
+      "fresh_layout_extraction_matches": true
+    }
+  ],
+  "frozen_note_inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/notes/AUDIT.md": "2c6f649fa0891be05dd1f3a1f89c935692091195e71f0b1959d78b5ef9061007",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md": "4c43bce409495edf9c9d5b8e4ada0581af5be0ecf6ff949fbd99fdbfd3da62fe",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/BOUND.md": "b07d7714ca6078a63bf1281ad8edbd07dc39094d91f6808e1c3868a3503dc2e5",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/finite_reduction/FINITE_THEOREM.md": "7ae20bc50552283e4688466b966c7e2d1265613f4fb8a49c2909aaeb77bd7bd4"
+  },
+  "parameter_source": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/results.json",
+    "sha256": "93783ef7735ace3c7f033dfbe58cae60f5f8fbc74b53ed62b7b6729500533138"
+  },
+  "artifacts": {
+    "FINITE_THEOREM.md": "7ae20bc50552283e4688466b966c7e2d1265613f4fb8a49c2909aaeb77bd7bd4",
+    "PARAMETERS.md": "48592ae22653db4541d9ffec3565d8436b7aff0875d1111218544726fdfaede0",
+    "STATUS.md": "da66ed8721fd9dec7c9ceaa025405b1b45e74e52945c48f2cb7b6227e0583229",
+    "NEXT.md": "fdb7b1a0b2be9da21d8bfa608444b11121cba8c9f3cfccbfb91db016256c29b0",
+    "INPUTS.json": "24286ceca502dcca865e9f0bb617e6e6730d82e38d7f0b3c3991b5c7a0f0dfcf",
+    "RESULTS.json": "a6d4ff5dae146a7fb1c736de64e70b6ac65387f21d0b0b0c97bc30ac3f3b801b",
+    "SOURCES.json": "32f0663bc71190e6f656187f654d10fabe98b1fdaca25ffd8b414b1d3140483e",
+    "check_parameters.py": "56a43ae292e213d66c318838f3684259d76f88fb90e1b9a6e5c634acb047284c",
+    "seal.py": "db8f9f816440a82cb2f7c28aaaa96e1b09f7a0e2f9f74abd376a6833b803f044"
+  },
+  "network_meter": {
+    "web_search_queries": 2,
+    "arxiv_abstract_opens": 1,
+    "arxiv_pdf_downloads": 1,
+    "eprint_pdf_downloads": 0,
+    "scry_sql_queries": 0,
+    "scry_schema_queries": 0,
+    "kagi_queries": 0
+  }
+}

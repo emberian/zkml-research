@@ -1,0 +1,16 @@
+{
+  "status": "COMPLETE",
+  "scope": "independent source, mathematical and bounded finite audit; no new Lean build",
+  "files": {
+    "NEXT.md": "c5a7df8accd84bb5763bed60e6a0ccfc0603e238ee569b141c2abf183c5ae427",
+    "REPORT.md": "65aaa22c832e21f8f52b90ffa0633fd0cfd9fb348ad7461658ee5eb38919b36a",
+    "STATUS.md": "1c58a3a82e9aced84851f3139244758c25775428b4be4d0427cb5493d7a95f29",
+    "census.json": "813503ae4835026276caf154bbbe26a837beff8ee96159c050a59cec50eeab4b",
+    "finite_checks.json": "1dd1160eb29501895976fcce191169bcf8c20d0eb467f56d57ea212d268b3cf6",
+    "import_closure.json": "65f9444f8495e34698ca71437a4af3a7ca56b27982dd927c17618801dfd1fb80",
+    "review.log": "20fea76fa3cc5bb577cbeefbfffac480dd86eddcb29666c2f527bee1f619ebc0",
+    "review.py": "4c1882ffc34f1baac04bea8db7f79cd80c729b7b5bfceeddb4152eb311719fb9",
+    "verification.json": "78906f22f3c53ace344af50b7e3af1b7b3ea3584703d4a3f62e8e7930ac471ee"
+  },
+  "input_closure_unchanged_at_freeze": true
+}

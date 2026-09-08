@@ -1,0 +1,58 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer_3g.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution",
+  "source_sha256": "a88038831e7fb5d30fa29d3ada9cfb009401d356dcd5ba090b6b6739db22a171",
+  "exit_code": 1,
+  "seconds": 10.119329791981727,
+  "stopped_by": null,
+  "seconds_cap": 120,
+  "rss_cap_kib": 3145728,
+  "max_sampled_rss_kib": 2947312,
+  "samples": [
+    {
+      "seconds": 0.0032436669862363487,
+      "rss_kib": 320
+    },
+    {
+      "seconds": 1.0190724169951864,
+      "rss_kib": 204192
+    },
+    {
+      "seconds": 2.025155458977679,
+      "rss_kib": 369744
+    },
+    {
+      "seconds": 3.0316714590007905,
+      "rss_kib": 469504
+    },
+    {
+      "seconds": 4.048502583988011,
+      "rss_kib": 526816
+    },
+    {
+      "seconds": 5.058983333990909,
+      "rss_kib": 1936944
+    },
+    {
+      "seconds": 6.070259083993733,
+      "rss_kib": 2530832
+    },
+    {
+      "seconds": 7.08508512499975,
+      "rss_kib": 2757392
+    },
+    {
+      "seconds": 8.094194499979494,
+      "rss_kib": 2814816
+    },
+    {
+      "seconds": 9.110037916980218,
+      "rss_kib": 2947312
+    }
+  ],
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer_3g.lean:7:2: error: Tactic `decide` failed for proposition\n  validCheck inferSchedule = true\nbecause its `Decidable` instance\n  instDecidableEqBool (validCheck inferSchedule) true\ndid not reduce to `isTrue` or `isFalse`.\n\nReduction got stuck at the `Decidable` instance\n  match validCheck inferSchedule, true with\n  | false, false => isTrue \u22ef\n  | false, true => isFalse \u22ef\n  | true, false => isFalse \u22ef\n  | true, true => isTrue \u22ef\n'infer_valid_kernel' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n",
+  "stderr": ""
+}

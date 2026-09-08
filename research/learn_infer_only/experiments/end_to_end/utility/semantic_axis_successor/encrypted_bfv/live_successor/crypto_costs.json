@@ -1,0 +1,103 @@
+{
+  "by_component_role_command": {
+    "commands.jsonl.gz:authority:host-infer": {
+      "count": 2,
+      "sum_ns": 59722458
+    },
+    "commands.jsonl.gz:authority:host-learn": {
+      "count": 1,
+      "sum_ns": 30142292
+    },
+    "commands.jsonl.gz:authority:inspect": {
+      "count": 3,
+      "sum_ns": 53276333
+    },
+    "commands.jsonl.gz:host:host-infer": {
+      "count": 2,
+      "sum_ns": 57202292
+    },
+    "commands.jsonl.gz:host:host-learn": {
+      "count": 1,
+      "sum_ns": 35713458
+    },
+    "commands.jsonl.gz:host:inspect": {
+      "count": 3,
+      "sum_ns": 53315083
+    },
+    "commands.jsonl.gz:independent_public_replay:host-infer": {
+      "count": 2,
+      "sum_ns": 82662999
+    },
+    "commands.jsonl.gz:independent_public_replay:host-learn": {
+      "count": 1,
+      "sum_ns": 32055583
+    },
+    "commands.jsonl.gz:independent_public_replay:inspect": {
+      "count": 3,
+      "sum_ns": 57075249
+    },
+    "commands.jsonl.gz:issuer:issuer-encrypt": {
+      "count": 1,
+      "sum_ns": 31483708
+    },
+    "commands.jsonl.gz:public_transport:inspect": {
+      "count": 3,
+      "sum_ns": 51919083
+    },
+    "commands.jsonl.gz:trusted_setup:encode-query": {
+      "count": 16,
+      "sum_ns": 147829623
+    },
+    "commands.jsonl.gz:trusted_setup:keygen": {
+      "count": 1,
+      "sum_ns": 98805583
+    },
+    "commands.jsonl.gz:trusted_setup:params": {
+      "count": 1,
+      "sum_ns": 5748917
+    },
+    "independent_public_commands.jsonl:independent_public_verifier:host-infer": {
+      "count": 2,
+      "sum_ns": 57532084
+    },
+    "independent_public_commands.jsonl:independent_public_verifier:host-learn": {
+      "count": 1,
+      "sum_ns": 25927333
+    },
+    "independent_public_commands.jsonl:independent_public_verifier:inspect": {
+      "count": 3,
+      "sum_ns": 55391167
+    },
+    "private_receive_commands.jsonl.gz:reader:inspect": {
+      "count": 2,
+      "sum_ns": 31873792
+    },
+    "private_receive_commands.jsonl.gz:reader:reader-decrypt": {
+      "count": 2,
+      "sum_ns": 31796500
+    },
+    "verified_commands.jsonl.gz:reader:host-infer": {
+      "count": 2,
+      "sum_ns": 54179000
+    },
+    "verified_commands.jsonl.gz:reader:host-learn": {
+      "count": 1,
+      "sum_ns": 31337792
+    },
+    "verified_commands.jsonl.gz:reader:inspect": {
+      "count": 3,
+      "sum_ns": 55603500
+    }
+  },
+  "later_decryptions": 2,
+  "later_private_receive_cli_rows": 4,
+  "log_sha256": {
+    "commands.jsonl.gz": "9f4711cda22d709d3240cb3ab6163c373b4f86e1c1ba525ec552f5758f1d96e3",
+    "independent_public_commands.jsonl": "e5c8b3f4c5df3f74facaab32d0401972190de4be1b1fa6b08812413a61e520e8",
+    "private_receive_commands.jsonl.gz": "776b49b49221f1e8c364e9901d96eece6208b7e5a1be8127bf1a362163627dc3",
+    "verified_commands.jsonl.gz": "69e7c669b166a9110f6bfba0cad84f4ef97322483f77b6ef58b762d507fd3290"
+  },
+  "public_cli_rows": 52,
+  "public_decryptions": 0,
+  "scope": "Actual logged subprocess intervals; overlap outer/model timing and persistent-worker meters."
+}

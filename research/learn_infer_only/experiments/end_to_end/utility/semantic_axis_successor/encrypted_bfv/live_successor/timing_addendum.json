@@ -1,0 +1,32 @@
+{
+  "actual_live_start_utc": "2026-09-08T05:56:48Z",
+  "following_learn_event": {
+    "complete_replay_pairs": 81,
+    "completed_events": 81,
+    "current_operation": "h0-e0081",
+    "elapsed_seconds": 1698.2360932909942,
+    "operations": 245,
+    "phase": "public",
+    "public_phase_closed": false,
+    "reader_invocations": 0,
+    "updated_utc": "2026-09-08T05:56:46.718959+00:00"
+  },
+  "interpretation": "Original packet mislabeled a later worker observation as exact Infer-block close. The actual live run overlapped Learn82 onward; no isolated timing claim.",
+  "last_infer_event": {
+    "complete_replay_pairs": 80,
+    "completed_events": 80,
+    "current_operation": "h0-e0080",
+    "elapsed_seconds": 1677.4533599159913,
+    "operations": 242,
+    "phase": "public",
+    "public_phase_closed": false,
+    "reader_invocations": 0,
+    "updated_utc": "2026-09-08T05:56:25.935979+00:00"
+  },
+  "later_observation_utc": "2026-09-08T05:56:47Z",
+  "live_outer_wall_ns": 27504062000,
+  "original_manifest_sha256": "9e04634c8e7346697035372e363de4fb6a1abd5efd92e552eef6e1e6f86dce9f",
+  "scope": "Timing attribution correction only; original model/BFV result and phase-order checks unchanged",
+  "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_long_run/contention.json",
+  "source_sha256": "670f57b16ae146116cdf751b226b87962d621ff677331104445c47fae6b71bf4"
+}
