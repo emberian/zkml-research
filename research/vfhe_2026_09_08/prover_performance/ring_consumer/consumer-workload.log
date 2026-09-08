@@ -1,0 +1,23 @@
+    Finished `release` profile [optimized] target(s) in 0.27s
+     Running unittests src/lib.rs (target/release/deps/matvec-05e485c334458da0)
+
+running 1 test
+{"phase":"claim_totals","sample":0,"old_ns":520352,"new_ns":63996}
+{"phase":"claim_totals","sample":1,"old_ns":483427,"new_ns":63481}
+{"phase":"claim_totals","sample":2,"old_ns":553123,"new_ns":64062}
+{"phase":"claim_totals","sample":3,"old_ns":604761,"new_ns":63352}
+{"phase":"claim_totals","sample":4,"old_ns":548743,"new_ns":63348}
+{"phase":"claim_totals","sample":5,"old_ns":618782,"new_ns":99416}
+{"phase":"claim_totals","sample":6,"old_ns":550444,"new_ns":63639}
+{"phase":"claim_totals","sample":7,"old_ns":551040,"new_ns":63358}
+{"phase":"claim_totals","sample":8,"old_ns":502699,"new_ns":66406}
+{"phase":"claim_medians","ring_degree":1024,"rows":4,"inner":2,"components":2,"old_ns":550444,"new_ns":63639}
+
+thread 'protocol::prover::ring_contraction_tests::ring_claim_workload_and_real_pcs_consumer' (19014018) panicked at src/protocol/verifier/mod.rs:104:14:
+called `Result::unwrap()` on an `Err` value: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+{"phase":"actual_consumer","pcs_enabled":true,"verifier_accepted":true,"modified_output_refused":true,"output_coefficients_matched":8192,"prove_ns":34514083,"verify_ns":2739916}
+test protocol::prover::ring_contraction_tests::ring_claim_workload_and_real_pcs_consumer ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 15 filtered out; finished in 0.22s
+

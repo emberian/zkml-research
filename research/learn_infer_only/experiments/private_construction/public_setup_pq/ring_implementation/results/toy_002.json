@@ -1,0 +1,181 @@
+{
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "flint_version": "0.9.0",
+  "argv": [
+    "run.py",
+    "--profile",
+    "toy",
+    "--inputs",
+    "5",
+    "--output",
+    "results/toy_002.json"
+  ],
+  "source_sha256": {
+    "ring.py": "2a08c444ee6cd34194fe7f519fc7e687abf180fa000da219d3feaec30d79ff00",
+    "run.py": "c4d919bd9dec6ea994db98bf366651242f4a171572e21b92ada90e7a86650657",
+    "sampling/sampler.py": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd"
+  },
+  "controls": {
+    "independent_naive_negacyclic_cases": 6,
+    "pass": true
+  },
+  "arithmetic_bench": [
+    {
+      "N": 64,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 7.908401312306523e-05,
+      "one_constant_product_seconds": 1.5416997484862804e-05
+    },
+    {
+      "N": 1024,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.0014429580187425017,
+      "one_constant_product_seconds": 0.00019566604169085622
+    },
+    {
+      "N": 4096,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.005575041985139251,
+      "one_constant_product_seconds": 0.0007882090285420418
+    },
+    {
+      "N": 16384,
+      "q_bits": 289,
+      "one_negacyclic_multiply_seconds": 0.02332758397096768,
+      "one_constant_product_seconds": 0.0030896250391379
+    }
+  ],
+  "run": {
+    "profile": "toy",
+    "status": "PASS",
+    "parameters": {
+      "N": 64,
+      "w": 4,
+      "d": 9,
+      "recipients": 2,
+      "p": 257,
+      "q": 2013265921,
+      "sigma_key": 2,
+      "sigma_error": 1,
+      "flood": 1024,
+      "W": 8,
+      "denominator": null
+    },
+    "classification": "toy or reduced-dimension execution; no security inference",
+    "timings_seconds": {
+      "sampler_table_build": 0.262517791998107,
+      "public_A": 0.00012779200915247202,
+      "recipient_keygen_and_publish": 0.003511417016852647,
+      "missing_public_rows": 0.00011725001968443394,
+      "signed_combine": 1.3166980352252722e-05,
+      "signed_all_recipient_decode": 8.520903065800667e-05
+    },
+    "encodes": [
+      {
+        "step": 0,
+        "encode_seconds": 0.0020205419859848917,
+        "all_recipient_decode_seconds": 0.00011329195694997907,
+        "encode_error_sampler_seconds": 0.0017237490392290056,
+        "encode_other_seconds": 0.0002967929467558861,
+        "window_update_seconds": 1.812499249354005e-05,
+        "window_all_recipient_decode_seconds": 8.674996206536889e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 1,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 1,
+        "encode_seconds": 0.0016541669610887766,
+        "all_recipient_decode_seconds": 9.858299745246768e-05,
+        "encode_error_sampler_seconds": 0.0014575410168617964,
+        "encode_other_seconds": 0.0001966259442269802,
+        "window_update_seconds": 1.4165998436510563e-05,
+        "window_all_recipient_decode_seconds": 8.783297380432487e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 2,
+        "encode_seconds": 0.0014235000126063824,
+        "all_recipient_decode_seconds": 8.954096119850874e-05,
+        "encode_error_sampler_seconds": 0.001273792004212737,
+        "encode_other_seconds": 0.0001497080083936453,
+        "window_update_seconds": 1.7583020962774754e-05,
+        "window_all_recipient_decode_seconds": 8.654099656268954e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 3,
+        "encode_seconds": 0.0017390830325894058,
+        "all_recipient_decode_seconds": 9.954103734344244e-05,
+        "encode_error_sampler_seconds": 0.0015541660832241178,
+        "encode_other_seconds": 0.00018491694936528802,
+        "window_update_seconds": 2.504198346287012e-05,
+        "window_all_recipient_decode_seconds": 8.687499212101102e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      },
+      {
+        "step": 4,
+        "encode_seconds": 0.001493167015723884,
+        "all_recipient_decode_seconds": 9.833299554884434e-05,
+        "encode_error_sampler_seconds": 0.0013431260013021529,
+        "encode_other_seconds": 0.00015004101442173123,
+        "window_update_seconds": 1.6874982975423336e-05,
+        "window_all_recipient_decode_seconds": 8.450000314041972e-05,
+        "fresh_recipients_matched": 2,
+        "window_recipients_matched": 2,
+        "live_window_size": 2,
+        "exact_expiry_rebuild_matched": true
+      }
+    ],
+    "sampler": {
+      "2": {
+        "count": 512,
+        "seconds": 0.0032542490516789258,
+        "proposals": 8225,
+        "direct_threshold_evaluations": 1,
+        "cap_fallbacks": 0,
+        "os_random_bytes_requested": 43520
+      },
+      "1": {
+        "count": 1280,
+        "seconds": 0.00735237414482981,
+        "proposals": 19181,
+        "direct_threshold_evaluations": 1,
+        "cap_fallbacks": 0,
+        "os_random_bytes_requested": 104480
+      }
+    },
+    "fresh_inputs_executed": 5,
+    "candidate_theorem_T": 384,
+    "T384_executed": false,
+    "actual_recipient_rows_generated": 2,
+    "absent_recipient_rows_generated": 0,
+    "signed_combination_recipients_matched": 2,
+    "oversized_combination_rejected": true,
+    "packed_sizes_bytes": {
+      "ciphertext": 1027,
+      "public_A_P": 3224,
+      "one_key_cutoff": 160
+    },
+    "packing_implemented": false,
+    "peak_process_rss_native": 77922304,
+    "rss_native_unit": "bytes on macOS; KiB on Linux",
+    "raw_keys_coins_inputs_or_ciphertext_persisted": false,
+    "privacy_or_hardness_tested": false,
+    "timing_side_channel_claim": false
+  },
+  "source_unchanged": true,
+  "elapsed_seconds": 0.38365079200593755,
+  "status": "PASS"
+}

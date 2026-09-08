@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "real_cli_both_backends": true,
+  "new_label": "account_access",
+  "teaches_per_backend": 2,
+  "before_after_queries_per_backend": 2,
+  "comparisons": [
+    {
+      "event_index": 0,
+      "class_count": 8,
+      "all_integer_scores_match": true,
+      "prediction": "card_payment_not_recognised"
+    },
+    {
+      "event_index": 3,
+      "class_count": 9,
+      "all_integer_scores_match": true,
+      "prediction": "account_access"
+    }
+  ],
+  "scope": "New authored text interaction after the fixed eight-intent benchmark; not a held-out accuracy estimate. CLI query receives scores inline using full reader key."
+}

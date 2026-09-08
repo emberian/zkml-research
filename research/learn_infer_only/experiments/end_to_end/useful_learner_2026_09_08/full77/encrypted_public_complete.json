@@ -1,0 +1,10 @@
+{
+  "learns": 1232,
+  "classes": 77,
+  "expiries": 616,
+  "queries": 77,
+  "scalar_outputs": 5929,
+  "private_decryptions_so_far": 0,
+  "subprocesses_all_returned": true,
+  "public_elapsed_seconds": 205.92517529096222
+}

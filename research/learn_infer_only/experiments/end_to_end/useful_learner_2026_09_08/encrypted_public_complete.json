@@ -1,0 +1,11 @@
+{
+  "updates": 128,
+  "expiries": 64,
+  "queries": 960,
+  "scalar_outputs": 6400,
+  "public_elapsed_seconds": 160.1655646659783,
+  "binary_sha256": "9c79c02e7d919ecdc24851c6f77e50ed6990397bd669f571a886f8e2b85058c2",
+  "source_sha256": "9888c5200ebfad3e00052e47aa822d74d03a62b76a46ccf53d5644b092448799",
+  "private_decryptions_so_far": 0,
+  "subprocesses_all_returned": true
+}

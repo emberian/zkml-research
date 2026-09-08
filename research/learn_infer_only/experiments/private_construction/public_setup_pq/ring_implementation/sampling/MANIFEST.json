@@ -1,0 +1,49 @@
+{
+  "claim_label": "EXECUTED",
+  "completed_utc": "2026-09-08 15:55:26 UTC",
+  "earlier_unfrozen_smoke_coefficients": 2000,
+  "files": {
+    "DESIGN.md": {
+      "bytes": 7149,
+      "sha256": "a3da0b7fb7ff6545309863e1c5f64909804a0ad74c13814863844f3b9330de13"
+    },
+    "MEASUREMENTS.json": {
+      "bytes": 7171,
+      "sha256": "1a60bfee04fdb3b43367bfff2fdc2feb64e399621b388d64f2d3e38f2f757b3e"
+    },
+    "NEXT.md": {
+      "bytes": 655,
+      "sha256": "59156f69a713e4791c552a35fe3abcab56dbba162b8e6d24048cd61ee705a948"
+    },
+    "RUN.log": {
+      "bytes": 2648,
+      "sha256": "9328d7e9bb8928e552673e82b1224b9fa795b9ec8dbb9a3d564f9fe52c1bdce6"
+    },
+    "STATUS.md": {
+      "bytes": 689,
+      "sha256": "0695d4d52ba43fc4f1d05f85cc75bd5b1193039ae7233b311b2c21f24ffc45d7"
+    },
+    "__init__.py": {
+      "bytes": 179,
+      "sha256": "3b6a8876d26cf9489d59789044c4af2334fa2ca8a2c991202a194e3134dca0e2"
+    },
+    "sampler.py": {
+      "bytes": 7670,
+      "sha256": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd"
+    },
+    "verify_and_benchmark.py": {
+      "bytes": 7593,
+      "sha256": "3f134678460e3465077f896190cf9f60970d2f62a01b743e6a813e225dc9e865"
+    }
+  },
+  "frozen": true,
+  "measured_coefficients": 2200000,
+  "measured_sources_unchanged": true,
+  "raw_samples_persisted": 0,
+  "reference_specification": {
+    "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/SPEC.md",
+    "sha256": "2fef91992b092f93f6023a02b0072008a2f4f46e5601ea8fd71eb8d0972e1576"
+  },
+  "scope": "Coefficient sampler only; same finite threshold output law under ideal independent OS-byte coins by the supplied derived argument; variable-time research implementation, no production security or private execution claim.",
+  "search_queries": 0
+}

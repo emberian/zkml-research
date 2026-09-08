@@ -1,0 +1,198 @@
+{
+  "ok": true,
+  "learns": 128,
+  "expiries": 64,
+  "queries": 960,
+  "exact_integer_matches": 6400,
+  "prediction_matches": 960,
+  "checkpoint_results": {
+    "32": {
+      "correct": 151,
+      "total": 320,
+      "accuracy": 0.471875,
+      "by_class": {
+        "card_arrival": {
+          "correct": 38,
+          "total": 40
+        },
+        "cash_withdrawal_charge": {
+          "correct": 39,
+          "total": 40
+        },
+        "card_payment_not_recognised": {
+          "correct": 36,
+          "total": 40
+        },
+        "lost_or_stolen_card": {
+          "correct": 38,
+          "total": 40
+        },
+        "pending_card_payment": {
+          "correct": 0,
+          "total": 40
+        },
+        "pending_transfer": {
+          "correct": 0,
+          "total": 40
+        },
+        "transfer_not_received_by_recipient": {
+          "correct": 0,
+          "total": 40
+        },
+        "wrong_amount_of_cash_received": {
+          "correct": 0,
+          "total": 40
+        }
+      },
+      "original_four": {
+        "correct": 151,
+        "total": 160
+      },
+      "introduced_four": {
+        "correct": 0,
+        "total": 160
+      }
+    },
+    "64": {
+      "correct": 270,
+      "total": 320,
+      "accuracy": 0.84375,
+      "by_class": {
+        "card_arrival": {
+          "correct": 37,
+          "total": 40
+        },
+        "cash_withdrawal_charge": {
+          "correct": 38,
+          "total": 40
+        },
+        "card_payment_not_recognised": {
+          "correct": 33,
+          "total": 40
+        },
+        "lost_or_stolen_card": {
+          "correct": 38,
+          "total": 40
+        },
+        "pending_card_payment": {
+          "correct": 38,
+          "total": 40
+        },
+        "pending_transfer": {
+          "correct": 32,
+          "total": 40
+        },
+        "transfer_not_received_by_recipient": {
+          "correct": 18,
+          "total": 40
+        },
+        "wrong_amount_of_cash_received": {
+          "correct": 36,
+          "total": 40
+        }
+      },
+      "original_four": {
+        "correct": 146,
+        "total": 160
+      },
+      "introduced_four": {
+        "correct": 124,
+        "total": 160
+      }
+    },
+    "128": {
+      "correct": 269,
+      "total": 320,
+      "accuracy": 0.840625,
+      "by_class": {
+        "card_arrival": {
+          "correct": 39,
+          "total": 40
+        },
+        "cash_withdrawal_charge": {
+          "correct": 39,
+          "total": 40
+        },
+        "card_payment_not_recognised": {
+          "correct": 35,
+          "total": 40
+        },
+        "lost_or_stolen_card": {
+          "correct": 38,
+          "total": 40
+        },
+        "pending_card_payment": {
+          "correct": 39,
+          "total": 40
+        },
+        "pending_transfer": {
+          "correct": 26,
+          "total": 40
+        },
+        "transfer_not_received_by_recipient": {
+          "correct": 16,
+          "total": 40
+        },
+        "wrong_amount_of_cash_received": {
+          "correct": 37,
+          "total": 40
+        }
+      },
+      "original_four": {
+        "correct": 151,
+        "total": 160
+      },
+      "introduced_four": {
+        "correct": 118,
+        "total": 160
+      }
+    }
+  },
+  "public_elapsed_seconds": 160.16846970794722,
+  "total_elapsed_seconds": 284.6048980829655,
+  "commands": {
+    "encode-query": {
+      "calls": 960,
+      "seconds": 9.582708880945574,
+      "mean_seconds": 0.00998198841765164,
+      "max_seconds": 0.029238334042020142
+    },
+    "host-infer": {
+      "calls": 6400,
+      "seconds": 140.68230305722682,
+      "mean_seconds": 0.02198160985269169,
+      "max_seconds": 0.1435433749575168
+    },
+    "host-learn": {
+      "calls": 128,
+      "seconds": 2.8083865447551943,
+      "mean_seconds": 0.021940519880899956,
+      "max_seconds": 0.0261226249858737
+    },
+    "issuer-encrypt": {
+      "calls": 128,
+      "seconds": 2.619789077027235,
+      "mean_seconds": 0.020467102164275275,
+      "max_seconds": 0.026455917046405375
+    },
+    "keygen": {
+      "calls": 1,
+      "seconds": 0.03671204100828618,
+      "mean_seconds": 0.03671204100828618,
+      "max_seconds": 0.03671204100828618
+    },
+    "reader-decrypt": {
+      "calls": 6400,
+      "seconds": 120.56420849252027,
+      "mean_seconds": 0.018838157576956293,
+      "max_seconds": 0.1955915839644149
+    }
+  },
+  "private_after_public_complete": true,
+  "decryption_semantics": "Full-key BFV reader internally decrypts complete polynomial; this experiment compares coefficient576 only. No restricted release.",
+  "queries_public": true,
+  "classes_and_counts_public": true,
+  "encoder_plaintext": true,
+  "cryptographic_backend_changed": false,
+  "new_wrapper_previously_verified": false
+}

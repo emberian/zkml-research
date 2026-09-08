@@ -1,0 +1,23 @@
+[
+  {
+    "op": "query",
+    "text": "How do I submit a mortgage application for a new house?"
+  },
+  {
+    "op": "teach",
+    "label": "loan_application",
+    "text": "I would like to apply for a mortgage to buy my first home."
+  },
+  {
+    "op": "teach",
+    "label": "loan_application",
+    "text": "Please explain the documents needed for a housing loan application."
+  },
+  {
+    "op": "query",
+    "text": "How do I submit a mortgage application for a new house?"
+  },
+  {
+    "op": "status"
+  }
+]

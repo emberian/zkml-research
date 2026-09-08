@@ -1,0 +1,301 @@
+{
+  "claim": "EXECUTED symbolic/function checks only; no cryptographic implementation",
+  "full_valid_domain_correctness_comparisons": 1056250,
+  "fresh_private_label_robust_compatibility_comparisons": 5000,
+  "initial_state_robust_compatibility_comparisons": 6250,
+  "plaintext_parser_checks": 1250,
+  "symbolic_worlds": 2,
+  "learn_per_world": 32,
+  "infer_per_world": 66,
+  "identical_released_traces": true,
+  "final_semantic_states": [
+    [
+      0,
+      21
+    ],
+    [
+      0,
+      22
+    ]
+  ],
+  "anchor_issuance_survives": false,
+  "public_encryption_keys": 33,
+  "function_keys": 1,
+  "ciphertexts_in_current_resident": 33,
+  "selector_ciphertexts_per_infer": 1,
+  "valid_t4_input_bits": 8,
+  "valid_t32_input_bits": 14,
+  "visible_first_coordinate_changes": 10,
+  "out_of_horizon_separation": [
+    0,
+    1
+  ],
+  "replacement_anchor_separation": [
+    0,
+    1
+  ],
+  "nonlinear_step_values": [
+    -1,
+    -1,
+    0
+  ],
+  "trajectory": [
+    {
+      "step": 1,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 2,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 3,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 4,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 5,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 6,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 7,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 8,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 9,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 10,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 11,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 12,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 13,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 14,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 15,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 16,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 17,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 18,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 19,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 20,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 21,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 22,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 23,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 24,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 25,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 26,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 27,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 28,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 29,
+      "ack": "ack",
+      "classes": [
+        0,
+        1
+      ]
+    },
+    {
+      "step": 30,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 31,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    },
+    {
+      "step": 32,
+      "ack": "ack",
+      "classes": [
+        1,
+        1
+      ]
+    }
+  ],
+  "elapsed_seconds": 3.5993463749764487
+}

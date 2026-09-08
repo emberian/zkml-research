@@ -1,0 +1,68 @@
+{
+  "label": "SOURCE / EXECUTED discovery accounting",
+  "primary_sources": [
+    {
+      "id": "2013/727",
+      "url": "https://eprint.iacr.org/2013/727",
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/727.pdf",
+      "pdf_sha256": "dae5804925e44859f31572d49bb8ae1d1511645fc98027c3f46290057cf448e9",
+      "local_text_sha256": "ad472cdebb4a55ad737033a90154104185250453aae7a52785718a79d64665e0",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/727.pdf",
+        "research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/sources/2013-727.txt"
+      ],
+      "access": "Definitions2\u20133, printed pp10\u201311; actual compatibility/adaptive versus selective input timing"
+    },
+    {
+      "id": "2025/330",
+      "url": "https://eprint.iacr.org/2025/330",
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+      "pdf_sha256": "b7133ad8161f287b2a4b4d1a15664c4ace47fbce451d5f569a6d795261108fd2",
+      "local_text_sha256": "88e4fa7f4120767c0724bf37d757e0ea1ed24ca0d6eefa9ea181148fa2249e54",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/330.pdf",
+        "research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/sources/2025-330.txt"
+      ],
+      "access": "Definitions4.2\u20134.4 pp21\u201323; section6.1 and Construction2 pp48\u201349; Theorem6.1 p50 and opening adaptive hybrids"
+    },
+    {
+      "id": "2015/1136",
+      "url": "https://eprint.iacr.org/2015/1136",
+      "pdf": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/1136.pdf",
+      "pdf_sha256": "d50f0f798996230f1513346af3dd59ac2ebd3badd3ee9c24a79906bc69673724",
+      "local_text_sha256": "d01514aa404c9afcfb9532427ceadd119ab8066168ab12e829e3b2a1ff8bbb7e",
+      "command": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/1136.pdf",
+        "research/learn_infer_only/experiments/private_construction/release_successor_2026_09_08/sources/2015-1136.txt"
+      ],
+      "access": "Discovery candidate extracted; not relied on for the construction theorem"
+    }
+  ],
+  "web_search_queries": [
+    "\"multi-input functional encryption\" \"unbounded\" Turing",
+    "\"functional encryption\" \"stateful\" \"garbling\" public encryption",
+    "\"functional encryption\" \"unbounded arity\"",
+    "\"Adaptively Secure Streaming Functional Encryption\" encryption master key eprint",
+    "\"Dynamic Bounded-Collusion Streaming Functional Encryption\" eprint",
+    "\"(Multi-Input) FE for Randomized Functionalities, Revisited\"",
+    "\"Multi-Hop Functional Encryption\" Datta Guan Korb Sahai eprint"
+  ],
+  "web_search_query_count": 7,
+  "web_open_count": 1,
+  "opened_primary_page": "https://www.guan.io/",
+  "primary_publication_discovery": "https://www.guan.io/publications/",
+  "sql_count": 1,
+  "schema_count": 0,
+  "sql_output": "sources/scry_1.json",
+  "sql": "SELECT id,title,doi,primary_location.landing_page_url,publication_year FROM openalex.works WHERE hasAllTokens(search_text_lc,['streaming','functional','encryption']) OR hasAllTokens(search_text_lc,['multi','input','functional','unbounded']) ORDER BY publication_year DESC,cited_by_count DESC LIMIT 15",
+  "scry_credential": "helper reads configured credential; no credential copied or printed",
+  "pdf_downloads": 0,
+  "absence_scope": "rg over research/learn_infer_only and notes for multi-hop functional yielded no hits; not a literature absence claim",
+  "source_note": "Primary 2026 Multi-Hop FE abstract is discovery only; no inspected full construction."
+}

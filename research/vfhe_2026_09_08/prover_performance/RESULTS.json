@@ -1,0 +1,143 @@
+{
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "changed_paths": [
+    "prover/src/sumcheck.rs",
+    "prover/tests/matmul_binding_reuse.rs"
+  ],
+  "patch_applies_to_baseline": true,
+  "patched_sources_equal_checked_sources": true,
+  "rustc": "1.98.0-nightly (91fe22da8 2026-06-21)",
+  "machine": "Apple M2 Max",
+  "binding_multiplications": {
+    "old_basis": 919552,
+    "new_basis": 128,
+    "matrix_products_unchanged": 133120,
+    "old_total": 1052672,
+    "new_total": 133248
+  },
+  "workload": [
+    {
+      "workload": "[2,1024]x[1024,128]",
+      "field": 2013265921,
+      "transcript_equal": true,
+      "honest_accepts": true,
+      "forged_output_refused_both": true,
+      "h1_mutation_refused": true,
+      "iterations_per_sample": 8,
+      "samples": 9
+    },
+    {
+      "phase": "bind_outer",
+      "old_seconds": [
+        0.007764651,
+        0.007980697875,
+        0.0078086355,
+        0.007969953125,
+        0.007727505125,
+        0.007394974,
+        0.007606411375,
+        0.00752681775,
+        0.00736355725
+      ],
+      "new_seconds": [
+        0.001713557375,
+        0.001906270875,
+        0.001755854125,
+        0.00172611975,
+        0.00184571875,
+        0.00168999475,
+        0.001659010375,
+        0.00170431775,
+        0.001735802125
+      ],
+      "old_median_seconds": 0.007727505125,
+      "new_median_seconds": 0.00172611975,
+      "speedup": 4.476807084213016
+    },
+    {
+      "phase": "prove_matmul",
+      "old_seconds": [
+        0.0078169115,
+        0.007802364625,
+        0.00790293225,
+        0.007728114625,
+        0.007865239625,
+        0.007956604125,
+        0.007954322875,
+        0.00775553125,
+        0.0077688855
+      ],
+      "new_seconds": [
+        0.001970302125,
+        0.00204714575,
+        0.00194915625,
+        0.00192611975,
+        0.00199490625,
+        0.00197203125,
+        0.001845552,
+        0.00192052075,
+        0.0020539635
+      ],
+      "old_median_seconds": 0.0078169115,
+      "new_median_seconds": 0.001970302125,
+      "speedup": 3.9673669336371447
+    },
+    {
+      "phase": "output_mle",
+      "old_seconds": [
+        2.0734375e-05,
+        1.21875e-05,
+        1.2166625e-05,
+        1.2208375e-05,
+        1.2197875e-05,
+        1.219275e-05,
+        1.21875e-05,
+        1.21875e-05,
+        1.2182375e-05
+      ],
+      "new_seconds": [
+        3.302125e-06,
+        2.958375e-06,
+        2.958375e-06,
+        2.97925e-06,
+        3.177125e-06,
+        2.93225e-06,
+        2.9375e-06,
+        2.921875e-06,
+        2.90625e-06
+      ],
+      "old_median_seconds": 1.21875e-05,
+      "new_median_seconds": 2.958375e-06,
+      "speedup": 4.119660286474838
+    },
+    {
+      "phase": "compute_output_unchanged",
+      "old_seconds": [
+        0.003254541625,
+        0.003610901125,
+        0.0035487605,
+        0.003327557375,
+        0.00335616675,
+        0.003420885375,
+        0.003409177125,
+        0.0034411145,
+        0.003448958375
+      ],
+      "new_seconds": [
+        0.003317286375,
+        0.003552375,
+        0.00334253125,
+        0.0033487605,
+        0.00340485425,
+        0.003441192625,
+        0.003263849,
+        0.00327025,
+        0.0033089635
+      ],
+      "old_median_seconds": 0.003420885375,
+      "new_median_seconds": 0.00334253125,
+      "speedup": 1.0234415534634118
+    }
+  ],
+  "scope": "Counts derive from loop bounds; times are the single saved public BabyBear workload, not PCS/full-system proving."
+}

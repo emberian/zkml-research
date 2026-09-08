@@ -1,0 +1,43 @@
+{
+  "claim": "EXECUTED symbolic/function checks only; no cryptographic implementation",
+  "full_valid_domain_correctness_comparisons": 1056250,
+  "fresh_private_label_robust_compatibility_comparisons": 5000,
+  "initial_state_robust_compatibility_comparisons": 6250,
+  "plaintext_parser_checks": 1250,
+  "symbolic_worlds": 2,
+  "learn_per_world": 32,
+  "infer_per_world": 66,
+  "identical_released_traces": true,
+  "final_semantic_states": [
+    [
+      0,
+      21
+    ],
+    [
+      0,
+      22
+    ]
+  ],
+  "anchor_issuance_survives": false,
+  "public_encryption_keys": 33,
+  "function_keys": 1,
+  "ciphertexts_in_current_resident": 33,
+  "selector_ciphertexts_per_infer": 1,
+  "valid_t4_input_bits": 8,
+  "valid_t32_input_bits": 14,
+  "visible_first_coordinate_changes": 10,
+  "out_of_horizon_separation": [
+    0,
+    1
+  ],
+  "replacement_anchor_separation": [
+    0,
+    1
+  ],
+  "nonlinear_step_values": [
+    -1,
+    -1,
+    0
+  ],
+  "elapsed_seconds": 3.5993463749764487
+}

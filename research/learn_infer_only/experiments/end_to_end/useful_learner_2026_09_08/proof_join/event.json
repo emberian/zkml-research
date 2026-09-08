@@ -1,0 +1,97 @@
+{
+  "schema": "useful-prototype-expiry-proof-join-v1",
+  "event": 65,
+  "class": "card_arrival",
+  "operation": "out=acc+fresh-old in each canonical ciphertext component and q residue",
+  "fifo_capacity": 8,
+  "class_count_before": 8,
+  "class_count_after": 8,
+  "prior_state_event": 29,
+  "expired_input_event": 1,
+  "incoming_source": {
+    "text": "I still haven't received my card after two weeks, is it lost?",
+    "category": "card_arrival",
+    "source_split": "train",
+    "source_row": 11
+  },
+  "expired_source": {
+    "text": "Could you send me and up date on the arrival of my card?",
+    "category": "card_arrival",
+    "source_split": "train",
+    "source_row": 118
+  },
+  "files": {
+    "acc": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/proof_join/public/acc.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/state-000029-ed4519f3.ct",
+      "bytes": 85103,
+      "sha256": "a379e8226bce28659934ff3fe65826461ee64ab4860bbbc35a15729b83f4e702"
+    },
+    "fresh": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/proof_join/public/fresh.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/input-000065-dc585352.ct",
+      "bytes": 85103,
+      "sha256": "a379d821893c6f42402c6d7e53dc30d63f3868d8e3299e7088b58e1e89b67abc"
+    },
+    "out": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/proof_join/public/out.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/state-000065-dc585352.ct",
+      "bytes": 85103,
+      "sha256": "67d13c84cc4b131b4011eacbf55dfe86c22093125ba7f45e6e9b84413429ab54"
+    },
+    "old": {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/proof_join/public/old.ct",
+      "origin": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/input-000001-46d70721.ct",
+      "bytes": 85103,
+      "sha256": "93a21a6e86494918be754926bb51501a5dc8e829baa33d117a7089dbbabb1020"
+    }
+  },
+  "public_operation_record": {
+    "command": "host-learn",
+    "arguments": {
+      "acc": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/state-000029-ed4519f3.ct",
+      "fresh": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/input-000065-dc585352.ct",
+      "out": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/state-000065-dc585352.ct",
+      "old": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/useful_learner_2026_09_08/models/bfv/ciphertexts/input-000001-46d70721.ct"
+    },
+    "elapsed_seconds": 0.023928207985591143,
+    "returncode": 0,
+    "result": {
+      "acc_sha256": "a379e8226bce28659934ff3fe65826461ee64ab4860bbbc35a15729b83f4e702",
+      "arithmetic_ns": 14291,
+      "bytes": 85103,
+      "canonical": true,
+      "components": 2,
+      "degree": 4096,
+      "fresh_sha256": "a379d821893c6f42402c6d7e53dc30d63f3868d8e3299e7088b58e1e89b67abc",
+      "key_id": "09143779d452ebdf2c023542e34af4b092197d2dae9c162ae0a512414fb054e8",
+      "key_id_scope": "declared metadata; no proof ciphertext belongs to this key",
+      "kind": "learn_result",
+      "level": 0,
+      "old_sha256": "93a21a6e86494918be754926bb51501a5dc8e829baa33d117a7089dbbabb1020",
+      "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+      "payload_bytes": 85022,
+      "process_work_ns": 19637958,
+      "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+      "schema": "resident-crypto-result-v1",
+      "sha256": "67d13c84cc4b131b4011eacbf55dfe86c22093125ba7f45e6e9b84413429ab54"
+    }
+  },
+  "bfv": {
+    "degree": 4096,
+    "plaintext_modulus": 4294828033,
+    "ciphertext_moduli": [
+      2199023190017,
+      4398046486529
+    ],
+    "components": 2,
+    "level": 0,
+    "envelope_bytes": 81,
+    "payload_bytes": 85022,
+    "format": "RSBFV001 envelope; canonical protobuf full NTT polynomials"
+  },
+  "learner_source_sha256": "86a72771e84c765987ff671f1096e89f1e35a407cc35af77dae0365942fab6d3",
+  "selected_dataset_sha256": "5e1e10fce61b7074345bdee1e5cecf5768f5cdd91684e06fb37cf783abe2eb09",
+  "feature_file_sha256": "03959f885631c4b095d81210b06def3e4071a1d9bf98e1c7427b1cd114aeaf6a",
+  "scope": "Actual known-public-dataset learner transition. A proof of the ciphertext relation does not by itself prove encoder execution, FIFO credential policy, decryption privacy or the entire Python wrapper."
+}

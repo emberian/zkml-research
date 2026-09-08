@@ -1,0 +1,27 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "--manifest-path",
+    "prover/Cargo.toml",
+    "--test",
+    "matmul_binding_reuse",
+    "--test",
+    "zkml_matmul_conformance"
+  ],
+  "cwd": "/tmp/minidregg-prover-performance-20260908",
+  "exit_code": 0,
+  "debug_checks_already_passed": {
+    "library_tests": 60,
+    "Lean_authored_matmul_conformance_tests": 8,
+    "focused_binding_tests": 3
+  },
+  "release_log": "release-tests.log",
+  "benchmark_command": [
+    "rustc --edition=2021 -C opt-level=3 bench.rs -o /tmp/minidregg-prover-performance-bench",
+    "/tmp/minidregg-prover-performance-bench > workload.jsonl"
+  ],
+  "benchmark_exit_code": 0,
+  "harness_correction": "rustfmt on bench.rs recursively reformatted its source snapshots; initial patch replay detected whitespace drift. Restored byte-exact baseline/optimized sources and reran the same workload. No implementation change."
+}

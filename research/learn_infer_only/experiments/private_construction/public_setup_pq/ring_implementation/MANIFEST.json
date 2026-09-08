@@ -1,0 +1,178 @@
+{
+  "status": "COMPLETE: executable prototype and completed full repaired-point measurement",
+  "frozen_utc": "2026-09-08T16:01:04.301838+00:00",
+  "files": {
+    ".gitignore": {
+      "sha256": "75b0a4e3da345dcb83c12cbb7897e3a27cdc27652cac5067622790558d37e1c8",
+      "bytes": 42
+    },
+    "NEXT.md": {
+      "sha256": "a1dba4a6ab377ee6c1af75ad8147f8ae841186ee106564bb585e02ca7ed3fcde",
+      "bytes": 878
+    },
+    "README.md": {
+      "sha256": "9c33f5fa2bcb7357a0fa7b5dc4d4558778e48ec939994f5468946ae3557db0c1",
+      "bytes": 6452
+    },
+    "REPORT.md": {
+      "sha256": "1abce6fb441967dda0abe352e1dbeca523a193a83a96b3e3ce975d8aeee2be9d",
+      "bytes": 5949
+    },
+    "STATUS.md": {
+      "sha256": "12520ebad0a0c4e03cf4cc2d8784fa766630f6a8d34f4963dbb5f37c98013e89",
+      "bytes": 988
+    },
+    "requirements.txt": {
+      "sha256": "da2cb34654746e6aadfbdf6ad185640f3dccbf23ca4256e4cb153b3adb8dd6ac",
+      "bytes": 33
+    },
+    "results/candidate_full_001.json": {
+      "sha256": "04926801a131ede24f325f3feb63f98b5d02eb7d376c0cadafab345973f9ce88",
+      "bytes": 5209
+    },
+    "results/candidate_full_001.log": {
+      "sha256": "e9036c81fd73cd2649afa651c42c5ebcf30d25d295ab5e84673cbb3af04b5f69",
+      "bytes": 1817
+    },
+    "results/candidate_full_001.stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "results/candidate_n_probe_001.json": {
+      "sha256": "2f9d77980a0e72bbe11c71917ed196b91def39087177b2f5da31ef1b2444b2f6",
+      "bytes": 4856
+    },
+    "results/candidate_n_probe_001.log": {
+      "sha256": "7e90864834b705f5a2e2fba2375e521e35e7b9b4a7cf005860fb56e853091777",
+      "bytes": 1558
+    },
+    "results/candidate_n_probe_001.stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "results/toy_001.json": {
+      "sha256": "6268aefd3701bfbe8ba4f04eba9e3de594cc84da787a38340c4d6c0cf47814ed",
+      "bytes": 5510
+    },
+    "results/toy_001.log": {
+      "sha256": "2b5e98e82c7725a432ece10f758ddca88192f4e1495ca8a2458148b66457614b",
+      "bytes": 2291
+    },
+    "results/toy_001.stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "results/toy_002.json": {
+      "sha256": "e17ab6ec347971baa7800f6ebdc5823e1246bcc90ea50677c2ca791175418b30",
+      "bytes": 6097
+    },
+    "results/toy_002.log": {
+      "sha256": "d61ee29448605bee6f9fa1083f10bbcd6b71b57a09bd4813d6b61acab69b85e1",
+      "bytes": 2803
+    },
+    "results/toy_002.stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "ring.py": {
+      "sha256": "2a08c444ee6cd34194fe7f519fc7e687abf180fa000da219d3feaec30d79ff00",
+      "bytes": 9774
+    },
+    "run.py": {
+      "sha256": "c4d919bd9dec6ea994db98bf366651242f4a171572e21b92ada90e7a86650657",
+      "bytes": 8619
+    },
+    "sampling/DESIGN.md": {
+      "sha256": "a3da0b7fb7ff6545309863e1c5f64909804a0ad74c13814863844f3b9330de13",
+      "bytes": 7149
+    },
+    "sampling/MANIFEST.json": {
+      "sha256": "1478757f226a9e4e9531775273da4f7e0b794ff59b6ebe3c3f0d8cff5cd84ae7",
+      "bytes": 1810
+    },
+    "sampling/MEASUREMENTS.json": {
+      "sha256": "1a60bfee04fdb3b43367bfff2fdc2feb64e399621b388d64f2d3e38f2f757b3e",
+      "bytes": 7171
+    },
+    "sampling/NEXT.md": {
+      "sha256": "59156f69a713e4791c552a35fe3abcab56dbba162b8e6d24048cd61ee705a948",
+      "bytes": 655
+    },
+    "sampling/RUN.log": {
+      "sha256": "9328d7e9bb8928e552673e82b1224b9fa795b9ec8dbb9a3d564f9fe52c1bdce6",
+      "bytes": 2648
+    },
+    "sampling/STATUS.md": {
+      "sha256": "0695d4d52ba43fc4f1d05f85cc75bd5b1193039ae7233b311b2c21f24ffc45d7",
+      "bytes": 689
+    },
+    "sampling/__init__.py": {
+      "sha256": "3b6a8876d26cf9489d59789044c4af2334fa2ca8a2c991202a194e3134dca0e2",
+      "bytes": 179
+    },
+    "sampling/sampler.py": {
+      "sha256": "2258da232fb6a3459f58c9842f9560baef7796bacaedfd757a4ae27b37c033dd",
+      "bytes": 7670
+    },
+    "sampling/verify_and_benchmark.py": {
+      "sha256": "3f134678460e3465077f896190cf9f60970d2f62a01b743e6a813e225dc9e865",
+      "bytes": 7593
+    }
+  },
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/MANIFEST.json": {
+      "sha256": "703e824295a40357f44d3a8cfa073ae2f6c1411b24783a83ca1c6e4f7992fbdb",
+      "bytes": 4638
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/MANIFEST.json": {
+      "sha256": "2f90bee88437465514066d879eddbc3918ab1af6d0c8d6592e63b0750adeef53",
+      "bytes": 9634
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/MANIFEST.json": {
+      "sha256": "23226a36d44899189716a63bd97378bdf114b8791fa0f80a39ed3f212b1adf4e",
+      "bytes": 4075
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/CANDIDATE.md": {
+      "sha256": "5010b72b024aa7154504a7c0dd0de306fe0068b3af3b33b5026b444c510a0dc2",
+      "bytes": 13739
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/finite_sampler/SPEC.md": {
+      "sha256": "2fef91992b092f93f6023a02b0072008a2f4f46e5601ea8fd71eb8d0972e1576",
+      "bytes": 14614
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/ring_candidate/hardness/GRID.json": {
+      "sha256": "de246339b8321791cba308e01ef0f929a42d725e3bbdd7a8b533622a7011031a",
+      "bytes": 5790
+    }
+  },
+  "final_source_measurements": [
+    "results/toy_002.json",
+    "results/candidate_full_001.json"
+  ],
+  "developmental_measurements": [
+    "results/toy_001.json",
+    "results/candidate_n_probe_001.json"
+  ],
+  "full_run": {
+    "status": "PASS",
+    "elapsed_seconds": 265.73834695800906,
+    "peak_rss_bytes": 2188001280,
+    "fresh_inputs": 3,
+    "recipient_reads_matched": 112,
+    "gaussian_coefficients": 19922944,
+    "absent_recipient_keys_generated": 0
+  },
+  "frozen_predecessors_unchanged": true,
+  "private_or_raw_ciphertext_files_written": 0,
+  "queries": {
+    "primary_web_searches": 1,
+    "scry": 0,
+    "eprint_pdf_downloads": 0,
+    "estimator_calls": 0
+  },
+  "scope": "Actual in-memory setup/encode/update/decode and finite Gaussian sampling; no hardness/security/constant-time certification",
+  "source_docs": [
+    "https://python-flint.readthedocs.io/en/latest/fmpz_mod_poly.html",
+    "https://github.com/flintlib/python-flint"
+  ]
+}
