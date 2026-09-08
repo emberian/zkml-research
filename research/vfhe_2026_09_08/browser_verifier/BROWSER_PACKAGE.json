@@ -1,0 +1,112 @@
+{
+  "claim": "EXECUTED frozen standalone JS/WASM consumer and two real public proof fixtures",
+  "created_utc": "2026-09-08T16:32:58.408819+00:00",
+  "backend": "plonky3-hidingfri-babybear-ir2@82cfad73cd734d37a0d51953094f970c531817ec|lb3|lfp0|arity3|q38|qpow16|ext4|salt4|random-codewords4|public-preprocessing-xoshiro256pp-0.8.1-v1",
+  "files": [
+    {
+      "path": "fixtures/learner-expiry/fixture.json",
+      "bytes": 1219,
+      "sha256": "53098b707479860dbfe82655b18df18c47659d9e4f81de549033b93814ea78bd"
+    },
+    {
+      "path": "fixtures/learner-expiry/proof.bin",
+      "bytes": 508777,
+      "sha256": "acf747cf42eff8171b2b774abae5572e8d7bdb7ace144754c7605128c15e5ba6"
+    },
+    {
+      "path": "fixtures/learner-expiry/public_rows.json",
+      "bytes": 1355662,
+      "sha256": "125fdd7d2bc8739898559c3275a8d572cbb0ea693e2d8b9cbb1b8d2cc944c8b1"
+    },
+    {
+      "path": "fixtures/learner-expiry/template.json",
+      "bytes": 268925,
+      "sha256": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7"
+    },
+    {
+      "path": "fixtures/operation/fixture.json",
+      "bytes": 1191,
+      "sha256": "353926b7c93914e68ec6e036f0b60e06f922836179efe591cd77934e2fc0b892"
+    },
+    {
+      "path": "fixtures/operation/proof.bin",
+      "bytes": 557834,
+      "sha256": "a2bf044768672690ddef7c8d08eed40323356b30b949d72d0e157cea68689648"
+    },
+    {
+      "path": "fixtures/operation/public_rows.json",
+      "bytes": 1461721,
+      "sha256": "267092b2fe739fde58a70aec79769f891a92c2967475f304b41cd28edb7001ba"
+    },
+    {
+      "path": "fixtures/operation/template.json",
+      "bytes": 315975,
+      "sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684"
+    },
+    {
+      "path": "web/package.json",
+      "bytes": 34,
+      "sha256": "55c40fada2c832d834f915351168d4a46598bde8070f076b72ab6b45d53b3da5"
+    },
+    {
+      "path": "web/pkg/vfhe_browser_verifier.d.ts",
+      "bytes": 1942,
+      "sha256": "481b151baa99a73ff118ad192d56e67732d15e09ba26de4088be7635a469b054"
+    },
+    {
+      "path": "web/pkg/vfhe_browser_verifier.js",
+      "bytes": 8325,
+      "sha256": "58e31dbd078d6769aea5f7518900d55d93422c6eddf065425b0a00c133102f0e"
+    },
+    {
+      "path": "web/pkg/vfhe_browser_verifier_bg.wasm",
+      "bytes": 2063586,
+      "sha256": "96137c1ed0ad5fc7584ca72ef006ff70ac1951831408ee12ab22ce3879f6f908"
+    },
+    {
+      "path": "web/pkg/vfhe_browser_verifier_bg.wasm.d.ts",
+      "bytes": 725,
+      "sha256": "9d6af5e8addb975cd6f3534cc6144ccff96c48cbd2aa4e2e399c85c7da67aeac"
+    },
+    {
+      "path": "web/verifier.js",
+      "bytes": 1122,
+      "sha256": "3f8f73180eac337b0b2210d3490f225dc7691b86b0a2d40db7284847ae524f24"
+    },
+    {
+      "path": "web/verify-file.mjs",
+      "bytes": 1037,
+      "sha256": "5e281aedc85bd55bac8cdccb028b51b88d5c313148899d82727ce388e5ae6c0f"
+    },
+    {
+      "path": "web/verify-fixture.mjs",
+      "bytes": 2249,
+      "sha256": "5b562fba972a80528b9bc607e7a62f8d24d767e703101adba70651bdec784da4"
+    },
+    {
+      "path": "web/worker.js",
+      "bytes": 547,
+      "sha256": "19c13b7b36a0afb029bb2090b2e2f3654f4dec88e1d98eae00bf3b2e32862ae1"
+    }
+  ],
+  "file_count": 17,
+  "total_bytes": 6550871,
+  "approved_template_sha256": {
+    "operation": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684",
+    "learner-expiry": "1afc2b3a120f59fdd79d273c6d32887373c5718225cb6e94b82a7231010c3aa7"
+  },
+  "verification_results": [
+    {
+      "path": "results/verify-wasm.json",
+      "bytes": 1291,
+      "sha256": "8cf90102aa7d4f54ac6e938cd687feb055c9fd1fc7af258b17e4575579b78e3d"
+    },
+    {
+      "path": "results/verify-wasm-expiry.json",
+      "bytes": 1303,
+      "sha256": "028ec48accdfb5e499b0bb7259de188e9e6fb75141a12a0d6535fbfab737f64d"
+    }
+  ],
+  "integration": "Copy web/verifier.js, web/worker.js and web/pkg together preserving relative imports; fixtures are caller-selected public statements. Application owns approved template pins.",
+  "scope": "Existing IR2 verifier with shared portable public-preprocessing adapter. Exact public rows verified; no browser BFV blob decoding, key-membership, FIFO/event authorization or plaintext claim."
+}

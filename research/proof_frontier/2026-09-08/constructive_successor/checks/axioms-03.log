@@ -1,0 +1,6 @@
+'Minidregg.Selvage.ArityEight.supplied_point_pins' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.rowCheck_eq_true_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.supplied_row_pins' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.ArityEight.supplied_injected_crossing_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

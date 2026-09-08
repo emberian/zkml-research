@@ -1,0 +1,2 @@
+Selvage/ArityEightSampling.lean:19:76: error: unexpected token 'omit'; expected 'lemma'
+Selvage/ArityEightSampling.lean:30:58: error: unexpected token 'set_option'; expected 'lemma'

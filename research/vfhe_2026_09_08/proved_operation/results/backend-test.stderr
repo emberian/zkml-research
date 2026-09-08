@@ -1,0 +1,523 @@
+   Compiling num-traits v0.2.19
+   Compiling syn v2.0.119
+   Compiling num-integer v0.1.47
+   Compiling transpose v0.2.3
+   Compiling p3-util v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling num-bigint v0.4.8
+   Compiling tracing-attributes v0.1.31
+   Compiling tracing v0.1.44
+   Compiling p3-field v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-matrix v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-symmetric v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-dft v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling thiserror v2.0.20
+   Compiling p3-multilinear-util v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-mds v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-poseidon1 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-poseidon2 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-monty-31 v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-air v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-poseidon1-air v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-challenger v0.5.1 (/Users/ember/dev/breadstuffs/vendor/plonky3-challenger-82cfad73)
+   Compiling strum_macros v0.28.0
+   Compiling p3-commit v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-fri v0.5.1 (/Users/ember/dev/breadstuffs/vendor/plonky3-fri-82cfad73)
+   Compiling p3-uni-stark v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-koala-bear v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-lookup v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-baby-bear v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-goldilocks v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-poseidon1-circuit-air v0.1.0 (https://github.com/emberian/plonky3-recursion?rev=fc3c6df#fc3c6dfa)
+   Compiling p3-keccak v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling getrandom v0.3.4
+   Compiling p3-circuit v0.1.0 (https://github.com/emberian/plonky3-recursion?rev=fc3c6df#fc3c6dfa)
+   Compiling p3-poseidon2-air v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling cobs v0.3.0
+   Compiling rmp v0.8.15
+   Compiling postcard v1.1.3
+   Compiling rmp-serde v1.3.1
+   Compiling p3-poseidon2-circuit-air v0.1.0 (https://github.com/emberian/plonky3-recursion?rev=fc3c6df#fc3c6dfa)
+   Compiling p3-batch-stark v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling p3-merkle-tree v0.5.1 (https://github.com/Plonky3/Plonky3?rev=82cfad73cd734d37a0d51953094f970c531817ec#82cfad73)
+   Compiling dregg-dsl v0.1.0 (/Users/ember/dev/breadstuffs/dregg-dsl)
+   Compiling dregg-circuit v0.1.0 (/Users/ember/dev/breadstuffs/circuit)
+warning: unused import: `crate::dsl::descriptors::merkle_poseidon2_circuit`
+  --> /Users/ember/dev/breadstuffs/circuit/src/body_membership.rs:24:5
+   |
+24 | use crate::dsl::descriptors::merkle_poseidon2_circuit;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `AccumulatorNonMembershipWitness`
+  --> /Users/ember/dev/breadstuffs/circuit/src/dsl/accumulator.rs:25:24
+   |
+25 |     ACCUMULATOR_WIDTH, AccumulatorNonMembershipWitness, AccumulatorNonRevocationWitness, ExtElem,
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `BoundaryDef`, `BoundaryRow`, `CircuitDescriptor`, `ColumnDef`, `ColumnKind`, `ConstraintExpr`, and `DslCircuit`
+  --> /Users/ember/dev/breadstuffs/circuit/src/dsl/fold.rs:30:5
+   |
+30 |     BoundaryDef, BoundaryRow, CircuitDescriptor, ColumnDef, ColumnKind, ConstraintExpr, DslCircuit,
+   |     ^^^^^^^^^^^  ^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^  ^^^^^^^^^  ^^^^^^^^^^  ^^^^^^^^^^^^^^  ^^^^^^^^^^
+
+warning: unused import: `hash_4_to_1`
+ --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/trace.rs:8:37
+  |
+8 | use crate::poseidon2::{hash_2_to_1, hash_4_to_1};
+  |                                     ^^^^^^^^^^^
+
+warning: private item shadows public glob re-export
+  --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/trace_rotated.rs:47:13
+   |
+47 | use super::{EFFECT_VM_WIDTH, EffectVmContext, generate_effect_vm_trace_ext};
+   |             ^^^^^^^^^^^^^^^
+   |
+note: the name `EFFECT_VM_WIDTH` in the value namespace is supposed to be publicly re-exported here
+  --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/trace_rotated.rs:52:9
+   |
+52 | pub use crate::effect_vm::layout_generated::*;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+note: but the private item here shadows it
+  --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/trace_rotated.rs:47:13
+   |
+47 | use super::{EFFECT_VM_WIDTH, EffectVmContext, generate_effect_vm_trace_ext};
+   |             ^^^^^^^^^^^^^^^
+   = note: `#[warn(hidden_glob_reexports)]` on by default
+
+warning: unused import: `EFFECT_VM_WIDTH`
+  --> /Users/ember/dev/breadstuffs/circuit/src/effect_vm/transfer_fee_avail_weld.rs:37:5
+   |
+37 |     EFFECT_VM_WIDTH, PARAM_BASE, STATE_AFTER_BASE, STATE_BEFORE_BASE, param, state,
+   |     ^^^^^^^^^^^^^^^
+
+warning: unused imports: `prove` and `verify`
+  --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:40:40
+   |
+40 | use p3_uni_stark::{Proof, StarkConfig, prove, verify};
+   |                                        ^^^^^  ^^^^^^
+
+warning: unused doc comment
+   --> /Users/ember/dev/breadstuffs/circuit/src/refusal.rs:485:1
+    |
+485 | / /// Set while this thread is inside [`catch_quietly`]. The hook installed below reads it, so
+486 | | /// silencing is scoped to the thread that asked for it.
+    | |_-------------------------------------------------------^
+    |   |
+    |   rustdoc does not generate documentation for macro invocations
+    |
+    = help: to document an item produced by a macro, the macro must produce the documentation as part of its expansion
+    = note: `#[warn(unused_doc_comments)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `crate::dsl::predicates::*`
+   --> /Users/ember/dev/breadstuffs/circuit/src/lib.rs:700:13
+    |
+700 |     pub use crate::dsl::predicates::*;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::dsl::predicates::*`
+   --> /Users/ember/dev/breadstuffs/circuit/src/lib.rs:701:13
+    |
+701 |     pub use crate::dsl::predicates::*;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `WindowAccess`
+  --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:29:40
+   |
+29 | use p3_air::{Air, AirBuilder, BaseAir, WindowAccess};
+   |                                        ^^^^^^^^^^^^
+
+warning: unused import: `BaseAir`
+  --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:29:31
+   |
+29 | use p3_air::{Air, AirBuilder, BaseAir, WindowAccess};
+   |                               ^^^^^^^
+
+warning: unused import: `Air`
+  --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:29:14
+   |
+29 | use p3_air::{Air, AirBuilder, BaseAir, WindowAccess};
+   |              ^^^
+
+warning: variable does not need to be mutable
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:5712:9
+     |
+5712 |     let mut fact_hist: BTreeMap<(u32, u32, u32), u64> = BTreeMap::new();
+     |         ----^^^^^^^^^
+     |         |
+     |         help: remove this `mut`
+     |
+     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> /Users/ember/dev/breadstuffs/circuit/src/table_air.rs:404:13
+    |
+404 |         let mut share_out_of_range = |e: &TableExpr, what: &str| -> Result<(), String> {
+    |             ----^^^^^^^^^^^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /Users/ember/dev/breadstuffs/circuit/src/table_air.rs:428:13
+    |
+428 |         let mut prep_out_of_range = |e: &TableExpr, what: &str| -> Result<(), String> {
+    |             ----^^^^^^^^^^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: type `CompiledMain` is more private than the item `Ir2Air::Main::compiled`
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:3672:9
+     |
+3672 |         compiled: Arc<crate::flat_eval::CompiledMain>,
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ field `Ir2Air::Main::compiled` is reachable at visibility `pub`
+     |
+note: but type `CompiledMain` is only usable at visibility `pub(crate)`
+    --> /Users/ember/dev/breadstuffs/circuit/src/flat_eval.rs:368:1
+     |
+ 368 | pub(crate) struct CompiledMain {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     = note: `#[warn(private_interfaces)]` on by default
+
+warning: type `CompiledTable` is more private than the item `Ir2Air::LeanTable::compiled`
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:3760:9
+     |
+3760 |         compiled: Arc<crate::flat_eval::CompiledTable>,
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ field `Ir2Air::LeanTable::compiled` is reachable at visibility `pub`
+     |
+note: but type `CompiledTable` is only usable at visibility `pub(crate)`
+    --> /Users/ember/dev/breadstuffs/circuit/src/flat_eval.rs:418:1
+     |
+ 418 | pub(crate) struct CompiledTable {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `resolve_row` is never used
+   --> /Users/ember/dev/breadstuffs/circuit/src/dsl/circuit.rs:636:8
+    |
+635 | impl BoundaryDef {
+    | ---------------- method in this implementation
+636 |     fn resolve_row(&self, trace_len: usize) -> usize {
+    |        ^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `lookup_index` is never read
+   --> /Users/ember/dev/breadstuffs/circuit/src/dsl/circuit.rs:673:5
+    |
+668 | pub struct DslCircuit {
+    |            ---------- field in this struct
+...
+673 |     lookup_index: LookupIndex,
+    |     ^^^^^^^^^^^^
+
+warning: field `set_elements` is never read
+   --> /Users/ember/dev/breadstuffs/circuit/src/non_membership.rs:140:5
+    |
+138 | pub struct NonMembershipProver {
+    |            ------------------- field in this struct
+139 |     /// The set's elements (needed for witness generation).
+140 |     set_elements: Vec<BabyBear>,
+    |     ^^^^^^^^^^^^
+    |
+    = note: `NonMembershipProver` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: constant `ROUND_STATES_OFFSET` is never used
+   --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:289:7
+    |
+289 | const ROUND_STATES_OFFSET: usize = 5;
+    |       ^^^^^^^^^^^^^^^^^^^
+
+warning: constant `PARENT_COL` is never used
+   --> /Users/ember/dev/breadstuffs/circuit/src/plonky3_prover.rs:292:7
+    |
+292 | const PARENT_COL: usize = P3_TRACE_WIDTH - 1; // 245
+    |       ^^^^^^^^^^
+
+warning: function `vm_site_digest_concrete` is never used
+    --> /Users/ember/dev/breadstuffs/circuit/src/lean_descriptor_air.rs:1633:15
+     |
+1633 | pub(crate) fn vm_site_digest_concrete(
+     |               ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `CHIP_MULT_STATE16` is never used
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:3505:7
+     |
+3505 | const CHIP_MULT_STATE16: usize = CHIP_MULT_NARROW;
+     |       ^^^^^^^^^^^^^^^^^
+
+warning: function `hash2_state_c` is never used
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:5248:4
+     |
+5248 | fn hash2_state_c(a: BabyBear, b: BabyBear) -> [BabyBear; POSEIDON2_WIDTH] {
+     |    ^^^^^^^^^^^^^
+
+   Compiling vfhe-public-preprocessing-backend v0.1.0 (/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend)
+error[E0277]: the trait bound `PublicPreprocessingPcs: Clone` is not satisfied
+   --> backend/src/lib.rs:95:16
+    |
+ 95 |     type Proof=Ir2BatchProof<Config>;
+    |                ^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `PublicPreprocessingPcs`
+    |
+    = note: required for `StarkConfig<PublicPreprocessingPcs, ..., ...>` to implement `StarkGenericConfig`
+    = note: required for `Ir2BatchProof<StarkConfig<PublicPreprocessingPcs, ..., ...>>` to implement `for<'de> serde_core::de::Deserialize<'de>`
+    = note: required for `<FixedPublicPreprocessing as DescriptorProofVerifier>::Proof` to implement `serde_core::de::DeserializeOwned`
+note: required by a bound in `dregg_circuit::descriptor_proof_backend::DescriptorProofVerifier::Proof`
+   --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_proof_backend.rs:110:29
+    |
+110 |     type Proof: Serialize + DeserializeOwned;
+    |                             ^^^^^^^^^^^^^^^^ required by this bound in `DescriptorProofVerifier::Proof`
+    = note: the full name for the type has been written to '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/deps/vfhe_public_preprocessing_backend-c1d2bea15706d50c.long-type-17452190215374643838.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+help: consider annotating `PublicPreprocessingPcs` with `#[derive(Clone)]`
+    |
+ 58 + #[derive(Clone)]
+ 59 | pub struct PublicPreprocessingPcs {witness:Inner}
+    |
+
+error[E0277]: the trait bound `PublicPreprocessingPcs: Clone` is not satisfied
+  --> backend/src/lib.rs:95:16
+   |
+95 |     type Proof=Ir2BatchProof<Config>;
+   |                ^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `PublicPreprocessingPcs`
+   |
+help: the trait `StarkGenericConfig` is implemented for `StarkConfig<Pcs, Challenge, Challenger>`
+  --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/uni-stark/src/config.rs:67:1
+   |
+67 | / impl<Pcs, Challenge, Challenger> StarkGenericConfig for StarkConfig<Pcs, Challenge, Challenger>
+68 | | where
+69 | |     Challenge: ExtensionField<<Pcs::Domain as PolynomialSpace>::Val> + Clone,
+70 | |     Pcs: p3_commit::Pcs<Challenge, Challenger> + Clone,
+...  |
+73 | |         + CanSample<Challenge>
+74 | |         + Clone,
+   | |________________^
+   = note: required for `StarkConfig<PublicPreprocessingPcs, ..., ...>` to implement `StarkGenericConfig`
+note: required by a bound in `Ir2BatchProof`
+  --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/batch-stark/src/proof.rs:12:27
+   |
+12 | pub struct BatchProof<SC: StarkGenericConfig> {
+   |                           ^^^^^^^^^^^^^^^^^^ required by this bound in `Ir2BatchProof`
+   = note: the full name for the type has been written to '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/deps/vfhe_public_preprocessing_backend-c1d2bea15706d50c.long-type-17452190215374643838.txt'
+   = note: consider using `--verbose` to print the full type name to the console
+help: consider annotating `PublicPreprocessingPcs` with `#[derive(Clone)]`
+   |
+58 + #[derive(Clone)]
+59 | pub struct PublicPreprocessingPcs {witness:Inner}
+   |
+
+error[E0277]: the trait bound `PublicPreprocessingPcs: Clone` is not satisfied
+  --> backend/src/lib.rs:97:52
+   |
+97 |     fn verify(statement:&DescriptorStatement,proof:&Self::Proof)->Result<(),String> {
+   |                                                    ^^^^^^^^^^^^ the trait `Clone` is not implemented for `PublicPreprocessingPcs`
+   |
+help: the trait `StarkGenericConfig` is implemented for `StarkConfig<Pcs, Challenge, Challenger>`
+  --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/uni-stark/src/config.rs:67:1
+   |
+67 | / impl<Pcs, Challenge, Challenger> StarkGenericConfig for StarkConfig<Pcs, Challenge, Challenger>
+68 | | where
+69 | |     Challenge: ExtensionField<<Pcs::Domain as PolynomialSpace>::Val> + Clone,
+70 | |     Pcs: p3_commit::Pcs<Challenge, Challenger> + Clone,
+...  |
+73 | |         + CanSample<Challenge>
+74 | |         + Clone,
+   | |________________^
+   = note: required for `StarkConfig<PublicPreprocessingPcs, ..., ...>` to implement `StarkGenericConfig`
+note: required by a bound in `Ir2BatchProof`
+  --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/batch-stark/src/proof.rs:12:27
+   |
+12 | pub struct BatchProof<SC: StarkGenericConfig> {
+   |                           ^^^^^^^^^^^^^^^^^^ required by this bound in `Ir2BatchProof`
+   = note: the full name for the type has been written to '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/deps/vfhe_public_preprocessing_backend-c1d2bea15706d50c.long-type-17452190215374643838.txt'
+   = note: consider using `--verbose` to print the full type name to the console
+help: consider annotating `PublicPreprocessingPcs` with `#[derive(Clone)]`
+   |
+58 + #[derive(Clone)]
+59 | pub struct PublicPreprocessingPcs {witness:Inner}
+   |
+
+error[E0277]: the trait bound `PublicPreprocessingPcs: Clone` is not satisfied
+   --> backend/src/lib.rs:104:71
+    |
+104 |     fn prove<'a>(statement:&DescriptorStatement,w:Self::Witness<'a>)->Result<Self::Proof,String> {
+    |                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `PublicPreprocessingPcs`
+    |
+help: the trait `StarkGenericConfig` is implemented for `StarkConfig<Pcs, Challenge, Challenger>`
+   --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/uni-stark/src/config.rs:67:1
+    |
+ 67 | / impl<Pcs, Challenge, Challenger> StarkGenericConfig for StarkConfig<Pcs, Challenge, Challenger>
+ 68 | | where
+ 69 | |     Challenge: ExtensionField<<Pcs::Domain as PolynomialSpace>::Val> + Clone,
+ 70 | |     Pcs: p3_commit::Pcs<Challenge, Challenger> + Clone,
+...   |
+ 73 | |         + CanSample<Challenge>
+ 74 | |         + Clone,
+    | |________________^
+    = note: required for `StarkConfig<PublicPreprocessingPcs, ..., ...>` to implement `StarkGenericConfig`
+note: required by a bound in `Ir2BatchProof`
+   --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/batch-stark/src/proof.rs:12:27
+    |
+ 12 | pub struct BatchProof<SC: StarkGenericConfig> {
+    |                           ^^^^^^^^^^^^^^^^^^ required by this bound in `Ir2BatchProof`
+    = note: the full name for the type has been written to '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/deps/vfhe_public_preprocessing_backend-c1d2bea15706d50c.long-type-17452190215374643838.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+help: consider annotating `PublicPreprocessingPcs` with `#[derive(Clone)]`
+    |
+ 58 + #[derive(Clone)]
+ 59 | pub struct PublicPreprocessingPcs {witness:Inner}
+    |
+
+error[E0277]: the trait bound `PublicPreprocessingPcs: Clone` is not satisfied
+  --> backend/src/lib.rs:91:22
+   |
+91 |     StarkConfig::new(PublicPreprocessingPcs{witness:inner(false)},Challenger::new(default_babybear_poseidon2_16()))
+   |     ---------------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `PublicPreprocessingPcs`
+   |     |
+   |     required by a bound introduced by this call
+   |
+note: required by a bound in `StarkConfig::<Pcs, Challenge, Challenger>::new`
+  --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/uni-stark/src/config.rs:57:11
+   |
+57 | impl<Pcs: Clone, Challenge: Clone, Challenger: Clone> StarkConfig<Pcs, Challenge, Challenger> {
+   |           ^^^^^ required by this bound in `StarkConfig::<Pcs, Challenge, Challenger>::new`
+58 |     pub const fn new(pcs: Pcs, challenger: Challenger) -> Self {
+   |                  --- required by a bound in this associated function
+help: consider annotating `PublicPreprocessingPcs` with `#[derive(Clone)]`
+   |
+58 + #[derive(Clone)]
+59 | pub struct PublicPreprocessingPcs {witness:Inner}
+   |
+
+error[E0277]: the trait bound `PublicPreprocessingPcs: Clone` is not satisfied
+    --> backend/src/lib.rs:99:9
+     |
+  99 |         verify_vm_descriptor2_with_config(statement.descriptor(),proof,&statement.public_input_felts(),&config())
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `PublicPreprocessingPcs`
+     |
+help: the trait `StarkGenericConfig` is implemented for `StarkConfig<Pcs, Challenge, Challenger>`
+    --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/uni-stark/src/config.rs:67:1
+     |
+  67 | / impl<Pcs, Challenge, Challenger> StarkGenericConfig for StarkConfig<Pcs, Challenge, Challenger>
+  68 | | where
+  69 | |     Challenge: ExtensionField<<Pcs::Domain as PolynomialSpace>::Val> + Clone,
+  70 | |     Pcs: p3_commit::Pcs<Challenge, Challenger> + Clone,
+...    |
+  73 | |         + CanSample<Challenge>
+  74 | |         + Clone,
+     | |________________^
+     = note: required for `StarkConfig<PublicPreprocessingPcs, ..., ...>` to implement `StarkGenericConfig`
+note: required by a bound in `dregg_circuit::descriptor_ir2::verify_vm_descriptor2_with_config`
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:7721:9
+     |
+7714 | pub fn verify_vm_descriptor2_with_config<SC>(
+     |        --------------------------------- required by a bound in this function
+...
+7721 |     SC: StarkGenericConfig,
+     |         ^^^^^^^^^^^^^^^^^^ required by this bound in `verify_vm_descriptor2_with_config`
+     = note: the full name for the type has been written to '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/deps/vfhe_public_preprocessing_backend-c1d2bea15706d50c.long-type-17452190215374643838.txt'
+     = note: consider using `--verbose` to print the full type name to the console
+help: consider annotating `PublicPreprocessingPcs` with `#[derive(Clone)]`
+     |
+  58 + #[derive(Clone)]
+  59 | pub struct PublicPreprocessingPcs {witness:Inner}
+     |
+
+error[E0277]: the trait bound `PublicPreprocessingPcs: Clone` is not satisfied
+   --> backend/src/lib.rs:105:9
+    |
+105 |         statement.validate()?;
+    |         ^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `PublicPreprocessingPcs`
+    |
+help: the trait `StarkGenericConfig` is implemented for `StarkConfig<Pcs, Challenge, Challenger>`
+   --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/uni-stark/src/config.rs:67:1
+    |
+ 67 | / impl<Pcs, Challenge, Challenger> StarkGenericConfig for StarkConfig<Pcs, Challenge, Challenger>
+ 68 | | where
+ 69 | |     Challenge: ExtensionField<<Pcs::Domain as PolynomialSpace>::Val> + Clone,
+ 70 | |     Pcs: p3_commit::Pcs<Challenge, Challenger> + Clone,
+...   |
+ 73 | |         + CanSample<Challenge>
+ 74 | |         + Clone,
+    | |________________^
+    = note: required for `StarkConfig<PublicPreprocessingPcs, ..., ...>` to implement `StarkGenericConfig`
+note: required by a bound in `Ir2BatchProof`
+   --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/batch-stark/src/proof.rs:12:27
+    |
+ 12 | pub struct BatchProof<SC: StarkGenericConfig> {
+    |                           ^^^^^^^^^^^^^^^^^^ required by this bound in `Ir2BatchProof`
+    = note: the full name for the type has been written to '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/deps/vfhe_public_preprocessing_backend-c1d2bea15706d50c.long-type-17452190215374643838.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+help: consider annotating `PublicPreprocessingPcs` with `#[derive(Clone)]`
+    |
+ 58 + #[derive(Clone)]
+ 59 | pub struct PublicPreprocessingPcs {witness:Inner}
+    |
+
+error[E0277]: the trait bound `PublicPreprocessingPcs: Clone` is not satisfied
+    --> backend/src/lib.rs:106:152
+     |
+ 106 | ...   prove_vm_descriptor2_for_config(statement.descriptor(),w.base_trace,&statement.public_input_felts(),w.mem_boundary,w.map_heaps,w.umem_boundary,&config())
+     |       ------------------------------- required by a bound introduced by this call                                                                    ^^^^^^^^^ the trait `Clone` is not implemented for `PublicPreprocessingPcs`
+     |
+help: the trait `StarkGenericConfig` is implemented for `StarkConfig<Pcs, Challenge, Challenger>`
+    --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/uni-stark/src/config.rs:67:1
+     |
+  67 | / impl<Pcs, Challenge, Challenger> StarkGenericConfig for StarkConfig<Pcs, Challenge, Challenger>
+  68 | | where
+  69 | |     Challenge: ExtensionField<<Pcs::Domain as PolynomialSpace>::Val> + Clone,
+  70 | |     Pcs: p3_commit::Pcs<Challenge, Challenger> + Clone,
+...    |
+  73 | |         + CanSample<Challenge>
+  74 | |         + Clone,
+     | |________________^
+     = note: required for `StarkConfig<PublicPreprocessingPcs, ..., ...>` to implement `StarkGenericConfig`
+note: required by a bound in `prove_vm_descriptor2_for_config`
+    --> /Users/ember/dev/breadstuffs/circuit/src/descriptor_ir2.rs:7634:9
+     |
+7624 | pub fn prove_vm_descriptor2_for_config<SC>(
+     |        ------------------------------- required by a bound in this function
+...
+7634 |     SC: StarkGenericConfig,
+     |         ^^^^^^^^^^^^^^^^^^ required by this bound in `prove_vm_descriptor2_for_config`
+     = note: the full name for the type has been written to '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/deps/vfhe_public_preprocessing_backend-c1d2bea15706d50c.long-type-17452190215374643838.txt'
+     = note: consider using `--verbose` to print the full type name to the console
+help: consider annotating `PublicPreprocessingPcs` with `#[derive(Clone)]`
+     |
+  58 + #[derive(Clone)]
+  59 | pub struct PublicPreprocessingPcs {witness:Inner}
+     |
+
+error[E0277]: the trait bound `PublicPreprocessingPcs: Clone` is not satisfied
+   --> backend/src/lib.rs:106:9
+    |
+106 | ...   prove_vm_descriptor2_for_config(statement.descriptor(),w.base_trace,&statement.public_input_felts(),w.mem_boundary,w.map_heaps,w.umem_boundary,&config())
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `PublicPreprocessingPcs`
+    |
+help: the trait `StarkGenericConfig` is implemented for `StarkConfig<Pcs, Challenge, Challenger>`
+   --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/uni-stark/src/config.rs:67:1
+    |
+ 67 | / impl<Pcs, Challenge, Challenger> StarkGenericConfig for StarkConfig<Pcs, Challenge, Challenger>
+ 68 | | where
+ 69 | |     Challenge: ExtensionField<<Pcs::Domain as PolynomialSpace>::Val> + Clone,
+ 70 | |     Pcs: p3_commit::Pcs<Challenge, Challenger> + Clone,
+...   |
+ 73 | |         + CanSample<Challenge>
+ 74 | |         + Clone,
+    | |________________^
+    = note: required for `StarkConfig<PublicPreprocessingPcs, ..., ...>` to implement `StarkGenericConfig`
+note: required by a bound in `Ir2BatchProof`
+   --> /Users/ember/.cargo/git/checkouts/plonky3-7d8a3b21a665a86f/82cfad7/batch-stark/src/proof.rs:12:27
+    |
+ 12 | pub struct BatchProof<SC: StarkGenericConfig> {
+    |                           ^^^^^^^^^^^^^^^^^^ required by this bound in `Ir2BatchProof`
+    = note: the full name for the type has been written to '/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/target/release/deps/vfhe_public_preprocessing_backend-c1d2bea15706d50c.long-type-17452190215374643838.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+help: consider annotating `PublicPreprocessingPcs` with `#[derive(Clone)]`
+    |
+ 58 + #[derive(Clone)]
+ 59 | pub struct PublicPreprocessingPcs {witness:Inner}
+    |
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `vfhe-public-preprocessing-backend` (lib) due to 9 previous errors
+warning: build failed, waiting for other jobs to finish...
+warning: `dregg-circuit` (lib) generated 26 warnings (run `cargo fix --lib -p dregg-circuit` to apply 11 suggestions)

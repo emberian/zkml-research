@@ -1,0 +1,506 @@
+Selvage/ArityEightWitnesses.lean:14:2: error: unsolved goals
+case h1
+⊢ 43046721 = 1
+Selvage/ArityEightWitnesses.lean:15:2: error: unsolved goals
+case h.«1»
+l : ℕ
+hl : 0 < 1
+hlt : 1 < 2 ^ 4
+⊢ ¬3 = 1
+
+case h.«2»
+l : ℕ
+hl : 0 < 2
+hlt : 2 < 2 ^ 4
+⊢ ¬9 = 1
+
+case h.«3»
+l : ℕ
+hl : 0 < 3
+hlt : 3 < 2 ^ 4
+⊢ ¬27 = 1
+
+case h.«4»
+l : ℕ
+hl : 0 < 4
+hlt : 4 < 2 ^ 4
+⊢ ¬81 = 1
+
+case h.«5»
+l : ℕ
+hl : 0 < 5
+hlt : 5 < 2 ^ 4
+⊢ ¬243 = 1
+
+case h.«6»
+l : ℕ
+hl : 0 < 6
+hlt : 6 < 2 ^ 4
+⊢ ¬729 = 1
+
+case h.«7»
+l : ℕ
+hl : 0 < 7
+hlt : 7 < 2 ^ 4
+⊢ ¬2187 = 1
+
+case h.«8»
+l : ℕ
+hl : 0 < 8
+hlt : 8 < 2 ^ 4
+⊢ ¬6561 = 1
+
+case h.«9»
+l : ℕ
+hl : 0 < 9
+hlt : 9 < 2 ^ 4
+⊢ ¬19683 = 1
+
+case h.«10»
+l : ℕ
+hl : 0 < 10
+hlt : 10 < 2 ^ 4
+⊢ ¬59049 = 1
+
+case h.«11»
+l : ℕ
+hl : 0 < 11
+hlt : 11 < 2 ^ 4
+⊢ ¬177147 = 1
+
+case h.«12»
+l : ℕ
+hl : 0 < 12
+hlt : 12 < 2 ^ 4
+⊢ ¬531441 = 1
+
+case h.«13»
+l : ℕ
+hl : 0 < 13
+hlt : 13 < 2 ^ 4
+⊢ ¬1594323 = 1
+
+case h.«14»
+l : ℕ
+hl : 0 < 14
+hlt : 14 < 2 ^ 4
+⊢ ¬4782969 = 1
+
+case h.«15»
+l : ℕ
+hl : 0 < 15
+hlt : 15 < 2 ^ 4
+⊢ ¬14348907 = 1
+Selvage/ArityEightWitnesses.lean:18:54: error: unsolved goals
+⊢ ¬2 = 0
+Selvage/ArityEightWitnesses.lean:18:73: error: Expected type must not contain metavariables
+  0 < ?m.4
+Selvage/ArityEightWitnesses.lean:19:54: error: unsolved goals
+⊢ ¬2 = 0
+Selvage/ArityEightWitnesses.lean:19:73: error: Expected type must not contain metavariables
+  1 < ?m.4
+Selvage/ArityEightWitnesses.lean:20:54: error: unsolved goals
+⊢ ¬2 = 0
+Selvage/ArityEightWitnesses.lean:20:73: error: Expected type must not contain metavariables
+  2 < ?m.4
+Selvage/ArityEightWitnesses.lean:21:49: error: Application type mismatch: The argument
+  root_primitive
+has type
+  @IsPrimitiveRoot F (@CommRing.toCommMonoid F (ZMod.commRing 17)) 3 (2 ^ 4)
+but is expected to have type
+  @IsPrimitiveRoot (?m.11 n) (@CommRing.toCommMonoid (?m.11 n) Field.toCommRing) ?m.6 (2 ^ ?m.10 n)
+in the application
+  PowerTwoRootFolding.domain root_primitive
+Selvage/ArityEightWitnesses.lean:23:38: error(lean.unknownIdentifier): Unknown identifier `dom`
+Selvage/ArityEightWitnesses.lean:26:36: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:26:53: error: Function expected at
+  dom
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  0
+
+Hint: The identifier `dom` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Selvage/ArityEightWitnesses.lean:44:23: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:44:40: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:44:57: error: Function expected at
+  dom
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  0
+
+Hint: The identifier `dom` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Selvage/ArityEightWitnesses.lean:57:28: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:58:44: error(lean.unknownIdentifier): Unknown identifier `dom`
+Selvage/ArityEightWitnesses.lean:58:48: error: Invalid argument: Variable `D₀` is not a proposition or let-declaration
+Selvage/ArityEightWitnesses.lean:58:51: error: Invalid argument: Variable `D₁` is not a proposition or let-declaration
+Selvage/ArityEightWitnesses.lean:58:54: error: Invalid argument: Variable `D₂` is not a proposition or let-declaration
+Selvage/ArityEightWitnesses.lean:57:62: error: unsolved goals
+inst✝ : Field F
+α✝¹ : Type u_1
+dom✝ : Fin 16 ↪ F
+domSq✝² : α✝¹ ↪ F
+D₀ : FoldingData F dom✝ domSq✝²
+α✝ : Type u_2
+domSq✝¹ : α✝ ↪ F
+D₁ : FoldingData F domSq✝² domSq✝¹
+domSq✝ : ℕ ↪ F
+D₂ : FoldingData F domSq✝¹ domSq✝
+β : F
+⊢ sorry () = 1
+Selvage/ArityEightWitnesses.lean:58:36: warning: declaration uses `sorry`
+Selvage/ArityEightWitnesses.lean:58:8: warning: This simp argument is unused:
+  fold8
+
+Hint: Omit it from the simp argument list.
+  simp [fold8̵, ̲fold,̵f̵o̵l̵d̵Even, ̲foldOdd, ̲farWord, ̲dom, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:58:14: warning: This simp argument is unused:
+  fold
+
+Hint: Omit it from the simp argument list.
+  simp [fold8, ̲fold,̵f̵o̵l̵d̵Even, ̲foldOdd, ̲farWord, ̲dom, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:58:19: warning: This simp argument is unused:
+  foldEven
+
+Hint: Omit it from the simp argument list.
+  simp [fold8, ̲fold, ̲foldE̵v̵e̵n̵,̵f̵o̵l̵d̵Odd, ̲farWord, ̲dom, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:58:28: warning: This simp argument is unused:
+  foldOdd
+
+Hint: Omit it from the simp argument list.
+  simp [fold8, ̲fold, ̲foldEven, ̲fo̵l̵d̵O̵d̵d̵,̵f̵arWord, ̲dom, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:58:36: warning: This simp argument is unused:
+  farWord
+
+Hint: Omit it from the simp argument list.
+  simp [fold8, ̲fold, ̲foldEven, ̲foldOdd,f̵a̵r̵W̵o̵r̵ ̲d,̵d̵om, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:59:4: warning: This simp argument is unused:
+  PowerTwoRootFolding.data
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲o̲m̲a̲i̲n̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲l̲e̲v̲e̲l̲R̲o̲o̲t̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲s̲e̲c̲t̲i̲o̲n̲I̲n̲d̲e̲x̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲n̲e̲g̲a̲t̲i̲v̲e̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:59:29: warning: This simp argument is unused:
+  PowerTwoRootFolding.domain
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲a̲t̲a̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲l̲e̲v̲e̲l̲R̲o̲o̲t̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲s̲e̲c̲t̲i̲o̲n̲I̲n̲d̲e̲x̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲n̲e̲g̲a̲t̲i̲v̲e̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:59:56: warning: This simp argument is unused:
+  PowerTwoRootFolding.levelRoot
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲a̲t̲a̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲o̲m̲a̲i̲n̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲s̲e̲c̲t̲i̲o̲n̲I̲n̲d̲e̲x̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲n̲e̲g̲a̲t̲i̲v̲e̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:60:4: warning: This simp argument is unused:
+  PowerTwoRootFolding.sectionIndex
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲a̲t̲a̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲o̲m̲a̲i̲n̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲l̲e̲v̲e̲l̲R̲o̲o̲t̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲n̲e̲g̲a̲t̲i̲v̲e̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:60:37: warning: This simp argument is unused:
+  PowerTwoRootFolding.negativeIndex
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲a̲t̲a̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲o̲m̲a̲i̲n̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲l̲e̲v̲e̲l̲R̲o̲o̲t̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲s̲e̲c̲t̲i̲o̲n̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:63:27: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:64:44: error(lean.unknownIdentifier): Unknown identifier `dom`
+Selvage/ArityEightWitnesses.lean:64:48: error: Invalid argument: Variable `D₀` is not a proposition or let-declaration
+Selvage/ArityEightWitnesses.lean:64:51: error: Invalid argument: Variable `D₁` is not a proposition or let-declaration
+Selvage/ArityEightWitnesses.lean:64:54: error: Invalid argument: Variable `D₂` is not a proposition or let-declaration
+Selvage/ArityEightWitnesses.lean:63:62: error: unsolved goals
+inst✝ : Field F
+α✝¹ : Type u_1
+dom✝ : Fin 16 ↪ F
+domSq✝² : α✝¹ ↪ F
+D₀ : FoldingData F dom✝ domSq✝²
+α✝ : Type u_2
+domSq✝¹ : α✝ ↪ F
+D₁ : FoldingData F domSq✝² domSq✝¹
+domSq✝ : ℕ ↪ F
+D₂ : FoldingData F domSq✝¹ domSq✝
+β : F
+⊢ sorry () = -1
+Selvage/ArityEightWitnesses.lean:64:36: warning: declaration uses `sorry`
+Selvage/ArityEightWitnesses.lean:64:8: warning: This simp argument is unused:
+  fold8
+
+Hint: Omit it from the simp argument list.
+  simp [fold8̵, ̲fold,̵f̵o̵l̵d̵Even, ̲foldOdd, ̲farWord, ̲dom, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:64:14: warning: This simp argument is unused:
+  fold
+
+Hint: Omit it from the simp argument list.
+  simp [fold8, ̲fold,̵f̵o̵l̵d̵Even, ̲foldOdd, ̲farWord, ̲dom, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:64:19: warning: This simp argument is unused:
+  foldEven
+
+Hint: Omit it from the simp argument list.
+  simp [fold8, ̲fold, ̲foldE̵v̵e̵n̵,̵f̵o̵l̵d̵Odd, ̲farWord, ̲dom, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:64:28: warning: This simp argument is unused:
+  foldOdd
+
+Hint: Omit it from the simp argument list.
+  simp [fold8, ̲fold, ̲foldEven, ̲fo̵l̵d̵O̵d̵d̵,̵f̵arWord, ̲dom, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:64:36: warning: This simp argument is unused:
+  farWord
+
+Hint: Omit it from the simp argument list.
+  simp [fold8, ̲fold, ̲foldEven, ̲foldOdd,f̵a̵r̵W̵o̵r̵ ̲d,̵d̵om, ̲D₀, ̲D₁, ̲D₂,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.data,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.domain, ̲PowerTwoRootFolding.levelRoot,
+  ̵  ̵ ̵ ̵PowerTwoRootFolding.sectionIndex,
+  ̲ ̲ ̲ ̲ ̲PowerTwoRootFolding.negativeIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:65:4: warning: This simp argument is unused:
+  PowerTwoRootFolding.data
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲o̲m̲a̲i̲n̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲l̲e̲v̲e̲l̲R̲o̲o̲t̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲s̲e̲c̲t̲i̲o̲n̲I̲n̲d̲e̲x̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲n̲e̲g̲a̲t̲i̲v̲e̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:65:29: warning: This simp argument is unused:
+  PowerTwoRootFolding.domain
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲a̲t̲a̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲l̲e̲v̲e̲l̲R̲o̲o̲t̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲s̲e̲c̲t̲i̲o̲n̲I̲n̲d̲e̲x̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲n̲e̲g̲a̲t̲i̲v̲e̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:65:56: warning: This simp argument is unused:
+  PowerTwoRootFolding.levelRoot
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲a̲t̲a̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲o̲m̲a̲i̲n̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲s̲e̲c̲t̲i̲o̲n̲I̲n̲d̲e̲x̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲n̲e̲g̲a̲t̲i̲v̲e̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:66:4: warning: This simp argument is unused:
+  PowerTwoRootFolding.sectionIndex
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲a̲t̲a̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲o̲m̲a̲i̲n̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲l̲e̲v̲e̲l̲R̲o̲o̲t̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲n̲e̲g̲a̲t̲i̲v̲e̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:66:37: warning: This simp argument is unused:
+  PowerTwoRootFolding.negativeIndex
+
+Hint: Omit it from the simp argument list.
+  simp [̵f̵o̵l̵d̵8̵,̵f̵o̵l̵d̵,̵f̵o̵l̵d̵E̵v̵e̵n̵,̵f̵o̵l̵d̵O̵d̵d̵,̵f̵a̵r̵W̵o̵r̵d̵,̵d̵o̵m̵,̵D̵₀̵,̵D̵₁̵,̵D̵₂̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵a̵t̵a̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵d̵o̵m̵a̵i̵n̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵l̵e̵v̵e̵l̵R̵o̵o̵t̵,̵
+  ̵ ̵ ̵ ̵ ̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵s̵e̵c̵t̵i̵o̵n̵I̵n̵d̵e̵x̵,̵P̵o̵w̵e̵r̵T̵w̵o̵R̵o̵o̵t̵F̵o̵l̵d̵i̵n̵g̵.̵n̵e̵g̵a̵t̵i̵v̵e̵I̵n̵d̵e̵x̵]̵[̲f̲o̲l̲d̲8̲,̲ ̲f̲o̲l̲d̲,̲ ̲f̲o̲l̲d̲E̲v̲e̲n̲,̲ ̲f̲o̲l̲d̲O̲d̲d̲,̲ ̲f̲a̲r̲W̲o̲r̲d̲,̲ ̲d̲o̲m̲,̲ ̲D̲₀̲,̲ ̲D̲₁̲,̲ ̲D̲₂̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲a̲t̲a̲,̲
+  ̲ ̲ ̲ ̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲d̲o̲m̲a̲i̲n̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲l̲e̲v̲e̲l̲R̲o̲o̲t̲,̲ ̲P̲o̲w̲e̲r̲T̲w̲o̲R̲o̲o̲t̲F̲o̲l̲d̲i̲n̲g̲.̲s̲e̲c̲t̲i̲o̲n̲I̲n̲d̲e̲x̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Selvage/ArityEightWitnesses.lean:72:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:71:4: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:71:14: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:71:31: error: Function expected at
+  dom
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  3
+
+Hint: The identifier `dom` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Selvage/ArityEightWitnesses.lean:74:2: error: No goals to be solved
+Selvage/ArityEightWitnesses.lean:81:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:80:5: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:80:15: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:80:32: error: Function expected at
+  dom
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  3
+
+Hint: The identifier `dom` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Selvage/ArityEightWitnesses.lean:81:66: error: unsolved goals
+x✝ : Sort u_1
+dom : x✝
+inst✝ : Field F
+α✝¹ : Type u_2
+dom✝ : Fin 16 ↪ F
+domSq✝² : α✝¹ ↪ F
+D₀ : FoldingData F dom✝ domSq✝²
+α✝ : Type u_3
+domSq✝¹ : α✝ ↪ F
+D₁ : FoldingData F domSq✝² domSq✝¹
+domSq✝ : ℕ ↪ F
+D₂ : FoldingData F domSq✝¹ domSq✝
+β : F
+h : sorry
+⊢ False
+Selvage/ArityEightWitnesses.lean:92:9: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:91:7: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:91:17: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Field F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/ArityEightWitnesses.lean:91:34: error: Function expected at
+  dom
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  3
+
+Hint: The identifier `dom` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+Selvage/ArityEightWitnesses.lean:95:5: error: unsolved goals
+x✝ : Sort u_1
+dom : x✝
+inst✝ : Field F
+α✝¹ : Type u_2
+dom✝ : Fin 16 ↪ F
+domSq✝² : α✝¹ ↪ F
+D₀ : FoldingData F dom✝ domSq✝²
+α✝ : Type u_3
+domSq✝¹ : α✝ ↪ F
+D₁ : FoldingData F domSq✝² domSq✝¹
+domSq✝ : Fin 2 ↪ F
+D₂ : FoldingData F domSq✝¹ domSq✝
+q : ℕ
+⊢ 1 < 3 / 5 * ↑(Fintype.card ?m.84)
+Selvage/ArityEightWitnesses.lean:93:41: error: Application type mismatch: The argument
+  D₂
+has type
+  FoldingData.{0, u_3, 0} F domSq✝¹ domSq✝
+of sort `Type u_3` but is expected to have type
+  FoldingData.{0, 0, 0} F ?m.96 ?m.97
+of sort `Type` in the application
+  @fold8_sampled_crossing F (Fin 16) ?m.82 ?m.83 ?m.84 inst✝ (ZMod.fintype 17) (ZMod.decidableEq 17) (Fin.fintype 16)
+    ?m.89 ?m.90 ?m.91 instNonemptyOfInhabited ?m.93 ?m.94 ?m.95 ?m.96 ?m.97 ?m.98 ?m.99 D₂

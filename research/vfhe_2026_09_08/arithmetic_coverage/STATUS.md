@@ -1,0 +1,1 @@
+[EXECUTED] Both complete 8192-row Lean traces are emitted and handed to the actual prover lane. Five Lean modules and 23 guarded theorem pins compile; the proposal patch applies in isolated scratch. Weighted and expiry arithmetic artifacts are fixed. [OPEN] Actual prover/verifier outcomes belong to `../proved_operation/`; root owns integration.

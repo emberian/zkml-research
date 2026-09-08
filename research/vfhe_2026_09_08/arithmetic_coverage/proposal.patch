@@ -1,0 +1,981 @@
+--- /dev/null
++++ b/Compiler/BfvLinearCombination.lean
+@@ -0,0 +1,189 @@
++/- Whole-coefficient BFV linear-combination arithmetic, generated from the existing
++range/addition gadgets and one reusable signed-carry source constructor. -/
++import Compiler.IntegerCertificateEmission
++
++namespace Minidregg.Compiler.BfvLinearCombination
++open Minidregg.Compiler
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.IntegerCertificateEmission
++open Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 1000000
++
++structure RowWires (J : Type) where
++  canonical : Fin 3 → AirBignum.AddWires J 7 6
++  quotient : J
++  quotientBit : Fin 3 → J
++  carry : Fin 8 → J
++  carryBit : Fin 8 → Fin 4 → J
++
++def word {J : Type} (asg : J → BabyBear) (w : RowWires J) (kind : Fin 3) : Nat :=
++  Bignum.denoteNat 64 (AirBignum.limbVals asg (w.canonical kind).x)
++
++def canonicalSystem {J : Type} (q : Nat) (w : AirBignum.AddWires J 7 6) :
++    ConstraintSystem BabyBear J :=
++  AirBignum.addGadget w ++ AirModularView.pinWordSystem (limbBits := 6) (q-1) w.z
++
++def column {J : Type} (q : Nat) (w : RowWires J) (i : Fin 7) : Term (AirSig BabyBear J) :=
++  add'
++    (add' (add' (mul' (cst 3) (vr ((w.canonical 0).x i)))
++      (mul' (cst 5) (vr ((w.canonical 1).x i))))
++      (add' (vr (w.carry i.castSucc)) (cst 512)))
++    (mul' (cst (-1))
++      (add' (add' (vr ((w.canonical 2).x i))
++        (mul' (cst (AirModularView.constDigit 64 7 q i : BabyBear)) (vr w.quotient)))
++        (add' (mul' (cst 64) (vr (w.carry i.succ))) (cst 8))))
++
++def rowSystem {J : Type} (q : Nat) (w : RowWires J) : ConstraintSystem BabyBear J :=
++  (List.finRange 3).flatMap (fun kind => canonicalSystem q (w.canonical kind)) ++
++  rangeGadget w.quotient w.quotientBit ++
++  AirBignum.limbRangeSystem w.carry w.carryBit ++
++  [add' (vr (w.carry 0)) (cst (-8)), add' (vr (w.carry 7)) (cst (-8))] ++
++  (List.finRange 7).map (column q w)
++
++/-- Acceptance forces the complete modular linear combination, with all three
++input/output word bounds supplied by the emitted relation itself. -/
++def RowSound {J : Type} (q : Nat) (w : RowWires J) : Prop :=
++  ∀ asg : J → BabyBear, systemAccepts asg (rowSystem q w) →
++    (∀ kind, word asg w kind < q) ∧
++    word asg w 2 = (3 * word asg w 0 + 5 * word asg w 1) % q
++
++theorem canonicalSystem_sound {J : Type} (q : Nat) (hq : 0 < q) (hqcap : q < 64^7)
++    (w : AirBignum.AddWires J 7 6) (asg : J → BabyBear)
++    (h : systemAccepts asg (canonicalSystem q w)) :
++    Bignum.denoteNat 64 (AirBignum.limbVals asg w.x) < q ∧
++    ∀ i, (asg (w.x i)).val < 64 := by
++  obtain ⟨ha,hp⟩ := (systemAccepts_append asg _ _).mp h
++  have hh := AirBignum.addGadget_sound (by norm_num [babyBearP] : 2*2^6 ≤ babyBearP) asg w ha
++  have hpin := (AirModularView.pinWordSystem_correct asg (q-1) w.z).mp hp
++  have hz := AirModularView.denote_pinned_word (by positivity : 0 < 2^6)
++    (by norm_num [babyBearP] : 2^6 ≤ babyBearP)
++    (show q-1 < (2^6)^7 by norm_num at *; omega) asg w.z hpin
++  constructor
++  · norm_num at hz hh
++    omega
++  · intro i
++    have hr := (AirBignum.addGadget_correct asg w).mp ha
++    exact rangeGadget_val_lt (by norm_num [babyBearP] : 2^6 ≤ babyBearP)
++      asg (w.x i) (w.xBit i) (hr.1 i)
++
++/-- Signed carry c is encoded as c+8. The endpoint correction telescopes;
++there is no coefficientwise reduction or discarded integer quotient. -/
++theorem radix_balance : ∀ {n : Nat} (a b out qd : Fin n → Nat)
++    (carry : Fin (n+1) → Nat) (k : Nat),
++    (∀ i, 3*a i + 5*b i + carry i.castSucc + 512 =
++      out i + qd i*k + 64*carry i.succ + 8) →
++    3*Bignum.denoteNat 64 (List.ofFn a) + 5*Bignum.denoteNat 64 (List.ofFn b) +
++      carry 0 + 8*64^n =
++    Bignum.denoteNat 64 (List.ofFn out) + Bignum.denoteNat 64 (List.ofFn qd)*k +
++      64^n*carry (Fin.last n) + 8 := by
++  intro n
++  induction n with
++  | zero => intro a b out qd carry k _; simp
++  | succ n ih =>
++    intro a b out qd carry k heq
++    have hlo := heq (0 : Fin (n+1))
++    have htail := ih (fun i => a i.succ) (fun i => b i.succ)
++      (fun i => out i.succ) (fun i => qd i.succ) (fun i => carry i.succ) k
++      (fun i => heq i.succ)
++    simp only [List.ofFn_succ, Bignum.denoteNat_cons, pow_succ]
++    have hzero : (0 : Fin (n+1)).castSucc = (0 : Fin (n+2)) := by apply Fin.ext; rfl
++    have hlast : (Fin.last n).succ = Fin.last (n+1) := by apply Fin.ext; rfl
++    rw [hzero] at hlo
++    dsimp only at htail
++    rw [hlast] at htail
++    nlinarith [hlo, htail]
++
++theorem column_correct {J : Type} (q : Nat) (w : RowWires J) (asg : J → BabyBear) (i : Fin 7) :
++    accepts asg (column q w i) ↔
++      3*asg ((w.canonical 0).x i) + 5*asg ((w.canonical 1).x i) +
++        asg (w.carry i.castSucc) + 512 =
++      asg ((w.canonical 2).x i) +
++        (AirModularView.constDigit 64 7 q i : BabyBear)*asg w.quotient +
++        64*asg (w.carry i.succ) + 8 := by
++  simp only [accepts, column, eval_add', eval_mul', eval_cst, eval_vr]
++  constructor <;> intro h <;> linear_combination h
++
++theorem rowSystem_sound {J : Type} (q : Nat) (hq : 0 < q) (hqcap : q < 64^7)
++    (w : RowWires J) : RowSound q w := by
++  intro asg hs
++  simp only [rowSystem, systemAccepts_append] at hs
++  obtain ⟨⟨⟨⟨hcan,hqrange⟩,hcrange⟩,hend⟩,hcols⟩ := hs
++  have hcan' (kind : Fin 3) : systemAccepts asg (canonicalSystem q (w.canonical kind)) := by
++    intro term ht
++    exact hcan term (List.mem_flatMap.mpr ⟨kind,List.mem_finRange kind,ht⟩)
++  have hwords := fun kind => canonicalSystem_sound q hq hqcap (w.canonical kind) asg (hcan' kind)
++  have hkr : (asg w.quotient).val < 8 :=
++    rangeGadget_val_lt (by norm_num [babyBearP] : 2^3 ≤ babyBearP) asg _ _ hqrange
++  have hcr : ∀ i, (asg (w.carry i)).val < 16 := fun i =>
++    rangeGadget_val_lt (by norm_num [babyBearP] : 2^4 ≤ babyBearP) asg _ _
++      ((AirBignum.limbRangeSystem_correct asg w.carry w.carryBit).mp hcrange i)
++  have hcol (i : Fin 7) :
++      3*(asg ((w.canonical 0).x i)).val + 5*(asg ((w.canonical 1).x i)).val +
++        (asg (w.carry i.castSucc)).val + 512 =
++      (asg ((w.canonical 2).x i)).val +
++        AirModularView.constDigit 64 7 q i*(asg w.quotient).val +
++        64*(asg (w.carry i.succ)).val + 8 := by
++    have hf := (column_correct q w asg i).mp
++      (hcols _ (List.mem_map.mpr ⟨i,List.mem_finRange i,rfl⟩))
++    have ha := (hwords 0).2 i
++    have hb := (hwords 1).2 i
++    have ho := (hwords 2).2 i
++    have hc0 := hcr i.castSucc
++    have hc1 := hcr i.succ
++    have hqd := constDigit_lt 64 7 q (by omega) i
++    have hm := Nat.mul_le_mul (show AirModularView.constDigit 64 7 q i ≤ 63 by omega)
++      (show (asg w.quotient).val ≤ 7 by omega)
++    have hl : 3*(asg ((w.canonical 0).x i)).val + 5*(asg ((w.canonical 1).x i)).val +
++        (asg (w.carry i.castSucc)).val + 512 < babyBearP := by norm_num [babyBearP]; omega
++    have hr : (asg ((w.canonical 2).x i)).val +
++        AirModularView.constDigit 64 7 q i*(asg w.quotient).val +
++        64*(asg (w.carry i.succ)).val + 8 < babyBearP := by norm_num [babyBearP]; omega
++    have heq : ((3*(asg ((w.canonical 0).x i)).val + 5*(asg ((w.canonical 1).x i)).val +
++        (asg (w.carry i.castSucc)).val + 512 : Nat) : BabyBear) =
++      (( (asg ((w.canonical 2).x i)).val +
++        AirModularView.constDigit 64 7 q i*(asg w.quotient).val +
++        64*(asg (w.carry i.succ)).val + 8 : Nat) : BabyBear) := by simpa using hf
++    have hv := congrArg ZMod.val heq
++    simpa only [ZMod.val_cast_of_lt hl,ZMod.val_cast_of_lt hr] using hv
++  have hends : asg (w.carry 0) = 8 ∧ asg (w.carry 7) = 8 := by
++    simpa only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,
++      eval_add',eval_vr,eval_cst,add_neg_eq_zero] using hend
++  have h0 : (asg (w.carry 0)).val = 8 := by rw [hends.1]; decide +kernel
++  have h7 : (asg (w.carry 7)).val = 8 := by rw [hends.2]; decide +kernel
++  have ht := radix_balance (fun i => (asg ((w.canonical 0).x i)).val)
++    (fun i => (asg ((w.canonical 1).x i)).val) (fun i => (asg ((w.canonical 2).x i)).val)
++    (AirModularView.constDigit 64 7 q) (fun i => (asg (w.carry i)).val) (asg w.quotient).val hcol
++  have hqd : Bignum.denoteNat 64 (List.ofFn (AirModularView.constDigit 64 7 q)) = q := by
++    rw [AirModularView.constDigits_eq]
++    exact Bignum.denoteNat_digitsLE (by omega) 7 q hqcap
++  change _ + _ + (asg (w.carry 0)).val + _ = _ + _ + _*(asg (w.carry 7)).val + _ at ht
++  rw [h0,h7,hqd] at ht
++  have heq : 3*word asg w 0 + 5*word asg w 1 = word asg w 2 + q*(asg w.quotient).val := by
++    dsimp [word,AirBignum.limbVals]
++    omega
++  refine ⟨fun kind => (hwords kind).1,?_⟩
++  rw [heq,Nat.add_mul_mod_self_left]
++  exact (Nat.mod_eq_of_lt (hwords 2).1).symm
++
++
++/-- info: 'Minidregg.Compiler.BfvLinearCombination.canonicalSystem_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms canonicalSystem_sound
++
++/-- info: 'Minidregg.Compiler.BfvLinearCombination.radix_balance' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms radix_balance
++
++/-- info: 'Minidregg.Compiler.BfvLinearCombination.column_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms column_correct
++
++/-- info: 'Minidregg.Compiler.BfvLinearCombination.rowSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms rowSystem_sound
++
++end Minidregg.Compiler.BfvLinearCombination
+--- /dev/null
++++ b/Compiler/BfvLinearCombinationLayout.lean
+@@ -0,0 +1,148 @@
++import Compiler.BfvLinearCombination
++import Compiler.AirSimplify
++
++namespace Minidregg.Compiler.BfvLinearCombination
++open Minidregg.Compiler
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.AirSimplify
++open Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 1000000
++
++local instance : Hashable BabyBear where hash x := hash x.val
++
++def primes : Fin 3 → Nat := ![68719403009,68719230977,137438822401]
++def nVars : Nat := 1234
++def start (limb : Fin 3) : Nat := 64+390*limb.val
++
++def layout (limb : Fin 3) : RowWires (Fin nVars) where
++  canonical := fun kind => {
++    x := fun i => ⟨1+21*kind.val+7*limb.val+i.val,by dsimp [nVars]; omega⟩
++    y := fun i => ⟨start limb+126+7*kind.val+i.val,by dsimp [start,nVars]; omega⟩
++    z := fun i => ⟨start limb+273+i.val,by dsimp [start,nVars]; omega⟩
++    xBit := fun i j => ⟨start limb+42*kind.val+6*i.val+j.val,by dsimp [start,nVars]; omega⟩
++    yBit := fun i j => ⟨start limb+147+42*kind.val+6*i.val+j.val,by dsimp [start,nVars]; omega⟩
++    zBit := fun i j => ⟨start limb+280+6*i.val+j.val,by dsimp [start,nVars]; omega⟩
++    carry := fun i => ⟨start limb+322+8*kind.val+i.val,by dsimp [start,nVars]; omega⟩ }
++  quotient := ⟨start limb+346,by dsimp [start,nVars]; omega⟩
++  quotientBit := fun j => ⟨start limb+347+j.val,by dsimp [start,nVars]; omega⟩
++  carry := fun i => ⟨start limb+350+i.val,by dsimp [start,nVars]; omega⟩
++  carryBit := fun i j => ⟨start limb+358+4*i.val+j.val,by dsimp [start,nVars]; omega⟩
++
++def system : ConstraintSystem BabyBear (Fin nVars) :=
++  (List.finRange 3).flatMap fun limb => rowSystem (primes limb) (layout limb)
++
++def descriptor : ConstraintDescriptor BabyBear := cse (emitSimplified Fin.val 64 nVars system)
++
++/-- One shared row contains A, B and O for all three limbs. -/
++def WholeRowSound : Prop := ∀ asg : Fin nVars → BabyBear, systemAccepts asg system →
++  ∀ limb, (∀ kind,word asg (layout limb) kind < primes limb) ∧
++    word asg (layout limb) 2 =
++      (3*word asg (layout limb) 0+5*word asg (layout limb) 1)%primes limb
++
++theorem prime_capacity (limb : Fin 3) : 0 < primes limb ∧ primes limb < 64^7 := by
++  fin_cases limb <;> norm_num [primes]
++
++theorem wholeRowSound : WholeRowSound := by
++  intro asg hs limb
++  apply rowSystem_sound (primes limb) (prime_capacity limb).1 (prime_capacity limb).2
++  intro term ht
++  exact hs term (List.mem_flatMap.mpr ⟨limb,List.mem_finRange limb,ht⟩)
++
++theorem descriptor_sound (v : Nat → BabyBear) (h : descriptorHolds descriptor v) :
++    ∀ limb, (∀ kind,word (fun i => v i.val) (layout limb) kind < primes limb) ∧
++      word (fun i => v i.val) (layout limb) 2 =
++        (3*word (fun i => v i.val) (layout limb) 0+
++          5*word (fun i => v i.val) (layout limb) 1)%primes limb := by
++  have hs := (cse_emitSimplified_accepts_iff Fin.val Fin.val_injective 64 nVars
++    (fun i : Fin nVars => i.isLt) (fun i => v i.val) system).mp ⟨v,fun _ => rfl,h⟩
++  exact wholeRowSound _ hs
++
++/-- The IR2 serializer folds exactly this simplified source system. -/
++theorem simplifiedSource_sound (asg : Fin nVars → BabyBear)
++    (h : systemAccepts asg (simplifySystem system)) :
++    ∀ limb, (∀ kind,word asg (layout limb) kind < primes limb) ∧
++      word asg (layout limb) 2 =
++      (3*word asg (layout limb) 0+5*word asg (layout limb) 1)%primes limb := by
++  exact wholeRowSound asg ((simplifySystem_accepts_iff asg system).mp h)
++
++def digit (value index : Nat) : Nat := value / 64^index % 64
++def bit (value index : Nat) : Nat := value / 2^index % 2
++
++def readWord (row : Array Nat) (kind limb : Nat) : Nat :=
++  (List.range 7).foldr (fun i acc => row[1+21*kind+7*limb+i]!+64*acc) 0
++
++def setBits (a : Array BabyBear) (offset bits value : Nat) : Array BabyBear := Id.run do
++  let mut a := a
++  for j in [:bits] do a := a.set! (offset+j) (bit value j : BabyBear)
++  return a
++
++/-- Witness synthesis is in the same Lean package as the generated relation.
++The caller supplies actual public A/B/O digits; the producer does not choose O. -/
++def variableArray (row : Array Nat) : Array BabyBear := Id.run do
++  let mut a : Array BabyBear := Array.replicate nVars 0
++  for i in [:64] do a := a.set! i (row[i]! : BabyBear)
++  for limb in List.finRange 3 do
++    let q := primes limb
++    let s := start limb
++    for kind in [:3] do
++      let value := readWord row kind limb.val
++      let slack := q-1-value
++      let mut carry : Nat := 0
++      for i in [:7] do
++        a := setBits a (s+42*kind+6*i) 6 (digit value i)
++        a := a.set! (s+126+7*kind+i) (digit slack i : BabyBear)
++        a := setBits a (s+147+42*kind+6*i) 6 (digit slack i)
++        a := a.set! (s+322+8*kind+i) (carry : BabyBear)
++        carry := (digit value i+digit slack i+carry)/64
++      a := a.set! (s+322+8*kind+7) (carry : BabyBear)
++    for i in [:7] do
++      a := a.set! (s+273+i) (digit (q-1) i : BabyBear)
++      a := setBits a (s+280+6*i) 6 (digit (q-1) i)
++    let av := readWord row 0 limb.val
++    let bv := readWord row 1 limb.val
++    let ov := readWord row 2 limb.val
++    let k := (3*av+5*bv)/q
++    a := a.set! (s+346) (k : BabyBear)
++    a := setBits a (s+347) 3 k
++    let mut carry : Int := 0
++    for i in [:8] do
++      let encoded := (carry+8).toNat
++      a := a.set! (s+350+i) (encoded : BabyBear)
++      a := setBits a (s+358+4*i) 4 encoded
++      if i < 7 then
++        carry := (3*(digit av i : Int)+5*(digit bv i : Int)+carry-
++          (digit ov i : Int)-(digit q i : Int)*k)/64
++  return a
++
++def rowOfValues (rowId : Nat) (av bv ov : Fin 3 → Nat) : Array Nat :=
++  #[rowId] ++ ((List.finRange 3).flatMap fun kind =>
++    (List.finRange 3).flatMap fun limb =>
++      (List.range 7).map fun i => digit ((![av,bv,ov] : Fin 3 → Fin 3 → Nat) kind limb) i).toArray
++
++def sourceCheck (row : Array Nat) : Bool :=
++  let a := variableArray row
++  system.all (fun term => eval (fun i => a[i.val]!) term == 0)
++
++
++/-- info: 'Minidregg.Compiler.BfvLinearCombination.prime_capacity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms prime_capacity
++
++/-- info: 'Minidregg.Compiler.BfvLinearCombination.wholeRowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms wholeRowSound
++
++/-- info: 'Minidregg.Compiler.BfvLinearCombination.descriptor_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms descriptor_sound
++
++/-- info: 'Minidregg.Compiler.BfvLinearCombination.simplifiedSource_sound' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound] -/
++#guard_msgs in
++#print axioms simplifiedSource_sound
++
++end Minidregg.Compiler.BfvLinearCombination
+--- /dev/null
++++ b/Compiler/BfvExpiry.lean
+@@ -0,0 +1,154 @@
++import Compiler.BfvLinearCombination
++
++namespace Minidregg.Compiler.BfvExpiry
++open Minidregg.Compiler
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.IntegerCertificateEmission
++open Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 1000000
++
++structure RowWires (J : Type) where
++  canonical : Fin 4 → AirBignum.AddWires J 7 6
++  quotient : J
++  quotientBit : Fin 2 → J
++  carry : Fin 8 → J
++  carryBit : Fin 8 → Fin 3 → J
++
++def word {J : Type} (asg : J → BabyBear) (w : RowWires J) (kind : Fin 4) : Nat :=
++  Bignum.denoteNat 64 (AirBignum.limbVals asg (w.canonical kind).x)
++
++def column {J : Type} (q : Nat) (w : RowWires J) (i : Fin 7) : Term (AirSig BabyBear J) :=
++  let qd := cst (AirModularView.constDigit 64 7 q i : BabyBear)
++  add' (add' (add' (vr ((w.canonical 0).x i)) (vr ((w.canonical 1).x i)))
++    (add' qd (add' (vr (w.carry i.castSucc)) (cst 256))))
++    (mul' (cst (-1))
++      (add' (add' (vr ((w.canonical 2).x i)) (vr ((w.canonical 3).x i)))
++        (add' (mul' qd (vr w.quotient))
++          (add' (mul' (cst 64) (vr (w.carry i.succ))) (cst 4)))))
++
++def rowSystem {J : Type} (q : Nat) (w : RowWires J) : ConstraintSystem BabyBear J :=
++  (List.finRange 4).flatMap (fun kind => BfvLinearCombination.canonicalSystem q (w.canonical kind)) ++
++  rangeGadget w.quotient w.quotientBit ++ AirBignum.limbRangeSystem w.carry w.carryBit ++
++  [add' (vr (w.carry 0)) (cst (-4)),add' (vr (w.carry 7)) (cst (-4))] ++
++  (List.finRange 7).map (column q w)
++
++/-- Complete expiry arithmetic with canonical accumulator, fresh, old and output
++words; adding q makes the integer numerator nonnegative before reduction. -/
++def RowSound {J : Type} (q : Nat) (w : RowWires J) : Prop :=
++  ∀ asg : J → BabyBear, systemAccepts asg (rowSystem q w) →
++    (∀ kind,word asg w kind < q) ∧
++    word asg w 3 = (word asg w 0+word asg w 1+q-word asg w 2)%q
++
++theorem radix_balance : ∀ {n : Nat} (a fresh old out qd : Fin n → Nat)
++    (carry : Fin (n+1) → Nat) (j : Nat),
++    (∀ i,a i+fresh i+qd i+carry i.castSucc+256 =
++      old i+out i+qd i*j+64*carry i.succ+4) →
++    Bignum.denoteNat 64 (List.ofFn a)+Bignum.denoteNat 64 (List.ofFn fresh)+
++      Bignum.denoteNat 64 (List.ofFn qd)+carry 0+4*64^n =
++    Bignum.denoteNat 64 (List.ofFn old)+Bignum.denoteNat 64 (List.ofFn out)+
++      Bignum.denoteNat 64 (List.ofFn qd)*j+64^n*carry (Fin.last n)+4 := by
++  intro n
++  induction n with
++  | zero => intro a fresh old out qd carry j _; simp
++  | succ n ih =>
++    intro a fresh old out qd carry j heq
++    have hlo := heq (0 : Fin (n+1))
++    have htail := ih (fun i => a i.succ) (fun i => fresh i.succ)
++      (fun i => old i.succ) (fun i => out i.succ) (fun i => qd i.succ)
++      (fun i => carry i.succ) j (fun i => heq i.succ)
++    simp only [List.ofFn_succ,Bignum.denoteNat_cons,pow_succ]
++    have hzero : (0 : Fin (n+1)).castSucc = (0 : Fin (n+2)) := by apply Fin.ext; rfl
++    have hlast : (Fin.last n).succ = Fin.last (n+1) := by apply Fin.ext; rfl
++    rw [hzero] at hlo
++    dsimp only at htail
++    rw [hlast] at htail
++    nlinarith [hlo,htail]
++
++theorem column_correct {J : Type} (q : Nat) (w : RowWires J) (asg : J → BabyBear) (i : Fin 7) :
++    accepts asg (column q w i) ↔
++    asg ((w.canonical 0).x i)+asg ((w.canonical 1).x i)+
++      (AirModularView.constDigit 64 7 q i : BabyBear)+asg (w.carry i.castSucc)+256 =
++    asg ((w.canonical 2).x i)+asg ((w.canonical 3).x i)+
++      (AirModularView.constDigit 64 7 q i : BabyBear)*asg w.quotient+
++      64*asg (w.carry i.succ)+4 := by
++  simp only [accepts,column,eval_add',eval_mul',eval_vr,eval_cst]
++  constructor <;> intro h <;> linear_combination h
++
++theorem rowSystem_sound {J : Type} (q : Nat) (hq : 0 < q) (hqcap : q < 64^7)
++    (w : RowWires J) : RowSound q w := by
++  intro asg hs
++  simp only [rowSystem,systemAccepts_append] at hs
++  obtain ⟨⟨⟨⟨hcan,hqr⟩,hcr⟩,hend⟩,hcols⟩ := hs
++  have hcan' (kind : Fin 4) : systemAccepts asg (BfvLinearCombination.canonicalSystem q (w.canonical kind)) := by
++    intro term ht
++    exact hcan term (List.mem_flatMap.mpr ⟨kind,List.mem_finRange kind,ht⟩)
++  have hwords := fun kind => BfvLinearCombination.canonicalSystem_sound q hq hqcap (w.canonical kind) asg (hcan' kind)
++  have hj : (asg w.quotient).val < 4 := rangeGadget_val_lt
++    (by norm_num [babyBearP] : 2^2 ≤ babyBearP) asg _ _ hqr
++  have hc : ∀ i,(asg (w.carry i)).val < 8 := fun i => rangeGadget_val_lt
++    (by norm_num [babyBearP] : 2^3 ≤ babyBearP) asg _ _
++    ((AirBignum.limbRangeSystem_correct asg w.carry w.carryBit).mp hcr i)
++  have hcol (i : Fin 7) :
++    (asg ((w.canonical 0).x i)).val+(asg ((w.canonical 1).x i)).val+
++      AirModularView.constDigit 64 7 q i+(asg (w.carry i.castSucc)).val+256 =
++    (asg ((w.canonical 2).x i)).val+(asg ((w.canonical 3).x i)).val+
++      AirModularView.constDigit 64 7 q i*(asg w.quotient).val+
++      64*(asg (w.carry i.succ)).val+4 := by
++    have hf := (column_correct q w asg i).mp
++      (hcols _ (List.mem_map.mpr ⟨i,List.mem_finRange i,rfl⟩))
++    have ha := (hwords 0).2 i
++    have hfr := (hwords 1).2 i
++    have hold := (hwords 2).2 i
++    have hout := (hwords 3).2 i
++    have hc0 := hc i.castSucc
++    have hc1 := hc i.succ
++    have hqd := constDigit_lt 64 7 q (by omega) i
++    have hm := Nat.mul_le_mul (show AirModularView.constDigit 64 7 q i ≤ 63 by omega)
++      (show (asg w.quotient).val ≤ 3 by omega)
++    have hl : (asg ((w.canonical 0).x i)).val+(asg ((w.canonical 1).x i)).val+
++      AirModularView.constDigit 64 7 q i+(asg (w.carry i.castSucc)).val+256 < babyBearP := by
++      norm_num [babyBearP]; omega
++    have hr : (asg ((w.canonical 2).x i)).val+(asg ((w.canonical 3).x i)).val+
++      AirModularView.constDigit 64 7 q i*(asg w.quotient).val+
++      64*(asg (w.carry i.succ)).val+4 < babyBearP := by norm_num [babyBearP]; omega
++    have heq : (((asg ((w.canonical 0).x i)).val+(asg ((w.canonical 1).x i)).val+
++      AirModularView.constDigit 64 7 q i+(asg (w.carry i.castSucc)).val+256 : Nat) : BabyBear) =
++      (((asg ((w.canonical 2).x i)).val+(asg ((w.canonical 3).x i)).val+
++        AirModularView.constDigit 64 7 q i*(asg w.quotient).val+
++        64*(asg (w.carry i.succ)).val+4 : Nat) : BabyBear) := by simpa using hf
++    have hv := congrArg ZMod.val heq
++    simpa only [ZMod.val_cast_of_lt hl,ZMod.val_cast_of_lt hr] using hv
++  have hends : asg (w.carry 0) = 4 ∧ asg (w.carry 7) = 4 := by
++    simpa only [systemAccepts_cons,systemAccepts_nil,and_true,accepts,
++      eval_add',eval_vr,eval_cst,add_neg_eq_zero] using hend
++  have h0 : (asg (w.carry 0)).val = 4 := by rw [hends.1]; decide +kernel
++  have h7 : (asg (w.carry 7)).val = 4 := by rw [hends.2]; decide +kernel
++  have ht := radix_balance (fun i => (asg ((w.canonical 0).x i)).val)
++    (fun i => (asg ((w.canonical 1).x i)).val) (fun i => (asg ((w.canonical 2).x i)).val)
++    (fun i => (asg ((w.canonical 3).x i)).val) (AirModularView.constDigit 64 7 q)
++    (fun i => (asg (w.carry i)).val) (asg w.quotient).val hcol
++  have hqd : Bignum.denoteNat 64 (List.ofFn (AirModularView.constDigit 64 7 q)) = q := by
++    rw [AirModularView.constDigits_eq]
++    exact Bignum.denoteNat_digitsLE (by omega) 7 q hqcap
++  change _+_+_+(asg (w.carry 0)).val+_ = _+_+_+_*(asg (w.carry 7)).val+_ at ht
++  rw [h0,h7,hqd] at ht
++  have heq : word asg w 0+word asg w 1+q-word asg w 2 = word asg w 3+q*(asg w.quotient).val := by
++    dsimp [word,AirBignum.limbVals]
++    omega
++  refine ⟨fun kind => (hwords kind).1,?_⟩
++  rw [heq,Nat.add_mul_mod_self_left]
++  exact (Nat.mod_eq_of_lt (hwords 3).1).symm
++
++/-- info: 'Minidregg.Compiler.BfvExpiry.radix_balance' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms radix_balance
++/-- info: 'Minidregg.Compiler.BfvExpiry.column_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms column_correct
++/-- info: 'Minidregg.Compiler.BfvExpiry.rowSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms rowSystem_sound
++
++end Minidregg.Compiler.BfvExpiry
+--- /dev/null
++++ b/Compiler/BfvExpiryLayout.lean
+@@ -0,0 +1,145 @@
++import Compiler.BfvExpiry
++import Compiler.BfvLinearCombinationLayout
++
++namespace Minidregg.Compiler.BfvExpiry
++open Minidregg.Compiler
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.AirSimplify
++open Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 20000
++set_option maxHeartbeats 1000000
++
++local instance : Hashable BabyBear where hash x := hash x.val
++
++def primes : Fin 2 → Nat := ![2199023190017,4398046486529]
++def nVars : Nat := 1017
++def start (limb : Fin 2) : Nat := 57+480*limb.val
++
++def layout (limb : Fin 2) : RowWires (Fin nVars) where
++  canonical := fun kind => {
++    x := fun i => ⟨1+14*kind.val+7*limb.val+i.val,by dsimp [nVars]; omega⟩
++    y := fun i => ⟨start limb+168+7*kind.val+i.val,by dsimp [start,nVars]; omega⟩
++    z := fun i => ⟨start limb+364+i.val,by dsimp [start,nVars]; omega⟩
++    xBit := fun i j => ⟨start limb+42*kind.val+6*i.val+j.val,by dsimp [start,nVars]; omega⟩
++    yBit := fun i j => ⟨start limb+196+42*kind.val+6*i.val+j.val,by dsimp [start,nVars]; omega⟩
++    zBit := fun i j => ⟨start limb+371+6*i.val+j.val,by dsimp [start,nVars]; omega⟩
++    carry := fun i => ⟨start limb+413+8*kind.val+i.val,by dsimp [start,nVars]; omega⟩ }
++  quotient := ⟨start limb+445,by dsimp [start,nVars]; omega⟩
++  quotientBit := fun j => ⟨start limb+446+j.val,by dsimp [start,nVars]; omega⟩
++  carry := fun i => ⟨start limb+448+i.val,by dsimp [start,nVars]; omega⟩
++  carryBit := fun i j => ⟨start limb+456+3*i.val+j.val,by dsimp [start,nVars]; omega⟩
++
++def system : ConstraintSystem BabyBear (Fin nVars) :=
++  (List.finRange 2).flatMap fun limb => rowSystem (primes limb) (layout limb)
++
++def descriptor : ConstraintDescriptor BabyBear := cse (emitSimplified Fin.val 57 nVars system)
++
++/-- One shared row contains accumulator, fresh, old and output for both limbs. -/
++def WholeRowSound : Prop := ∀ asg : Fin nVars → BabyBear, systemAccepts asg system →
++  ∀ limb, (∀ kind,word asg (layout limb) kind < primes limb) ∧
++    word asg (layout limb) 3 =
++      (word asg (layout limb) 0+word asg (layout limb) 1+primes limb-word asg (layout limb) 2)%primes limb
++
++theorem prime_capacity (limb : Fin 2) : 0 < primes limb ∧ primes limb < 64^7 := by
++  fin_cases limb <;> norm_num [primes]
++
++theorem wholeRowSound : WholeRowSound := by
++  intro asg hs limb
++  apply rowSystem_sound (primes limb) (prime_capacity limb).1 (prime_capacity limb).2
++  intro term ht
++  exact hs term (List.mem_flatMap.mpr ⟨limb,List.mem_finRange limb,ht⟩)
++
++theorem descriptor_sound (v : Nat → BabyBear) (h : descriptorHolds descriptor v) :
++    ∀ limb, (∀ kind,word (fun i => v i.val) (layout limb) kind < primes limb) ∧
++      word (fun i => v i.val) (layout limb) 3 =
++        (word (fun i => v i.val) (layout limb) 0+
++          word (fun i => v i.val) (layout limb) 1+primes limb-
++          word (fun i => v i.val) (layout limb) 2)%primes limb := by
++  have hs := (cse_emitSimplified_accepts_iff Fin.val Fin.val_injective 64 nVars
++    (fun i : Fin nVars => i.isLt) (fun i => v i.val) system).mp ⟨v,fun _ => rfl,h⟩
++  exact wholeRowSound _ hs
++
++/-- The IR2 serializer folds exactly this simplified source system. -/
++theorem simplifiedSource_sound (asg : Fin nVars → BabyBear)
++    (h : systemAccepts asg (simplifySystem system)) :
++    ∀ limb, (∀ kind,word asg (layout limb) kind < primes limb) ∧
++      word asg (layout limb) 3 =
++      (word asg (layout limb) 0+word asg (layout limb) 1+primes limb-word asg (layout limb) 2)%primes limb := by
++  exact wholeRowSound asg ((simplifySystem_accepts_iff asg system).mp h)
++
++def digit (value index : Nat) : Nat := value / 64^index % 64
++def bit (value index : Nat) : Nat := value / 2^index % 2
++
++def readWord (row : Array Nat) (kind limb : Nat) : Nat :=
++  (List.range 7).foldr (fun i acc => row[1+14*kind+7*limb+i]!+64*acc) 0
++
++def setBits (a : Array BabyBear) (offset bits value : Nat) : Array BabyBear := Id.run do
++  let mut a := a
++  for j in [:bits] do a := a.set! (offset+j) (bit value j : BabyBear)
++  return a
++
++/-- Witness synthesis is in the same Lean package as the generated relation.
++The caller supplies actual public A/B/O digits; the producer does not choose O. -/
++def variableArray (row : Array Nat) : Array BabyBear := Id.run do
++  let mut a : Array BabyBear := Array.replicate nVars 0
++  for i in [:57] do a := a.set! i (row[i]! : BabyBear)
++  for limb in List.finRange 2 do
++    let q := primes limb
++    let s := start limb
++    for kind in [:4] do
++      let value := readWord row kind limb.val
++      let slack := q-1-value
++      let mut carry : Nat := 0
++      for i in [:7] do
++        a := setBits a (s+42*kind+6*i) 6 (digit value i)
++        a := a.set! (s+168+7*kind+i) (digit slack i : BabyBear)
++        a := setBits a (s+196+42*kind+6*i) 6 (digit slack i)
++        a := a.set! (s+413+8*kind+i) (carry : BabyBear)
++        carry := (digit value i+digit slack i+carry)/64
++      a := a.set! (s+413+8*kind+7) (carry : BabyBear)
++    for i in [:7] do
++      a := a.set! (s+364+i) (digit (q-1) i : BabyBear)
++      a := setBits a (s+371+6*i) 6 (digit (q-1) i)
++    let av := readWord row 0 limb.val
++    let bv := readWord row 1 limb.val
++    let old := readWord row 2 limb.val
++    let ov := readWord row 3 limb.val
++    let k := (av+bv+q-old)/q
++    a := a.set! (s+445) (k : BabyBear)
++    a := setBits a (s+446) 2 k
++    let mut carry : Int := 0
++    for i in [:8] do
++      let encoded := (carry+4).toNat
++      a := a.set! (s+448+i) (encoded : BabyBear)
++      a := setBits a (s+456+3*i) 3 encoded
++      if i < 7 then
++        carry := ((digit av i : Int)+(digit bv i : Int)+(digit q i : Int)+carry-
++          (digit old i : Int)-(digit ov i : Int)-(digit q i : Int)*k)/64
++  return a
++
++def rowOfValues (rowId : Nat) (av bv old ov : Fin 2 → Nat) : Array Nat :=
++  #[rowId] ++ ((List.finRange 4).flatMap fun kind =>
++    (List.finRange 2).flatMap fun limb =>
++      (List.range 7).map fun i => digit ((![av,bv,old,ov] : Fin 4 → Fin 2 → Nat) kind limb) i).toArray
++
++def sourceCheck (row : Array Nat) : Bool :=
++  let a := variableArray row
++  system.all (fun term => eval (fun i => a[i.val]!) term == 0)
++
++
++/-- info: 'Minidregg.Compiler.BfvExpiry.prime_capacity' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms prime_capacity
++/-- info: 'Minidregg.Compiler.BfvExpiry.wholeRowSound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms wholeRowSound
++/-- info: 'Minidregg.Compiler.BfvExpiry.descriptor_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms descriptor_sound
++/-- info: 'Minidregg.Compiler.BfvExpiry.simplifiedSource_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms simplifiedSource_sound
++
++end Minidregg.Compiler.BfvExpiry
+--- /dev/null
++++ b/Compiler/BfvOperationWitness.lean
+@@ -0,0 +1,136 @@
++import Compiler.BfvExpiryLayout
++
++namespace Minidregg.Compiler.BfvOperationWitness
++open Minidregg.Compiler
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Theory
++set_option autoImplicit false
++set_option maxRecDepth 30000
++set_option maxHeartbeats 1000000
++
++inductive Wire where
++  | value (kind digit : Nat)
++  | slack (kind digit : Nat)
++  | bound (digit : Nat)
++  | valueBit (kind digit bit : Nat)
++  | slackBit (kind digit bit : Nat)
++  | boundBit (digit bit : Nat)
++  | addCarry (kind digit : Nat)
++  | quotient
++  | quotientBit (bit : Nat)
++  | carry (digit : Nat)
++  | carryBit (digit bit : Nat)
++
++def canonical (kind : Nat) : AirBignum.AddWires Wire 7 6 where
++  x := fun i => .value kind i.val
++  y := fun i => .slack kind i.val
++  z := fun i => .bound i.val
++  xBit := fun i j => .valueBit kind i.val j.val
++  yBit := fun i j => .slackBit kind i.val j.val
++  zBit := fun i j => .boundBit i.val j.val
++  carry := fun i => .addCarry kind i.val
++
++def weightedWires : BfvLinearCombination.RowWires Wire where
++  canonical := fun kind => canonical kind.val
++  quotient := .quotient
++  quotientBit := fun j => .quotientBit j.val
++  carry := fun i => .carry i.val
++  carryBit := fun i j => .carryBit i.val j.val
++
++def expiryWires : BfvExpiry.RowWires Wire where
++  canonical := fun kind => canonical kind.val
++  quotient := .quotient
++  quotientBit := fun j => .quotientBit j.val
++  carry := fun i => .carry i.val
++  carryBit := fun i j => .carryBit i.val j.val
++
++def natAsg (values : Nat → Nat) (quotient offset : Nat) : Wire → Nat
++  | .value k i => if i=0 then values k else 0
++  | .slack k i => if i=0 then 30-values k else 0
++  | .bound i => if i=0 then 30 else 0
++  | .valueBit k i j => if i=0 then (values k/2^j)%2 else 0
++  | .slackBit k i j => if i=0 then ((30-values k)/2^j)%2 else 0
++  | .boundBit i j => if i=0 then (30/2^j)%2 else 0
++  | .addCarry _ _ => 0
++  | .quotient => quotient
++  | .quotientBit j => (quotient/2^j)%2
++  | .carry _ => offset
++  | .carryBit _ j => (offset/2^j)%2
++
++def asg (values : Nat → Nat) (quotient offset : Nat) (wire : Wire) : BabyBear :=
++  natAsg values quotient offset wire
++
++def weightedAsg := asg (fun k => if k=0 then 1 else if k=1 then 2 else 13) 0 8
++def expiryAsg := asg (fun k => if k=0 then 17 else if k=1 then 23 else if k=2 then 9 else 0) 2 4
++
++def WeightedPremise : Prop := systemAccepts weightedAsg (BfvLinearCombination.rowSystem 31 weightedWires)
++def ExpiryPremise : Prop := systemAccepts expiryAsg (BfvExpiry.rowSystem 31 expiryWires)
++def WeightedFalsifier : Prop := ∀ a : Wire → BabyBear,
++  BfvLinearCombination.word a weightedWires 0 = 1 →
++  BfvLinearCombination.word a weightedWires 1 = 2 →
++  BfvLinearCombination.word a weightedWires 2 = 14 →
++  ¬ systemAccepts a (BfvLinearCombination.rowSystem 31 weightedWires)
++def ExpiryFalsifier : Prop := ∀ a : Wire → BabyBear,
++  BfvExpiry.word a expiryWires 0 = 17 → BfvExpiry.word a expiryWires 1 = 23 →
++  BfvExpiry.word a expiryWires 2 = 9 → BfvExpiry.word a expiryWires 3 = 1 →
++  ¬ systemAccepts a (BfvExpiry.rowSystem 31 expiryWires)
++
++theorem weightedCheck : (BfvLinearCombination.rowSystem 31 weightedWires).all
++    (fun term => eval weightedAsg term == 0) = true := by decide +kernel
++
++theorem expiryCheck : (BfvExpiry.rowSystem 31 expiryWires).all
++    (fun term => eval expiryAsg term == 0) = true := by decide +kernel
++
++theorem weightedPremise : WeightedPremise := by
++  simpa [WeightedPremise,List.all_eq_true,systemAccepts,accepts] using weightedCheck
++
++theorem expiryPremise : ExpiryPremise := by
++  simpa [ExpiryPremise,List.all_eq_true,systemAccepts,accepts] using expiryCheck
++
++theorem weightedFalsifier : WeightedFalsifier := by
++  intro a ha hb ho hs
++  have h := (BfvLinearCombination.rowSystem_sound 31 (by decide) (by decide) weightedWires a hs).2
++  rw [ha,hb,ho] at h
++  norm_num at h
++
++theorem expiryFalsifier : ExpiryFalsifier := by
++  intro a ha hf hold ho hs
++  have h := (BfvExpiry.rowSystem_sound 31 (by decide) (by decide) expiryWires a hs).2
++  rw [ha,hf,hold,ho] at h
++  norm_num at h
++
++theorem weightedWords :
++    BfvLinearCombination.word weightedAsg weightedWires 0 = 1 ∧
++    BfvLinearCombination.word weightedAsg weightedWires 1 = 2 ∧
++    BfvLinearCombination.word weightedAsg weightedWires 2 = 13 := by decide +kernel
++
++theorem expiryWords :
++    BfvExpiry.word expiryAsg expiryWires 0 = 17 ∧ BfvExpiry.word expiryAsg expiryWires 1 = 23 ∧
++    BfvExpiry.word expiryAsg expiryWires 2 = 9 ∧ BfvExpiry.word expiryAsg expiryWires 3 = 0 := by decide +kernel
++
++/-- info: 'Minidregg.Compiler.BfvOperationWitness.weightedCheck' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms weightedCheck
++/-- info: 'Minidregg.Compiler.BfvOperationWitness.expiryCheck' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms expiryCheck
++/-- info: 'Minidregg.Compiler.BfvOperationWitness.weightedPremise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms weightedPremise
++/-- info: 'Minidregg.Compiler.BfvOperationWitness.expiryPremise' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms expiryPremise
++/-- info: 'Minidregg.Compiler.BfvOperationWitness.weightedFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms weightedFalsifier
++/-- info: 'Minidregg.Compiler.BfvOperationWitness.expiryFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms expiryFalsifier
++/-- info: 'Minidregg.Compiler.BfvOperationWitness.weightedWords' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms weightedWords
++/-- info: 'Minidregg.Compiler.BfvOperationWitness.expiryWords' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs in
++#print axioms expiryWords
++
++end Minidregg.Compiler.BfvOperationWitness
+--- /dev/null
++++ b/EmitBfvLinearCombination.lean
+@@ -0,0 +1,94 @@
++/- Executable compiler boundary: the IR2 arithmetic is a Signature.fold of the
++proved source terms. Rust supplies public table rows, not constraint expressions. -/
++import Compiler.BfvLinearCombinationLayout
++import Lean.Data.Json
++
++open Lean (Json toJson)
++open Minidregg.Compiler
++open Minidregg.Compiler.BfvLinearCombination
++open Minidregg.Compiler.AirSimplify
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Theory
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++
++def ir2Alg : Alg (AirSig BabyBear (Fin nVars)) String := fun op =>
++  match op with
++  | .const c => fun _ => "{\"t\":\"const\",\"v\":"++toString c.val++"}"
++  | .var i => fun _ => ir2Var i.val
++  | .add => fun child => "{\"t\":\"add\",\"l\":"++child false++",\"r\":"++child true++"}"
++  | .mul => fun child => "{\"t\":\"mul\",\"l\":"++child false++",\"r\":"++child true++"}"
++
++/-- The backend's tagged-node parser requires the discriminator first. This
++ordered serialization folds the same source terms; it introduces no equations. -/
++def ir2Template : String :=
++  let terms := simplifySystem system
++  let arithmetic := terms.map fun t => "{\"t\":\"gate\",\"body\":"++fold ir2Alg t++"}"
++  let lookup := "{\"t\":\"lookup\",\"table\":11,\"tuple\":["++
++    String.intercalate "," ((List.range 64).map ir2Var)++"]}"
++  "{\"name\":\"bfv_three_moduli_linear_combination_3a_5b\",\"ir\":2,\"trace_width\":"++
++    toString nVars++",\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":11,"++
++    "\"name\":\"bfv_public_rows\",\"arity\":64,\"sem\":\"exact_public_rows\",\"rows\":[]}],"++
++    "\"constraints\":["++String.intercalate "," (lookup::arithmetic)++"],\"hash_sites\":[],\"ranges\":[]}"
++
++def u32Bytes (a : Array BabyBear) : ByteArray := Id.run do
++  let mut bytes := ByteArray.emptyWithCapacity (4*a.size)
++  for value in a do
++    let v := value.val
++    for shift in [0,8,16,24] do bytes := bytes.push ((v >>> shift).toUInt8)
++  return bytes
++
++def sampleRows : Array (Array Nat) := #[
++  rowOfValues 0 (fun _ => 0) (fun _ => 0) (fun _ => 0),
++  rowOfValues 1 (fun _ => 17) (fun _ => 23) (fun _ => 166),
++  rowOfValues 2 (fun i => primes i-1) (fun i => primes i-1) (fun i => primes i-8),
++  rowOfValues 3 (fun i => primes i-4) (fun _ => 11) (fun _ => 43)]
++
++def main (args : List String) : IO UInt32 := do
++  let outDir : System.FilePath := args.headD "artifacts"
++  IO.FS.createDirAll outDir
++  IO.FS.writeFile (outDir / "template_ir2.json") (ir2Template++"\n")
++  let d := descriptor
++  IO.FS.writeFile (outDir / "minidregg_descriptor.json") ((descriptorToJson d).compress++"\n")
++  for row in sampleRows do
++    unless sourceCheck row do
++      let a := variableArray row
++      let failures := system.zipIdx |>.filterMap fun (term,i) =>
++        let value := eval (fun j => a[j.val]!) term
++        if value == 0 then none else some (i,value.val)
++      throw (IO.userError s!"constructed row {row[0]!} refused: {failures}")
++    let full := fillAux d (variableArray row)
++    unless descriptorHoldsCheck d (fun i => full.getD i 0) do
++      throw (IO.userError "existing emitted descriptor refused constructed witness")
++  let wrong := sampleRows[1]!.set! 43 39
++  if sourceCheck wrong then throw (IO.userError "changed output accepted")
++  let badDigit := sampleRows[1]!.set! 1 64
++  if sourceCheck badDigit then throw (IO.userError "out-of-range radix digit accepted")
++  let mut rows := sampleRows
++  if let some inputPath := args[1]? then
++    let parsed ← IO.ofExcept (Json.parse (← IO.FS.readFile (System.FilePath.mk inputPath)))
++    rows ← IO.ofExcept (Lean.fromJson? parsed : Except String (Array (Array Nat)))
++  IO.FS.withFile (outDir / "trace.leu32") .write fun handle => do
++    for i in [:rows.size] do
++      let row := rows[i]!
++      unless row.size == 64 do throw (IO.userError s!"row {i}: wrong public arity")
++      unless row[0]! == i do throw (IO.userError s!"row {i}: wrong row ID")
++      unless sourceCheck row do throw (IO.userError s!"row {i}: actual operation does not satisfy generated relation")
++      handle.write (u32Bytes (variableArray row))
++      if i % 1024 == 0 then IO.println s!"produced {i}/{rows.size} rows"
++  let summary := Json.mkObj [("rows",toJson rows.size),("trace_width",toJson nVars),
++    ("trace_bytes",toJson (rows.size*nVars*4)),
++    ("source_constraints",toJson system.length),
++    ("ir2_arithmetic_constraints",toJson (simplifySystem system).length),
++    ("standard_descriptor_gates",toJson d.gates.length),
++    ("standard_descriptor_nWires",toJson d.nWires),
++    ("constructed_cases_checked",toJson sampleRows.size),
++    ("changed_output_refused",toJson true),("radix64_refused",toJson true),
++    ("all_actual_source_rows_checked",toJson true),
++    ("public_tuple_order",toJson "rowID,A3x7,B3x7,O3x7")]
++  IO.FS.writeFile (outDir / "emission.json") (summary.pretty++"\n")
++  IO.println summary.compress
++  return 0
+--- /dev/null
++++ b/EmitBfvExpiry.lean
+@@ -0,0 +1,94 @@
++/- Executable compiler boundary: the IR2 arithmetic is a Signature.fold of the
++proved source terms. Rust supplies public table rows, not constraint expressions. -/
++import Compiler.BfvExpiryLayout
++import Lean.Data.Json
++
++open Lean (Json toJson)
++open Minidregg.Compiler
++open Minidregg.Compiler.BfvExpiry
++open Minidregg.Compiler.AirSimplify
++open Minidregg.Compiler.DescriptorEval
++open Minidregg.Compiler.NativeKernelPlan
++open Minidregg.Theory
++set_option maxRecDepth 100000
++set_option maxHeartbeats 0
++
++def ir2Var (i : Nat) : String := "{\"t\":\"var\",\"v\":"++toString i++"}"
++
++def ir2Alg : Alg (AirSig BabyBear (Fin nVars)) String := fun op =>
++  match op with
++  | .const c => fun _ => "{\"t\":\"const\",\"v\":"++toString c.val++"}"
++  | .var i => fun _ => ir2Var i.val
++  | .add => fun child => "{\"t\":\"add\",\"l\":"++child false++",\"r\":"++child true++"}"
++  | .mul => fun child => "{\"t\":\"mul\",\"l\":"++child false++",\"r\":"++child true++"}"
++
++/-- The backend's tagged-node parser requires the discriminator first. This
++ordered serialization folds the same source terms; it introduces no equations. -/
++def ir2Template : String :=
++  let terms := simplifySystem system
++  let arithmetic := terms.map fun t => "{\"t\":\"gate\",\"body\":"++fold ir2Alg t++"}"
++  let lookup := "{\"t\":\"lookup\",\"table\":11,\"tuple\":["++
++    String.intercalate "," ((List.range 57).map ir2Var)++"]}"
++  "{\"name\":\"bfv_two_moduli_expiry_acc_plus_fresh_minus_old\",\"ir\":2,\"trace_width\":"++
++    toString nVars++",\"public_input_count\":0,\"challenges\":0,\"tables\":[{\"id\":11,"++
++    "\"name\":\"bfv_public_rows\",\"arity\":57,\"sem\":\"exact_public_rows\",\"rows\":[]}],"++
++    "\"constraints\":["++String.intercalate "," (lookup::arithmetic)++"],\"hash_sites\":[],\"ranges\":[]}"
++
++def u32Bytes (a : Array BabyBear) : ByteArray := Id.run do
++  let mut bytes := ByteArray.emptyWithCapacity (4*a.size)
++  for value in a do
++    let v := value.val
++    for shift in [0,8,16,24] do bytes := bytes.push ((v >>> shift).toUInt8)
++  return bytes
++
++def sampleRows : Array (Array Nat) := #[
++  rowOfValues 0 (fun _ => 0) (fun _ => 0) (fun _ => 0) (fun _ => 0),
++  rowOfValues 1 (fun _ => 17) (fun _ => 23) (fun _ => 9) (fun _ => 31),
++  rowOfValues 2 (fun i => primes i-1) (fun i => primes i-1) (fun _ => 0) (fun i => primes i-2),
++  rowOfValues 3 (fun _ => 0) (fun _ => 0) (fun _ => 1) (fun i => primes i-1)]
++
++def main (args : List String) : IO UInt32 := do
++  let outDir : System.FilePath := args.headD "artifacts_expiry"
++  IO.FS.createDirAll outDir
++  IO.FS.writeFile (outDir / "template_ir2.json") (ir2Template++"\n")
++  let d := descriptor
++  IO.FS.writeFile (outDir / "minidregg_descriptor.json") ((descriptorToJson d).compress++"\n")
++  for row in sampleRows do
++    unless sourceCheck row do
++      let a := variableArray row
++      let failures := system.zipIdx |>.filterMap fun (term,i) =>
++        let value := eval (fun j => a[j.val]!) term
++        if value == 0 then none else some (i,value.val)
++      throw (IO.userError s!"constructed row {row[0]!} refused: {failures}")
++    let full := fillAux d (variableArray row)
++    unless descriptorHoldsCheck d (fun i => full.getD i 0) do
++      throw (IO.userError "existing emitted descriptor refused constructed witness")
++  let wrong := sampleRows[1]!.set! 43 32
++  if sourceCheck wrong then throw (IO.userError "changed output accepted")
++  let badDigit := sampleRows[1]!.set! 1 64
++  if sourceCheck badDigit then throw (IO.userError "out-of-range radix digit accepted")
++  let mut rows := sampleRows
++  if let some inputPath := args[1]? then
++    let parsed ← IO.ofExcept (Json.parse (← IO.FS.readFile (System.FilePath.mk inputPath)))
++    rows ← IO.ofExcept (Lean.fromJson? parsed : Except String (Array (Array Nat)))
++  IO.FS.withFile (outDir / "trace.leu32") .write fun handle => do
++    for i in [:rows.size] do
++      let row := rows[i]!
++      unless row.size == 57 do throw (IO.userError s!"row {i}: wrong public arity")
++      unless row[0]! == i do throw (IO.userError s!"row {i}: wrong row ID")
++      unless sourceCheck row do throw (IO.userError s!"row {i}: actual operation does not satisfy generated relation")
++      handle.write (u32Bytes (variableArray row))
++      if i % 1024 == 0 then IO.println s!"produced {i}/{rows.size} rows"
++  let summary := Json.mkObj [("rows",toJson rows.size),("trace_width",toJson nVars),
++    ("trace_bytes",toJson (rows.size*nVars*4)),
++    ("source_constraints",toJson system.length),
++    ("ir2_arithmetic_constraints",toJson (simplifySystem system).length),
++    ("standard_descriptor_gates",toJson d.gates.length),
++    ("standard_descriptor_nWires",toJson d.nWires),
++    ("constructed_cases_checked",toJson sampleRows.size),
++    ("changed_output_refused",toJson true),("radix64_refused",toJson true),
++    ("all_actual_source_rows_checked",toJson true),
++    ("public_tuple_order",toJson "rowID,acc2x7,fresh2x7,old2x7,out2x7")]
++  IO.FS.writeFile (outDir / "emission.json") (summary.pretty++"\n")
++  IO.println summary.compress
++  return 0

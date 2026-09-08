@@ -1,0 +1,56 @@
+import Compiler.BfvLinearCombinationWitnessData
+
+namespace Minidregg.Compiler.BfvLinearCombination
+open Minidregg.Compiler
+open Minidregg.Compiler.NativeKernelPlan
+open Minidregg.Compiler.DescriptorEval
+open Minidregg.Compiler.AirSimplify
+open Minidregg.Theory
+set_option autoImplicit false
+set_option maxRecDepth 100000
+set_option maxHeartbeats 0
+
+def nonzeroRow : Array Nat := rowOfValues 0 (fun _ => 17) (fun _ => 23) (fun _ => 166)
+def sourceAsg (row : Array Nat) : Fin nVars → BabyBear := fun i => (variableArray row)[i.val]!
+
+def PremiseInhabited : Prop := ∃ asg : Fin nVars → BabyBear,
+  systemAccepts asg system ∧ ∀ limb,
+    word asg (layout limb) 0 = 17 ∧ word asg (layout limb) 1 = 23 ∧
+      word asg (layout limb) 2 = 166
+
+def WrongOutputExcluded : Prop := ∀ (asg : Fin nVars → BabyBear) (limb : Fin 3),
+  word asg (layout limb) 0 = 17 → word asg (layout limb) 1 = 23 →
+  word asg (layout limb) 2 = 167 → ¬ systemAccepts asg system
+
+theorem sourceCheck_correct (row : Array Nat) : sourceCheck row = true ↔
+    systemAccepts (sourceAsg row) system := by
+  simp [sourceCheck, sourceAsg, List.all_eq_true, systemAccepts, accepts]
+
+theorem simplifiedSource_sound (asg : Fin nVars → BabyBear)
+    (h : systemAccepts asg (simplifySystem system)) :
+    ∀ limb, (∀ kind, word asg (layout limb) kind < primes limb) ∧
+      word asg (layout limb) 2 = (3*word asg (layout limb) 0+5*word asg (layout limb) 1)%primes limb := by
+  exact wholeRowSound asg ((simplifySystem_accepts_iff asg system).mp h)
+
+theorem wrongOutputExcluded : WrongOutputExcluded := by
+  intro asg limb ha hb ho hs
+  have h := (wholeRowSound asg hs limb).2
+  rw [ha,hb,ho] at h
+  fin_cases limb <;> norm_num [primes] at h
+
+def closedAsg : Fin nVars → BabyBear := fun i => closedWitness[i.val]!
+
+theorem closedWitnessCheck : system.all (fun term => eval closedAsg term == 0) = true := by decide +kernel
+
+theorem closedWitnessAccepts : systemAccepts closedAsg system := by
+  simpa [List.all_eq_true, systemAccepts, accepts] using closedWitnessCheck
+
+theorem nonzeroWords : ∀ limb,
+    word closedAsg (layout limb) 0 = 17 ∧
+    word closedAsg (layout limb) 1 = 23 ∧
+    word closedAsg (layout limb) 2 = 166 := by decide +kernel
+
+theorem premiseInhabited : PremiseInhabited := by
+  exact ⟨closedAsg, closedWitnessAccepts,nonzeroWords⟩
+
+end Minidregg.Compiler.BfvLinearCombination

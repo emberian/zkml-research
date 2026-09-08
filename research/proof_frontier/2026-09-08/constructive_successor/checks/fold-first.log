@@ -1,0 +1,469 @@
+Selvage/ArityEightFold.lean:77:17: error: synthesized type class instance is not definitionally equal to expression inferred by typing rules, synthesized
+  inst✝¹
+inferred
+  fun a b => Classical.propDecidable (a = b)
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+Selvage/ArityEightFold.lean:83:64: error: unsolved goals
+case h
+F : Type u_1
+inst✝⁴ : Field F
+ι₀ : Type u_4
+ι₁ : Type u_5
+ι₂ : Type u_6
+ι₃ : Type u_7
+inst✝³ : Fintype ι₀
+inst✝² : Fintype ι₁
+inst✝¹ : Fintype ι₂
+inst✝ : Fintype ι₃
+dom₀ : ι₀ ↪ F
+dom₁ : ι₁ ↪ F
+dom₂ : ι₂ ↪ F
+dom₃ : ι₃ ↪ F
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+f : ι₀ → F
+β : F
+i : ι₃
+⊢ ⋯ + ⋯ - ⋯ * (dom₂ (D₂.sec i))⁻¹ + ⋯ * ⋯ * ⋯⁻¹ - ⋯ * β * f ⋯ * (dom₀ (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))))⁻¹ +
+                                                                                                ⋯ ^ 3 * β *
+                                                                                                    f
+                                                                                                      (D₀.sec
+                                                                                                        (D₁.sec
+                                                                                                          (D₂.neg
+                                                                                                            (D₂.sec
+                                                                                                              i)))) *
+                                                                                                  (dom₀
+                                                                                                      (D₀.sec
+                                                                                                        (D₁.sec
+                                                                                                          (D₂.neg
+                                                                                                            (D₂.sec
+                                                                                                              i)))))⁻¹ -
+                                                                                              2⁻¹ ^ 3 * β *
+                                                                                                  f
+                                                                                                    (D₀.neg
+                                                                                                      (D₀.sec
+                                                                                                        (D₁.sec
+                                                                                                          (D₂.neg
+                                                                                                            (D₂.sec
+                                                                                                              i))))) *
+                                                                                                (dom₀
+                                                                                                    (D₀.sec
+                                                                                                      (D₁.sec
+                                                                                                        (D₂.neg
+                                                                                                          (D₂.sec
+                                                                                                            i)))))⁻¹ +
+                                                                                            2⁻¹ ^ 3 * β *
+                                                                                                f
+                                                                                                  (D₀.sec
+                                                                                                    (D₁.neg
+                                                                                                      (D₁.sec
+                                                                                                        (D₂.neg
+                                                                                                          (D₂.sec
+                                                                                                            i))))) *
+                                                                                              (dom₀
+                                                                                                  (D₀.sec
+                                                                                                    (D₁.neg
+                                                                                                      (D₁.sec
+                                                                                                        (D₂.neg
+                                                                                                          (D₂.sec
+                                                                                                            i))))))⁻¹ -
+                                                                                          2⁻¹ ^ 3 * β *
+                                                                                              f
+                                                                                                (D₀.neg
+                                                                                                  (D₀.sec
+                                                                                                    (D₁.neg
+                                                                                                      (D₁.sec
+                                                                                                        (D₂.neg
+                                                                                                          (D₂.sec
+                                                                                                            i)))))) *
+                                                                                            (dom₀
+                                                                                                (D₀.sec
+                                                                                                  (D₁.neg
+                                                                                                    (D₁.sec
+                                                                                                      (D₂.neg
+                                                                                                        (D₂.sec
+                                                                                                          i))))))⁻¹ -
+                                                                                        2⁻¹ ^ 3 * β ^ 2 *
+                                                                                            f
+                                                                                              (D₀.sec
+                                                                                                (D₁.neg
+                                                                                                  (D₁.sec
+                                                                                                    (D₂.sec i)))) *
+                                                                                          (dom₁ (D₁.sec (D₂.sec i)))⁻¹ -
+                                                                                      2⁻¹ ^ 3 * β ^ 2 *
+                                                                                          f
+                                                                                            (D₀.neg
+                                                                                              (D₀.sec
+                                                                                                (D₁.neg
+                                                                                                  (D₁.sec
+                                                                                                    (D₂.sec i))))) *
+                                                                                        (dom₁ (D₁.sec (D₂.sec i)))⁻¹ +
+                                                                                    2⁻¹ ^ 3 * β ^ 2 *
+                                                                                        f
+                                                                                          (D₀.sec
+                                                                                            (D₁.sec
+                                                                                              (D₂.neg (D₂.sec i)))) *
+                                                                                      (dom₁
+                                                                                          (D₁.sec
+                                                                                            (D₂.neg (D₂.sec i))))⁻¹ +
+                                                                                  2⁻¹ ^ 3 * β ^ 2 *
+                                                                                      f
+                                                                                        (D₀.neg
+                                                                                          (D₀.sec
+                                                                                            (D₁.sec
+                                                                                              (D₂.neg (D₂.sec i))))) *
+                                                                                    (dom₁
+                                                                                        (D₁.sec
+                                                                                          (D₂.neg (D₂.sec i))))⁻¹ -
+                                                                                2⁻¹ ^ 3 * β ^ 2 *
+                                                                                    f
+                                                                                      (D₀.sec
+                                                                                        (D₁.neg
+                                                                                          (D₁.sec
+                                                                                            (D₂.neg (D₂.sec i))))) *
+                                                                                  (dom₁
+                                                                                      (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ -
+                                                                              2⁻¹ ^ 3 * β ^ 2 *
+                                                                                  f
+                                                                                    (D₀.neg
+                                                                                      (D₀.sec
+                                                                                        (D₁.neg
+                                                                                          (D₁.sec
+                                                                                            (D₂.neg (D₂.sec i)))))) *
+                                                                                (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ -
+                                                                            2⁻¹ ^ 3 * β ^ 3 *
+                                                                                  f
+                                                                                    (D₀.sec
+                                                                                      (D₁.neg (D₁.sec (D₂.sec i)))) *
+                                                                                (dom₀
+                                                                                    (D₀.sec
+                                                                                      (D₁.neg (D₁.sec (D₂.sec i)))))⁻¹ *
+                                                                              (dom₁ (D₁.sec (D₂.sec i)))⁻¹ +
+                                                                          2⁻¹ ^ 3 * β ^ 3 *
+                                                                                f
+                                                                                  (D₀.neg
+                                                                                    (D₀.sec
+                                                                                      (D₁.neg (D₁.sec (D₂.sec i))))) *
+                                                                              (dom₀
+                                                                                  (D₀.sec
+                                                                                    (D₁.neg (D₁.sec (D₂.sec i)))))⁻¹ *
+                                                                            (dom₁ (D₁.sec (D₂.sec i)))⁻¹ +
+                                                                        2⁻¹ ^ 3 * β ^ 3 *
+                                                                              f (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))) *
+                                                                            (dom₀
+                                                                                (D₀.sec
+                                                                                  (D₁.sec (D₂.neg (D₂.sec i)))))⁻¹ *
+                                                                          (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ -
+                                                                      2⁻¹ ^ 3 * β ^ 3 *
+                                                                            f
+                                                                              (D₀.neg
+                                                                                (D₀.sec (D₁.sec (D₂.neg (D₂.sec i))))) *
+                                                                          (dom₀
+                                                                              (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))))⁻¹ *
+                                                                        (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ -
+                                                                    2⁻¹ ^ 3 * β ^ 3 *
+                                                                          f
+                                                                            (D₀.sec
+                                                                              (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))) *
+                                                                        (dom₀
+                                                                            (D₀.sec
+                                                                              (D₁.neg
+                                                                                (D₁.sec (D₂.neg (D₂.sec i))))))⁻¹ *
+                                                                      (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ +
+                                                                  2⁻¹ ^ 3 * β ^ 3 *
+                                                                        f
+                                                                          (D₀.neg
+                                                                            (D₀.sec
+                                                                              (D₁.neg (D₁.sec (D₂.neg (D₂.sec i)))))) *
+                                                                      (dom₀
+                                                                          (D₀.sec
+                                                                            (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))))⁻¹ *
+                                                                    (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ +
+                                                                2⁻¹ ^ 3 * β ^ 4 *
+                                                                    f (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))) *
+                                                                  (dom₂ (D₂.sec i))⁻¹ +
+                                                              2⁻¹ ^ 3 * β ^ 4 *
+                                                                  f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.sec i))))) *
+                                                                (dom₂ (D₂.sec i))⁻¹ -
+                                                            2⁻¹ ^ 3 * β ^ 4 * f (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))) *
+                                                              (dom₂ (D₂.sec i))⁻¹ -
+                                                          2⁻¹ ^ 3 * β ^ 4 *
+                                                              f (D₀.neg (D₀.sec (D₁.sec (D₂.neg (D₂.sec i))))) *
+                                                            (dom₂ (D₂.sec i))⁻¹ -
+                                                        2⁻¹ ^ 3 * β ^ 4 *
+                                                            f (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))) *
+                                                          (dom₂ (D₂.sec i))⁻¹ -
+                                                      2⁻¹ ^ 3 * β ^ 4 *
+                                                          f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i)))))) *
+                                                        (dom₂ (D₂.sec i))⁻¹ +
+                                                    2⁻¹ ^ 3 * β ^ 5 * f (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))) *
+                                                        (dom₀ (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))))⁻¹ *
+                                                      (dom₂ (D₂.sec i))⁻¹ -
+                                                  2⁻¹ ^ 3 * β ^ 5 * f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.sec i))))) *
+                                                      (dom₀ (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))))⁻¹ *
+                                                    (dom₂ (D₂.sec i))⁻¹ -
+                                                2⁻¹ ^ 3 * β ^ 5 * f (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))) *
+                                                    (dom₀ (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))))⁻¹ *
+                                                  (dom₂ (D₂.sec i))⁻¹ +
+                                              2⁻¹ ^ 3 * β ^ 5 * f (D₀.neg (D₀.sec (D₁.sec (D₂.neg (D₂.sec i))))) *
+                                                  (dom₀ (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))))⁻¹ *
+                                                (dom₂ (D₂.sec i))⁻¹ -
+                                            2⁻¹ ^ 3 * β ^ 5 * f (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))) *
+                                                (dom₀ (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))))⁻¹ *
+                                              (dom₂ (D₂.sec i))⁻¹ +
+                                          2⁻¹ ^ 3 * β ^ 5 * f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i)))))) *
+                                              (dom₀ (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))))⁻¹ *
+                                            (dom₂ (D₂.sec i))⁻¹ -
+                                        2⁻¹ ^ 3 * β ^ 6 * f (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))) *
+                                            (dom₁ (D₁.sec (D₂.sec i)))⁻¹ *
+                                          (dom₂ (D₂.sec i))⁻¹ -
+                                      2⁻¹ ^ 3 * β ^ 6 * f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.sec i))))) *
+                                          (dom₁ (D₁.sec (D₂.sec i)))⁻¹ *
+                                        (dom₂ (D₂.sec i))⁻¹ -
+                                    2⁻¹ ^ 3 * β ^ 6 * f (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))) *
+                                        (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ *
+                                      (dom₂ (D₂.sec i))⁻¹ -
+                                  2⁻¹ ^ 3 * β ^ 6 * f (D₀.neg (D₀.sec (D₁.sec (D₂.neg (D₂.sec i))))) *
+                                      (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ *
+                                    (dom₂ (D₂.sec i))⁻¹ +
+                                2⁻¹ ^ 3 * β ^ 6 * f (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))) *
+                                    (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ *
+                                  (dom₂ (D₂.sec i))⁻¹ +
+                              2⁻¹ ^ 3 * β ^ 6 * f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i)))))) *
+                                  (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ *
+                                (dom₂ (D₂.sec i))⁻¹ -
+                            2⁻¹ ^ 3 * β ^ 7 * f (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))) *
+                                  (dom₀ (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))))⁻¹ *
+                                (dom₁ (D₁.sec (D₂.sec i)))⁻¹ *
+                              (dom₂ (D₂.sec i))⁻¹ +
+                          2⁻¹ ^ 3 * β ^ 7 * f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.sec i))))) *
+                                (dom₀ (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))))⁻¹ *
+                              (dom₁ (D₁.sec (D₂.sec i)))⁻¹ *
+                            (dom₂ (D₂.sec i))⁻¹ -
+                        2⁻¹ ^ 3 * β ^ 7 * f (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))) *
+                              (dom₀ (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))))⁻¹ *
+                            (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ *
+                          (dom₂ (D₂.sec i))⁻¹ +
+                      2⁻¹ ^ 3 * β ^ 7 * f (D₀.neg (D₀.sec (D₁.sec (D₂.neg (D₂.sec i))))) *
+                            (dom₀ (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))))⁻¹ *
+                          (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ *
+                        (dom₂ (D₂.sec i))⁻¹ +
+                    2⁻¹ ^ 3 * β ^ 7 * f (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))) *
+                          (dom₀ (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))))⁻¹ *
+                        (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ *
+                      (dom₂ (D₂.sec i))⁻¹ -
+                  2⁻¹ ^ 3 * β ^ 7 * f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i)))))) *
+                        (dom₀ (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))))⁻¹ *
+                      (dom₁ (D₁.sec (D₂.neg (D₂.sec i))))⁻¹ *
+                    (dom₂ (D₂.sec i))⁻¹ +
+                2⁻¹ ^ 3 * f (D₀.sec (D₁.neg (D₁.sec (D₂.sec i)))) +
+              2⁻¹ ^ 3 * f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.sec i))))) +
+            2⁻¹ ^ 3 * f (D₀.sec (D₁.sec (D₂.neg (D₂.sec i)))) +
+          2⁻¹ ^ 3 * f (D₀.neg (D₀.sec (D₁.sec (D₂.neg (D₂.sec i))))) +
+        2⁻¹ ^ 3 * f (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i))))) +
+      2⁻¹ ^ 3 * f (D₀.neg (D₀.sec (D₁.neg (D₁.sec (D₂.neg (D₂.sec i)))))) =
+    β *
+                    Fin.addCases (motive := fun x => ι₃ → F)
+                      (fun j =>
+                        foldEven D₂
+                          (Fin.addCases (motive := fun x => ι₂ → F)
+                            (fun j =>
+                              foldEven D₁
+                                (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f)
+                                  (fun j => foldOdd D₀ f) j))
+                            (fun j =>
+                              foldOdd D₁
+                                (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f)
+                                  (fun j => foldOdd D₀ f) j))
+                            j))
+                      (fun j =>
+                        foldOdd D₂
+                          (Fin.addCases (motive := fun x => ι₂ → F)
+                            (fun j =>
+                              foldEven D₁
+                                (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f)
+                                  (fun j => foldOdd D₀ f) j))
+                            (fun j =>
+                              foldOdd D₁
+                                (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f)
+                                  (fun j => foldOdd D₀ f) j))
+                            j))
+                      1 i +
+                  β ^ 2 *
+                    Fin.addCases (motive := fun x => ι₃ → F)
+                      (fun j =>
+                        foldEven D₂
+                          (Fin.addCases (motive := fun x => ι₂ → F)
+                            (fun j =>
+                              foldEven D₁
+                                (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f)
+                                  (fun j => foldOdd D₀ f) j))
+                            (fun j =>
+                              foldOdd D₁
+                                (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f)
+                                  (fun j => foldOdd D₀ f) j))
+                            j))
+                      (fun j =>
+                        foldOdd D₂
+                          (Fin.addCases (motive := fun x => ι₂ → F)
+                            (fun j =>
+                              foldEven D₁
+                                (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f)
+                                  (fun j => foldOdd D₀ f) j))
+                            (fun j =>
+                              foldOdd D₁
+                                (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f)
+                                  (fun j => foldOdd D₀ f) j))
+                            j))
+                      2 i +
+                β ^ 3 *
+                  Fin.addCases (motive := fun x => ι₃ → F)
+                    (fun j =>
+                      foldEven D₂
+                        (Fin.addCases (motive := fun x => ι₂ → F)
+                          (fun j =>
+                            foldEven D₁
+                              (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f)
+                                j))
+                          (fun j =>
+                            foldOdd D₁
+                              (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f)
+                                j))
+                          j))
+                    (fun j =>
+                      foldOdd D₂
+                        (Fin.addCases (motive := fun x => ι₂ → F)
+                          (fun j =>
+                            foldEven D₁
+                              (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f)
+                                j))
+                          (fun j =>
+                            foldOdd D₁
+                              (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f)
+                                j))
+                          j))
+                    3 i +
+              β ^ 4 *
+                Fin.addCases (motive := fun x => ι₃ → F)
+                  (fun j =>
+                    foldEven D₂
+                      (Fin.addCases (motive := fun x => ι₂ → F)
+                        (fun j =>
+                          foldEven D₁
+                            (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f)
+                              j))
+                        (fun j =>
+                          foldOdd D₁
+                            (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f)
+                              j))
+                        j))
+                  (fun j =>
+                    foldOdd D₂
+                      (Fin.addCases (motive := fun x => ι₂ → F)
+                        (fun j =>
+                          foldEven D₁
+                            (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f)
+                              j))
+                        (fun j =>
+                          foldOdd D₁
+                            (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f)
+                              j))
+                        j))
+                  4 i +
+            β ^ 5 *
+              Fin.addCases (motive := fun x => ι₃ → F)
+                (fun j =>
+                  foldEven D₂
+                    (Fin.addCases (motive := fun x => ι₂ → F)
+                      (fun j =>
+                        foldEven D₁
+                          (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                      (fun j =>
+                        foldOdd D₁
+                          (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                      j))
+                (fun j =>
+                  foldOdd D₂
+                    (Fin.addCases (motive := fun x => ι₂ → F)
+                      (fun j =>
+                        foldEven D₁
+                          (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                      (fun j =>
+                        foldOdd D₁
+                          (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                      j))
+                5 i +
+          β ^ 6 *
+            Fin.addCases (motive := fun x => ι₃ → F)
+              (fun j =>
+                foldEven D₂
+                  (Fin.addCases (motive := fun x => ι₂ → F)
+                    (fun j =>
+                      foldEven D₁
+                        (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                    (fun j =>
+                      foldOdd D₁
+                        (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                    j))
+              (fun j =>
+                foldOdd D₂
+                  (Fin.addCases (motive := fun x => ι₂ → F)
+                    (fun j =>
+                      foldEven D₁
+                        (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                    (fun j =>
+                      foldOdd D₁
+                        (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                    j))
+              6 i +
+        β ^ 7 *
+          Fin.addCases (motive := fun x => ι₃ → F)
+            (fun j =>
+              foldEven D₂
+                (Fin.addCases (motive := fun x => ι₂ → F)
+                  (fun j =>
+                    foldEven D₁
+                      (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                  (fun j =>
+                    foldOdd D₁
+                      (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                  j))
+            (fun j =>
+              foldOdd D₂
+                (Fin.addCases (motive := fun x => ι₂ → F)
+                  (fun j =>
+                    foldEven D₁
+                      (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                  (fun j =>
+                    foldOdd D₁
+                      (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+                  j))
+            7 i +
+      Fin.addCases (motive := fun x => ι₃ → F)
+        (fun j =>
+          foldEven D₂
+            (Fin.addCases (motive := fun x => ι₂ → F)
+              (fun j =>
+                foldEven D₁
+                  (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+              (fun j =>
+                foldOdd D₁
+                  (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+              j))
+        (fun j =>
+          foldOdd D₂
+            (Fin.addCases (motive := fun x => ι₂ → F)
+              (fun j =>
+                foldEven D₁
+                  (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+              (fun j =>
+                foldOdd D₁
+                  (Fin.addCases (motive := fun x => ι₁ → F) (fun j => foldEven D₀ f) (fun j => foldOdd D₀ f) j))
+              j))
+        0 i

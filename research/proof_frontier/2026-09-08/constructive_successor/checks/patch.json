@@ -1,0 +1,29 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/arity-eight-consumer.patch"
+  ],
+  "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/arity-eight-patch-yd51x_nt",
+  "exit_code": 0,
+  "output": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/arity-eight-consumer.patch:61: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/arity-eight-consumer.patch:205: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/arity-eight-consumer.patch:429: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/arity-eight-consumer.patch:513: new blank line at EOF.\n+\n/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/arity-eight-consumer.patch:688: new blank line at EOF.\n+\nwarning: squelched 2 whitespace errors\nwarning: 7 lines add whitespace errors.\n",
+  "exact_target_files": [
+    "Selvage/ArityEightBabyBear.lean",
+    "Selvage/ArityEightFold.lean",
+    "Selvage/ArityEightLoggedWitnesses.lean",
+    "Selvage/ArityEightQueryTransport.lean",
+    "Selvage/ArityEightSampling.lean",
+    "Selvage/ArityEightSupplied.lean",
+    "Selvage/ArityEightWitnesses.lean"
+  ],
+  "all_exact_bytes": true,
+  "file_matches": {
+    "Selvage/ArityEightBabyBear.lean": true,
+    "Selvage/ArityEightFold.lean": true,
+    "Selvage/ArityEightLoggedWitnesses.lean": true,
+    "Selvage/ArityEightQueryTransport.lean": true,
+    "Selvage/ArityEightSampling.lean": true,
+    "Selvage/ArityEightSupplied.lean": true,
+    "Selvage/ArityEightWitnesses.lean": true
+  }
+}

@@ -1,0 +1,9 @@
+produced 0/8192 rows
+produced 1024/8192 rows
+produced 2048/8192 rows
+produced 3072/8192 rows
+produced 4096/8192 rows
+produced 5120/8192 rows
+produced 6144/8192 rows
+produced 7168/8192 rows
+{"all_actual_source_rows_checked":true,"changed_output_refused":true,"constructed_cases_checked":4,"ir2_arithmetic_constraints":1456,"public_tuple_order":"rowID,acc2x7,fresh2x7,old2x7,out2x7","radix64_refused":true,"rows":8192,"source_constraints":1456,"standard_descriptor_gates":3865,"standard_descriptor_nWires":5925,"trace_bytes":33325056,"trace_width":1017}

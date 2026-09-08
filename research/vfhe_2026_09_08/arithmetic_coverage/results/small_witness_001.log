@@ -1,0 +1,6 @@
+Compiler/BfvOperationWitness.lean:76:58: error: Tactic `decide` proved that the proposition
+  (List.all (BfvLinearCombination.rowSystem 31 weightedWires) fun term => eval weightedAsg term == 0) = true
+is false
+Compiler/BfvOperationWitness.lean:79:56: error: Tactic `decide` proved that the proposition
+  (List.all (BfvExpiry.rowSystem 31 expiryWires) fun term => eval expiryAsg term == 0) = true
+is false

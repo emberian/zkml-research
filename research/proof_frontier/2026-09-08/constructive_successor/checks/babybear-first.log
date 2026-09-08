@@ -1,0 +1,12 @@
+Selvage/ArityEightBabyBear.lean:31:2: error: Type mismatch: After simplification, term
+  h
+ has type
+  uniformProb (Ext4 × (Fin q → Fin 131072))
+      (Crossing (reedSolomonCode (tower.dom 3) 65536) 10⁻¹
+        (fun β i => fold8 (tower.data 0 ⋯) (tower.data 1 ⋯) (tower.data 2 ⋯) f β i + β ^ 8 * g i) next q) ≤
+    1048576 / ↑(Fintype.card Ext4) + (1 - 10⁻¹) ^ q
+but is expected to have type
+  uniformProb (Ext4 × (Fin q → Fin 131072))
+      (Crossing (reedSolomonCode (tower.dom 3) 65536) 10⁻¹
+        (fun β i => fold8 (tower.data 0 ⋯) (tower.data 1 ⋯) (tower.data 2 ⋯) f β i + β ^ 8 * g i) next q) ≤
+    2 ^ 20 / ↑modulus ^ 4 + (9 / 10) ^ q

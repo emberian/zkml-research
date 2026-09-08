@@ -1,0 +1,6 @@
+     Locking 1 package to latest Rust 1.98.0-nightly compatible version
+      Adding rand_xoshiro v0.8.1
+error: failed to download `rand_xoshiro v0.8.1`
+
+Caused by:
+  attempting to make an HTTP request, but --offline was specified

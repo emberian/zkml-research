@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-constructive-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightLoggedWitnesses.olean",
+    "Selvage/ArityEightLoggedWitnesses.lean"
+  ],
+  "cwd": "/tmp/minidregg-constructive-successor-20260908",
+  "exit_code": 1,
+  "source_sha256": "dc3f6272f75270b9cbe67f5a17d1fea177c9f7fc39146a688ceb732c719d0a2d",
+  "source_unchanged": true,
+  "elapsed_s": 16.34792709350586,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/checks/logged-second.log"
+}

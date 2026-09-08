@@ -1,0 +1,3 @@
+'Minidregg.Compiler.BfvLinearCombination.prime_capacity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvLinearCombination.wholeRowSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvLinearCombination.descriptor_sound' depends on axioms: [propext, Classical.choice, Quot.sound]

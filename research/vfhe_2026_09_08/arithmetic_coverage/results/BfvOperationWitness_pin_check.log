@@ -1,0 +1,8 @@
+'Minidregg.Compiler.BfvOperationWitness.weightedCheck' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvOperationWitness.expiryCheck' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvOperationWitness.weightedPremise' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvOperationWitness.expiryPremise' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvOperationWitness.weightedFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvOperationWitness.expiryFalsifier' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvOperationWitness.weightedWords' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvOperationWitness.expiryWords' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/checks/ExecutableProbe.lean"
+  ],
+  "cwd": "/tmp/minidregg-constructive-successor-20260908",
+  "source_sha256": "71075443d99f7c55a6205f988bcd0509d4f0ed02854f0ac5f9b6d52e3cb83e4d",
+  "exit_code": 0,
+  "elapsed_s": 11.262595891952515,
+  "output": "(true, true, true)\n88\n"
+}

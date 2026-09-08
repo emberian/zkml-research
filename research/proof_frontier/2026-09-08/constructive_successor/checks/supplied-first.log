@@ -1,0 +1,120 @@
+Selvage/ArityEightSupplied.lean:10:12: error: unexpected token ':='; expected command
+Selvage/ArityEightSupplied.lean:23:59: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:25:8: error(lean.unknownIdentifier): Unknown identifier `E.openingLog`
+Selvage/ArityEightSupplied.lean:29:11: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:29:11: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:31:38: error(lean.unknownIdentifier): Unknown identifier `E.Bad`
+Selvage/ArityEightSupplied.lean:33:14: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:34:13: error(lean.unknownIdentifier): Unknown identifier `E.Query.leaf`
+Selvage/ArityEightSupplied.lean:35:4: error: Function expected at
+  hlogged
+but this term has type
+  PointLogged H L i o
+
+Note: Expected a function because this term is being applied to the argument
+  _
+Selvage/ArityEightSupplied.lean:36:18: error(lean.unknownIdentifier): Unknown identifier `E.pathLog`
+Selvage/ArityEightSupplied.lean:33:43: error: unsolved goals
+F Digest : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+H : BinaryMerkle.HashSuite F Digest
+P : sorry
+L : sorry
+default : F
+k : ℕ
+root : Digest
+i : Fin (2 ^ k)
+o : PointOpening F Digest
+hsub : ∀ (e : ?m.24 H P L default root i o), sorry → sorry
+hgood : ¬sorry
+hlogged : PointLogged H L i o
+hacc : PointVerified H root i o
+hl : sorry
+⊢ o.value = sorry
+Selvage/ArityEightSupplied.lean:63:57: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:70:27: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:70:27: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:70:27: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:70:27: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:71:2: error(lean.unknownIdentifier): Unknown identifier `E.Bad`
+Selvage/ArityEightSupplied.lean:71:18: error(lean.unknownIdentifier): Unknown identifier `E.Bad`
+Selvage/ArityEightSupplied.lean:71:34: error(lean.unknownIdentifier): Unknown identifier `E.Bad`
+Selvage/ArityEightSupplied.lean:78:18: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:78:18: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:78:18: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:78:18: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:84:4: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:85:22: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:86:12: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:87:14: error(lean.unknownIdentifier): Unknown identifier `E.Bad`
+Selvage/ArityEightSupplied.lean:88:14: error(lean.unknownIdentifier): Unknown identifier `E.Bad`
+Selvage/ArityEightSupplied.lean:89:14: error(lean.unknownIdentifier): Unknown identifier `E.Bad`
+Selvage/ArityEightSupplied.lean:91:19: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:93:10: error(lean.unknownIdentifier): Unknown identifier `supplied_point_pins`
+Selvage/ArityEightSupplied.lean:94:14: error(lean.unknownIdentifier): Unknown identifier `supplied_point_pins`
+Selvage/ArityEightSupplied.lean:86:41: error: unsolved goals
+F Digest : Type
+inst✝² : Field F
+inst✝¹ : DecidableEq F
+inst✝ : DecidableEq Digest
+k₀ k₁ k₂ k₃ : ℕ
+dom₀ : Fin (2 ^ k₀) ↪ F
+dom₁ : Fin (2 ^ k₁) ↪ F
+dom₂ : Fin (2 ^ k₂) ↪ F
+dom₃ : Fin (2 ^ k₃) ↪ F
+H : BinaryMerkle.HashSuite F Digest
+D₀ : FoldingData F dom₀ dom₁
+D₁ : FoldingData F dom₁ dom₂
+D₂ : FoldingData F dom₂ dom₃
+Ps : sorry
+Pg : sorry
+Pn : sorry
+L : sorry
+default : F
+rs rg rn : Digest
+hs : ∀ (e : ?m.116 H D₀ D₁ D₂ Ps Pg Pn L default rs rg rn), sorry → sorry
+hg : ∀ (e : ?m.117 H D₀ D₁ D₂ Ps Pg Pn L default rs rg rn hs), sorry → sorry
+hn : ∀ (e : ?m.118 H D₀ D₁ D₂ Ps Pg Pn L default rs rg rn hs hg), sorry → sorry
+hgood : ¬RoundBad Ps Pg Pn L rs rg rn
+β : F
+i : Fin (2 ^ k₃)
+o : RowOpening F Digest
+hlog : RowLogged H L D₀ D₁ D₂ i o
+ha : RowVerified H D₀ D₁ D₂ rs rg rn β i o
+hgs : ¬sorry
+hgg : ¬sorry
+hgn : ¬sorry
+hp : (fun c b a => (o.source c b a).value) = fun c b a => sorry
+⊢ sorry = fold8 D₀ D₁ D₂ sorry β i + β ^ 8 * sorry
+Selvage/ArityEightSupplied.lean:103:13: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:103:13: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:103:39: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:107:36: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:119:13: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:119:13: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:119:39: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:122:39: error(lean.unknownIdentifier): Unknown identifier `E.Log`
+Selvage/ArityEightSupplied.lean:126:12: error(lean.unknownIdentifier): Unknown identifier `E.Far_E`
+Selvage/ArityEightSupplied.lean:136:32: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:137:10: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:138:14: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:146:12: error(lean.unknownIdentifier): Unknown identifier `supplied_row_pins`
+Selvage/ArityEightSupplied.lean:152:38: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:153:7: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:153:42: error(lean.unknownIdentifier): Unknown identifier `E.word`
+Selvage/ArityEightSupplied.lean:155:4: error: Application type mismatch: The argument
+  add_le_add_right hideal ?m.423
+has type
+  ?m.423 + uniformProb (F × (Fin q → Fin (2 ^ k₃))) ideal ≤ ?m.423 + (↑(8 * 2 ^ k₃) / ↑(Fintype.card F) + (1 - τ) ^ q)
+but is expected to have type
+  uniformProb (F × (Fin q → Fin (2 ^ k₃))) ideal + uniformProb (F × (Fin q → Fin (2 ^ k₃))) bad ≤
+    ↑(8 * 2 ^ k₃) / ↑(Fintype.card F) + (1 - τ) ^ q +
+      uniformProb (F × (Fin q → Fin (2 ^ k₃))) fun x => RoundBad Ps Pg (Pn x.1) (logs x) rs rg (rn x.1)
+in the application
+  le_trans (le_trans (uniformProb_mono hcover) (uniformProb_or_le ideal bad)) (add_le_add_right hideal ?m.423)
+Selvage/ArityEightSupplied.lean:157:0: error: Invalid name after `end`: Expected `Selvage.ArityEight.E`, but found `Minidregg.Selvage.ArityEight`
+
+Hint: If you meant to end the outer scope(s) `Minidregg.Selvage.ArityEight`, you must end all the intervening scopes `Minidregg.Selvage.ArityEight.E`:
+  end Minidregg.Selvage.ArityEight.̲E̲

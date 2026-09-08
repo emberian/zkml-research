@@ -1,0 +1,12 @@
+Selvage/ArityEightLoggedWitnesses.lean:71:4: error: Type mismatch: After simplification, term
+  Or.inr (Or.inl hm)
+ has type
+  e ∈ completeLog 4 farWord ∨ (e ∈ completeLog 1 fun x => 0) ∨ e ∈ completeLog 1 fun x => 1
+but is expected to have type
+  (e ∈ completeLog 4 farWord ∨ e ∈ completeLog 1 fun x => 0) ∨ e ∈ completeLog 1 fun x => 1
+Selvage/ArityEightLoggedWitnesses.lean:76:4: error: Type mismatch: After simplification, term
+  Or.inr (Or.inr hm)
+ has type
+  e ∈ completeLog 4 farWord ∨ (e ∈ completeLog 1 fun x => 0) ∨ e ∈ completeLog 1 fun x => 1
+but is expected to have type
+  (e ∈ completeLog 4 farWord ∨ e ∈ completeLog 1 fun x => 0) ∨ e ∈ completeLog 1 fun x => 1

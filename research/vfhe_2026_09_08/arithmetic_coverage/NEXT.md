@@ -1,0 +1,1 @@
+The arithmetic handoff is complete. Collect the actual weighted and expiry proof outcomes from `../proved_operation/`. Root integrates the checked proposal with its two existing compiler dependencies. Further arithmetic coverage requires a generated ciphertext-multiplication/rescale or convolution relation; these linear-operation theorems do not supply it.

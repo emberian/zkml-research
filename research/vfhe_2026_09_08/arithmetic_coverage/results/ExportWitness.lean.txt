@@ -1,0 +1,8 @@
+import Compiler.BfvLinearCombinationLayout
+import Lean.Data.Json
+open Minidregg.Compiler Minidregg.Compiler.BfvLinearCombination
+open Lean
+
+def main : IO Unit := do
+  let row := rowOfValues 0 (fun _ => 17) (fun _ => 23) (fun _ => 166)
+  IO.FS.writeFile "artifacts/nonzero_witness.json" ((toJson ((variableArray row).map (fun x => x.val))).compress)

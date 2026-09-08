@@ -1,0 +1,23 @@
+{
+  "claim": "SOURCE public proof/input transport fixture; acceptance must come from the verifier",
+  "backend": "FixedPublicPreprocessing (shared proved_operation/backend adapter)",
+  "public_table_id": 11,
+  "files": {
+    "template.json": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/arithmetic_coverage/artifacts/template_ir2.json",
+      "bytes": 315975,
+      "sha256": "26e06c2bd68061903df5afd5b1e31227f837ed99e7e37152a496e6c32bf46684"
+    },
+    "public_rows.json": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/case001/public_rows.json",
+      "bytes": 1461721,
+      "sha256": "267092b2fe739fde58a70aec79769f891a92c2967475f304b41cd28edb7001ba"
+    },
+    "proof.bin": {
+      "source": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/results/proof002/proof.bin",
+      "bytes": 557834,
+      "sha256": "a2bf044768672690ddef7c8d08eed40323356b30b949d72d0e157cea68689648"
+    }
+  },
+  "scope": "Exact public coefficient rows under the supplied application-approved Lean template. Ciphertext decoding/provenance and learner authorization are outside this browser wrapper."
+}

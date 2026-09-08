@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-constructive-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightFold.olean",
+    "Selvage/ArityEightFold.lean"
+  ],
+  "cwd": "/tmp/minidregg-constructive-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "24f7863dfba4095d0f26dbe16ed494b324df2e97ffae4ff04e9e62fec84506d4",
+  "source_unchanged": true,
+  "elapsed_s": 9.332622051239014,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/checks/fold-row.log"
+}

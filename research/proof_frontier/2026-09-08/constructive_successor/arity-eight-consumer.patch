@@ -1,0 +1,1046 @@
+diff --git a/Selvage/ArityEightBabyBear.lean b/Selvage/ArityEightBabyBear.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightBabyBear.lean
+@@ -0,0 +1,56 @@
++/- Actual BabyBearExt4 first arity-eight transition, on the existing certified
++tower. Single-round uniform challenges and sampled checks, with fixed input
++injection; no new whole-protocol security-bit claim. -/
++import Selvage.ArityEightSampling
++import Selvage.BabyBearFoldingTower
++
++namespace Minidregg.Selvage.ArityEight.BabyBear
++open BabyBearExt4 BabyBearExt4.MultiplicativeTower
++
++/-- The next word is committed after beta, before the query vector; g is a
++fixed-prefix input. Source 2/5-farness implies the 1/5-farness needed for this
++arity-eight block. All carrier, domain and rate premises are discharged. -/
++theorem first_injected_crossing (f : Fin (2^20) → Ext4) (g : Fin (2^17) → Ext4)
++    (next : Ext4 → Fin (2^17) → Ext4) (q : ℕ)
++    (hfar : ¬close (2/5:ℝ) (reedSolomonCode (tower.dom 0) (2^19)) f) :
++    uniformProb (Ext4 × (Fin q → Fin (2^17)))
++      (Crossing (reedSolomonCode (tower.dom 3) (2^16)) (1/10:ℝ)
++        (fun β i => fold8 (tower.data 0 (by decide)) (tower.data 1 (by decide))
++          (tower.data 2 (by decide)) f β i + β^8*g i) next q) ≤
++      (2^20:ℝ)/(modulus^4:ℕ) + (9/10:ℝ)^q := by
++  have hf : ¬close (1/5:ℝ) (reedSolomonCode (tower.dom 0) (8*2^16)) f := by
++    rintro ⟨w,hw,hclose⟩
++    apply hfar
++    refine ⟨w,?_,?_⟩
++    · convert hw using 1
++    · linarith
++  have h := fold8_injected_sampled_crossing (tower.data 0 (by decide))
++    (tower.data 1 (by decide)) (tower.data 2 (by decide)) (d := 2^16) (by norm_num)
++    (θ := (1/5:ℝ)) (δ := (1/10:ℝ)) (τ := (1/10:ℝ)) (by norm_num)
++    (by norm_num [PowerTwoFriLevels]) (by norm_num) (by norm_num) f g next q hf
++  have hc : Fintype.card Ext4 = modulus^4 := ext4_card
++  rw [hc] at h
++  norm_num [PowerTwoFriLevels] at h ⊢
++  exact h
++
++/-- The actual high-degree witness inhabits the source-farness premise of
++the newly composed width-eight statement for any fixed injected input. -/
++theorem actual_far_source_fires (g : Fin (2^17) → Ext4)
++    (next : Ext4 → Fin (2^17) → Ext4) (q : ℕ) :
++    uniformProb (Ext4 × (Fin q → Fin (2^17)))
++      (Crossing (reedSolomonCode (tower.dom 3) (2^16)) (1/10:ℝ)
++        (fun β i => fold8 (tower.data 0 (by decide)) (tower.data 1 (by decide))
++          (tower.data 2 (by decide)) farWord β i + β^8*g i) next q) ≤
++      (2^20:ℝ)/(modulus^4:ℕ) + (9/10:ℝ)^q :=
++  first_injected_crossing farWord g next q farWord_far
++
++end Minidregg.Selvage.ArityEight.BabyBear
++
++/-- info: 'Minidregg.Selvage.ArityEight.BabyBear.first_injected_crossing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.BabyBear.first_injected_crossing
++
++/-- info: 'Minidregg.Selvage.ArityEight.BabyBear.actual_far_source_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.BabyBear.actual_far_source_fires
++
+diff --git a/Selvage/ArityEightFold.lean b/Selvage/ArityEightFold.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightFold.lean
+@@ -0,0 +1,139 @@
++/- One arity-eight fold from three existing binary FoldingData objects.
++The same scalar supplies beta, beta^2, beta^4. No independence premise.
++The agreement reconstruction uses existing RS codes and existing squaring fibres. -/
++import Selvage.Proximity
++import Selvage.CurveFriChallenge
++
++namespace Minidregg.Selvage.ArityEight
++open scoped BigOperators Classical
++
++variable {F : Type*} [Field F]
++variable {ι κ : Type*} [Fintype ι] [Fintype κ]
++variable {dom : ι ↪ F} {domSq : κ ↪ F}
++
++/-- Even components precede odd components, in coefficient order. -/
++def parityFamily (D : FoldingData F dom domSq) {n : ℕ} (u : Fin n → ι → F) :
++    Fin (n+n) → κ → F :=
++  Fin.append (fun j => foldEven D (u j)) (fun j => foldOdd D (u j))
++
++/-- One common agreement set lifts through the actual squaring map for every
++member of the family, preserving its relative size. -/
++theorem correlatedAgreement_recompose_family [DecidableEq F] [DecidableEq ι]
++    (D : FoldingData F dom domSq) {n d : ℕ} {δ : ℝ} (u : Fin n → ι → F)
++    (h : CorrelatedAgreement (reedSolomonCode domSq d) δ (parityFamily D u)) :
++    CorrelatedAgreement (reedSolomonCode dom (2*d)) δ u := by
++  classical
++  obtain ⟨S, hScard, hgood⟩ := h
++  refine ⟨Finset.univ.filter (fun i => D.sq i ∈ S), ?_, ?_⟩
++  · rw [card_sq_preimage D S, card_eq_two_mul_card D]
++    push_cast
++    linarith
++  · intro j
++    obtain ⟨vE, hvE, hE⟩ := hgood (j.castAdd n)
++    obtain ⟨vO, hvO, hO⟩ := hgood (j.natAdd n)
++    simp only [parityFamily, Fin.append_left, Fin.append_right] at hE hO
++    obtain ⟨pE, hpEd, hpE⟩ := mem_reedSolomonCode_iff.mp hvE
++    obtain ⟨pO, hpOd, hpO⟩ := mem_reedSolomonCode_iff.mp hvO
++    refine ⟨fun i => (recompose pE pO).eval (dom i),
++      mem_reedSolomonCode_iff.mpr
++        ⟨recompose pE pO, degree_recompose_lt hpEd hpOd, fun _ => rfl⟩, ?_⟩
++    intro i hi
++    have hik := (Finset.mem_filter.mp hi).2
++    exact eq_recompose_of_agree D i
++      ((hE _ hik).trans (hpE _)) ((hO _ hik).trans (hpO _))
++
++variable {ι₀ ι₁ ι₂ ι₃ : Type*}
++variable [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃]
++variable {dom₀ : ι₀ ↪ F} {dom₁ : ι₁ ↪ F} {dom₂ : ι₂ ↪ F} {dom₃ : ι₃ ↪ F}
++
++/-- Eight beta-independent coefficient words. -/
++def components (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (f : ι₀ → F) : Fin 8 → ι₃ → F :=
++  parityFamily D₂ (parityFamily D₁ (parityFamily D₀ (fun _ : Fin 1 => f)))
++
++/-- One width-eight challenge, implemented by the existing three binary folds. -/
++def fold8 (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (f : ι₀ → F) (β : F) : ι₃ → F :=
++  fold D₂ (fold D₁ (fold D₀ f β) (β^2)) (β^4)
++
++/-- Statement-first source-farness contract. -/
++def Reconstruction [DecidableEq F] (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) : Prop :=
++  ∀ (d : ℕ) (δ : ℝ) (f : ι₀ → F),
++    CorrelatedAgreement (reedSolomonCode dom₃ d) δ (components D₀ D₁ D₂ f) →
++    close δ (reedSolomonCode dom₀ (8*d)) f
++
++/-- The source agreement is reconstructed on the eightfold squaring preimage. -/
++theorem reconstruction [DecidableEq F] [Nonempty ι₀]
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) : Reconstruction D₀ D₁ D₂ := by
++  classical
++  intro d δ f h
++  have h₂ := correlatedAgreement_recompose_family D₂ _ h
++  have h₁ := correlatedAgreement_recompose_family D₁ _ h₂
++  have h₀ := correlatedAgreement_recompose_family D₀ _ h₁
++  obtain ⟨S, hS, hw⟩ := h₀
++  obtain ⟨w, hwC, hwAg⟩ := hw 0
++  refine ⟨w, ?_, relDist_le_of_agreesOn hwAg hS⟩
++  simpa only [show 2*(2*(2*d)) = 8*d by omega] using hwC
++
++omit [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃] in
++/-- Exact coefficient-curve identity for the correlated internal challenges. -/
++theorem fold8_eq_curve (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (f : ι₀ → F) (β : F) :
++    fold8 D₀ D₁ D₂ f β = curveWord (components D₀ D₁ D₂ f) β := by
++  ext i
++  simp [fold8, components, parityFamily, curveWord, comb, Fin.sum_univ_succ,
++    Fin.append, Fin.addCases, Fin.castLT, fold, foldEven, foldOdd, div_eq_mul_inv]
++  ring
++
++/-- The two actual indices in an existing binary fibre. -/
++def branch (D : FoldingData F dom domSq) (i : κ) (b : Bool) : ι :=
++  if b then D.neg (D.sec i) else D.sec i
++
++/-- The eight source indices needed for a three-pass fold. -/
++def rowPoint (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (i : ι₃) (c b a : Bool) : ι₀ :=
++  branch D₀ (branch D₁ (branch D₂ i c) b) a
++
++/-- Literal arithmetic on two supplied values. -/
++def pairFold (x a b β : F) : F := (a+b)/2 + β*((a-b)/(2*x))
++
++/-- The executable eight-value fold; the source word is not an input. -/
++def foldRow8 (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (i : ι₃) (v : Bool → Bool → Bool → F) (β : F) : F :=
++  let v₁ := fun c b => pairFold (dom₀ (D₀.sec (branch D₁ (branch D₂ i c) b)))
++    (v c b false) (v c b true) β
++  let v₂ := fun c => pairFold (dom₁ (D₁.sec (branch D₂ i c)))
++    (v₁ c false) (v₁ c true) (β^2)
++  pairFold (dom₂ (D₂.sec i)) (v₂ false) (v₂ true) (β^4)
++
++omit [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃] in
++/-- Eight true source values make the supplied-value computation the actual fold. -/
++theorem foldRow8_eq_fold8 (D₀ : FoldingData F dom₀ dom₁)
++    (D₁ : FoldingData F dom₁ dom₂) (D₂ : FoldingData F dom₂ dom₃)
++    (i : ι₃) (f : ι₀ → F) (β : F) :
++    foldRow8 D₀ D₁ D₂ i (fun c b a => f (rowPoint D₀ D₁ D₂ i c b a)) β =
++      fold8 D₀ D₁ D₂ f β i := by
++  simp only [foldRow8, fold8, rowPoint, branch, Bool.false_eq_true, ↓reduceIte,
++    fold, foldEven, foldOdd, pairFold]
++
++end Minidregg.Selvage.ArityEight
++
++
++/-- info: 'Minidregg.Selvage.ArityEight.correlatedAgreement_recompose_family' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.correlatedAgreement_recompose_family
++
++/-- info: 'Minidregg.Selvage.ArityEight.reconstruction' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.reconstruction
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold8_eq_curve' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold8_eq_curve
++
++/-- info: 'Minidregg.Selvage.ArityEight.foldRow8_eq_fold8' depends on axioms: [propext, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.foldRow8_eq_fold8
++
+diff --git a/Selvage/ArityEightLoggedWitnesses.lean b/Selvage/ArityEightLoggedWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightLoggedWitnesses.lean
+@@ -0,0 +1,219 @@
++/- End-to-end finite supplied-path witness. The tree-valued digest is an
++explicit injective toy hash, not a cryptographic assumption or runtime hash. -/
++import Selvage.ArityEightSupplied
++import Selvage.ArityEightWitnesses
++
++namespace Minidregg.Selvage.ArityEight.Witnesses.Logged
++open scoped Classical
++
++inductive Digest where
++  | leaf : F → Digest
++  | node : Digest → Digest → Digest
++  deriving DecidableEq
++
++def H : BinaryMerkle.HashSuite F Digest := ⟨Digest.leaf,Digest.node⟩
++
++def honestPoint (k : ℕ) (f : Fin (2^k) → F) (i : Fin (2^k)) : PointOpening F Digest :=
++  ⟨f i,(BinaryMerkle.openingScheme H k).openAt f i⟩
++
++def completeLog (k : ℕ) (f : Fin (2^k) → F) : EfficientRootOpening.Log F Digest :=
++  (List.ofFn fun i : Fin (2^k) => EfficientRootOpening.openingLog H (f i)
++    (binaryAddressBits k i) ((honestPoint k f i).path)).flatten
++
++def sourceRoot := (BinaryMerkle.openingScheme H 4).commit farWord
++def inputRoot := (BinaryMerkle.openingScheme H 1).commit (fun _ => (0:F))
++def nextRoot := (BinaryMerkle.openingScheme H 1).commit (fun _ => (1:F))
++
++def checkpoint : EfficientRootOpening.Log F Digest :=
++  completeLog 4 farWord ++ completeLog 1 (fun _ => 0) ++ completeLog 1 (fun _ => 1)
++
++set_option maxRecDepth 10000 in
++set_option maxHeartbeats 4000000 in
++/-- All three honest roots and all queried entries already occur at the checkpoint. -/
++theorem no_bad (root : Digest) : ¬EfficientRootOpening.Bad checkpoint checkpoint root := by
++  rintro (hc | ⟨e,he,hnot,_⟩)
++  · have hb : EfficientRootOpening.badCheck checkpoint checkpoint sourceRoot = false := by decide
++    exact (EfficientRootOpening.no_bad_of_check_false checkpoint checkpoint sourceRoot hb) (Or.inl hc)
++  · exact hnot he
++
++/-- Each honest path is retained in its complete finite log. -/
++theorem completeLog_contains (k : ℕ) (f : Fin (2^k) → F) (i : Fin (2^k)) :
++    PointLogged H (completeLog k f) i (honestPoint k f i) := by
++  intro e he
++  apply List.mem_flatten.mpr
++  refine ⟨_,?_,he⟩
++  exact List.mem_ofFn.mpr ⟨i,rfl⟩
++
++/-- The checkpoint's actual extracted source is the far source, coordinate by coordinate. -/
++theorem extracted_source : EfficientRootOpening.word checkpoint 0 4 sourceRoot = farWord := by
++  funext i
++  symm
++  apply supplied_point_pins H checkpoint checkpoint 0 sourceRoot i (honestPoint 4 farWord i)
++    (fun _ h => h) (no_bad sourceRoot)
++  · intro e he
++    have hm := completeLog_contains 4 farWord i e he
++    simp [checkpoint,hm]
++  · exact (BinaryMerkle.openingScheme H 4).verifyOpen_commit farWord i
++
++def row (i : Fin 2) : RowOpening F Digest where
++  source c b a := honestPoint 4 farWord (rowPoint D₀ D₁ D₂ i c b a)
++  injected := honestPoint 1 (fun _ => 0) i
++  next := honestPoint 1 (fun _ => 1) i
++
++/-- Every supplied path really is logged at the fixed checkpoint. -/
++theorem row_logged (i : Fin 2) : RowLogged H checkpoint D₀ D₁ D₂ i (row i) := by
++  refine ⟨?_,?_,?_⟩
++  · intro c b a e he
++    have hm := completeLog_contains 4 farWord (rowPoint D₀ D₁ D₂ i c b a) e he
++    simp [checkpoint,hm]
++  · intro e he
++    have hm := completeLog_contains 1 (fun _ => (0:F)) i e he
++    simpa only [checkpoint,List.mem_append,or_assoc] using (Or.inr (Or.inl hm) :
++      e ∈ completeLog 4 farWord ∨ e ∈ completeLog 1 (fun _ => (0:F)) ∨
++        e ∈ completeLog 1 (fun _ => (1:F)))
++  · intro e he
++    have hm := completeLog_contains 1 (fun _ => (1:F)) i e he
++    simpa only [checkpoint,List.mem_append,or_assoc] using (Or.inr (Or.inr hm) :
++      e ∈ completeLog 4 farWord ∨ e ∈ completeLog 1 (fun _ => (0:F)) ∨
++        e ∈ completeLog 1 (fun _ => (1:F)))
++
++/-- All supplied honest paths pass; at row zero their literal equation passes too. -/
++theorem row_zero_verified (β : F) :
++    RowVerified H D₀ D₁ D₂ sourceRoot inputRoot nextRoot β 0 (row 0) := by
++  refine ⟨fun c b a => ?_,?_,?_,?_⟩
++  · exact (BinaryMerkle.openingScheme H 4).verifyOpen_commit farWord _
++  · exact (BinaryMerkle.openingScheme H 1).verifyOpen_commit (fun _ => (0:F)) _
++  · exact (BinaryMerkle.openingScheme H 1).verifyOpen_commit (fun _ => (1:F)) _
++  · change (1:F) = foldRow8 D₀ D₁ D₂ 0
++      (fun c b a => farWord (rowPoint D₀ D₁ D₂ 0 c b a)) β + β^8*0
++    rw [foldRow8_eq_fold8,fold_zero]
++    simp
++
++/-- Actual extracted farness and a no-Bad accepted supplied row coexist. -/
++theorem supplied_premises_inhabited (β : F) :
++    EfficientRootOpening.Far_E (1/5:ℝ) 4 (reedSolomonCode (dom 0) 8) checkpoint 0 sourceRoot ∧
++    ¬RoundBad checkpoint checkpoint checkpoint checkpoint sourceRoot inputRoot nextRoot ∧
++    RowLogged H checkpoint D₀ D₁ D₂ 0 (row 0) ∧
++    RowVerified H D₀ D₁ D₂ sourceRoot inputRoot nextRoot β 0 (row 0) := by
++  refine ⟨?_,?_,row_logged 0,row_zero_verified β⟩
++  · simpa [EfficientRootOpening.Far_E,extracted_source] using farWord_far
++  · rintro (h | h | h)
++    · exact no_bad _ h
++    · exact no_bad _ h
++    · exact no_bad _ h
++
++/-- The executable checker accepts the supplied witness for every scalar. -/
++theorem row_zero_check (β : F) :
++    rowCheck H D₀ D₁ D₂ sourceRoot inputRoot nextRoot β 0 (row 0) = true :=
++  (rowCheck_eq_true_iff _ _ _ _ _ _ _ _ _ _).mpr (row_zero_verified β)
++
++/-- Honest paths at row one still fail the false fold equation. -/
++theorem row_one_check (β : F) :
++    rowCheck H D₀ D₁ D₂ sourceRoot inputRoot nextRoot β 1 (row 1) = false := by
++  apply Bool.eq_false_iff.mpr
++  intro ht
++  have h := (rowCheck_eq_true_iff _ _ _ _ _ _ _ _ _ _).mp ht
++  have heq := h.2.2.2
++  change (1:F) = foldRow8 D₀ D₁ D₂ 1
++    (fun c b a => farWord (rowPoint D₀ D₁ D₂ 1 c b a)) β + β^8*0 at heq
++  rw [foldRow8_eq_fold8,fold_one] at heq
++  simp only [mul_zero,add_zero] at heq
++  exact (by decide : (1:F) ≠ -1) heq
++
++/-- The next checkpoint extracts the claimed constant codeword. -/
++theorem extracted_next : EfficientRootOpening.word checkpoint 0 1 nextRoot = fun _ => (1:F) := by
++  funext i
++  symm
++  apply supplied_point_pins H checkpoint checkpoint 0 nextRoot i
++    (honestPoint 1 (fun _ => 1) i) (fun _ h => h) (no_bad nextRoot)
++  · intro e he
++    have hm := completeLog_contains 1 (fun _ => (1:F)) i e he
++    simpa only [checkpoint,List.mem_append] using
++      (Or.inr hm : e ∈ completeLog 4 farWord ++ completeLog 1 (fun _ => (0:F)) ∨
++        e ∈ completeLog 1 (fun _ => (1:F)))
++  · exact (BinaryMerkle.openingScheme H 1).verifyOpen_commit (fun _ => (1:F)) i
++
++/-- The complete raw event is inhabited for any query count. -/
++theorem supplied_event_accepts (β : F) (q : ℕ) :
++    SuppliedCrossing H D₀ D₁ D₂ 1 (1/10:ℝ) q (fun _ => checkpoint) 0
++      sourceRoot inputRoot (fun _ => nextRoot)
++      (fun x a => row (x.2 a)) (β,fun _ => 0) := by
++  refine ⟨?_,fun _ => row_zero_verified β⟩
++  change close (1/10:ℝ) (reedSolomonCode (dom 3) 1)
++    (EfficientRootOpening.word checkpoint 0 1 nextRoot)
++  rw [extracted_next]
++  exact ⟨fun _ => 1,mem_reedSolomonCode_one_iff.mpr (fun _ _ => rfl),by norm_num [relDist,hammingDist]⟩
++
++/-- The supplied-opening probability head fires with genuine extracted
++farness, full path-log completeness and zero observed failure probability. -/
++theorem supplied_bound_fires (q : ℕ) :
++    uniformProb (F × (Fin q → Fin 2))
++      (SuppliedCrossing H D₀ D₁ D₂ 1 (1/10:ℝ) q (fun _ => checkpoint) 0
++        sourceRoot inputRoot (fun _ => nextRoot) (fun x a => row (x.2 a))) ≤
++      16/17+(9/10:ℝ)^q := by
++  have hf : EfficientRootOpening.Far_E (1/5:ℝ) 4 (reedSolomonCode (dom 0) 8)
++      checkpoint 0 sourceRoot := (supplied_premises_inhabited 0).1
++  have h := supplied_injected_crossing_sound H D₀ D₁ D₂ (d := 1) (by decide)
++    (θ := (1/5:ℝ)) (δ := (1/10:ℝ)) (τ := (1/10:ℝ)) (by norm_num)
++    (by norm_num) (by norm_num) (by norm_num) q checkpoint checkpoint
++    (fun _ => checkpoint) 0 sourceRoot inputRoot (fun _ => nextRoot)
++    (fun x a => row (x.2 a)) (fun _ => checkpoint)
++    (fun _ => ⟨fun _ h => h,fun _ h => h,fun _ h => h⟩)
++    (fun x a => row_logged (x.2 a)) hf
++  have hz : uniformProb (F × (Fin q → Fin (2^(4-(2+1)))))
++      (fun _ => RoundBad checkpoint checkpoint checkpoint checkpoint sourceRoot inputRoot nextRoot) = 0 := by
++    apply uniformProb_false
++    intro _ hb
++    exact (supplied_premises_inhabited 0).2.1 hb
++  dsimp only at h
++  norm_num only [Nat.reduceAdd,Nat.reduceSub,Nat.reducePow] at h
++  rw [hz] at h
++  norm_num [ZMod.card] at h ⊢
++  exact h
++
++end Minidregg.Selvage.ArityEight.Witnesses.Logged
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.no_bad' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.no_bad
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.completeLog_contains' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.completeLog_contains
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.extracted_source' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.extracted_source
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.row_logged' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.row_logged
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.row_zero_verified' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.row_zero_verified
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.supplied_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.supplied_premises_inhabited
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.row_zero_check' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.row_zero_check
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.row_one_check' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.row_one_check
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.extracted_next' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.extracted_next
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.supplied_event_accepts' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.supplied_event_accepts
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.Logged.supplied_bound_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.Logged.supplied_bound_fires
++
+diff --git a/Selvage/ArityEightQueryTransport.lean b/Selvage/ArityEightQueryTransport.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightQueryTransport.lean
+@@ -0,0 +1,79 @@
++/- Existing coherent query seeds transport the new one-scalar arity-eight
++consumer exactly. The p3 index statement is arithmetic, not Rust refinement. -/
++import Selvage.ArityEightBabyBear
++import Selvage.P3FriQueryTransport
++
++namespace Minidregg.Selvage.ArityEight
++open scoped Classical
++
++/-- Transport any challenge/row event through the existing third binary-level
++query projection. Discarded quotient bits cancel exactly in finite probability. -/
++theorem coherent_block_uniform {F : Type} [Fintype F] {q : ℕ}
++    (p : F × (Fin q → PowerTwoFriLevels 20 3) → Prop) :
++    uniformProb (F × (Fin q → PowerTwoFriLevels 20 1))
++      (fun x => p (x.1,powerTwoCoherentRound (m := 19) (by decide)
++        (⟨2,by decide⟩ : Fin 19) x.2)) =
++      uniformProb (F × (Fin q → PowerTwoFriLevels 20 3)) p := by
++  let s := powerTwoBatchSplitEquiv (qCount := q) (ell := 20) (m := 19)
++    (by decide) (⟨2,by decide⟩ : Fin 19)
++  let e : (F × (Fin q → PowerTwoFriLevels 20 1)) ≃
++      ((Fin q → Fin (2^2)) × (F × (Fin q → PowerTwoFriLevels 20 3))) := {
++    toFun := fun x => ((s x.2).1,(x.1,(s x.2).2))
++    invFun := fun x => (x.2.1,s.symm (x.1,x.2.2))
++    left_inv := fun x => by simp
++    right_inv := fun x => by simp }
++  calc
++    _ = uniformProb (F × (Fin q → PowerTwoFriLevels 20 1))
++        (fun x => p (e x).2) := by
++      apply uniformProb_congr
++      intro x
++      dsimp [e,s]
++      have hs := powerTwoBatchSplitEquiv_snd (show 19 ≤ 20 by decide)
++        (⟨2,by decide⟩ : Fin 19) x.2
++      exact iff_of_eq (congrArg (fun r => p (x.1,r)) hs.symm)
++    _ = uniformProb ((Fin q → Fin (2^2)) × (F × (Fin q → PowerTwoFriLevels 20 3)))
++        (fun x => p x.2) := uniformProb_equiv e (fun x => p x.2)
++    _ = _ := uniformProb_prod_snd p
++
++/-- The p3 query's first width-eight row is exactly the transported coherent
++seed at level three: divide its runtime index by eight, then reverse 17 bits. -/
++theorem p3_first_block_row (index : Fin (2^20)) :
++    (powerTwoRoundIndex (ell := 20) (m := 19) (by decide)
++      (⟨2,by decide⟩ : Fin 19) (P3FriQueryTransport.pairSeed 20 index.val)).val =
++      Minidregg.Theory.BitReverseFriTransport.reverseIndex 17 (index.val/8) :=
++  P3FriQueryTransport.existing_coherent_transport 20 19 (by decide) ⟨2,by decide⟩ index
++
++/-- Actual BabyBear arity-eight crossing under the existing coherent seed
++sampler. It uses one scalar beta and a pre-beta injected word. -/
++theorem babyBear_coherent_first_injected_crossing
++    (f : Fin (2^20) → BabyBearExt4.Ext4) (g : Fin (2^17) → BabyBearExt4.Ext4)
++    (next : BabyBearExt4.Ext4 → Fin (2^17) → BabyBearExt4.Ext4) (q : ℕ)
++    (hfar : ¬close (2/5:ℝ)
++      (reedSolomonCode (BabyBearExt4.MultiplicativeTower.tower.dom 0) (2^19)) f) :
++    uniformProb (BabyBearExt4.Ext4 × (Fin q → PowerTwoFriLevels 20 1))
++      (fun x => Crossing
++        (reedSolomonCode (BabyBearExt4.MultiplicativeTower.tower.dom 3) (2^16)) (1/10:ℝ)
++        (fun β i => fold8
++          (BabyBearExt4.MultiplicativeTower.tower.data 0 (by decide))
++          (BabyBearExt4.MultiplicativeTower.tower.data 1 (by decide))
++          (BabyBearExt4.MultiplicativeTower.tower.data 2 (by decide)) f β i + β^8*g i)
++        next q (x.1,powerTwoCoherentRound (m := 19) (by decide) (⟨2,by decide⟩ : Fin 19) x.2)) ≤
++      (2^20:ℝ)/(BabyBearExt4.modulus^4:ℕ) + (9/10:ℝ)^q := by
++  rw [coherent_block_uniform]
++  exact BabyBear.first_injected_crossing f g next q hfar
++
++end Minidregg.Selvage.ArityEight
++
++
++/-- info: 'Minidregg.Selvage.ArityEight.coherent_block_uniform' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.coherent_block_uniform
++
++/-- info: 'Minidregg.Selvage.ArityEight.p3_first_block_row' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.p3_first_block_row
++
++/-- info: 'Minidregg.Selvage.ArityEight.babyBear_coherent_first_injected_crossing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.babyBear_coherent_first_injected_crossing
++
+diff --git a/Selvage/ArityEightSampling.lean b/Selvage/ArityEightSampling.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightSampling.lean
+@@ -0,0 +1,170 @@
++/- A single arity-eight transition with a next word selected after beta,
++before independent query seeds. The conclusion prices crossing from a far
++source into a close next word while all sampled equations pass. -/
++import Selvage.ArityEightFold
++import Selvage.HalfThresholdFriCoherent
++
++namespace Minidregg.Selvage.ArityEight
++open scoped Classical
++
++section Sampling
++variable {F ι : Type} [Field F] [Fintype F] [DecidableEq F]
++variable [Fintype ι] [Nonempty ι]
++
++/-- The next word can depend on the challenge, but has no query-seed argument. -/
++def Crossing (C : Submodule F (ι → F)) (δ : ℝ)
++    (literal next : F → ι → F) (q : ℕ) (x : F × (Fin q → ι)) : Prop :=
++  close δ C (next x.1) ∧ ∀ a, next x.1 (x.2 a) = literal x.1 (x.2 a)
++
++omit [Field F] [Fintype F] in
++/-- Finite column counting in the existing uniform probability interface. -/
++theorem point_query_miss (q : ℕ) {f g : ι → F} {τ : ℝ}
++    (hfar : τ ≤ relDist f g) :
++    uniformProb (Fin q → ι) (fun s => ∀ a, f (s a) = g (s a)) ≤ (1-τ)^q := by
++  classical
++  unfold uniformProb
++  rw [Nat.card_eq_fintype_card, Fintype.card_subtype]
++  simpa [Fintype.card_fun] using column_sampling_bridge_pr q hfar
++
++set_option maxHeartbeats 800000 in
++/-- Finite challenge/query composition. The challenge bound will be discharged
++by the actual arity-eight source-farness theorem below. -/
++theorem sampled_crossing_of_challenge_bound
++    (C : Submodule F (ι → F)) (literal next : F → ι → F)
++    (q : ℕ) {θ δ τ ε : ℝ} (hτ : τ ≤ 1) (hgap : δ+τ ≤ θ) (hε : 0 ≤ ε)
++    (hchallenge : uniformProb F (fun β => close θ C (literal β)) ≤ ε) :
++    uniformProb (F × (Fin q → ι)) (Crossing C δ literal next q) ≤ ε+(1-τ)^q := by
++  classical
++  let bad : F → Prop := fun β => close θ C (literal β)
++  have heps : 0 ≤ (1-τ)^q := pow_nonneg (sub_nonneg.mpr hτ) _
++  have hsplit : uniformProb (F × (Fin q → ι)) (Crossing C δ literal next q) ≤
++      uniformProb (F × (Fin q → ι)) (fun x => bad x.1) +
++      uniformProb (F × (Fin q → ι))
++        (fun x => ¬bad x.1 ∧ Crossing C δ literal next q x) := by
++    refine le_trans (uniformProb_mono fun x hx => ?_) (uniformProb_or_le _ _)
++    by_cases hb : bad x.1
++    · exact Or.inl hb
++    · exact Or.inr ⟨hb,hx⟩
++  have hb : uniformProb (F × (Fin q → ι)) (fun x => bad x.1) ≤ ε := by
++    let e := Equiv.prodComm F (Fin q → ι)
++    calc
++      _ = uniformProb ((Fin q → ι) × F) (fun x => bad x.2) := by
++        simpa [e] using uniformProb_equiv e (fun x => bad x.2)
++      _ ≤ ε := uniformProb_prod_le hε (fun _ => hchallenge)
++  have hq : uniformProb (F × (Fin q → ι))
++      (fun x => ¬bad x.1 ∧ Crossing C δ literal next q x) ≤ (1-τ)^q := by
++    apply uniformProb_prod_le heps
++    intro β
++    by_cases hb : bad β
++    · rw [uniformProb_false]
++      · exact heps
++      · intro s hs
++        exact hs.1 hb
++    · by_cases hn : close δ C (next β)
++      · have hdist : τ ≤ relDist (next β) (literal β) := by
++          by_contra h
++          have hlt := lt_of_not_ge h
++          obtain ⟨c, hc, hnc⟩ := hn
++          apply hb
++          refine ⟨c,hc,?_⟩
++          have htri := relDist_triangle (literal β) (next β) c
++          rw [relDist_comm (literal β) (next β)] at htri
++          linarith
++        exact le_trans (uniformProb_mono fun _ hs => hs.2.2)
++          (point_query_miss q hdist)
++      · rw [uniformProb_false]
++        · exact heps
++        · intro s hs
++          exact hn hs.2.1
++  linarith
++end Sampling
++
++section ActualFold
++variable {F ι₀ ι₁ ι₂ ι₃ : Type} [Field F] [Fintype F] [DecidableEq F]
++variable [Fintype ι₀] [Fintype ι₁] [Fintype ι₂] [Fintype ι₃]
++variable [Nonempty ι₀] [Nonempty ι₃]
++variable {dom₀ : ι₀ ↪ F} {dom₁ : ι₁ ↪ F} {dom₂ : ι₂ ↪ F} {dom₃ : ι₃ ↪ F}
++
++/-- Actual source farness discharges the coefficient non-CA premise. -/
++theorem fold8_uniform_sound
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) {d : ℕ} (hd : 1 ≤ d) {θ : ℝ}
++    (hθ : 0 < θ) (hrate : (d:ℝ) < (1-2*θ)*(Fintype.card ι₃:ℝ))
++    (f : ι₀ → F) (hfar : ¬close θ (reedSolomonCode dom₀ (8*d)) f) :
++    uniformProb F (fun β => close θ (reedSolomonCode dom₃ d) (fold8 D₀ D₁ D₂ f β)) ≤
++      ((7*Fintype.card ι₃:ℕ):ℝ)/Fintype.card F := by
++  simpa only [fold8_eq_curve] using arity8_curve_sound dom₃ hd hθ hrate
++    (components D₀ D₁ D₂ f) (fun h => hfar (reconstruction D₀ D₁ D₂ d θ f h))
++
++/-- Fixed-prefix input injection costs degree eight. The arbitrary injected
++word is fixed before beta; the next committed word may depend on beta. -/
++theorem fold8_injected_uniform_sound
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) {d : ℕ} (hd : 1 ≤ d) {θ : ℝ}
++    (hθ : 0 < θ) (hrate : (d:ℝ) < (1-2*θ)*(Fintype.card ι₃:ℝ))
++    (f : ι₀ → F) (g : ι₃ → F)
++    (hfar : ¬close θ (reedSolomonCode dom₀ (8*d)) f) :
++    uniformProb F (fun β => close θ (reedSolomonCode dom₃ d)
++      (fun i => fold8 D₀ D₁ D₂ f β i + β^8*g i)) ≤
++      ((8*Fintype.card ι₃:ℕ):ℝ)/Fintype.card F := by
++  simpa only [fold8_eq_curve] using arity8_injected_curve_sound dom₃ hd hθ hrate
++    (components D₀ D₁ D₂ f) g (fun h => hfar (reconstruction D₀ D₁ D₂ d θ f h))
++
++/-- One real arity-eight transition: one beta, then the next word, then q
++uniform row seeds with replacement. This is a crossing bound, not an
++unproved multi-round Fiat--Shamir or runtime correspondence assertion. -/
++theorem fold8_sampled_crossing
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) {d : ℕ} (hd : 1 ≤ d) {θ δ τ : ℝ}
++    (hθ : 0 < θ) (hrate : (d:ℝ) < (1-2*θ)*(Fintype.card ι₃:ℝ))
++    (hτ : τ ≤ 1) (hgap : δ+τ ≤ θ)
++    (f : ι₀ → F) (next : F → ι₃ → F) (q : ℕ)
++    (hfar : ¬close θ (reedSolomonCode dom₀ (8*d)) f) :
++    uniformProb (F × (Fin q → ι₃))
++      (Crossing (reedSolomonCode dom₃ d) δ (fold8 D₀ D₁ D₂ f) next q) ≤
++      ((7*Fintype.card ι₃:ℕ):ℝ)/Fintype.card F + (1-τ)^q :=
++  sampled_crossing_of_challenge_bound _ _ _ q hτ hgap (by positivity)
++    (fold8_uniform_sound D₀ D₁ D₂ hd hθ hrate f hfar)
++
++/-- The same sampled transition with a pre-beta injected word, as in a
++matching-height input addition. No independence between beta and beta^8. -/
++theorem fold8_injected_sampled_crossing
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) {d : ℕ} (hd : 1 ≤ d) {θ δ τ : ℝ}
++    (hθ : 0 < θ) (hrate : (d:ℝ) < (1-2*θ)*(Fintype.card ι₃:ℝ))
++    (hτ : τ ≤ 1) (hgap : δ+τ ≤ θ)
++    (f : ι₀ → F) (g : ι₃ → F) (next : F → ι₃ → F) (q : ℕ)
++    (hfar : ¬close θ (reedSolomonCode dom₀ (8*d)) f) :
++    uniformProb (F × (Fin q → ι₃))
++      (Crossing (reedSolomonCode dom₃ d) δ
++        (fun β i => fold8 D₀ D₁ D₂ f β i + β^8*g i) next q) ≤
++      ((8*Fintype.card ι₃:ℕ):ℝ)/Fintype.card F + (1-τ)^q :=
++  sampled_crossing_of_challenge_bound _ _ _ q hτ hgap (by positivity)
++    (fold8_injected_uniform_sound D₀ D₁ D₂ hd hθ hrate f g hfar)
++end ActualFold
++end Minidregg.Selvage.ArityEight
++
++/-- info: 'Minidregg.Selvage.ArityEight.point_query_miss' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.point_query_miss
++
++/-- info: 'Minidregg.Selvage.ArityEight.sampled_crossing_of_challenge_bound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.sampled_crossing_of_challenge_bound
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold8_uniform_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold8_uniform_sound
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold8_injected_uniform_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold8_injected_uniform_sound
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold8_sampled_crossing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold8_sampled_crossing
++
++/-- info: 'Minidregg.Selvage.ArityEight.fold8_injected_sampled_crossing' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.fold8_injected_sampled_crossing
++
+diff --git a/Selvage/ArityEightSupplied.lean b/Selvage/ArityEightSupplied.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightSupplied.lean
+@@ -0,0 +1,201 @@
++/- Supplied BinaryMerkle paths for one injected arity-eight transition.
++The verifier consumes eight source point openings, one input opening and
++one next-word opening. This is not the packed p3 MMCS representation.
++The commitment checkpoints are fixed before their relevant query randomness. -/
++import Selvage.ArityEightSampling
++import Selvage.EfficientRootOpening
++
++namespace Minidregg.Selvage.ArityEight
++open scoped Classical
++
++variable {F Digest : Type} [Field F] [DecidableEq F] [DecidableEq Digest]
++
++structure PointOpening (F Digest : Type) where
++  value : F
++  path : List Digest
++
++/-- The supplied value and path are fed directly to the existing verifier. -/
++def PointVerified (H : BinaryMerkle.HashSuite F Digest) {k : ℕ}
++    (root : Digest) (i : Fin (2^k)) (o : PointOpening F Digest) : Prop :=
++  (BinaryMerkle.openingScheme H k).verifyOpen root i o.value o.path
++
++def PointLogged (H : BinaryMerkle.HashSuite F Digest) (L : EfficientRootOpening.Log F Digest)
++    {k : ℕ} (i : Fin (2^k)) (o : PointOpening F Digest) : Prop :=
++  ∀ e ∈ EfficientRootOpening.openingLog H o.value (binaryAddressBits k i) o.path, e ∈ L
++
++omit [Field F] [DecidableEq F] in
++/-- General finite execution-log version, retaining the supplied path. -/
++theorem supplied_point_pins (H : BinaryMerkle.HashSuite F Digest)
++    (P L : EfficientRootOpening.Log F Digest) (default : F) {k : ℕ} (root : Digest)
++    (i : Fin (2^k)) (o : PointOpening F Digest)
++    (hsub : ∀ e ∈ P, e ∈ L) (hgood : ¬EfficientRootOpening.Bad P L root)
++    (hlogged : PointLogged H L i o) (hacc : PointVerified H root i o) :
++    o.value = EfficientRootOpening.word P default k root i := by
++  have hl : (EfficientRootOpening.Query.leaf o.value,H.leaf o.value) ∈ L :=
++    hlogged _ (by simp [EfficientRootOpening.openingLog])
++  have hn : ∀ e ∈ EfficientRootOpening.pathLog H (H.leaf o.value) (binaryAddressBits k i) o.path,
++      e ∈ L := by
++    intro e he
++    exact hlogged e (by simp [EfficientRootOpening.openingLog,he])
++  exact (EfficientRootOpening.extractedAt_eq_of_logged H P L default root hsub hgood o.value hl
++    k root (binaryAddressBits k i) o.path (Or.inl rfl) hn hacc).symm
++
++structure RowOpening (F Digest : Type) where
++  source : Bool → Bool → Bool → PointOpening F Digest
++  injected : PointOpening F Digest
++  next : PointOpening F Digest
++
++variable {k₀ k₁ k₂ k₃ : ℕ}
++variable {dom₀ : Fin (2^k₀) ↪ F} {dom₁ : Fin (2^k₁) ↪ F}
++variable {dom₂ : Fin (2^k₂) ↪ F} {dom₃ : Fin (2^k₃) ↪ F}
++
++/-- All ten supplied paths and the actual eight-input fold equation. -/
++def RowVerified (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (rs rg rn : Digest)
++    (β : F) (i : Fin (2^k₃)) (o : RowOpening F Digest) : Prop :=
++  (∀ c b a, PointVerified H rs (rowPoint D₀ D₁ D₂ i c b a) (o.source c b a)) ∧
++  PointVerified H rg i o.injected ∧ PointVerified H rn i o.next ∧
++  o.next.value = foldRow8 D₀ D₁ D₂ i (fun c b a => (o.source c b a).value) β +
++    β^8*o.injected.value
++
++/-- Executable supplied-point verification through the existing recomputation. -/
++def pointCheck (H : BinaryMerkle.HashSuite F Digest) {k : ℕ}
++    (root : Digest) (i : Fin (2^k)) (o : PointOpening F Digest) : Bool :=
++  decide (BinaryMerkle.recompute H (H.leaf o.value) (binaryAddressBits k i) o.path = some root)
++
++/-- Executable arity-eight row verifier, retaining every supplied path. -/
++def rowCheck (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (rs rg rn : Digest)
++    (β : F) (i : Fin (2^k₃)) (o : RowOpening F Digest) : Bool :=
++  ([false,true].all fun c => [false,true].all fun b => [false,true].all fun a =>
++    pointCheck H rs (rowPoint D₀ D₁ D₂ i c b a) (o.source c b a)) &&
++  pointCheck H rg i o.injected && pointCheck H rn i o.next &&
++  decide (o.next.value = foldRow8 D₀ D₁ D₂ i (fun c b a => (o.source c b a).value) β +
++    β^8*o.injected.value)
++
++/-- Exact Boolean/proposition interface for the supplied-path checker. -/
++theorem rowCheck_eq_true_iff (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (rs rg rn : Digest)
++    (β : F) (i : Fin (2^k₃)) (o : RowOpening F Digest) :
++    rowCheck H D₀ D₁ D₂ rs rg rn β i o = true ↔
++      RowVerified H D₀ D₁ D₂ rs rg rn β i o := by
++  simp [rowCheck,pointCheck,RowVerified,PointVerified,BinaryMerkle.openingScheme,Bool.forall_bool,and_assoc]
++
++/-- These are log-completeness conditions on the actual supplied paths. -/
++def RowLogged (H : BinaryMerkle.HashSuite F Digest) (L : EfficientRootOpening.Log F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (i : Fin (2^k₃)) (o : RowOpening F Digest) : Prop :=
++  (∀ c b a, PointLogged H L (rowPoint D₀ D₁ D₂ i c b a) (o.source c b a)) ∧
++  PointLogged H L i o.injected ∧ PointLogged H L i o.next
++
++/-- A finite observed failure, at exactly the three commitment checkpoints. -/
++def RoundBad (Ps Pg Pn L : EfficientRootOpening.Log F Digest) (rs rg rn : Digest) : Prop :=
++  EfficientRootOpening.Bad Ps L rs ∨ EfficientRootOpening.Bad Pg L rg ∨ EfficientRootOpening.Bad Pn L rn
++
++omit [DecidableEq F] in
++/-- On no observed failure, all supplied paths pin the computed equation to
++three deterministically extracted words. -/
++theorem supplied_row_pins (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃)
++    (Ps Pg Pn L : EfficientRootOpening.Log F Digest) (default : F) (rs rg rn : Digest)
++    (hs : ∀ e ∈ Ps, e ∈ L) (hg : ∀ e ∈ Pg, e ∈ L) (hn : ∀ e ∈ Pn, e ∈ L)
++    (hgood : ¬RoundBad Ps Pg Pn L rs rg rn)
++    (β : F) (i : Fin (2^k₃)) (o : RowOpening F Digest)
++    (hlog : RowLogged H L D₀ D₁ D₂ i o)
++    (ha : RowVerified H D₀ D₁ D₂ rs rg rn β i o) :
++    EfficientRootOpening.word Pn default k₃ rn i =
++      fold8 D₀ D₁ D₂ (EfficientRootOpening.word Ps default k₀ rs) β i +
++        β^8*EfficientRootOpening.word Pg default k₃ rg i := by
++  have hgs : ¬EfficientRootOpening.Bad Ps L rs := fun h => hgood (Or.inl h)
++  have hgg : ¬EfficientRootOpening.Bad Pg L rg := fun h => hgood (Or.inr (Or.inl h))
++  have hgn : ¬EfficientRootOpening.Bad Pn L rn := fun h => hgood (Or.inr (Or.inr h))
++  have hp : (fun c b a => (o.source c b a).value) =
++      fun c b a => EfficientRootOpening.word Ps default k₀ rs (rowPoint D₀ D₁ D₂ i c b a) := by
++    funext c b a
++    exact supplied_point_pins H Ps L default rs _ _ hs hgs (hlog.1 c b a) (ha.1 c b a)
++  have hpi := supplied_point_pins H Pg L default rg i o.injected hg hgg hlog.2.1 ha.2.1
++  have hpn := supplied_point_pins H Pn L default rn i o.next hn hgn hlog.2.2 ha.2.2.1
++  rw [←hpn,ha.2.2.2,hp,foldRow8_eq_fold8,hpi]
++
++/-- The raw supplied-path acceptance event. The next word is extracted from
++its beta-dependent checkpoint, fixed before the query vector. -/
++def SuppliedCrossing (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) (d : ℕ) (δ : ℝ) (q : ℕ)
++    (Pn : F → EfficientRootOpening.Log F Digest) (default : F)
++    (rs rg : Digest) (rn : F → Digest)
++    (openings : F × (Fin q → Fin (2^k₃)) → Fin q → RowOpening F Digest)
++    (x : F × (Fin q → Fin (2^k₃))) : Prop :=
++  close δ (reedSolomonCode dom₃ d) (EfficientRootOpening.word (Pn x.1) default k₃ (rn x.1)) ∧
++  ∀ a, RowVerified H D₀ D₁ D₂ rs rg (rn x.1) x.1 (x.2 a) (openings x a)
++
++/-- The supplied-opening reduction plus the actual degree-eight challenge
++and sampling bounds. Ps and Pg are chosen before beta; Pn and rn depend only
++on beta. No numerical ROM, hash-collision or Fiat--Shamir term is assumed. -/
++theorem supplied_injected_crossing_sound [Fintype F]
++    (H : BinaryMerkle.HashSuite F Digest)
++    (D₀ : FoldingData F dom₀ dom₁) (D₁ : FoldingData F dom₁ dom₂)
++    (D₂ : FoldingData F dom₂ dom₃) {d : ℕ} (hd : 1 ≤ d) {θ δ τ : ℝ}
++    (hθ : 0 < θ) (hrate : (d:ℝ) < (1-2*θ)*(2^k₃:ℕ))
++    (hτ : τ ≤ 1) (hgap : δ+τ ≤ θ) (q : ℕ)
++    (Ps Pg : EfficientRootOpening.Log F Digest) (Pn : F → EfficientRootOpening.Log F Digest) (default : F)
++    (rs rg : Digest) (rn : F → Digest)
++    (openings : F × (Fin q → Fin (2^k₃)) → Fin q → RowOpening F Digest)
++    (logs : F × (Fin q → Fin (2^k₃)) → EfficientRootOpening.Log F Digest)
++    (hsub : ∀ x, (∀ e ∈ Ps, e ∈ logs x) ∧ (∀ e ∈ Pg, e ∈ logs x) ∧
++      (∀ e ∈ Pn x.1, e ∈ logs x))
++    (hlog : ∀ x a, RowLogged H (logs x) D₀ D₁ D₂ (x.2 a) (openings x a))
++    (hfar : EfficientRootOpening.Far_E θ k₀ (reedSolomonCode dom₀ (8*d)) Ps default rs) :
++    uniformProb (F × (Fin q → Fin (2^k₃)))
++      (SuppliedCrossing H D₀ D₁ D₂ d δ q Pn default rs rg rn openings) ≤
++      ((8*2^k₃:ℕ):ℝ)/Fintype.card F + (1-τ)^q +
++      uniformProb (F × (Fin q → Fin (2^k₃)))
++        (fun x => RoundBad Ps Pg (Pn x.1) (logs x) rs rg (rn x.1)) := by
++  classical
++  let bad := fun x : F × (Fin q → Fin (2^k₃)) =>
++    RoundBad Ps Pg (Pn x.1) (logs x) rs rg (rn x.1)
++  let ideal := Crossing (reedSolomonCode dom₃ d) δ
++    (fun β i => fold8 D₀ D₁ D₂ (EfficientRootOpening.word Ps default k₀ rs) β i +
++      β^8*EfficientRootOpening.word Pg default k₃ rg i)
++    (fun β => EfficientRootOpening.word (Pn β) default k₃ (rn β)) q
++  have hcover : ∀ x, SuppliedCrossing H D₀ D₁ D₂ d δ q Pn default rs rg rn
++      openings x → ideal x ∨ bad x := by
++    intro x hx
++    by_cases hb : bad x
++    · exact Or.inr hb
++    · refine Or.inl ⟨hx.1,?_⟩
++      intro a
++      exact supplied_row_pins H D₀ D₁ D₂ Ps Pg (Pn x.1) (logs x) default rs rg (rn x.1)
++        (hsub x).1 (hsub x).2.1 (hsub x).2.2 hb x.1 (x.2 a) (openings x a)
++        (hlog x a) (hx.2 a)
++  have hideal : uniformProb (F × (Fin q → Fin (2^k₃))) ideal ≤
++      ((8*2^k₃:ℕ):ℝ)/Fintype.card F + (1-τ)^q := by
++    simpa [ideal,Fintype.card_fin] using fold8_injected_sampled_crossing D₀ D₁ D₂ hd hθ
++      (by simpa using hrate) hτ hgap (EfficientRootOpening.word Ps default k₀ rs)
++      (EfficientRootOpening.word Pg default k₃ rg) (fun β => EfficientRootOpening.word (Pn β) default k₃ (rn β)) q hfar
++  exact le_trans (le_trans (uniformProb_mono hcover) (uniformProb_or_le ideal bad))
++    (by dsimp [bad] at *; linarith)
++
++end Minidregg.Selvage.ArityEight
++
++
++/-- info: 'Minidregg.Selvage.ArityEight.supplied_point_pins' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.supplied_point_pins
++
++/-- info: 'Minidregg.Selvage.ArityEight.rowCheck_eq_true_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.rowCheck_eq_true_iff
++
++/-- info: 'Minidregg.Selvage.ArityEight.supplied_row_pins' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.supplied_row_pins
++
++/-- info: 'Minidregg.Selvage.ArityEight.supplied_injected_crossing_sound' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.supplied_injected_crossing_sound
++
+diff --git a/Selvage/ArityEightWitnesses.lean b/Selvage/ArityEightWitnesses.lean
+new file mode 100644
+--- /dev/null
++++ b/Selvage/ArityEightWitnesses.lean
+@@ -0,0 +1,147 @@
++/- Small exact witness for the actual eightfold source-farness consumer. -/
++import Selvage.ArityEightSampling
++import Selvage.PowerTwoRootFolding
++import Mathlib.Tactic.ReduceModChar
++
++namespace Minidregg.Selvage.ArityEight.Witnesses
++open Polynomial
++open scoped Classical
++instance : Fact (Nat.Prime 17) := ⟨by norm_num⟩
++abbrev F := ZMod 17
++
++/-- Certified exact root, with only fifteen small exponent checks. -/
++theorem root_primitive : IsPrimitiveRoot (3 : F) (2^4) := by
++  apply IsPrimitiveRoot.mk_of_lt
++  · norm_num
++  · decide
++  · intro l hl hlt
++    interval_cases l <;> decide
++
++abbrev D₀ := PowerTwoRootFolding.data root_primitive (by decide) 0 (by decide)
++abbrev D₁ := PowerTwoRootFolding.data root_primitive (by decide) 1 (by decide)
++abbrev D₂ := PowerTwoRootFolding.data root_primitive (by decide) 2 (by decide)
++abbrev dom (n : ℕ) := PowerTwoRootFolding.domain root_primitive n
++
++def farWord : Fin 16 → F := fun i => (dom 0 i)^8
++
++/-- Actual source degree is outside the legal window. -/
++theorem farWord_not_mem : farWord ∉ reedSolomonCode (dom 0) 8 := by
++  intro hw
++  obtain ⟨p,hp,heval⟩ := mem_reedSolomonCode_iff.mp hw
++  have hne : (X^8 : Polynomial F) ≠ p := by
++    intro heq
++    rw [←heq] at hp
++    norm_num at hp
++  have hc := card_agreeSet_lt_of_ne (dom 0) (d := 9)
++    (p := (X^8 : Polynomial F)) (by norm_num) (q := p) (hp.trans (by norm_num)) hne
++  have hall : (Finset.univ.filter fun i =>
++      (X^8 : Polynomial F).eval (dom 0 i) = p.eval (dom 0 i)) = Finset.univ := by
++    apply Finset.filter_eq_self.mpr
++    intro i _
++    simpa [farWord] using heval i
++  rw [hall,Finset.card_univ] at hc
++  norm_num [PowerTwoFriLevels] at hc
++
++/-- Existing RS minimum distance supplies substantial positive farness. -/
++theorem farWord_far : ¬close (1/5 : ℝ) (reedSolomonCode (dom 0) 8) farWord := by
++  rintro ⟨w,hw,hclose⟩
++  have hmem : farWord ∈ reedSolomonCode (dom 0) 9 :=
++    mem_reedSolomonCode_iff.mpr ⟨X^8,by norm_num,fun i => by simp [farWord]⟩
++  have hw' : w ∈ reedSolomonCode (dom 0) 9 := by
++    obtain ⟨p,hp,heval⟩ := mem_reedSolomonCode_iff.mp hw
++    exact mem_reedSolomonCode_iff.mpr ⟨p,hp.trans (by norm_num),heval⟩
++  have h := reedSolomonCode_minDist (dom 0) 9 farWord hmem w hw'
++    (fun heq => farWord_not_mem (heq ▸ hw))
++  norm_num [PowerTwoFriLevels] at h
++  linarith
++
++/-- Every scalar sends the actual far source to [1,-1]. -/
++theorem fold_zero (β : F) : fold8 D₀ D₁ D₂ farWord β 0 = 1 := by
++  simp [fold8,fold,foldEven,foldOdd,farWord,dom,D₀,D₁,D₂,
++    PowerTwoRootFolding.data,PowerTwoRootFolding.domain,PowerTwoRootFolding.levelRoot,
++    PowerTwoRootFolding.sectionIndex,PowerTwoRootFolding.negativeIndex, F]
++  reduce_mod_char
++  norm_num [div_eq_mul_inv, show (2:F)⁻¹ = 9 by decide]
++  reduce_mod_char
++
++theorem fold_one (β : F) : fold8 D₀ D₁ D₂ farWord β 1 = -1 := by
++  simp [fold8,fold,foldEven,foldOdd,farWord,dom,D₀,D₁,D₂,
++    PowerTwoRootFolding.data,PowerTwoRootFolding.domain,PowerTwoRootFolding.levelRoot,
++    PowerTwoRootFolding.sectionIndex,PowerTwoRootFolding.negativeIndex, F]
++  reduce_mod_char
++  norm_num [div_eq_mul_inv, show (2:F)⁻¹ = 9 by decide]
++  reduce_mod_char
++
++/-- A real far source and accepting query schedule coexist. -/
++theorem accepted_zero_seed (β : F) (q : ℕ) :
++    Crossing (reedSolomonCode (dom 3) 1) (1/10 : ℝ)
++      (fold8 D₀ D₁ D₂ farWord) (fun _ _ => 1) q (β,fun _ => 0) := by
++  refine ⟨⟨fun _ => 1,mem_reedSolomonCode_one_iff.mpr (fun _ _ => rfl),?_⟩,?_⟩
++  · norm_num [relDist,hammingDist]
++  · intro a
++    exact (fold_zero β).symm
++
++/-- The same actual source and next word reject query one. -/
++theorem rejected_one_seed (β : F) :
++    ¬Crossing (reedSolomonCode (dom 3) 1) (1/10 : ℝ)
++      (fold8 D₀ D₁ D₂ farWord) (fun _ _ => 1) 1 (β,fun _ => 1) := by
++  intro h
++  have heq := h.2 0
++  change (1:F) = fold8 D₀ D₁ D₂ farWord β 1 at heq
++  rw [fold_one] at heq
++  exact (by decide : (1:F) ≠ -1) heq
++
++/-- All radius, rate, positive-degree and source-farness premises fire. -/
++theorem sampled_bound_fires (q : ℕ) :
++    uniformProb (F × (Fin q → Fin 2))
++      (Crossing (reedSolomonCode (dom 3) 1) (1/10 : ℝ)
++        (fold8 D₀ D₁ D₂ farWord) (fun _ _ => 1) q) ≤ 14/17+(9/10:ℝ)^q := by
++  have h := fold8_sampled_crossing D₀ D₁ D₂ (d := 1) (by decide)
++    (θ := (1/5:ℝ)) (δ := (1/10:ℝ)) (τ := (1/10:ℝ)) (by norm_num)
++    (by norm_num [PowerTwoFriLevels]) (by norm_num) (by norm_num)
++    farWord (fun _ _ => 1) q farWord_far
++  norm_num [PowerTwoFriLevels,ZMod.card] at h ⊢
++  exact h
++
++/-- The sampled expression is already nontrivial at this small positive instance. -/
++theorem bound_nontrivial : (14/17 : ℝ)+(9/10:ℝ)^32 < 1 := by norm_num
++
++end Minidregg.Selvage.ArityEight.Witnesses
++
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.root_primitive' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.root_primitive
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.farWord_not_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.farWord_not_mem
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.farWord_far' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.farWord_far
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.fold_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.fold_zero
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.fold_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.fold_one
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.accepted_zero_seed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.accepted_zero_seed
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.rejected_one_seed' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.rejected_one_seed
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.sampled_bound_fires' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.sampled_bound_fires
++
++/-- info: 'Minidregg.Selvage.ArityEight.Witnesses.bound_nontrivial' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Minidregg.Selvage.ArityEight.Witnesses.bound_nontrivial
++

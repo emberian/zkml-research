@@ -1,0 +1,55 @@
+{
+  "claim": "EXECUTED portable-adapter release build provenance",
+  "wasm_build_returncode": 0,
+  "native_build_returncode": 0,
+  "wasm_build_log": "results/build-wasm-portable.stderr",
+  "native_build_log": "results/build-native-portable.stderr",
+  "backend_sources_modified_by_consumer": false,
+  "files": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/Cargo.toml",
+      "bytes": 994,
+      "sha256": "d3645ef209c41c4d84ceb7e8a9835805ad639566f46f54a7babfe1d759ee57a1"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/Cargo.lock",
+      "bytes": 32343,
+      "sha256": "74a480e70ed2191e0578dd54bbf8dde81d614f3181c3768399b53f69df338f56"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/.cargo/config.toml",
+      "bytes": 86,
+      "sha256": "3d93ea0b6c032f4b65b3c9e8e66b52f80ec41806f3c86bc38b870003915448ef"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/src/lib.rs",
+      "bytes": 5295,
+      "sha256": "1d3388879ccd30466fa5c7e88315eb8451281115edac29734880218816050999"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/src/main.rs",
+      "bytes": 801,
+      "sha256": "9f8fceb9b21f73fbd4151a318cea8c215659d6a39b96e4ebfb2c498be780c032"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/Cargo.toml",
+      "bytes": 1414,
+      "sha256": "ff6d7b6a881eee5eda9b52678b71e947c97bb6142ae5acb264220cf71860f6a9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/proved_operation/backend/src/lib.rs",
+      "bytes": 9468,
+      "sha256": "2322491298f311ead06c93db7c6a847fd58385fe4b18f96da7d3ef7a95abbf1b"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/web/pkg/vfhe_browser_verifier_bg.wasm",
+      "bytes": 2063586,
+      "sha256": "96137c1ed0ad5fc7584ca72ef006ff70ac1951831408ee12ab22ce3879f6f908"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/vfhe_2026_09_08/browser_verifier/target/release/vfhe-verify",
+      "bytes": 2370864,
+      "sha256": "8fe70c0f95e98d35cc927e3dbe0b557adac057180c9b090e6f05253c16288587"
+    }
+  ]
+}

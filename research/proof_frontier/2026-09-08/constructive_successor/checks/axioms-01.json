@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-constructive-successor-20260908/.lake/build/lib/lean/Selvage/ArityEightFold.olean",
+    "Selvage/ArityEightFold.lean"
+  ],
+  "cwd": "/tmp/minidregg-constructive-successor-20260908",
+  "exit_code": 0,
+  "source_sha256": "f0bfb989a793daed4e25cb7ea1789a53c73e4c4638ccac7bb888d649170dcc56",
+  "source_unchanged": true,
+  "elapsed_s": 5.873995065689087,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/constructive_successor/checks/axioms-01.log"
+}

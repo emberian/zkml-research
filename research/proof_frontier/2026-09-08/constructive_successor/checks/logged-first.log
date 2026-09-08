@@ -1,0 +1,31 @@
+Selvage/ArityEightLoggedWitnesses.lean:27:3: error: unexpected token 'prefix'; expected identifier
+Selvage/ArityEightLoggedWitnesses.lean:30:86: error: unexpected token 'set_option'; expected 'lemma'
+Selvage/ArityEightLoggedWitnesses.lean:33:58: error: unexpected token 'prefix'; expected ':=', 'where' or '|'
+Selvage/ArityEightLoggedWitnesses.lean:33:34: error: Application type mismatch: The argument
+  EfficientRootOpening.Bad
+has type
+  EfficientRootOpening.Log ?m.1 ?m.2 → EfficientRootOpening.Log ?m.1 ?m.2 → ?m.2 → Prop
+but is expected to have type
+  Prop
+in the application
+  ¬EfficientRootOpening.Bad
+Selvage/ArityEightLoggedWitnesses.lean:33:65: error: unexpected token 'prefix'; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:33:72: error: unexpected identifier; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:35:60: error: unexpected token ':='; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:48:52: error: unexpected token 'prefix'; expected ':=', 'where' or '|'
+Selvage/ArityEightLoggedWitnesses.lean:48:59: error: unexpected token; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:51:36: error: unexpected token 'prefix'; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:51:43: error: unexpected token; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:55:16: error: unexpected token ','; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:64:44: error: unexpected token 'prefix'; expected ':=', 'where' or '|'
+Selvage/ArityEightLoggedWitnesses.lean:64:51: error: unexpected identifier; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:68:16: error: unexpected token ','; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:71:16: error: unexpected token ','; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:74:16: error: unexpected token ','; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:90:68: error: unexpected token 'prefix'; expected ':=', 'where' or '|'
+Selvage/ArityEightLoggedWitnesses.lean:90:75: error: unexpected token; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:91:20: error: unexpected token 'prefix'; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:91:27: error: unexpected token 'prefix'; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:91:34: error: unexpected token 'prefix'; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:91:41: error: unexpected identifier; expected ':'
+Selvage/ArityEightLoggedWitnesses.lean:92:22: error: unexpected identifier; expected ':'

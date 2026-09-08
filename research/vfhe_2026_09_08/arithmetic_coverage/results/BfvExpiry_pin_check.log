@@ -1,0 +1,3 @@
+'Minidregg.Compiler.BfvExpiry.radix_balance' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvExpiry.column_correct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Compiler.BfvExpiry.rowSystem_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
