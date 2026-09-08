@@ -1,0 +1,8 @@
+{
+  "opposite_output_decoder_pairs": 3634,
+  "independent_label_selection_vectors": 682,
+  "shared_label_game_negative_control": "both issued selections cannot preserve the changed branch",
+  "pointwise_union_masks": 8190,
+  "author_files_unchanged": true,
+  "author_file_count": 8
+}

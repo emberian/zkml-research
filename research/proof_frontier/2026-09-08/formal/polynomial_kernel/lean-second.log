@@ -1,0 +1,31 @@
+COMMAND: lake env lean Theory/PolynomialMatrixKernel.lean
+EXIT: 1
+SECONDS: 54.857
+Theory/PolynomialMatrixKernel.lean:422:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'X', which is 'noncomputable'
+Theory/PolynomialMatrixKernel.lean:425:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'instOne', which is 'noncomputable'
+Theory/PolynomialMatrixKernel.lean:441:4: warning: Try `simp at this` instead of `simpa using this`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Theory/PolynomialMatrixKernel.lean:453:2: warning: Try `simp at this` instead of `simpa using this`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+Theory/PolynomialMatrixKernel.lean:486:4: error: Tactic `simp` failed with a nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Theory/PolynomialMatrixKernel.lean:489:4: error: Tactic `simp` failed with a nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Theory/PolynomialMatrixKernel.lean:493:4: error: Type mismatch: After simplification, term
+  ha0
+ has type
+  a 0 = 0
+but is expected to have type
+  (a 0).coeff n✝ = 0
+Theory/PolynomialMatrixKernel.lean:494:4: error: Type mismatch: After simplification, term
+  ha1
+ has type
+  a 1 = 0
+but is expected to have type
+  (a 1).coeff n✝ = 0

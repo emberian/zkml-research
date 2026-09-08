@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema",
+  "exit_code": 1,
+  "elapsed_seconds": 0.2803752079780679,
+  "source_sha256": "4010abfc1d4bd3e26caa03064be07c2e4a7c87cbdaf43c4be2adfe881e384b62",
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:68:0: error: unterminated comment\n",
+  "stderr": ""
+}

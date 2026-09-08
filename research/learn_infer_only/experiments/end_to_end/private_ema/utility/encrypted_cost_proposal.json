@@ -1,0 +1,100 @@
+{
+  "assumptions": "same backend and machine; serialized operations; no contention; no new compilation",
+  "excluded": "additional read-time hashing, wrapper overhead, audit/sealing and contention",
+  "prior_costs_sha256": "289888780fb55b13f15ffa0a5e3017511a46146bb316a0af530fb53756bcb29d",
+  "projected_wall_seconds": 7470.983641443334,
+  "public_query_encryption_policy": "16 fixed source query IDs once, reused unchanged at six checkpoints",
+  "rows": [
+    {
+      "claim": "DERIVED projection",
+      "count": 384,
+      "operation": "host_learn_",
+      "prior_mean_wall_seconds": 9.7311461245,
+      "prior_sample_count": 2,
+      "projected_wall_seconds": 3736.760111808,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    },
+    {
+      "claim": "DERIVED projection",
+      "count": 384,
+      "operation": "replay_learn_",
+      "prior_mean_wall_seconds": 9.466456167,
+      "prior_sample_count": 2,
+      "projected_wall_seconds": 3635.119168128,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    },
+    {
+      "claim": "DERIVED projection",
+      "count": 96,
+      "operation": "host_infer_",
+      "prior_mean_wall_seconds": 0.2901733125,
+      "prior_sample_count": 2,
+      "projected_wall_seconds": 27.856638,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    },
+    {
+      "claim": "DERIVED projection",
+      "count": 96,
+      "operation": "replay_infer_",
+      "prior_mean_wall_seconds": 0.29703816699999996,
+      "prior_sample_count": 2,
+      "projected_wall_seconds": 28.515664031999997,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    },
+    {
+      "claim": "DERIVED projection",
+      "count": 384,
+      "operation": "issuer_learn_",
+      "prior_mean_wall_seconds": 0.101639417,
+      "prior_sample_count": 2,
+      "projected_wall_seconds": 39.029536128,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    },
+    {
+      "claim": "DERIVED projection",
+      "count": 16,
+      "operation": "issuer_query",
+      "prior_mean_wall_seconds": 0.057052625,
+      "prior_sample_count": 1,
+      "projected_wall_seconds": 0.912842,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    },
+    {
+      "claim": "DERIVED projection",
+      "count": 4,
+      "operation": "issuer_init",
+      "prior_mean_wall_seconds": 0.245401333,
+      "prior_sample_count": 1,
+      "projected_wall_seconds": 0.981605332,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    },
+    {
+      "claim": "DERIVED projection",
+      "count": 1,
+      "operation": "setup",
+      "prior_mean_wall_seconds": 0.877016458,
+      "prior_sample_count": 1,
+      "projected_wall_seconds": 0.877016458,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    },
+    {
+      "claim": "DERIVED projection",
+      "count": 16,
+      "operation": "reader_state_",
+      "prior_mean_wall_seconds": 0.008460972333333334,
+      "prior_sample_count": 3,
+      "projected_wall_seconds": 0.13537555733333334,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    },
+    {
+      "claim": "DERIVED projection",
+      "count": 96,
+      "operation": "reader_output_",
+      "prior_mean_wall_seconds": 0.008288375,
+      "prior_sample_count": 2,
+      "projected_wall_seconds": 0.7956840000000001,
+      "source": "../costs.csv; matched operation prefix; process wall including startup"
+    }
+  ],
+  "scope": "unexecuted 384 Learn / 96 Infer and one full replay each"
+}

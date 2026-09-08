@@ -1,0 +1,714 @@
+{
+  "scope": "Source identity, finite exact generator indexing/puncturing and clock arithmetic only; no cryptography or adversary runtime",
+  "reviewed_note_sha256": "af5e6acb0feb544b739c08838dcc8c88dff63244d33c16e18792d992e662a445",
+  "source_pins": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md",
+      "sha256": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/DEPTH_INTERFACE.md",
+      "sha256": "f7a380764376f5292a65e8b0a0ebe9917f90594fc4f5e99875f28a4f080b088a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md",
+      "sha256": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/qio_instantiation/bootstrap_lift/BOOTSTRAP_LIFT.md",
+      "sha256": "ec9f721f2402d31a49a9fd4ee14f978b4cf7474429600710347dc555fe0d9792"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/depth_interface/REPORT.md",
+      "sha256": "8ccd373cbb5584ce81a31e5c958875b1a54a8a4efe16a52a01a23ab26d8a05f5"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+      "sha256": "ab74e55cc8ed1a30fc31165086b8d39ac5ba62cad643875a729735b8b14be325"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2015_173.txt",
+      "sha256": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+      "sha256": "aef02e2f8ea90f0dc21893fbe925c84fbee6039b0df38a9daba598948f74297e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/texts/2016_006.txt",
+      "sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/356.pdf",
+      "sha256": "44062b699622cc5304c1e5e012627d195bcdfec4a7c4f42960619b5d3eec3ea5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt",
+      "sha256": "cb26f4b9590c252f8e1759532d40953f168f43a37ba115910352600836c5b221"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/769.pdf",
+      "sha256": "2ff48e358662e3602b8119bbf919c2af3c1700c83d184d1d27c5949ed989bba8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt",
+      "sha256": "f3062776daaf61f0de021879f67e25a05bb917799db1d6885c5c4025d5e9a98c"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/925.pdf",
+      "sha256": "0e04d7df8867bf29bf1b014c9e1e1e64976e5af343cba85aa57ada74ca05cfc2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt",
+      "sha256": "8a98e369d0b0b11bf9f512a0df4ae87210e282ffbcd12bfe22b1fd441ab80487"
+    }
+  ],
+  "extractions": [
+    {
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/compact_tmre/texts/2015_173.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "sha256": "15efbdd7922c8c9c8416d56ccf724cb774cd9accb60a3543fffed5786bd73197"
+    },
+    {
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2016/006.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/compact_tmre/texts/2016_006.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "sha256": "bb35f26eab10391b9090ad1813dd463266d3f1b8bfa16c90f1f65cf9cee03576"
+    },
+    {
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/356.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/compact_tmre/texts/2015_356.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "sha256": "cb26f4b9590c252f8e1759532d40953f168f43a37ba115910352600836c5b221"
+    },
+    {
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/769.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/compact_tmre/texts/2014_769.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "sha256": "f3062776daaf61f0de021879f67e25a05bb917799db1d6885c5c4025d5e9a98c"
+    },
+    {
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/925.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/compact_tmre/texts/2014_925.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "sha256": "8a98e369d0b0b11bf9f512a0df4ae87210e282ffbcd12bfe22b1fd441ab80487"
+    }
+  ],
+  "checks": {
+    "output_lengths": 64,
+    "adjacent_index_hybrids": 2080,
+    "off_point_equalities": 111634,
+    "out_of_range_encoding_negative_controls": 58,
+    "author_files_unchanged": true,
+    "author_file_count": 12
+  },
+  "clock_gap_controls": [
+    {
+      "original_actual_steps": 2,
+      "declared_T": 16,
+      "pad_to_declared_clock_steps": 16,
+      "padding_ratio": 8
+    },
+    {
+      "original_actual_steps": 2,
+      "declared_T": 256,
+      "pad_to_declared_clock_steps": 256,
+      "padding_ratio": 128
+    },
+    {
+      "original_actual_steps": 2,
+      "declared_T": 65536,
+      "pad_to_declared_clock_steps": 65536,
+      "padding_ratio": 32768
+    },
+    {
+      "original_actual_steps": 2,
+      "declared_T": 4294967296,
+      "pad_to_declared_clock_steps": 4294967296,
+      "padding_ratio": 2147483648
+    }
+  ],
+  "coefficient_rows": [
+    {
+      "output_bits": 1,
+      "coefficients": {
+        "O": 2,
+        "P": 2,
+        "H": 1
+      }
+    },
+    {
+      "output_bits": 2,
+      "coefficients": {
+        "O": 4,
+        "P": 4,
+        "H": 2
+      }
+    },
+    {
+      "output_bits": 3,
+      "coefficients": {
+        "O": 6,
+        "P": 6,
+        "H": 3
+      }
+    },
+    {
+      "output_bits": 4,
+      "coefficients": {
+        "O": 8,
+        "P": 8,
+        "H": 4
+      }
+    },
+    {
+      "output_bits": 5,
+      "coefficients": {
+        "O": 10,
+        "P": 10,
+        "H": 5
+      }
+    },
+    {
+      "output_bits": 6,
+      "coefficients": {
+        "O": 12,
+        "P": 12,
+        "H": 6
+      }
+    },
+    {
+      "output_bits": 7,
+      "coefficients": {
+        "O": 14,
+        "P": 14,
+        "H": 7
+      }
+    },
+    {
+      "output_bits": 8,
+      "coefficients": {
+        "O": 16,
+        "P": 16,
+        "H": 8
+      }
+    },
+    {
+      "output_bits": 9,
+      "coefficients": {
+        "O": 18,
+        "P": 18,
+        "H": 9
+      }
+    },
+    {
+      "output_bits": 10,
+      "coefficients": {
+        "O": 20,
+        "P": 20,
+        "H": 10
+      }
+    },
+    {
+      "output_bits": 11,
+      "coefficients": {
+        "O": 22,
+        "P": 22,
+        "H": 11
+      }
+    },
+    {
+      "output_bits": 12,
+      "coefficients": {
+        "O": 24,
+        "P": 24,
+        "H": 12
+      }
+    },
+    {
+      "output_bits": 13,
+      "coefficients": {
+        "O": 26,
+        "P": 26,
+        "H": 13
+      }
+    },
+    {
+      "output_bits": 14,
+      "coefficients": {
+        "O": 28,
+        "P": 28,
+        "H": 14
+      }
+    },
+    {
+      "output_bits": 15,
+      "coefficients": {
+        "O": 30,
+        "P": 30,
+        "H": 15
+      }
+    },
+    {
+      "output_bits": 16,
+      "coefficients": {
+        "O": 32,
+        "P": 32,
+        "H": 16
+      }
+    },
+    {
+      "output_bits": 17,
+      "coefficients": {
+        "O": 34,
+        "P": 34,
+        "H": 17
+      }
+    },
+    {
+      "output_bits": 18,
+      "coefficients": {
+        "O": 36,
+        "P": 36,
+        "H": 18
+      }
+    },
+    {
+      "output_bits": 19,
+      "coefficients": {
+        "O": 38,
+        "P": 38,
+        "H": 19
+      }
+    },
+    {
+      "output_bits": 20,
+      "coefficients": {
+        "O": 40,
+        "P": 40,
+        "H": 20
+      }
+    },
+    {
+      "output_bits": 21,
+      "coefficients": {
+        "O": 42,
+        "P": 42,
+        "H": 21
+      }
+    },
+    {
+      "output_bits": 22,
+      "coefficients": {
+        "O": 44,
+        "P": 44,
+        "H": 22
+      }
+    },
+    {
+      "output_bits": 23,
+      "coefficients": {
+        "O": 46,
+        "P": 46,
+        "H": 23
+      }
+    },
+    {
+      "output_bits": 24,
+      "coefficients": {
+        "O": 48,
+        "P": 48,
+        "H": 24
+      }
+    },
+    {
+      "output_bits": 25,
+      "coefficients": {
+        "O": 50,
+        "P": 50,
+        "H": 25
+      }
+    },
+    {
+      "output_bits": 26,
+      "coefficients": {
+        "O": 52,
+        "P": 52,
+        "H": 26
+      }
+    },
+    {
+      "output_bits": 27,
+      "coefficients": {
+        "O": 54,
+        "P": 54,
+        "H": 27
+      }
+    },
+    {
+      "output_bits": 28,
+      "coefficients": {
+        "O": 56,
+        "P": 56,
+        "H": 28
+      }
+    },
+    {
+      "output_bits": 29,
+      "coefficients": {
+        "O": 58,
+        "P": 58,
+        "H": 29
+      }
+    },
+    {
+      "output_bits": 30,
+      "coefficients": {
+        "O": 60,
+        "P": 60,
+        "H": 30
+      }
+    },
+    {
+      "output_bits": 31,
+      "coefficients": {
+        "O": 62,
+        "P": 62,
+        "H": 31
+      }
+    },
+    {
+      "output_bits": 32,
+      "coefficients": {
+        "O": 64,
+        "P": 64,
+        "H": 32
+      }
+    },
+    {
+      "output_bits": 33,
+      "coefficients": {
+        "O": 66,
+        "P": 66,
+        "H": 33
+      }
+    },
+    {
+      "output_bits": 34,
+      "coefficients": {
+        "O": 68,
+        "P": 68,
+        "H": 34
+      }
+    },
+    {
+      "output_bits": 35,
+      "coefficients": {
+        "O": 70,
+        "P": 70,
+        "H": 35
+      }
+    },
+    {
+      "output_bits": 36,
+      "coefficients": {
+        "O": 72,
+        "P": 72,
+        "H": 36
+      }
+    },
+    {
+      "output_bits": 37,
+      "coefficients": {
+        "O": 74,
+        "P": 74,
+        "H": 37
+      }
+    },
+    {
+      "output_bits": 38,
+      "coefficients": {
+        "O": 76,
+        "P": 76,
+        "H": 38
+      }
+    },
+    {
+      "output_bits": 39,
+      "coefficients": {
+        "O": 78,
+        "P": 78,
+        "H": 39
+      }
+    },
+    {
+      "output_bits": 40,
+      "coefficients": {
+        "O": 80,
+        "P": 80,
+        "H": 40
+      }
+    },
+    {
+      "output_bits": 41,
+      "coefficients": {
+        "O": 82,
+        "P": 82,
+        "H": 41
+      }
+    },
+    {
+      "output_bits": 42,
+      "coefficients": {
+        "O": 84,
+        "P": 84,
+        "H": 42
+      }
+    },
+    {
+      "output_bits": 43,
+      "coefficients": {
+        "O": 86,
+        "P": 86,
+        "H": 43
+      }
+    },
+    {
+      "output_bits": 44,
+      "coefficients": {
+        "O": 88,
+        "P": 88,
+        "H": 44
+      }
+    },
+    {
+      "output_bits": 45,
+      "coefficients": {
+        "O": 90,
+        "P": 90,
+        "H": 45
+      }
+    },
+    {
+      "output_bits": 46,
+      "coefficients": {
+        "O": 92,
+        "P": 92,
+        "H": 46
+      }
+    },
+    {
+      "output_bits": 47,
+      "coefficients": {
+        "O": 94,
+        "P": 94,
+        "H": 47
+      }
+    },
+    {
+      "output_bits": 48,
+      "coefficients": {
+        "O": 96,
+        "P": 96,
+        "H": 48
+      }
+    },
+    {
+      "output_bits": 49,
+      "coefficients": {
+        "O": 98,
+        "P": 98,
+        "H": 49
+      }
+    },
+    {
+      "output_bits": 50,
+      "coefficients": {
+        "O": 100,
+        "P": 100,
+        "H": 50
+      }
+    },
+    {
+      "output_bits": 51,
+      "coefficients": {
+        "O": 102,
+        "P": 102,
+        "H": 51
+      }
+    },
+    {
+      "output_bits": 52,
+      "coefficients": {
+        "O": 104,
+        "P": 104,
+        "H": 52
+      }
+    },
+    {
+      "output_bits": 53,
+      "coefficients": {
+        "O": 106,
+        "P": 106,
+        "H": 53
+      }
+    },
+    {
+      "output_bits": 54,
+      "coefficients": {
+        "O": 108,
+        "P": 108,
+        "H": 54
+      }
+    },
+    {
+      "output_bits": 55,
+      "coefficients": {
+        "O": 110,
+        "P": 110,
+        "H": 55
+      }
+    },
+    {
+      "output_bits": 56,
+      "coefficients": {
+        "O": 112,
+        "P": 112,
+        "H": 56
+      }
+    },
+    {
+      "output_bits": 57,
+      "coefficients": {
+        "O": 114,
+        "P": 114,
+        "H": 57
+      }
+    },
+    {
+      "output_bits": 58,
+      "coefficients": {
+        "O": 116,
+        "P": 116,
+        "H": 58
+      }
+    },
+    {
+      "output_bits": 59,
+      "coefficients": {
+        "O": 118,
+        "P": 118,
+        "H": 59
+      }
+    },
+    {
+      "output_bits": 60,
+      "coefficients": {
+        "O": 120,
+        "P": 120,
+        "H": 60
+      }
+    },
+    {
+      "output_bits": 61,
+      "coefficients": {
+        "O": 122,
+        "P": 122,
+        "H": 61
+      }
+    },
+    {
+      "output_bits": 62,
+      "coefficients": {
+        "O": 124,
+        "P": 124,
+        "H": 62
+      }
+    },
+    {
+      "output_bits": 63,
+      "coefficients": {
+        "O": 126,
+        "P": 126,
+        "H": 63
+      }
+    },
+    {
+      "output_bits": 64,
+      "coefficients": {
+        "O": 128,
+        "P": 128,
+        "H": 64
+      }
+    }
+  ],
+  "author_hashes_before": {
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/.gitignore": "caa3d07d1605371cefc16c6121c993460a247fbc3073566e609b48ea8b8c0fc5",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/COMPACT_TMRE.md": "af5e6acb0feb544b739c08838dcc8c88dff63244d33c16e18792d992e662a445",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/access.json": "14fddd08726b24281bf08c6ec1afa51e33123aa8639ae65623c88245d87a75e7",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/artifact_hashes.json": "f74e4ffe3a6b77d162c3e5f846a6ad4827575032edaadc39c6cfd951bc41dc47",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/inputs.json": "ce759df1c3bf95a03f63d7e650658730977fde5d2a63d0a8b7f36e2cd154b7ba",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/source_spans.json": "6ae0042f324fd90654e0fa972c0119d919d57d8e57be93a94eb6cee7e2a0ed0b",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt": "f3062776daaf61f0de021879f67e25a05bb917799db1d6885c5c4025d5e9a98c",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt": "8a98e369d0b0b11bf9f512a0df4ae87210e282ffbcd12bfe22b1fd441ab80487",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt": "cb26f4b9590c252f8e1759532d40953f168f43a37ba115910352600836c5b221",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/validate.py": "7603e201bd196634b5bd2ef0b158c1444f6e483104440da8a26e21be972aa216",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/validation.json": "11e104214da40c1b1df2cc5375de2221810226609fabcc0e90fe8e7e2ddde097",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/wrapper_ledger.json": "2dbd8a101c2eb919f5af66228d351fc1688fd2c90975f498f10f25c39fc5a5d1"
+  },
+  "author_hashes_after": {
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/.gitignore": "caa3d07d1605371cefc16c6121c993460a247fbc3073566e609b48ea8b8c0fc5",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/COMPACT_TMRE.md": "af5e6acb0feb544b739c08838dcc8c88dff63244d33c16e18792d992e662a445",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/access.json": "14fddd08726b24281bf08c6ec1afa51e33123aa8639ae65623c88245d87a75e7",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/artifact_hashes.json": "f74e4ffe3a6b77d162c3e5f846a6ad4827575032edaadc39c6cfd951bc41dc47",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/inputs.json": "ce759df1c3bf95a03f63d7e650658730977fde5d2a63d0a8b7f36e2cd154b7ba",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/source_spans.json": "6ae0042f324fd90654e0fa972c0119d919d57d8e57be93a94eb6cee7e2a0ed0b",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_769.txt": "f3062776daaf61f0de021879f67e25a05bb917799db1d6885c5c4025d5e9a98c",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2014_925.txt": "8a98e369d0b0b11bf9f512a0df4ae87210e282ffbcd12bfe22b1fd441ab80487",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/texts/2015_356.txt": "cb26f4b9590c252f8e1759532d40953f168f43a37ba115910352600836c5b221",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/validate.py": "7603e201bd196634b5bd2ef0b158c1444f6e483104440da8a26e21be972aa216",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/validation.json": "11e104214da40c1b1df2cc5375de2221810226609fabcc0e90fe8e7e2ddde097",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/compact_tmre/wrapper_ledger.json": "2dbd8a101c2eb919f5af66228d351fc1688fd2c90975f498f10f25c39fc5a5d1"
+  },
+  "activity": {
+    "local_pdf_extractions": 5,
+    "pdf_downloads": 0,
+    "web_queries": 0,
+    "scry_sql_queries": 0,
+    "scry_schema_queries": 0,
+    "kagi_queries": 0,
+    "crypto_runtime": 0,
+    "attack_runtime": 0
+  }
+}

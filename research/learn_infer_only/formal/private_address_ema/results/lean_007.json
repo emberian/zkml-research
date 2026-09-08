@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema",
+  "exit_code": 1,
+  "elapsed_seconds": 24.598850750015117,
+  "source_sha256": "7ddac1a500a9bae64c5372555bedb60d9767e6c778dc9da2e0de24cb8fe87a01",
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:103:16: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  b \u2265 0\n  0 \u2264 a \u2264 255\n  0 \u2264 a - 2048*c \u2264 2047\n  -1792 \u2264 a - 2048*c - 256*d \u2264 -1537\n  8*a - b - 16384*c - 2048*d \u2264 -14337\nwhere\n a := \u2191(BitVec.toNat s)\n b := \u2191(BitVec.toNat s * 8 ||| BitVec.toNat 0)\n c := \u2191(BitVec.toNat s) / 2048\n d := \u2191((BitVec.toNat s % 2048 + 1792) * 8) / 2048\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:103:16: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  b \u2265 0\n  0 \u2264 a \u2264 255\n  0 \u2264 a - 2048*c \u2264 2047\n  0 \u2264 a - 2048*c - 256*d \u2264 255\n  8*a - b - 16384*c - 2048*d \u2264 -1\nwhere\n a := \u2191(BitVec.toNat s)\n b := \u2191(BitVec.toNat s * 8 ||| BitVec.toNat 0)\n c := \u2191(BitVec.toNat s) / 2048\n d := \u2191((BitVec.toNat s % 2048 + 0) * 8) / 2048\n",
+  "stderr": ""
+}

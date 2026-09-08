@@ -1,0 +1,110 @@
+{
+  "scope": "Source identity, deterministic label-game and union-bound controls only; no cryptography, encryption, model, or adversary runtime",
+  "reviewed_note_sha256": "a72f903330f4b4504947cb2cd49592619912f168b375a8abb4532fd373caf828",
+  "source_pins": [
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "sha256": "117f9a5a3c2d7eed51c939af7c01f59aa34a33298a06b82fda99157aa28c4d97"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf",
+      "sha256": "05b5f649f9cd52ab8fb87f5b6a61c90f8cbd7ac7ca7c6fe7228457f3a02030a4"
+    },
+    {
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf",
+      "sha256": "3574f296f030d424c8cf3f818b947ff8e1a0a39c42f86737ec53cc346b3e7896"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/BASE_FE_AUDIT.md",
+      "sha256": "3e49e259abbe3ca72da5528b96ca8080b96a3589a442e6b3a38ea66841c60d2d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/public_environment/PUBLIC_ENVIRONMENT.md",
+      "sha256": "0293ce75968387ca33b49691274ffb91777f78a31f724dd6a71f76ca2d012ca8"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/pq_composition/base_fe_audit/depth_interface/DEPTH_INTERFACE.md",
+      "sha256": "f7a380764376f5292a65e8b0a0ebe9917f90594fc4f5e99875f28a4f080b088a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_environment/REPORT.md",
+      "sha256": "0d5f0386a06b3a493169e0a66f7d1dda5e90b631ef6ecd44c64f112d7eab8be4"
+    }
+  ],
+  "extractions": [
+    {
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/direct_multioutput/texts/2012_733.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "sha256": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a"
+    },
+    {
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2013/337.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/direct_multioutput/texts/2013_337.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "sha256": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86"
+    },
+    {
+      "argv": [
+        "pdftotext",
+        "-layout",
+        "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/917.pdf",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/direct_multioutput/texts/2014_917.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "sha256": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa"
+    }
+  ],
+  "checks": {
+    "opposite_output_decoder_pairs": 3634,
+    "independent_label_selection_vectors": 682,
+    "shared_label_game_negative_control": "both issued selections cannot preserve the changed branch",
+    "pointwise_union_masks": 8190,
+    "author_files_unchanged": true,
+    "author_file_count": 8
+  },
+  "author_hashes_before": {
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/.gitignore": "dea9c44856386d9463646b29b3d67882d8bfbe4094d863fe25b62813a5172dbe",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/DIRECT_MULTIOUTPUT.md": "a72f903330f4b4504947cb2cd49592619912f168b375a8abb4532fd373caf828",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/commands.txt": "a27db2b38b850fd3ba762c2963d81d07c456b764ac78636375d198ff74a3bf31",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/hashes.stdout.txt": "5aef3bad552dd2bf19724706b353e3d478a899dcd7ab1037bcb881da4c4052dc",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/inputs.json": "c571bc01956bd4b640b7bafbaa0bc15395ca054085fa842230ab52fcf9414ab2",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2012_733.txt": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2013_337.txt": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2014_917.txt": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa"
+  },
+  "author_hashes_after": {
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/.gitignore": "dea9c44856386d9463646b29b3d67882d8bfbe4094d863fe25b62813a5172dbe",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/DIRECT_MULTIOUTPUT.md": "a72f903330f4b4504947cb2cd49592619912f168b375a8abb4532fd373caf828",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/commands.txt": "a27db2b38b850fd3ba762c2963d81d07c456b764ac78636375d198ff74a3bf31",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/hashes.stdout.txt": "5aef3bad552dd2bf19724706b353e3d478a899dcd7ab1037bcb881da4c4052dc",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/inputs.json": "c571bc01956bd4b640b7bafbaa0bc15395ca054085fa842230ab52fcf9414ab2",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2012_733.txt": "6abdfeadd99fdc53cc33d2baa3a1513bc7c2cc795dd3c324d2590d62d567247a",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2013_337.txt": "47268efce49161cdacbfa895c1ef87cacd7bd7303316cc61c5999887882a0a86",
+    "research/learn_infer_only/experiments/pq_composition/base_fe_audit/direct_multioutput/texts/2014_917.txt": "6ce27916b7fca003f5bf8f7550f30163ca2545e3b81a791079625a12fb6f8ffa"
+  },
+  "activity": {
+    "local_pdf_extractions": 3,
+    "pdf_downloads": 0,
+    "web_queries": 0,
+    "scry_sql_queries": 0,
+    "scry_schema_queries": 0,
+    "kagi_queries": 0,
+    "crypto_runtime": 0,
+    "attack_runtime": 0
+  }
+}

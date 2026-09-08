@@ -1,0 +1,127 @@
+{
+  "file_count": 30,
+  "files": {
+    "CONTRACT.md": {
+      "bytes": 3617,
+      "sha256": "9124885ed86397f50753854e69d723655044540e2fb8a25b4363282eb98b2213"
+    },
+    "NEXT.md": {
+      "bytes": 728,
+      "sha256": "519251fb88ff9b2ed361f364989357839b8ace8727d512ec3c454bae3034cbe1"
+    },
+    "REPORT.md": {
+      "bytes": 8014,
+      "sha256": "21dff798a148f847905d752586ae827edeb950e90542252d3001151eef399e19"
+    },
+    "STATUS.md": {
+      "bytes": 888,
+      "sha256": "51f18204cd98c8c0afd04c9f33bee12d3aa2608474a19775decafe68283c82ba"
+    },
+    "audit.command.json": {
+      "bytes": 480,
+      "sha256": "86002e8689527b3f0e404c7e06c819faf4306138aa5bb8925262e672b826bafd"
+    },
+    "audit.json": {
+      "bytes": 729,
+      "sha256": "a2d7ee19528bcd5c56aa76234fe4369bb7db18895aede919b8c7cdeab191b372"
+    },
+    "audit.py": {
+      "bytes": 5948,
+      "sha256": "193326953e16e5e705a459f6e4e3e9cea4b6ac866033e5fbb0a1aacad4d215e9"
+    },
+    "audit.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "audit.stdout": {
+      "bytes": 681,
+      "sha256": "77f931f0fc8d9df5048f3c06d5adea8b139ddc69169c72faa3b9312a432a1138"
+    },
+    "checkpoint_states.json": {
+      "bytes": 37213,
+      "sha256": "d0d62e893ffd58cde062db01c78318250ba190e199f77576ba557cad1548c9fb"
+    },
+    "common.py": {
+      "bytes": 1143,
+      "sha256": "1b716a063fb34de19d21b88abba114a10eb0bb5fa9b061b4217674b05a84cfc5"
+    },
+    "costs.csv": {
+      "bytes": 1979,
+      "sha256": "c7df986f03463d9b39f6137424c91e1a9adaec9dd042c105c8cbac361b1fbcc1"
+    },
+    "encrypted_cost_proposal.json": {
+      "bytes": 3723,
+      "sha256": "1b7f545525bad6d7a9ec6b20499c90c95076111ebe57066e75a60e276ed29584"
+    },
+    "evaluate.command.json": {
+      "bytes": 484,
+      "sha256": "a59e7c119a232e3a66362423c2aa7353d996ef55781a657f8bbea7b8f3609429"
+    },
+    "evaluate.py": {
+      "bytes": 11080,
+      "sha256": "618caf6d52e1db8836c3c316fff1e04efb31cf0c60036c938d133fa0529540fa"
+    },
+    "evaluate.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evaluate.stdout": {
+      "bytes": 1484,
+      "sha256": "cc0c9b3fa5a98da2101a123a589a08e85476b2c9969a95e7e386daf7078cea02"
+    },
+    "freeze.command.json": {
+      "bytes": 483,
+      "sha256": "641f84df962c869ec1c08ca4e6ae67d90e1c19e19be87517998fcc8db3867d1e"
+    },
+    "freeze.json": {
+      "bytes": 26968,
+      "sha256": "63b798b519cbc5e7a8218a0e7811274f397cfb015e5c8f1f8c6364df8bf1e369"
+    },
+    "freeze.py": {
+      "bytes": 1882,
+      "sha256": "94e353134c999705e1212b63084f1d250bf1ee0986217f534749437a0b32b7b6"
+    },
+    "freeze.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "freeze.stdout": {
+      "bytes": 106,
+      "sha256": "c23bfb869ef42e23be9eee5837adbfab7c9d8fc91c81305a5ae3f7f9f7ad5493"
+    },
+    "launch.py": {
+      "bytes": 936,
+      "sha256": "439465e2485d73937e1e14c83b2681b21b9834219b573d3219ffd5da8c798bec"
+    },
+    "materialized_fixture.json": {
+      "bytes": 208728,
+      "sha256": "76d084577179f90c311549eb931fe8cd312b18099e6063cdb6a5493df4257a62"
+    },
+    "per_history.csv": {
+      "bytes": 1748,
+      "sha256": "d6dc7c06c63a7b8a0f4dc73a9991d34d3adbd75cc3f6df248b70e77d27ef24c2"
+    },
+    "query_scores.json": {
+      "bytes": 11196565,
+      "sha256": "9709ddcefde502d7f0e9e5e0c103bf5f4d8338ce954d38eb0c053dd92ab67724"
+    },
+    "results.json": {
+      "bytes": 41332,
+      "sha256": "d250ac49d115eb88127ace99042be09ba38a05b94989e322ca2e1332fef1c765"
+    },
+    "seal.py": {
+      "bytes": 4139,
+      "sha256": "8b45a4b725d0b87dc6996b733ae85b9a2d9b59bfbaa47438846042dc86cde0dc"
+    },
+    "summary_checks.json": {
+      "bytes": 167,
+      "sha256": "3b7d7fc7eb75f37c723a061a88b582864d2b21d68514dadf2093d796e0201253"
+    },
+    "transitions.json": {
+      "bytes": 5727903,
+      "sha256": "fdde63b18452fbebf55bb01828982bca41eff567c96c73c041420268d064487a"
+    }
+  },
+  "freeze_sha256": "63b798b519cbc5e7a8218a0e7811274f397cfb015e5c8f1f8c6364df8bf1e369",
+  "scope": "completed plaintext fixed-law utility tranche; no encrypted execution"
+}

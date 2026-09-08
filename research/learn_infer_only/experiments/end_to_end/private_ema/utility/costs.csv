@@ -1,0 +1,16 @@
+claim,operation,count,wall_seconds,scope,source
+EXECUTED,freeze,1,0.09533250000094995,whole subprocess wall,freeze.command.json
+EXECUTED,evaluate,1,0.7702099579910282,whole subprocess wall,evaluate.command.json
+EXECUTED,audit,1,1.508783666009549,whole subprocess wall,audit.command.json
+EXECUTED,evaluation_interval,1,0.5315659590123687,internal interval,results.json
+EXECUTED,audit_interval,1,1.4217502920073457,internal interval,audit.json
+DERIVED projection,host_learn_,384,3736.760111808,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup
+DERIVED projection,replay_learn_,384,3635.119168128,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup
+DERIVED projection,host_infer_,96,27.856638,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup
+DERIVED projection,replay_infer_,96,28.515664031999997,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup
+DERIVED projection,issuer_learn_,384,39.029536128,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup
+DERIVED projection,issuer_query,16,0.912842,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup
+DERIVED projection,issuer_init,4,0.981605332,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup
+DERIVED projection,setup,1,0.877016458,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup
+DERIVED projection,reader_state_,16,0.13537555733333334,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup
+DERIVED projection,reader_output_,96,0.7956840000000001,projected total from prior mean,../costs.csv; matched operation prefix; process wall including startup

@@ -1,0 +1,4 @@
+COMMAND: bash scripts/check-import-boundary.sh
+EXIT: 0
+OK: Theory: all imports within {Mathlib|Minidregg\.Theory|Theory}
+OK: Selvage: all imports within {Mathlib|Minidregg\.Theory|Minidregg\.Selvage|Theory|Selvage}

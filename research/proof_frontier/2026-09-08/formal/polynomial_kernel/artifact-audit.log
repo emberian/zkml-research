@@ -1,0 +1,5 @@
+COMMAND: ['rg', '-n', '\\bsorry\\b|^axiom ', '/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/PolynomialMatrixKernel.lean']
+EXIT: 1 (1 means no matches)
+
+UPSTREAM_LICENSE_BYTE_EQUALITY: True
+CHECKED_MODULE_BYTE_EQUALITY: True

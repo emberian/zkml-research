@@ -1,0 +1,52 @@
+{
+  "local_minidregg_head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "arklib_local_checkout": "/Users/ember/src/ArkLib-2026-09",
+  "arklib_local_head": "22dbd4e836c15a21f68889afa69b7130da04abbb",
+  "arklib_upstream_pin": "66f3d089a41704597f54d641b78254d2a8f361f8",
+  "vcvio_upstream_pin": "40481e538efab1e5b1dbe44470334b961bf2bc3d",
+  "plonky3_upstream_pin": "7230fc572870436e6651762f35c6c3f3f48960d2",
+  "queries": [
+    "site.github.com/Verified-zkEVM/ArkLib \"UniqueDecoding\" \"proximity\"",
+    "\"FRI\" \"correlated agreement\" \"September\" \"2026\"",
+    "\"Algorithmic List Decoding of Reed–Solomon Codes up to Capacity\" Brakensiek Chen 2026",
+    "site.github.com \"RS_correlatedAgreement_affineLines_uniqueDecodingRegime\""
+  ],
+  "scry_sql": "SELECT title, arxiv_id, published_at, abstract, built_at FROM academic.catalog WHERE published_year >= 2026 AND (positionCaseInsensitive(title, 'proximity gap') > 0 OR positionCaseInsensitive(title, 'correlated agreement') > 0 OR positionCaseInsensitive(title, 'Algorithmic List Decoding') > 0) ORDER BY published_at DESC LIMIT 15",
+  "counts": {
+    "web_search_queries": 4,
+    "web_direct_open_click_find": 11,
+    "scry_sql": 1,
+    "scry_schema": 2,
+    "github_api": 9,
+    "kagi": 0,
+    "eprint_requests": 0
+  },
+  "primary_urls": [
+    "https://eccc.weizmann.ac.il/report/2026/164/revision/1/download",
+    "https://eccc.weizmann.ac.il/report/2026/169/download",
+    "https://github.com/Verified-zkEVM/ArkLib/tree/66f3d089a41704597f54d641b78254d2a8f361f8/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines"
+  ],
+  "commands": [
+    "python3 research/proof_frontier/2026-09-08/evidence/derive.py > research/proof_frontier/2026-09-08/evidence/derive-output.txt",
+    "python3 research/proof_frontier/2026-09-08/evidence/source_closure.py > research/proof_frontier/2026-09-08/evidence/source-closure-output.txt",
+    "python3 research/proof_frontier/2026-09-08/evidence/audit_evidence.py > research/proof_frontier/2026-09-08/evidence/audit-output.txt"
+  ],
+  "evidence_sha256": {
+    "evidence/arklib-current-status.md": "82fa8d5b465779255242036b063ca421bc90972e8a3af752c3c17f29c9170820",
+    "evidence/source-closure-output.txt": "ed5cc6acda577a93c6499085918f70b674ae4a3a2ea670fa9faddc90e4eed1e6",
+    "evidence/scry-schema.txt": "8b36fce1f9df96527e495660c4d0bc7c7e9fd938d31797f0ae1579510de0303d",
+    "evidence/arklib-delta.json": "d58291982f23b98b20bfd2ab23aa426b1d7e42adb35235e0251c8d57bfa3bd8a",
+    "evidence/arklib-JointAgreement.lean": "0462c8bd84dba845f887d159aaf180b8f7b78d2c7022f62d697209ff1782ddea",
+    "evidence/matrix-declaration-closure.json": "58f1ba4763a3f4495179a3da5350d5b30ebc32c28991800e2c4ece79c39a5e74",
+    "evidence/arklib-FS.lean": "24e040e533aa3945fdd9bcdeea87c1aa6d1c9949ab635c70215ce1e7f11d83fa",
+    "evidence/audit-output.txt": "bd96348dd284e71937cb9b88de55a5d9ad3408217df780a6131b1457090dbc90",
+    "evidence/derive.py": "3d148e65ba62f440a45f2eb20e486745f670de74efeb081d089162b896b62e5d",
+    "evidence/arklib-BCS.lean": "528fd3622a7bab5b86f4374bdf848cb2fc2057eef6e83c3a5b8fdbcebac1b821",
+    "evidence/audit_evidence.py": "fe43823f78c7f9247a53d3724704f9857f10db4d73e1807c3b46cf12b7fade7a",
+    "evidence/arklib-axiom-baseline.json": "23532bc249abd27627b11d89e4168d20265b8cc3bbb5a21d4d066136e9201ab4",
+    "evidence/source_closure.py": "cab1cba7aae5d3858172908c9336de05f350ebb31e7ecda15c96e602e507805a",
+    "evidence/scry-proximity.json": "686dd818e4da0dbac180612510cc55da32dc28eec4a660142daa72e2eeed97b4",
+    "evidence/source-closure.json": "fdcd0403c95a29f2440cbe7ad90efa58d5477c81cbcd0876b530390d766b332d",
+    "evidence/derive-output.txt": "ff453bf930429e6e24cb83a3e5f61002123e259cfeda0ef8f4627ddf25f49adb"
+  }
+}

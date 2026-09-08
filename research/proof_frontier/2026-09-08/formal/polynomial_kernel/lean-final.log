@@ -1,0 +1,4 @@
+COMMAND: lake env lean Theory/PolynomialMatrixKernel.lean
+SOURCE_SHA256: aa04f65f81689b1a70dd897177623f3f6f25705b36043ad5ae6d138d220cd3ac
+EXIT: 0
+SECONDS: 15.700

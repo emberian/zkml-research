@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema",
+  "exit_code": 0,
+  "elapsed_seconds": 19.895367459015688,
+  "source_sha256": "39b91731406a3ab13e842a905ac2e637a82522db54b2d3a9f4540460714cf789",
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:149:54: warning: 'apply Fin.ext' tactic does nothing\n\nNote: This linter can be disabled with `set_option linter.unusedTactic false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:149:72: warning: 'rfl' tactic does nothing\n\nNote: This linter can be disabled with `set_option linter.unusedTactic false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:149:54: warning: this tactic is never executed\n\nNote: This linter can be disabled with `set_option linter.unreachableTactic false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:149:72: warning: this tactic is never executed\n\nNote: This linter can be disabled with `set_option linter.unreachableTactic false`\n",
+  "stderr": ""
+}

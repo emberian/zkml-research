@@ -1,0 +1,43 @@
+[
+  {
+    "anchor": "Encryption FE.Enc(MPK, x)",
+    "pdf_page_one_based": 23,
+    "extract_line": 1134,
+    "argv": [
+      "pdftoppm",
+      "-f",
+      "23",
+      "-l",
+      "23",
+      "-scale-to",
+      "1800",
+      "-png",
+      "-singlefile",
+      "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "research/learn_infer_only/experiments/adversarial_review/direct_multioutput/renders/2012_733"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "description": "Full encryption steps, decryption and size proof",
+    "pdf_page_one_based": 24,
+    "argv": [
+      "pdftoppm",
+      "-f",
+      "24",
+      "-l",
+      "24",
+      "-scale-to",
+      "1800",
+      "-png",
+      "-singlefile",
+      "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2012/733.pdf",
+      "research/learn_infer_only/experiments/adversarial_review/direct_multioutput/renders/2012_733_p24"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

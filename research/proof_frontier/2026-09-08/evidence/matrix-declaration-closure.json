@@ -1,0 +1,60 @@
+{
+  "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one": {
+    "line": 1175,
+    "source_lines": 223,
+    "local_references": [
+      "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+      "RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+      "RS_det_submatrix_eq_zero_of_det_eq_zero",
+      "RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+      "RS_natDegree_det_le_of_entry_natDegree_le_one",
+      "det_updateRow_eq_sum_mul_adjugate_col"
+    ]
+  },
+  "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc": {
+    "line": 606,
+    "source_lines": 12,
+    "local_references": []
+  },
+  "RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc": {
+    "line": 618,
+    "source_lines": 12,
+    "local_references": [
+      "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc"
+    ]
+  },
+  "RS_det_submatrix_eq_zero_of_det_eq_zero": {
+    "line": 630,
+    "source_lines": 33,
+    "local_references": []
+  },
+  "RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero": {
+    "line": 760,
+    "source_lines": 15,
+    "local_references": [
+      "RS_mulVec_adjugate_col_eq_det"
+    ]
+  },
+  "RS_mulVec_adjugate_col_eq_det": {
+    "line": 742,
+    "source_lines": 18,
+    "local_references": []
+  },
+  "RS_natDegree_det_le_of_entry_natDegree_le_one": {
+    "line": 789,
+    "source_lines": 43,
+    "local_references": []
+  },
+  "det_updateRow_eq_sum_mul_adjugate_col": {
+    "line": 944,
+    "source_lines": 13,
+    "local_references": [
+      "adjugate_updateRow_same_col"
+    ]
+  },
+  "adjugate_updateRow_same_col": {
+    "line": 937,
+    "source_lines": 7,
+    "local_references": []
+  }
+}

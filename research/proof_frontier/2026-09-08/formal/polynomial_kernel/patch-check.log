@@ -1,0 +1,13 @@
+COMMAND: ['git', 'apply', '--check', '--whitespace=error-all', '/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/polynomial-kernel.patch']
+CWD: /var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/polynomial-kernel-apply-fcdqhj55
+EXIT: 0
+
+COMMAND: ['git', 'apply', '/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/polynomial-kernel.patch']
+CWD: /var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/polynomial-kernel-apply-fcdqhj55
+EXIT: 0
+
+BYTE-EQUALITY: Theory/PolynomialMatrixKernel.lean: PASS
+SHA256: aa04f65f81689b1a70dd897177623f3f6f25705b36043ad5ae6d138d220cd3ac
+
+BYTE-EQUALITY: LICENSES/ArkLib-Apache-2.0.txt: PASS
+SHA256: c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851
