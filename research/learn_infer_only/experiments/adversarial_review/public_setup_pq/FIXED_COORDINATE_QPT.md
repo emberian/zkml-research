@@ -1,0 +1,230 @@
+# A direct QPT argument for the fixed-coordinate variant
+
+[DERIVED, new variant, 2026-09-08] The fixed-policy public setup can be analyzed
+without importing the whole adaptive-functional-key theorem of ALS §4.2.
+After the multi-hint extended-LWE hybrid, an augmented public matrix gives a
+direct statistical mask for every unexposed coordinate. This argument permits
+the polynomial Gaussian widths of ALS Lemmas 4–5 instead of the arbitrary-key
+`K'=(sqrt(d)p)^d` widths. It is a mathematical construction and reduction, not
+an implementation, concrete parameter recommendation, novelty claim, or a
+published theorem attributed to ALS.
+
+[SOURCE] All source references are to the exact ALS PDF pinned in `REVIEW.md`:
+Definition 4 (multi-hint extended LWE), p.11; §4.2 encryption/key algorithms,
+p.17; Lemmas 3–5, pp.21–22; Appendix C Lemma 10, p.34. Displayed formulas on
+pp.18 and 21 were additionally rendered locally with `pdftoppm` and visually
+inspected, including the square-root boundaries in the width conditions.
+No additional network query was made. The author's original candidate remains
+frozen at `2c6f649fa0891be05dd1f3a1f89c935692091195e71f0b1959d78b5ef9061007`.
+
+## 1. Exact scope and assumptions
+
+[DERIVED construction] Keep the original public-setup algorithms: fixed prime
+`p`, dimension `d`, full-rank `Y∈F_p^(r×d)`, `r<d`, fixed public completion
+`B∈GL_d(F_p)` with first rows `Y`, recipients sampling exactly their independent
+row marginals, and public direct-uniform missing rows. Encrypt `a=Bx mod p`.
+Fix a coalition `J⊆[r]` independently of the setup; write `j=|J|`. It receives
+exactly those coordinate keys and accepted public setup values. Challenge
+messages are classical and may depend on the whole public view and the
+adversary's quantum computation. Their `J` coordinates must agree.
+
+[DERIVED parameters] Let `m=2M`, `q=p^k`, `n≥100`, `d<n`, and require:
+
+```text
+n ≤ M ≤ n^O(1),
+M ≥ 2(n+1) log_2 q,
+σ1 ≥ Ω(sqrt(M n log M)),
+M ≥ Ω(n log(σ1 n)),
+σ2 ≥ Ω(n^(5/2) sqrt(M) σ1^2 log^(3/2)(M σ1)),
+ξ ≥ Ω(sqrt(n M) σ2).
+```
+
+[SOURCE/DERIVED] These are ALS Lemma 4 with `m1=m2=M`, Lemma 5's `ξ`
+bound, and the slightly stronger row-count requirement needed below. Constants
+must be chosen to satisfy the source inequalities, not inferred from the
+asymptotic symbols. Choose `τ` as the first `d` rows of Lemma 4's independent
+Gaussian law: left width `σ1`, right width `σ2` centered at the appropriate
+canonical vectors of length `M`. These widths need not equal the larger
+§4.2 arbitrary-key choice. Therefore this is a restricted variant analyzed
+directly, not an invocation of Theorem 3 at unproved smaller parameters.
+
+[HYPOTHESIS QPT-LWE] Put `β=α/(2ξ)`, with `0<α<1`, and require
+`β≥Ω(sqrt(n)/q)`. Assume decision LWE with modulus `q`, noise rate `β`,
+`m` samples, and secret dimension `n-d` is hard for QPT algorithms on its
+classical sample tuples. This is the specific computational hypothesis; no
+claim of a concrete security level is included. Gaussian-sampling error, if
+implemented approximately, must be added to the error ledger.
+
+[SOURCE/DERIVED reduction] Lemma 3 maps that LWE distribution to the
+first-`d`-are-errorless distribution in dimension `n`. Lemma 5 maps the latter
+to `mheLWE(q,α,m,d,τ)`, since `2βξ=α`. Both are explicit classical randomized
+sample transformations and call the distinguishing algorithm once. They use
+no extraction, rewinding, superposition oracle, or ROM. Their distributional
+proofs therefore remain valid when the final distinguishing algorithm is QPT:
+run the same classical sampler, hand its classical tuple to the QPT algorithm,
+and output its measured decision. The source's statistical sampling/reduction
+errors remain, denoted `ε_red = O(2^(d-n))+2^-Ω(n)` in a difference-of-
+probabilities convention. This is our QPT lift of these straight-line source
+reductions, not an attribution of a published QIND theorem to the paper.
+
+## 2. The augmented-matrix regularity lemma
+
+[DERIVED lemma] Let `A←Z_q^(m×n)`, `v←Z_q^m`, `Z←τ`, all independent.
+Write `U=ZA mod q` and `w=Zv mod q`. For fixed exposed row set `J`, the
+joint tuple
+
+```text
+(A, v, Z_J, U, w)
+```
+
+is within `(d-j)η_+` statistical distance of the following tuple:
+keep `A,v,Z_J`; set `U_J=Z_J A`, `w_J=Z_J v`; and independently sample
+each pair `(U_i,w_i)` uniformly in `Z_q^n × Z_q` for `i∉J`.
+Here `η_+=2^-Ω(n)` is Lemma 10's error with column dimension `n+1`.
+
+[DERIVED proof] Split every vector into left/right `M`-entry blocks. For a
+missing row `Z_i=(L_i,R_i)`, apply Lemma 10 to the uniform matrix
+`[A_L | v_L]∈Z_q^(M×(n+1))` and the independent centered Gaussian `L_i`.
+The dimensional condition is exactly `M≥2(n+1)log_2 q`. The chosen `σ1`
+dominates the lemma's `Ω(sqrt(n+1+log M))` lower bound. Independently append
+`A_R,v_R,R_i` and translate the syndrome pair by
+`(R_i A_R,R_i v_R)`. This leaves a uniform pair uniform. Every other row,
+its products and all exposed `Z_J` are generated by a common randomized
+kernel depending on `A,v`. Replace missing rows successively and add the
+errors. No conditioning on a particular syndrome or arbitrary rare event is
+used; the statement is a joint distribution bound.
+
+[DERIVED] This is the place where the stronger `n+1` condition matters.
+The original equality `m≥4n log_2 q` alone need not imply it at the boundary.
+It also explains why the arbitrary-key lattice-kernel entropy argument, and
+its exponentially large `K'`, is unnecessary for this fixed coordinate game.
+
+## 3. One-challenge privacy proof
+
+[DERIVED game S] For the analysis only, generate the complete source matrix
+`Z←τ` and `U=ZA`. This comparison does not alter the actual public-setup
+algorithm, which generates no missing rows. Give `(A,U)`, fixed public basis
+data, accepted public values copied from it, and `Z_J` to the adversary.
+It returns a valid pair `a0,a1` with equal `J` coordinates. For a bit `b`,
+return a standard encryption of `a_b` with fresh independent coins.
+
+[DERIVED computational step] A `mheLWE` distinguisher receives exactly
+
+```text
+(A, c, Z, h),   h=Z e0,
+```
+
+where `c=A s+e0` in the LWE world and `c=u` uniform in the other world.
+It computes the setup view, runs the QPT adversary on that classical view,
+obtains the two classical messages, samples `e1`, and forms
+
+```text
+c0 = c,
+c1 = Z c - h + e1 + Δ a_b  mod q,     Δ=q/p.
+```
+
+[DERIVED] The first world is exactly the genuine ciphertext law because
+`Z(A s+e0)-Z e0=U s`. The uniform world has
+`c0=u`, `c1=Z(u-e0)+e1+Δa_b`. Each bit-world transition costs at most
+the QPT `mheLWE` distinguishing advantage `ε_mhe`. The reduction uses
+full `Z` only as private simulator state; the adversary receives `Z_J`.
+
+[DERIVED statistical step] For analysis set `v=u-e0 mod q`. Since `u` is
+uniform independent of `e0`, the tuple `(A,v)` is uniform independent of
+`e0,Z`. Apply the lemma above, then append the independent noises and set
+`u=v+e0`. After the replacement, each unexposed `w_i=Z_i v` is an independent
+uniform residue, jointly independent of the public `U_i`, other masks and
+`Z_J`. It hides `e1_i+Δ a_b,i` perfectly. Exposed coordinates have the same
+message value by challenge validity. Thus the entire ideal challenge view is
+independent of `b` even if the two messages were chosen adaptively from `U`.
+
+[DERIVED quantum detail] The prechallenge QPT state is produced from the
+classical setup/key view by a common channel. The augmented lemma is joint
+in that view and the hidden masks, so applying the channel and subsequent
+classical challenge construction preserves the statistical bound as trace
+distance. No assumption that the adversary's private state is classical is
+made. The interfaces and chosen messages remain classical; arbitrary
+independent secret-correlated quantum advice is not part of this game.
+
+[DERIVED bound] Use acceptance-probability difference as advantage. Let
+`η_0=2^-Ω(n)` be the original `n`-column setup regularity error. For at most
+`T` adaptively chosen valid fresh-input pairs and efficient public processing
+of their retained ciphertext history, the actual public-setup scheme satisfies
+
+```text
+Adv_public ≤ 2(d-r)η_0 + 2T[ε_mhe + (d-j)η_+]
+           ≤ 2(d-r)η_0 + 2T[ε_LWE + ε_red + (d-j)η_+].
+```
+
+[DERIVED] The first term compares the public setup with game S once in
+each bit world, using `REVIEW.md`'s joint setup proof. The factor `T` comes
+from the ordinary sequential fresh-ciphertext hybrid; it does not multiply
+the initial setup comparison. Other challenge positions can be encrypted
+publicly by the reduction. Each pair must satisfy equality on the fixed
+coalition's per-input projections. This is IND privacy with that leakage;
+it is not selected-output simulation, evolving keys, adaptive registration,
+or a stateful nonlinear learner theorem.
+
+## 4. Correctness and a satisfying asymptotic parameter family
+
+[DERIVED sufficient correctness] Retain the exact recipient equation
+`c1_i-Z_i c0=Δ a_i+e1_i-Z_i e0 mod q`. On an event with
+`||Z_i||_2≤L`, `||e0||_2≤αq sqrt(m)t`, `|e1_i|≤αq t`, Cauchy–Schwarz gives
+
+```text
+|e1_i-Z_i e0| ≤ αq t(1+L sqrt(m)).
+```
+
+[DERIVED] Consequently a scalar combination with coefficient L1 norm at
+most `W` is correct whenever
+`α^-1 > 2p W t(1+L sqrt(m))`. Gaussian tail probabilities for all rows
+and fresh inputs must be added; exact expiry cancellation and integer no-wrap
+have the same separate conditions as `REVIEW.md`. A polynomial number of
+Gaussian entries with widths at most `σ2` has `L=O(σ2 sqrt(m)t+1)` except
+negligible probability when `t=log n` (the source's product Gaussian law,
+with unit-vector centers). These deliberately conservative bounds suffice
+for premise inhabitation; they are not optimized parameters.
+
+[DERIVED asymptotic witness] For all sufficiently large `n`, choose
+
+```text
+p=2,               d≤n/2,              r<d,
+q=2^ceil(30 log_2 n),
+M=C n ceil(log_2 n),                    m=2M,
+σ1=n^2,            σ2=n^8,             ξ=n^10,
+α=n^-15,           β=(1/2)n^-25,
+t=log n,           W≤n^2.
+```
+
+[DERIVED] Take the fixed constant `C` large enough for all source hidden
+constants and `M≥2(n+1)log_2 q`. Lemma 4's `σ2` lower bound is
+`O(n^7 log^2 n)`, below `n^8`; its `σ1` lower bound is `O(n log n)`, below
+`n^2`. Lemma 5 needs `ξ=Ω(n^9 sqrt(log n))`, met by `n^10`.
+The LWE requirement holds because `βq=Ω(n^5)`, exceeding `sqrt(n)`.
+The accumulated relative error bound is `O(n^-4 log^3 n)`, below `1/(2p)`
+for large enough `n`; polynomially many Gaussian-tail events remain negligible.
+The LWE secret dimension is at least `n/2`. All representation lengths and
+row widths are polynomially bounded, with no `p^d` width requirement.
+
+[DERIVED limitation] This family is intentionally loose and asymptotic. It
+shows simultaneous satisfiability of the reduction and correctness premises;
+it supplies no concrete bit-security estimate, useful latency, memory figure,
+integer-score encoding, or real learner. Binary full-domain nonvacuity follows
+from the same `d=3,r=2` witness, while application-image nonvacuity remains an
+independent obligation. A larger prime and realistic noise tail/union budget
+would need a fresh concrete parameter study.
+
+## 5. Review status and next work
+
+[REPORTED independent check] On 2026-09-08 the original construction author
+independently checked §§1–4 and found no objection: the augmented joint lemma,
+private `h=Ze0`, one-shot QPT reduction, advantage accounting, and asymptotic
+witness exponents all matched. This is a cross-review of the derivation, not a
+machine-checked cryptographic proof. Root has additionally assigned a third
+source/math review. This variant remains separate from the accepted frozen
+source-Theorem-3 candidate.
+
+[OPEN decisive next work] Independently check the exact Lemma 4/5 parameter
+map and augmented joint-view argument, then derive a concrete conservative
+parameter point with a stated QPT-LWE assumption and complete Gaussian-tail
+budget. No cryptographic execution is needed to validate this theorem first.

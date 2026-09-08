@@ -1,0 +1,216 @@
+{
+  "claim": "EXECUTED",
+  "created_utc": "2026-09-08T04:44:25.185962+00:00",
+  "build_command": [
+    "cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j",
+    "1",
+    "--message-format=json-render-diagnostics"
+  ],
+  "test_command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "-j",
+    "1"
+  ],
+  "compiler_tfhe_artifact": {
+    "reason": "compiler-artifact",
+    "package_id": "registry+https://github.com/rust-lang/crates.io-index#tfhe@1.6.3",
+    "manifest_path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/Cargo.toml",
+    "target": {
+      "kind": [
+        "lib",
+        "staticlib",
+        "cdylib"
+      ],
+      "crate_types": [
+        "lib",
+        "staticlib",
+        "cdylib"
+      ],
+      "name": "tfhe",
+      "src_path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/lib.rs",
+      "edition": "2021",
+      "doc": true,
+      "doctest": true,
+      "test": true
+    },
+    "profile": {
+      "opt_level": "3",
+      "debuginfo": 0,
+      "debug_assertions": false,
+      "overflow_checks": false,
+      "test": false
+    },
+    "features": [
+      "boolean",
+      "experimental-force_fft_algo_dif4"
+    ],
+    "filenames": [
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/target/release/deps/libtfhe-7533d56551bdcf59.rlib",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/target/release/deps/libtfhe-7533d56551bdcf59.a",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/target/release/deps/libtfhe-7533d56551bdcf59.dylib"
+    ],
+    "executable": null,
+    "fresh": false
+  },
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "-Vv"
+      ],
+      "returncode": 0,
+      "stdout": "rustc 1.98.0-nightly (91fe22da8 2026-06-21)\nbinary: rustc\ncommit-hash: 91fe22da8084a1c9e993d78d4a56f22ab8396236\ncommit-date: 2026-06-21\nhost: aarch64-apple-darwin\nrelease: 1.98.0-nightly\nLLVM version: 22.1.7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "-V"
+      ],
+      "returncode": 0,
+      "stdout": "cargo 1.98.0-nightly (a595d0da2 2026-06-20)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "uname",
+        "-a"
+      ],
+      "returncode": 0,
+      "stdout": "Darwin nextop.local 25.6.0 Darwin Kernel Version 25.6.0: Sat Jul 11 15:25:34 PDT 2026; root:xnu-12377.161.13~4/RELEASE_ARM64_T6020 arm64\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-n",
+        "machdep.cpu.brand_string"
+      ],
+      "returncode": 0,
+      "stdout": "Apple M2 Max\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "d434f5ebc7473dd3efd3a70eb09f0adb9d4000af\n",
+      "stderr": ""
+    }
+  ],
+  "build_environment": {
+    "RUSTFLAGS": null,
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "RUSTC_WRAPPER": null,
+    "CARGO_BUILD_TARGET": null,
+    "CARGO_TARGET_DIR": null
+  },
+  "runtime_environment_contract": {
+    "RAYON_NUM_THREADS": "1"
+  },
+  "same_cargo_lock_as_prior": true,
+  "identical_source_files": {
+    "src/lib.rs": true,
+    "src/ciphertext.rs": true
+  },
+  "binary": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/target/release/resident-emitted-bool-runtime",
+    "bytes": 1199088,
+    "sha256": "6c0954fae626940e720c47bfb535347ecd3c3fc0b19b36d0834b70465b02d197"
+  },
+  "source_evidence": [
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/Cargo.toml",
+      "bytes": 8434,
+      "sha256": "384820d9391ec42b1c737b4d5617554534e45dca5b3b5c7b930596fb150c6ceb",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          75,
+          98
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs",
+      "bytes": 25896,
+      "sha256": "3157e01727300ac29dbd516ff9d01905e3de0da8b98b77eb4293439c6c5f9bcf",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          75,
+          120
+        ],
+        [
+          161,
+          197
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/bootstrapping.rs",
+      "bytes": 21651,
+      "sha256": "d330528dd580177e21843b1ddb504bd6e2f2eda45f46b780461f4a2fbd66cfd5",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          94,
+          163
+        ],
+        [
+          445,
+          475
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/unordered.rs",
+      "bytes": 278033,
+      "sha256": "06443ae63ac2d0df68c317a6eb2e45ad4cda410b864c4d85ff9d3666d523c021",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          495,
+          540
+        ],
+        [
+          654,
+          682
+        ],
+        [
+          768,
+          779
+        ]
+      ]
+    }
+  ],
+  "custom_plan_setter_search": {
+    "argv": [
+      "rg",
+      "-n",
+      "setup_custom_fft_plan",
+      "src"
+    ],
+    "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft",
+    "returncode": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  "earlier_emitted_freeze": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/freeze.json",
+    "bytes": 7887,
+    "sha256": "b45a38b01838b9b44bf8f8bcdd67c7e908bec0850b0f627d051d3a5e75785b3b"
+  },
+  "no_past_failure_cause_inferred": true
+}

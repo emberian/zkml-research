@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "--run",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/EmitPrivateAddressEma.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule",
+  "exit_code": 0,
+  "elapsed_seconds": 17.47856691700872,
+  "stdout": "{\"infer\":{\"gates\":9,\"nInputs\":34,\"nWires\":46,\"outputs\":1},\"learn\":{\"gates\":538,\"nInputs\":42,\"nWires\":11562,\"outputs\":32}}\n",
+  "stderr": "",
+  "runner_sha256": "ad2d79fcd234112e75b44aec94750caac9fcca564fe99f2e675e329d7f51cecf"
+}

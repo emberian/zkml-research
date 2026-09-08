@@ -1,0 +1,6 @@
+model,log_blowup,q,pow_bits,rho,old_radius_open_ceiling,full_radius_open_ceiling,current_full_udr_bits,current_full_udr_floor_bits,current_ledger_changed,counterfactual_old_restricted_bits,q_for_100_current_udr,q_for_100_counterfactual_old_radius,endpoint_warning
+ir2,6,19,16,1/64,21/64,63/128,34.57501155245936,34,False,26.900969660660138,86,147,"Consumer PG bands are strict; full-radius query ledger is a separate endpoint formula, not automatically the sampled tower tau."
+recursionCfg,3,38,14,1/8,7/24,7/16,45.54284994519213,45,False,32.90498705989103,104,173,"Consumer PG bands are strict; full-radius query ledger is a separate endpoint formula, not automatically the sampled tower tau."
+prodV1,3,38,16,1/8,7/24,7/16,47.54284994519213,47,False,34.90498705989103,102,169,"Consumer PG bands are strict; full-radius query ledger is a separate endpoint formula, not automatically the sampled tower tau."
+lb2Drop,2,57,16,1/4,1/4,3/8,54.650098591420345,54,False,39.6571374588941,124,203,"Consumer PG bands are strict; full-radius query ledger is a separate endpoint formula, not automatically the sampled tower tau."
+zkdtvmCore,1,261,20,1/2,1/6,1/4,128.3247873117782,128,False,88.65197992262017,193,305,"Consumer PG bands are strict; full-radius query ledger is a separate endpoint formula, not automatically the sampled tower tau."

@@ -1,0 +1,25 @@
+[
+  {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.1587042500032112,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "--reverse",
+      "--check",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/polynomial-gluing.patch"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.025925292022293434,
+    "stdout": "",
+    "stderr": ""
+  }
+]

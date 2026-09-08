@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/run.py", line 140, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/run.py", line 105, in main
+    output=evaluate_pair(e,parents,encrypted)
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/run.py", line 77, in evaluate_pair
+    assert equal and pair['inputs_equal_across_invocations'] and pair['primary_process']!=pair['replay_process'],tag
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: h0-e0014

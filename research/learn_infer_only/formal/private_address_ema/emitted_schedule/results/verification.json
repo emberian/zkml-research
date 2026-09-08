@@ -1,0 +1,901 @@
+{
+  "all_passed": true,
+  "scope": "46 exact-pin compiler proposal; single-file check and source-only patch/import checks; separate-cwd Lean emission byte reproduction. Cached dependency oleans; root owns full integration; Rust/TFHE execution belongs to independent runtime lane.",
+  "checks": [
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_package_vape8sfl",
+      "exit_code": 0,
+      "elapsed_seconds": 0.06537237498559989,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_package_vape8sfl",
+      "exit_code": 0,
+      "elapsed_seconds": 0.07346174999838695,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_package_vape8sfl",
+      "exit_code": 0,
+      "elapsed_seconds": 0.053294582990929484,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_package_vape8sfl/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_package_vape8sfl",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1898796249879524,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "elapsed_seconds": 0.19241629197495058,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "--run",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/EmitPrivateAddressEma.lean"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/ema_schedule_package_vape8sfl/emission",
+      "exit_code": 0,
+      "elapsed_seconds": 14.628605500009144,
+      "stdout": "{\"infer\":{\"gates\":9,\"nInputs\":34,\"nWires\":46,\"outputs\":1},\"learn\":{\"gates\":538,\"nInputs\":42,\"nWires\":11562,\"outputs\":32}}\n",
+      "stderr": ""
+    }
+  ],
+  "census": {
+    "theorems": [
+      "enc_dec",
+      "dec_enc",
+      "enc_xor",
+      "enc_and",
+      "eval_xor",
+      "eval_and",
+      "eval_const",
+      "eval_var",
+      "eval_not",
+      "eval_mux",
+      "flattened_outputs",
+      "raw_outputs",
+      "shared_gates_backward",
+      "shared_output_correctness",
+      "shared_premises_inhabited",
+      "bits_value_testBit",
+      "bits_value_word",
+      "adder_trace",
+      "adder_value",
+      "pack_bit",
+      "bits_value_congr",
+      "pack_value",
+      "valueB_bit",
+      "valueB_of_bits",
+      "signE_value",
+      "eightE_value",
+      "notE_value",
+      "candidateE_value",
+      "selectE_eval",
+      "learnE_value",
+      "inferE_eval",
+      "input_state_value",
+      "input_label_value",
+      "input_address_zero",
+      "input_address_one",
+      "learn_source_byte",
+      "learn_source_outputs",
+      "infer_source_outputs",
+      "learn_schedule_correct",
+      "infer_schedule_correct",
+      "learn_premises_inhabited",
+      "infer_premises_inhabited",
+      "learn_changed_subject",
+      "wrong_learn_output_refused",
+      "infer_negative_subject",
+      "wrong_infer_output_refused"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "enc_dec",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.enc_dec",
+        "line": 45
+      },
+      {
+        "name": "dec_enc",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.dec_enc",
+        "line": 55
+      },
+      {
+        "name": "enc_xor",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.enc_xor",
+        "line": 58
+      },
+      {
+        "name": "enc_and",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.enc_and",
+        "line": 61
+      },
+      {
+        "name": "eval_xor",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_xor",
+        "line": 64
+      },
+      {
+        "name": "eval_and",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_and",
+        "line": 70
+      },
+      {
+        "name": "eval_const",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_const",
+        "line": 76
+      },
+      {
+        "name": "eval_var",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_var",
+        "line": 80
+      },
+      {
+        "name": "eval_not",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_not",
+        "line": 84
+      },
+      {
+        "name": "eval_mux",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_mux",
+        "line": 91
+      },
+      {
+        "name": "flattened_outputs",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.flattened_outputs",
+        "line": 96
+      },
+      {
+        "name": "raw_outputs",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.raw_outputs",
+        "line": 111
+      },
+      {
+        "name": "shared_gates_backward",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.shared_gates_backward",
+        "line": 118
+      },
+      {
+        "name": "shared_output_correctness",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.shared_output_correctness",
+        "line": 126
+      },
+      {
+        "name": "shared_premises_inhabited",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.shared_premises_inhabited",
+        "line": 142
+      },
+      {
+        "name": "bits_value_testBit",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_testBit",
+        "line": 159
+      },
+      {
+        "name": "bits_value_word",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_word",
+        "line": 167
+      },
+      {
+        "name": "adder_trace",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.adder_trace",
+        "line": 182
+      },
+      {
+        "name": "adder_value",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.adder_value",
+        "line": 191
+      },
+      {
+        "name": "pack_bit",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.pack_bit",
+        "line": 200
+      },
+      {
+        "name": "bits_value_congr",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_congr",
+        "line": 205
+      },
+      {
+        "name": "pack_value",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.pack_value",
+        "line": 211
+      },
+      {
+        "name": "valueB_bit",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_bit",
+        "line": 217
+      },
+      {
+        "name": "valueB_of_bits",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_of_bits",
+        "line": 222
+      },
+      {
+        "name": "signE_value",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.signE_value",
+        "line": 236
+      },
+      {
+        "name": "eightE_value",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eightE_value",
+        "line": 247
+      },
+      {
+        "name": "notE_value",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.notE_value",
+        "line": 256
+      },
+      {
+        "name": "candidateE_value",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.candidateE_value",
+        "line": 263
+      },
+      {
+        "name": "selectE_eval",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.selectE_eval",
+        "line": 295
+      },
+      {
+        "name": "learnE_value",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learnE_value",
+        "line": 302
+      },
+      {
+        "name": "inferE_eval",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.inferE_eval",
+        "line": 317
+      },
+      {
+        "name": "input_state_value",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_state_value",
+        "line": 350
+      },
+      {
+        "name": "input_label_value",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_label_value",
+        "line": 361
+      },
+      {
+        "name": "input_address_zero",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_zero",
+        "line": 371
+      },
+      {
+        "name": "input_address_one",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_one",
+        "line": 377
+      },
+      {
+        "name": "learn_source_byte",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_byte",
+        "line": 383
+      },
+      {
+        "name": "learn_source_outputs",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_outputs",
+        "line": 410
+      },
+      {
+        "name": "infer_source_outputs",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_source_outputs",
+        "line": 421
+      },
+      {
+        "name": "learn_schedule_correct",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_schedule_correct",
+        "line": 432
+      },
+      {
+        "name": "infer_schedule_correct",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_schedule_correct",
+        "line": 439
+      },
+      {
+        "name": "learn_premises_inhabited",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_premises_inhabited",
+        "line": 446
+      },
+      {
+        "name": "infer_premises_inhabited",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_premises_inhabited",
+        "line": 451
+      },
+      {
+        "name": "learn_changed_subject",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_changed_subject",
+        "line": 457
+      },
+      {
+        "name": "wrong_learn_output_refused",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_learn_output_refused",
+        "line": 467
+      },
+      {
+        "name": "infer_negative_subject",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_negative_subject",
+        "line": 474
+      },
+      {
+        "name": "wrong_infer_output_refused",
+        "qualified_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_infer_output_refused",
+        "line": 484
+      }
+    ],
+    "theorem_count": 46,
+    "pin_count": 46,
+    "pins": [
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.enc_dec",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.enc_dec",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 495,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.enc_dec' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.dec_enc",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.dec_enc",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 498,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.dec_enc' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.enc_xor",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.enc_xor",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 501,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.enc_xor' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.enc_and",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.enc_and",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 504,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.enc_and' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_xor",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_xor",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 507,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_xor' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_and",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_and",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 510,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_and' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_const",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_const",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 513,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_const' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_var",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_var",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 516,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_var' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_not",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_not",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 519,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_not' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_mux",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eval_mux",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 522,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eval_mux' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.flattened_outputs",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.flattened_outputs",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 525,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.flattened_outputs' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.raw_outputs",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.raw_outputs",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 528,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.raw_outputs' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.shared_gates_backward",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.shared_gates_backward",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 531,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.shared_gates_backward' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.shared_output_correctness",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.shared_output_correctness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 534,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.shared_output_correctness' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.shared_premises_inhabited",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.shared_premises_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 537,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.shared_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_testBit",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_testBit",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 540,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_testBit' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_word",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_word",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 543,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_word' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.adder_trace",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.adder_trace",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 546,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.adder_trace' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.adder_value",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.adder_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 549,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.adder_value' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.pack_bit",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.pack_bit",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 552,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.pack_bit' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_congr",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_congr",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 555,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.bits_value_congr' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.pack_value",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.pack_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 558,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.pack_value' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_bit",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_bit",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 561,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_bit' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_of_bits",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_of_bits",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 564,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.valueB_of_bits' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.signE_value",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.signE_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 567,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.signE_value' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.eightE_value",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.eightE_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 570,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.eightE_value' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.notE_value",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.notE_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 573,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.notE_value' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.candidateE_value",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.candidateE_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 576,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.candidateE_value' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.selectE_eval",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.selectE_eval",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 579,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.selectE_eval' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.learnE_value",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learnE_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 582,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learnE_value' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.inferE_eval",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.inferE_eval",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 585,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.inferE_eval' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_state_value",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_state_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 588,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.input_state_value' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_label_value",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_label_value",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 591,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.input_label_value' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_zero",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 594,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_zero' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_one",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 597,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.input_address_one' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_byte",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_byte",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 600,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_byte' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_outputs",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_outputs",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 603,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_source_outputs' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_source_outputs",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_source_outputs",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 606,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.infer_source_outputs' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_schedule_correct",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_schedule_correct",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 609,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_schedule_correct' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_schedule_correct",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_schedule_correct",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 612,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.infer_schedule_correct' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_premises_inhabited",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_premises_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 615,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_premises_inhabited",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_premises_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 618,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.infer_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_changed_subject",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.learn_changed_subject",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 621,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.learn_changed_subject' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_learn_output_refused",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_learn_output_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 624,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_learn_output_refused' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_negative_subject",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.infer_negative_subject",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 627,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.infer_negative_subject' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_infer_output_refused",
+        "requested_name": "Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_infer_output_refused",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 630,
+        "expected_message": "info: 'Minidregg.Compiler.PrivateAddressEmaSchedule.wrong_infer_output_refused' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "source_sha256": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+  "patch_sha256": "c96679078731512508994cd3804c111e096e9e8cb14409592154d1d8bf9cbb30",
+  "frozen_json": {
+    "learn.json": "94e8369ffc8fcdf57b8351b278d5af90dc49a26d83600d40f0bd6a0da359dde8",
+    "infer.json": "b742ed7710d2680119eceeff0c553d675e1ce187a503981fc500a6a4a683b80c"
+  },
+  "companion_before": {
+    "head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+    "status": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n"
+  },
+  "companion_after": {
+    "head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+    "status": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n"
+  },
+  "inputs": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/EmitPrivateAddressEma.lean": "ad2d79fcd234112e75b44aec94750caac9fcca564fe99f2e675e329d7f51cecf",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/check.py": "459bd0d1d4f6a09e07a41b15fff1c7cb98b2cda10df34a6184456f41f5ce7b5a",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/package.py": "46591368ebbab5c673ae414be69e192841e79dc29816ac750db06b7b5c77b832",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/SCHEMA.md": "13b7fadd20d0e281857f76aab4ea88228e80c1ac7dcfecbd57fa5b1aefe97db1",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch": "c96679078731512508994cd3804c111e096e9e8cb14409592154d1d8bf9cbb30",
+    "/Users/ember/dev/minidregg/Compiler/Signature.lean": "c77dd3020ea142d5dec4ad19f74fbd05f0a761ad6012f209a8fdc118ed6e2424",
+    "/Users/ember/dev/minidregg/Compiler/Air.lean": "8bde0e33ab2ed0cb739ddf2f06df299bdbada7ffac81057438f52a1528cfeecb",
+    "/Users/ember/dev/minidregg/Compiler/AirFlatten.lean": "504221deeb50018370b35110c60bcd01d0e0e89677a63ed0f023b80c07fe3f54",
+    "/Users/ember/dev/minidregg/Compiler/Emit.lean": "e07b5c1c9833053a3b8eea0d71590cf4d7ba9d13e16d4197afa6a842cf087b30",
+    "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": "86fdb40c26097ea61535b3bd43489ebef3aaefa0c44b2c26815e95cfc90ae2f4",
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": "8eb5570c4d52c6b805791be1959e7643903f230a3863d1a2c90a9c5738db55e6"
+  },
+  "lean_check": "results/lean_009.json"
+}

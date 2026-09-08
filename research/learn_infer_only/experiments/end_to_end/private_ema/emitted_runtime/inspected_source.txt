@@ -1,0 +1,277 @@
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/server_key/mod.rs:48-87
+48: impl<Lhs, Rhs> BinaryBooleanGates<Lhs, Rhs> for ServerKey
+49: where
+50:     <Self as DefaultImplementation>::Engine: BinaryGatesEngine<Lhs, Rhs, Self>,
+51: {
+52:     fn and(&self, ct_left: Lhs, ct_right: Rhs) -> Ciphertext {
+53:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+54:             engine.and(ct_left, ct_right, self)
+55:         })
+56:     }
+57: 
+58:     fn nand(&self, ct_left: Lhs, ct_right: Rhs) -> Ciphertext {
+59:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+60:             engine.nand(ct_left, ct_right, self)
+61:         })
+62:     }
+63: 
+64:     fn nor(&self, ct_left: Lhs, ct_right: Rhs) -> Ciphertext {
+65:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+66:             engine.nor(ct_left, ct_right, self)
+67:         })
+68:     }
+69: 
+70:     fn or(&self, ct_left: Lhs, ct_right: Rhs) -> Ciphertext {
+71:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+72:             engine.or(ct_left, ct_right, self)
+73:         })
+74:     }
+75: 
+76:     fn xor(&self, ct_left: Lhs, ct_right: Rhs) -> Ciphertext {
+77:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+78:             engine.xor(ct_left, ct_right, self)
+79:         })
+80:     }
+81: 
+82:     fn xnor(&self, ct_left: Lhs, ct_right: Rhs) -> Ciphertext {
+83:         <Self as DefaultImplementation>::Engine::with_thread_local_mut(|engine| {
+84:             engine.xnor(ct_left, ct_right, self)
+85:         })
+86:     }
+87: }
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/server_key/mod.rs:129-137
+129: 
+130: impl ServerKey {
+131:     pub fn new(cks: &ClientKey) -> Self {
+132:         BooleanEngine::with_thread_local_mut(|engine| engine.create_server_key(cks))
+133:     }
+134: 
+135:     pub fn trivial_encrypt(&self, message: bool) -> Ciphertext {
+136:         Ciphertext::Trivial(message)
+137:     }
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/ciphertext/mod.rs:1-24
+1: //! An encryption of a boolean message.
+2: //!
+3: //! This module implements the ciphertext structure containing an encryption of a Boolean message.
+4: 
+5: use crate::core_crypto::entities::*;
+6: use serde::{Deserialize, Serialize};
+7: use tfhe_versionable::Versionize;
+8: 
+9: use super::backward_compatibility::ciphertext::{CiphertextVersions, CompressedCiphertextVersions};
+10: 
+11: /// A structure containing a ciphertext, meant to encrypt a Boolean message.
+12: ///
+13: /// It is used to evaluate a Boolean circuits homomorphically.
+14: #[derive(Clone, Debug, Serialize, Deserialize, Versionize)]
+15: #[versionize(CiphertextVersions)]
+16: pub enum Ciphertext {
+17:     Encrypted(LweCiphertextOwned<u32>),
+18:     Trivial(bool),
+19: }
+20: 
+21: /// A structure containing a compressed ciphertext, meant to encrypt a Boolean message.
+22: ///
+23: /// It has to be decompressed before evaluating a Boolean circuit.
+24: #[derive(Clone, Debug, Serialize, Deserialize, Versionize)]
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:557-599
+557: impl BinaryGatesEngine<&Ciphertext, &Ciphertext, ServerKey> for BooleanEngine {
+558:     fn and(
+559:         &mut self,
+560:         ct_left: &Ciphertext,
+561:         ct_right: &Ciphertext,
+562:         server_key: &ServerKey,
+563:     ) -> Ciphertext {
+564:         match (ct_left, ct_right) {
+565:             (Ciphertext::Trivial(message_left), Ciphertext::Trivial(message_right)) => {
+566:                 Ciphertext::Trivial(*message_left && *message_right)
+567:             }
+568:             (Ciphertext::Encrypted(_), Ciphertext::Trivial(message_right)) => {
+569:                 self.and(ct_left, *message_right, server_key)
+570:             }
+571:             (Ciphertext::Trivial(message_left), Ciphertext::Encrypted(_)) => {
+572:                 self.and(*message_left, ct_right, server_key)
+573:             }
+574:             (Ciphertext::Encrypted(ct_left_ct), Ciphertext::Encrypted(ct_right_ct)) => {
+575:                 let mut buffer_lwe_before_pbs = LweCiphertext::new(
+576:                     0u32,
+577:                     ct_left_ct.lwe_size(),
+578:                     ct_left_ct.ciphertext_modulus(),
+579:                 );
+580: 
+581:                 let bootstrapper = &mut self.bootstrapper;
+582: 
+583:                 // compute the linear combination for AND: ct_left + ct_right + (0,...,0,-1/8)
+584:                 // ct_left + ct_right
+585:                 lwe_ciphertext_add(&mut buffer_lwe_before_pbs, ct_left_ct, ct_right_ct);
+586:                 let cst = Plaintext(PLAINTEXT_FALSE);
+587:                 // - 1/8
+588:                 lwe_ciphertext_plaintext_add_assign(&mut buffer_lwe_before_pbs, cst);
+589: 
+590:                 // compute the bootstrap and the key switch
+591:                 bootstrapper.apply_bootstrapping_pattern(buffer_lwe_before_pbs, server_key)
+592:             }
+593:         }
+594:     }
+595: 
+596:     fn nand(
+597:         &mut self,
+598:         ct_left: &Ciphertext,
+599:         ct_right: &Ciphertext,
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:709-754
+709: 
+710:     fn xor(
+711:         &mut self,
+712:         ct_left: &Ciphertext,
+713:         ct_right: &Ciphertext,
+714:         server_key: &ServerKey,
+715:     ) -> Ciphertext {
+716:         match (ct_left, ct_right) {
+717:             (Ciphertext::Trivial(message_left), Ciphertext::Trivial(message_right)) => {
+718:                 Ciphertext::Trivial(*message_left ^ *message_right)
+719:             }
+720:             (Ciphertext::Encrypted(_), Ciphertext::Trivial(message_right)) => {
+721:                 self.xor(ct_left, *message_right, server_key)
+722:             }
+723:             (Ciphertext::Trivial(message_left), Ciphertext::Encrypted(_)) => {
+724:                 self.xor(*message_left, ct_right, server_key)
+725:             }
+726:             (Ciphertext::Encrypted(ct_left_ct), Ciphertext::Encrypted(ct_right_ct)) => {
+727:                 let mut buffer_lwe_before_pbs = LweCiphertext::new(
+728:                     0u32,
+729:                     ct_left_ct.lwe_size(),
+730:                     ct_left_ct.ciphertext_modulus(),
+731:                 );
+732:                 let bootstrapper = &mut self.bootstrapper;
+733: 
+734:                 // Compute the linear combination for XOR: 2*(ct_left + ct_right) + (0,...,0,1/4)
+735:                 // ct_left + ct_right
+736:                 lwe_ciphertext_add(&mut buffer_lwe_before_pbs, ct_left_ct, ct_right_ct);
+737:                 let cst_add = Plaintext(PLAINTEXT_TRUE);
+738:                 // + 1/8
+739:                 lwe_ciphertext_plaintext_add_assign(&mut buffer_lwe_before_pbs, cst_add);
+740:                 let cst_mul = Cleartext(2u32);
+741:                 //* 2
+742:                 lwe_ciphertext_cleartext_mul_assign(&mut buffer_lwe_before_pbs, cst_mul);
+743: 
+744:                 // compute the bootstrap and the key switch
+745:                 bootstrapper.apply_bootstrapping_pattern(buffer_lwe_before_pbs, server_key)
+746:             }
+747:         }
+748:     }
+749: 
+750:     fn xnor(
+751:         &mut self,
+752:         ct_left: &Ciphertext,
+753:         ct_right: &Ciphertext,
+754:         server_key: &ServerKey,
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs:919-990
+919: impl BinaryGatesEngine<&Ciphertext, bool, ServerKey> for BooleanEngine {
+920:     fn and(&mut self, ct_left: &Ciphertext, ct_right: bool, _server_key: &ServerKey) -> Ciphertext {
+921:         if ct_right {
+922:             // ct AND true = ct
+923:             ct_left.clone()
+924:         } else {
+925:             // ct AND false = false
+926:             self.trivial_encrypt(false)
+927:         }
+928:     }
+929: 
+930:     fn nand(
+931:         &mut self,
+932:         ct_left: &Ciphertext,
+933:         ct_right: bool,
+934:         _server_key: &ServerKey,
+935:     ) -> Ciphertext {
+936:         if ct_right {
+937:             // NOT (ct AND true) = NOT(ct)
+938:             self.not(ct_left)
+939:         } else {
+940:             // NOT (ct AND false) = NOT(false) = true
+941:             self.trivial_encrypt(true)
+942:         }
+943:     }
+944: 
+945:     fn nor(&mut self, ct_left: &Ciphertext, ct_right: bool, _server_key: &ServerKey) -> Ciphertext {
+946:         if ct_right {
+947:             // NOT (ct OR true) = NOT(true) = false
+948:             self.trivial_encrypt(false)
+949:         } else {
+950:             // NOT (ct OR false) = NOT(ct)
+951:             self.not(ct_left)
+952:         }
+953:     }
+954: 
+955:     fn or(&mut self, ct_left: &Ciphertext, ct_right: bool, _server_key: &ServerKey) -> Ciphertext {
+956:         if ct_right {
+957:             // ct OR true = true
+958:             self.trivial_encrypt(true)
+959:         } else {
+960:             // ct OR false = ct
+961:             ct_left.clone()
+962:         }
+963:     }
+964: 
+965:     fn xor(&mut self, ct_left: &Ciphertext, ct_right: bool, _server_key: &ServerKey) -> Ciphertext {
+966:         if ct_right {
+967:             // ct XOR true = NOT(ct)
+968:             self.not(ct_left)
+969:         } else {
+970:             // ct XOR false = ct
+971:             ct_left.clone()
+972:         }
+973:     }
+974: 
+975:     fn xnor(
+976:         &mut self,
+977:         ct_left: &Ciphertext,
+978:         ct_right: bool,
+979:         _server_key: &ServerKey,
+980:     ) -> Ciphertext {
+981:         if ct_right {
+982:             // NOT(ct XOR true) = NOT(NOT(ct)) = ct
+983:             ct_left.clone()
+984:         } else {
+985:             // NOT(ct XOR false) = NOT(ct)
+986:             self.not(ct_left)
+987:         }
+988:     }
+989: }
+990: 
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bincode-1.3.3/src/config/mod.rs:1-30
+1: //! `bincode` uses a Builder-pattern to configure the Serializers and Deserializers in this
+2: //! crate. This means that if you need to customize the behavior of `bincode`, you should create an
+3: //! instance of the `DefaultOptions` struct:
+4: //!
+5: //! ```rust
+6: //! use bincode::Options;
+7: //! let my_options = bincode::DefaultOptions::new();
+8: //! ```
+9: //!
+10: //! # Options Struct vs bincode functions
+11: //!
+12: //! Due to historical reasons, the default options used by the `serialize()` and `deserialize()`
+13: //! family of functions are different than the default options created by the `DefaultOptions` struct:
+14: //!
+15: //! |          | Byte limit | Endianness | Int Encoding | Trailing Behavior |
+16: //! |----------|------------|------------|--------------|-------------------|
+17: //! | struct   | Unlimited  | Little     | Varint       | Reject            |
+18: //! | function | Unlimited  | Little     | Fixint       | Allow             |
+19: //!
+20: //! This means that if you want to use the `Serialize` / `Deserialize` structs with the same
+21: //! settings as the functions, you should adjust the `DefaultOptions` struct like so:
+22: //!
+23: //! ```rust
+24: //! use bincode::Options;
+25: //! let my_options = bincode::DefaultOptions::new()
+26: //!     .with_fixint_encoding()
+27: //!     .allow_trailing_bytes();
+28: //! ```
+29: 
+30: use de::read::BincodeRead;

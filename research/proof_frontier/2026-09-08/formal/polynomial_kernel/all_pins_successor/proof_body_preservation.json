@@ -1,0 +1,10 @@
+{
+  "original_source_sha256": "aa04f65f81689b1a70dd897177623f3f6f25705b36043ad5ae6d138d220cd3ac",
+  "successor_source_sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+  "original_full_file_is_exact_prefix": true,
+  "all_changes_are_appended_helper_axiom_guards": true,
+  "integration_census_tool": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/check_all_formal.py",
+  "integration_census_tool_sha256": "91085fd91482d1c5f0a66b7c95aa511de0d014ac841b6c113cfda55d92894a55",
+  "declarations": 16,
+  "guards": 16
+}

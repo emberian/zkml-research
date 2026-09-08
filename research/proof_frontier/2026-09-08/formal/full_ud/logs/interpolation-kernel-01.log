@@ -1,0 +1,4 @@
+Theory/RSInterpolationKernel.lean:45:20: error: Invalid argument: Variable `e` is not a proposition or let-declaration
+Theory/RSInterpolationKernel.lean:66:23: error: Invalid argument: Variable `e` is not a proposition or let-declaration
+Theory/RSInterpolationKernel.lean:87:25: error: Invalid argument: Variable `e` is not a proposition or let-declaration
+Theory/RSInterpolationKernel.lean:102:18: error: Invalid argument: Variable `e` is not a proposition or let-declaration

@@ -1,0 +1,173 @@
+{
+  "scope": "Independent cleartext finite mathematics and static source review only; does not execute Rust/TFHE or realize its trace in Lean.",
+  "source_pins": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/minidregg-private-address-ema.patch": "9fabd5d64ab3280dde1bbb1affab9ced9d5835f248f984dd4bb9d0488622ebae",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/lib.rs": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/issuer.rs": "b9bf8be29a0a38c4578448f0f77214c367595ceb0ef7753ed5298617c1ff01b8",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/host.rs": "f0ba609bdf7d6a2ad2b83298b526d8fecf4d8569f7db28af6c5306c14e159ac2",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.toml": "888637418d68f3688acec178273e8284e6789b6cccc3f1f7eb545523f86eece0",
+    "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/server_key/mod.rs": "bf88871068b974a5496f861c076d8ef9714ef193742d57dba96c42f7d0e9f82a"
+  },
+  "theorem_count": 28,
+  "pin_count": 28,
+  "theorem_pin_order_equal": true,
+  "theorems": [
+    "byte_range",
+    "numerator_integer_range",
+    "eight_s_encoding",
+    "extract_signed_floor",
+    "numerator_eq",
+    "numerator_exact",
+    "candidate_exact",
+    "selected_exact",
+    "learn_selected",
+    "learn_untouched",
+    "infer_selected",
+    "infer_negative",
+    "private_address_correctness",
+    "invariant_correctness",
+    "full_adder_identity",
+    "ripple_correctness",
+    "ripple_modular",
+    "ripple_bitvec",
+    "ripple_premises_inhabited",
+    "carry_falsifier",
+    "selected_unique",
+    "infer_untouched",
+    "history_invariant",
+    "premises_inhabited",
+    "satisfying_subject",
+    "truncation_falsifier",
+    "ten_bit_falsifier",
+    "unselected_falsifier"
+  ],
+  "all_signed_byte_pairs_checked": 65536,
+  "signed_numerator_min_max": [
+    -1024,
+    1016
+  ],
+  "all_eleven_bit_extractions_checked": 2048,
+  "address_selection_cases_checked": 16,
+  "address_truth_table": [
+    {
+      "address": 0,
+      "wire0": false,
+      "wire1": false,
+      "selected": [
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "address": 1,
+      "wire0": true,
+      "wire1": false,
+      "selected": [
+        false,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "address": 2,
+      "wire0": false,
+      "wire1": true,
+      "selected": [
+        false,
+        false,
+        true,
+        false
+      ]
+    },
+    {
+      "address": 3,
+      "wire0": true,
+      "wire1": true,
+      "selected": [
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  ],
+  "all_sign_pattern_query_cases_checked": 64,
+  "full_adder_truth_table_cases_checked": 8,
+  "strict_subrange_endpoint_label_cases_checked": 482,
+  "witnesses": {
+    "nonvacuous_premise": {
+      "old": 0,
+      "label": 120,
+      "address": 3,
+      "updated": 15
+    },
+    "satisfying_subject": {
+      "state": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "label": -120,
+      "address": 3,
+      "next": [
+        0,
+        0,
+        0,
+        -15
+      ],
+      "query": 3,
+      "negative": true
+    },
+    "floor_vs_truncation": {
+      "old": 1,
+      "label": -8,
+      "numerator": -1,
+      "floor": -1,
+      "trunc": 0
+    },
+    "ten_bit_width": {
+      "old": -128,
+      "label": -128,
+      "numerator": -1024,
+      "narrowed_numerator": 0,
+      "correct_output": -128
+    },
+    "unselected": {
+      "old": 0,
+      "label": 120,
+      "learn_address": 3,
+      "register": 0,
+      "selected_output": 0,
+      "unconditional_output": 15
+    },
+    "carry_drop": {
+      "width": 1,
+      "a": 1,
+      "b": 1,
+      "initial_carry": 0,
+      "output": 0,
+      "final_carry": 1,
+      "integer_sum": 2
+    },
+    "invariant_premise_needed": {
+      "old": -120,
+      "disallowed_label": -128,
+      "output": -121
+    }
+  },
+  "forbidden_proof_constructs_found": [],
+  "frozen_hashes_unchanged": true,
+  "cryptographic_operations_executed": 0,
+  "query_counts": {
+    "web": 0,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0
+  },
+  "all_checks_passed": true
+}

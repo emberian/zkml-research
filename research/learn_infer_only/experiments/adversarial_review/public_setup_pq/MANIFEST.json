@@ -1,0 +1,66 @@
+{
+  "artifacts": [
+    {
+      "bytes": 13601,
+      "path": "REVIEW.md",
+      "sha256": "464e5665914d958c1b99749728956ab9c350cd3dbe3587b7a6f0d67e05a291b0"
+    },
+    {
+      "bytes": 12096,
+      "path": "FIXED_COORDINATE_QPT.md",
+      "sha256": "4c43bce409495edf9c9d5b8e4ada0581af5be0ecf6ff949fbd99fdbfd3da62fe"
+    },
+    {
+      "bytes": 3838,
+      "path": "checks/public_algebra.py",
+      "sha256": "9620363c964652d6f1663d508b10397f77a72c5c0d60fae311149761ffbac82c"
+    },
+    {
+      "bytes": 903,
+      "path": "checks/public_algebra_output.json",
+      "sha256": "7a81022927465d34115131a83b8b1d8c4678b6513c11c3ef2eae18535e066f66"
+    },
+    {
+      "bytes": 2559,
+      "path": "checks/seal_review.py",
+      "sha256": "fa3542663cddaa0882abae027649d9bb535ed43739246477bc482c1e97100f5c"
+    },
+    {
+      "bytes": 302183,
+      "path": "extracts/page18.png",
+      "sha256": "7b311ccb07717b382ee299f5eef4d63da97bfe08d6dc2a70a99886174f2ee272"
+    },
+    {
+      "bytes": 298711,
+      "path": "extracts/page21.png",
+      "sha256": "3ce207a76ea0952666a47c0f12217bb530724ebcfe679f5a5db09dad1dc72444"
+    }
+  ],
+  "frozen_inputs": [
+    {
+      "matched": true,
+      "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/608.pdf",
+      "sha256": "a7d5c231b70961ea59ca544c91b2392fb35c166c88e42b898640cfdc7dbb94d0"
+    },
+    {
+      "matched": true,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/notes/AUDIT.md",
+      "sha256": "2c6f649fa0891be05dd1f3a1f89c935692091195e71f0b1959d78b5ef9061007"
+    },
+    {
+      "matched": true,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/extracts/2015-608.txt",
+      "sha256": "a1170661edc061a9b011367d43b9b75ed6dfc073cfd0aa477459c20f14d1ecdd"
+    }
+  ],
+  "public_algebra_result": "PASS",
+  "scope": "Independent public-source and mathematical review; no crypto or private-state execution",
+  "source_queries": {
+    "kagi": 0,
+    "pdf_download": 0,
+    "scry_schema": 0,
+    "scry_sql": 0,
+    "web_open": 1,
+    "web_search": 0
+  }
+}

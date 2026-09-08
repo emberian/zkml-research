@@ -1,0 +1,472 @@
+{
+  "theorems": [
+    "advance_zero",
+    "advance_succ",
+    "advance_succ_input",
+    "candidate_monotone",
+    "advance_monotone",
+    "positive_sign_preserved",
+    "negative_sign_preserved",
+    "six_positive_endpoint",
+    "six_negative_endpoint",
+    "six_positive",
+    "six_negative",
+    "after_six_positive",
+    "after_six_negative",
+    "history_target_subsequence",
+    "untargeted_retention",
+    "allowed_label_cases",
+    "six_consistent_sign",
+    "consistent_suffix_sign",
+    "fixed_points",
+    "floor_residual",
+    "five_positive_falsifier",
+    "five_negative_falsifier",
+    "five_inference_falsifiers",
+    "positive_fixed_point_witness",
+    "asymmetric_fixed_points",
+    "six_step_premises_inhabited",
+    "satisfying_subject",
+    "interleaved_satisfying_subject"
+  ],
+  "qualified_declarations": [
+    {
+      "name": "advance_zero",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.advance_zero",
+      "line": 47
+    },
+    {
+      "name": "advance_succ",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.advance_succ",
+      "line": 49
+    },
+    {
+      "name": "advance_succ_input",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.advance_succ_input",
+      "line": 53
+    },
+    {
+      "name": "candidate_monotone",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.candidate_monotone",
+      "line": 57
+    },
+    {
+      "name": "advance_monotone",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.advance_monotone",
+      "line": 62
+    },
+    {
+      "name": "positive_sign_preserved",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.positive_sign_preserved",
+      "line": 70
+    },
+    {
+      "name": "negative_sign_preserved",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.negative_sign_preserved",
+      "line": 77
+    },
+    {
+      "name": "six_positive_endpoint",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.six_positive_endpoint",
+      "line": 84
+    },
+    {
+      "name": "six_negative_endpoint",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.six_negative_endpoint",
+      "line": 87
+    },
+    {
+      "name": "six_positive",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.six_positive",
+      "line": 90
+    },
+    {
+      "name": "six_negative",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.six_negative",
+      "line": 96
+    },
+    {
+      "name": "after_six_positive",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.after_six_positive",
+      "line": 102
+    },
+    {
+      "name": "after_six_negative",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.after_six_negative",
+      "line": 112
+    },
+    {
+      "name": "history_target_subsequence",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.history_target_subsequence",
+      "line": 122
+    },
+    {
+      "name": "untargeted_retention",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.untargeted_retention",
+      "line": 144
+    },
+    {
+      "name": "allowed_label_cases",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.allowed_label_cases",
+      "line": 155
+    },
+    {
+      "name": "six_consistent_sign",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.six_consistent_sign",
+      "line": 160
+    },
+    {
+      "name": "consistent_suffix_sign",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.consistent_suffix_sign",
+      "line": 177
+    },
+    {
+      "name": "fixed_points",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.fixed_points",
+      "line": 185
+    },
+    {
+      "name": "floor_residual",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.floor_residual",
+      "line": 210
+    },
+    {
+      "name": "five_positive_falsifier",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.five_positive_falsifier",
+      "line": 216
+    },
+    {
+      "name": "five_negative_falsifier",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.five_negative_falsifier",
+      "line": 217
+    },
+    {
+      "name": "five_inference_falsifiers",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.five_inference_falsifiers",
+      "line": 219
+    },
+    {
+      "name": "positive_fixed_point_witness",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.positive_fixed_point_witness",
+      "line": 224
+    },
+    {
+      "name": "asymmetric_fixed_points",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.asymmetric_fixed_points",
+      "line": 227
+    },
+    {
+      "name": "six_step_premises_inhabited",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.six_step_premises_inhabited",
+      "line": 234
+    },
+    {
+      "name": "satisfying_subject",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.satisfying_subject",
+      "line": 248
+    },
+    {
+      "name": "interleaved_satisfying_subject",
+      "qualified_name": "Minidregg.Theory.PrivateEmaDynamics.interleaved_satisfying_subject",
+      "line": 254
+    }
+  ],
+  "theorem_count": 28,
+  "pin_count": 28,
+  "pins": [
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.advance_zero",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.advance_zero",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 266,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.advance_zero' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.advance_succ",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.advance_succ",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 269,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.advance_succ' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.advance_succ_input",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.advance_succ_input",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 272,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.advance_succ_input' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.candidate_monotone",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.candidate_monotone",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 275,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.candidate_monotone' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.advance_monotone",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.advance_monotone",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 278,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.advance_monotone' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.positive_sign_preserved",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.positive_sign_preserved",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 281,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.positive_sign_preserved' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.negative_sign_preserved",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.negative_sign_preserved",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 284,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.negative_sign_preserved' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.six_positive_endpoint",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.six_positive_endpoint",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 287,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.six_positive_endpoint' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.six_negative_endpoint",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.six_negative_endpoint",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 290,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.six_negative_endpoint' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.six_positive",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.six_positive",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 293,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.six_positive' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.six_negative",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.six_negative",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 296,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.six_negative' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.after_six_positive",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.after_six_positive",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 299,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.after_six_positive' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.after_six_negative",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.after_six_negative",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 302,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.after_six_negative' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.history_target_subsequence",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.history_target_subsequence",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 305,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.history_target_subsequence' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.untargeted_retention",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.untargeted_retention",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 308,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.untargeted_retention' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.allowed_label_cases",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.allowed_label_cases",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 311,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.allowed_label_cases' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.six_consistent_sign",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.six_consistent_sign",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 314,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.six_consistent_sign' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.fixed_points",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.fixed_points",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 317,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.fixed_points' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.floor_residual",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.floor_residual",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 320,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.floor_residual' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.five_positive_falsifier",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.five_positive_falsifier",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 323,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.five_positive_falsifier' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.five_negative_falsifier",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.five_negative_falsifier",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 326,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.five_negative_falsifier' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.five_inference_falsifiers",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.five_inference_falsifiers",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 329,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.five_inference_falsifiers' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.positive_fixed_point_witness",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.positive_fixed_point_witness",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 332,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.positive_fixed_point_witness' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.asymmetric_fixed_points",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.asymmetric_fixed_points",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 335,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.asymmetric_fixed_points' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.six_step_premises_inhabited",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.six_step_premises_inhabited",
+      "axioms": [
+        "propext"
+      ],
+      "line": 338,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.six_step_premises_inhabited' depends on axioms: [propext]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.satisfying_subject",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.satisfying_subject",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 341,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.satisfying_subject' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.interleaved_satisfying_subject",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.interleaved_satisfying_subject",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "line": 344,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.interleaved_satisfying_subject' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "theorem": "Minidregg.Theory.PrivateEmaDynamics.consistent_suffix_sign",
+      "requested_name": "Minidregg.Theory.PrivateEmaDynamics.consistent_suffix_sign",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "line": 347,
+      "expected_message": "info: 'Minidregg.Theory.PrivateEmaDynamics.consistent_suffix_sign' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    }
+  ],
+  "forbidden_constructs": [],
+  "admit_identifier_tokens": [],
+  "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+}

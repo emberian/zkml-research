@@ -1,0 +1,30 @@
+{
+  "context_id": "708316c774c287151c677b6e78d9934f5cb5818a6f3d4fdbd6781e40afd79b58",
+  "full_verification_before_operational_continuation": true,
+  "group_arithmetic_or_private_decode_reruns": 0,
+  "legacy_dealer_commands_absent": true,
+  "native_pin_matches": true,
+  "ok": true,
+  "private_files_read_or_hashed": 0,
+  "private_integer_match_status": "attributed to frozen executed report; private answers not opened",
+  "public_call_count": 110,
+  "public_ciphertext_hashes_checked": 71,
+  "public_command_counts": {
+    "auth-init": 1,
+    "encode-query": 4,
+    "host-infer": 4,
+    "host-learn": 33,
+    "issuer-encrypt": 33,
+    "public-build": 1,
+    "recipient-finalize": 16,
+    "recipient-init": 16,
+    "validate-context": 1,
+    "verify-public": 1
+  },
+  "registration_before_public_build": true,
+  "report_sha256": "c3cbf9b4bc1b01dd0c2796c55c55c9aea4985fb5f26f4c6dc65cf57440fe264a",
+  "saved_exports_matching_runtime": 66,
+  "schema": "public-coin-adapter-evidence-seal-v1",
+  "source_and_review_read_pins_match": true,
+  "source_sha256": "065e7165535ff15de753c0cc8d2e0a839eee579d37443fd1f5780b585bd78e80"
+}

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/tmp/minidregg-emitted-ema-review-20260908/.review-olean/Compiler/PrivateAddressEmaSchedule.olean",
+    "/tmp/minidregg-emitted-ema-review-20260908/Compiler/PrivateAddressEmaSchedule.lean"
+  ],
+  "cwd": "/tmp/minidregg-emitted-ema-review-20260908",
+  "elapsed_seconds": 18.04709974999423,
+  "exit_code": 0,
+  "source_sha256": "2c89af0fa69ceca9d9a7f0ed3a7a8746255dded42b63d2dc021315ba429d0d1b",
+  "stdout": "",
+  "stderr": ""
+}

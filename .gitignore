@@ -2,3 +2,12 @@
 # python bytecode
 __pycache__/
 *.pyc
+
+# Local paper extracts and browser QA are evidence inputs, not publications.
+research/learn_infer_only/experiments/private_construction/public_setup_pq/extracts/
+research/learn_infer_only/experiments/private_construction/public_setup_pq/alternatives/extracts/
+research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/
+research/learn_infer_only/experiments/adversarial_review/public_setup_pq/extracts/
+research/learn_infer_only/experiments/adversarial_review/public_setup_pq/finite_reduction/extracts/
+research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/sources/*.html
+.playwright-mcp/

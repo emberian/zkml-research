@@ -1,0 +1,10 @@
+{"completed": "prior_emitted_learn_001.primary", "returncode": 0, "wall_seconds": 18.258514042}
+{"completed": "prior_emitted_learn_001.replay", "returncode": 0, "wall_seconds": 20.055212958}
+{"completed": "prior_emitted_infer_001.primary", "returncode": 0, "wall_seconds": 0.5845055}
+{"completed": "prior_emitted_infer_001.replay", "returncode": 0, "wall_seconds": 0.570372792}
+{"completed": "prior_emitted_learn_002.primary", "returncode": 0, "wall_seconds": 17.626691667}
+{"completed": "prior_emitted_learn_002.replay", "returncode": 0, "wall_seconds": 16.252242}
+{"completed": "prior_emitted_infer_002.primary", "returncode": 0, "wall_seconds": 0.624240959}
+{"completed": "prior_emitted_infer_002.replay", "returncode": 0, "wall_seconds": 0.521139167}
+{"completed": "old_fourteenth_learn_public_inputs.primary", "returncode": 0, "wall_seconds": 16.8136305}
+{"completed": "old_fourteenth_learn_public_inputs.replay", "returncode": 0, "wall_seconds": 17.183131833}

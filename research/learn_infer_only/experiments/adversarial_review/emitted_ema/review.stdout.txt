@@ -1,0 +1,190 @@
+{
+  "decision": "accept scoped frozen proof/runtime correspondence; no concrete mismatch found",
+  "formal_theorems": 46,
+  "formal_pins": 46,
+  "inventory": {
+    "learn": {
+      "sha256": "94e8369ffc8fcdf57b8351b278d5af90dc49a26d83600d40f0bd6a0da359dde8",
+      "bytes": 28772,
+      "nInputs": 42,
+      "nWires": 11562,
+      "nGates": 538,
+      "nOutputs": 32,
+      "xor": 342,
+      "and": 196,
+      "unusedWireSlots": 10982,
+      "output_references": [
+        {
+          "w": 136
+        },
+        {
+          "w": 283
+        },
+        {
+          "w": 494
+        },
+        {
+          "w": 781
+        },
+        {
+          "w": 1156
+        },
+        {
+          "w": 1631
+        },
+        {
+          "w": 2218
+        },
+        {
+          "w": 2929
+        },
+        {
+          "w": 3023
+        },
+        {
+          "w": 3169
+        },
+        {
+          "w": 3379
+        },
+        {
+          "w": 3665
+        },
+        {
+          "w": 4039
+        },
+        {
+          "w": 4513
+        },
+        {
+          "w": 5099
+        },
+        {
+          "w": 5809
+        },
+        {
+          "w": 5903
+        },
+        {
+          "w": 6049
+        },
+        {
+          "w": 6259
+        },
+        {
+          "w": 6545
+        },
+        {
+          "w": 6919
+        },
+        {
+          "w": 7393
+        },
+        {
+          "w": 7979
+        },
+        {
+          "w": 8689
+        },
+        {
+          "w": 8782
+        },
+        {
+          "w": 8927
+        },
+        {
+          "w": 9136
+        },
+        {
+          "w": 9421
+        },
+        {
+          "w": 9794
+        },
+        {
+          "w": 10267
+        },
+        {
+          "w": 10852
+        },
+        {
+          "w": 11561
+        }
+      ],
+      "all_outputs_are_wire_references": true
+    },
+    "infer": {
+      "sha256": "b742ed7710d2680119eceeff0c553d675e1ce187a503981fc500a6a4a683b80c",
+      "bytes": 556,
+      "nInputs": 34,
+      "nWires": 46,
+      "nGates": 9,
+      "nOutputs": 1,
+      "xor": 6,
+      "and": 3,
+      "unusedWireSlots": 3,
+      "output_references": [
+        {
+          "w": 45
+        }
+      ],
+      "all_outputs_are_wire_references": true
+    }
+  },
+  "saved_plain_comparison": {
+    "learn": {
+      "rows": 25600,
+      "saved_outputs_match_reconstructed_oracle": true,
+      "reconstructed_input_sha256": "e60ebb0d9e4679527e96a236431fa922c3d0574addf8ede4b0cb632f8063dc9f",
+      "saved_stdout_sha256": "7aea1e7ac15778a3fca23d325b985d100a491257d4941e65011504da38f6fc0e",
+      "true_output_bits": 387686
+    },
+    "infer": {
+      "rows": 49152,
+      "saved_outputs_match_reconstructed_oracle": true,
+      "reconstructed_input_sha256": "e38244ca9a96c0478dc138f9fb26d0d66668221a1a819413cbd5c3c5bbb783c6",
+      "saved_stdout_sha256": "10698c417ad106560d41dec229450bdb357f876c011521122dea9dcf9af6f100",
+      "true_output_bits": 24068
+    }
+  },
+  "smoke_public_pairs": [
+    {
+      "operation": "learn",
+      "step": "001",
+      "archived_complete_bytes_equal": true,
+      "bytes": 108441
+    },
+    {
+      "operation": "infer",
+      "step": "001",
+      "archived_complete_bytes_equal": true,
+      "bytes": 3413
+    },
+    {
+      "operation": "learn",
+      "step": "002",
+      "archived_complete_bytes_equal": true,
+      "bytes": 108441
+    },
+    {
+      "operation": "infer",
+      "step": "002",
+      "archived_complete_bytes_equal": true,
+      "bytes": 3413
+    }
+  ],
+  "public_freeze_files_rechecked": 29,
+  "private_oracle_results": "Reported by saved author record only; no private audit opened",
+  "ordering_deviation": "Final after_private_audit integrity recheck retained, beyond literal all-checks-before wording",
+  "runtime_or_crypto_reruns": 0,
+  "private_files_opened": 0,
+  "general_ciphertext_determinism_established": false,
+  "older_fourteenth_learn_failure": "Retained separate root-reported failure; no failed outputs inspected",
+  "queries": {
+    "web": 0,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0
+  },
+  "all_checks_passed": true
+}

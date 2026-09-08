@@ -1,0 +1,13 @@
+{
+  "freeze_sha256": "1a47a33cad3e0858a5b2437e3b5edc002cfe3a0fff0a496136b7587604332929",
+  "host_concurrency": 1,
+  "initial_projection_seconds": 7470.983641443334,
+  "pid": 38579,
+  "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+  "python": "3.14.7",
+  "started_utc": "2026-09-08T04:12:26.322556+00:00",
+  "thread_environment": {
+    "OMP_NUM_THREADS": null,
+    "RAYON_NUM_THREADS": null
+  }
+}

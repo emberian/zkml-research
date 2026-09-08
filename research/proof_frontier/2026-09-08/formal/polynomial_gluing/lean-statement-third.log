@@ -1,0 +1,22 @@
+Theory/PolynomialGluingStatement.lean:70:46: error: Invalid field notation: Function `Function.support_one` does not have a usable parameter of type `Function` for which to substitute `Polynomial`
+
+Note: Such a parameter must be explicit, or implicit with a unique name, to be used by field notation
+Theory/PolynomialGluingStatement.lean:68:42: error: unsolved goals
+⊢ ((support 1).sup fun n => (Polynomial.coeff 1 n).natDegree) = 0
+Theory/PolynomialGluingStatement.lean:74:75: error: Invalid field notation: Function `Function.support_one` does not have a usable parameter of type `Function` for which to substitute `Polynomial`
+
+Note: Such a parameter must be explicit, or implicit with a unique name, to be used by field notation
+Theory/PolynomialGluingStatement.lean:75:9: error: Insufficient number of fields for `⟨...⟩` constructor: Constructor `Eq.refl` does not have explicit fields, but 2 were provided
+Theory/PolynomialGluingStatement.lean:83:2: warning: Try `simp at h0` instead of `simpa using h0`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'polynomialGluing_premise_inhabited' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+Theory/PolynomialGluingStatement.lean:86:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'polynomialGluing_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'polynomialGluing_premise_inhabited' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'polynomialGluing_satisfiable' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+Theory/PolynomialGluingStatement.lean:89:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'polynomialGluing_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'polynomialGluing_satisfiable' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

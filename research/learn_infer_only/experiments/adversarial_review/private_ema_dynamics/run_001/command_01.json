@@ -1,0 +1,12 @@
+{
+  "command": [
+    "git",
+    "init",
+    "-q"
+  ],
+  "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/review_ema_dynamics_1ie0om48",
+  "exit_code": 0,
+  "elapsed_seconds": 0.05448379201698117,
+  "stdout": "",
+  "stderr": ""
+}

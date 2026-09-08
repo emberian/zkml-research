@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    ".lake/build/lib/lean/Theory/PolynomialGluing.olean",
+    "Theory/PolynomialGluing.lean"
+  ],
+  "cwd": "/private/tmp/minidregg-polynomial-gluing-20260908",
+  "exit_code": 0,
+  "elapsed_seconds": 39.79336254199734,
+  "source_sha256": "ce6255d764e4929ac20c794871c3a4170b8efb962ac1ce79fd517fdc9d9f88f3",
+  "stdout": "",
+  "stderr": ""
+}

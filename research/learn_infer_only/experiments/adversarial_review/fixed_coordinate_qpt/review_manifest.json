@@ -1,0 +1,57 @@
+{
+  "schema": "independent-fixed-coordinate-qpt-review-v1",
+  "claim_kind": "EXECUTED",
+  "reviewer": "/root/independent_review",
+  "as_of_date_utc": "2026-09-08",
+  "subject_sha256": "4c43bce409495edf9c9d5b8e4ada0581af5be0ecf6ff949fbd99fdbfd3da62fe",
+  "original_audit_sha256": "2c6f649fa0891be05dd1f3a1f89c935692091195e71f0b1959d78b5ef9061007",
+  "verdict": "Accept derived fixed-coordinate theorem and asymptotic witness; match advice hardness class, retain statistical losses and require n-d=omega(log n) for negligible security",
+  "checks": {
+    "author_and_primary_source_files_unchanged": true,
+    "source_pins": 4,
+    "visual_pages": 3,
+    "finite_controls_exit_code": 0,
+    "stderr_empty": true,
+    "python_compile": true,
+    "whitespace": true,
+    "report_under_400_lines": true
+  },
+  "activity": {
+    "crypto_runtime": 0,
+    "private_file_reads_or_hashes": 0,
+    "protocol_controls": 0,
+    "network_queries": 0,
+    "author_edits": 0,
+    "commits": 0
+  },
+  "artifacts": [
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/.gitignore",
+      "sha256": "1fc884e1dc23be501b54c2be5209caf32c10197807e591162677a0fe4158cfe7"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/REPORT.md",
+      "sha256": "eb9a13c0fb8bcc4bb2147efb15f6e5cb251cfa1dabc541c8aab5165424c2df2d"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/check.py",
+      "sha256": "85b5040e0813bd0fd9a513005fd8915000e40350678e743ce9fa2bbe25ef6654"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/results.json",
+      "sha256": "869251d5e17c4b5f49a500aa601806c8092cf85b62b8103c22ceecfdf8ffbf31"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/stdout.txt",
+      "sha256": "7f7890e06b94512dd59284782b60e54cc662a8bcc084aa224cfdf48ab0ac1f24"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/fixed_coordinate_qpt/visual_access.json",
+      "sha256": "193aeadf763d0a0b2e7c3ad0e2576fcc0762cc67ec1b7c7582d7411465c66c5f"
+    }
+  ]
+}

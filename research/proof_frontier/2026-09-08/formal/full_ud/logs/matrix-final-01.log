@@ -1,0 +1,1 @@
+Theory/RSInterpolationMatrix.lean:11:0: error: object file '/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean/Mathlib/LinearAlgebra/Matrix/Vandermonde.olean' of module Mathlib.LinearAlgebra.Matrix.Vandermonde does not exist

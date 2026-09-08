@@ -1,0 +1,610 @@
+{
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "checkout": "/tmp/minidregg-full-ud-20260908",
+  "owned_modules": 10,
+  "owned_declarations": 38,
+  "owned_lines": 1992,
+  "owned_pins": 38,
+  "dependency_modules": 4,
+  "modules": [
+    {
+      "path": "Theory/RSInterpolationMatrix.lean",
+      "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "lines": 390,
+      "declarations": [
+        "BW_homMatrix_entry_natDegree_eq_zero_of_ge",
+        "BW_homMatrix_entry_natDegree_le_one",
+        "BW_homMatrix_map_evalRingHom",
+        "BW_homMatrix_mulVec_eq_zero_iff",
+        "Fin_sum_ite_lt_e_add_one",
+        "BW_homMatrix_det_submatrix_natDegree_le_e_add_one",
+        "RS_isUnit_det_vandermonde_C_of_injective",
+        "RS_mulVec_append_castAdd_natAdd",
+        "RS_natDegree_inv_neg_vandermonde_C_eq_zero"
+      ],
+      "pins": [
+        "BW_homMatrix_entry_natDegree_eq_zero_of_ge",
+        "BW_homMatrix_entry_natDegree_le_one",
+        "BW_homMatrix_map_evalRingHom",
+        "BW_homMatrix_mulVec_eq_zero_iff",
+        "Fin_sum_ite_lt_e_add_one",
+        "BW_homMatrix_det_submatrix_natDegree_le_e_add_one",
+        "RS_isUnit_det_vandermonde_C_of_injective",
+        "RS_mulVec_append_castAdd_natAdd",
+        "RS_natDegree_inv_neg_vandermonde_C_eq_zero"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Theory/RSInterpolationKernel.lean",
+      "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+      "lines": 346,
+      "declarations": [
+        "det_eq_zero_of_specializations",
+        "bounded_kernel_of_specializations"
+      ],
+      "pins": [
+        "det_eq_zero_of_specializations",
+        "bounded_kernel_of_specializations"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Selvage/FullUDStatement.lean",
+      "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+      "lines": 96,
+      "declarations": [
+        "x_mem",
+        "one_mem",
+        "premise_inhabited",
+        "conclusion_inhabited"
+      ],
+      "pins": [
+        "x_mem",
+        "one_mem",
+        "FullUDWitness.premise_inhabited",
+        "FullUDWitness.conclusion_inhabited"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Selvage/FullUDTeeth.lean",
+      "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+      "lines": 118,
+      "declarations": [
+        "affine_mem",
+        "codeword_affine",
+        "all_folds_close",
+        "common_affine_card",
+        "no_joint_three",
+        "radius_hypothesis_necessary"
+      ],
+      "pins": [
+        "radius_hypothesis_necessary",
+        "affine_mem",
+        "codeword_affine",
+        "all_folds_close",
+        "common_affine_card",
+        "no_joint_three"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Selvage/FullUDInterpolation.lean",
+      "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+      "lines": 178,
+      "declarations": [
+        "bw_specialization_of_close",
+        "bw_bounded_kernel_of_many_close"
+      ],
+      "pins": [
+        "bw_specialization_of_close",
+        "bw_bounded_kernel_of_many_close"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Selvage/FullUDBivariate.lean",
+      "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+      "lines": 203,
+      "declarations": [
+        "bw_bivariate_of_many_close"
+      ],
+      "pins": [
+        "bw_bivariate_of_many_close"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Selvage/FullUDCore.lean",
+      "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+      "lines": 343,
+      "declarations": [
+        "rs_nearby_polynomial",
+        "fullUDCardCore"
+      ],
+      "pins": [
+        "fullUDCardCore",
+        "rs_nearby_polynomial"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Selvage/ProximityGapFullUD.lean",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "lines": 132,
+      "declarations": [
+        "correlatedAgreement_of_many_close_fullUD",
+        "reedSolomonCode_isProximityGenerator_fullUD",
+        "hasMutualCorrelatedAgreement_fullUD",
+        "foldDistancePreserving_fullUD"
+      ],
+      "pins": [
+        "reedSolomonCode_isProximityGenerator_fullUD",
+        "hasMutualCorrelatedAgreement_fullUD",
+        "foldDistancePreserving_fullUD",
+        "correlatedAgreement_of_many_close_fullUD"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Selvage/FullUDFriConsumer.lean",
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+      "lines": 115,
+      "declarations": [
+        "proximity_sound_halfThen_fullUD",
+        "proximity_sound_rateHalf_twoFifths_fullUD",
+        "rateHalf_twoFifths_new_band",
+        "committedFri_sound_halfThen_fullUD"
+      ],
+      "pins": [
+        "proximity_sound_halfThen_fullUD",
+        "committedFri_sound_halfThen_fullUD",
+        "proximity_sound_rateHalf_twoFifths_fullUD",
+        "rateHalf_twoFifths_new_band"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Selvage/FullUDWitnesses.lean",
+      "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf",
+      "lines": 71,
+      "declarations": [
+        "line_pr_one_fullUD",
+        "good_line_CA_fullUD",
+        "old_band_rejects_fullUD_witness",
+        "fullUD_generator_premise_inhabited"
+      ],
+      "pins": [
+        "line_pr_one_fullUD",
+        "good_line_CA_fullUD",
+        "old_band_rejects_fullUD_witness",
+        "fullUD_generator_premise_inhabited"
+      ],
+      "missing_pins": [],
+      "owned": true
+    },
+    {
+      "path": "Theory/PolynomialMatrixKernel.lean",
+      "sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+      "lines": 582,
+      "declarations": [
+        "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+        "RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+        "RS_det_submatrix_eq_zero_of_det_eq_zero",
+        "RS_mulVec_adjugate_col_eq_det",
+        "RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+        "RS_natDegree_det_le_of_entry_natDegree_le_one",
+        "adjugate_updateRow_same_col",
+        "det_updateRow_eq_sum_mul_adjugate_col",
+        "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+        "correctness",
+        "witnessMatrix_premises",
+        "witnessVector_valid",
+        "premises_inhabited",
+        "satisfiable",
+        "determinant_hypothesis_teeth",
+        "degree_bound_teeth"
+      ],
+      "pins": [
+        "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+        "PolynomialMatrixKernel.correctness",
+        "PolynomialMatrixKernel.witnessMatrix_premises",
+        "PolynomialMatrixKernel.witnessVector_valid",
+        "PolynomialMatrixKernel.premises_inhabited",
+        "PolynomialMatrixKernel.satisfiable",
+        "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+        "PolynomialMatrixKernel.degree_bound_teeth",
+        "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+        "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+        "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+        "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+        "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+        "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+        "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+        "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col"
+      ],
+      "missing_pins": [],
+      "owned": false
+    },
+    {
+      "path": "Theory/PolynomialBivariate.lean",
+      "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+      "lines": 282,
+      "declarations": [
+        "leadingCoeffY_eq_zero",
+        "leadingCoeffY_ne_zero",
+        "degreeY_mul",
+        "coeff_natDegree_le_degreeX",
+        "evalX_eq_map",
+        "degreeX_swap",
+        "evalY_eq_evalX_swap",
+        "natDegreeY_swap",
+        "degreeX_mul",
+        "evalX_mul"
+      ],
+      "pins": [
+        "Polynomial.Bivariate.leadingCoeffY_eq_zero",
+        "Polynomial.Bivariate.leadingCoeffY_ne_zero",
+        "Polynomial.Bivariate.degreeY_mul",
+        "Polynomial.Bivariate.coeff_natDegree_le_degreeX",
+        "Polynomial.Bivariate.evalX_eq_map",
+        "Polynomial.Bivariate.degreeX_swap",
+        "Polynomial.Bivariate.evalY_eq_evalX_swap",
+        "Polynomial.Bivariate.natDegreeY_swap",
+        "Polynomial.Bivariate.degreeX_mul",
+        "Polynomial.Bivariate.evalX_mul"
+      ],
+      "missing_pins": [],
+      "owned": false
+    },
+    {
+      "path": "Theory/PolynomialGluingStatement.lean",
+      "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+      "lines": 93,
+      "declarations": [
+        "polynomialGluing_premise_inhabited",
+        "polynomialGluing_satisfiable",
+        "polynomialGluing_teeth"
+      ],
+      "pins": [
+        "polynomialGluing_premise_inhabited",
+        "polynomialGluing_satisfiable",
+        "polynomialGluing_teeth"
+      ],
+      "missing_pins": [],
+      "owned": false
+    },
+    {
+      "path": "Theory/PolynomialGluing.lean",
+      "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+      "lines": 1190,
+      "declarations": [
+        "ps_bx_lt_nx",
+        "ps_by_lt_ny",
+        "ps_card_eval_x_eq_zero_le_degree_x",
+        "ps_card_eval_y_eq_zero_le_nat_degree_y",
+        "ps_coeff_mul_monomial_ite",
+        "ps_coeff_mul_sum_monomial",
+        "ps_degree_x_swap",
+        "ps_descend_eval_x",
+        "ps_descend_eval_y",
+        "ps_eval_x_eq_map",
+        "ps_eval_y_eq_eval_x_swap",
+        "ps_exists_x_preserve_nat_degree_y",
+        "ps_exists_y_preserve_degree_x",
+        "ps_filter_nonzero_card_y",
+        "ps_filter_nonzero_card_x",
+        "ps_degX_bound",
+        "ps_degY_bound",
+        "ps_degree_bounds_of_mul",
+        "ps_gcd_decompose",
+        "ps_is_rel_prime_swap",
+        "ps_nat_degree_y_swap",
+        "ps_nat_degree_mul_x_pow_le",
+        "ps_nat_degree_resultant_le",
+        "ps_resultant_map",
+        "ps_resultant_eval_x",
+        "ps_sylvester_map",
+        "ps_sylvester_mul_vec_eq_coeff_add",
+        "ps_resultant_dvd_pow_eval_x",
+        "ps_resultant_dvd_pow_eval_y",
+        "ps_resultant_ne_zero_of_is_rel_prime",
+        "ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero",
+        "ps_exists_qx_of_cancel",
+        "ps_exists_qy_of_cancel",
+        "ps_coprime_case_constant",
+        "ps_exists_p_nonzero",
+        "ps_exists_p",
+        "polishchuk_spielman",
+        "polynomialGluing"
+      ],
+      "pins": [
+        "polishchuk_spielman",
+        "polynomialGluing",
+        "ps_bx_lt_nx",
+        "ps_by_lt_ny",
+        "ps_card_eval_x_eq_zero_le_degree_x",
+        "ps_card_eval_y_eq_zero_le_nat_degree_y",
+        "ps_coeff_mul_monomial_ite",
+        "ps_coeff_mul_sum_monomial",
+        "ps_degree_x_swap",
+        "ps_descend_eval_x",
+        "ps_descend_eval_y",
+        "ps_eval_x_eq_map",
+        "ps_eval_y_eq_eval_x_swap",
+        "ps_exists_x_preserve_nat_degree_y",
+        "ps_exists_y_preserve_degree_x",
+        "ps_filter_nonzero_card_y",
+        "ps_filter_nonzero_card_x",
+        "ps_degX_bound",
+        "ps_degY_bound",
+        "ps_degree_bounds_of_mul",
+        "ps_gcd_decompose",
+        "ps_is_rel_prime_swap",
+        "ps_nat_degree_y_swap",
+        "ps_nat_degree_mul_x_pow_le",
+        "ps_nat_degree_resultant_le",
+        "ps_resultant_map",
+        "ps_resultant_eval_x",
+        "ps_sylvester_map",
+        "ps_sylvester_mul_vec_eq_coeff_add",
+        "ps_resultant_dvd_pow_eval_x",
+        "ps_resultant_dvd_pow_eval_y",
+        "ps_resultant_ne_zero_of_is_rel_prime",
+        "ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero",
+        "ps_exists_qx_of_cancel",
+        "ps_exists_qy_of_cancel",
+        "ps_coprime_case_constant",
+        "ps_exists_p_nonzero",
+        "ps_exists_p"
+      ],
+      "missing_pins": [],
+      "owned": false
+    }
+  ],
+  "patch_sha256": "1e7a4c2292766f8b02a80879ef288915d610b67b5c070d8892db8661a8146cb2",
+  "exact_byte_checks_complete": true,
+  "checks": [
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Theory/PolynomialMatrixKernel.olean",
+        "Theory/PolynomialMatrixKernel.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+      "source_unchanged": true,
+      "elapsed_s": 19.048081874847412,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-01.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Theory/PolynomialBivariate.olean",
+        "Theory/PolynomialBivariate.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+      "source_unchanged": true,
+      "elapsed_s": 21.924387216567993,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-02.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Theory/PolynomialGluingStatement.olean",
+        "Theory/PolynomialGluingStatement.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+      "source_unchanged": true,
+      "elapsed_s": 8.209594964981079,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-03.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Theory/PolynomialGluing.olean",
+        "Theory/PolynomialGluing.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+      "source_unchanged": true,
+      "elapsed_s": 17.92096710205078,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-04.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Theory/RSInterpolationMatrix.olean",
+        "Theory/RSInterpolationMatrix.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+      "source_unchanged": true,
+      "elapsed_s": 10.085508108139038,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-05.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Theory/RSInterpolationKernel.olean",
+        "Theory/RSInterpolationKernel.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+      "source_unchanged": true,
+      "elapsed_s": 12.617788076400757,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-06.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDStatement.olean",
+        "Selvage/FullUDStatement.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+      "source_unchanged": true,
+      "elapsed_s": 8.250354766845703,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-07.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDTeeth.olean",
+        "Selvage/FullUDTeeth.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+      "source_unchanged": true,
+      "elapsed_s": 8.902896881103516,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-08.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDInterpolation.olean",
+        "Selvage/FullUDInterpolation.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+      "source_unchanged": true,
+      "elapsed_s": 11.733479976654053,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-09.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDBivariate.olean",
+        "Selvage/FullUDBivariate.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+      "source_unchanged": true,
+      "elapsed_s": 10.442678928375244,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-10.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDCore.olean",
+        "Selvage/FullUDCore.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+      "source_unchanged": true,
+      "elapsed_s": 13.311755895614624,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-11.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/ProximityGapFullUD.olean",
+        "Selvage/ProximityGapFullUD.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "source_unchanged": true,
+      "elapsed_s": 14.620151042938232,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-12.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDFriConsumer.olean",
+        "Selvage/FullUDFriConsumer.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+      "source_unchanged": true,
+      "elapsed_s": 9.343991041183472,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-13.log"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-o",
+        "/tmp/minidregg-full-ud-20260908/.lake/build/lib/lean/Selvage/FullUDWitnesses.olean",
+        "Selvage/FullUDWitnesses.lean"
+      ],
+      "cwd": "/tmp/minidregg-full-ud-20260908",
+      "exit_code": 0,
+      "source_sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf",
+      "source_unchanged": true,
+      "elapsed_s": 10.261608839035034,
+      "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/logs/freeze-14.log"
+    }
+  ],
+  "umbrella_imports_proposed": [
+    "Selvage.FullUDFriConsumer",
+    "Selvage.FullUDWitnesses"
+  ],
+  "source_arklib_commit": "22dbd4e836c15a21f68889afa69b7130da04abbb",
+  "all_pins_standard_only": "Each guard requires exactly propext, Classical.choice, Quot.sound; see final Lean checks.",
+  "external_queries_added_during_formalization": 0
+}

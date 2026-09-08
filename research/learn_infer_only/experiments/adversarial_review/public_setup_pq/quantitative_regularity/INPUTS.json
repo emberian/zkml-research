@@ -1,0 +1,47 @@
+{
+  "kappa": 160,
+  "profiles": [
+    {
+      "M": 268435456,
+      "T": 384,
+      "W": 32,
+      "d": 577,
+      "k": 2748,
+      "label": "full_source_prescription_normalized",
+      "m": 536870912,
+      "n": 1024,
+      "p": 28439893,
+      "r": 16,
+      "sigma1_pow2": 16942
+    },
+    {
+      "M": 1048576,
+      "T": 384,
+      "W": 32,
+      "d": 577,
+      "k": 13,
+      "label": "fixed_coordinate_polynomial_family",
+      "m": 2097152,
+      "n": 1024,
+      "p": 28439893,
+      "r": 16,
+      "sigma1_pow2": 20
+    },
+    {
+      "M": 4194304,
+      "T": 384,
+      "W": 32,
+      "d": 577,
+      "k": 15,
+      "label": "fixed_coordinate_polynomial_family",
+      "m": 8388608,
+      "n": 4096,
+      "p": 28439893,
+      "r": 16,
+      "sigma1_pow2": 24
+    }
+  ],
+  "scope": "Selected public cost-profile parameters only; not certified cryptographic parameters",
+  "source": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/results.json",
+  "source_sha256": "93783ef7735ace3c7f033dfbe58cae60f5f8fbc74b53ed62b7b6729500533138"
+}

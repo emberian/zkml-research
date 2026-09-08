@@ -1,0 +1,465 @@
+{
+  "schema": 1,
+  "prior_source_checks": [
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/server_key/mod.rs",
+      "matches_prior_pin": true
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/ciphertext/mod.rs",
+      "matches_prior_pin": true
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs",
+      "matches_prior_pin": true
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/bootstrapping.rs",
+      "matches_prior_pin": true
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/parameters/params.rs",
+      "matches_prior_pin": true
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/public_key/standard.rs",
+      "matches_prior_pin": true
+    }
+  ],
+  "crate_archives": [
+    {
+      "path": "/Users/ember/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3.crate",
+      "bytes": 1755311,
+      "sha256": "65191ecd03bb34ac41df98958a8445d5e062de19843cde95ccad8deff2e22194",
+      "matches_cargo_lock": true
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1.crate",
+      "bytes": 102001,
+      "sha256": "960a6a2ef1869320837e3d45ab60bbc031c045005eb2578b20fe074a982c2e56",
+      "matches_cargo_lock": true
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/bincode-1.3.3.crate",
+      "bytes": 28958,
+      "sha256": "b1f45e9417d87227c7a56d22e471c6206462cba514c7590c09aff4cf6d1ddcad",
+      "matches_cargo_lock": true
+    }
+  ],
+  "selected_sources": [
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/server_key/mod.rs",
+      "bytes": 5428,
+      "sha256": "bf88871068b974a5496f861c076d8ef9714ef193742d57dba96c42f7d0e9f82a",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          80,
+          159
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/ciphertext/mod.rs",
+      "bytes": 1537,
+      "sha256": "d2650d683cc9a23de5e8d2f700180c68e793ae038fc6376522f4f1c6e8e5b48a",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          1,
+          20
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/mod.rs",
+      "bytes": 38336,
+      "sha256": "645ca26eab47b80d16c3088b1ab776966462d4bf2b3516567559d3b4234141f5",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          203,
+          280
+        ],
+        [
+          325,
+          349
+        ],
+        [
+          389,
+          410
+        ],
+        [
+          411,
+          553
+        ],
+        [
+          558,
+          596
+        ],
+        [
+          710,
+          748
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/bootstrapping.rs",
+      "bytes": 21651,
+      "sha256": "d330528dd580177e21843b1ddb504bd6e2f2eda45f46b780461f4a2fbd66cfd5",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          325,
+          386
+        ],
+        [
+          445,
+          604
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/parameters/params.rs",
+      "bytes": 3618,
+      "sha256": "3ac1db249c48c031b144f1e2300531af228196d089bedad810655922ccbb8d69",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          45,
+          63
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs",
+      "bytes": 25896,
+      "sha256": "3157e01727300ac29dbd516ff9d01905e3de0da8b98b77eb4293439c6c5f9bcf",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          60,
+          119
+        ],
+        [
+          161,
+          197
+        ],
+        [
+          268,
+          330
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/crypto/bootstrap.rs",
+      "bytes": 25554,
+      "sha256": "4a672bb4f4de85689be5ffdbb3c2eda07a78d5e1362d10445377e9574187b885",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          294,
+          366
+        ],
+        [
+          481,
+          519
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/crypto/ggsw.rs",
+      "bytes": 26981,
+      "sha256": "e686210f50b68719b0706cded16d46cf32556e6b9c4f25b1c23b3a6f0f866232",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          483,
+          611
+        ],
+        [
+          616,
+          698
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_programmable_bootstrapping/fft64_pbs.rs",
+      "bytes": 42310,
+      "sha256": "21c8009e0999c78401dea57a1d7bcbe91c47b80b231357b42eab9552a20abd71",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          984,
+          1040
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/algorithms/lwe_keyswitch.rs",
+      "bytes": 39990,
+      "sha256": "4e21ac924972ca8884257aa5bb778f672c07b4c35be542b51e86583bfcd45913",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          103,
+          134
+        ],
+        [
+          189,
+          228
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/math/torus/mod.rs",
+      "bytes": 5901,
+      "sha256": "f20d224653e19fb55b979d4c9a1f6f716d99349e430e38b7a275935c7d5d0d8d",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          66,
+          79
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/entities/lwe_ciphertext.rs",
+      "bytes": 26496,
+      "sha256": "8f8d9139e15cdfa2c67fe45cc3dd51ffeb90163741e4c87555b8d34b2ce295a2",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          533,
+          544
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/commons/ciphertext_modulus.rs",
+      "bytes": 19583,
+      "sha256": "2e150c5daa8e289b8a9aca46d056c9dbb1ebed67d8ccf246f2c950a30d097ab9",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          25,
+          54
+        ],
+        [
+          79,
+          92
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/Cargo.toml",
+      "bytes": 8434,
+      "sha256": "384820d9391ec42b1c737b4d5617554534e45dca5b3b5c7b930596fb150c6ceb",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          62,
+          100
+        ],
+        [
+          365,
+          371
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/ordered.rs",
+      "bytes": 15239,
+      "sha256": "d7533465583e251dd6c6f9d2e46a50735281f77fab914a62d127ae7e204dc494",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          1,
+          59
+        ],
+        [
+          62,
+          83
+        ],
+        [
+          99,
+          178
+        ],
+        [
+          204,
+          223
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/unordered.rs",
+      "bytes": 278033,
+      "sha256": "06443ae63ac2d0df68c317a6eb2e45ad4cda410b864c4d85ff9d3666d523c021",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          490,
+          635
+        ],
+        [
+          654,
+          700
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bincode-1.3.3/src/lib.rs",
+      "bytes": 6718,
+      "sha256": "c68480ac64127e196b49b75a676b7c3a3bd723020b168b4f6093a64feb548b2e",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          99,
+          117
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bincode-1.3.3/src/ser/mod.rs",
+      "bytes": 19872,
+      "sha256": "a9cbf0b6c24c73d6f51994ebdb4c3b8ecd410011b083b7a882d823a7271d2221",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          149,
+          180
+        ],
+        [
+          184,
+          197
+        ]
+      ]
+    },
+    {
+      "path": "/Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bincode-1.3.3/src/config/mod.rs",
+      "bytes": 13997,
+      "sha256": "d79766ac15a213293e8d684ba639e0968bf883214007ffcab6c9f7128a12bdb6",
+      "archive_bytes_match": true,
+      "read_ranges": [
+        [
+          55,
+          74
+        ]
+      ]
+    }
+  ],
+  "public_evidence": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/started.json",
+      "bytes": 400,
+      "sha256": "c90af4a5d459069a740776bf44c7e8a918b97856813420430c48d4cb35698c6d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/failure.json",
+      "bytes": 183,
+      "sha256": "9ba0e51862a33624dab8fc7a393f84e9035c8d3c46c8b34fdc89776be2f82524"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/progress.json",
+      "bytes": 266,
+      "sha256": "778b53deb6e8c90ee57732fecf615f9f0a8d4f2b16b68503fa160cb19846b5e7"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/public_operations.jsonl",
+      "bytes": 212701,
+      "sha256": "8a903413dc7048b23cd0d8c056a039b909e348f0782745a84317138930912c0a"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/replays.jsonl",
+      "bytes": 21988,
+      "sha256": "62e6b2e1acb1619e594cea7541d5553b54f44fa37c73ad64d46b7904b3468967"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/events.jsonl",
+      "bytes": 23336,
+      "sha256": "8aced2acc4cf4ce9a6bf6f99f330b8eca0851c8273e4a36095f74728c3d5f43e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/public_keys.json",
+      "bytes": 656,
+      "sha256": "e64fccc55f1896b00d29d993bfddd2240309d0cb4bc46430fd28ccd6bae392bb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/reports/run001/public_failure_audit.json",
+      "bytes": 40621,
+      "sha256": "c089857dee7190932e8d644d6bf72c9aec60c36c4bd9b8753267cb20aeb9ccf4"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/manifest.json",
+      "bytes": 5385,
+      "sha256": "921fc2263825a99ac22efc6a2ba88cc8d3c11a092b31a7685aeacef3a870b08d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/source_checkpoint.json",
+      "bytes": 2856,
+      "sha256": "2cfc101453e3bb9de17f8dd3a95f2a47f93d228beb56c394bd4d00a4f9e8898d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/.fingerprint/tfhe-c88aa25edc01de9a/lib-tfhe.json",
+      "bytes": 2093,
+      "sha256": "e74360e41f1768ed5a5e43719fb5cf7b20673925b09fa381801b3aaa1d0887ad"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/target/release/host",
+      "bytes": 1001984,
+      "sha256": "d45d096a68a46ecfde022bf2b35a30d512d93d5cb333c9097f64c04aeeebe474"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.toml",
+      "bytes": 219,
+      "sha256": "888637418d68f3688acec178273e8284e6789b6cccc3f1f7eb545523f86eece0"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/Cargo.lock",
+      "bytes": 15444,
+      "sha256": "6a677322ed8b8db7bba5f785148d3c9e0d6cfe46a7e666665b06f22d78065fa5"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/lib.rs",
+      "bytes": 4648,
+      "sha256": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/src/bin/host.rs",
+      "bytes": 1826,
+      "sha256": "f0ba609bdf7d6a2ad2b83298b526d8fecf4d8569f7db28af6c5306c14e159ac2"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/source_manifest.json",
+      "bytes": 8635,
+      "sha256": "2dd31102c7ed58a974814f48102ec2a1f9228b984c766c5b5c47ec5d695b2339"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/freeze.json",
+      "bytes": 9186,
+      "sha256": "1a47a33cad3e0858a5b2437e3b5edc002cfe3a0fff0a496136b7587604332929"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/run.py",
+      "bytes": 8830,
+      "sha256": "7311a8fc433813445705367c5373262c5993c00140cdc18d5f70f82bc565892d"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/CONTRACT.md",
+      "bytes": 5058,
+      "sha256": "fe1015df3937660158b8d7d756c246855c48bf7f05337ef03291afcb8ad6bb02"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/run.command.json",
+      "bytes": 265,
+      "sha256": "44676327c20b3088a362e711cb6189bf5b834c7dc33d8f86c150b073c692719e"
+    }
+  ],
+  "queries": {
+    "web": 0,
+    "scry": 0,
+    "kagi": 0,
+    "crypto": 0,
+    "private_decoder": 0
+  }
+}

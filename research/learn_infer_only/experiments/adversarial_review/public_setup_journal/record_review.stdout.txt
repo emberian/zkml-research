@@ -1,0 +1,14 @@
+{
+  "finalized_envelopes": 44,
+  "learns": 40,
+  "infers": 4,
+  "exact_fifo_expiries": 8,
+  "normal_historical_retries": 2,
+  "reopen_revision": 22,
+  "public_command_records": 735,
+  "named_exported_logs": 7,
+  "parsed_public_log_records": 917,
+  "parsed_nested_stdout_documents": 823,
+  "host_requests": 44,
+  "service_starts": 4
+}

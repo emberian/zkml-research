@@ -1,0 +1,12 @@
+{
+  "learn.json": {
+    "bytes": 28772,
+    "full_bytes_equal": true,
+    "sha256": "94e8369ffc8fcdf57b8351b278d5af90dc49a26d83600d40f0bd6a0da359dde8"
+  },
+  "infer.json": {
+    "bytes": 556,
+    "full_bytes_equal": true,
+    "sha256": "b742ed7710d2680119eceeff0c553d675e1ce187a503981fc500a6a4a683b80c"
+  }
+}

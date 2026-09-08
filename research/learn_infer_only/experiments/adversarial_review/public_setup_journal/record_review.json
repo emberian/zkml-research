@@ -1,0 +1,170 @@
+{
+  "claim_kind": "EXECUTED",
+  "scope": "Independent canonical hash/state/record controls on exported public artifacts; no cryptographic verification or private reads",
+  "genesis": "0c81dbc0158b6703c3cc50b1ba4b6ed4e4ad07aed2e7acd8b9c98909deb9e8d3",
+  "final_state_digest": "16ebef46e0c5d19d9601519482cc985ac7c49a09af2aade5109fffa2c8615e83",
+  "checks": {
+    "finalized_envelopes": 44,
+    "learns": 40,
+    "infers": 4,
+    "exact_fifo_expiries": 8,
+    "normal_historical_retries": 2,
+    "reopen_revision": 22,
+    "public_command_records": 735,
+    "named_exported_logs": 7,
+    "parsed_public_log_records": 917,
+    "parsed_nested_stdout_documents": 823,
+    "host_requests": 44,
+    "service_starts": 4
+  },
+  "public_command_counts": [
+    {
+      "role": "authority",
+      "command": "host-infer",
+      "count": 4
+    },
+    {
+      "role": "authority",
+      "command": "host-learn",
+      "count": 40
+    },
+    {
+      "role": "authority",
+      "command": "inspect",
+      "count": 107
+    },
+    {
+      "role": "honest_public_setup",
+      "command": "auth-init",
+      "count": 1
+    },
+    {
+      "role": "honest_public_setup",
+      "command": "public-build",
+      "count": 1
+    },
+    {
+      "role": "honest_public_setup",
+      "command": "recipient-init",
+      "count": 16
+    },
+    {
+      "role": "honest_public_setup",
+      "command": "verify-public",
+      "count": 1
+    },
+    {
+      "role": "honest_setup",
+      "command": "encode-query",
+      "count": 16
+    },
+    {
+      "role": "honest_setup",
+      "command": "params",
+      "count": 1
+    },
+    {
+      "role": "honest_setup",
+      "command": "recipient-finalize",
+      "count": 16
+    },
+    {
+      "role": "honest_setup",
+      "command": "validate-context",
+      "count": 1
+    },
+    {
+      "role": "host",
+      "command": "host-infer",
+      "count": 4
+    },
+    {
+      "role": "host",
+      "command": "host-learn",
+      "count": 40
+    },
+    {
+      "role": "host",
+      "command": "inspect",
+      "count": 84
+    },
+    {
+      "role": "independent_public_replay",
+      "command": "host-infer",
+      "count": 4
+    },
+    {
+      "role": "independent_public_replay",
+      "command": "host-learn",
+      "count": 40
+    },
+    {
+      "role": "independent_public_replay",
+      "command": "inspect",
+      "count": 84
+    },
+    {
+      "role": "issuer",
+      "command": "issuer-encrypt",
+      "count": 40
+    },
+    {
+      "role": "public_transport",
+      "command": "inspect",
+      "count": 84
+    },
+    {
+      "role": "reader",
+      "command": "host-infer",
+      "count": 4
+    },
+    {
+      "role": "reader",
+      "command": "host-learn",
+      "count": 40
+    },
+    {
+      "role": "reader",
+      "command": "inspect",
+      "count": 107
+    }
+  ],
+  "author_reported_only": {
+    "all_four_private_integer_comparisons_match": true,
+    "private_retry_new_decodes": 0,
+    "processes_closed_before_private_drain": "source control-flow and public completion record; no private phase timing read"
+  },
+  "limitations": [
+    "No group recomputation or signature verification in this reviewer",
+    "No private score, scalar, private file/hash or decoder execution",
+    "Hash chains and log schemas do not prove OS isolation or side-channel privacy"
+  ],
+  "public_artifacts_sha256": {
+    "COMMAND.json": "1a9e910b98c6bf02b510b848f14067ba1c4de5b62e4df6186dab1d00cbe61b20",
+    "accepted_envelopes.json": "efc23ee91f4e083039827817519ab739b5296bd1408f8e2ddbd9ebb886652358",
+    "authority-server.jsonl.gz": "33171f59375865ab0b6baf24cc458cd9c8d4ad8fc5a296dd01faba505e85f32e",
+    "closeout.stdout.json": "f837e1dd661c3f102c55ab85c2105e21f7d06a592931123f62fd1278e5f74527",
+    "commands.jsonl.gz": "26b2d0539773214a843a08c76d5b5e2f7f74243f5cf2ede2a1330d40479b4832",
+    "context_validation.json": "f7371662756639666e89c35532532fb2e88c37b59623db8894f0cb4b0ec54ca8",
+    "events.jsonl.gz": "2780079f58d2462929390f2891365b51463a5e543a10945c52c413c4fa8b1a5f",
+    "execution_pins.json": "12c614b917156b8f8a0e0cba0e3655e09c51e689a4a314dff73eba3819e5c390",
+    "genesis.json": "70a2a629bc6668f383d27b2dba704a9cfc93da12306ce75b232a617341feb4f2",
+    "host_worker.jsonl.gz": "ef3963cbe08e22e5453adf818013fc838faba4e1d3a88bdebc289f74c2dbdfe4",
+    "launched.json": "d58472e4193a1c5ecfba5003b230cb138e749744d1fa99934f7a1dc9f94b8e1e",
+    "orderly_reopen.json": "4d07d5e33349438ec3c4d3293bb7c4f7b9fac2e6a4263d42740b56770022e008",
+    "public_ciphertext_inventory.json": "7e93dc7c4e6a2979e7f23d91f70102156a371d3ba310534a22cbea8535811e15",
+    "public_complete.json": "d9defca4a105c268e31951098a1f18fc26d7c56e87742f954812a6b81376b278",
+    "public_context.json": "b060f1ae45ae1df7d3ed31b20364a884aebdc537b8ad27036b817f04cc9757c6",
+    "public_log_audit.json": "e9c044df8e25b90e968cc98462c5efd5039fcab5501b90bd024afa479da587e7",
+    "public_setup_verification.json": "4f4320819b5d42d2aa98b685354c6ca3c6520683457dda678a763400120a4e1f",
+    "public_transcript.json": "21e1c3ef7de039eef25084d55ad64fbf76dc96ee6b98c8d31b3ab9093b8c62aa",
+    "reader-server.jsonl.gz": "cfd43fb7a0c528f22990d050d6c043588d901453473527b786e05db00a558632",
+    "registry.json": "592962f5d69b94312da99c54679b9397580946c9a0e70691cc969c45f7279ce2",
+    "replay.json.gz": "ca6c7ff2e34c4c4f67fbec3924bec202ce6df791c2a94ab8d6684ff985a9fdd4",
+    "report.json": "9d70fbdde313b91ae732af11d004597dfcf8f6a17a9bbdabd3fb535b0357d791",
+    "role_calls.jsonl.gz": "a459532402536209c560de7d4190bc4370138aeb62d8001a33cce1ff52ae9b99",
+    "seal.json": "e9d2716c5ecf48a90a7a02faf860b176b975de0fce4914776debaffcfce8d743",
+    "server_processes.jsonl.gz": "23df1ee6cbb4d1226c85d714acf61c72d86cd4ab5f9ff8859700c8583fb45a7d",
+    "setup_report.json": "d271efa1c43bd6baa3fb7946c1308133844fb744888d9e6675681d2d4dd074da"
+  }
+}

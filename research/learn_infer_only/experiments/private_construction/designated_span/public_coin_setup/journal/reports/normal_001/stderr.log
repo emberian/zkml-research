@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/driver.py", line 189, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/driver.py", line 188, in main
+    else:require(a.root is not None,'rootRequired');run(a.root.resolve(),reports)
+                                                    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/driver.py", line 98, in run
+    setup_result=setup(root)
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/setup_join.py", line 52, in setup
+    registry=root/'registry.json';reg=call('auth-init',private=private/'registration',out=registry)
+                                      ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/setup_join.py", line 51, in call
+    require(out.returncode==0,'publicSetupCommand:'+command);return json.loads(out.stdout)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/source/journal/common.py", line 10, in require
+    if not condition:raise Refusal(reason)
+                     ^^^^^^^^^^^^^^^^^^^^^
+common.Refusal: publicSetupCommand:auth-init

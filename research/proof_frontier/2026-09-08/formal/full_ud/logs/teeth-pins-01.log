@@ -1,0 +1,11 @@
+'_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.affine_mem' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.codeword_affine' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FullUDTeeth.all_folds_close' depends on axioms: [propext, Classical.choice, Quot.sound]
+'_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.common_affine_card' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FullUDTeeth.no_joint_three' depends on axioms: [propext, Classical.choice, Quot.sound]

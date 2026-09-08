@@ -1,0 +1,38 @@
+Selvage/FullUDWitnesses.lean:27:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  {z ∈ ?m.151 | close (1 / 5) (reedSolomonCode dom 4) (comb ((affineGenerator (ZMod 11)).gen z) pair)}
+in the target expression
+  ∑ ω with (fun r => close (1 / 5) (reedSolomonCode dom 4) (comb r pair)) ((affineGenerator (ZMod 11)).gen ω),
+      (affineGenerator (ZMod 11)).weight ω =
+    1
+
+hall : ∀ (z : ZMod 11), close (1 / 5) (reedSolomonCode dom 4) (comb ((affineGenerator (ZMod 11)).gen z) pair)
+⊢ ∑ ω with (fun r => close (1 / 5) (reedSolomonCode dom 4) (comb r pair)) ((affineGenerator (ZMod 11)).gen ω),
+      (affineGenerator (ZMod 11)).weight ω =
+    1
+'Minidregg.Selvage.FullUDWitness.line_pr_one_fullUD' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+Selvage/FullUDWitnesses.lean:59:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Selvage.FullUDWitness.line_pr_one_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.Selvage.FullUDWitness.line_pr_one_fullUD' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Minidregg.Selvage.FullUDWitness.good_line_CA_fullUD' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+Selvage/FullUDWitnesses.lean:62:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Selvage.FullUDWitness.good_line_CA_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.Selvage.FullUDWitness.good_line_CA_fullUD' depends on axioms: [propext,
++  sorryAx,
++  Classical.choice,
++  Quot.sound]
+'Minidregg.Selvage.FullUDWitness.fullUD_generator_premise_inhabited' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+Selvage/FullUDWitnesses.lean:68:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Selvage.FullUDWitness.fullUD_generator_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.Selvage.FullUDWitness.fullUD_generator_premise_inhabited' depends on axioms: [propext,
++  sorryAx,
++  Classical.choice,
++  Quot.sound]

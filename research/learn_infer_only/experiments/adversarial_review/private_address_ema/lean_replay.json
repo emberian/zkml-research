@@ -1,0 +1,14 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Theory/PrivateAddressEma.lean"
+  ],
+  "cwd": "/private/tmp/minidregg-ema-review-20260908",
+  "elapsed_seconds": 17.993325165996794,
+  "source_sha256": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

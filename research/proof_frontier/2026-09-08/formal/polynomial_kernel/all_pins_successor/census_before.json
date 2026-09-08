@@ -1,0 +1,40 @@
+{
+  "declarations": [
+    "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+    "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+    "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+    "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+    "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+    "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+    "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+    "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+    "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+    "PolynomialMatrixKernel.correctness",
+    "PolynomialMatrixKernel.witnessMatrix_premises",
+    "PolynomialMatrixKernel.witnessVector_valid",
+    "PolynomialMatrixKernel.premises_inhabited",
+    "PolynomialMatrixKernel.satisfiable",
+    "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+    "PolynomialMatrixKernel.degree_bound_teeth"
+  ],
+  "existing_pins": [
+    "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+    "PolynomialMatrixKernel.correctness",
+    "PolynomialMatrixKernel.witnessMatrix_premises",
+    "PolynomialMatrixKernel.witnessVector_valid",
+    "PolynomialMatrixKernel.premises_inhabited",
+    "PolynomialMatrixKernel.satisfiable",
+    "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+    "PolynomialMatrixKernel.degree_bound_teeth"
+  ],
+  "missing_pins": [
+    "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+    "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+    "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+    "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+    "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+    "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+    "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+    "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col"
+  ]
+}

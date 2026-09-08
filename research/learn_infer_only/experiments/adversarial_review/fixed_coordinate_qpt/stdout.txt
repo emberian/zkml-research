@@ -1,0 +1,27 @@
+{
+  "finite_probability_controls": [
+    {
+      "modulus": 2,
+      "matrices": 16,
+      "translation_checks": 64,
+      "joint_one_row_SD": "21/64",
+      "joint_two_rows_SD": "123/256",
+      "conditioned_zero_matrix_SD": "3/4",
+      "independent_exposed_row_preserves_SD": true
+    },
+    {
+      "modulus": 3,
+      "matrices": 81,
+      "translation_checks": 729,
+      "joint_one_row_SD": "200/729",
+      "joint_two_rows_SD": "2384/6561",
+      "conditioned_zero_matrix_SD": "8/9",
+      "independent_exposed_row_preserves_SD": true
+    }
+  ],
+  "nonvacuity": {
+    "whole_coalition_equal_output_distinct_state_pairs": 160,
+    "injective_restricted_image_control_points": 38
+  }
+}
+Parameter unit-constant controls passed for log2(n)=16,32,64; not concrete security points.

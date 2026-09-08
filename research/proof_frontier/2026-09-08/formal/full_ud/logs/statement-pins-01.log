@@ -1,0 +1,2 @@
+'Minidregg.Selvage.FullUDWitness.x_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.FullUDWitness.one_mem' depends on axioms: [propext, Classical.choice, Quot.sound]

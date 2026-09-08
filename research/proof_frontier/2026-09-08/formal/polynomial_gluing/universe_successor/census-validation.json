@@ -1,0 +1,262 @@
+{
+  "instrument": "nested Lean block and line comments stripped, lexical theorem/lemma census matched to #print axioms pins",
+  "declaration_count": 51,
+  "all_pinned": true,
+  "declarations": [
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.leadingCoeffY_eq_zero",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.leadingCoeffY_ne_zero",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.degreeY_mul",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.coeff_natDegree_le_degreeX",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.evalX_eq_map",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.degreeX_swap",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.evalY_eq_evalX_swap",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.natDegreeY_swap",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.degreeX_mul",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialBivariate",
+      "name": "Polynomial.Bivariate.evalX_mul",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluingStatement",
+      "name": "polynomialGluing_premise_inhabited",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluingStatement",
+      "name": "polynomialGluing_satisfiable",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluingStatement",
+      "name": "polynomialGluing_teeth",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_bx_lt_nx",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_by_lt_ny",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_card_eval_x_eq_zero_le_degree_x",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_card_eval_y_eq_zero_le_nat_degree_y",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_coeff_mul_monomial_ite",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_coeff_mul_sum_monomial",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_degree_x_swap",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_descend_eval_x",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_descend_eval_y",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_eval_x_eq_map",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_eval_y_eq_eval_x_swap",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_exists_x_preserve_nat_degree_y",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_exists_y_preserve_degree_x",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_filter_nonzero_card_y",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_filter_nonzero_card_x",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_degX_bound",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_degY_bound",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_degree_bounds_of_mul",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_gcd_decompose",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_is_rel_prime_swap",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_nat_degree_y_swap",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_nat_degree_mul_x_pow_le",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_nat_degree_resultant_le",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_resultant_map",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_resultant_eval_x",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_sylvester_map",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_sylvester_mul_vec_eq_coeff_add",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_resultant_dvd_pow_eval_x",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_resultant_dvd_pow_eval_y",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_resultant_ne_zero_of_is_rel_prime",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_exists_qx_of_cancel",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_exists_qy_of_cancel",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_coprime_case_constant",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_exists_p_nonzero",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "ps_exists_p",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "polishchuk_spielman",
+      "exact_pin_present": true
+    },
+    {
+      "module": "PolynomialGluing",
+      "name": "polynomialGluing",
+      "exact_pin_present": true
+    }
+  ]
+}

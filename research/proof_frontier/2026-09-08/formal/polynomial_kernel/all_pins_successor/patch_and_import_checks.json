@@ -1,0 +1,43 @@
+[
+  {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "--whitespace=error-all",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/polynomial-kernel.patch"
+    ],
+    "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/polynomial-all-pins-apply-8pe41s0k",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/polynomial-kernel.patch"
+    ],
+    "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/polynomial-all-pins-apply-8pe41s0k",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "applied_files_equal_checked_checkout": true,
+    "files": [
+      "Theory/PolynomialMatrixKernel.lean",
+      "LICENSES/ArkLib-Apache-2.0.txt"
+    ]
+  },
+  {
+    "command": [
+      "bash",
+      "scripts/check-import-boundary.sh"
+    ],
+    "cwd": "/tmp/minidregg-polynomial-all-pins-20260908",
+    "exit_code": 0,
+    "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+    "stderr": ""
+  }
+]

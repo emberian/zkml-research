@@ -1,0 +1,162 @@
+Theory/PolynomialGluingStatement.lean:16:2: error: unexpected token 'by'; expected command
+Theory/PolynomialGluingStatement.lean:29:25: error(lean.invalidField): Invalid field `by`: The environment does not contain `PolynomialGluingData.by`, so it is not possible to project the field `by` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:29:32: error(lean.invalidField): Invalid field `A`: The environment does not contain `PolynomialGluingData.A`, so it is not possible to project the field `A` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:30:12: error(lean.invalidField): Invalid field `A`: The environment does not contain `PolynomialGluingData.A`, so it is not possible to project the field `A` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:30:33: error(lean.invalidField): Invalid field `B`: The environment does not contain `PolynomialGluingData.B`, so it is not possible to project the field `B` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:31:15: error(lean.invalidField): Invalid field `A`: The environment does not contain `PolynomialGluingData.A`, so it is not possible to project the field `A` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:31:39: error(lean.invalidField): Invalid field `B`: The environment does not contain `PolynomialGluingData.B`, so it is not possible to project the field `B` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:31:45: error(lean.invalidField): Invalid field `by`: The environment does not contain `PolynomialGluingData.by`, so it is not possible to project the field `by` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:32:5: error(lean.invalidField): Invalid field `nx`: The environment does not contain `PolynomialGluingData.nx`, so it is not possible to project the field `nx` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:32:17: error(lean.invalidField): Invalid field `Px`: The environment does not contain `PolynomialGluingData.Px`, so it is not possible to project the field `Px` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:32:30: error(lean.invalidField): Invalid field `ny`: The environment does not contain `PolynomialGluingData.ny`, so it is not possible to project the field `ny` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:32:42: error(lean.invalidField): Invalid field `Py`: The environment does not contain `PolynomialGluingData.Py`, so it is not possible to project the field `Py` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:33:11: error(lean.invalidField): Invalid field `Py`: The environment does not contain `PolynomialGluingData.Py`, so it is not possible to project the field `Py` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:34:14: error(lean.invalidField): Invalid field `B`: The environment does not contain `PolynomialGluingData.B`, so it is not possible to project the field `B` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:34:20: error(lean.invalidField): Invalid field `quotX`: The environment does not contain `PolynomialGluingData.quotX`, so it is not possible to project the field `quotX` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:34:40: error(lean.invalidField): Invalid field `A`: The environment does not contain `PolynomialGluingData.A`, so it is not possible to project the field `A` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:35:11: error(lean.invalidField): Invalid field `Px`: The environment does not contain `PolynomialGluingData.Px`, so it is not possible to project the field `Px` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:35:41: error(lean.invalidField): Invalid field `by`: The environment does not contain `PolynomialGluingData.by`, so it is not possible to project the field `by` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:36:14: error(lean.invalidField): Invalid field `B`: The environment does not contain `PolynomialGluingData.B`, so it is not possible to project the field `B` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:36:20: error(lean.invalidField): Invalid field `quotY`: The environment does not contain `PolynomialGluingData.quotY`, so it is not possible to project the field `quotY` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:36:40: error(lean.invalidField): Invalid field `A`: The environment does not contain `PolynomialGluingData.A`, so it is not possible to project the field `A` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:37:18: error(lean.invalidField): Invalid field `nx`: The environment does not contain `PolynomialGluingData.nx`, so it is not possible to project the field `nx` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:37:31: error(lean.invalidField): Invalid field `by`: The environment does not contain `PolynomialGluingData.by`, so it is not possible to project the field `by` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:37:44: error(lean.invalidField): Invalid field `ny`: The environment does not contain `PolynomialGluingData.ny`, so it is not possible to project the field `ny` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:33:18: error(lean.invalidField): Invalid field `quotX`: The environment does not contain `PolynomialGluingData.quotX`, so it is not possible to project the field `quotX` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:35:18: error(lean.invalidField): Invalid field `quotY`: The environment does not contain `PolynomialGluingData.quotY`, so it is not possible to project the field `quotY` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:40:19: error(lean.invalidField): Invalid field `B`: The environment does not contain `PolynomialGluingData.B`, so it is not possible to project the field `B` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:40:29: error(lean.invalidField): Invalid field `A`: The environment does not contain `PolynomialGluingData.A`, so it is not possible to project the field `A` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:41:47: error(lean.invalidField): Invalid field `by`: The environment does not contain `PolynomialGluingData.by`, so it is not possible to project the field `by` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:42:25: error(lean.invalidField): Invalid field `nx`: The environment does not contain `PolynomialGluingData.nx`, so it is not possible to project the field `nx` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:42:59: error(lean.invalidField): Invalid field `Px`: The environment does not contain `PolynomialGluingData.Px`, so it is not possible to project the field `Px` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:43:30: error(lean.invalidField): Invalid field `quotY`: The environment does not contain `PolynomialGluingData.quotY`, so it is not possible to project the field `quotY` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:44:25: error(lean.invalidField): Invalid field `ny`: The environment does not contain `PolynomialGluingData.ny`, so it is not possible to project the field `ny` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:44:59: error(lean.invalidField): Invalid field `Py`: The environment does not contain `PolynomialGluingData.Py`, so it is not possible to project the field `Py` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:45:30: error(lean.invalidField): Invalid field `quotX`: The environment does not contain `PolynomialGluingData.quotX`, so it is not possible to project the field `quotX` from an expression
+  d
+of type `PolynomialGluingData F`
+Theory/PolynomialGluingStatement.lean:57:2: error: unexpected token 'by'; expected command
+Theory/PolynomialGluingStatement.lean:68:42: error: unsolved goals
+⊢ sorry { ax := 0, ay := 0, bx := 0 }
+Theory/PolynomialGluingStatement.lean:69:8: warning: declaration uses `sorry`
+Theory/PolynomialGluingStatement.lean:70:4: warning: This simp argument is unused:
+  degreeX
+
+Hint: Omit it from the simp argument list.
+  simp [PolynomialGluingData.Admissible, polynomialGluingWitness,
+  ̵  ̵ ̵ ̵d̵e̵g̵r̵e̵e̵X̵,̵ ̵natDegreeY, evalX_eq_map, evalY]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Theory/PolynomialGluingStatement.lean:70:13: warning: This simp argument is unused:
+  natDegreeY
+
+Hint: Omit it from the simp argument list.
+  simp [PolynomialGluingData.Admissible, polynomialGluingWitness,
+  ̵  ̵ ̵ ̵degreeX, n̵a̵t̵D̵eg̵r̵e̵e̵Y̵,̵ ̵e̵valX_eq_map, evalY]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Theory/PolynomialGluingStatement.lean:70:25: warning: This simp argument is unused:
+  evalX_eq_map
+
+Hint: Omit it from the simp argument list.
+  simp [PolynomialGluingData.Admissible, polynomialGluingWitness,
+  ̵  ̵ ̵ ̵degreeX, natDegreeY, evalX̵_̵e̵q̵_̵m̵a̵p̵,̵ ̵e̵v̵a̵l̵Y]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Theory/PolynomialGluingStatement.lean:70:39: warning: This simp argument is unused:
+  evalY
+
+Hint: Omit it from the simp argument list.
+  simp [PolynomialGluingData.Admissible, polynomialGluingWitness,
+  ̵  ̵ ̵ ̵degreeX, natDegreeY, evalX_eq_map,̵ ̵e̵v̵a̵l̵Y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Theory/PolynomialGluingStatement.lean:75:9: error: Insufficient number of fields for `⟨...⟩` constructor: Constructor `Eq.refl` does not have explicit fields, but 2 were provided
+Theory/PolynomialGluingStatement.lean:75:31: error: unsolved goals
+⊢ sorry () ≤ 1 ∧ 0 ∈ sorry () ∧ 1 = sorry ()
+Theory/PolynomialGluingStatement.lean:78:49: error: unexpected token 'by'; expected '}'
+Theory/PolynomialGluingStatement.lean:80:8: warning: declaration uses `sorry`
+Theory/PolynomialGluingStatement.lean:83:2: warning: 'simpa [polynomialGluingBroken, polynomialGluingWitness, evalY] using h0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+'polynomialGluing_premise_inhabited' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+Theory/PolynomialGluingStatement.lean:86:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'polynomialGluing_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'polynomialGluing_premise_inhabited' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'polynomialGluing_satisfiable' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+Theory/PolynomialGluingStatement.lean:89:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'polynomialGluing_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'polynomialGluing_satisfiable' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'polynomialGluing_teeth' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+Theory/PolynomialGluingStatement.lean:92:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'polynomialGluing_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'polynomialGluing_teeth' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

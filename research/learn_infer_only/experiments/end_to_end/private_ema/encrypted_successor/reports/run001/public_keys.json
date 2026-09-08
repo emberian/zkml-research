@@ -1,0 +1,14 @@
+{
+  "client_key_bytes": 11664,
+  "client_key_retained": true,
+  "public_key": {
+    "bytes": 90316428,
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/runtime/run001/public/keys/public_key.bin",
+    "sha256": "3096bbbf9d9b7d4b9dea6fd79a2d6772c99362584faaf20036c114b175f06157"
+  },
+  "server_key": {
+    "bytes": 157865796,
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/runtime/run001/public/keys/server_key.bin",
+    "sha256": "2a098a8cb241126ba0218b159a1e092864e1049f9ddc882c03d7bf287a2d2f21"
+  }
+}

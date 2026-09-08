@@ -1,0 +1,27 @@
+{
+  "scope": "Frozen first EMA patch only; mathematical/source-level independent review; no crypto",
+  "checkout": "/tmp/minidregg-ema-review-20260908",
+  "checkout_head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "source_manifest": "source_manifest.json",
+  "results": "results.json",
+  "kernel_replay": "lean_replay.json",
+  "patch_and_import_validation": "patch_application.json",
+  "review_command": [
+    "python3",
+    "research/learn_infer_only/experiments/adversarial_review/private_address_ema/review.py"
+  ],
+  "review_exit_code": 0,
+  "outputs_sha256": {
+    "source_manifest.json": "972f9f1e8c0fd73f0a4a295f14c6be79e0a7eb31eb16f6334038a079b3bf59ae",
+    "REPORT.md": "282ee1ab63a55c014da0a39ad64869cdcc3da9f6593426ebfeb48008bc673bc1",
+    "NEXT.md": "cfdf1203a72c3f060457e40ae612ccac91548b440c7ba7336d503ed1f908e01e",
+    "STATUS.md": "5c822135be9901fe6a944ff193f59e1b0c4bcbaad2eaf091ecf02f609b1721f8",
+    "results.json": "138fbb16a0a0165f1616e109a1478a7fa4f3bd7a0a3c2e43efef59cb99cccd1f",
+    "review.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "review.py": "026af541306c3d5fddb870ee4f2b60edf49cf3e82190cb7aa4b1178e5e445e47",
+    "patch_application.json": "e8ef5d6d9921029d971a99ac0e72265e64e838f172d3a64fe141795b0881de0b",
+    "lean_replay.json": "24d5a107856a3250327ad8b682be37a75090a8f674d6622eaf39988e591b3442",
+    "final_audit.json": "af4ee9a287409648fdd2c306918acad6786a8fff4eb0f8b0ceae29080c8d60a5",
+    "review.stdout.txt": "138fbb16a0a0165f1616e109a1478a7fa4f3bd7a0a3c2e43efef59cb99cccd1f"
+  }
+}

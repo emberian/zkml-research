@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics",
+  "exit_code": 1,
+  "elapsed_seconds": 18.737791332998313,
+  "source_sha256": "1363fc41b3799d95664ac5fbba3e74cbdde26f09ad9a74098c6c999822cf702c",
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean:177:44: error: unexpected token 'prefix'; expected '_' or identifier\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean:177:50: error: unexpected identifier; expected ':'\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean:178:75: error: unexpected token ')'; expected ':'\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean:180:28: error: unexpected token '++'; expected ':'\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean:181:49: error: unexpected token ')'; expected ':'\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean:182:31: error: unexpected identifier; expected ':'\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_ema_dynamics/Theory/PrivateEmaDynamics.lean:347:14: error(lean.unknownIdentifier): Unknown constant `Minidregg.Theory.PrivateEmaDynamics.consistent_suffix_sign`\n",
+  "stderr": ""
+}

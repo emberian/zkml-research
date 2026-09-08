@@ -1,0 +1,8 @@
+Selvage/FullUDInterpolation.lean:25:6: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  ι → DecidableEq F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/FullUDInterpolation.lean:159:6: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  ι → DecidableEq F
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.

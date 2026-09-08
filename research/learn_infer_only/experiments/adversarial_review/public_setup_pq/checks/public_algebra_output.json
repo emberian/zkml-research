@@ -1,0 +1,46 @@
+{
+  "basis_roundtrips": 503,
+  "equal_output_distinct_state_pairs": 503,
+  "integer_wrap_witness": {
+    "centered_readouts": [
+      -1,
+      -1
+    ],
+    "field_readouts": [
+      4,
+      4
+    ],
+    "integer_readouts": [
+      4,
+      4
+    ],
+    "integer_state": [
+      2,
+      2,
+      2
+    ],
+    "p": 5
+  },
+  "max_absolute_error_in_passing_checks": 8,
+  "outside_radius_witness": {
+    "delta": 25,
+    "intended_residue": 0,
+    "nearest_grid_residue": 1,
+    "p": 5,
+    "supplied_phase_error": 13
+  },
+  "phase_combination_checks": 15625,
+  "phase_grid": {
+    "delta": 25,
+    "p": 5,
+    "q": 125
+  },
+  "result": "PASS",
+  "scope": "Exact public algebra; no cryptographic execution or private inputs",
+  "script_sha256": "9620363c964652d6f1663d508b10397f77a72c5c0d60fae311149761ffbac82c",
+  "unsupported_matrix_update_symbolic_residual_coefficients": [
+    -1,
+    0,
+    1
+  ]
+}

@@ -1,0 +1,17 @@
+Selvage/FullUDTeeth.lean:43:85: error: Type mismatch: After simplification, term
+  hp
+ has type
+  p.degree < 2
+but is expected to have type
+  p.degree ≤ 1
+'Minidregg.Selvage.FullUDTeeth.radius_hypothesis_necessary' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+Selvage/FullUDTeeth.lean:93:0: error: ❌️ Docstring on `#guard_msgs` does not match generated message:
+
+- info: 'Minidregg.Selvage.FullUDTeeth.radius_hypothesis_necessary' depends on axioms: [propext, Classical.choice, Quot.sound]
++ info: 'Minidregg.Selvage.FullUDTeeth.radius_hypothesis_necessary' depends on axioms: [propext,
++  sorryAx,
++  Classical.choice,
++  Quot.sound]

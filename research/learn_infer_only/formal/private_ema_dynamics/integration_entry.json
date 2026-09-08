@@ -1,0 +1,9 @@
+{
+  "expected_pins": 28,
+  "name": "private_ema_dynamics",
+  "patch": "formal/private_ema_dynamics/minidregg-private-ema-dynamics.patch",
+  "requires": [
+    "private_address_ema"
+  ],
+  "root": "formal/private_ema_dynamics"
+}

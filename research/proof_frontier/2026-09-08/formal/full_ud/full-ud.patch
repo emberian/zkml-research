@@ -1,0 +1,2052 @@
+diff --git a/Theory/RSInterpolationMatrix.lean b/Theory/RSInterpolationMatrix.lean
+new file mode 100644
+index 0000000..b4a15f7
+--- /dev/null
++++ b/Theory/RSInterpolationMatrix.lean
+@@ -0,0 +1,390 @@
++/-
++Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
++Released under Apache 2.0 license as described in the file LICENSES/ArkLib-Apache-2.0.txt.
++Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
++         Ilia Vlasov, Chung Thai Nguyen
++
++Adapted from ArkLib at 22dbd4e836c15a21f68889afa69b7130da04abbb,
++Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/BWMatrix.lean.
++Only polynomial-matrix algebra is retained; no parallel RS/probability model.
++-/
++import Mathlib.Algebra.Polynomial.BigOperators
++import Mathlib.Algebra.Polynomial.RingDivision
++import Mathlib.Data.Fin.Tuple.Basic
++import Mathlib.LinearAlgebra.Vandermonde
++import Mathlib.LinearAlgebra.Matrix.SchurComplement
++import Mathlib.Tactic
++
++namespace Minidregg.RSInterpolation
++
++open Polynomial Matrix Finset
++open scoped BigOperators
++
++variable {F : Type*} [Field F]
++variable {ι : Type*} [Fintype ι]
++
++def BW_homMatrix {R : Type*} [CommRing R] {ι : Type*} [Fintype ι]
++    (e k : ℕ) (ωs : ι → R) (f : ι → R) :
++    Matrix ι (Fin ((e + 1) + (e + k))) R :=
++  Matrix.of fun i j =>
++    if j.1 < e + 1 then
++      f i * (ωs i) ^ j.1
++    else
++      - (ωs i) ^ (j.1 - (e + 1))
++
++
++theorem BW_homMatrix_entry_natDegree_eq_zero_of_ge {F : Type*} [Field F] {ι : Type*} [Fintype ι]
++    (e k : ℕ) (ωs : ι → F) (f0 f1 : ι → F) (i : ι)
++    (j : Fin ((e + 1) + (e + k))) (hj : e + 1 ≤ j.1) :
++    (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X]))
++        (fun i => Polynomial.C (f0 i) + Polynomial.X * Polynomial.C (f1 i)) i j).natDegree = 0 := by
++  classical
++  have hle : ¬ (j.1 ≤ e) := by
++    have hgt : e < j.1 := by
++      exact lt_of_lt_of_le (Nat.lt_succ_self e) hj
++    exact not_le_of_gt hgt
++  -- reduce to the second branch
++  simp [BW_homMatrix, hle]
++
++
++theorem BW_homMatrix_entry_natDegree_le_one {F : Type*} [Field F] {ι : Type*} [Fintype ι] (e k : ℕ)
++    (ωs : ι → F) (f0 f1 : ι → F) (i : ι)
++    (j : Fin ((e + 1) + (e + k))) :
++    (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X]))
++        (fun i => Polynomial.C (f0 i) + Polynomial.X * Polynomial.C (f1 i)) i j).natDegree ≤ 1 := by
++  classical
++  by_cases hjle : (j.1 ≤ e)
++  · -- j.1 ≤ e
++    simp only [BW_homMatrix, Order.lt_add_one_iff, X_mul_C, Matrix.of_apply, hjle, ↓reduceIte]
++    have hlin :
++        (Polynomial.C (f0 i) + Polynomial.C (f1 i) * Polynomial.X : F[X]).natDegree ≤ 1 := by
++      have hadd :
++          (Polynomial.C (f0 i) + Polynomial.C (f1 i) * Polynomial.X : F[X]).natDegree ≤
++            max (Polynomial.C (f0 i) : F[X]).natDegree
++              (Polynomial.C (f1 i) * Polynomial.X : F[X]).natDegree := by
++        exact
++          (Polynomial.natDegree_add_le (Polynomial.C (f0 i) : F[X])
++            (Polynomial.C (f1 i) * Polynomial.X : F[X]))
++      have hC : (Polynomial.C (f0 i) : F[X]).natDegree ≤ 1 := by
++        simp
++      have hX : (Polynomial.C (f1 i) * Polynomial.X : F[X]).natDegree ≤ 1 := by
++        simpa using Polynomial.natDegree_mul_le
++          (p := (Polynomial.C (f1 i) : F[X])) (q := (Polynomial.X : F[X]))
++      exact le_trans hadd (max_le hC hX)
++    have hq : ((Polynomial.C (ωs i) : F[X]) ^ j.1).natDegree = 0 := by
++      simp
++    calc
++      ((Polynomial.C (f0 i) + Polynomial.C (f1 i) * Polynomial.X : F[X]) *
++            (Polynomial.C (ωs i) : F[X]) ^ j.1).natDegree ≤
++          (Polynomial.C (f0 i) + Polynomial.C (f1 i) * Polynomial.X : F[X]).natDegree +
++            ((Polynomial.C (ωs i) : F[X]) ^ j.1).natDegree :=
++        Polynomial.natDegree_mul_le
++          (p := (Polynomial.C (f0 i) + Polynomial.C (f1 i) * Polynomial.X : F[X]))
++          (q := (Polynomial.C (ωs i) : F[X]) ^ j.1)
++      _ = (Polynomial.C (f0 i) + Polynomial.C (f1 i) * Polynomial.X : F[X]).natDegree := by
++        simp [hq]
++      _ ≤ 1 := hlin
++  · -- ¬ j.1 ≤ e
++    simp [BW_homMatrix, hjle]
++
++
++theorem BW_homMatrix_map_evalRingHom {F : Type*} [Field F] {ι : Type*} [Fintype ι]
++    (e k : ℕ) (ωs f0 f1 : ι → F) (z : F) :
++    (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X]))
++          (fun i => Polynomial.C (f0 i) + Polynomial.X * Polynomial.C (f1 i))).map
++        (Polynomial.evalRingHom z)
++      =
++      BW_homMatrix (ι := ι) e k ωs (fun i => f0 i + z * f1 i) := by
++  ext i j
++  by_cases hje : (j.1 ≤ e)
++  · have hcomm : f1 i * z = z * f1 i := mul_comm (f1 i) z
++    have : f1 i * z = z * f1 i ∨ ωs i = 0 ∧ ¬j = 0 := Or.inl hcomm
++    simpa [BW_homMatrix, Nat.lt_succ_iff, hje, mul_add, add_mul] using this
++  · simp [BW_homMatrix, hje]
++
++
++theorem BW_homMatrix_mulVec_eq_zero_iff {R : Type*} [CommRing R] {ι : Type*} [Fintype ι] (e k : ℕ)
++    (ωs : ι → R) (f : ι → R)
++    (a : Fin (e + 1) → R) (b : Fin (e + k) → R) :
++    Matrix.mulVec (BW_homMatrix (ι := ι) e k ωs f) (Fin.append a b) = 0 ↔
++      (∀ i : ι,
++        (∑ t : Fin (e + 1), a t * (ωs i) ^ t.1) * (f i)
++          = ∑ s : Fin (e + k), b s * (ωs i) ^ s.1) := by
++  classical
++  -- helper facts to simplify the `if` guards coming from `BW_homMatrix`
++  have hx : ∀ x : Fin (e + 1), (x.1 ≤ e) := fun x => Nat.le_of_lt_succ x.isLt
++  have hy : ∀ x : Fin (e + k), ¬ (e + 1 + x.1 ≤ e) := by
++    intro x hle
++    have : e + 1 ≤ e := le_trans (Nat.le_add_right (e + 1) x.1) hle
++    exact Nat.not_succ_le_self e this
++  constructor
++  · intro h i
++    have hi := congrArg (fun v => v i) h
++    have hi' :
++        (∑ j : Fin ((e + 1) + (e + k)),
++            BW_homMatrix (ι := ι) e k ωs f i j * Fin.append a b j) = 0 := by
++      simpa [Matrix.mulVec, dotProduct] using hi
++    have hi'' := hi'
++    rw [Fin.sum_univ_add] at hi''
++    simp only [BW_homMatrix, Order.lt_add_one_iff, Matrix.of_apply, Fin.val_castAdd, hx,
++      ↓reduceIte, Fin.append_left, Fin.val_natAdd, hy, add_tsub_cancel_left, Fin.append_right,
++      neg_mul, sum_neg_distrib] at hi''
++    have hAC :
++        (∑ x : Fin (e + 1), f i * ωs i ^ x.1 * a x) =
++          ∑ x : Fin (e + k), ωs i ^ x.1 * b x := by
++      have := eq_neg_of_add_eq_zero_left hi''
++      simpa using this
++    -- Convert `hAC` into the desired coefficientwise identity.
++    calc
++      (∑ t : Fin (e + 1), a t * ωs i ^ t.1) * f i
++          = f i * (∑ t : Fin (e + 1), a t * ωs i ^ t.1) := by
++              simp [mul_comm]
++      _ = ∑ t : Fin (e + 1), f i * (a t * ωs i ^ t.1) := by
++              simp [Finset.mul_sum]
++      _ = ∑ t : Fin (e + 1), f i * ωs i ^ t.1 * a t := by
++              simp [mul_left_comm, mul_comm]
++      _ = ∑ x : Fin (e + k), ωs i ^ x.1 * b x := by
++              simpa using hAC
++      _ = ∑ s : Fin (e + k), b s * ωs i ^ s.1 := by
++              simp [mul_comm]
++  · intro h
++    ext i
++    -- expand the matrix-vector multiplication at coordinate `i`
++    simp only [Matrix.mulVec, dotProduct, Pi.zero_apply]
++    rw [Fin.sum_univ_add]
++    simp only [BW_homMatrix, Order.lt_add_one_iff, Matrix.of_apply, Fin.val_castAdd, hx,
++      ↓reduceIte, Fin.append_left, Fin.val_natAdd, hy, add_tsub_cancel_left, Fin.append_right,
++      neg_mul, sum_neg_distrib]
++    -- turn the hypothesis `h i` into the same normal form
++    have hEq0 : f i * (∑ t : Fin (e + 1), a t * ωs i ^ t.1) =
++        ∑ s : Fin (e + k), b s * ωs i ^ s.1 := by
++      simpa [mul_comm] using h i
++    have hEq1 : (∑ t : Fin (e + 1), f i * (a t * ωs i ^ t.1)) =
++        ∑ s : Fin (e + k), b s * ωs i ^ s.1 := by
++      simpa [Finset.mul_sum] using hEq0
++    have hAC :
++        (∑ x : Fin (e + 1), f i * ωs i ^ x.1 * a x) =
++          ∑ x : Fin (e + k), ωs i ^ x.1 * b x := by
++      -- rearrange products in `hEq1`
++      simpa [mul_assoc, mul_left_comm, mul_comm]
++    -- use `hAC` to close the goal
++    simp [hAC]
++
++
++theorem Fin_sum_ite_lt_e_add_one (e k : ℕ) :
++    (Finset.univ.filter (fun i : Fin ((e + 1) + (e + k)) => i.1 ≤ e)).card = e + 1 := by
++  classical
++  have hle : e + 1 ≤ (e + 1) + (e + k) := Nat.le_add_right (e + 1) (e + k)
++  have hcard_lt0 :
++      Fintype.card {i : Fin ((e + 1) + (e + k)) // i.1 < e + 1} = e + 1 :=
++    Fintype.card_fin_lt_of_le (m := e + 1) (n := (e + 1) + (e + k)) hle
++  have hcard_lt : (Finset.univ.filter (fun i : Fin ((e + 1) + (e + k)) => i.1 < e + 1)).card = e + 1 := by
++    simpa [Fintype.card_subtype] using hcard_lt0
++  simpa [Nat.lt_succ_iff] using hcard_lt
++
++
++theorem BW_homMatrix_det_submatrix_natDegree_le_e_add_one {F : Type*} [Field F] {ι : Type*}
++    [Fintype ι] (e k : ℕ) (ωs : ι → F) (f0 f1 : ι → F)
++    (r : Fin ((e + 1) + (e + k)) → ι) :
++    (Matrix.det
++        (Matrix.submatrix
++          (BW_homMatrix (ι := ι) e k
++            (fun i => (Polynomial.C (ωs i) : F[X]))
++            (fun i => Polynomial.C (f0 i) + Polynomial.X * Polynomial.C (f1 i)))
++          r id)).natDegree ≤ e + 1 := by
++  classical
++  -- Name the matrices to keep subsequent expressions manageable.
++  let M : Matrix ι (Fin ((e + 1) + (e + k))) F[X] :=
++    BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X]))
++      (fun i => Polynomial.C (f0 i) + Polynomial.X * Polynomial.C (f1 i))
++  let A : Matrix (Fin ((e + 1) + (e + k))) (Fin ((e + 1) + (e + k))) F[X] :=
++    Matrix.submatrix M r id
++  change (Matrix.det A).natDegree ≤ e + 1
++  -- Expand determinant as a sum over permutations.
++  rw [Matrix.det_apply]
++  refine
++    (Polynomial.natDegree_sum_le_of_forall_le
++        (s :=
++          (Finset.univ : Finset (Equiv.Perm (Fin ((e + 1) + (e + k))))))
++        (f := fun σ : Equiv.Perm (Fin ((e + 1) + (e + k))) =>
++          Equiv.Perm.sign σ •
++            ∏ i : Fin ((e + 1) + (e + k)), A (σ i) i)
++        (n := e + 1) ?_)
++  intro σ hσ
++  -- The permutation sign is a unit (±1), so it does not increase natDegree.
++  have hsign :
++      (Equiv.Perm.sign σ •
++            ∏ i : Fin ((e + 1) + (e + k)), A (σ i) i).natDegree ≤
++        (∏ i : Fin ((e + 1) + (e + k)), A (σ i) i).natDegree := by
++    rcases Int.units_eq_one_or (Equiv.Perm.sign σ) with hs | hs <;> simp [hs]
++  -- Degree of a product is bounded by the sum of degrees.
++  have hprod :
++      (∏ i : Fin ((e + 1) + (e + k)), A (σ i) i).natDegree ≤
++        ∑ i : Fin ((e + 1) + (e + k)), (A (σ i) i).natDegree := by
++    simpa using
++      (Polynomial.natDegree_prod_le
++        (s := (Finset.univ : Finset (Fin ((e + 1) + (e + k)))))
++        (f := fun i : Fin ((e + 1) + (e + k)) => A (σ i) i))
++  -- Only the first `e+1` columns can contribute degree (and each contributes at most 1).
++  have hsum :
++      (∑ i : Fin ((e + 1) + (e + k)), (A (σ i) i).natDegree) ≤ e + 1 := by
++    have hpoint :
++        ∀ i : Fin ((e + 1) + (e + k)),
++          (A (σ i) i).natDegree ≤ ite (i.1 < e + 1) (1 : ℕ) 0 := by
++      intro i
++      by_cases hi : i.1 < e + 1
++      · -- In the first `e+1` columns, each entry has natDegree ≤ 1.
++        have hle1 :
++            (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X]))
++                (fun i => Polynomial.C (f0 i) + Polynomial.X * Polynomial.C (f1 i))
++                (r (σ i)) i).natDegree ≤ 1 :=
++          BW_homMatrix_entry_natDegree_le_one (ι := ι) (F := F) e k ωs f0 f1
++            (r (σ i)) i
++        simpa [A, M, Matrix.submatrix, hi] using hle1
++      · -- After column `e+1`, the entry is constant in `X`, hence natDegree = 0.
++        have hi' : e + 1 ≤ i.1 := Nat.le_of_not_gt hi
++        have hzero :
++            (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X]))
++                (fun i => Polynomial.C (f0 i) + Polynomial.X * Polynomial.C (f1 i))
++                (r (σ i)) i).natDegree = 0 :=
++          BW_homMatrix_entry_natDegree_eq_zero_of_ge (ι := ι) (F := F) e k ωs
++            f0 f1 (r (σ i)) i hi'
++        have hzero' :
++            (BW_homMatrix (ι := ι) e k (fun i => (Polynomial.C (ωs i) : F[X]))
++                (fun i => Polynomial.C (f0 i) + Polynomial.X * Polynomial.C (f1 i))
++                (r (σ i)) i).natDegree = 0 := by
++          -- For these columns, the definition of `BW_homMatrix` ignores the input `f`.
++          simpa [BW_homMatrix, Nat.not_lt_of_ge hi'] using hzero
++        have hA : (A (σ i) i).natDegree = 0 := by
++          simpa [A, M, Matrix.submatrix] using hzero'
++        simp [hi, hA]
++    have hle :
++        (∑ i : Fin ((e + 1) + (e + k)), (A (σ i) i).natDegree)
++          ≤
++          ∑ i : Fin ((e + 1) + (e + k)), ite (i.1 < e + 1) (1 : ℕ) 0 := by
++      simpa using
++        (Finset.sum_le_sum
++          (s := (Finset.univ : Finset (Fin ((e + 1) + (e + k)))))
++          (fun i _ => hpoint i))
++    -- `simp` rewrites this indicator sum into a cardinality, so rewrite the axiom the same way.
++    have hcard :
++        ((Finset.univ.filter (fun x : Fin ((e + 1) + (e + k)) => (x.1 : ℕ) ≤ e)).card : ℕ) = e + 1 := by
++      simpa [Nat.lt_succ_iff] using Fin_sum_ite_lt_e_add_one e k
++    -- Conclude.
++    simpa [hcard] using hle
++  -- Assemble the inequalities.
++  exact le_trans hsign (le_trans hprod hsum)
++
++
++
++theorem RS_isUnit_det_vandermonde_C_of_injective (n : ℕ) (v : Fin n → F)
++    (hv : Function.Injective v) :
++    IsUnit (Matrix.det (Matrix.vandermonde (fun i : Fin n => (Polynomial.C (v i) : F[X])))) := by
++  classical
++  -- The Vandermonde matrix over `F[X]` with constant entries is the entrywise image of the
++  -- Vandermonde matrix over `F` under the ring hom `Polynomial.C`.
++  have hdet :
++      (Matrix.vandermonde (fun i : Fin n => (Polynomial.C (v i) : F[X]))).det =
++        (Polynomial.C : F →+* F[X]) ((Matrix.vandermonde v).det) := by
++    have hvand :
++        (Polynomial.C : F →+* F[X]).mapMatrix (Matrix.vandermonde v) =
++          Matrix.vandermonde (fun i : Fin n => (Polynomial.C (v i) : F[X])) := by
++      ext i j
++      simp [Matrix.vandermonde]
++    -- Map the determinant through `Polynomial.C` and rewrite the mapped matrix as a Vandermonde.
++    simpa [hvand] using
++      (RingHom.map_det (f := (Polynomial.C : F →+* F[X])) (M := Matrix.vandermonde v)).symm
++  -- Over a field, the Vandermonde determinant is nonzero iff the entries are distinct.
++  have hne : (Matrix.vandermonde v).det ≠ 0 :=
++    (Matrix.det_vandermonde_ne_zero_iff (v := v)).2 hv
++  -- In a field, nonzero elements are units.
++  have hunit : IsUnit ((Matrix.vandermonde v).det) := (isUnit_iff_ne_zero).2 hne
++  -- Constant polynomials are units iff their coefficients are units.
++  have hunitC : IsUnit ((Polynomial.C : F →+* F[X]) ((Matrix.vandermonde v).det)) :=
++    (Polynomial.isUnit_C (x := (Matrix.vandermonde v).det)).2 hunit
++  -- Conclude by rewriting the determinant as a constant polynomial.
++  simpa [hdet] using hunitC
++
++
++theorem RS_mulVec_append_castAdd_natAdd {R : Type*} [NonUnitalNonAssocSemiring R] {ι : Type*}
++    (m n : ℕ) (M : Matrix ι (Fin (m + n)) R) (a : Fin m → R) (b : Fin n → R) :
++    Matrix.mulVec M (Fin.append a b) =
++      Matrix.mulVec (M.submatrix id (Fin.castAdd n)) a +
++        Matrix.mulVec (M.submatrix id (Fin.natAdd m)) b := by
++  classical
++  -- check names
++  have _ := (dotProduct : (Fin (m + n) → R) → (Fin (m + n) → R) → R)
++  ext i
++  simp [Matrix.mulVec, dotProduct, Fin.sum_univ_add, Fin.append, Matrix.submatrix]
++
++
++theorem RS_natDegree_inv_neg_vandermonde_C_eq_zero (n : ℕ) (v : Fin n → F)
++    (hv : Function.Injective v) :
++    ∀ i j : Fin n,
++      ((-Matrix.vandermonde (fun t : Fin n => (Polynomial.C (v t) : F[X])))⁻¹ i j).natDegree =
++        0 := by
++  classical
++  intro i j
++  let f : F →+* F[X] := Polynomial.C
++  let D0 : Matrix (Fin n) (Fin n) F := -Matrix.vandermonde v
++  let D : Matrix (Fin n) (Fin n) F[X] :=
++    -Matrix.vandermonde (fun t : Fin n => (Polynomial.C (v t) : F[X]))
++  change ((D⁻¹ i j).natDegree = 0)
++  have hDmap : D = D0.map f := by
++    ext i j
++    simp [D, D0, Matrix.vandermonde, Matrix.map_apply, f, map_pow]
++  have hdetV : (Matrix.det (Matrix.vandermonde v)) ≠ 0 := by
++    simpa using (Matrix.det_vandermonde_ne_zero_iff (v := v)).2 hv
++  have hdetD0 : (Matrix.det D0) ≠ 0 := by
++    have h : ((-1 : F) ^ (Fintype.card (Fin n)) * Matrix.det (Matrix.vandermonde v)) ≠ 0 := by
++      exact mul_ne_zero (pow_ne_zero _ (by simp)) hdetV
++    simpa [D0, Matrix.det_neg] using h
++  have hunit0 : IsUnit (Matrix.det D0) := (isUnit_iff_ne_zero).2 hdetD0
++  have hmul0 : D0 * D0⁻¹ = 1 := Matrix.mul_nonsing_inv D0 hunit0
++  have hmul : (D0.map f) * ((D0⁻¹).map f) = (1 : Matrix (Fin n) (Fin n) F[X]) := by
++    simpa [Matrix.map_mul] using congrArg (fun A : Matrix (Fin n) (Fin n) F => A.map f) hmul0
++  have hmul' : D * ((D0⁻¹).map f) = (1 : Matrix (Fin n) (Fin n) F[X]) := by
++    simpa [hDmap] using hmul
++  have hinv : D⁻¹ = (D0⁻¹).map f := by
++    exact Matrix.inv_eq_right_inv (A := D) (B := (D0⁻¹).map f) hmul'
++  simp [hinv, Matrix.map_apply, f]
++
++
++
++/-- info: 'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_eq_zero_of_ge' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms BW_homMatrix_entry_natDegree_eq_zero_of_ge
++
++/-- info: 'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_le_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms BW_homMatrix_entry_natDegree_le_one
++
++/-- info: 'Minidregg.RSInterpolation.BW_homMatrix_map_evalRingHom' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms BW_homMatrix_map_evalRingHom
++
++/-- info: 'Minidregg.RSInterpolation.BW_homMatrix_mulVec_eq_zero_iff' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms BW_homMatrix_mulVec_eq_zero_iff
++
++/-- info: 'Minidregg.RSInterpolation.Fin_sum_ite_lt_e_add_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms Fin_sum_ite_lt_e_add_one
++
++/-- info: 'Minidregg.RSInterpolation.BW_homMatrix_det_submatrix_natDegree_le_e_add_one' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms BW_homMatrix_det_submatrix_natDegree_le_e_add_one
++
++/-- info: 'Minidregg.RSInterpolation.RS_isUnit_det_vandermonde_C_of_injective' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms RS_isUnit_det_vandermonde_C_of_injective
++
++/-- info: 'Minidregg.RSInterpolation.RS_mulVec_append_castAdd_natAdd' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms RS_mulVec_append_castAdd_natAdd
++
++/-- info: 'Minidregg.RSInterpolation.RS_natDegree_inv_neg_vandermonde_C_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms RS_natDegree_inv_neg_vandermonde_C_eq_zero
++
++end Minidregg.RSInterpolation
+diff --git a/Theory/RSInterpolationKernel.lean b/Theory/RSInterpolationKernel.lean
+new file mode 100644
+index 0000000..9194e86
+--- /dev/null
++++ b/Theory/RSInterpolationKernel.lean
+@@ -0,0 +1,346 @@
++/-
++Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
++Released under Apache 2.0 license as described in LICENSES/ArkLib-Apache-2.0.txt.
++Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
++         Ilia Vlasov, Chung Thai Nguyen
++
++Adapted from ArkLib 22dbd4e836c15a21f68889afa69b7130da04abbb,
++AffineLines/GoodCoeffs.lean:212,464. Direct polynomial-matrix interface;
++all coding hypotheses are supplied by the existing Selvage RS layer.
++-/
++import Theory.RSInterpolationMatrix
++import Theory.PolynomialMatrixKernel
++
++namespace Minidregg.RSInterpolation
++open Polynomial Matrix Finset
++open scoped BigOperators
++variable {F : Type*} [Field F] {ι : Type*} [Fintype ι]
++
++/-- At each scalar, an actual nonzero error-locator block is required. -/
++def SpecializationKernels (e d : ℕ) (ωs f0 f1 : ι → F) (S : Finset F) : Prop :=
++  ∀ z ∈ S, ∃ a : Fin (e+1) → F, ∃ b : Fin (e+d) → F,
++    a ≠ 0 ∧ (BW_homMatrix e d ωs (fun i => f0 i + z * f1 i)).mulVec
++      (Fin.append a b) = 0
++
++/-- More specializations than the determinant degree force every maximal
++minor to vanish; arbitrary row maps are allowed. -/
++theorem det_eq_zero_of_specializations
++    (e deg : ℕ) (domain : ι ↪ F) (u : Fin 2 → ι → F) (S : Finset F)
++    (hS : e+1 < S.card)
++    (hgood : SpecializationKernels e deg domain (u 0) (u 1) S)
++    (r : Fin ((e+1)+(e+deg)) → ι) :
++    Matrix.det ((BW_homMatrix e deg (fun i => (Polynomial.C (domain i) : F[X]))
++      (fun i => Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i))).submatrix r id) = 0 := by
++  classical
++  let N : ℕ := (e + 1) + (e + deg)
++  -- Polynomial matrix and its square submatrix
++  let M : Matrix ι (Fin N) F[X] :=
++    BW_homMatrix (ι := ι) e deg
++      (fun i => (Polynomial.C (domain i) : F[X]))
++      (fun i => Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i))
++  let A : Matrix (Fin N) (Fin N) F[X] :=
++    Matrix.submatrix M (r : Fin N → ι) (id : Fin N → Fin N)
++  -- Degree bound on det(A)
++  have hdeg_det : (Matrix.det A).natDegree ≤ e + 1 := by
++    simpa [A, M, N] using
++      (BW_homMatrix_det_submatrix_natDegree_le_e_add_one (ι := ι) (F := F) e deg
++        (ωs := fun i => domain i) (f0 := fun i => u 0 i) (f1 := fun i => u 1 i)
++        (r := (r : Fin N → ι)))
++  have he1_lt : e + 1 < S.card := hS
++  have hdeg_lt : (Matrix.det A).natDegree < S.card := lt_of_le_of_lt hdeg_det he1_lt
++  -- det(A) vanishes on all points of S
++  have heval : ∀ z ∈ S, (Matrix.det A).eval z = 0 := by
++    intro z hz
++    obtain ⟨a,b,ha0,hmul⟩ := hgood z hz
++    let v : Fin N → F := Fin.append a b
++    have hv_ne : v ≠ 0 := by
++      intro hv
++      apply ha0
++      ext i
++      have hvi : v (Fin.castAdd (e + deg) i) = (0 : Fin N → F) (Fin.castAdd (e + deg) i) :=
++        congrArg (fun f => f (Fin.castAdd (e + deg) i)) hv
++      simpa [v, N] using hvi
++    let Mz : Matrix ι (Fin N) F :=
++      BW_homMatrix (ι := ι) e deg (fun i => domain i) (fun i => u 0 i + z * u 1 i)
++    have hmulMz : Mz *ᵥ v = 0 := by
++      simpa [Mz, v, N] using hmul
++    have hmulSub :
++        (Matrix.submatrix Mz (r : Fin N → ι) (id : Fin N → Fin N)) *ᵥ v = 0 := by
++      ext i
++      have hi : (Mz *ᵥ v) (r i) = 0 := by
++        simpa using congrArg (fun f => f (r i)) hmulMz
++      simpa [Matrix.mulVec, Matrix.submatrix] using hi
++    have hdetMz :
++        Matrix.det (Matrix.submatrix Mz (r : Fin N → ι) (id : Fin N → Fin N)) = 0 := by
++      have hex : ∃ v' : Fin N → F, v' ≠ 0 ∧
++          (Matrix.submatrix Mz (r : Fin N → ι) (id : Fin N → Fin N)) *ᵥ v' = 0 :=
++        ⟨v, hv_ne, hmulSub⟩
++      exact (Matrix.exists_mulVec_eq_zero_iff
++        (M := Matrix.submatrix Mz (r : Fin N → ι) (id : Fin N → Fin N))).1 hex
++    -- Relate evaluation of det(A) to determinant of the evaluated matrix
++    have hdet_eval : (Matrix.det A).eval z = Matrix.det (A.map (Polynomial.eval z)) := by
++      simpa [Polynomial.coe_evalRingHom] using (RingHom.map_det (Polynomial.evalRingHom z) A)
++    -- Identify the mapped matrix with the evaluated BW matrix
++    have hAmap : A.map (Polynomial.eval z) =
++        Matrix.submatrix Mz (r : Fin N → ι) (id : Fin N → Fin N) := by
++      have hMmap : M.map (Polynomial.eval z) = Mz := by
++        simpa [M, Mz, N, Polynomial.coe_evalRingHom] using
++          (BW_homMatrix_map_evalRingHom (ι := ι) (F := F) e deg (fun i => domain i)
++            (fun i => u 0 i) (fun i => u 1 i) z)
++      ext i j
++      change (M.map (Polynomial.eval z)) (r i) j = Mz (r i) j
++      rw [hMmap]
++    -- conclude evaluation is zero
++    rw [hdet_eval]
++    simpa [hAmap] using hdetMz
++  -- Root counting: det(A) has too many roots, hence is zero
++  have hdetA0 : Matrix.det A = 0 := by
++    exact
++      Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' (p := Matrix.det A) (s := S) heval
++        (by simpa using hdeg_lt)
++  -- Finish: unfold A and M
++  simpa [A, M, N] using hdetA0
++
++/-- Bounded polynomial interpolation certificate. The dimension/radius
++hypotheses are integer arithmetic, and specialization certificates are
++checked at every element of the explicitly supplied good set. -/
++theorem bounded_kernel_of_specializations
++    (e deg : ℕ) (domain : ι ↪ F) (u : Fin 2 → ι → F) (S : Finset F)
++    (hdegpos : 1 ≤ deg) (hradius : 2*e+deg ≤ Fintype.card ι)
++    (hScard : e+1 < S.card)
++    (hgood : SpecializationKernels e deg domain (u 0) (u 1) S) :
++    ∃ a : Fin (e+1) → F[X], ∃ b : Fin (e+deg) → F[X],
++      a ≠ 0 ∧ (∀ t, (a t).natDegree ≤ e) ∧
++      (∀ s, (b s).natDegree ≤ e+1) ∧
++      (BW_homMatrix e deg (fun i => (Polynomial.C (domain i) : F[X]))
++        (fun i => Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i))).mulVec
++        (Fin.append a b) = 0 := by
++  classical
++  let m : ℕ := e + 1
++  let n : ℕ := e + deg
++  let N : ℕ := m + n
++  let M : Matrix ι (Fin N) F[X] :=
++    BW_homMatrix (ι := ι) e deg (fun i => (Polynomial.C (domain i) : F[X]))
++      (fun i => Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i))
++  have hdetM : ∀ r : Fin N → ι, Matrix.det (Matrix.submatrix M r id) = 0 := by
++    intro r
++    simpa [M, N, m, n] using
++      det_eq_zero_of_specializations e deg domain u S hScard hgood r
++  have hcard_n : n ≤ Fintype.card ι := by
++    dsimp [n]
++    omega
++  obtain ⟨rB⟩ : Nonempty (Fin n ↪ ι) := by
++    classical
++    refine Function.Embedding.nonempty_of_card_le ?_
++    simpa using hcard_n
++  let cL : Fin m → Fin N := fun j => Fin.castAdd n j
++  let cR : Fin n → Fin N := fun j => Fin.natAdd m j
++  let L : Matrix ι (Fin m) F[X] := Matrix.submatrix M id cL
++  let R : Matrix ι (Fin n) F[X] := Matrix.submatrix M id cR
++  let A21 : Matrix (Fin n) (Fin m) F[X] := Matrix.submatrix M rB cL
++  let D : Matrix (Fin n) (Fin n) F[X] := Matrix.submatrix M rB cR
++  have hD : D = -Matrix.vandermonde (fun i : Fin n => (Polynomial.C (domain (rB i)) : F[X])) := by
++    funext i j
++    have hj' : ¬ e + 1 + (j : ℕ) ≤ e := by
++      omega
++    simp [D, M, BW_homMatrix, cR, Matrix.vandermonde, m, hj']
++  have hvB : Function.Injective (fun i : Fin n => domain (rB i)) := by
++    intro i1 i2 h
++    apply rB.injective
++    apply domain.injective
++    exact h
++  have hdetV : IsUnit
++      (Matrix.det
++        (Matrix.vandermonde (fun i : Fin n => (Polynomial.C (domain (rB i)) : F[X])))) := by
++    simpa using
++      (RS_isUnit_det_vandermonde_C_of_injective (F := F) n (fun i : Fin n => domain (rB i)) hvB)
++  have hdetD : IsUnit (Matrix.det D) := by
++    have hunitNeg : IsUnit ((-1 : F[X]) ^ Fintype.card (Fin n)) := by
++      simpa using (isUnit_neg_one (α := F[X])).pow (Fintype.card (Fin n))
++    have hdetD' :
++        Matrix.det D =
++          (-1 : F[X]) ^ Fintype.card (Fin n) *
++            Matrix.det
++              (Matrix.vandermonde (fun i : Fin n => (Polynomial.C (domain (rB i)) : F[X]))) := by
++      simp [hD, Matrix.det_neg]
++    refine hdetD'.symm ▸ (hunitNeg.mul hdetV)
++  let : Invertible D := Matrix.invertibleOfIsUnitDet D hdetD
++  let K0 : Matrix ι (Fin m) F[X] := L - R * (⅟D * A21)
++  have hdetK0 : ∀ rA : Fin m → ι, Matrix.det (K0.submatrix rA id) = 0 := by
++    intro rA
++    let r : Fin N → ι := Fin.append rA rB
++    have hdetA : Matrix.det (M.submatrix r id) = 0 := hdetM r
++    let eSum : (Fin m ⊕ Fin n) ≃ Fin N := finSumFinEquiv (m := m) (n := n)
++    let Ablocks : Matrix (Fin m ⊕ Fin n) (Fin m ⊕ Fin n) F[X] :=
++      (M.submatrix r id).submatrix eSum eSum
++    have hdetAblocks : Matrix.det Ablocks = 0 := by
++      have hdetEq : Matrix.det Ablocks = Matrix.det (M.submatrix r id) := by
++        simpa [Ablocks] using (Matrix.det_submatrix_equiv_self (e := eSum) (M.submatrix r id))
++      simpa [hdetEq] using hdetA
++    have hAblocks_eq :
++        Ablocks = Matrix.fromBlocks (L.submatrix rA id) (R.submatrix rA id) A21 D := by
++      funext i j
++      cases i <;> cases j <;>
++        simp (config := { zeta := true })
++          [Ablocks, eSum, L, R, A21, D, r, cL, cR, Matrix.fromBlocks, N, m, n]
++    have hmul :
++        Matrix.det D *
++            Matrix.det ((L.submatrix rA id) - (R.submatrix rA id) * ⅟D * A21) =
++          0 := by
++      have hformula :=
++        (Matrix.det_fromBlocks₂₂ (A := L.submatrix rA id) (B := R.submatrix rA id)
++          (C := A21) (D := D))
++      simpa [hAblocks_eq, hformula, Matrix.mul_assoc] using hdetAblocks
++    have hdetSchur :
++        Matrix.det ((L.submatrix rA id) - (R.submatrix rA id) * ⅟D * A21) = 0 := by
++      exact (IsUnit.mul_right_eq_zero (a := Matrix.det D)
++        (b := Matrix.det ((L.submatrix rA id) - (R.submatrix rA id) * ⅟D * A21)) hdetD).1 hmul
++    change ((L - R * (⅟D * A21)).submatrix rA id).det = 0
++    have hmatrix : (L - R * (⅟D * A21)).submatrix rA id =
++        L.submatrix rA id - R.submatrix rA id * (⅟D * A21) := by
++      ext i j
++      simp [Matrix.mul_apply]
++    rw [hmatrix]
++    simpa only [Matrix.mul_assoc] using hdetSchur
++  have hdegL : ∀ i j, (L i j).natDegree ≤ 1 := by
++    intro i j
++    simpa [L, cL, M] using
++      (BW_homMatrix_entry_natDegree_le_one (F := F) (ι := ι) e deg
++        (ωs := fun i => domain i) (f0 := fun i => u 0 i) (f1 := fun i => u 1 i) i (cL j))
++  have hdegA21 : ∀ i j, (A21 i j).natDegree ≤ 1 := by
++    intro i j
++    simpa [A21, cL, M] using
++      (BW_homMatrix_entry_natDegree_le_one (F := F) (ι := ι) e deg
++        (ωs := fun i => domain i) (f0 := fun i => u 0 i) (f1 := fun i => u 1 i) (rB i) (cL j))
++  have hdegR0 : ∀ i j, (R i j).natDegree = 0 := by
++    intro i j
++    have hj : e + 1 ≤ (cR j).1 := by
++      simp [cR, m]
++    simpa [R, cR, M] using
++      (BW_homMatrix_entry_natDegree_eq_zero_of_ge (F := F) (ι := ι) e deg
++        (ωs := fun i => domain i) (f0 := fun i => u 0 i) (f1 := fun i => u 1 i) i (cR j) hj)
++  have hdegInvD0 : ∀ i j : Fin n, (D⁻¹ i j).natDegree = 0 := by
++    intro i j
++    simpa [hD] using
++      (RS_natDegree_inv_neg_vandermonde_C_eq_zero
++        (F := F) n (fun t : Fin n => domain (rB t)) hvB i j)
++  have hdegInvDA21 : ∀ i j, ((⅟D * A21) i j).natDegree ≤ 1 := by
++    intro i j
++    classical
++    have hterm : ∀ k ∈ (Finset.univ : Finset (Fin n)),
++        ((⅟D i k) * (A21 k j)).natDegree ≤ 1 := by
++      intro k hk
++      have hInv' : (D⁻¹ i k).natDegree = 0 := hdegInvD0 i k
++      calc
++        ((⅟D i k) * (A21 k j)).natDegree ≤ (⅟D i k).natDegree + (A21 k j).natDegree :=
++          Polynomial.natDegree_mul_le
++        _ = 0 + (A21 k j).natDegree := by
++          simp [Matrix.invOf_eq_nonsing_inv, hInv']
++        _ = (A21 k j).natDegree := by simp
++        _ ≤ 1 := hdegA21 k j
++    have hsum :=
++      Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Fin n)))
++        (n := 1) (f := fun k : Fin n => (⅟D i k) * (A21 k j)) hterm
++    simpa [Matrix.mul_apply] using hsum
++  have hdegRInvDA21 : ∀ i j, ((R * (⅟D * A21)) i j).natDegree ≤ 1 := by
++    intro i j
++    classical
++    have hterm : ∀ k ∈ (Finset.univ : Finset (Fin n)),
++        (R i k * ((⅟D * A21) k j)).natDegree ≤ 1 := by
++      intro k hk
++      have hR : (R i k).natDegree = 0 := hdegR0 i k
++      calc
++        (R i k * ((⅟D * A21) k j)).natDegree ≤ (R i k).natDegree + ((⅟D * A21) k j).natDegree :=
++          Polynomial.natDegree_mul_le
++        _ = 0 + ((⅟D * A21) k j).natDegree := by simp [hR]
++        _ = ((⅟D * A21) k j).natDegree := by simp
++        _ ≤ 1 := hdegInvDA21 k j
++    have hsum :=
++      Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Fin n)))
++        (n := 1) (f := fun k : Fin n => R i k * ((⅟D * A21) k j)) hterm
++    simpa [Matrix.mul_apply] using hsum
++  have hdegK0 : ∀ i j, (K0 i j).natDegree ≤ 1 := by
++    intro i j
++    have hsub : (L i j - (R * (⅟D * A21)) i j).natDegree ≤
++        max (L i j).natDegree ((R * (⅟D * A21)) i j).natDegree :=
++      Polynomial.natDegree_sub_le (L i j) ((R * (⅟D * A21)) i j)
++    have hmax :
++        max (L i j).natDegree ((R * (⅟D * A21)) i j).natDegree ≤ 1 := by
++      exact max_le_iff.mpr ⟨hdegL i j, hdegRInvDA21 i j⟩
++    have : (K0 i j).natDegree ≤
++        max (L i j).natDegree ((R * (⅟D * A21)) i j).natDegree := by
++      simpa [K0] using hsub
++    exact le_trans this hmax
++  have hcard_m : m ≤ Fintype.card ι := by
++    dsimp [m]
++    omega
++  obtain ⟨a, ha0, ha_deg, haKer⟩ :=
++    PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one (ι := ι) (F := F) e K0
++      (by simpa [m] using hcard_m) hdegK0 (by
++        intro rA
++        simpa [m, K0] using hdetK0 rA)
++  let b : Fin n → F[X] := -(⅟D).mulVec (A21.mulVec a)
++  refine ⟨a, b, ha0, ha_deg, ?_, ?_⟩
++  · intro s
++    classical
++    have hdegA21mulVec : ∀ i : Fin n, ((A21.mulVec a) i).natDegree ≤ e + 1 := by
++      intro i
++      have hterm : ∀ t ∈ (Finset.univ : Finset (Fin m)),
++          (A21 i t * a t).natDegree ≤ e + 1 := by
++        intro t ht
++        have hA : (A21 i t).natDegree ≤ 1 := hdegA21 i t
++        have ha : (a t).natDegree ≤ e := ha_deg t
++        have hmul : (A21 i t * a t).natDegree ≤ (A21 i t).natDegree + (a t).natDegree :=
++          Polynomial.natDegree_mul_le
++        have hadd : (A21 i t).natDegree + (a t).natDegree ≤ 1 + e := Nat.add_le_add hA ha
++        have : (A21 i t * a t).natDegree ≤ 1 + e := le_trans hmul hadd
++        simpa [Nat.add_comm] using this
++      have hsum :=
++        Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Fin m)))
++          (n := e + 1) (f := fun t : Fin m => A21 i t * a t) hterm
++      simpa [Matrix.mulVec, dotProduct] using hsum
++    have hdegInvDmulVec : ∀ i : Fin n, ((⅟D).mulVec (A21.mulVec a) i).natDegree ≤ e + 1 := by
++      intro i
++      have hterm : ∀ k ∈ (Finset.univ : Finset (Fin n)),
++          ((⅟D i k) * (A21.mulVec a k)).natDegree ≤ e + 1 := by
++        intro k hk
++        have hInv' : (D⁻¹ i k).natDegree = 0 := hdegInvD0 i k
++        have hA : ((A21.mulVec a) k).natDegree ≤ e + 1 := hdegA21mulVec k
++        calc
++          ((⅟D i k) * (A21.mulVec a k)).natDegree ≤
++              (⅟D i k).natDegree + (A21.mulVec a k).natDegree :=
++            Polynomial.natDegree_mul_le
++          _ = 0 + (A21.mulVec a k).natDegree := by
++            simp [Matrix.invOf_eq_nonsing_inv, hInv']
++          _ = (A21.mulVec a k).natDegree := by simp
++          _ ≤ e + 1 := hA
++      have hsum :=
++        Polynomial.natDegree_sum_le_of_forall_le (s := (Finset.univ : Finset (Fin n)))
++          (n := e + 1) (f := fun k : Fin n => (⅟D i k) * (A21.mulVec a k)) hterm
++      simpa [Matrix.mulVec, dotProduct] using hsum
++    simpa [b] using hdegInvDmulVec s
++  · -- kernel equation
++    have hRb : Matrix.mulVec R b = -Matrix.mulVec (R * (⅟D * A21)) a := by
++      ext i
++      simp [b, Matrix.mulVec_neg, Matrix.mulVec_mulVec]
++    have hLR : Matrix.mulVec L a + Matrix.mulVec R b = 0 := by
++      have haKer' : Matrix.mulVec (L - R * (⅟D * A21)) a = 0 := by
++        simpa [K0] using haKer
++      have haKer'' : Matrix.mulVec L a - Matrix.mulVec (R * (⅟D * A21)) a = 0 := by
++        simpa [Matrix.sub_mulVec] using haKer'
++      simpa [sub_eq_add_neg, hRb] using haKer''
++    have hsplit : Matrix.mulVec M (Fin.append a b) = Matrix.mulVec L a + Matrix.mulVec R b := by
++      simpa [L, R, cL, cR, N] using
++        (RS_mulVec_append_castAdd_natAdd (ι := ι) (R := F[X]) m n M a b)
++    change Matrix.mulVec M (Fin.append a b) = 0
++    rw [hsplit]
++    exact hLR
++/-- info: 'Minidregg.RSInterpolation.det_eq_zero_of_specializations' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms det_eq_zero_of_specializations
++
++/-- info: 'Minidregg.RSInterpolation.bounded_kernel_of_specializations' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms bounded_kernel_of_specializations
++
++end Minidregg.RSInterpolation
+diff --git a/Selvage/FullUDStatement.lean b/Selvage/FullUDStatement.lean
+new file mode 100644
+index 0000000..4eac367
+--- /dev/null
++++ b/Selvage/FullUDStatement.lean
+@@ -0,0 +1,96 @@
++/-
++# Full unique-decoding target over Selvage's existing Reed–Solomon code
++
++Statement-first contract for the theorem in FullUDCore. This module states
++the integer cardinality core and pins a nonempty premise. The radius-premise
++falsifier is in FullUDTeeth; the existing consumer is in FullUDFriConsumer.
++-/
++import Selvage.Proximity
++
++namespace Minidregg.Selvage
++
++variable {ι : Type*} [Fintype ι] [DecidableEq ι]
++variable {F : Type*} [Field F] [DecidableEq F]
++
++/-- The proposed full-UD cardinality core, stated in existing code/distance
++language. Its theorem will require `1 ≤ d` and `2*e+d ≤ card ι`. -/
++def FullUDCardCore (dom : ι ↪ F) (d e : ℕ) : Prop :=
++  ∀ (f : Fin 2 → ι → F) (A : Finset F),
++    (∀ z ∈ A, ∃ w ∈ reedSolomonCode dom d,
++      hammingDist (f 0 + z • f 1) w ≤ e) →
++    Fintype.card ι < A.card →
++    ∃ S : Finset ι, Fintype.card ι - e ≤ S.card ∧
++      ∀ j, ∃ w ∈ reedSolomonCode dom d, AgreesOn S (f j) w
++
++/-- Concrete admissibility and good-slope data. The cardinality condition
++rules out an empty/all-impossible source premise. -/
++def FullUDPremise (dom : ι ↪ F) (d e : ℕ)
++    (f : Fin 2 → ι → F) (A : Finset F) : Prop :=
++  1 ≤ d ∧ 2 * e + d ≤ Fintype.card ι ∧
++    Fintype.card ι < A.card ∧
++    ∀ z ∈ A, ∃ w ∈ reedSolomonCode dom d,
++      hammingDist (f 0 + z • f 1) w ≤ e
++
++namespace FullUDWitness
++
++private instance : Fact (Nat.Prime 11) := ⟨by decide⟩
++
++def dom : Fin 8 ↪ ZMod 11 where
++  toFun i := i.val
++  inj' := by
++    intro a b hab
++    have ha : a.val < 11 := lt_trans a.isLt (by decide)
++    have hb : b.val < 11 := lt_trans b.isLt (by decide)
++    apply Fin.ext
++    have := congrArg ZMod.val hab
++    simpa [ZMod.val_natCast, Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb] using this
++
++def xWord : Fin 8 → ZMod 11 := fun i => dom i
++def oneWord : Fin 8 → ZMod 11 := fun _ => 1
++def pair : Fin 2 → Fin 8 → ZMod 11 := ![xWord, oneWord]
++
++theorem x_mem : xWord ∈ reedSolomonCode dom 4 := by
++  apply mem_reedSolomonCode_iff.mpr
++  exact ⟨Polynomial.X, by norm_num, fun i => by simp [xWord]⟩
++
++theorem one_mem : oneWord ∈ reedSolomonCode dom 4 := by
++  apply mem_reedSolomonCode_iff.mpr
++  exact ⟨1, by norm_num, fun i => by simp [oneWord]⟩
++
++/-- The full-UD source premise fires at rate one half, eight positions and
++one-error-pair radius `e=2`. In particular it is not a full-rate/top code. -/
++theorem premise_inhabited : FullUDPremise dom 4 2 pair Finset.univ := by
++  refine ⟨by norm_num, by norm_num, by norm_num, ?_⟩
++  intro z hz
++  refine ⟨xWord + z • oneWord,
++    (reedSolomonCode dom 4).add_mem x_mem ((reedSolomonCode dom 4).smul_mem z one_mem), ?_⟩
++  simp [pair]
++
++/-- The same witness has all eight jointly explained positions. -/
++theorem conclusion_inhabited :
++    ∃ S : Finset (Fin 8), 8 - 2 ≤ S.card ∧
++      ∀ j, ∃ w ∈ reedSolomonCode dom 4, AgreesOn S (pair j) w := by
++  refine ⟨Finset.univ, by simp, ?_⟩
++  intro j
++  fin_cases j
++  · exact ⟨xWord, x_mem, fun _ _ => rfl⟩
++  · exact ⟨oneWord, one_mem, fun _ _ => rfl⟩
++
++/-- info: 'Minidregg.Selvage.FullUDWitness.x_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms x_mem
++
++/-- info: 'Minidregg.Selvage.FullUDWitness.one_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms one_mem
++
++end FullUDWitness
++
++/-- info: 'Minidregg.Selvage.FullUDWitness.premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms FullUDWitness.premise_inhabited
++/-- info: 'Minidregg.Selvage.FullUDWitness.conclusion_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms FullUDWitness.conclusion_inhabited
++
++end Minidregg.Selvage
+diff --git a/Selvage/FullUDTeeth.lean b/Selvage/FullUDTeeth.lean
+new file mode 100644
+index 0000000..b1214b5
+--- /dev/null
++++ b/Selvage/FullUDTeeth.lean
+@@ -0,0 +1,118 @@
++/-
++# A falsifier for dropping the full unique-decoding radius premise
++
++The concrete pair was found by evidence/derive.py in the 2026-09-08 research
++lane. The conclusions here are kernel proofs, over the existing RS code.
++-/
++import Selvage.FullUDStatement
++import Mathlib.Algebra.Polynomial.Degree.SmallDegree
++
++namespace Minidregg.Selvage.FullUDTeeth
++
++private instance : Fact (Nat.Prime 7) := ⟨by decide⟩
++
++private def dom : Fin 6 ↪ ZMod 7 where
++  toFun i := i.val
++  inj' := by
++    intro a b hab
++    have ha : a.val < 7 := lt_trans a.isLt (by decide)
++    have hb : b.val < 7 := lt_trans b.isLt (by decide)
++    apply Fin.ext
++    have := congrArg ZMod.val hab
++    simpa [ZMod.val_natCast, Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb] using this
++
++private def f0 : Fin 6 → ZMod 7 := ![3,0,4,1,3,3]
++private def f1 : Fin 6 → ZMod 7 := ![6,4,1,1,6,3]
++private def pair : Fin 2 → Fin 6 → ZMod 7 := ![f0,f1]
++private def affine (a b : ZMod 7) : Fin 6 → ZMod 7 := fun i => a + b * dom i
++private def bestA : ZMod 7 → ZMod 7 := ![3,0,1,0,3,2,2]
++private def bestB : ZMod 7 → ZMod 7 := ![4,4,0,0,6,6,4]
++
++private theorem affine_mem (a b : ZMod 7) :
++    affine a b ∈ reedSolomonCode dom 2 := by
++  apply mem_reedSolomonCode_iff.mpr
++  refine ⟨Polynomial.C b * Polynomial.X + Polynomial.C a,
++    Polynomial.degree_linear_lt, ?_⟩
++  intro i
++  simp [affine, add_comm]
++
++private theorem codeword_affine {w : Fin 6 → ZMod 7}
++    (hw : w ∈ reedSolomonCode dom 2) : ∃ a b, w = affine a b := by
++  obtain ⟨p, hp, heval⟩ := mem_reedSolomonCode_iff.mp hw
++  have hnat : p.natDegree ≤ 1 := by
++    by_cases hp0 : p = 0
++    · simp [hp0]
++    · have := (Polynomial.natDegree_lt_iff_degree_lt hp0).mpr hp
++      omega
++  obtain ⟨b,a,hpaff⟩ := Polynomial.exists_eq_X_add_C_of_natDegree_le_one hnat
++  refine ⟨a,b,funext fun i => ?_⟩
++  rw [heval i, hpaff]
++  simp [affine, add_comm]
++
++/-- Every scalar has a nearby codeword at the forbidden radius. -/
++theorem all_folds_close :
++    ∀ z : ZMod 7, ∃ w ∈ reedSolomonCode dom 2,
++      hammingDist (f0 + z • f1) w ≤ 3 := by
++  intro z
++  refine ⟨affine (bestA z) (bestB z), affine_mem _ _, ?_⟩
++  fin_cases z <;> decide
++
++set_option maxRecDepth 20000 in
++set_option maxHeartbeats 4000000 in
++private theorem common_affine_card : ∀ a b c d : ZMod 7,
++    (Finset.univ.filter fun i : Fin 6 =>
++      f0 i = affine a b i ∧ f1 i = affine c d i).card ≤ 2 := by
++  decide +kernel
++
++/-- No pair of degree-below-two polynomials explains three common positions. -/
++theorem no_joint_three :
++    ¬ ∃ S : Finset (Fin 6), 3 ≤ S.card ∧
++      ∀ j, ∃ w ∈ reedSolomonCode dom 2, AgreesOn S (pair j) w := by
++  rintro ⟨S,hScard,hjoint⟩
++  obtain ⟨w0,hw0,h0⟩ := hjoint 0
++  obtain ⟨w1,hw1,h1⟩ := hjoint 1
++  obtain ⟨a,b,rfl⟩ := codeword_affine hw0
++  obtain ⟨c,d,rfl⟩ := codeword_affine hw1
++  have hsub : S ⊆ Finset.univ.filter (fun i : Fin 6 =>
++      f0 i = affine a b i ∧ f1 i = affine c d i) := by
++    intro i hi
++    exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, by
++      exact ⟨by simpa [pair] using h0 i hi, by simpa [pair] using h1 i hi⟩⟩
++  have hcard := (Finset.card_le_card hsub).trans (common_affine_card a b c d)
++  omega
++
++/-- Deleting `2e+d≤n` makes the proposed core false, despite all seven
++scalars satisfying the good-slope premise on a six-point domain. -/
++theorem radius_hypothesis_necessary : ¬ FullUDCardCore dom 2 3 := by
++  intro h
++  apply no_joint_three
++  have h' := h pair Finset.univ (by
++    intro z hz
++    simpa [pair] using all_folds_close z) (by norm_num)
++  simpa using h'
++
++/-- info: 'Minidregg.Selvage.FullUDTeeth.radius_hypothesis_necessary' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms radius_hypothesis_necessary
++
++/-- info: '_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.affine_mem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms affine_mem
++
++/-- info: '_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.codeword_affine' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms codeword_affine
++
++/-- info: 'Minidregg.Selvage.FullUDTeeth.all_folds_close' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms all_folds_close
++
++/-- info: '_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.common_affine_card' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms common_affine_card
++
++/-- info: 'Minidregg.Selvage.FullUDTeeth.no_joint_three' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms no_joint_three
++
++end Minidregg.Selvage.FullUDTeeth
+diff --git a/Selvage/FullUDInterpolation.lean b/Selvage/FullUDInterpolation.lean
+new file mode 100644
+index 0000000..16e14f0
+--- /dev/null
++++ b/Selvage/FullUDInterpolation.lean
+@@ -0,0 +1,178 @@
++/-
++Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
++Released under Apache 2.0 license as described in LICENSES/ArkLib-Apache-2.0.txt.
++Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
++         Ilia Vlasov, Chung Thai Nguyen
++
++Error-locator argument adapted from ArkLib GoodCoeffs.lean:72 at
++22dbd4e836c15a21f68889afa69b7130da04abbb. Uses Selvage's existing
++reedSolomonCode and Mathlib hammingDist, with no parallel coding definitions.
++-/
++import Selvage.FullUDStatement
++import Theory.RSInterpolationKernel
++
++namespace Minidregg.Selvage
++open Polynomial Matrix Finset RSInterpolation
++open scoped BigOperators
++variable {F : Type*} [Field F] [DecidableEq F] {ι : Type*} [Fintype ι]
++
++/-- Each actual nearby codeword supplies an evaluated BW kernel whose
++error-locator block is nonzero. -/
++theorem bw_specialization_of_close
++    {deg e : ℕ} (hdegpos : 0 < deg) {domain : ι ↪ F}
++    (u : Fin 2 → ι → F) (z : F)
++    (hclose : ∃ w ∈ reedSolomonCode domain deg,
++      hammingDist (u 0 + z • u 1) w ≤ e) :
++    ∃ a : Fin (e+1) → F, ∃ b : Fin (e+deg) → F,
++      a ≠ 0 ∧ (BW_homMatrix e deg domain (fun i => u 0 i + z * u 1 i)).mulVec
++        (Fin.append a b) = 0 := by
++  classical
++  obtain ⟨w,hw,hdist⟩ := hclose
++  obtain ⟨Pz,hPzdegree,heval⟩ := mem_reedSolomonCode_iff.mp hw
++  have hPzdeg : Pz.natDegree < deg := by
++    by_cases hPz0 : Pz = 0
++    · simpa [hPz0] using hdegpos
++    · exact (Polynomial.natDegree_lt_iff_degree_lt hPz0).mpr hPzdegree
++  let D : Finset ι := Finset.univ.filter fun i => (u 0 + z • u 1) i ≠ w i
++  have hDcard : D.card ≤ e := by
++    simpa [D, hammingDist] using hdist
++  have hAgree : ∀ i, i ∉ D → (u 0 + z • u 1) i = Pz.eval (domain i) := by
++    intro i hi
++    have hw' : (u 0 + z • u 1) i = w i := by
++      simpa [D] using hi
++    exact hw'.trans (heval i)
++  -- Error-locator polynomial and the corresponding `Q`
++  set E : F[X] := ∏ i ∈ D, (Polynomial.X - Polynomial.C (domain i)) with hE
++  set Q : F[X] := E * Pz with hQ
++  -- Coefficient vectors (truncated to the required degrees)
++  let a : Fin (e + 1) → F := fun t => E.coeff t.1
++  let b : Fin (e + deg) → F := fun s => Q.coeff s.1
++  have hE_monic : E.Monic := by
++    -- `E` is a product of monic linear factors
++    simpa [hE] using (Polynomial.monic_prod_X_sub_C (b := fun i : ι => domain i) (s := D))
++  have hE_natDegree : E.natDegree = D.card := by
++    -- degree of product of monic polynomials is sum of degrees
++    have hdeg :=
++      Polynomial.natDegree_prod_of_monic (s := D)
++        (f := fun i : ι => (Polynomial.X - Polynomial.C (domain i) : F[X]))
++        (by
++          intro i hi
++          simpa using (Polynomial.monic_X_sub_C (domain i)))
++    -- simplify the RHS
++    convert hdeg using 1
++    simp
++  have hE_deg_lt : E.natDegree < e + 1 := by
++    have : D.card < e + 1 := Nat.lt_succ_of_le hDcard
++    simpa [hE_natDegree] using this
++  have hQ_deg_lt : Q.natDegree < e + deg := by
++    -- `natDegree (E*Pz) ≤ natDegree E + natDegree Pz`
++    have hmul : Q.natDegree ≤ E.natDegree + Pz.natDegree := by
++      simpa [hQ] using (Polynomial.natDegree_mul_le (p := E) (q := Pz))
++    have hPz_le : Pz.natDegree ≤ deg - 1 := Nat.le_pred_of_lt hPzdeg
++    have hE_le : E.natDegree ≤ e := by
++      simpa [hE_natDegree] using hDcard
++    have hsum_le : E.natDegree + Pz.natDegree ≤ e + (deg - 1) := Nat.add_le_add hE_le hPz_le
++    have hle : Q.natDegree ≤ e + (deg - 1) := le_trans hmul (by simpa [Nat.add_assoc] using hsum_le)
++    -- turn into a strict inequality
++    have hdegpos : 0 < deg := hdegpos
++    have : e + (deg - 1) < e + deg :=
++      Nat.add_lt_add_left (Nat.pred_lt (Nat.ne_of_gt hdegpos)) e
++    exact lt_of_le_of_lt hle this
++  -- `a` is nonzero because the leading coefficient of `E` is 1
++  have ha_ne : a ≠ 0 := by
++    have hcard_lt : D.card < e + 1 := Nat.lt_succ_of_le hDcard
++    let t0 : Fin (e + 1) := ⟨D.card, hcard_lt⟩
++    have hcoeff : E.coeff D.card = 1 := by
++      have hlead : E.leadingCoeff = 1 := hE_monic.leadingCoeff
++      simpa [Polynomial.leadingCoeff, hE_natDegree] using hlead
++    have ht0 : a t0 = 1 := by
++      simpa [a, t0] using hcoeff
++    intro hzero
++    have hz0 : a t0 = 0 := by
++      simpa using congrArg (fun f => f t0) hzero
++    have h1 : (1 : F) = 0 := by
++      rwa [ht0] at hz0
++    exact one_ne_zero h1
++  refine ⟨a, b, ha_ne, ?_⟩
++  -- Show the vector is in the kernel via the characterization lemma
++  apply (BW_homMatrix_mulVec_eq_zero_iff (ι := ι) (e := e) (k := deg)
++      (ωs := fun i => domain i)
++      (f := fun i => u 0 i + z * u 1 i)
++      (a := a) (b := b)).2
++  intro i
++  -- Convert the coefficient sums into polynomial evaluations
++  have hsum_a : (∑ t : Fin (e + 1), a t * (domain i) ^ t.1) = E.eval (domain i) := by
++    have hfin : (∑ t : Fin (e + 1), a t * (domain i) ^ t.1)
++        = ∑ n ∈ Finset.range (e + 1), E.coeff n * (domain i) ^ n := by
++      simpa [a] using
++        (Fin.sum_univ_eq_sum_range (f := fun n : ℕ => E.coeff n * (domain i) ^ n) (n := e + 1))
++    have heval : E.eval (domain i) = ∑ n ∈ Finset.range (e + 1), E.coeff n * (domain i) ^ n :=
++      Polynomial.eval_eq_sum_range' (p := E) (n := e + 1) hE_deg_lt (domain i)
++    simpa [hfin] using heval.symm
++  have hsum_b : (∑ s : Fin (e + deg), b s * (domain i) ^ s.1) = Q.eval (domain i) := by
++    have hfin : (∑ s : Fin (e + deg), b s * (domain i) ^ s.1)
++        = ∑ n ∈ Finset.range (e + deg), Q.coeff n * (domain i) ^ n := by
++      simpa [b] using
++        (Fin.sum_univ_eq_sum_range (f := fun n : ℕ => Q.coeff n * (domain i) ^ n) (n := e + deg))
++    have heval : Q.eval (domain i) = ∑ n ∈ Finset.range (e + deg), Q.coeff n * (domain i) ^ n :=
++      Polynomial.eval_eq_sum_range' (p := Q) (n := e + deg) hQ_deg_lt (domain i)
++    simpa [hfin] using heval.symm
++  -- Reduce to showing `E.eval ω * f = Q.eval ω` and discharge by cases
++  by_cases hiD : i ∈ D
++  · -- On error positions, `E(ω_i)=0`
++    have hE0 : E.eval (domain i) = 0 := by
++      -- expand `E` and use that evaluation commutes with products
++      rw [hE]
++      rw [Polynomial.eval_prod (s := D)
++        (p := fun j : ι => (Polynomial.X - Polynomial.C (domain j) : F[X]))
++        (x := domain i)]
++      refine Finset.prod_eq_zero hiD ?_
++      simp
++    calc
++      (∑ t : Fin (e + 1), a t * (domain i) ^ t.1) * (u 0 i + z * u 1 i)
++          = (E.eval (domain i)) * (u 0 i + z * u 1 i) := by rw [hsum_a]
++      _ = 0 := by simp [hE0]
++      _ = Q.eval (domain i) := by
++            have hmul_eval : Q.eval (domain i) = (E.eval (domain i)) * (Pz.eval (domain i)) := by
++              rw [hQ, Polynomial.eval_mul]
++            simp [hmul_eval, hE0]
++      _ = ∑ s : Fin (e + deg), b s * (domain i) ^ s.1 := by rw [hsum_b]
++  · -- On agreement positions, `f_i = Pz(ω_i)`
++    have hf_eq : (u 0 i + z * u 1 i) = Pz.eval (domain i) := by
++      have := hAgree i hiD
++      simpa [Pi.add_apply, Pi.smul_apply, smul_eq_mul] using this
++    calc
++      (∑ t : Fin (e + 1), a t * (domain i) ^ t.1) * (u 0 i + z * u 1 i)
++          = (E.eval (domain i)) * (u 0 i + z * u 1 i) := by rw [hsum_a]
++      _ = (E.eval (domain i)) * (Pz.eval (domain i)) := by simp [hf_eq]
++      _ = Q.eval (domain i) := by
++            rw [hQ, Polynomial.eval_mul]
++      _ = ∑ s : Fin (e + deg), b s * (domain i) ^ s.1 := by rw [hsum_b]
++
++/-- The complete bounded BW certificate is now derived from the real RS
++proximity premise, not assumed as an abstract certificate. -/
++theorem bw_bounded_kernel_of_many_close
++    (e d : ℕ) (dom : ι ↪ F) (u : Fin 2 → ι → F) (A : Finset F)
++    (hd : 1 ≤ d) (hradius : 2*e+d ≤ Fintype.card ι)
++    (hcard : Fintype.card ι < A.card)
++    (hclose : ∀ z ∈ A, ∃ w ∈ reedSolomonCode dom d,
++      hammingDist (u 0 + z • u 1) w ≤ e) :
++    ∃ a : Fin (e+1) → F[X], ∃ b : Fin (e+d) → F[X],
++      a ≠ 0 ∧ (∀ t, (a t).natDegree ≤ e) ∧
++      (∀ s, (b s).natDegree ≤ e+1) ∧
++      (BW_homMatrix e d (fun i => (Polynomial.C (dom i) : F[X]))
++        (fun i => Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i))).mulVec
++        (Fin.append a b) = 0 := by
++  apply bounded_kernel_of_specializations e d dom u A hd hradius (by omega)
++  intro z hz
++  exact bw_specialization_of_close hd u z (hclose z hz)
++
++/-- info: 'Minidregg.Selvage.bw_specialization_of_close' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms bw_specialization_of_close
++
++/-- info: 'Minidregg.Selvage.bw_bounded_kernel_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms bw_bounded_kernel_of_many_close
++
++end Minidregg.Selvage
+diff --git a/Selvage/FullUDBivariate.lean b/Selvage/FullUDBivariate.lean
+new file mode 100644
+index 0000000..9e576c6
+--- /dev/null
++++ b/Selvage/FullUDBivariate.lean
+@@ -0,0 +1,203 @@
++/-
++Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
++Released under Apache 2.0 license as described in LICENSES/ArkLib-Apache-2.0.txt.
++Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
++         Ilia Vlasov, Chung Thai Nguyen
++
++Adapted from ArkLib JointAgreement.lean:35 at
++22dbd4e836c15a21f68889afa69b7130da04abbb. Directly converts the proved
++Selvage interpolation certificate into ordinary Mathlib nested polynomials.
++-/
++import Selvage.FullUDInterpolation
++import Theory.PolynomialBivariate
++
++namespace Minidregg.Selvage
++open Polynomial Polynomial.Bivariate Matrix Finset RSInterpolation
++open scoped BigOperators Polynomial.Bivariate
++variable {F : Type*} [Field F] [DecidableEq F] {ι : Type*} [Fintype ι]
++
++/-- Bivariate interpolation polynomials from the actual RS proximity data. -/
++theorem bw_bivariate_of_many_close
++    (e deg : ℕ) (domain : ι ↪ F) (u : Fin 2 → ι → F) (good : Finset F)
++    (hd : 1 ≤ deg) (hradius : 2*e+deg ≤ Fintype.card ι)
++    (hcard : Fintype.card ι < good.card)
++    (hclose : ∀ z ∈ good, ∃ w ∈ reedSolomonCode domain deg,
++      hammingDist (u 0 + z • u 1) w ≤ e) :
++    ∃ A B : F[X][Y], A ≠ 0 ∧ degreeX A ≤ e ∧ natDegreeY A ≤ e ∧
++      degreeX B ≤ e+deg-1 ∧ natDegreeY B ≤ e+1 ∧
++      (∀ i, evalX (domain i) B =
++        (Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i)) *
++          evalX (domain i) A) := by
++  classical
++  obtain ⟨a,b,ha_ne,ha_deg,hb_deg,hMul⟩ :=
++    bw_bounded_kernel_of_many_close e deg domain u good hd hradius hcard hclose
++  let A0 : F[X][Y] := ∑ t : Fin (e + 1), Polynomial.monomial t.1 (a t)
++  let B0 : F[X][Y] := ∑ s : Fin (e + deg), Polynomial.monomial s.1 (b s)
++  let A : F[X][Y] := (Polynomial.Bivariate.swap (R := F)) A0
++  let B : F[X][Y] := (Polynomial.Bivariate.swap (R := F)) B0
++  have hcoeffA0 : ∀ n : ℕ, ∀ hn : n < e + 1, A0.coeff n = a ⟨n, hn⟩ := by
++    intro n hn
++    classical
++    simp [A0, Polynomial.coeff_monomial]
++    have hsum :
++        (∑ t : Fin (e + 1), (if t = ⟨n, hn⟩ then a t else (0 : F[X]))) = a ⟨n, hn⟩ := by
++      simp
++    simpa [Fin.ext_iff] using hsum
++  have hcoeffB0 : ∀ n : ℕ, ∀ hn : n < e + deg, B0.coeff n = b ⟨n, hn⟩ := by
++    intro n hn
++    classical
++    simp [B0, Polynomial.coeff_monomial]
++    have hsum :
++        (∑ t : Fin (e + deg), (if t = ⟨n, hn⟩ then b t else (0 : F[X]))) = b ⟨n, hn⟩ := by
++      simp
++    simpa [Fin.ext_iff] using hsum
++  have hcoeffA0_big : ∀ N : ℕ, e < N → A0.coeff N = 0 := by
++    intro N hN
++    classical
++    have hN' : e + 1 ≤ N := Nat.succ_le_of_lt hN
++    have hne : ∀ t : Fin (e + 1), (t : ℕ) ≠ N := by
++      intro t
++      have ht : (t : ℕ) < N := lt_of_lt_of_le t.2 hN'
++      exact Nat.ne_of_lt ht
++    simp [A0, Polynomial.coeff_monomial, hne]
++  have hcoeffB0_big : ∀ N : ℕ, e + deg - 1 < N → B0.coeff N = 0 := by
++    intro N hN
++    classical
++    have hdegpos : 0 < deg := hd
++    have hpos : 1 ≤ e + deg := Nat.succ_le_of_lt (Nat.add_pos_right e hdegpos)
++    have hN' : e + deg ≤ N := by
++      have : (e + deg - 1) + 1 ≤ N := by
++        simpa [Nat.succ_eq_add_one] using Nat.succ_le_of_lt hN
++      simpa [Nat.sub_add_cancel hpos, Nat.add_assoc] using this
++    have hne : ∀ t : Fin (e + deg), (t : ℕ) ≠ N := by
++      intro t
++      have ht : (t : ℕ) < N := lt_of_lt_of_le t.2 hN'
++      exact Nat.ne_of_lt ht
++    simp [B0, Polynomial.coeff_monomial, hne]
++  refine ⟨A, B, ?_, ?_, ?_, ?_, ?_, ?_⟩
++  · -- A ≠ 0
++    have hex : ∃ t : Fin (e + 1), a t ≠ 0 := by
++      by_contra h
++      apply ha_ne
++      funext t
++      have : a t = 0 := by
++        by_contra ht
++        exact h ⟨t, ht⟩
++      simpa using this
++    rcases hex with ⟨t0, ht0⟩
++    have hcoeff : A0.coeff t0.1 = a t0 := by
++      simpa using (hcoeffA0 t0.1 t0.2)
++    have hA0 : A0 ≠ 0 := by
++      intro hzero
++      apply ht0
++      have : A0.coeff t0.1 = 0 := by simp [hzero]
++      simpa [hcoeff] using this
++    intro hzero
++    apply hA0
++    exact (Polynomial.Bivariate.swap (R := F)).injective (by simp [A, hzero])
++  · -- degreeX A bound
++    have hnatY_A0 : Polynomial.Bivariate.natDegreeY A0 ≤ e := by
++      unfold Polynomial.Bivariate.natDegreeY
++      exact (Polynomial.natDegree_le_iff_coeff_eq_zero).2 hcoeffA0_big
++    have hdegX : Polynomial.Bivariate.degreeX A = Polynomial.Bivariate.natDegreeY A0 := by
++      simpa [A] using (Polynomial.Bivariate.degreeX_swap (F := F) (f := A0))
++    simpa [hdegX] using hnatY_A0
++  · -- natDegreeY A bound
++    have hdegX_A0 : Polynomial.Bivariate.degreeX A0 ≤ e := by
++      classical
++      unfold Polynomial.Bivariate.degreeX
++      refine Finset.sup_le_iff.2 ?_
++      intro n hn
++      by_cases hnlt : n < e + 1
++      · have : (A0.coeff n).natDegree = (a ⟨n, hnlt⟩).natDegree := by
++          simp [hcoeffA0 n hnlt]
++        simpa [this] using ha_deg ⟨n, hnlt⟩
++      · have hnle : e < n := by
++          have : e + 1 ≤ n := Nat.le_of_not_gt hnlt
++          exact lt_of_lt_of_le (Nat.lt_succ_self e) this
++        have hcoeff0 : A0.coeff n = 0 := hcoeffA0_big n hnle
++        have : A0.coeff n ≠ 0 := by
++          simpa [Polynomial.mem_support_iff] using hn
++        exact (this hcoeff0).elim
++    have hnatY : Polynomial.Bivariate.natDegreeY A = Polynomial.Bivariate.degreeX A0 := by
++      simpa [A] using (Polynomial.Bivariate.natDegreeY_swap (F := F) (f := A0))
++    simpa [hnatY] using hdegX_A0
++  · -- degreeX B bound
++    have hnatY_B0 : Polynomial.Bivariate.natDegreeY B0 ≤ e + deg - 1 := by
++      unfold Polynomial.Bivariate.natDegreeY
++      exact (Polynomial.natDegree_le_iff_coeff_eq_zero).2 hcoeffB0_big
++    have hdegX : Polynomial.Bivariate.degreeX B = Polynomial.Bivariate.natDegreeY B0 := by
++      simpa [B] using (Polynomial.Bivariate.degreeX_swap (F := F) (f := B0))
++    simpa [hdegX] using hnatY_B0
++  · -- natDegreeY B bound
++    have hdegX_B0 : Polynomial.Bivariate.degreeX B0 ≤ e + 1 := by
++      classical
++      unfold Polynomial.Bivariate.degreeX
++      refine Finset.sup_le_iff.2 ?_
++      intro n hn
++      by_cases hnlt : n < e + deg
++      · have : (B0.coeff n).natDegree = (b ⟨n, hnlt⟩).natDegree := by
++          simp [hcoeffB0 n hnlt]
++        simpa [this] using hb_deg ⟨n, hnlt⟩
++      · have hdegpos : 0 < deg := hd
++        have hpos : 0 < e + deg := Nat.add_pos_right e hdegpos
++        have hnge : e + deg ≤ n := (Nat.not_lt).1 hnlt
++        have hnle : e + deg - 1 < n := Nat.sub_one_lt_of_le hpos hnge
++        have hcoeff0 : B0.coeff n = 0 := hcoeffB0_big n hnle
++        have : B0.coeff n ≠ 0 := by
++          simpa [Polynomial.mem_support_iff] using hn
++        exact (this hcoeff0).elim
++    have hnatY : Polynomial.Bivariate.natDegreeY B = Polynomial.Bivariate.degreeX B0 := by
++      simpa [B] using (Polynomial.Bivariate.natDegreeY_swap (F := F) (f := B0))
++    simpa [hnatY] using hdegX_B0
++  · -- main identity
++    intro i
++    have hEvalX_A :
++        Polynomial.Bivariate.evalX (domain i) A =
++          Polynomial.Bivariate.evalY (domain i) A0 := by
++      simpa [A] using (Polynomial.Bivariate.evalY_eq_evalX_swap (F := F) (y := domain i) (f := A0)).symm
++    have hEvalX_B :
++        Polynomial.Bivariate.evalX (domain i) B =
++          Polynomial.Bivariate.evalY (domain i) B0 := by
++      simpa [B] using (Polynomial.Bivariate.evalY_eq_evalX_swap (F := F) (y := domain i) (f := B0)).symm
++    rw [hEvalX_B, hEvalX_A]
++    have hEq_all :
++        ∀ i : ι,
++          (∑ t : Fin (e + 1), a t * (Polynomial.C (domain i) : F[X]) ^ t.1) *
++              (Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i))
++            = ∑ s : Fin (e + deg), b s * (Polynomial.C (domain i) : F[X]) ^ s.1 :=
++      (BW_homMatrix_mulVec_eq_zero_iff (ι := ι) (R := F[X]) e deg
++          (fun i => (Polynomial.C (domain i) : F[X]))
++          (fun i => Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i))
++          a b).1 hMul
++    have hEvalA :
++        Polynomial.Bivariate.evalY (domain i) A0 =
++          ∑ t : Fin (e + 1), a t * (Polynomial.C (domain i) : F[X]) ^ t.1 := by
++      classical
++      simp [Polynomial.Bivariate.evalY, A0, Polynomial.eval_finsetSum]
++    have hEvalB :
++        Polynomial.Bivariate.evalY (domain i) B0 =
++          ∑ s : Fin (e + deg), b s * (Polynomial.C (domain i) : F[X]) ^ s.1 := by
++      classical
++      simp [Polynomial.Bivariate.evalY, B0, Polynomial.eval_finsetSum]
++    have hEq_eval :
++        Polynomial.Bivariate.evalY (domain i) A0 *
++            (Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i))
++          = Polynomial.Bivariate.evalY (domain i) B0 := by
++      simpa [hEvalA, hEvalB] using (hEq_all i)
++    calc
++      Polynomial.Bivariate.evalY (domain i) B0
++          = Polynomial.Bivariate.evalY (domain i) A0 *
++              (Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i)) := by
++              simpa using hEq_eval.symm
++      _ = (Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i)) *
++            Polynomial.Bivariate.evalY (domain i) A0 := by
++            -- commutativity in `F[X]`
++            exact (mul_comm (Polynomial.Bivariate.evalY (domain i) A0)
++              (Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i)))
++
++/-- info: 'Minidregg.Selvage.bw_bivariate_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms bw_bivariate_of_many_close
++
++end Minidregg.Selvage
+diff --git a/Selvage/FullUDCore.lean b/Selvage/FullUDCore.lean
+new file mode 100644
+index 0000000..f65912f
+--- /dev/null
++++ b/Selvage/FullUDCore.lean
+@@ -0,0 +1,343 @@
++/-
++Copyright (c) 2024-2025 ArkLib Contributors. All rights reserved.
++Released under Apache 2.0 license as described in LICENSES/ArkLib-Apache-2.0.txt.
++Authors: Quang Dao, Katerina Hristova, František Silváši, Julian Sutherland,
++         Ilia Vlasov, Chung Thai Nguyen
++
++Adapted from ArkLib JointAgreement.lean:442–733 at
++22dbd4e836c15a21f68889afa69b7130da04abbb. Positive-degree full-UD branch,
++with integer-radius inputs and Selvage's existing RS/AgreesOn definitions.
++-/
++import Selvage.FullUDBivariate
++import Theory.PolynomialGluing
++
++namespace Minidregg.Selvage
++open Polynomial Polynomial.Bivariate Finset
++open scoped BigOperators Polynomial.Bivariate
++variable {F : Type*} [Field F] [DecidableEq F]
++variable {ι : Type*} [Fintype ι]
++
++private theorem rs_nearby_polynomial
++    {d e : ℕ} {dom : ι ↪ F} {f : ι → F} (hd : 1 ≤ d)
++    (hclose : ∃ w ∈ reedSolomonCode dom d, hammingDist f w ≤ e) :
++    ∃ p : F[X], p.natDegree < d ∧ hammingDist f (p.eval ∘ dom) ≤ e := by
++  obtain ⟨w,hw,hclose⟩ := hclose
++  obtain ⟨p,hp,heval⟩ := mem_reedSolomonCode_iff.mp hw
++  have hnat : p.natDegree < d := by
++    by_cases hp0 : p = 0
++    · simpa [hp0] using hd
++    · exact (Polynomial.natDegree_lt_iff_degree_lt hp0).mpr hp
++  refine ⟨p,hnat,?_⟩
++  have hw : w = p.eval ∘ dom := funext heval
++  simpa [hw] using hclose
++
++set_option maxHeartbeats 500000 in
++/-- Full conservative unique-decoding cardinality core. More than `n`
++good scalar folds force a common set of at least `n-e` positions, provided
++`2e+d≤n`. All premises use the existing code and Hamming distance. -/
++theorem fullUDCardCore (domain : ι ↪ F) (deg e : ℕ)
++    (hd : 1 ≤ deg) (hradius : 2*e+deg ≤ Fintype.card ι) :
++    FullUDCardCore domain deg e := by
++  classical
++  intro u good hclose hgood_card
++  let n := Fintype.card ι
++  have hn_pos : 0 < n := by dsimp [n]; omega
++  letI : Nonempty ι := Fintype.card_pos_iff.mp hn_pos
++  have hBW : 2*e < n-deg+1 := by dsimp [n]; omega
++  have hgood_pos : 0 < good.card := lt_trans hn_pos hgood_card
++  let P_x : Finset F := Finset.univ.map domain
++  let P_y : Finset F := good
++  have : Nonempty P_x := by
++    apply Finset.Nonempty.to_subtype
++    simp [P_x]
++  have : Nonempty P_y := by
++    apply Finset.Nonempty.to_subtype
++    exact Finset.card_pos.mp hgood_pos
++  have evalY_natDegree_le_degreeX (z : F) (f : F[X][Y]) :
++      (Polynomial.Bivariate.evalY z f).natDegree ≤ Polynomial.Bivariate.degreeX f := by
++    have heval :
++        Polynomial.Bivariate.evalY z f =
++          ∑ j ∈ f.support, f.coeff j * (Polynomial.C z : F[X]) ^ j := by
++      simp [Polynomial.Bivariate.evalY, Polynomial.eval_eq_sum, Polynomial.sum_def]
++    rw [heval]
++    refine
++      Polynomial.natDegree_sum_le_of_forall_le
++        (s := f.support)
++        (f := fun j => f.coeff j * (Polynomial.C z : F[X]) ^ j)
++        (n := Polynomial.Bivariate.degreeX f)
++        ?_
++    intro j hj
++    have hj_le :
++        (f.coeff j).natDegree ≤ Polynomial.Bivariate.degreeX f :=
++      Polynomial.Bivariate.coeff_natDegree_le_degreeX f j
++    have hmul :
++        (f.coeff j * (Polynomial.C z : F[X]) ^ j).natDegree ≤ (f.coeff j).natDegree := by
++      simpa [Polynomial.C_pow] using
++        (Polynomial.natDegree_mul_C_le (f := f.coeff j) (a := z ^ j))
++    exact le_trans hmul hj_le
++  have evalX_eval_eq_evalY_eval (x z : F) (f : F[X][Y]) :
++      (Polynomial.Bivariate.evalX x f).eval z = (Polynomial.Bivariate.evalY z f).eval x := by
++    calc
++      (Polynomial.Bivariate.evalX x f).eval z
++          = (f.map (Polynomial.evalRingHom x)).eval z := by
++              exact congrArg (fun p : F[X] => p.eval z)
++                (Polynomial.Bivariate.evalX_eq_map x f)
++      _ = f.eval₂ (Polynomial.evalRingHom x) z := by
++            simpa using
++              (Polynomial.eval_map (f := Polynomial.evalRingHom x) (p := f) (x := z))
++      _ = (Polynomial.eval (Polynomial.C z) f).eval x := by
++            simpa [Polynomial.Bivariate.evalY] using
++              (Polynomial.eval₂_at_apply
++                (p := f) (f := Polynomial.evalRingHom x) (r := Polynomial.C z))
++      _ = (Polynomial.Bivariate.evalY z f).eval x := by
++            simp [Polynomial.Bivariate.evalY]
++  obtain ⟨A, B, hA0, hA_degX, hA_degY, hB_degX, hB_degY, hAB⟩ :=
++    bw_bivariate_of_many_close e deg domain u good hd hradius hgood_card hclose
++  let quot_x : F → F[X] := fun z =>
++    if hz : z ∈ good then
++      Classical.choose (rs_nearby_polynomial hd (hclose z hz))
++    else 0
++  let quot_y : F → F[X] := fun x =>
++    Polynomial.C (u 0 (Function.invFun domain x)) +
++      Polynomial.X * Polynomial.C (u 1 (Function.invFun domain x))
++  have h_card_Px : (⟨n, hn_pos⟩ : ℕ+) ≤ P_x.card := by
++    simp [P_x, n]
++  have h_card_Py : (⟨good.card, hgood_pos⟩ : ℕ+) ≤ P_y.card := by
++    simp [P_y]
++  have h_quot_x :
++      ∀ z ∈ P_y,
++        (quot_x z).natDegree ≤ (e + deg - 1) - e ∧
++          Polynomial.Bivariate.evalY z B = (quot_x z) * (Polynomial.Bivariate.evalY z A) := by
++    intro z hz
++    have hz_good : z ∈ good := by simpa [P_y] using hz
++    let Pz : F[X] := Classical.choose
++      (rs_nearby_polynomial hd (hclose z hz_good))
++    have hPz :
++        Pz.natDegree < deg ∧
++          hammingDist (u 0 + z • u 1) (Pz.eval ∘ domain) ≤ e := by
++      simpa [Pz] using
++        (Classical.choose_spec
++          (rs_nearby_polynomial hd (hclose z hz_good)))
++    have hquot_def : quot_x z = Pz := by
++      simp [quot_x, hz_good, Pz]
++    refine ⟨?_, ?_⟩
++    · have hPz_le : Pz.natDegree ≤ deg - 1 := Nat.le_pred_of_lt hPz.1
++      have harith : deg - 1 ≤ (e + deg - 1) - e := by omega
++      exact le_trans (by simpa [hquot_def] using hPz_le) harith
++    · let Dz : F[X] := Polynomial.Bivariate.evalY z B - Pz * Polynomial.Bivariate.evalY z A
++      let Tz : Finset ι := Finset.univ.filter fun i =>
++        (u 0 + z • u 1) i = Pz.eval (domain i)
++      have hTz_card : n-e ≤ Tz.card := by
++        have hpartition := Finset.card_filter_add_card_filter_not
++          (s := (Finset.univ : Finset ι))
++          (p := fun i => (u 0 + z • u 1) i = Pz.eval (domain i))
++        have hh : hammingDist (u 0 + z • u 1) (Pz.eval ∘ domain) =
++            (Finset.univ.filter fun i => ¬ (u 0 + z • u 1) i = Pz.eval (domain i)).card := by
++          simp [hammingDist]
++        simp only [Finset.card_univ] at hpartition
++        have hdist := hPz.2
++        rw [hh] at hdist
++        change Fintype.card ι-e ≤ (Finset.univ.filter fun i =>
++          (u 0 + z • u 1) i = Pz.eval (domain i)).card
++        omega
++      have hTz_agree : ∀ i, i ∈ Tz ↔ (u 0 + z • u 1) i = Pz.eval (domain i) := by
++        intro i
++        simp [Tz]
++      have hDz_eval :
++          ∀ x ∈ Tz.image domain, Dz.eval x = 0 := by
++        intro x hx
++        rcases Finset.mem_image.mp hx with ⟨i, hiTz, rfl⟩
++        have hi_eq : u 0 i + z * u 1 i = Pz.eval (domain i) := by
++          simpa [Pi.add_apply, Pi.smul_apply, smul_eq_mul] using (hTz_agree i).1 hiTz
++        have hEq_eval :
++            (Polynomial.Bivariate.evalY z B).eval (domain i) =
++              (Pz * Polynomial.Bivariate.evalY z A).eval (domain i) := by
++          calc
++            (Polynomial.Bivariate.evalY z B).eval (domain i)
++                = (Polynomial.Bivariate.evalX (domain i) B).eval z := by
++                    symm
++                    exact evalX_eval_eq_evalY_eval (domain i) z B
++            _ = (((Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i)) *
++                  Polynomial.Bivariate.evalX (domain i) A)).eval z := by
++                  simpa using congrArg (fun p : F[X] => p.eval z) (hAB i)
++            _ = (Polynomial.C (u 0 i) + Polynomial.X * Polynomial.C (u 1 i)).eval z *
++                  (Polynomial.Bivariate.evalX (domain i) A).eval z := by
++                    rw [Polynomial.eval_mul]
++            _ = ((Polynomial.C (u 0 i)).eval z + (Polynomial.X * Polynomial.C (u 1 i)).eval z) *
++                  (Polynomial.Bivariate.evalX (domain i) A).eval z := by
++                    rw [Polynomial.eval_add]
++            _ = (u 0 i + (Polynomial.X * Polynomial.C (u 1 i)).eval z) *
++                  (Polynomial.Bivariate.evalX (domain i) A).eval z := by
++                    simp
++            _ = (u 0 i + z * u 1 i) * (Polynomial.Bivariate.evalX (domain i) A).eval z := by
++                  rw [Polynomial.eval_mul]
++                  simp
++            _ = Pz.eval (domain i) * (Polynomial.Bivariate.evalX (domain i) A).eval z := by
++                  rw [hi_eq]
++            _ = Pz.eval (domain i) * (Polynomial.Bivariate.evalY z A).eval (domain i) := by
++                  rw [evalX_eval_eq_evalY_eval]
++            _ = (Pz * Polynomial.Bivariate.evalY z A).eval (domain i) := by
++                  simp [Polynomial.eval_mul, mul_comm]
++        simpa [Dz, sub_eq_zero] using hEq_eval
++      have hDz_deg :
++          Dz.natDegree ≤ e + deg - 1 := by
++        have hB_eval_deg : (Polynomial.Bivariate.evalY z B).natDegree ≤ e + deg - 1 :=
++          le_trans (evalY_natDegree_le_degreeX z B) hB_degX
++        have hA_eval_deg : (Polynomial.Bivariate.evalY z A).natDegree ≤ e := by
++          exact le_trans (evalY_natDegree_le_degreeX z A) hA_degX
++        have hprod_deg :
++            (Pz * Polynomial.Bivariate.evalY z A).natDegree ≤ e + deg - 1 := by
++          have hmul :
++              (Pz * Polynomial.Bivariate.evalY z A).natDegree ≤
++                Pz.natDegree + (Polynomial.Bivariate.evalY z A).natDegree := by
++            exact Polynomial.natDegree_mul_le
++              (p := Pz) (q := Polynomial.Bivariate.evalY z A)
++          have hsum :
++              Pz.natDegree + (Polynomial.Bivariate.evalY z A).natDegree ≤
++                (deg - 1) + e := Nat.add_le_add (Nat.le_pred_of_lt hPz.1) hA_eval_deg
++          have hsum' :
++              Pz.natDegree + (Polynomial.Bivariate.evalY z A).natDegree ≤ e + deg - 1 := by
++            omega
++          exact le_trans hmul hsum'
++        exact le_trans (Polynomial.natDegree_sub_le _ _) (max_le hB_eval_deg hprod_deg)
++      have hdeg_lt :
++          Dz.natDegree < (Tz.image domain).card := by
++        have hlt : e + deg - 1 < n - e := by
++          omega
++        have hcard_lt : e + deg - 1 < Tz.card := lt_of_lt_of_le hlt hTz_card
++        have himg :
++            (Tz.image domain).card = Tz.card :=
++          Finset.card_image_of_injective _ domain.injective
++        exact lt_of_le_of_lt hDz_deg (by simpa [himg] using hcard_lt)
++      have hDz_zero : Dz = 0 := by
++        exact
++          Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero'
++            (p := Dz) (s := Tz.image domain) hDz_eval hdeg_lt
++      simpa [Dz, hquot_def, sub_eq_zero] using hDz_zero
++  have h_quot_y :
++      ∀ x ∈ P_x,
++        (quot_y x).natDegree ≤ (e + 1) - e ∧
++          Polynomial.Bivariate.evalX x B = (quot_y x) * (Polynomial.Bivariate.evalX x A) := by
++    intro x hx
++    rcases Finset.mem_map.mp hx with ⟨i, -, rfl⟩
++    refine ⟨?_, ?_⟩
++    · have hconst : (Polynomial.C (u 0 i) : F[X]).natDegree ≤ 1 := by
++        simp
++      have hlin' : (Polynomial.X * Polynomial.C (u 1 i) : F[X]).natDegree ≤
++          (Polynomial.X : F[X]).natDegree := by
++        simpa using
++          (Polynomial.natDegree_mul_C_le (f := (Polynomial.X : F[X])) (a := u 1 i))
++      have hlin : (Polynomial.X * Polynomial.C (u 1 i) : F[X]).natDegree ≤ 1 := by
++        simpa using hlin'
++      simpa [quot_y, Function.leftInverse_invFun domain.injective i] using
++        (le_trans (Polynomial.natDegree_add_le _ _) (max_le hconst hlin))
++    · simpa [quot_y, Function.leftInverse_invFun domain.injective i] using hAB i
++  have h_le_1 :
++      1 >
++        ((((e + deg - 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) +
++          (((e + 1 : ℕ) : ℚ) / ((⟨good.card, hgood_pos⟩ : ℕ+) : ℚ))) := by
++    have h2e_deg_le_n : 2 * e + deg ≤ n := by
++      omega
++    have hnq_pos : (0 : ℚ) < ((⟨n, hn_pos⟩ : ℕ+) : ℚ) := by positivity
++    have hfrac_lt :
++        (((e + 1 : ℕ) : ℚ) / ((⟨good.card, hgood_pos⟩ : ℕ+) : ℚ)) <
++          (((e + 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) := by
++      have hnum_pos : (0 : ℚ) < (((e + 1 : ℕ) : ℚ)) := by positivity
++      have hng :
++          (((⟨n, hn_pos⟩ : ℕ+) : ℚ)) <
++            (((⟨good.card, hgood_pos⟩ : ℕ+) : ℚ)) := by
++        change (n : ℚ) < (good.card : ℚ)
++        exact_mod_cast hgood_card
++      exact div_lt_div_of_pos_left hnum_pos hnq_pos hng
++    have hsum_lt :
++        ((((e + deg - 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) +
++          (((e + 1 : ℕ) : ℚ) / ((⟨good.card, hgood_pos⟩ : ℕ+) : ℚ)))
++          <
++        (((2 * e + deg : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) := by
++      have hsum_lt' :
++          ((((e + deg - 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) +
++            (((e + 1 : ℕ) : ℚ) / ((⟨good.card, hgood_pos⟩ : ℕ+) : ℚ)))
++            <
++          ((((e + deg - 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) +
++            (((e + 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ))) := by
++        simpa [add_comm, add_left_comm, add_assoc] using
++          add_lt_add_left hfrac_lt
++            ((((e + deg - 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)))
++      have hsum_eq :
++          ((((e + deg - 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) +
++            (((e + 1 : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ))) =
++          (((2 * e + deg : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) := by
++        rw [← add_div]
++        congr 1
++        exact_mod_cast (by omega : (e + deg - 1) + (e + 1) = 2 * e + deg)
++      exact hsum_lt'.trans_eq hsum_eq
++    have hle_one : (((2 * e + deg : ℕ) : ℚ) / ((⟨n, hn_pos⟩ : ℕ+) : ℚ)) ≤ 1 := by
++      rw [div_le_iff₀ hnq_pos]
++      simpa using
++        (show (((2 * e + deg : ℕ) : ℚ)) ≤ ((⟨n, hn_pos⟩ : ℕ+) : ℚ) by
++          exact_mod_cast h2e_deg_le_n)
++    exact lt_of_lt_of_le hsum_lt hle_one
++  obtain ⟨P, hBA, hP_degX, hP_degY, ⟨Q_x, hQx_card, hQx_sub, hQx_eval⟩, _⟩ :=
++    polishchuk_spielman
++      (a_x := e) (a_y := e) (b_x := e + deg - 1) (b_y := e + 1)
++      (n_x := ⟨n, hn_pos⟩) (n_y := ⟨good.card, hgood_pos⟩)
++      (h_bx_ge_ax := by omega) (h_by_ge_ay := by omega)
++      (A := A) (B := B) hA0 hA_degX hB_degX hA_degY hB_degY
++      P_x P_y quot_x quot_y h_card_Px h_card_Py h_quot_x h_quot_y h_le_1
++  have hP_degX' : Polynomial.Bivariate.degreeX P ≤ deg - 1 := by
++    omega
++  let S0 : Finset ι := Q_x.preimage domain domain.injective.injOn
++  have hS0_card_nat : n - e ≤ S0.card := by
++    have himg : S0.map domain = Q_x := by
++      ext x
++      constructor
++      · intro hx
++        rcases Finset.mem_map.mp hx with ⟨i, hi, rfl⟩
++        exact Finset.mem_preimage.mp hi
++      · intro hx
++        rcases Finset.mem_map.mp (hQx_sub hx) with ⟨i, -, rfl⟩
++        exact Finset.mem_map.mpr ⟨i, Finset.mem_preimage.mpr hx, rfl⟩
++    have hcard_eq : S0.card = Q_x.card := by
++      calc
++        S0.card = (S0.map domain).card := by symm; simp
++        _ = Q_x.card := by simp [himg]
++    exact by simpa [S0, hcard_eq, n] using hQx_card
++  have hv_mem (j : ℕ) : ((P.coeff j).eval ∘ domain) ∈ reedSolomonCode domain deg := by
++    have hcoeff_deg_nat : (P.coeff j).natDegree ≤ deg-1 :=
++      (Polynomial.Bivariate.coeff_natDegree_le_degreeX P j).trans hP_degX'
++    have hcoeff_deg : (P.coeff j).degree < (deg : WithBot ℕ) := by
++      have hlt_nat : (P.coeff j).natDegree < deg := by omega
++      exact lt_of_le_of_lt (Polynomial.degree_le_natDegree (p := P.coeff j))
++        (by exact_mod_cast hlt_nat)
++    exact mem_reedSolomonCode_iff.mpr ⟨P.coeff j,hcoeff_deg,fun _ => rfl⟩
++  refine ⟨S0,hS0_card_nat,?_⟩
++  intro j
++  fin_cases j
++  · refine ⟨(P.coeff 0).eval ∘ domain,hv_mem 0,?_⟩
++    intro i hi
++    have hiQ : domain i ∈ Q_x := Finset.mem_preimage.mp hi
++    have hEval := hQx_eval _ hiQ
++    have hcoeff := congrArg (fun p : F[X] => p.coeff 0) hEval
++    have heq : (P.coeff 0).eval (domain i) = u 0 i := by
++      simpa [Polynomial.Bivariate.evalX_eq_map, quot_y,
++        Function.leftInverse_invFun domain.injective i] using hcoeff
++    exact heq.symm
++  · refine ⟨(P.coeff 1).eval ∘ domain,hv_mem 1,?_⟩
++    intro i hi
++    have hiQ : domain i ∈ Q_x := Finset.mem_preimage.mp hi
++    have hEval := hQx_eval _ hiQ
++    have hcoeff := congrArg (fun p : F[X] => p.coeff 1) hEval
++    have heq : (P.coeff 1).eval (domain i) = u 1 i := by
++      simpa [Polynomial.Bivariate.evalX_eq_map, quot_y,
++        Function.leftInverse_invFun domain.injective i] using hcoeff
++    exact heq.symm
++
++/-- info: 'Minidregg.Selvage.fullUDCardCore' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUDCardCore
++
++/-- info: '_private.Selvage.FullUDCore.0.Minidregg.Selvage.rs_nearby_polynomial' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms rs_nearby_polynomial
++
++end Minidregg.Selvage
+diff --git a/Selvage/ProximityGapFullUD.lean b/Selvage/ProximityGapFullUD.lean
+new file mode 100644
+index 0000000..73bf56e
+--- /dev/null
++++ b/Selvage/ProximityGapFullUD.lean
+@@ -0,0 +1,132 @@
++/-
++# Full unique-decoding proximity generator over the existing RS code
++
++The integer BW/gluing core is `fullUDCardCore`. This module provides the
++existing IsProximityGenerator, mutual-agreement and FRI-fold interfaces.
++The error is still n/|F|; the admissible open radius grows to (1-d/n)/2.
++-/
++import Selvage.FullUDCore
++import Selvage.FullUDTeeth
++
++namespace Minidregg.Selvage
++variable {ι : Type*} [Fintype ι] [DecidableEq ι]
++variable {F : Type*} [Field F] [DecidableEq F]
++
++/-- Integer full-UD core converted to the existing relative-distance
++correlated-agreement predicate. -/
++theorem correlatedAgreement_of_many_close_fullUD [Nonempty ι]
++    (dom : ι ↪ F) {d : ℕ} (hd : 1 ≤ d) {δ : ℝ}
++    (hδ0 : 0 < δ) (hδ2 : (d : ℝ) < (1-2*δ) * (Fintype.card ι : ℝ))
++    (f : Fin 2 → ι → F) (A : Finset F)
++    (hclose : ∀ z ∈ A, close δ (reedSolomonCode dom d) (f 0 + z • f 1))
++    (hcard : Fintype.card ι < A.card) :
++    CorrelatedAgreement (reedSolomonCode dom d) δ f := by
++  have hn : (0 : ℝ) < (Fintype.card ι : ℝ) := by exact_mod_cast Fintype.card_pos
++  let e := Nat.floor (δ * (Fintype.card ι : ℝ))
++  have he : (e : ℝ) ≤ δ * (Fintype.card ι : ℝ) := Nat.floor_le (by positivity)
++  have hradius : 2*e+d ≤ Fintype.card ι := by
++    have h : (2 : ℝ)*(e : ℝ)+(d : ℝ) ≤ (Fintype.card ι : ℝ) := by nlinarith
++    exact_mod_cast h
++  have he_le : e ≤ Fintype.card ι := by omega
++  obtain ⟨S,hScard,hjoint⟩ := fullUDCardCore dom d e hd hradius f A (by
++    intro z hz
++    obtain ⟨w,hw,hrel⟩ := hclose z hz
++    refine ⟨w,hw,?_⟩
++    have hh : (hammingDist (f 0 + z • f 1) w : ℝ) ≤
++        δ * (Fintype.card ι : ℝ) := by
++      exact (div_le_iff₀ hn).mp hrel
++    exact Nat.le_floor hh) hcard
++  refine ⟨S,?_,hjoint⟩
++  have hcast : (Fintype.card ι : ℝ) - (e : ℝ) ≤ (S.card : ℝ) := by
++    exact_mod_cast (show Fintype.card ι-e ≤ S.card from hScard)
++  nlinarith
++
++/-- Full conservative unique-decoding proximity generator. Positive code
++dimension and nonempty domain are explicit; the error remains n/|F|. -/
++theorem reedSolomonCode_isProximityGenerator_fullUD [Nonempty ι] [Fintype F]
++    (dom : ι ↪ F) (d : ℕ) (hd : 1 ≤ d) :
++    IsProximityGenerator (affineGenerator F) (reedSolomonCode dom d)
++      ((1 + (d : ℝ) / (Fintype.card ι : ℝ)) / 2)
++      (fun _ => (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) := by
++  classical
++  intro f δ hδ0 hδB hpr
++  have hn : (0 : ℝ) < (Fintype.card ι : ℝ) := by exact_mod_cast Fintype.card_pos
++  have hF : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
++  have hδ2 : (d : ℝ) < (1-2*δ) * (Fintype.card ι : ℝ) := by
++    have hρ : (d : ℝ) / (Fintype.card ι : ℝ) < 1-2*δ := by linarith
++    exact (div_lt_iff₀ hn).mp hρ
++  let A : Finset F := Finset.univ.filter
++    (fun z => close δ (reedSolomonCode dom d) (f 0 + z • f 1))
++  have hpr_eq : (affineGenerator F).pr
++      (fun r => close δ (reedSolomonCode dom d) (comb r f)) =
++      (A.card : ℝ) / (Fintype.card F : ℝ) := by
++    unfold ProximityGenerator.pr
++    have hcomb : ∀ z : F, comb ((affineGenerator F).gen z) f = f 0 + z • f 1 :=
++      fun z => funext fun x => by rw [comb_affineGenerator]; rfl
++    have hfilter : (Finset.univ.filter fun ω : (affineGenerator F).Seed =>
++        close δ (reedSolomonCode dom d) (comb ((affineGenerator F).gen ω) f)) = A := by
++      refine Finset.filter_congr fun z _ => ?_
++      rw [hcomb z]
++    rw [hfilter]
++    calc ∑ ω ∈ A, (affineGenerator F).weight ω
++        = ∑ _ω ∈ A, ((Fintype.card F : ℝ))⁻¹ :=
++          Finset.sum_congr rfl fun ω _ => rfl
++      _ = (A.card : ℝ) * ((Fintype.card F : ℝ))⁻¹ := by
++          rw [Finset.sum_const, nsmul_eq_mul]
++      _ = (A.card : ℝ) / (Fintype.card F : ℝ) := (div_eq_mul_inv _ _).symm
++  have hcard : Fintype.card ι < A.card := by
++    rw [hpr_eq, div_lt_div_iff_of_pos_right hF] at hpr
++    exact_mod_cast hpr
++  exact correlatedAgreement_of_many_close_fullUD dom hd hδ0 hδ2 f A
++    (fun z hz => (Finset.mem_filter.mp hz).2) hcard
++
++/-- Mutual correlated agreement at the same full-UD radius, via the existing
++RS minimum-distance and WHIR CA-to-MCA theorem. -/
++theorem hasMutualCorrelatedAgreement_fullUD [Nonempty ι] [Fintype F]
++    (dom : ι ↪ F) {d : ℕ} (hd : 1 ≤ d) :
++    HasMutualCorrelatedAgreement (affineGenerator F) (reedSolomonCode dom d)
++      ((1 + (d : ℝ) / (Fintype.card ι : ℝ)) / 2)
++      (fun _ => (Fintype.card ι : ℝ) / (Fintype.card F : ℝ)) := by
++  have hn : (0 : ℝ) < (Fintype.card ι : ℝ) := by exact_mod_cast Fintype.card_pos
++  have h := reedSolomonCode_hasMutualCorrelatedAgreement (affineGenerator F)
++    dom d (reedSolomonCode_isProximityGenerator_fullUD dom d hd)
++    (fun _ _ _ => le_refl _)
++    (fun _ _ => div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _))
++  have hle : 1 - (1 - ((d : ℝ)-1)/(Fintype.card ι : ℝ))/2 ≤
++      (1+(d : ℝ)/(Fintype.card ι : ℝ))/2 := by
++    have hsub : ((d : ℝ)-1)/(Fintype.card ι : ℝ) =
++        (d : ℝ)/(Fintype.card ι : ℝ)-1/(Fintype.card ι : ℝ) := sub_div _ _ _
++    rw [hsub]
++    have h1n : (0 : ℝ) < 1/(Fintype.card ι : ℝ) := by positivity
++    linarith
++  rwa [max_eq_right hle] at h
++
++/-- Existing FRI fold-distance interface, now discharged up to full UD. -/
++theorem foldDistancePreserving_fullUD {κ : Type*} [Fintype κ] [DecidableEq κ]
++    [Fintype F] [Nonempty ι] [Nonempty κ] {dom : ι ↪ F} {domSq : κ ↪ F}
++    (D : FoldingData F dom domSq) (d : ℕ) (hd : 1 ≤ d) {δ : ℝ}
++    (hδ0 : 0 < δ)
++    (hδB : δ < 1-(1+(d : ℝ)/(Fintype.card κ : ℝ))/2) :
++    FoldDistancePreserving D (2*d) d δ (Fintype.card κ) := by
++  have hF : (0 : ℝ) < (Fintype.card F : ℝ) := by exact_mod_cast Fintype.card_pos
++  exact foldDistancePreserving_of_isProximityGenerator D d
++    (reedSolomonCode_isProximityGenerator_fullUD domSq d hd) hδ0 hδB
++    (le_of_eq (div_mul_cancel₀ _ (ne_of_gt hF)))
++
++/-- info: 'Minidregg.Selvage.reedSolomonCode_isProximityGenerator_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms reedSolomonCode_isProximityGenerator_fullUD
++
++/-- info: 'Minidregg.Selvage.hasMutualCorrelatedAgreement_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms hasMutualCorrelatedAgreement_fullUD
++
++/-- info: 'Minidregg.Selvage.foldDistancePreserving_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms foldDistancePreserving_fullUD
++
++/-- info: 'Minidregg.Selvage.correlatedAgreement_of_many_close_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms correlatedAgreement_of_many_close_fullUD
++
++end Minidregg.Selvage
+diff --git a/Selvage/FullUDFriConsumer.lean b/Selvage/FullUDFriConsumer.lean
+new file mode 100644
+index 0000000..c6632f2
+--- /dev/null
++++ b/Selvage/FullUDFriConsumer.lean
+@@ -0,0 +1,115 @@
++/-
++# Full unique-decoding tail in the existing half-threshold FRI chain
++
++The first fold still halves the target distance. Each positive tail round
++uses the proved full-UD realizer. The challenge numerator is unchanged.
++-/
++import Selvage.ProximityGapFullUD
++import Selvage.HalfThresholdFriTranscript
++
++namespace Minidregg.Selvage
++variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
++variable {ι : ℕ → Type*} [∀ n, Fintype (ι n)] [∀ n, DecidableEq (ι n)]
++variable {m : ℕ}
++
++/-- The existing half-threshold tower bound with the full-UD tail radius. -/
++theorem proximity_sound_halfThen_fullUD
++    (T : FoldingTower F ι m) (deg : ℕ → ℕ) {delta : ℝ}
++    (hm : 0 < m) (hdelta : 0 < delta)
++    (hnonempty : ∀ n, n ≤ m → Nonempty (ι n))
++    (hdeg : ∀ j, j < m → deg j = 2 * deg (j + 1))
++    (hdegpos : ∀ j, j < m → 0 < j → 1 ≤ deg (j+1))
++    (hband : ∀ j, j < m → 0 < j →
++      delta / 2 <
++        1 - (1 + (deg (j + 1) : ℝ) /
++          (Fintype.card (ι (j + 1)) : ℝ)) / 2)
++    {f : ι 0 → F}
++    (hfar : ¬ close delta (reedSolomonCode (T.dom 0) (deg 0)) f) :
++    (acceptSet T deg f).card ≤
++      m * (Fintype.card (ι 0) * Fintype.card F ^ (m - 1)) := by
++  letI : Nonempty (ι 0) := hnonempty 0 (Nat.zero_le m)
++  letI : Nonempty (ι 1) := hnonempty 1 hm
++  apply proximity_sound_halfThen T deg hm hdelta.le
++    (by exact_mod_cast Fintype.card_pos) (hdeg 0 hm) ?_ hfar
++  intro j hj hjpos
++  letI : Nonempty (ι j) := hnonempty j (Nat.le_of_lt hj)
++  letI : Nonempty (ι (j + 1)) :=
++    hnonempty (j + 1) (Nat.succ_le_iff.mpr hj)
++  have hpres := foldDistancePreserving_fullUD (T.data j hj) (deg (j + 1)) (hdegpos j hj hjpos)
++    (by positivity) (hband j hj hjpos)
++  have hpres' : FoldDistancePreserving (T.data j hj)
++      (deg j) (deg (j + 1)) (delta / 2) (Fintype.card (ι (j + 1))) := by
++    simpa [hdeg j hj] using hpres
++  exact (foldDistanceTransition_of_preserving hpres').mono_bad
++    (T.card_level_le_zero (j + 1) (Nat.succ_le_iff.mpr hj))
++
++/-- At rate one half, an initial distance two fifths has tail radius one
++fifth. This lies in the newly proved band and outside the former one-third
++UD tail band. The same tower acceptance numerator follows. -/
++theorem proximity_sound_rateHalf_twoFifths_fullUD
++    (T : FoldingTower F ι m) (deg : ℕ → ℕ)
++    (hm : 0 < m)
++    (hnonempty : ∀ n, n ≤ m → Nonempty (ι n))
++    (hdeg : ∀ j, j < m → deg j = 2*deg (j+1))
++    (hrate : ∀ j, j < m → 0 < j →
++      (deg (j+1) : ℝ)/(Fintype.card (ι (j+1)) : ℝ) = 1/2)
++    {f : ι 0 → F}
++    (hfar : ¬ close (2/5 : ℝ) (reedSolomonCode (T.dom 0) (deg 0)) f) :
++    (acceptSet T deg f).card ≤
++      m * (Fintype.card (ι 0) * Fintype.card F ^ (m-1)) := by
++  apply proximity_sound_halfThen_fullUD T deg hm (by norm_num)
++    hnonempty hdeg ?_ ?_ hfar
++  · intro j hj hjpos
++    have hr := hrate j hj hjpos
++    by_contra h
++    have hz : deg (j+1) = 0 := by omega
++    norm_num [hz] at hr
++  · intro j hj hjpos
++    rw [hrate j hj hjpos]
++    norm_num
++
++/-- Arithmetic tooth: the new rate-half tail radius cannot satisfy the
++old theorem's radius hypothesis. -/
++theorem rateHalf_twoFifths_new_band :
++    (0 : ℝ) < (2/5)/2 ∧
++    (2/5)/2 < 1-(1+(1/2 : ℝ))/2 ∧
++    ¬ (2/5)/2 < 1-(2+(1/2 : ℝ))/3 := by
++  norm_num
++
++/-- All-position committed-oracle soundness inherits the wider tail band,
++using the existing binding reduction. No Fiat–Shamir random-oracle or
++sampled-opening claim is added here. -/
++theorem committedFri_sound_halfThen_fullUD
++    {Root Op : ℕ → Type*}
++    (S : ∀ n, BindingCommitment (Root n) F (ι n) (Op n))
++    (T : FoldingTower F ι m) (deg : ℕ → ℕ)
++    (st : FriCommittedStatement S) {delta : ℝ}
++    (hm : 0 < m) (hdelta : 0 < delta)
++    (hnonempty : ∀ n, n ≤ m → Nonempty (ι n))
++    (hdeg : ∀ j, j < m → deg j = 2*deg (j+1))
++    (hdegpos : ∀ j, j < m → 0 < j → 1 ≤ deg (j+1))
++    (hband : ∀ j, j < m → 0 < j →
++      delta/2 < 1-(1+(deg (j+1) : ℝ)/(Fintype.card (ι (j+1)) : ℝ))/2)
++    (hfar : ¬ close delta (reedSolomonCode (T.dom 0) (deg 0)) (st.word 0)) :
++    (friCommittedAcceptSet S T deg st).card ≤
++      m * (Fintype.card (ι 0) * Fintype.card F ^ (m-1)) := by
++  exact (Finset.card_le_card (friCommittedAcceptSet_subset S T deg st)).trans
++    (proximity_sound_halfThen_fullUD T deg hm hdelta hnonempty hdeg hdegpos hband hfar)
++
++/-- info: 'Minidregg.Selvage.proximity_sound_halfThen_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms proximity_sound_halfThen_fullUD
++
++/-- info: 'Minidregg.Selvage.committedFri_sound_halfThen_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms committedFri_sound_halfThen_fullUD
++
++/-- info: 'Minidregg.Selvage.proximity_sound_rateHalf_twoFifths_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms proximity_sound_rateHalf_twoFifths_fullUD
++
++/-- info: 'Minidregg.Selvage.rateHalf_twoFifths_new_band' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms rateHalf_twoFifths_new_band
++
++end Minidregg.Selvage
+diff --git a/Selvage/FullUDWitnesses.lean b/Selvage/FullUDWitnesses.lean
+new file mode 100644
+index 0000000..3da0785
+--- /dev/null
++++ b/Selvage/FullUDWitnesses.lean
+@@ -0,0 +1,71 @@
++/-
++# A realizer firing beyond the previous radius band
++
++Toy witness, type-distinct from deployment parameters: eight evaluation
++points over ZMod11, degree bound four, relative radius one fifth.
++-/
++import Selvage.ProximityGapFullUD
++
++namespace Minidregg.Selvage.FullUDWitness
++private instance : Fact (Nat.Prime 11) := ⟨by decide⟩
++
++/-- The actual good line has probability one at the wider radius. -/
++theorem line_pr_one_fullUD :
++    (affineGenerator (ZMod 11)).pr (fun r =>
++      close (1/5 : ℝ) (reedSolomonCode dom 4) (comb r pair)) = 1 := by
++  classical
++  have hall : ∀ z : ZMod 11,
++      close (1/5 : ℝ) (reedSolomonCode dom 4)
++        (comb ((affineGenerator (ZMod 11)).gen z) pair) := by
++    intro z
++    have heq : comb ((affineGenerator (ZMod 11)).gen z) pair = xWord + z • oneWord :=
++      funext fun i => by rw [comb_affineGenerator]; rfl
++    rw [heq]
++    exact close_of_mem ((reedSolomonCode dom 4).add_mem x_mem
++      ((reedSolomonCode dom 4).smul_mem z one_mem)) (by norm_num)
++  unfold ProximityGenerator.pr
++  simp only [hall, Finset.filter_true]
++  exact (affineGenerator (ZMod 11)).weight_sum_one
++
++/-- The new theorem, rather than a hand-supplied conclusion, produces the
++correlated agreement at radius one fifth. -/
++theorem good_line_CA_fullUD :
++    CorrelatedAgreement (reedSolomonCode dom 4) (1/5 : ℝ) pair := by
++  refine reedSolomonCode_isProximityGenerator_fullUD dom 4 (by norm_num)
++    pair (1/5 : ℝ) (by norm_num) ?_ ?_
++  · norm_num
++  · rw [line_pr_one_fullUD]
++    norm_num [ZMod.card]
++
++/-- The former radius condition fails on precisely this firing site. -/
++theorem old_band_rejects_fullUD_witness :
++    ¬ (1/5 : ℝ) < 1-(2+(4 : ℝ)/(Fintype.card (Fin 8) : ℝ))/3 := by
++  norm_num
++
++/-- All source premises of the new hPG head are inhabited together, with a
++strictly positive rate and a probability strictly above the error bound. -/
++theorem fullUD_generator_premise_inhabited :
++    ∃ f : Fin 2 → Fin 8 → ZMod 11,
++      (0 : ℝ) < 1/5 ∧
++      (1/5 : ℝ) < 1-(1+(4 : ℝ)/(Fintype.card (Fin 8) : ℝ))/2 ∧
++      (Fintype.card (Fin 8) : ℝ)/(Fintype.card (ZMod 11) : ℝ) <
++        (affineGenerator (ZMod 11)).pr (fun r =>
++          close (1/5 : ℝ) (reedSolomonCode dom 4) (comb r f)) := by
++  refine ⟨pair,by norm_num,by norm_num,?_⟩
++  rw [line_pr_one_fullUD]
++  norm_num [ZMod.card]
++
++/-- info: 'Minidregg.Selvage.FullUDWitness.line_pr_one_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms line_pr_one_fullUD
++/-- info: 'Minidregg.Selvage.FullUDWitness.good_line_CA_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms good_line_CA_fullUD
++/-- info: 'Minidregg.Selvage.FullUDWitness.old_band_rejects_fullUD_witness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms old_band_rejects_fullUD_witness
++/-- info: 'Minidregg.Selvage.FullUDWitness.fullUD_generator_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
++#guard_msgs (whitespace := lax) in
++#print axioms fullUD_generator_premise_inhabited
++
++end Minidregg.Selvage.FullUDWitness

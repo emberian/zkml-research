@@ -1,0 +1,11 @@
+{
+  "command": [
+    "bash",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/review_ema_dynamics_1ie0om48/scripts/check-import-boundary.sh"
+  ],
+  "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/review_ema_dynamics_1ie0om48",
+  "exit_code": 0,
+  "elapsed_seconds": 0.17192070800228976,
+  "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+  "stderr": ""
+}

@@ -1,0 +1,22 @@
+{
+  "learn": {
+    "argv": [
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/target/release/resident-emitted-bool-runtime",
+      "validate",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json"
+    ],
+    "returncode": 0,
+    "stdout": "{\"schedule\":{\"and\":196,\"nGates\":538,\"nInputs\":42,\"nOutputs\":32,\"nWires\":11562,\"operation\":\"learn\",\"schema\":\"private-address-ema-bool-schedule-v1\",\"unusedWireSlots\":10982,\"xor\":342},\"valid\":true}\n",
+    "stderr": ""
+  },
+  "infer": {
+    "argv": [
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/target/release/resident-emitted-bool-runtime",
+      "validate",
+      "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json"
+    ],
+    "returncode": 0,
+    "stdout": "{\"schedule\":{\"and\":3,\"nGates\":9,\"nInputs\":34,\"nOutputs\":1,\"nWires\":46,\"operation\":\"infer\",\"schema\":\"private-address-ema-bool-schedule-v1\",\"unusedWireSlots\":3,\"xor\":6},\"valid\":true}\n",
+    "stderr": ""
+  }
+}

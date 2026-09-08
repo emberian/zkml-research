@@ -1,0 +1,12 @@
+{"completed": "learn_001", "returncode": 0, "wall_seconds": 14.906869583}
+{"completed": "learn_001_replay", "returncode": 0, "wall_seconds": 14.963948333}
+{"completed": "infer_001", "returncode": 0, "wall_seconds": 0.594722916}
+{"completed": "infer_001_replay", "returncode": 0, "wall_seconds": 0.544291708}
+{"completed": "learn_002", "returncode": 0, "wall_seconds": 13.943847584}
+{"completed": "learn_002_replay", "returncode": 0, "wall_seconds": 27.680424708}
+{"completed": "infer_002", "returncode": 0, "wall_seconds": 0.696433958}
+{"completed": "infer_002_replay", "returncode": 0, "wall_seconds": 0.704653958}
+{"completed": "reader_state_001", "returncode": 0, "wall_seconds": 0.019034459}
+{"completed": "reader_output_001", "returncode": 0, "wall_seconds": 0.015814834}
+{"completed": "reader_state_002", "returncode": 0, "wall_seconds": 0.019112125}
+{"completed": "reader_output_002", "returncode": 0, "wall_seconds": 0.020511959}

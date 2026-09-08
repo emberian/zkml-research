@@ -198,3 +198,28 @@ unpinned mixed-journal and failing source-window successors are excluded.
 It pins original/repaired protocols, both full runs and a separate concurrent
 retry-after-install schedule. QIND finite controls are retained against the
 exact pre-closeout draft snapshot; final review/primitive instantiation remains open.
+
+## Third overnight source/evidence checkpoint — 2026-09-08
+
+[EXECUTED] Root's `experiments/end_to_end/overnight_checkpoint_002.py/json`
+rehashes392 public source/evidence files across ten inventories. It reuses saved
+execution reports without running cryptography or reading private runtime state.
+The public-coin journal, emitted/runtime controls, sealed replay failure,
+independent reviews and proposed full-UD sources are included.
+
+[SOURCE/DERIVED] Exact source locations and access depth for ALS IPFE and nearby
+transparent constructions are in
+`experiments/private_construction/public_setup_pq/notes/SOURCES.md` and its
+SOURCE_MANIFEST. The fixed-coordinate QPT derivation has a separate independent
+review. Its finite regularity derivation uses MP2011/501 and GPV2007/432, including
+prime-power subgroup counts, not a prime-field hashing shortcut. The cost note
+retains source equations and the exact public integer script. These are source
+and mathematical artifacts, not an implemented PQ cryptosystem.
+
+[EXECUTED source accounting, completed first source tranches] Capsule audit:
+eight web queries/two Scry SQL; initial PQ setup audit:eight web queries/four
+Scry SQL submissions (two errors); proof-frontier orientation:four web queries,
+one Scry SQL/two schema,11 direct web operations and nine GitHub API reads.
+Finite regularity:two web discovery queries, zero Scry. Later alternatives and
+finite-reduction lanes are still active and keep their own counters; these
+figures are not a final nightly aggregate. No eprint PDF was downloaded.

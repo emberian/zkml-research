@@ -1,0 +1,72 @@
+{
+  "schema": "independent-public-setup-journal-review-v1",
+  "claim_kind": "EXECUTED",
+  "reviewer": "/root/independent_review",
+  "as_of_date_utc": "2026-09-08",
+  "subject": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/FINAL_MANIFEST.json",
+  "subject_sha256": "1d5901a81cb0056f94878878af3737865bb804bf3cd16533e9a3582bb7d676a9",
+  "verdict": "Accept source-level public setup join and normal integration; no extension of accepted-value DDH to timing-bearing genesis or full instrumented view",
+  "checks": {
+    "author_public_files_unchanged": 110,
+    "launch_sources_match_final_manifest": 33,
+    "reviewed_public_records_match_final_manifest": 26,
+    "review_scripts_compile": true,
+    "review_stderr_empty": true,
+    "review_whitespace": true,
+    "report_under_400_lines": true
+  },
+  "activity": {
+    "author_program_invocations": 0,
+    "group_or_signature_verification": 0,
+    "private_file_reads_or_hashes": 0,
+    "network_queries": 0,
+    "author_file_edits": 0,
+    "commits": 0
+  },
+  "artifacts": [
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/.gitignore",
+      "sha256": "9967fbf6a68b4488fb0a6eb19a6c36b1d408a47312b8825b6d38062e10d5c07a"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/REPORT.md",
+      "sha256": "938643ed06518a55478058106e5ad7ab48f56412c92ac5a2f04f9652e905b90f"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/finalize.py",
+      "sha256": "4a7ae3a8dcf63c433a9a328b4e6d6b39821583d56b5aff7e8dc9dd2ccdb3eae4"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/record_review.json",
+      "sha256": "5304ac3d529571ff201fa30b9c8132e10b073611456128a3c0175fca943dda15"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/record_review.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/record_review.stdout.txt",
+      "sha256": "0feb84f36c9564a98bb9c5f40abe611c62721f7880dcea08bd420b66e19731b2"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/records.py",
+      "sha256": "36e0bcbf011a33b13cad108b92a5e2456c767f89b05041684321bf605b684856"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/review.py",
+      "sha256": "c71e3eb0c0f5596181183044140e7b0123a34657aba17383af60b384722239c8"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/source_review.json",
+      "sha256": "1bc41664429d617b3d6fb6d212e7960375008ea2239596f3963801fba3a3686e"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/source_review.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_journal/source_review.stdout.txt",
+      "sha256": "80b2ea0e061cb52818e4756d117d2ae6bfd627d7b46015cb9b6c991cbe0219a9"
+    }
+  ]
+}

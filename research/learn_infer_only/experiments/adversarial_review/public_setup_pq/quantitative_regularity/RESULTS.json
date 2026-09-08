@@ -1,0 +1,250 @@
+{
+  "additive_group_controls": {
+    "parameter_cases": 12,
+    "public_vectors_counted": 21926,
+    "result": "PASS"
+  },
+  "input_sha256": "300f8060d4befbc52136be55f933af648a910d6804ac634951ff974ac2f9dbc3",
+  "profiles": [
+    {
+      "augmented_certificate": {
+        "checks": {
+          "gaussian_width_sufficient": true,
+          "matrix_rows_sufficient": true,
+          "prime_power_hypotheses": true
+        },
+        "columns": 1025,
+        "matrix_row_margin": 198689170,
+        "matrix_rows": 268435456,
+        "matrix_rows_required": 69746286,
+        "q_bits": 68045,
+        "sigma_squared_representation": "2^33884",
+        "sigma_squared_required": 190
+      },
+      "classification": "Regularity arithmetic only; no computational security certification",
+      "coalition_bounds": [
+        {
+          "augmented_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2308,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 577
+          },
+          "coalition_size": 0,
+          "regularity_terms_below_2_minus_139": true,
+          "regularity_terms_in_acceptance_gap": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 1777032,
+            "reduced_denominator": 182687704666362864775460604089535377456991567872,
+            "reduced_numerator": 222129
+          },
+          "setup_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2244,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 561
+          }
+        },
+        {
+          "augmented_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2244,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 561
+          },
+          "coalition_size": 16,
+          "regularity_terms_below_2_minus_139": true,
+          "regularity_terms_in_acceptance_gap": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 1727880,
+            "reduced_denominator": 182687704666362864775460604089535377456991567872,
+            "reduced_numerator": 215985
+          },
+          "setup_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2244,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 561
+          }
+        }
+      ],
+      "label": "full_source_prescription_normalized",
+      "n": 1024,
+      "setup_certificate": {
+        "checks": {
+          "gaussian_width_sufficient": true,
+          "matrix_rows_sufficient": true,
+          "prime_power_hypotheses": true
+        },
+        "columns": 1024,
+        "matrix_row_margin": 198757215,
+        "matrix_rows": 268435456,
+        "matrix_rows_required": 69678241,
+        "q_bits": 68045,
+        "sigma_squared_representation": "2^33884",
+        "sigma_squared_required": 190
+      }
+    },
+    {
+      "augmented_certificate": {
+        "checks": {
+          "gaussian_width_sufficient": true,
+          "matrix_rows_sufficient": true,
+          "prime_power_hypotheses": true
+        },
+        "columns": 1025,
+        "matrix_row_margin": 718365,
+        "matrix_rows": 1048576,
+        "matrix_rows_required": 330211,
+        "q_bits": 322,
+        "sigma_squared_representation": "2^40",
+        "sigma_squared_required": 182
+      },
+      "classification": "Regularity arithmetic only; no computational security certification",
+      "coalition_bounds": [
+        {
+          "augmented_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2308,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 577
+          },
+          "coalition_size": 0,
+          "regularity_terms_below_2_minus_139": true,
+          "regularity_terms_in_acceptance_gap": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 1777032,
+            "reduced_denominator": 182687704666362864775460604089535377456991567872,
+            "reduced_numerator": 222129
+          },
+          "setup_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2244,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 561
+          }
+        },
+        {
+          "augmented_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2244,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 561
+          },
+          "coalition_size": 16,
+          "regularity_terms_below_2_minus_139": true,
+          "regularity_terms_in_acceptance_gap": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 1727880,
+            "reduced_denominator": 182687704666362864775460604089535377456991567872,
+            "reduced_numerator": 215985
+          },
+          "setup_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2244,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 561
+          }
+        }
+      ],
+      "label": "fixed_coordinate_polynomial_family",
+      "n": 1024,
+      "setup_certificate": {
+        "checks": {
+          "gaussian_width_sufficient": true,
+          "matrix_rows_sufficient": true,
+          "prime_power_hypotheses": true
+        },
+        "columns": 1024,
+        "matrix_row_margin": 718687,
+        "matrix_rows": 1048576,
+        "matrix_rows_required": 329889,
+        "q_bits": 322,
+        "sigma_squared_representation": "2^40",
+        "sigma_squared_required": 182
+      }
+    },
+    {
+      "augmented_certificate": {
+        "checks": {
+          "gaussian_width_sufficient": true,
+          "matrix_rows_sufficient": true,
+          "prime_power_hypotheses": true
+        },
+        "columns": 4097,
+        "matrix_row_margin": 2670059,
+        "matrix_rows": 4194304,
+        "matrix_rows_required": 1524245,
+        "q_bits": 372,
+        "sigma_squared_representation": "2^48",
+        "sigma_squared_required": 184
+      },
+      "classification": "Regularity arithmetic only; no computational security certification",
+      "coalition_bounds": [
+        {
+          "augmented_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2308,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 577
+          },
+          "coalition_size": 0,
+          "regularity_terms_below_2_minus_139": true,
+          "regularity_terms_in_acceptance_gap": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 1777032,
+            "reduced_denominator": 182687704666362864775460604089535377456991567872,
+            "reduced_numerator": 222129
+          },
+          "setup_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2244,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 561
+          }
+        },
+        {
+          "augmented_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2244,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 561
+          },
+          "coalition_size": 16,
+          "regularity_terms_below_2_minus_139": true,
+          "regularity_terms_in_acceptance_gap": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 1727880,
+            "reduced_denominator": 182687704666362864775460604089535377456991567872,
+            "reduced_numerator": 215985
+          },
+          "setup_joint_bound": {
+            "kappa": 160,
+            "numerator_over_2_pow_kappa": 2244,
+            "reduced_denominator": 365375409332725729550921208179070754913983135744,
+            "reduced_numerator": 561
+          }
+        }
+      ],
+      "label": "fixed_coordinate_polynomial_family",
+      "n": 4096,
+      "setup_certificate": {
+        "checks": {
+          "gaussian_width_sufficient": true,
+          "matrix_rows_sufficient": true,
+          "prime_power_hypotheses": true
+        },
+        "columns": 4096,
+        "matrix_row_margin": 2670431,
+        "matrix_rows": 4194304,
+        "matrix_rows_required": 1523873,
+        "q_bits": 372,
+        "sigma_squared_representation": "2^48",
+        "sigma_squared_required": 184
+      }
+    }
+  ],
+  "result": "PASS",
+  "scope": "Exact public integer bound checks and p-adic additive-group counting only",
+  "script_sha256": "06ab88b97b7fd287af50b48d5e1c35b8cd00ce67b2b325fadaa1115ece4ebdf5"
+}

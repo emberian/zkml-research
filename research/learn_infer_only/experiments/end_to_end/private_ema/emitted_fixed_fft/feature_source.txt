@@ -1,0 +1,310 @@
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/Cargo.toml:75-98
+75: avx512 = [
+76:     "tfhe-fft/avx512",
+77:     "tfhe-ntt/avx512",
+78:     "pulp/x86-v4",
+79: ]
+80: boolean = []
+81: boolean-c-api = [
+82:     "boolean",
+83:     "__c_api",
+84: ]
+85: boolean-client-js-wasm-api = [
+86:     "boolean",
+87:     "__wasm_api",
+88: ]
+89: cross-origin-wasm-api = [
+90:     "dep:wasm-par-mq",
+91:     "tfhe-zk-pok?/cross-origin-wasm",
+92: ]
+93: default = ["avx512"]
+94: experimental = []
+95: experimental-force_fft_algo_dif4 = []
+96: extended-types = []
+97: gpu = [
+98:     "dep:tfhe-cuda-backend",
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs:75-120
+75: }
+76: 
+77: /// Negacyclic Fast Fourier Transform. See [`FftView`] for transform functions.
+78: ///
+79: /// This structure contains the twisting factors as well as the
+80: /// FFT plan needed for the negacyclic convolution over the reals.
+81: #[derive(Clone, Debug)]
+82: pub struct Fft {
+83:     plan: Arc<(Twisties, Plan)>,
+84: }
+85: 
+86: /// View type for [`Fft`].
+87: #[derive(Clone, Copy, Debug)]
+88: pub struct FftView<'a> {
+89:     plan: &'a Plan,
+90:     twisties: TwistiesView<'a>,
+91: }
+92: 
+93: impl Fft {
+94:     #[inline]
+95:     pub fn as_view(&self) -> FftView<'_> {
+96:         FftView {
+97:             plan: &self.plan.1,
+98:             twisties: self.plan.0.as_view(),
+99:         }
+100:     }
+101: }
+102: 
+103: type PlanMap = GenericPlanMap<PolynomialSize, (Twisties, Plan)>;
+104: 
+105: pub(crate) static PLANS: OnceLock<PlanMap> = OnceLock::new();
+106: fn plans() -> &'static PlanMap {
+107:     PLANS.get_or_init(GenericPlanMap::new)
+108: }
+109: 
+110: pub fn setup_custom_fft_plan(plan: Plan) {
+111:     let base_n = FourierPolynomialSize(plan.fft_size());
+112:     let n = base_n.to_standard_polynomial_size();
+113: 
+114:     let plan = Arc::new((Twisties::new(base_n.0), plan));
+115: 
+116:     let global_plans = plans();
+117: 
+118:     global_plans.set(n, plan);
+119: }
+120: 
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/core_crypto/fft_impl/fft64/math/fft/mod.rs:161-197
+161: impl Fft {
+162:     /// Real polynomial of size `size`.
+163:     pub fn new(polynomial_size: PolynomialSize) -> Self {
+164:         let global_plans = plans();
+165: 
+166:         let new = |polynomial_size: PolynomialSize| {
+167:             let fourier_polynomial_size = polynomial_size.to_fourier_polynomial_size().0;
+168: 
+169:             #[cfg(not(feature = "experimental-force_fft_algo_dif4"))]
+170:             {
+171:                 (
+172:                     Twisties::new(fourier_polynomial_size),
+173:                     Plan::new(
+174:                         fourier_polynomial_size,
+175:                         Method::Measure(Duration::from_millis(10)),
+176:                     ),
+177:                 )
+178:             }
+179:             #[cfg(feature = "experimental-force_fft_algo_dif4")]
+180:             {
+181:                 (
+182:                     Twisties::new(fourier_polynomial_size),
+183:                     Plan::new(
+184:                         fourier_polynomial_size,
+185:                         Method::UserProvided {
+186:                             base_algo: tfhe_fft::ordered::FftAlgo::Dif4,
+187:                             base_n: fourier_polynomial_size,
+188:                         },
+189:                     ),
+190:                 )
+191:             }
+192:         };
+193: 
+194:         let plan = global_plans.get_or_init(polynomial_size, new);
+195: 
+196:         Self { plan }
+197:     }
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/bootstrapping.rs:94-163
+94: /// * `bootstrapping_key` - a public key, used to perform the bootstrapping operation.
+95: /// * `key_switching_key` - a public key, used to perform the key-switching operation.
+96: #[derive(Clone, Serialize, Deserialize, Versionize)]
+97: #[versionize(ServerKeyVersions)]
+98: pub struct ServerKey {
+99:     pub(crate) bootstrapping_key: FourierLweBootstrapKeyOwned,
+100:     pub(crate) key_switching_key: LweKeyswitchKeyOwned<u32>,
+101:     pub(crate) pbs_order: PBSOrder,
+102: }
+103: 
+104: impl ServerKey {
+105:     /// Deconstruct a [`ServerKey`] into its constituents.
+106:     pub fn into_raw_parts(
+107:         self,
+108:     ) -> (
+109:         FourierLweBootstrapKeyOwned,
+110:         LweKeyswitchKeyOwned<u32>,
+111:         PBSOrder,
+112:     ) {
+113:         let Self {
+114:             bootstrapping_key,
+115:             key_switching_key,
+116:             pbs_order,
+117:         } = self;
+118: 
+119:         (bootstrapping_key, key_switching_key, pbs_order)
+120:     }
+121: 
+122:     /// Construct a [`ServerKey`] from its constituents.
+123:     ///
+124:     /// # Panics
+125:     ///
+126:     /// Panics if the constituents are not compatible with each others.
+127:     pub fn from_raw_parts(
+128:         bootstrapping_key: FourierLweBootstrapKeyOwned,
+129:         key_switching_key: LweKeyswitchKeyOwned<u32>,
+130:         pbs_order: PBSOrder,
+131:     ) -> Self {
+132:         assert_eq!(
+133:             key_switching_key.input_key_lwe_dimension(),
+134:             bootstrapping_key.output_lwe_dimension(),
+135:             "Mismatch between the input LweKeyswitchKey LweDimension ({:?}) \
+136:             and the FourierLweBootstrapKey output LweDimension ({:?})",
+137:             key_switching_key.input_key_lwe_dimension(),
+138:             bootstrapping_key.output_lwe_dimension()
+139:         );
+140: 
+141:         assert_eq!(
+142:             key_switching_key.output_key_lwe_dimension(),
+143:             bootstrapping_key.input_lwe_dimension(),
+144:             "Mismatch between the output LweKeyswitchKey LweDimension ({:?}) \
+145:             and the FourierLweBootstrapKey input LweDimension ({:?})",
+146:             key_switching_key.output_key_lwe_dimension(),
+147:             bootstrapping_key.input_lwe_dimension()
+148:         );
+149: 
+150:         assert!(
+151:             key_switching_key.ciphertext_modulus().is_native_modulus(),
+152:             "Expected native CiphertextModulus for LweKeyswitchKey got {:?}",
+153:             key_switching_key.ciphertext_modulus()
+154:         );
+155: 
+156:         Self {
+157:             bootstrapping_key,
+158:             key_switching_key,
+159:             pbs_order,
+160:         }
+161:     }
+162: 
+163:     pub fn bootstrapping_key_size_elements(&self) -> usize {
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-1.6.3/src/boolean/engine/bootstrapping.rs:445-475
+445:     }
+446: 
+447:     pub(crate) fn bootstrap(
+448:         &mut self,
+449:         input: &LweCiphertextOwned<u32>,
+450:         server_key: &ServerKey,
+451:     ) -> LweCiphertextOwned<u32> {
+452:         let BuffersRef {
+453:             lookup_table: accumulator,
+454:             mut buffer_lwe_after_pbs,
+455:             ..
+456:         } = self.memory.as_buffers(server_key);
+457: 
+458:         let fourier_bsk = &server_key.bootstrapping_key;
+459: 
+460:         let fft = Fft::new(fourier_bsk.polynomial_size());
+461:         let fft = fft.as_view();
+462: 
+463:         self.computation_buffers.resize(
+464:             programmable_bootstrap_lwe_ciphertext_mem_optimized_requirement::<u64>(
+465:                 fourier_bsk.glwe_size(),
+466:                 fourier_bsk.polynomial_size(),
+467:                 fft,
+468:             )
+469:             .unaligned_bytes_required(),
+470:         );
+471:         let stack = self.computation_buffers.stack();
+472: 
+473:         programmable_bootstrap_lwe_ciphertext_mem_optimized(
+474:             input,
+475:             &mut buffer_lwe_after_pbs,
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/unordered.rs:495-540
+495: #[derive(Clone)]
+496: pub struct Plan {
+497:     monomial_twiddles: ABox<[c64]>,
+498:     indices: ABox<[usize]>,
+499:     twiddles: ABox<[c64]>,
+500:     twiddles_inv: ABox<[c64]>,
+501:     fwd_process_x2: fn(&mut [c64], &[c64]),
+502:     fwd_process_x4: fn(&mut [c64], &[c64]),
+503:     fwd_process_x8: fn(&mut [c64], &[c64]),
+504:     inv_process_x2: fn(&mut [c64], &[c64]),
+505:     inv_process_x4: fn(&mut [c64], &[c64]),
+506:     inv_process_x8: fn(&mut [c64], &[c64]),
+507:     base_n: usize,
+508:     base_fn_fwd: fn(&mut [c64], &mut [c64], &[c64], &[c64]),
+509:     base_fn_inv: fn(&mut [c64], &mut [c64], &[c64], &[c64]),
+510:     base_algo: FftAlgo,
+511:     n: usize,
+512: }
+513: 
+514: impl core::fmt::Debug for Plan {
+515:     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+516:         f.debug_struct("Plan")
+517:             .field("base_algo", &self.base_algo)
+518:             .field("base_size", &self.base_n)
+519:             .field("fft_size", &self.fft_size())
+520:             .finish()
+521:     }
+522: }
+523: 
+524: /// Method for selecting the unordered FFT plan.
+525: #[derive(Clone, Copy, Debug)]
+526: pub enum Method {
+527:     /// Select the FFT plan by manually providing the underlying algorithm.
+528:     /// The unordered FFT works by using an internal ordered FFT plan, whose size and algorithm can
+529:     /// be specified by the user.
+530:     UserProvided { base_algo: FftAlgo, base_n: usize },
+531:     /// Select the FFT plan by measuring the running time of all the possible plans and selecting
+532:     /// the fastest one. The provided duration specifies how long the benchmark of each plan should
+533:     /// last.
+534:     #[cfg(feature = "std")]
+535:     #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+536:     Measure(Duration),
+537: }
+538: 
+539: #[cfg(feature = "std")]
+540: fn measure_fastest_scratch(n: usize) -> StackReq {
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/unordered.rs:654-682
+654:     pub fn new(n: usize, method: Method) -> Self {
+655:         assert!(n.is_power_of_two());
+656: 
+657:         let (base_algo, base_n) = match method {
+658:             Method::UserProvided { base_algo, base_n } => {
+659:                 assert!(base_n.is_power_of_two());
+660:                 assert!(base_n <= n);
+661:                 if base_n != n {
+662:                     assert!(base_n >= 32);
+663:                 }
+664:                 assert!(base_n.trailing_zeros() <= 10);
+665:                 (base_algo, base_n)
+666:             }
+667: 
+668:             #[cfg(feature = "std")]
+669:             Method::Measure(duration) => {
+670:                 let mut buf = PodBuffer::try_new(measure_fastest_scratch(n)).unwrap();
+671:                 let (algo, base_n, _) = measure_fastest(duration, n, PodStack::new(&mut buf));
+672:                 (algo, base_n)
+673:             }
+674:         };
+675: 
+676:         let [base_fn_fwd, base_fn_inv] = crate::ordered::get_fn_ptr(base_algo, base_n);
+677: 
+678:         let nan = c64 {
+679:             re: f64::NAN,
+680:             im: f64::NAN,
+681:         };
+682:         let mut twiddles = avec![nan; n + base_n].into_boxed_slice();
+
+[SOURCE implementation] /Users/ember/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tfhe-fft-0.10.1/src/unordered.rs:768-779
+768:     ///     Method::UserProvided {
+769:     ///         base_algo: FftAlgo::Dif2,
+770:     ///         base_n: 4,
+771:     ///     },
+772:     /// );
+773:     /// assert_eq!(plan.algo(), (FftAlgo::Dif2, 4));
+774:     /// ```
+775:     pub fn algo(&self) -> (FftAlgo, usize) {
+776:         (self.base_algo, self.base_n)
+777:     }
+778: 
+779:     /// Returns the size and alignment of the scratch memory needed to perform an FFT.

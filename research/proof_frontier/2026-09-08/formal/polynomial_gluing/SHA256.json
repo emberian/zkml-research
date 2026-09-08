@@ -1,0 +1,6 @@
+{
+  "Theory/PolynomialBivariate.lean": "411b3eaa23fd38a9d1165d91de01a3c3e47b108e0b48dfc7d8677197f2b8e5da",
+  "Theory/PolynomialGluingStatement.lean": "41eed62b663388fb5b3fb19b069d5dab36d04748610c5216b54b7dfe2f38d11b",
+  "Theory/PolynomialGluing.lean": "ce6255d764e4929ac20c794871c3a4170b8efb962ac1ce79fd517fdc9d9f88f3",
+  "polynomial-gluing.patch": "131b4d9adc82b983dca39bdc56315530fbd54c1b4628aff48ba6764c1d282b54"
+}

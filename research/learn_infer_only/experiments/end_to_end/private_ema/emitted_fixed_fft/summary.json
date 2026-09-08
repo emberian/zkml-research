@@ -1,0 +1,89 @@
+{
+  "claim": "EXECUTED",
+  "success": true,
+  "result_file": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/reports/controls/results.json",
+    "bytes": 71712,
+    "sha256": "eedc9e15594076286e5ba1db101d8f42ee68e1aead0a53e15636e76e04151d59"
+  },
+  "freeze_sha256": "b6805534d4aa32d4ea99f7017d71a3a38738a8c60fc84370c471826cfa94077e",
+  "pairs": 5,
+  "host_processes": 10,
+  "all_complete_byte_pairs_equal": true,
+  "all_read_input_and_binary_hashes_stable": true,
+  "all_observed_plans": [
+    "Plan { base_algo: Dif4, base_size: 512, fft_size: 512 }"
+  ],
+  "all_observed_polynomial_sizes": [
+    1024
+  ],
+  "pair_cases": [
+    {
+      "case": "prior_emitted_learn_001",
+      "operation": "learn",
+      "equal": true,
+      "primary_sha256": "dc45a0e8306c59661bfeca8261571cf3d56fe5bad5b27c65bba9bdf9be1df47d",
+      "replay_sha256": "dc45a0e8306c59661bfeca8261571cf3d56fe5bad5b27c65bba9bdf9be1df47d"
+    },
+    {
+      "case": "prior_emitted_infer_001",
+      "operation": "infer",
+      "equal": true,
+      "primary_sha256": "b29eaa5aabf115c4969f8817e3600d5fb279b53015f10aaa12b494a701cc3b8c",
+      "replay_sha256": "b29eaa5aabf115c4969f8817e3600d5fb279b53015f10aaa12b494a701cc3b8c"
+    },
+    {
+      "case": "prior_emitted_learn_002",
+      "operation": "learn",
+      "equal": true,
+      "primary_sha256": "56f72bbb49715f2a8199ef6a528f6428aba264a3dafb78d9ef36ac720451970e",
+      "replay_sha256": "56f72bbb49715f2a8199ef6a528f6428aba264a3dafb78d9ef36ac720451970e"
+    },
+    {
+      "case": "prior_emitted_infer_002",
+      "operation": "infer",
+      "equal": true,
+      "primary_sha256": "7392d8e66ce96df6f8d27bd3efdaff2239f773fbc04080175b7a51cb63239f39",
+      "replay_sha256": "7392d8e66ce96df6f8d27bd3efdaff2239f773fbc04080175b7a51cb63239f39"
+    },
+    {
+      "case": "old_fourteenth_learn_public_inputs",
+      "operation": "learn",
+      "equal": true,
+      "primary_sha256": "d2902cd85afe5dec3d57d422c018fac298e8dcd22b4798271682d0bde58f6f46",
+      "replay_sha256": "d2902cd85afe5dec3d57d422c018fac298e8dcd22b4798271682d0bde58f6f46"
+    }
+  ],
+  "cost_groups": {
+    "learn": {
+      "processes": 6,
+      "wall_seconds_min": 16.252242,
+      "wall_seconds_max": 20.055212958,
+      "wall_seconds_median": 17.40491175,
+      "evaluate_seconds_min": 16.059002917,
+      "evaluate_seconds_max": 19.820838583,
+      "peak_rss_bytes_max": 494338048
+    },
+    "infer": {
+      "processes": 4,
+      "wall_seconds_min": 0.521139167,
+      "wall_seconds_max": 0.624240959,
+      "wall_seconds_median": 0.577439146,
+      "evaluate_seconds_min": 0.308631083,
+      "evaluate_seconds_max": 0.349894833,
+      "peak_rss_bytes_max": 484638720
+    }
+  },
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "release": "25.6.0"
+  },
+  "scope": "five static public input tuples, fixed build and observed plan on one recorded platform",
+  "private_reader_invocations": 0,
+  "old_failed_output_files_opened": false,
+  "plaintext_correctness_tested": false,
+  "old_failure_cause_claimed": false,
+  "general_determinism_claimed": false,
+  "long_workload_started": false
+}

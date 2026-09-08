@@ -1,0 +1,14 @@
+{
+  "claim": "EXECUTED",
+  "argv": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/target/release/resident-emitted-bool-runtime",
+    "validate",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime",
+  "started_utc": "2026-09-08T04:24:57.862493+00:00",
+  "returncode": 0,
+  "stdout_sha256": "ff636de379f16ebc8ffb7f3a99fd7e574d7364f59aeb2c1b39f765603f029181",
+  "stdout_bytes": 181,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
