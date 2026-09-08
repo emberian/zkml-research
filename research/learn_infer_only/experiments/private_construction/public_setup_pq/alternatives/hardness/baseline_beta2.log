@@ -1,0 +1,8 @@
+START 1024 10 low MATZOV_classical dual_fixed_beta2
+RESULT ERROR None None
+START 1024 10 low ADPS16_classical dual_fixed_beta2
+RESULT ERROR None None
+START 1024 10 low ADPS16_quantum_core_svp dual_fixed_beta2
+RESULT ERROR None None
+START 1024 10 low MATZOV_quantum_depth_width dual_fixed_beta2
+RESULT ERROR None None

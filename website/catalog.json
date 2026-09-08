@@ -97,7 +97,7 @@
       "path": "research/learn_infer_only/formal/integration/README.md",
       "lines": [
         1,
-        16
+        5
       ],
       "label": "Checked Lean proposal · exact package and scope"
     },
@@ -366,9 +366,9 @@
       "status": "executed",
       "topic": "proof-systems",
       "title": "A checked collection of formal ingredients",
-      "metric": "708 pins",
-      "metric_label": "across 53 Lean modules",
-      "body": "The saved combined proposal passed its overlay build, four umbrellas, patch application/content checks and import boundaries. It includes exact arithmetic and mixed-journal window framing.",
+      "metric": "915 pins",
+      "metric_label": "across 70 Lean modules",
+      "body": "The combined proposal passed its overlay build, four umbrellas, patch application and import boundaries. It joins signed-word arithmetic, Lean-emitted learner schedules, adaptation dynamics and full unique decoding over existing Reed–Solomon objects.",
       "limit": "A checked proposal patch, not a landed companion change. Existing dependency oleans were reused. No clean whole-tree build or universal Rust refinement is inferred.",
       "sources": [
         "formal"

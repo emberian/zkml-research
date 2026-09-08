@@ -1,0 +1,383 @@
+{
+  "all_checks_passed": true,
+  "source_sha256": "9828878c2ac7b175c9d9928348b0a858573ad951a569a90997684732e0289608",
+  "patch_sha256": "ca0d13b93fba0e685800535c5f84ffa64f4d74c276fd6ec40a8c4cba315a155d",
+  "author_manifest_sha256": "aec59f6afbed5a180a2a023465e6fe2e4347464c8f8a29a5ecef0d6d585bbef6",
+  "manifest_files_checked": 14,
+  "manifest_matches": {
+    "Compiler/CseStructure.lean": true,
+    "README.md": true,
+    "check.py": true,
+    "integration_entry.json": true,
+    "minidregg-cse-structure.patch": true,
+    "package.py": true,
+    "results/baseline.json": true,
+    "results/environment.json": true,
+    "results/lean_001.json": true,
+    "results/lean_002.json": true,
+    "results/lean_003.json": true,
+    "results/lean_004.json": true,
+    "results/lean_005.json": true,
+    "results/verification.json": true
+  },
+  "frozen_inputs_checked": 81,
+  "frozen_input_matches": {
+    "research/learn_infer_only/formal/emitted_schedule_execution/CSE_FOLLOWUP.md": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/CheckScheduleStructure.lean": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/Compiler/EmittedScheduleExecution.lean": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/README.md": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/check.py": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/integration_entry.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/kernel_probe.py": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/manifest.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/minidregg-emitted-schedule-execution.patch": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/package.py": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/baseline.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/environment.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_baseline.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_baseline.lean": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_baseline.stderr": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_baseline.stdout": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer.lean": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer.stderr": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer.stdout": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer_3g.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer_3g.lean": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer_3g.stderr": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_infer_3g.stdout": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn.lean": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn.stderr": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn.stdout": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn_3g.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn_3g.lean": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn_3g.stderr": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/kernel_learn_3g.stdout": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/lean_001.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/lean_002.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/lean_003.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/lean_004.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/lean_005.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/lean_006.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/probe_summary.json": true,
+    "research/learn_infer_only/formal/emitted_schedule_execution/results/verification.json": true,
+    "research/learn_infer_only/formal/private_address_ema/README.md": true,
+    "research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": true,
+    "research/learn_infer_only/formal/private_address_ema/check.py": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/EmitPrivateAddressEma.lean": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/README.md": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/SCHEMA.md": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/check.py": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/integration_entry.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/package.py": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/emission_001.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/environment.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_001.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_002.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_003.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_004.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_005.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_006.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_007.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_008.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_009.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/verification.json": true,
+    "research/learn_infer_only/formal/private_address_ema/integration_entry.json": true,
+    "research/learn_infer_only/formal/private_address_ema/inventory.json": true,
+    "research/learn_infer_only/formal/private_address_ema/minidregg-private-address-ema.patch": true,
+    "research/learn_infer_only/formal/private_address_ema/package.py": true,
+    "research/learn_infer_only/formal/private_address_ema/results/environment.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_001.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_002.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_003.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_004.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_005.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_006.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_007.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_008.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_009.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_010.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/verification.json": true
+  },
+  "dependency_matches": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/Compiler/EmittedScheduleExecution.lean": true,
+    "/Users/ember/dev/minidregg/Compiler/Emit.lean": true,
+    "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": true,
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": true
+  },
+  "theorem_count": 18,
+  "pin_census": [
+    {
+      "name": "subst_bounded",
+      "kind": "theorem",
+      "line": 46,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "bounded_up",
+      "kind": "theorem",
+      "line": 54,
+      "exact_pin": true,
+      "axioms": []
+    },
+    {
+      "name": "insert_subst_le",
+      "kind": "theorem",
+      "line": 60,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "insert_signature_kept",
+      "kind": "theorem",
+      "line": 70,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "cseGo_good",
+      "kind": "theorem",
+      "line": 87,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "empty_good",
+      "kind": "theorem",
+      "line": 130,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "cse_structure_preservation",
+      "kind": "theorem",
+      "line": 141,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "raw_premises_inhabited",
+      "kind": "theorem",
+      "line": 162,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "shared_structure",
+      "kind": "theorem",
+      "line": 167,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "shared_execution_total",
+      "kind": "theorem",
+      "line": 172,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "learn_execution_total",
+      "kind": "theorem",
+      "line": 185,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "infer_execution_total",
+      "kind": "theorem",
+      "line": 193,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "learn_total_subject",
+      "kind": "theorem",
+      "line": 200,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "wrong_learn_answer_refused",
+      "kind": "theorem",
+      "line": 206,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "subst_empty",
+      "kind": "theorem",
+      "line": 213,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "singleton_cse",
+      "kind": "theorem",
+      "line": 216,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "missing_ssa_refused",
+      "kind": "theorem",
+      "line": 230,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "missing_bounds_refused",
+      "kind": "theorem",
+      "line": 246,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  ],
+  "forbidden_tokens": [],
+  "imports": [
+    "Compiler.EmittedScheduleExecution"
+  ],
+  "patch_replay": {
+    "exact_module_bytes": true,
+    "only_umbrella_addition": true,
+    "companion_base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+    "compiler_base_sha256": "7d1de586dc1b53d2785344c5a04e505540cad58e707d07b13ccfc35bb311c358"
+  },
+  "commands": [
+    {
+      "command": [
+        "git",
+        "show",
+        "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd:Compiler.lean"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "[captured Compiler.lean; SHA-256 7d1de586dc1b53d2785344c5a04e505540cad58e707d07b13ccfc35bb311c358]",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/independent_cse_structure_patch_objst64_",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/minidregg-cse-structure.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/independent_cse_structure_patch_objst64_",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/minidregg-cse-structure.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/independent_cse_structure_patch_objst64_",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "author_clean_lean_log_checked": true,
+  "lean_reexecuted": false,
+  "runtime_reexecuted": false,
+  "unconditional_ema_heads_checked": true,
+  "initialized_reference_theorem": false,
+  "toolchain_sources": {
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/src/lean/Init/Data/LawfulHashable.lean": "14a5635bf79ab8693d34e2c9dc8166f1ec37de9e5996cab1b03c88ed41d47d19",
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/src/lean/Std/Data/HashMap/Lemmas.lean": "d875b1d47e3031e17ebf58c920579355f9bbaec07dde17d05a4eb0ca081d63c0"
+  },
+  "strict_initialization_gap_control": {
+    "nVars": 34,
+    "nWires": 36,
+    "operand": 34,
+    "output": 35,
+    "ssa_and_wellFormed": true,
+    "operand_initially_available": false,
+    "basis": "Singleton CSE is unchanged by CseStructure.singleton_cse; finite arithmetic only"
+  }
+}

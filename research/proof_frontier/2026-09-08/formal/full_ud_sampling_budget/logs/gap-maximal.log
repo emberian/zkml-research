@@ -1,0 +1,7 @@
+Selvage/FullUDSamplingBudget.lean:110:17: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  simp only [F̵i̵n̵.̵v̵a̵l̵_̵m̵k̵,̵ ̵heq] at hh
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

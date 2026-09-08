@@ -1,0 +1,9 @@
+{
+  "name": "full_ud_sampling_budget",
+  "root": "../proof_frontier/2026-09-08/formal/full_ud_sampling_budget",
+  "patch": "../proof_frontier/2026-09-08/formal/full_ud_sampling_budget/full-ud-sampling-budget.patch",
+  "expected_pins": 25,
+  "source_files": {
+    "Selvage/FullUDSamplingBudget.lean": "../proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean"
+  }
+}

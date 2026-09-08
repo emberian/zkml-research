@@ -1,0 +1,379 @@
+{
+  "all_checks_passed": true,
+  "source_sha256": "37d9b62f5a0b0b3b80fa7b2de2f8322e71c92b4635710f64eb848f573bffb077",
+  "patch_sha256": "057672fd7654df79812d5071bd0c00497ef7c462b53c0314a62c97fcc219d72c",
+  "author_manifest_sha256": "cc5041fce37ac7cd72e05475291ff506a2ae8e95767f5565dbc61335d5cc0053",
+  "manifest_files_checked": 39,
+  "manifest_matches": {
+    "CSE_FOLLOWUP.md": true,
+    "CheckScheduleStructure.lean": true,
+    "Compiler/EmittedScheduleExecution.lean": true,
+    "README.md": true,
+    "check.py": true,
+    "integration_entry.json": true,
+    "kernel_probe.py": true,
+    "minidregg-emitted-schedule-execution.patch": true,
+    "package.py": true,
+    "results/baseline.json": true,
+    "results/environment.json": true,
+    "results/kernel_baseline.json": true,
+    "results/kernel_baseline.lean": true,
+    "results/kernel_baseline.stderr": true,
+    "results/kernel_baseline.stdout": true,
+    "results/kernel_infer.json": true,
+    "results/kernel_infer.lean": true,
+    "results/kernel_infer.stderr": true,
+    "results/kernel_infer.stdout": true,
+    "results/kernel_infer_3g.json": true,
+    "results/kernel_infer_3g.lean": true,
+    "results/kernel_infer_3g.stderr": true,
+    "results/kernel_infer_3g.stdout": true,
+    "results/kernel_learn.json": true,
+    "results/kernel_learn.lean": true,
+    "results/kernel_learn.stderr": true,
+    "results/kernel_learn.stdout": true,
+    "results/kernel_learn_3g.json": true,
+    "results/kernel_learn_3g.lean": true,
+    "results/kernel_learn_3g.stderr": true,
+    "results/kernel_learn_3g.stdout": true,
+    "results/lean_001.json": true,
+    "results/lean_002.json": true,
+    "results/lean_003.json": true,
+    "results/lean_004.json": true,
+    "results/lean_005.json": true,
+    "results/lean_006.json": true,
+    "results/probe_summary.json": true,
+    "results/verification.json": true
+  },
+  "frozen_inputs_checked": 41,
+  "frozen_input_matches": {
+    "research/learn_infer_only/formal/private_address_ema/README.md": true,
+    "research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": true,
+    "research/learn_infer_only/formal/private_address_ema/check.py": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/EmitPrivateAddressEma.lean": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/README.md": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/SCHEMA.md": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/infer.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/artifacts/learn.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/check.py": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/integration_entry.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/minidregg-private-address-ema-schedule.patch": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/package.py": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/emission_001.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/environment.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_001.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_002.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_003.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_004.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_005.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_006.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_007.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_008.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/lean_009.json": true,
+    "research/learn_infer_only/formal/private_address_ema/emitted_schedule/results/verification.json": true,
+    "research/learn_infer_only/formal/private_address_ema/integration_entry.json": true,
+    "research/learn_infer_only/formal/private_address_ema/inventory.json": true,
+    "research/learn_infer_only/formal/private_address_ema/minidregg-private-address-ema.patch": true,
+    "research/learn_infer_only/formal/private_address_ema/package.py": true,
+    "research/learn_infer_only/formal/private_address_ema/results/environment.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_001.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_002.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_003.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_004.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_005.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_006.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_007.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_008.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_009.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/lean_010.json": true,
+    "research/learn_infer_only/formal/private_address_ema/results/verification.json": true
+  },
+  "dependency_matches": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": true,
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/emitted_schedule/Compiler/PrivateAddressEmaSchedule.lean": true,
+    "/Users/ember/dev/minidregg/Compiler/Emit.lean": true,
+    "/Users/ember/dev/minidregg/Compiler/EmitShare.lean": true,
+    "/Users/ember/dev/minidregg/Compiler/DescriptorEval.lean": true
+  },
+  "theorem_count": 19,
+  "pin_census": [
+    {
+      "name": "validCheck_iff",
+      "kind": "theorem",
+      "line": 75,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "ready_bounded",
+      "kind": "theorem",
+      "line": 78,
+      "exact_pin": true,
+      "axioms": []
+    },
+    {
+      "name": "forwardGates_shape",
+      "kind": "theorem",
+      "line": 84,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "bounded_mono",
+      "kind": "theorem",
+      "line": 111,
+      "exact_pin": true,
+      "axioms": []
+    },
+    {
+      "name": "valid_implies_shape",
+      "kind": "theorem",
+      "line": 117,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "execution_soundness",
+      "kind": "theorem",
+      "line": 135,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "executed_inputs",
+      "kind": "theorem",
+      "line": 141,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "shared_execution_correctness",
+      "kind": "theorem",
+      "line": 149,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "learn_execution_correct",
+      "kind": "theorem",
+      "line": 157,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "infer_execution_correct",
+      "kind": "theorem",
+      "line": 166,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "decoded_gate_operations",
+      "kind": "theorem",
+      "line": 176,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "sparse_premises_inhabited",
+      "kind": "theorem",
+      "line": 188,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "sparse_subject",
+      "kind": "theorem",
+      "line": 192,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "sparse_nonconstant",
+      "kind": "theorem",
+      "line": 194,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "wrong_answer_refused",
+      "kind": "theorem",
+      "line": 196,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "forward_read_refused",
+      "kind": "theorem",
+      "line": 198,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "hole_read_refused",
+      "kind": "theorem",
+      "line": 203,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "input_write_refused",
+      "kind": "theorem",
+      "line": 206,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "decreasing_output_refused",
+      "kind": "theorem",
+      "line": 212,
+      "exact_pin": true,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  ],
+  "forbidden_tokens": [],
+  "imports": [
+    "Compiler.PrivateAddressEmaSchedule"
+  ],
+  "patch_replay": {
+    "exact_module_bytes": true,
+    "only_umbrella_addition": true,
+    "companion_base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+    "compiler_base_sha256": "7d1de586dc1b53d2785344c5a04e505540cad58e707d07b13ccfc35bb311c358"
+  },
+  "commands": [
+    {
+      "command": [
+        "git",
+        "show",
+        "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd:Compiler.lean"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "[captured Compiler.lean; SHA-256 7d1de586dc1b53d2785344c5a04e505540cad58e707d07b13ccfc35bb311c358]",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/independent_emitted_execution_patch_q4ffq22t",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/minidregg-emitted-schedule-execution.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/independent_emitted_execution_patch_q4ffq22t",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/minidregg-emitted-schedule-execution.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/independent_emitted_execution_patch_q4ffq22t",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "author_clean_lean_log_checked": true,
+  "lean_reexecuted": false,
+  "runtime_reexecuted": false,
+  "actual_validity_kernel_proved": false,
+  "author_compiled_structural_checks": [
+    {
+      "gates": 538,
+      "nInputs": 42,
+      "nWires": 11562,
+      "operation": "learn",
+      "outputs": 32,
+      "structurallyValid": true
+    },
+    {
+      "gates": 9,
+      "nInputs": 34,
+      "nWires": 46,
+      "operation": "infer",
+      "outputs": 1,
+      "structurallyValid": true
+    }
+  ]
+}

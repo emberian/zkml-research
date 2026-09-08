@@ -1,0 +1,72 @@
+{
+  "children_system_cpu_seconds": 6.557828,
+  "children_user_cpu_seconds": 11.164348,
+  "maximum_child_rss_bytes_macos": 8428748800,
+  "phases": [
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/runtime/e2e/verified_reader/live_driver.py",
+        "--worker",
+        "--input",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/runtime/.private/input.json",
+        "--runtime",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/runtime",
+        "--reports",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/reports/run001",
+        "--binary",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/runtime/e2e/resident-crypto"
+      ],
+      "group_cleanup_escalated": false,
+      "phase": "public_phase",
+      "process_group_absent": true,
+      "returncode": 0,
+      "timed_out": false,
+      "wall_ns": 19676214542
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/public_verify.py"
+      ],
+      "group_cleanup_escalated": false,
+      "phase": "public_verify",
+      "process_group_absent": true,
+      "returncode": 0,
+      "timed_out": false,
+      "wall_ns": 3889736208
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/drain.py"
+      ],
+      "group_cleanup_escalated": false,
+      "phase": "private_drain",
+      "process_group_absent": true,
+      "returncode": 0,
+      "timed_out": false,
+      "wall_ns": 203700459
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/validate.py"
+      ],
+      "group_cleanup_escalated": false,
+      "phase": "validate",
+      "process_group_absent": true,
+      "returncode": 0,
+      "timed_out": false,
+      "wall_ns": 202328125
+    }
+  ],
+  "returncode": 0,
+  "scope": "Sequential one-attempt pipeline; source hashing overlaps outer wall time. No retry after model scoring.",
+  "source_snapshot_and_model_bytes_unchanged": true,
+  "wall_ns": 27504062000
+}

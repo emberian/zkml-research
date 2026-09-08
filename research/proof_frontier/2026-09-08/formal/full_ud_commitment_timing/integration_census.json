@@ -1,0 +1,727 @@
+{
+  "Selvage/OpeningResolution.lean": {
+    "theorems": [
+      "word_openable",
+      "correctness",
+      "eq_word_of_no_double",
+      "no_double_of_binding",
+      "word_commit",
+      "transparent_no_double",
+      "word_transparent",
+      "transparent_double_original",
+      "transparent_binding",
+      "binaryMerkle_double_implies_collision",
+      "honest_image_falsifier",
+      "off_image_resolution_witness",
+      "binding_removal_falsifier",
+      "double_opening_inhabited"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "word_openable",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.word_openable",
+        "private": false,
+        "line": 33
+      },
+      {
+        "name": "correctness",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.correctness",
+        "private": false,
+        "line": 41
+      },
+      {
+        "name": "eq_word_of_no_double",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.eq_word_of_no_double",
+        "private": false,
+        "line": 50
+      },
+      {
+        "name": "no_double_of_binding",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.no_double_of_binding",
+        "private": false,
+        "line": 57
+      },
+      {
+        "name": "word_commit",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.word_commit",
+        "private": false,
+        "line": 63
+      },
+      {
+        "name": "transparent_no_double",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.transparent_no_double",
+        "private": false,
+        "line": 83
+      },
+      {
+        "name": "word_transparent",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.word_transparent",
+        "private": false,
+        "line": 89
+      },
+      {
+        "name": "transparent_double_original",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.transparent_double_original",
+        "private": false,
+        "line": 97
+      },
+      {
+        "name": "transparent_binding",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.transparent_binding",
+        "private": false,
+        "line": 109
+      },
+      {
+        "name": "binaryMerkle_double_implies_collision",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.binaryMerkle_double_implies_collision",
+        "private": false,
+        "line": 120
+      },
+      {
+        "name": "honest_image_falsifier",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.honest_image_falsifier",
+        "private": false,
+        "line": 140
+      },
+      {
+        "name": "off_image_resolution_witness",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.off_image_resolution_witness",
+        "private": false,
+        "line": 151
+      },
+      {
+        "name": "binding_removal_falsifier",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.binding_removal_falsifier",
+        "private": false,
+        "line": 165
+      },
+      {
+        "name": "double_opening_inhabited",
+        "qualified_name": "Minidregg.Selvage.OpeningResolution.double_opening_inhabited",
+        "private": false,
+        "line": 175
+      }
+    ],
+    "theorem_count": 14,
+    "pin_count": 14,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.word_openable",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.word_openable",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 182,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.word_openable' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.word_openable"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.correctness",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.correctness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 184,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.correctness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.correctness"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.eq_word_of_no_double",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.eq_word_of_no_double",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 186,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.eq_word_of_no_double' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.eq_word_of_no_double"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.no_double_of_binding",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.no_double_of_binding",
+        "axioms": [],
+        "line": 188,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.no_double_of_binding' does not depend on any axioms",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.no_double_of_binding"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.word_commit",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.word_commit",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 190,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.word_commit' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.word_commit"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.transparent_no_double",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.transparent_no_double",
+        "axioms": [],
+        "line": 192,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.transparent_no_double' does not depend on any axioms",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.transparent_no_double"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.word_transparent",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.word_transparent",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 194,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.word_transparent' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.word_transparent"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.transparent_double_original",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.transparent_double_original",
+        "axioms": [],
+        "line": 196,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.transparent_double_original' does not depend on any axioms",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.transparent_double_original"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.transparent_binding",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.transparent_binding",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 198,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.transparent_binding' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.transparent_binding"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.binaryMerkle_double_implies_collision",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.binaryMerkle_double_implies_collision",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 200,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.binaryMerkle_double_implies_collision' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.binaryMerkle_double_implies_collision"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.honest_image_falsifier",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.honest_image_falsifier",
+        "axioms": [],
+        "line": 202,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.honest_image_falsifier' does not depend on any axioms",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.honest_image_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.off_image_resolution_witness",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.off_image_resolution_witness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 204,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.off_image_resolution_witness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.off_image_resolution_witness"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.binding_removal_falsifier",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.binding_removal_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 206,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.binding_removal_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.binding_removal_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.OpeningResolution.double_opening_inhabited",
+        "requested_name": "Minidregg.Selvage.OpeningResolution.double_opening_inhabited",
+        "axioms": [],
+        "line": 208,
+        "expected_message": "info: 'Minidregg.Selvage.OpeningResolution.double_opening_inhabited' does not depend on any axioms",
+        "declaration_name": "Minidregg.Selvage.OpeningResolution.double_opening_inhabited"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/FriRootResolution.lean": {
+    "theorems": [
+      "resolved_word_prefix",
+      "terminal_resolves",
+      "round_resolves",
+      "sound_reduction",
+      "no_bad_of_binding",
+      "transparent_terminal"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "resolved_word_prefix",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.resolved_word_prefix",
+        "private": false,
+        "line": 79
+      },
+      {
+        "name": "terminal_resolves",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.terminal_resolves",
+        "private": false,
+        "line": 88
+      },
+      {
+        "name": "round_resolves",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.round_resolves",
+        "private": false,
+        "line": 103
+      },
+      {
+        "name": "sound_reduction",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.sound_reduction",
+        "private": false,
+        "line": 129
+      },
+      {
+        "name": "no_bad_of_binding",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.no_bad_of_binding",
+        "private": false,
+        "line": 141
+      },
+      {
+        "name": "transparent_terminal",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.transparent_terminal",
+        "private": false,
+        "line": 151
+      }
+    ],
+    "theorem_count": 6,
+    "pin_count": 6,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.resolved_word_prefix",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.resolved_word_prefix",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 171,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.resolved_word_prefix' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.resolved_word_prefix"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.terminal_resolves",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.terminal_resolves",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 173,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.terminal_resolves' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.terminal_resolves"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.round_resolves",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.round_resolves",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 175,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.round_resolves' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.round_resolves"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.sound_reduction",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.sound_reduction",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 177,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.sound_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.sound_reduction"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.no_bad_of_binding",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.no_bad_of_binding",
+        "axioms": [],
+        "line": 179,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.no_bad_of_binding' does not depend on any axioms",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.no_bad_of_binding"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.transparent_terminal",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.transparent_terminal",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 181,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.transparent_terminal' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.transparent_terminal"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/FriRootResolutionSoundness.lean": {
+    "theorems": [
+      "coherent_probability_reduction",
+      "coherent_sound",
+      "coherent_sound_binding"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "coherent_probability_reduction",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.coherent_probability_reduction",
+        "private": false,
+        "line": 28
+      },
+      {
+        "name": "coherent_sound",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.coherent_sound",
+        "private": false,
+        "line": 54
+      },
+      {
+        "name": "coherent_sound_binding",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.coherent_sound_binding",
+        "private": false,
+        "line": 79
+      }
+    ],
+    "theorem_count": 3,
+    "pin_count": 3,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.coherent_probability_reduction",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.coherent_probability_reduction",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 105,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.coherent_probability_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.coherent_probability_reduction"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.coherent_sound",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.coherent_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 107,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.coherent_sound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.coherent_sound_binding",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.coherent_sound_binding",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 109,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.coherent_sound_binding' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.coherent_sound_binding"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/FriRootResolutionWitnesses.lean": {
+    "theorems": [
+      "initial_root_off_image",
+      "fold_x_challenge",
+      "adaptive_word_witness",
+      "fixed_transcript_falsifier",
+      "future_challenge_falsifier",
+      "sampled_acceptance_inhabited",
+      "scheme_binding",
+      "witness_no_bad",
+      "reduction_inhabited",
+      "ideal_acceptance_witness"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "initial_root_off_image",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.initial_root_off_image",
+        "private": false,
+        "line": 26
+      },
+      {
+        "name": "fold_x_challenge",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.fold_x_challenge",
+        "private": false,
+        "line": 33
+      },
+      {
+        "name": "adaptive_word_witness",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.adaptive_word_witness",
+        "private": false,
+        "line": 40
+      },
+      {
+        "name": "fixed_transcript_falsifier",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.fixed_transcript_falsifier",
+        "private": false,
+        "line": 45
+      },
+      {
+        "name": "future_challenge_falsifier",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.future_challenge_falsifier",
+        "private": false,
+        "line": 57
+      },
+      {
+        "name": "sampled_acceptance_inhabited",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.sampled_acceptance_inhabited",
+        "private": false,
+        "line": 65
+      },
+      {
+        "name": "scheme_binding",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.scheme_binding",
+        "private": false,
+        "line": 88
+      },
+      {
+        "name": "witness_no_bad",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.witness_no_bad",
+        "private": false,
+        "line": 92
+      },
+      {
+        "name": "reduction_inhabited",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.reduction_inhabited",
+        "private": false,
+        "line": 96
+      },
+      {
+        "name": "ideal_acceptance_witness",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.Witnesses.ideal_acceptance_witness",
+        "private": false,
+        "line": 105
+      }
+    ],
+    "theorem_count": 10,
+    "pin_count": 10,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.initial_root_off_image",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.initial_root_off_image",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 116,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.initial_root_off_image' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.initial_root_off_image"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.fold_x_challenge",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.fold_x_challenge",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 118,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.fold_x_challenge' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.fold_x_challenge"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.adaptive_word_witness",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.adaptive_word_witness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 120,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.adaptive_word_witness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.adaptive_word_witness"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.fixed_transcript_falsifier",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.fixed_transcript_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 122,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.fixed_transcript_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.fixed_transcript_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.future_challenge_falsifier",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.future_challenge_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 124,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.future_challenge_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.future_challenge_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.sampled_acceptance_inhabited",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.sampled_acceptance_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 126,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.sampled_acceptance_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.sampled_acceptance_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.scheme_binding",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.scheme_binding",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 128,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.scheme_binding' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.scheme_binding"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.witness_no_bad",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.witness_no_bad",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 130,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.witness_no_bad' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.witness_no_bad"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.reduction_inhabited",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.reduction_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 132,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.reduction_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.reduction_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.Witnesses.ideal_acceptance_witness",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.Witnesses.ideal_acceptance_witness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 134,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.Witnesses.ideal_acceptance_witness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.Witnesses.ideal_acceptance_witness"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage/BabyBearFriRootResolution.lean": {
+    "theorems": [
+      "fullUD_coherent_sound",
+      "babyBear_coherent_sound",
+      "babyBear_coherent_sound_binding"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "fullUD_coherent_sound",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.fullUD_coherent_sound",
+        "private": false,
+        "line": 20
+      },
+      {
+        "name": "babyBear_coherent_sound",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound",
+        "private": false,
+        "line": 44
+      },
+      {
+        "name": "babyBear_coherent_sound_binding",
+        "qualified_name": "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound_binding",
+        "private": false,
+        "line": 65
+      }
+    ],
+    "theorem_count": 3,
+    "pin_count": 3,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.fullUD_coherent_sound",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.fullUD_coherent_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 87,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.fullUD_coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.fullUD_coherent_sound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 89,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound_binding",
+        "requested_name": "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound_binding",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 91,
+        "expected_message": "info: 'Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound_binding' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FriRootResolution.babyBear_coherent_sound_binding"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  }
+}

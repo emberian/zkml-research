@@ -1,0 +1,25 @@
+{
+  "verdict": "accepted finite mathematical repair, conditional on explicit sampler/resource and LWE hypotheses",
+  "reviewed_at_utc": "2026-09-08T05:49:18.668479+00:00",
+  "frozen_author_files": {
+    "FINITE_THEOREM.md": "7ae20bc50552283e4688466b966c7e2d1265613f4fb8a49c2909aaeb77bd7bd4",
+    "PARAMETERS.md": "48592ae22653db4541d9ffec3565d8436b7aff0875d1111218544726fdfaede0",
+    "INPUTS.json": "24286ceca502dcca865e9f0bb617e6e6730d82e38d7f0b3c3991b5c7a0f0dfcf",
+    "RESULTS.json": "a6d4ff5dae146a7fb1c736de64e70b6ac65387f21d0b0b0c97bc30ac3f3b801b",
+    "check_parameters.py": "56a43ae292e213d66c318838f3684259d76f88fb90e1b9a6e5c634acb047284c",
+    "SOURCES.json": "32f0663bc71190e6f656187f654d10fabe98b1fdaca25ffd8b414b1d3140483e",
+    "MANIFEST.json": "2938fd3de8cf77bd80d2a8f2c17109f4d9dc8db8d6563763faf26c4dea435f01"
+  },
+  "review_files": {
+    "REPORT.md": "275000fbe4d485f0d31afff19e76ff5c05bc488cd66b85c547fae970e55aedfa",
+    "check.py": "9957c59ef055a40a4e1d90c335ee52443e7344bb3f3f5e130d9cec33722dbadb",
+    "results.json": "3a694c0c9ea3fbcab4050e3541bf06075c1ae4336eedb62b8eee79b5906930d6",
+    "execution.json": "ca2f6d841c936577194306b988702f1a4303009065d523d1c43ee04cf204b395",
+    "stdout.txt": "3a694c0c9ea3fbcab4050e3541bf06075c1ae4336eedb62b8eee79b5906930d6",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source-pins.json": "5f4ef9a70353a6b3d2bd4b0589f6712364479f4aeb68a4c2a611fe88516da262"
+  },
+  "theorem_source_unchanged_since_check": true,
+  "prohibited_runtime_executions": 0,
+  "prior_artifacts_edited": false
+}

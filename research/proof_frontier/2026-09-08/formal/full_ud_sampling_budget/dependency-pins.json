@@ -1,0 +1,108 @@
+{
+  "direct_and_used_sources": [
+    {
+      "path": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/FullUDFriConsumer.lean",
+      "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+      "olean_sha256": "fd7991e1e4c537f5e05a483ea83b147351ac4d34daba292b2afeb1282000f43c",
+      "declarations": [
+        {
+          "name": "proximity_sound_rateHalf_twoFifths_fullUD",
+          "line": 49
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/ProximityGapFullUD.lean",
+      "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "olean_sha256": "c7809f0f5d9409c3255f5623d9acc5dd3879935c575c8961fc35557b17055d38",
+      "declarations": [
+        {
+          "name": "foldDistancePreserving_fullUD",
+          "line": 105
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/HalfThresholdFri.lean",
+      "sha256": "82a829919ce580e6e6f168feb7437d03409e3ccdb1d1a8f22b56607dc65f2918",
+      "olean_sha256": "5a6ea4e071e5a503a36a5d2de63c56a118daea53609ed937ca4c615864457b86",
+      "declarations": [
+        {
+          "name": "foldDistanceTransition_halfThreshold",
+          "line": 107
+        },
+        {
+          "name": "FoldDistanceTransition.mono_bad",
+          "line": 61
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/HalfThresholdFriCoherent.lean",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "olean_sha256": "57811f6290d86eb7f0528044d554866ada66df822a048e6d45e962c62b9d2e97",
+      "declarations": [
+        {
+          "name": "PowerTwoFriLevels",
+          "line": 28
+        },
+        {
+          "name": "FriAdaptiveCoherentAccepts",
+          "line": 203
+        },
+        {
+          "name": "friAdaptive_coherent_sampled_sound",
+          "line": 217
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/HalfThresholdFriQuery.lean",
+      "sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9",
+      "olean_sha256": "272acea120167d049c63a652fc1ecc08d26f941db6a194d9d37ec4229623f7c9",
+      "declarations": [
+        {
+          "name": "friAdaptive_earliestDeviation_cover",
+          "line": 206
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/BabyBearFullUD.lean",
+      "sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+      "olean_sha256": "31254d02d0b845df2fea20da55f07c006e1de08a8ef1e926edcb82c7a5959cb3",
+      "declarations": [
+        {
+          "name": "ext4_card",
+          "line": 33
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/BabyBearExt4.lean",
+      "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+      "olean_sha256": "0e3bffb28f157065ec68607fbe8d378da05d4423c23445eb8e92f2ad9bd7c8fc",
+      "declarations": [
+        {
+          "name": "Ext4",
+          "line": 132
+        }
+      ]
+    },
+    {
+      "path": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/Proximity.lean",
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f",
+      "olean_sha256": "1f954ac66c015cdf4527f8d1de50a7d318657198daa5714f56182b4bdaa72fe5",
+      "declarations": [
+        {
+          "name": "FoldingTower",
+          "line": 377
+        }
+      ]
+    }
+  ],
+  "full_ud_manifest": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/manifest.json",
+  "full_ud_manifest_sha256": "4151a1b24f599cee25b339090028f3680a558906b85f805f53dec2de0a056ecb",
+  "all_full_ud_sources_match_manifest": true,
+  "babybear_frozen_source_sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978"
+}

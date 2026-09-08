@@ -1,0 +1,11 @@
+{
+  "low": "497323236409786642155382248146820840100456150797347717440463976893159497012533375533183",
+  "high": "994646472819573284310764496293641680200912301594695434880927953786318994025066751065619",
+  "low_offset_above_2pow288": "127",
+  "high_offset_below_2pow289": "493",
+  "low_is_prime_proof_true": true,
+  "high_is_prime_proof_true": true,
+  "procedure": "Sage Integer.next_prime(proof=True); previous_prime then both is_prime(proof=True)",
+  "sage_version": "10.8",
+  "seconds_primality_computation": 0.13233808299992234
+}

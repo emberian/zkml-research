@@ -1,0 +1,256 @@
+/-
+[DERIVED statement-first] Execute the existing descriptor with DescriptorEval.fillAux.
+No Boolean evaluator or learner circuit is copied here. ForwardValid describes the
+initialized-reference and strictly increasing-output discipline of the frozen schema;
+it says nothing about gate values or output values. Holes in the allocation are allowed.
+
+Keystone ExecutionSoundness: structural acceptance and input length alone imply that
+the existing evaluator preserves every input and satisfies every gate. The nonconstant
+sparseSubject below inhabits the premises, and forward reads, holes, input writes and
+wrong answers supply separate teeth. SharedExecutionCorrectness composes this result
+with the previously proved term-fold/flatten/emission theorem. Compiled JSON parsing,
+Rust Vec/serde/compiler behavior and TFHE semantics are not Lean language refinements.
+-/
+import Compiler.PrivateAddressEmaSchedule
+
+namespace Minidregg.Compiler.EmittedScheduleExecution
+open Minidregg.Compiler
+open Minidregg.Compiler.DescriptorEval
+open Minidregg.Compiler.PrivateAddressEmaSchedule
+open Minidregg.Theory.PrivateAddressEma
+
+set_option autoImplicit false
+set_option maxRecDepth 10000
+set_option maxHeartbeats 2000000
+
+def Ready (available : List Nat) : DWire F2 → Prop
+  | .cnst _ => True
+  | .wire i => i ∈ available
+
+instance readyDecidable (available : List Nat) (w : DWire F2) : Decidable (Ready available w) :=
+  match w with
+  | .cnst _ => inferInstanceAs (Decidable True)
+  | .wire i => inferInstanceAs (Decidable (i ∈ available))
+
+def ForwardGates (bound lower : Nat) (available : List Nat) : List (DGate F2) → Prop
+  | [] => True
+  | g :: gs => lower ≤ g.out ∧ g.out < bound ∧ Ready available g.a ∧
+      Ready available g.b ∧ ForwardGates bound (g.out + 1) (g.out :: available) gs
+
+instance forwardGatesDecidable (bound lower : Nat) (available : List Nat)
+    (gs : List (DGate F2)) : Decidable (ForwardGates bound lower available gs) := by
+  induction gs generalizing lower available with
+  | nil => exact inferInstanceAs (Decidable True)
+  | cons g gs ih =>
+    unfold ForwardGates
+    haveI := ih (g.out + 1) (g.out :: available)
+    infer_instance
+
+def ForwardValid (d : ConstraintDescriptor F2) : Prop :=
+  d.nPublic ≤ d.nVars ∧ d.nVars ≤ d.nWires ∧
+  ForwardGates d.nWires d.nVars (List.range d.nVars) d.gates ∧
+  ∀ z ∈ d.zeros, Ready (d.gates.map DGate.out ++ List.range d.nVars) z
+
+instance forwardValidDecidable (d : ConstraintDescriptor F2) : Decidable (ForwardValid d) := by
+  unfold ForwardValid
+  infer_instance
+
+def validCheck (d : ConstraintDescriptor F2) : Bool := decide (ForwardValid d)
+
+/-- Boundary projection only: all gate execution is the existing fillAux fold. -/
+def execute (d : ConstraintDescriptor F2) (inputs : Array F2) : List F2 :=
+  d.zeros.map (readArr (fillAux d inputs))
+
+def ExecutionSoundness : Prop :=
+  ∀ (d : ConstraintDescriptor F2) (inputs : Array F2),
+    validCheck d = true → inputs.size = d.nVars →
+    (∀ i, i < d.nVars → (fillAux d inputs).getD i 0 = inputs.getD i 0) ∧
+    (∀ g ∈ d.gates, g.holds (fun i => (fillAux d inputs).getD i 0))
+
+def SharedExecutionCorrectness : Prop :=
+  ∀ (m : Nat) (es : List (Expr m)) (inputs : Fin m → F2),
+    validCheck (shared es) = true →
+    execute (shared es) (Array.ofFn inputs) = es.map (eval inputs)
+
+theorem validCheck_iff (d : ConstraintDescriptor F2) :
+    validCheck d = true ↔ ForwardValid d := by simp [validCheck]
+
+theorem ready_bounded (available : List Nat) (w : DWire F2) (bound : Nat)
+    (ha : ∀ i ∈ available, i < bound) (h : Ready available w) : w.bounded bound := by
+  cases w with
+  | cnst c => trivial
+  | wire i => exact ha i h
+
+theorem forwardGates_shape (bound lower : Nat) (available : List Nat)
+    (gs : List (DGate F2)) (ha : ∀ i ∈ available, i < lower)
+    (h : ForwardGates bound lower available gs) :
+    (∀ g ∈ gs, lower ≤ g.out ∧ g.out < bound ∧
+      g.a.bounded g.out ∧ g.b.bounded g.out) ∧
+    gs.Pairwise (fun g₁ g₂ => g₁.out < g₂.out) := by
+  induction gs generalizing lower available with
+  | nil => simp
+  | cons g gs ih =>
+    rcases h with ⟨hl, hb, hga, hgb, ht⟩
+    have hav : ∀ i ∈ g.out :: available, i < g.out + 1 := by
+      intro i hi
+      rcases List.mem_cons.mp hi with rfl | hi
+      · omega
+      · have := ha i hi; omega
+    obtain ⟨hgs, hsort⟩ := ih (g.out + 1) (g.out :: available) hav ht
+    refine ⟨?_, List.pairwise_cons.mpr ⟨?_, hsort⟩⟩
+    · intro k hk
+      rcases List.mem_cons.mp hk with rfl | hk
+      · exact ⟨hl, hb, ready_bounded available k.a k.out (fun i hi => (ha i hi).trans_le hl) hga,
+          ready_bounded available k.b k.out (fun i hi => (ha i hi).trans_le hl) hgb⟩
+      · obtain ⟨hklo, hkb, hka, hkc⟩ := hgs k hk
+        exact ⟨by omega, hkb, hka, hkc⟩
+    · intro k hk
+      have := (hgs k hk).1
+      omega
+
+theorem bounded_mono (w : DWire F2) (lo hi : Nat) (h : lo ≤ hi)
+    (hw : w.bounded lo) : w.bounded hi := by
+  cases w with
+  | cnst c => trivial
+  | wire i => exact hw.trans_le h
+
+theorem valid_implies_shape (d : ConstraintDescriptor F2) (h : ForwardValid d) :
+    d.SSA ∧ d.WellFormed := by
+  rcases h with ⟨hp, hn, hg, hz⟩
+  obtain ⟨hgs, hs⟩ := forwardGates_shape d.nWires d.nVars (List.range d.nVars) d.gates
+    (fun i hi => List.mem_range.mp hi) hg
+  refine ⟨⟨fun g hm => (hgs g hm).2.2, hs⟩, ⟨hp, hn, ?_, ?_⟩⟩
+  · intro g hm
+    obtain ⟨hl, hb, ha, hc⟩ := hgs g hm
+    exact ⟨bounded_mono g.a g.out d.nWires (Nat.le_of_lt hb) ha,
+      bounded_mono g.b g.out d.nWires (Nat.le_of_lt hb) hc, hl, hb⟩
+  · intro z hm
+    apply ready_bounded _ z d.nWires _ (hz z hm)
+    intro i hi
+    rcases List.mem_append.mp hi with hi | hi
+    · obtain ⟨g, hg, rfl⟩ := List.mem_map.mp hi
+      exact (hgs g hg).2.1
+    · exact (List.mem_range.mp hi).trans_le hn
+
+theorem execution_soundness : ExecutionSoundness := by
+  intro d inputs hv hn
+  obtain ⟨hssa, hwf⟩ := valid_implies_shape d ((validCheck_iff d).mp hv)
+  exact ⟨fun i hi => fillAux_getD_of_lt d inputs hwf hn hi,
+    fillAux_gates_hold d inputs hssa hwf hn⟩
+
+theorem executed_inputs (d : ConstraintDescriptor F2) (m : Nat) (inputs : Fin m → F2)
+    (hv : validCheck d = true) (hn : d.nVars = m) (i : Fin m) :
+    (fillAux d (Array.ofFn inputs)).getD i.val 0 = inputs i := by
+  have hs : (Array.ofFn inputs).size = d.nVars := by simp [hn]
+  rw [(execution_soundness d _ hv hs).1 i.val (by rw [hn]; exact i.isLt),
+    Array.getD_eq_getD_getElem?, Array.getElem?_ofFn, dif_pos i.isLt]
+  rfl
+
+theorem shared_execution_correctness : SharedExecutionCorrectness := by
+  intro m es inputs hv
+  have hs : (Array.ofFn inputs).size = (shared es).nVars := Array.size_ofFn
+  have hg := (execution_soundness (shared es) (Array.ofFn inputs) hv hs).2
+  have hi := executed_inputs (shared es) m inputs hv rfl
+  simpa only [execute, readArr_eq_read] using
+    shared_output_correctness m es inputs _ hi hg
+
+theorem learn_execution_correct (s : State) (a : Address) (u : Byte)
+    (hv : validCheck learnSchedule = true) :
+    (execute learnSchedule (Array.ofFn (fun i => enc (learnInputs s a u i)))).map dec =
+      stateBits (learn s a u) := by
+  have h := congrArg (List.map dec)
+    (shared_execution_correctness 42 learnTerms (fun i => enc (learnInputs s a u i)) hv)
+  simp only [List.map_map, Function.comp_def] at h
+  exact h.trans (learn_source_outputs s a u)
+
+theorem infer_execution_correct (s : State) (a : Address)
+    (hv : validCheck inferSchedule = true) :
+    (execute inferSchedule (Array.ofFn (fun i => enc (inferInputs s a i)))).map dec =
+      [infer s a] := by
+  have h := congrArg (List.map dec)
+    (shared_execution_correctness 34 inferTerms (fun i => enc (inferInputs s a i)) hv)
+  simp only [List.map_map, Function.comp_def] at h
+  exact h.trans (infer_source_outputs s a)
+
+/-- The field operations already used by fillAux decode to the two schema operators. -/
+theorem decoded_gate_operations (a b : F2) :
+    dec (a + b) = xor (dec a) (dec b) ∧ dec (a * b) = (dec a && dec b) := by
+  constructor
+  · rw [← enc_dec a, ← enc_dec b, ← enc_xor, dec_enc]
+    simp only [dec_enc]
+  · rw [← enc_dec a, ← enc_dec b, ← enc_and, dec_enc]
+    simp only [dec_enc]
+
+def sparseSubject : ConstraintDescriptor F2 :=
+  ⟨0, 2, 6, [⟨.add, .wire 0, .wire 1, 3⟩, ⟨.mul, .wire 3, .cnst 1, 5⟩],
+    [.wire 5, .cnst 1]⟩
+
+theorem sparse_premises_inhabited :
+    validCheck sparseSubject = true ∧ (#[1, 0] : Array F2).size = sparseSubject.nVars := by
+  decide +kernel
+
+theorem sparse_subject : execute sparseSubject #[1, 0] = [1, 1] := by decide +kernel
+
+theorem sparse_nonconstant : execute sparseSubject #[1, 1] = [0, 1] := by decide +kernel
+
+theorem wrong_answer_refused : execute sparseSubject #[1, 0] ≠ [0, 1] := by decide +kernel
+
+theorem forward_read_refused :
+    validCheck { sparseSubject with gates :=
+      [⟨.add, .wire 0, .wire 5, 3⟩, ⟨.mul, .wire 0, .cnst 1, 5⟩] } = false := by
+  decide +kernel
+
+theorem hole_read_refused :
+    validCheck { sparseSubject with zeros := [.wire 2] } = false := by decide +kernel
+
+theorem input_write_refused :
+    validCheck { sparseSubject with
+      gates := [⟨.add, .wire 0, .wire 1, 1⟩]
+      zeros := [.wire 1] } = false := by
+  decide +kernel
+
+theorem decreasing_output_refused :
+    validCheck { sparseSubject with gates :=
+      [⟨.add, .wire 0, .wire 1, 5⟩, ⟨.mul, .wire 0, .cnst 1, 3⟩] } = false := by
+  decide +kernel
+
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.validCheck_iff' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms validCheck_iff
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.ready_bounded' does not depend on any axioms -/
+#guard_msgs (whitespace := lax) in #print axioms ready_bounded
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.forwardGates_shape' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms forwardGates_shape
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.bounded_mono' does not depend on any axioms -/
+#guard_msgs (whitespace := lax) in #print axioms bounded_mono
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.valid_implies_shape' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms valid_implies_shape
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.execution_soundness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms execution_soundness
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.executed_inputs' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms executed_inputs
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.shared_execution_correctness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms shared_execution_correctness
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.learn_execution_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms learn_execution_correct
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.infer_execution_correct' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms infer_execution_correct
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.decoded_gate_operations' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms decoded_gate_operations
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.sparse_premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms sparse_premises_inhabited
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.sparse_subject' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms sparse_subject
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.sparse_nonconstant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms sparse_nonconstant
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.wrong_answer_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms wrong_answer_refused
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.forward_read_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms forward_read_refused
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.hole_read_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms hole_read_refused
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.input_write_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms input_write_refused
+/-- info: 'Minidregg.Compiler.EmittedScheduleExecution.decreasing_output_refused' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms decreasing_output_refused
+
+end Minidregg.Compiler.EmittedScheduleExecution

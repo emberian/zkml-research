@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "command": "python3 research/learn_infer_only/experiments/adversarial_review/public_seed_setup/finite_review.py > research/learn_infer_only/experiments/adversarial_review/public_seed_setup/finite.log 2>&1",
+  "exit_code": 0,
+  "finite_output_matches_log": true,
+  "source_unchanged": true,
+  "local_markdown_links_checked": 7,
+  "crypto_runs": 0,
+  "private_files_read": 0,
+  "web_queries": 0,
+  "claim": "independent finite public distribution checks and source/math audit; no Lean proof or DDH-hardness evidence"
+}

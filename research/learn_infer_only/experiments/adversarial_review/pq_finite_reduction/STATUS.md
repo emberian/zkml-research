@@ -1,0 +1,7 @@
+[DERIVED] COMPLETE: accepted the frozen finite mathematical repair within its explicit conditional QPT scope. REPORT.md reviews exact theorem SHA256 7ae20bc50552283e4688466b966c7e2d1265613f4fb8a49c2909aaeb77bd7bd4 and author manifest 2938fd3de8cf77bd80d2a8f2c17109f4d9dc8db8d6563763faf26c4dea435f01. No further required repair found.
+
+[DERIVED resolved finding] Author corrected the initial claim that Zb' is integral. Correct h=Z(b'+c)−[I_d|0]b proves hint integrality. The correction appears in the frozen bytes; the conclusion and error budget are unchanged.
+
+[EXECUTED] Source displays and local primary text confirm the Gaussian conventions, sqrt(2) balancing repair, AR quality/image conditions and LPSS gadget orientation. Independent exact controls verify 5,042 prime-power matrices, covariance/block identities, all five parameter classifications, all ten regularity certificates, and both conditional privacy totals. check.py exit 0; execution/results/stdout and source hashes retained. No cryptography, Gaussian sampling, estimator, private runtime or network search ran.
+
+[OPEN] The finite-bit tuple-level sampler discrepancy/resource certificate, exact resource-bounded QPT-LWE assumption, scheme sampler accuracy, correctness workload and application semantics remain unverified and explicit. The conditional statistical total is not a certified cryptographic security level. Root owns all ledgers and commits; prior frozen artifacts are unchanged.

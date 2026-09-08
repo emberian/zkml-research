@@ -1,0 +1,112 @@
+--- run017/check_all_formal.py
++++ current/check_all_formal.py
+@@ -96,7 +96,17 @@
+ 
+ 
+ def imports(source: str) -> list[str]:
+-    return re.findall(r'^\s*import\s+([A-Za-z_][\w.]*)', stripped_lean(source), re.M)
++    result = []
++    clean = stripped_lean(source)
++    for header in re.finditer(r'^[ \t]*(?:(?:public|private|meta)[ \t]+)*import\b[^\n]*', clean, re.M):
++        match = re.fullmatch(r'[ \t]*import[ \t]+([^\n]+)', header.group())
++        if not match:
++            raise ValueError(f'Unsupported import command: {header.group()}')
++        names = match.group(1).split()
++        if not names or any(not re.fullmatch(r'[A-Za-z_][\w.]*', name) for name in names):
++            raise ValueError(f'Unsupported import command: {match.group()}')
++        result.extend(names)
++    return result
+ 
+ 
+ def qualified_declarations(clean: str) -> list[dict]:
+@@ -250,6 +260,7 @@
+         self.scratch = HERE / 'build' / self.name
+         self.results.mkdir()
+         self.scratch.mkdir(parents=True)
++        (self.results / 'check_all_formal.py').write_bytes(Path(__file__).read_bytes())
+         self.report = dict(label='EXECUTED integration of selected proposed Lean modules',
+                            status='running', started_utc=datetime.now(timezone.utc).isoformat(),
+                            command=[sys.executable, *sys.argv], commands=[],
+@@ -316,7 +327,8 @@
+         print(f'{self.name}: {self.report["status"]}; report {self.results / "report.json"}', flush=True)
+ 
+ 
+-def integrate(run: Run, manifest_path: Path, with_checks: bool):
++def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project: bool = False):
++    (run.results / manifest_path.name).write_bytes(manifest_path.read_bytes())
+     manifest = json.loads(manifest_path.read_text())
+     run.report['manifest'] = manifest
+     for key, cmd in [('companion_head_before', ['git', 'rev-parse', 'HEAD']),
+@@ -480,6 +492,28 @@
+     run.command('boundary_applied_source', ['bash', str(source_root / 'scripts/check-import-boundary.sh')], source_root)
+     run.command('boundary_existing_companion', ['bash', str(COMPANION / 'scripts/check-import-boundary.sh')], COMPANION)
+ 
++    all_compile = {name: m['imports'] for name, m in modules.items()}
++    all_compile.update({u: imports(text) for u, text in staged_umbrellas.items()})
++    if rebuild_project:
++        # Rebuild the current project source closure, including preexisting dirty
++        # sources. External package/toolchain artifacts remain read-only caches.
++        project_imports = {rel[:-5].replace('/', '.'): imports((source_root / rel).read_text())
++                           for rel in relative_sources}
++        project_imports.update(all_compile)
++        closure = set()
++        pending = list(UMBRELLAS)
++        while pending:
++            name = pending.pop()
++            if name in closure or name not in project_imports:
++                continue
++            closure.add(name)
++            pending.extend(project_imports[name])
++        if not set(modules) <= closure:
++            raise ValueError('Proposed source is outside rebuilt project closure')
++        all_compile = {name: project_imports[name] for name in sorted(closure)}
++    run.report['rebuild_project_source_closure'] = rebuild_project
++    run.report['project_modules_compiled'] = len(all_compile)
++
+     # Mirror all companion artifact directories with real local directories and
+     # file symlinks. A namespace in the first LEAN_PATH root shadows later roots;
+     # a partial namespace directory cannot rely on per-module fallback.
+@@ -489,6 +523,9 @@
+     skip_modules = set(modules) | set(UMBRELLAS)
+     artifact_records = []
+     for folder, dirs, files in os.walk(artifacts):
++        if rebuild_project:
++            # No original project object may be inherited into this mode.
++            break
+         relfolder = Path(folder).relative_to(artifacts)
+         targetfolder = overlay / relfolder
+         targetfolder.mkdir(parents=True, exist_ok=True)
+@@ -504,13 +541,16 @@
+     save(run.results / 'cached_dependency_artifacts.json', artifact_records)
+     prior = json.loads(env_record.read_text())
+     paths = next(c['stdout'].strip() for c in prior['checks'] if c['command'] == ['lake', 'env', 'printenv', 'LEAN_PATH'])
+-    env = dict(os.environ, LEAN_PATH=str(overlay) + ':' + paths)
++    dependency_paths = paths.split(':')
++    if rebuild_project:
++        dependency_paths = [p for p in dependency_paths if Path(p).resolve() != artifacts.resolve()]
++        if any(not Path(p).is_absolute() for p in dependency_paths):
++            raise ValueError('Project-closure rebuild requires absolute external dependency paths')
++    env = dict(os.environ, LEAN_PATH=':'.join([str(overlay), *dependency_paths]))
+     run.report['lean_path'] = env['LEAN_PATH']
+     run.report['environment_provenance'] = dict(path=str(env_record), sha256=sha(env_record),
+                                                 source_command=['lake', 'env', 'printenv', 'LEAN_PATH'],
+                                                 reused_dependency_paths=True)
+-    all_compile = {name: m['imports'] for name, m in modules.items()}
+-    all_compile.update({u: imports(text) for u, text in staged_umbrellas.items()})
+     order = topo(all_compile)
+     run.report['full_compile_order'] = order
+     outputs = {}
+@@ -551,10 +591,12 @@
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--manifest', type=Path, default=HERE / 'modules.json')
+     parser.add_argument('--checks', action='store_true', help='Run integer #eval checks in isolated output directories.')
++    parser.add_argument('--rebuild-project', action='store_true',
++                        help='Recompile the entire selected project-source import closure; cache only external packages/toolchain.')
+     args = parser.parse_args()
+     run = Run()
+     try:
+-        integrate(run, args.manifest.resolve(), args.checks)
++        integrate(run, args.manifest.resolve(), args.checks, args.rebuild_project)
+     except Exception as error:
+         run.report['status'] = 'failed'
+         run.report['error'] = str(error)

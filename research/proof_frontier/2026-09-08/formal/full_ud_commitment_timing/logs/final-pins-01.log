@@ -1,0 +1,20 @@
+'Minidregg.Selvage.OpeningResolution.word_openable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.OpeningResolution.correctness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.OpeningResolution.eq_word_of_no_double' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.OpeningResolution.no_double_of_binding' does not depend on any axioms
+'Minidregg.Selvage.OpeningResolution.word_commit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.OpeningResolution.transparent_no_double' does not depend on any axioms
+'Minidregg.Selvage.OpeningResolution.word_transparent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.OpeningResolution.transparent_double_original' does not depend on any axioms
+'Minidregg.Selvage.OpeningResolution.transparent_binding' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Minidregg.Selvage.OpeningResolution.binaryMerkle_double_implies_collision' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.OpeningResolution.honest_image_falsifier' does not depend on any axioms
+'Minidregg.Selvage.OpeningResolution.off_image_resolution_witness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.OpeningResolution.binding_removal_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.OpeningResolution.double_opening_inhabited' does not depend on any axioms

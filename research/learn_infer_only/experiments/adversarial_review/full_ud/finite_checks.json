@@ -1,0 +1,188 @@
+{
+  "falsifier": {
+    "p": 7,
+    "n": 6,
+    "d": 2,
+    "e": 3,
+    "folds": 7,
+    "codewords": 49,
+    "codeword_pairs": 2401,
+    "fold_minima": [
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "joint_maximum": 2,
+    "required_common": 3,
+    "degree_positive": true,
+    "good_card_gt_n": true,
+    "radius_premise": false
+  },
+  "noisy_witnesses": [
+    {
+      "p": 11,
+      "n": 8,
+      "d": 4,
+      "e": 1,
+      "f0": [
+        1,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "f1": [
+        3,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "fold_minima": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "min_dist_f0": 1,
+      "min_dist_f1": 1,
+      "joint_maximum": 7,
+      "integer_premises": true,
+      "probability_delta_one_fifth": "1"
+    },
+    {
+      "p": 11,
+      "n": 8,
+      "d": 4,
+      "e": 2,
+      "f0": [
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "f1": [
+        3,
+        3,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "fold_minima": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        0,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "min_dist_f0": 2,
+      "min_dist_f1": 2,
+      "joint_maximum": 6,
+      "integer_premises": true,
+      "probability_delta_one_fifth": "1/11"
+    }
+  ],
+  "tower": {
+    "p": 97,
+    "root_order_8": 33,
+    "levels": [
+      [
+        1,
+        22,
+        33,
+        47,
+        50,
+        64,
+        75,
+        96
+      ],
+      [
+        1,
+        22,
+        75,
+        96
+      ],
+      [
+        1,
+        96
+      ]
+    ],
+    "degrees": [
+      4,
+      2,
+      1
+    ],
+    "m": 2,
+    "delta": "2/5",
+    "tail_delta": "1/5",
+    "tail_rate": "1/2",
+    "source_coefficients": [
+      0,
+      0,
+      0,
+      0,
+      1,
+      2
+    ],
+    "source_word": [
+      3,
+      45,
+      30,
+      2,
+      93,
+      65,
+      54,
+      96
+    ],
+    "min_source_distance": 4,
+    "source_relative_distance": "1/2",
+    "first_bad_challenges": [
+      48
+    ],
+    "far_tail_words": 96,
+    "tail_bad_counts": [
+      0
+    ],
+    "challenge_tuples": 9409,
+    "accepted_count": 97,
+    "accepted_first_challenges": [
+      48
+    ],
+    "acceptance_numerator_bound": 1552,
+    "uniform_acceptance_probability": "1/97",
+    "uniform_probability_bound": "16/97",
+    "new_band": true,
+    "old_band": false
+  },
+  "status": "PASS; independent exact integer/finite-field execution, not new Lean proof"
+}

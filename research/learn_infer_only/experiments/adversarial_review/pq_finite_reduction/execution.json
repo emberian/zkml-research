@@ -1,0 +1,9 @@
+{
+  "command": [
+    "python3",
+    "research/learn_infer_only/experiments/adversarial_review/pq_finite_reduction/check.py"
+  ],
+  "exit_code": 0,
+  "elapsed_s": 0.433413028717041,
+  "script_sha256": "9957c59ef055a40a4e1d90c335ee52443e7344bb3f3f5e130d9cec33722dbadb"
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/emitted_execution_6mhz9_g7/olean/Compiler/EmittedScheduleExecution.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/Compiler/EmittedScheduleExecution.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution",
+  "exit_code": 1,
+  "source_sha256": "04ebd66035c49cf33a44ef9c3fa5bd1a3b2ea3be1187eeb8327529841c279677",
+  "source_sha256_after": "04ebd66035c49cf33a44ef9c3fa5bd1a3b2ea3be1187eeb8327529841c279677",
+  "source_unchanged": true,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/Compiler/EmittedScheduleExecution.lean:207:75: error: unexpected identifier; expected '}'\n'Minidregg.Compiler.EmittedScheduleExecution.input_write_refused' depends on axioms: [propext,\n sorryAx,\n Classical.choice,\n Quot.sound]\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/emitted_schedule_execution/Compiler/EmittedScheduleExecution.lean:251:0: error: \u274c\ufe0f Docstring on `#guard_msgs` does not match generated message:\n\n- info: 'Minidregg.Compiler.EmittedScheduleExecution.input_write_refused' depends on axioms: [propext, Classical.choice, Quot.sound]\n+ info: 'Minidregg.Compiler.EmittedScheduleExecution.input_write_refused' depends on axioms: [propext,\n+  sorryAx,\n+  Classical.choice,\n+  Quot.sound]\n",
+  "stderr": "",
+  "seconds": 6.783918416011147
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-commitment-timing-20260908/.lake/build/lib/lean/Selvage/FriRootResolutionSoundness.olean",
+    "Selvage/FriRootResolutionSoundness.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-commitment-timing-20260908",
+  "exit_code": 0,
+  "source_sha256": "94bf9a8bc03110cabcbaa2e64340ec1631303b6451742d4b65eab6a53b871afc",
+  "source_unchanged": true,
+  "elapsed_s": 9.475228309631348,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/logs/final-pins-03.log"
+}

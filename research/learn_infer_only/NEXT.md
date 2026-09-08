@@ -5,7 +5,31 @@ Root owns shared ledgers, named commits and final integration. Read
 [the current brief](../../swarm/OVERNIGHT-2026-09-08.md). The earlier paused-goal
 paragraphs below are historical recovery records, not the current goal state.
 
-## Current second-wave ownership — 2026-09-08 05:21 UTC
+## Current fourth-wave ownership — 2026-09-08 06:30 UTC
+
+[EXECUTED] Checkpoint003 is complete. The 915-pin combined proof result,
+live semantic BFV successor, finite smudged proof and its parameter repair
+have separate completed reviews. The repair is heuristic and expensive;
+do not implement it on the strength of an exponent alone.
+
+| Owner | Current bounded artifact |
+|---|---|
+| root | Run018 clean project-source closure (567 modules, 952 selected pins); checkpoint and Pages publication; later integrate separately reviewed execution/CSE/root-resolution patches. |
+| emitted_runtime | One frozen 384 Learn / 96 Infer trajectory; cutoff 11:28:28 UTC; public closure before private audit. |
+| proof_frontier | Actual BabyBear multiplicative folding tower, farness and nonvacuous acceptance witnesses. |
+| polynomial_gluing | Actual p3 row/query transport, folding arity and multi-height injection correspondence. |
+| formal_runtime_bridge | Structural initialized-reference preservation through emission and CSE; Option-wire lookup bridge. |
+| pq_setup_review + polynomial_kernel | Compressed ring fixed-coordinate construction and independent source/math review; no crypto or estimator launch. |
+| transparent_setup_seed + nonlinear_utility | Public-seed concrete XOF adapter preparation and independent prelaunch review; one normal 33/4/1 contract only after review. |
+
+[OPEN] The root-only FRI resolution uses noncomputable canonical words and a
+semantic double-opening event; efficient collision extraction remains open.
+The actual tower uses natural-power order; actual p3 bit reversal, arity and
+multi-height injection need transport. Concrete hash/QROM and private release
+remain separate. Active artifacts must not enter a frozen manifest by directory
+glob. Preserve all previous failed runs and their original scope.
+
+## Second-wave ownership — 2026-09-08 05:21 UTC (historical)
 
 [EXECUTED] Public-coin journal, emitted EMA smoke/fixed-plan controls, full-UD
 core and first PQ finite sizing are complete. The failed long handwritten

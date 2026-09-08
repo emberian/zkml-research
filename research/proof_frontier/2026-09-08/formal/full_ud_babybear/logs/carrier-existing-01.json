@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/BabyBearExt4.olean",
+    "Selvage/BabyBearExt4.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-babybear-20260908",
+  "exit_code": 0,
+  "source_sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+  "source_unchanged": true,
+  "elapsed_s": 30.578640699386597,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/logs/carrier-existing-01.log"
+}

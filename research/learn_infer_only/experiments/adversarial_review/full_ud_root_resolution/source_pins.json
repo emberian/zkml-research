@@ -1,0 +1,33 @@
+{
+  "package_metadata": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/README.md",
+      "sha256": "f2241b62494f73458248bb4d13a46ef1dfb99967396170499a96e96a51382a60"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/manifest.json",
+      "sha256": "cf81d803dea2e2a4f53ab2cdb9816ac2634b5c720819b2994e7e3934434b066e"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/declaration-names.json",
+      "sha256": "b459fdd8fa0ac30792a2a89ffe64d452d45affa2953f90865329ae7119c0efec"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_commitment_timing/source-evidence.json",
+      "sha256": "37c16af0b4b291f365f1e1e3ad85e2ac4badae8cd5d5d63eab7283123c30970e"
+    }
+  ],
+  "additional_sources_read": [
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/Proximity.lean",
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f",
+      "access": "source at cited witness or consumer regions"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean",
+      "sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+      "access": "source at cited witness or consumer regions"
+    }
+  ],
+  "module_and_direct_source_pins": "results.json"
+}

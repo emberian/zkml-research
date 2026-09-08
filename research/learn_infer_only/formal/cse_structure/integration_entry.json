@@ -1,0 +1,11 @@
+{
+  "name": "cse_structure",
+  "root": "formal/cse_structure",
+  "patch": "formal/cse_structure/minidregg-cse-structure.patch",
+  "expected_pins": 18,
+  "depends_on": [
+    "private_address_ema",
+    "private_address_ema_schedule",
+    "emitted_schedule_execution"
+  ]
+}

@@ -40,10 +40,10 @@
     "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md"
   },
   "formal": {
-    "excerpt_sha256": "2a6991825b67e12b717b2746f71b3c9f3385c5286aeb4b4e9f0a7be019ec8118",
+    "excerpt_sha256": "3761e650910b4bd0abc9243da829e647bb6c7d436836060725d7f79cffce8b1c",
     "lines": [
       1,
-      16
+      5
     ],
     "path": "research/learn_infer_only/formal/integration/README.md"
   },

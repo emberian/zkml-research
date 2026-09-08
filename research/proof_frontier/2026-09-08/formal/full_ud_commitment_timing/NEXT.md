@@ -1,0 +1,9 @@
+[OPEN] Root owns independent mathematical review and combined umbrella integration of the explicit `integration_entry.json`. Proposed umbrella imports are `Selvage.FriRootResolutionWitnesses` and `Selvage.BabyBearFriRootResolution`; the other three modules are in their import closure. Do not modify frozen predecessor packages.
+
+[OPEN] For a deployed binding estimate, replace semantic all-accepted-path resolution with a proved efficient extraction/replay interface over the actual adversary execution. The retained `DoubleOpening` contains two accepted paths, but their existence is not an efficient discovery algorithm. A finite exhaustive continuation table would need coverage derived from the actual strategy and would still need its exponential search cost made explicit. Standard collision resistance cannot simply be assigned to the current existence event.
+
+[OPEN] Source-to-model work still required: actual multiplicative tower/domain; variable/binary arity selection and bit-reversed row/query-index transport; MMCS row authentication to the existing symbol OpeningScheme; final coefficient evaluation to the transparent-word root; initial PCS/IOP farness; challenger/Fiat–Shamir and both proof-of-work phases. The current artifact proves the prefix timing and arbitrary-root semantic bridge, not those execution equivalences.
+
+[OPEN] Initial resolved-word farness must be tied to the claimed input relation. Under exact binding and an honest initial root, `OpeningResolution.word_commit` supplies the equality to the input word. The concrete F5 acceptance witness proves this bridge is inhabited but does not instantiate the full 19-round BabyBear tower/farness premises.
+
+[EXECUTED] No query/radius arithmetic should be repeated: the bridge already consumes frozen `FullUDSamplingBudget` and preserves its exact query term plus the explicit binding event. No shared ledger, runtime setting or security label has been changed.

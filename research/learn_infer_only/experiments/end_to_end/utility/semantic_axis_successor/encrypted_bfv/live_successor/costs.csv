@@ -1,0 +1,18 @@
+component,unit,value,source,scope
+public_phase,seconds,19.676214542,run.command.json,sequential phase subprocess wall; outer hash checks excluded
+public_verify,seconds,3.889736208,run.command.json,sequential phase subprocess wall; outer hash checks excluded
+private_drain,seconds,0.203700459,run.command.json,sequential phase subprocess wall; outer hash checks excluded
+validate,seconds,0.202328125,run.command.json,sequential phase subprocess wall; outer hash checks excluded
+total,seconds,27.504062,run.command.json,outer wall includes source/model hashes; overlaps phase intervals
+children_user_cpu_seconds,seconds,11.164348,run.command.json,child resource usage; peak is not summed resident memory
+children_system_cpu_seconds,seconds,6.557828,run.command.json,child resource usage; peak is not summed resident memory
+maximum_child_rss_bytes_macos,bytes,8428748800,run.command.json,child resource usage; peak is not summed resident memory
+model:cpu_load_process_cpu_seconds,seconds,2.900569,reports/run001/report.json,actual source-model telemetry; overlapping intervals
+model:cpu_load_wall_seconds,seconds,2.8151146250020247,reports/run001/report.json,actual source-model telemetry; overlapping intervals
+model:forward_process_cpu_seconds,seconds,0.5699379999999987,reports/run001/report.json,actual source-model telemetry; overlapping intervals
+model:forward_wall_seconds,seconds,2.1102952910005115,reports/run001/report.json,actual source-model telemetry; overlapping intervals
+model:likelihood_and_transfer_wall_seconds,seconds,0.09537049999926239,reports/run001/report.json,actual source-model telemetry; overlapping intervals
+model:model_parameter_count,count,3075098624,reports/run001/report.json,actual source-model telemetry; overlapping intervals
+model:total_process_cpu_seconds_including_imports,seconds,11.382538,reports/run001/report.json,actual source-model telemetry; overlapping intervals
+model:total_wall_seconds_including_imports,seconds,16.64549329201691,reports/run001/report.json,actual source-model telemetry; overlapping intervals
+model:transfer_to_mps_wall_seconds,seconds,2.8527270420163404,reports/run001/report.json,actual source-model telemetry; overlapping intervals

@@ -1,0 +1,60 @@
+{
+  "schema": "independent-pq-finite-cost-review-v1",
+  "claim_kind": "EXECUTED",
+  "reviewer": "/root/independent_review",
+  "as_of_date_utc": "2026-09-08",
+  "subjects_sha256": {
+    "FEASIBILITY.md": "037b1b7995dbaec14cc983c7aea639496d1aeeed164f2a207ce3207c3a70372c",
+    "BOUND.md": "b07d7714ca6078a63bf1281ad8edbd07dc39094d91f6808e1c3868a3503dc2e5"
+  },
+  "verdict": "Accept finite regularity, ideal-Gaussian correctness and cost accounting; no total QPT security certificate; source-backed tighter coordinate-error and matrix-height bounds provided",
+  "checks": {
+    "checked_source_and_author_files_unchanged": 29,
+    "profiles": 3,
+    "cost_fields": 69,
+    "regularity_certificates": 6,
+    "small_rank_matrices": 890,
+    "stderr_empty": true,
+    "python_compile": true,
+    "whitespace": true,
+    "report_under_400_lines": true
+  },
+  "activity": {
+    "cryptographic_or_estimator_runtime": 0,
+    "Gaussian_sampling": 0,
+    "private_file_reads_or_hashes": 0,
+    "network_queries": 0,
+    "author_edits": 0,
+    "commits": 0
+  },
+  "artifacts": [
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/.gitignore",
+      "sha256": "1fc884e1dc23be501b54c2be5209caf32c10197807e591162677a0fe4158cfe7"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/REPORT.md",
+      "sha256": "9912a9c60d6ded755de96baf893f1fbf17f4d5b264d0623f3c895f9323d8b51c"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/check.py",
+      "sha256": "355977f1efc457b72896e353d48dc1dddac460ad838890e6dfaca76da7d5ca3a"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/results.json",
+      "sha256": "db54aca7dee866a28d7ab6d12e27a736dc08e34d3210511393a119ac56491b49"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/stdout.txt",
+      "sha256": "12b2ff915580854f419cc1e43ba4de351c498cfeaa64b2247adb07e58c5434be"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/visual_access.json",
+      "sha256": "f2e0cf07c6b74ab031354f62a906b605c6a54ff8d1947001b3e23f4389815386"
+    }
+  ]
+}

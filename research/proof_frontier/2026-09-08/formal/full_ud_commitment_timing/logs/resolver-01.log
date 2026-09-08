@@ -1,0 +1,33 @@
+Selvage/OpeningResolution.lean:23:2: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable (∃ v o, S.verifyOpen rt i v o)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/OpeningResolution.lean:32:8: warning: declaration uses `sorry`
+Selvage/OpeningResolution.lean:33:25: warning: unused variable `h`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Selvage/OpeningResolution.lean:37:2: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+Selvage/OpeningResolution.lean:36:2: warning: 'rw [dif_pos h]' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/OpeningResolution.lean:37:2: warning: 'exact Classical.choose_spec h' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Selvage/OpeningResolution.lean:63:23: error: Application type mismatch: The argument
+  S
+has type
+  BindingCommitment Root F ι Op
+but is expected to have type
+  OpeningScheme Root F ι ?m.4
+in the application
+  word S
+Selvage/OpeningResolution.lean:141:9: error: Application type mismatch: The argument
+  tagged F ι
+has type
+  BindingCommitment ((ι → F) × Bool) F ι Unit
+but is expected to have type
+  OpeningScheme ((ι → F) × Bool) F ι ?m.4
+in the application
+  word (tagged F ι)

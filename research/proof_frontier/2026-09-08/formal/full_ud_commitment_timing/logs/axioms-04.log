@@ -1,0 +1,30 @@
+'Minidregg.Selvage.FriRootResolution.Witnesses.initial_root_off_image' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FriRootResolution.Witnesses.fold_x_challenge' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FriRootResolution.Witnesses.adaptive_word_witness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FriRootResolution.Witnesses.fixed_transcript_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FriRootResolution.Witnesses.future_challenge_falsifier' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FriRootResolution.Witnesses.sampled_acceptance_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FriRootResolution.Witnesses.scheme_binding' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FriRootResolution.Witnesses.witness_no_bad' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FriRootResolution.Witnesses.reduction_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Minidregg.Selvage.FriRootResolution.Witnesses.ideal_acceptance_witness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

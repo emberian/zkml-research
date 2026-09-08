@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_structure_vzh3kl4b/olean/Compiler/CseStructure.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure",
+  "exit_code": 0,
+  "source_sha256": "93d004a3973c2f7d73d6c0962bd496db4e0f4d5fe7a015de93e97e982f1cbac4",
+  "source_sha256_after": "93d004a3973c2f7d73d6c0962bd496db4e0f4d5fe7a015de93e97e982f1cbac4",
+  "source_unchanged": true,
+  "stdout": "'Minidregg.Compiler.CseStructure.subst_bounded' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.CseStructure.bounded_up' does not depend on any axioms\n'Minidregg.Compiler.CseStructure.insert_subst_le' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.insert_signature_kept' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.cseGo_good' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.empty_good' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.CseStructure.cse_structure_preservation' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.raw_premises_inhabited' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.CseStructure.shared_structure' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.shared_execution_total' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.learn_execution_total' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.infer_execution_total' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.learn_total_subject' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.wrong_learn_answer_refused' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.subst_empty' depends on axioms: [propext, Quot.sound]\n'Minidregg.Compiler.CseStructure.singleton_cse' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.missing_ssa_refused' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Minidregg.Compiler.CseStructure.missing_bounds_refused' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+  "stderr": "",
+  "seconds": 6.648958415986272
+}

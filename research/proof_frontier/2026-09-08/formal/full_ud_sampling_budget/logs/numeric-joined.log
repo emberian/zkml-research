@@ -1,0 +1,34 @@
+Selvage/FullUDSamplingBudget.lean:156:30: error: linarith failed to find a contradiction
+q q' : ℕ
+hqq : q ≤ q'
+tau : ℝ
+htau : 0 ≤ tau
+htau1 : tau ≤ 1
+h : 19 * 2 ^ 20 / 2013265921 ^ 4 + (1 - tau) ^ q ≤ 1 / 2 ^ 55
+⊢ False
+failed
+Selvage/FullUDSamplingBudget.lean:156:44: error: linarith failed to find a contradiction
+q q' : ℕ
+hqq : q ≤ q'
+tau : ℝ
+htau : 0 ≤ tau
+htau1 : tau ≤ 1
+h : 19 * 2 ^ 20 / 2013265921 ^ 4 + (1 - tau) ^ q ≤ 1 / 2 ^ 55
+⊢ False
+failed
+Selvage/FullUDSamplingBudget.lean:165:26: error: linarith failed to find a contradiction
+q : ℕ
+tau tau' : ℝ
+htau : tau ≤ tau'
+htau1 : tau' ≤ 1
+h : 19 * 2 ^ 20 / 2013265921 ^ 4 + (1 - tau) ^ q ≤ 1 / 2 ^ 55
+⊢ False
+failed
+Selvage/FullUDSamplingBudget.lean:165:40: error: linarith failed to find a contradiction
+q : ℕ
+tau tau' : ℝ
+htau : tau ≤ tau'
+htau1 : tau' ≤ 1
+h : 19 * 2 ^ 20 / 2013265921 ^ 4 + (1 - tau) ^ q ≤ 1 / 2 ^ 55
+⊢ False
+failed

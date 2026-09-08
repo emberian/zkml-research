@@ -15,7 +15,80 @@ and interrupted PQ proof reviews; and a public research site. Root integrates,
 reviews and checkpoints named artifacts. No prior completed384/96 workload is
 rerun merely to restart, and prior safety-stopped tasks remain stopped.
 
-## Third-run second checkpoint — 2026-09-08 05:21 UTC
+## Third-run third checkpoint — 2026-09-08 06:30 UTC
+
+[EXECUTED] The public-only checkpoint003 collector passes 708 saved files
+across 33 inventories and 36 fixed anchors. Both companion repositories retain
+their baseline HEAD, status and all 26 preexisting dirty-file byte hashes.
+This checks evidence consistency; it reruns no Lean, cryptography, estimator,
+model or private-state comparison. Its frozen scope excludes the running
+source rebuild, mutable long-run outputs, and later hardness/ring work.
+[Collector record](experiments/end_to_end/overnight_checkpoint_003.json).
+
+[EXECUTED] The completed live semantic successor performs one real model
+forward, one Learn and two Infer operations in 27.504 seconds wall time.
+Public verification and shutdown precede the two passing private integer
+comparisons. The timing addendum records contention with the nonlinear run.
+Trusted plaintext issuance, a full reader key, and the known semantic image
+remain; this is a live integration result, not a new utility or confidentiality
+claim. [Report](experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/REPORT.md).
+
+[EXECUTED proposed proofs] Separate reviewed packages add 19 generic execution
+pins and 18 CSE preservation pins. Together they remove the SSA/well-formedness
+premises from execution of the exact Lean EMA descriptors. Initialized wire
+references, the concrete Rust interpreter and TFHE remain separate obligations.
+The 36-pin root-resolution package extends the ideal FRI event to root-only
+commitment transcripts, with a semantic existential double-opening bad event;
+its noncomputable word selection does not give an efficient collision reduction.
+These packages are not included in run017's 915-pin combined result.
+
+[DERIVED reviewed PQ result] The smudged fixed-coordinate construction has a
+finite conditional QPT-LWE proof. Its original 612,717-byte sizing point is
+heuristically weak and remains rejected for implementation. A coupled repair
+at n=16384, l=262144 and prime q=2^292+13 passes the declared finite constraints
+and selected attack-cost models: minimum retained exponents 180.456 classical
+and 163.77 quantum core-SVP. These are heuristic costs, not certified bits.
+The price is 9,622,157-byte ciphertexts, 157,649,414,144-byte public matrices
+and 4,304,420,864 dense matrix products per encryption. The independently
+reviewed audit preserves all 76 attempts, including exclusions and failures.
+[Hardness review](experiments/adversarial_review/smudged_hardness/REPORT.md).
+
+[EXECUTED ongoing] Run018 is rebuilding the complete 567-module project
+import closure from source for 952 proposed theorem pins, using cached
+external packages only. No result is claimed before closure. The separate
+frozen nonlinear trajectory has 160/480 matching public replay pairs at
+06:25:03 UTC (128 Learn, 32 Infer), with no failure and no reader calls.
+Its public phase must close before the deferred private audit.
+
+## Third-run proof checkpoint — 2026-09-08 05:34 UTC (historical)
+
+[EXECUTED] Run017 passes70 selected Lean modules/915 exact theorem pins,
+all four umbrellas, patch application/content and both import boundaries.
+Elapsed750.475898seconds. No input or companion source changed; existing
+project/dependency oleans were reused. The immutable915-pin combined patch is
+SHA256 `00175cda5228163b1626eabf94559ac3d8f406b7635f70dd01976b5301e5c3c6`.
+[Summary](experiments/integration/results/run_017/SUMMARY.md).
+
+[EXECUTED] Separate BabyBear carrier12-pin and coherent sampled-budget25-pin
+patches have completed independent source/math reviews. The latter derives
+all round gaps and reaches the actual ideal coherent event bound at3603
+queries. The exact same-bound old comparison needs4099; this is no deployed
+security gain and does not construct the required tower, farness or concrete
+binding. A new source-closure integration is being prepared.
+
+[EXECUTED ongoing] The emitted fixed-FFT nonlinear trajectory started
+05:28:28UTC, with cutoff11:28:28UTC (six-hour cap, before the goal deadline).
+Its first41 public byte pairs match as of05:47:26UTC, with zero reader calls.
+Use `emitted_long_run/reports/run001/progress.json` for public-worker progress;
+public_phase/public_seal/private_drain/pipeline records govern phase completion.
+No full workload result is claimed yet.
+
+[EXECUTED publication] The11-card Pages update at7e17708 passed workflow
+34190912338, all six served-file byte comparisons and19 immutable source-blob
+hash checks. `website/deployment-update-001.json` retains this separate record.
+The original deployment report is unchanged.
+
+## Third-run second checkpoint — 2026-09-08 05:21 UTC (historical)
 
 [EXECUTED] `experiments/end_to_end/overnight_checkpoint_002.py` rehashes392
 public source/evidence files across ten inventories, checks the saved frozen

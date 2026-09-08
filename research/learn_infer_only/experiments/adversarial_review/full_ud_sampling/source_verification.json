@@ -1,0 +1,184 @@
+{
+  "status": "PASS",
+  "checks": {
+    "Selvage.FullUDSamplingBudget": {
+      "source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/FullUDSamplingBudget.lean",
+      "source_sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+      "patch": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/full-ud-sampling-budget.patch",
+      "patch_sha256": "589ae51ff846889eb5403b1b415755a06a1fd4865466e22fa63902addd9f8852",
+      "exact_patch_source": true,
+      "declarations": 25,
+      "pins": 25
+    },
+    "Selvage.BabyBearFullUD": {
+      "source": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/BabyBearFullUD.lean",
+      "source_sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+      "patch": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/babybear-full-ud.patch",
+      "patch_sha256": "fa8a815069f628ef4ae34a1eda2c91989fd3af87c55ccc8f4056aa78d9bc6e25",
+      "exact_patch_source": true,
+      "declarations": 12,
+      "pins": 12
+    }
+  },
+  "dependency_object_pins": [
+    {
+      "source": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/FullUDFriConsumer.lean",
+      "source_sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+      "olean": "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/FullUDFriConsumer.olean",
+      "olean_sha256": "fd7991e1e4c537f5e05a483ea83b147351ac4d34daba292b2afeb1282000f43c",
+      "existing_main_equal": false
+    },
+    {
+      "source": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/ProximityGapFullUD.lean",
+      "source_sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+      "olean": "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/ProximityGapFullUD.olean",
+      "olean_sha256": "c7809f0f5d9409c3255f5623d9acc5dd3879935c575c8961fc35557b17055d38",
+      "existing_main_equal": false
+    },
+    {
+      "source": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/HalfThresholdFri.lean",
+      "source_sha256": "82a829919ce580e6e6f168feb7437d03409e3ccdb1d1a8f22b56607dc65f2918",
+      "olean": "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/HalfThresholdFri.olean",
+      "olean_sha256": "5a6ea4e071e5a503a36a5d2de63c56a118daea53609ed937ca4c615864457b86",
+      "existing_main_equal": true
+    },
+    {
+      "source": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/HalfThresholdFriCoherent.lean",
+      "source_sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b",
+      "olean": "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/HalfThresholdFriCoherent.olean",
+      "olean_sha256": "57811f6290d86eb7f0528044d554866ada66df822a048e6d45e962c62b9d2e97",
+      "existing_main_equal": true
+    },
+    {
+      "source": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/HalfThresholdFriQuery.lean",
+      "source_sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9",
+      "olean": "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/HalfThresholdFriQuery.olean",
+      "olean_sha256": "272acea120167d049c63a652fc1ecc08d26f941db6a194d9d37ec4229623f7c9",
+      "existing_main_equal": true
+    },
+    {
+      "source": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/BabyBearFullUD.lean",
+      "source_sha256": "03f80a278b95dfb767eaf6657ee63b26a643900df5d0cbfb4c1a579399314978",
+      "olean": "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/BabyBearFullUD.olean",
+      "olean_sha256": "31254d02d0b845df2fea20da55f07c006e1de08a8ef1e926edcb82c7a5959cb3",
+      "existing_main_equal": false
+    },
+    {
+      "source": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/BabyBearExt4.lean",
+      "source_sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b",
+      "olean": "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/BabyBearExt4.olean",
+      "olean_sha256": "0e3bffb28f157065ec68607fbe8d378da05d4423c23445eb8e92f2ad9bd7c8fc",
+      "existing_main_equal": true
+    },
+    {
+      "source": "/tmp/minidregg-full-ud-babybear-20260908/Selvage/Proximity.lean",
+      "source_sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f",
+      "olean": "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/Proximity.olean",
+      "olean_sha256": "1f954ac66c015cdf4527f8d1de50a7d318657198daa5714f56182b4bdaa72fe5",
+      "existing_main_equal": true
+    }
+  ],
+  "read_source_pins": [
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriCoherent.lean",
+      "sha256": "77b55c057d5a3a33599e705bf472fb50d6f0134e9faba02c4f5370c33acdd20b"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriQuery.lean",
+      "sha256": "227b9406fb8266d6974026333f0ca310af613372acc8814e79c65b7937bf9df9"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/HalfThresholdFriTranscript.lean",
+      "sha256": "9dbb34989ea4af684802075717f8b3fe5602bc5d128b796b851a5efa9d28e432"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/Commitment.lean",
+      "sha256": "be5b6088d0a367be6effee618cb502d724bedcfe30cb00cbfb2d69de6c6a059a"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/BabyBearExt4.lean",
+      "sha256": "e7f6db0f679f0e7c6a230e9989459a1466b079b0cff3013467a5b2747c4f8a0b"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/ReedSolomon.lean",
+      "sha256": "71e714de51fd1244540af5038764c40b61d7f822eebbc5a8078e93735edf886c"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/CorrelatedAgreement.lean",
+      "sha256": "1f93c645e77154fdd969855f17d153b9ffb9e2c147f997dbb704dce71876b70e"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/Proximity.lean",
+      "sha256": "33c5a2b7f02b496610494def365c83099d03cf9423332001e2e6fdd7afffa88f"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Selvage/ProximityGapUD.lean",
+      "sha256": "a43f8c847d9a22173aeb6e82d6f1c12b9490089cf7d58e07c8153f0a89e51b5b"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Assurance/ErrorBudget.lean",
+      "sha256": "cea8a98902a965b6028027bd00f6f99ddcb7d4e7bf2f69f5c3e56a3e0198c9f0"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Assurance/ErrorBudget120.lean",
+      "sha256": "24ff52a298f36e8ee668cae0a050518993af84dc4a896f952c0f1bd26ac67e2e"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Assurance/MixedFieldBudget.lean",
+      "sha256": "37e832f0d96a8da337e2629cffcbfd3ebe2f7b764ed962d48c006b24cf5e3468"
+    },
+    {
+      "path": "/Users/ember/dev/minidregg/Assurance/TwoRegimeQueryBudget.lean",
+      "sha256": "0648b74bbee85ba4769deb435bc76e1219160600e4303d99f58edb525f4eea36"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/manifest.json",
+      "sha256": "463d3efd156ff50cc991dd4dbe10ce2d6c2a7084040da4babb6518febe151bb9"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/README.md",
+      "sha256": "12a5d2b0b5dd95b37e23052587b156c2fba2af771b96f105f780cab77a3155bf"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/dependency-pins.json",
+      "sha256": "746043364054081e0614c0ca8f4ded53992a5805938d2e94e709407f3879a1ed"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/provenance.json",
+      "sha256": "8f3ad07e930aa41cfedd4242e4fe279b2ceadb0422684660f90d14db050bdf60"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/README.md",
+      "sha256": "15d554ec6d9261a6d29ca559a7665ce2073bea64b5fe560ecb30e1468c5de713"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/manifest.json",
+      "sha256": "4151a1b24f599cee25b339090028f3680a558906b85f805f53dec2de0a056ecb"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/parameter_delta/ANALYSIS.md",
+      "sha256": "761a39ed6034189d9dfbcf5a4cdc4e8fe664e72a315703d1c0a9cc1ac486d931"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/parameter_delta/SOURCE_MAP.md",
+      "sha256": "66b4035a96216969d257e5be93fbb9b88078c457118574758d541d0101598807"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/parameter_delta/derive.py",
+      "sha256": "f1bec526629796f87913a7795b7af9df58d76d4a8ed56086009071f577d8eeb3"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/parameter_delta/results.json",
+      "sha256": "a1ab9ea5ee801cf6e43667681dd9367b544edeac008bf7c7590d418b7f0be7da"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/parameter_delta/source-pins.json",
+      "sha256": "c1b2fe45c31fd5ede3195535296c5810eb7d6c961046009ac43ea8dd8674b6b5"
+    }
+  ],
+  "producer_checks_only": true,
+  "new_lean_builds": 0,
+  "external_queries": 0,
+  "census_instrument_sha256": "42d9ba6f2b064d8d2896e5c7d02f2732019388f1d13e82fddf1a78b1258b45b9",
+  "script_sha256": "72f03daa0f0a2d6e6d7f09e10272249e592ebf3985fd6ff37c915721ad5b368d"
+}

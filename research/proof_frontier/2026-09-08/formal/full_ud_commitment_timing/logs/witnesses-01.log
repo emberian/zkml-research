@@ -1,0 +1,38 @@
+Selvage/FriRootResolutionWitnesses.lean:31:75: error: unsolved goals
+case h.«0»
+a : ZMod 5
+⊢ foldEven
+        { neg := ![3, 2, 1, 0], dom_neg := data0._proof_2, sq := ![0, 1, 1, 0], domSq_sq := data0._proof_4,
+          sec := ![0, 1], sq_sec := data0._proof_5, dom_ne_zero := data0._proof_6, two_ne := data0._proof_7 }
+        ![1, 2, 3, 4] 0 +
+      a *
+        foldOdd
+          { neg := ![3, 2, 1, 0], dom_neg := data0._proof_2, sq := ![0, 1, 1, 0], domSq_sq := data0._proof_4,
+            sec := ![0, 1], sq_sec := data0._proof_5, dom_ne_zero := data0._proof_6, two_ne := data0._proof_7 }
+          ![1, 2, 3, 4] 0 =
+    a
+
+case h.«1»
+a : ZMod 5
+⊢ foldEven
+        { neg := ![3, 2, 1, 0], dom_neg := data0._proof_2, sq := ![0, 1, 1, 0], domSq_sq := data0._proof_4,
+          sec := ![0, 1], sq_sec := data0._proof_5, dom_ne_zero := data0._proof_6, two_ne := data0._proof_7 }
+        ![1, 2, 3, 4] 1 +
+      a *
+        foldOdd
+          { neg := ![3, 2, 1, 0], dom_neg := data0._proof_2, sq := ![0, 1, 1, 0], domSq_sq := data0._proof_4,
+            sec := ![0, 1], sq_sec := data0._proof_5, dom_ne_zero := data0._proof_6, two_ne := data0._proof_7 }
+          ![1, 2, 3, 4] 1 =
+    a
+Selvage/FriRootResolutionWitnesses.lean:48:46: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  OfNat (levels 1) 0
+numerals are polymorphic in Lean, but the numeral `0` cannot be used in a context where the expected type is
+  levels 1
+due to the absence of the instance above
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+Selvage/FriRootResolutionWitnesses.lean:79:61: error: (deterministic) timeout at `isDefEq`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

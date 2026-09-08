@@ -1,0 +1,113 @@
+{
+  "status": "PASS",
+  "patch_sha256": "1e7a4c2292766f8b02a80879ef288915d610b67b5c070d8892db8661a8146cb2",
+  "source_modules": 14,
+  "owned_modules": 10,
+  "owned_theorems": 38,
+  "all_theorems": 105,
+  "all_pins": 105,
+  "project_import_closure_modules": 45,
+  "exact_patch_files": {
+    "Theory/RSInterpolationMatrix.lean": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+    "Theory/RSInterpolationKernel.lean": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+    "Selvage/FullUDStatement.lean": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+    "Selvage/FullUDTeeth.lean": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+    "Selvage/FullUDInterpolation.lean": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+    "Selvage/FullUDBivariate.lean": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+    "Selvage/FullUDCore.lean": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+    "Selvage/ProximityGapFullUD.lean": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+    "Selvage/FullUDFriConsumer.lean": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+    "Selvage/FullUDWitnesses.lean": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf"
+  },
+  "stored_lean_checks": [
+    {
+      "record_sha256": "5bcd0e5245d425dcabd5c3af74bdef5d2a007882204ec5a5664d1b9fc701cddf",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Theory.PolynomialMatrixKernel",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "e73fe5ca18738b905a030bff85233d7c0c7c9dc1913d905e934bdd9488f8ec51",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Theory.PolynomialBivariate",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "d057be6230b0bcab8f53034aa1bc25899e514f981bf155a823dc778e45855ab2",
+      "log_sha256": "5fe917144dfde0b51a68f620ec62b50302802352090be6c7e74e8d5811b9c468",
+      "module": "Theory.PolynomialGluingStatement",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "c205181d906fb430e02c590a8701daa0fccab2fc87f634dfbe5413151cdbd3b9",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Theory.PolynomialGluing",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "5023390e4327f8870f83128686a909f470b8f70e0ac4cb148a9c452d0f77327d",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Theory.RSInterpolationMatrix",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "942ee7d72091a8ce4a6ac7941c493a344d2db6705bdbae0b33e13e38627edcaf",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Theory.RSInterpolationKernel",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "7873f78148885b6f937a9e1fa4a93901dfe6850e1d9cd409195c0a047a18329b",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Selvage.FullUDStatement",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "93f081eced88de130650eb8be778c3334936ceba069f2505df871e9514293ed0",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Selvage.FullUDTeeth",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "4de59fbce01cc02a795cea40eabc25436fbe3b3d09a0e8e086f6e01b923de0c2",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Selvage.FullUDInterpolation",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "cc27db29412c3e948171e857126e36a0e7544309eeeebe77c78fc88a0efcd534",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Selvage.FullUDBivariate",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "511aed882b84f8f6e87eabcc53e49709f85bad188788e8310c493a018118b190",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Selvage.FullUDCore",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "2301991c05b25b7a7d1f91dd9bc2076e41dbc1893b65598e71496e839a121eec",
+      "log_sha256": "d49ca8266aa44d119f37dee20b01f25ea8655456dfccc983683aab55149ea2ed",
+      "module": "Selvage.ProximityGapFullUD",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "b3d3575b64ca6c129ed05a4c2148737fd96f436b2183510257ef71b3b94c352f",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Selvage.FullUDFriConsumer",
+      "exit_code": 0
+    },
+    {
+      "record_sha256": "b7f798bc9b01aaaf2c551748966cc1cd10d50db91f5d29cbfb2f0c5cdc17c69a",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "module": "Selvage.FullUDWitnesses",
+      "exit_code": 0
+    }
+  ],
+  "new_lean_builds": 0,
+  "external_queries": 0,
+  "instrumentation_sha256": "42d9ba6f2b064d8d2896e5c7d02f2732019388f1d13e82fddf1a78b1258b45b9",
+  "review_script_sha256": "4c1882ffc34f1baac04bea8db7f79cd80c729b7b5bfceeddb4152eb311719fb9",
+  "finite_checks_sha256": "1dd1160eb29501895976fcce191169bcf8c20d0eb467f56d57ea212d268b3cf6"
+}

@@ -1,0 +1,535 @@
+{
+  "scope": "Source and bounded helper controls only; no Lean invocation or shared-output writes.",
+  "checker_sha256": "705571ff2691eda6f08b794d33404f84316a4f53ba14f7796d8b4efb00f7361a",
+  "source_symlinks": [],
+  "isolation_path_types": {
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration": {
+      "is_symlink": false,
+      "resolved": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration"
+    },
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build": {
+      "is_symlink": false,
+      "resolved": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/build"
+    },
+    "/Users/ember/dev/minidregg": {
+      "is_symlink": false,
+      "resolved": "/Users/ember/dev/minidregg"
+    },
+    "/Users/ember/dev/minidregg/.lake/build/lib/lean": {
+      "is_symlink": false,
+      "resolved": "/Users/ember/dev/minidregg/.lake/build/lib/lean"
+    }
+  },
+  "lean_environment": {
+    "LEAN_PATH": null,
+    "LEAN_SYSROOT": null,
+    "LEAN_SRC_PATH": null,
+    "ELAN_TOOLCHAIN": null
+  },
+  "literal_write_targets": {
+    "Assurance.AirSumcheckCubicConformance": [
+      "prover/testdata/sumcheck_cubic_conformance.json"
+    ],
+    "Assurance.ZkmlMatmulConformance": [
+      "prover/testdata/zkml_matmul_conformance.json"
+    ],
+    "Compiler.ArithmeticNativeDeployment": [
+      "prover/src/semantic_artifact_arithmetic.rs"
+    ],
+    "Compiler.BignumKernelABI": [],
+    "Compiler.CommittedTerminalController": [],
+    "Compiler.CommittedTerminalFactored7": [],
+    "Compiler.CommittedTerminalFactoredProver": [],
+    "Compiler.CommittedTerminalFiatShamir": [],
+    "Compiler.CommittedTerminalRealizer": [],
+    "Compiler.DescriptorEval": [
+      "prover/testdata/evm_stage0_add_witness_{v.name}.json"
+    ],
+    "Compiler.EmitSerialize": [
+      "prover/testdata/demo_descriptor.json",
+      "prover/testdata/poseidon_conformance.json"
+    ],
+    "Compiler.EvmAddAir": [
+      "prover/testdata/evm_stage0_add_descriptor.json"
+    ],
+    "Compiler.EvmStage0NativeDeployment": [
+      "prover/generated/evm_stage0_add_aux.rs"
+    ],
+    "Compiler.MinidreggV1Artifact": [
+      "prover/testdata/semantic_artifact_v1.json"
+    ],
+    "Compiler.MinidreggV1NativeGlue": [
+      "prover/generated/semantic_artifact_v1.rs"
+    ],
+    "Compiler.NativeGlueGen": [],
+    "Compiler.SemanticArtifactBundle": [],
+    "Compiler.SemanticTurnReceiptDescriptor": [],
+    "Compiler.Sp800185Cshake256Conformance": [],
+    "Compiler.SumcheckConformance": [
+      "prover/testdata/sumcheck_conformance.json"
+    ],
+    "Compiler.UwueavePreoProjectionV2": [
+      "prover/generated/uwueave_preo_projection_v2.rs"
+    ],
+    "Compiler.ZkmlEltwiseAir": [
+      "prover/testdata/zkml_eltwise_add_descriptor.json"
+    ],
+    "Compiler.ZkmlTraceCheck": [
+      "prover/testdata/zkml_mnist_trace_v1.json"
+    ]
+  },
+  "private_census": {
+    "theorems": 6,
+    "private": 3,
+    "controls": [
+      {
+        "label": "wrong module",
+        "refused": true,
+        "reason": "Axiom pin has no unique matching declaration: _private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.affine_mem"
+      },
+      {
+        "label": "public declaration/private printed name",
+        "refused": true,
+        "reason": "Axiom pin has no unique matching declaration: _private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.affine_mem"
+      },
+      {
+        "label": "private declaration/public printed name",
+        "refused": true,
+        "reason": "Axiom pin has no unique matching declaration: Minidregg.Selvage.FullUDTeeth.affine_mem"
+      },
+      {
+        "label": "missing private guard",
+        "refused": true,
+        "reason": "Axiom output comment without adjacent exact guard"
+      },
+      {
+        "label": "forbidden sorry",
+        "refused": true,
+        "reason": "Forbidden constructs in proposed proof source: [{'token': 'sorry', 'line': 120}]"
+      },
+      {
+        "label": "unauthorized axiom",
+        "refused": true,
+        "reason": "Unexpected axiom set: ['propext', 'Custom.axiom', 'Quot.sound']"
+      }
+    ]
+  },
+  "import_helper_controls": {
+    "multi_same_line": [
+      "Theory.A",
+      "Theory.B"
+    ],
+    "nested_comments": [
+      "Theory.A",
+      "Theory.B"
+    ],
+    "unsupported_symbol": {
+      "label": "quoted module name",
+      "refused": true,
+      "reason": "Unsupported import command: import \u00abA-B\u00bb"
+    },
+    "public_import": [],
+    "import_newline": []
+  },
+  "exact_patch": {
+    "files": 77,
+    "selected_source_roundtrips": 72,
+    "patch_sha256": "6205a3c5f2a2734be1957f00ff7a1220799a63e56cbea83550537be9ecf90e01",
+    "supports": [
+      {
+        "destination": "LICENSES/ArkLib-Apache-2.0.txt",
+        "sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+        "bytes": 11356,
+        "final_newline": false
+      }
+    ],
+    "every_applied_byte_equal": true
+  },
+  "eof_controls": [
+    {
+      "case": 0,
+      "before_final_newline": false,
+      "after_final_newline": false,
+      "exact_bytes": true
+    },
+    {
+      "case": 1,
+      "before_final_newline": true,
+      "after_final_newline": false,
+      "exact_bytes": true
+    },
+    {
+      "case": 2,
+      "before_final_newline": false,
+      "after_final_newline": true,
+      "exact_bytes": true
+    },
+    {
+      "case": 3,
+      "before_final_newline": false,
+      "after_final_newline": true,
+      "exact_bytes": true
+    },
+    {
+      "case": 4,
+      "before_final_newline": false,
+      "after_final_newline": false,
+      "exact_bytes": true
+    },
+    {
+      "case": 5,
+      "before_final_newline": false,
+      "after_final_newline": false,
+      "exact_bytes": true
+    }
+  ],
+  "run017": {
+    "checker_hash": "42d9ba6f2b064d8d2896e5c7d02f2732019388f1d13e82fddf1a78b1258b45b9",
+    "module_count": 70,
+    "pins": 915,
+    "project_sources": 524,
+    "archive_recovery": {
+      "method": "Inverse of subsequent recorded project-closure edits; exact SHA256 equals independently retained run017 input hash.",
+      "sha256": "42d9ba6f2b064d8d2896e5c7d02f2732019388f1d13e82fddf1a78b1258b45b9",
+      "exact_match": true
+    },
+    "archived_checker": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/integration/results/run_017/check_all_formal.py",
+    "changed_ast_members": [
+      "imports",
+      "Run",
+      "integrate",
+      "main"
+    ],
+    "census_and_eof_helper_ast_unchanged": true
+  },
+  "companion_unchanged": {
+    "head": true,
+    "status": true,
+    "source_hashes": true
+  },
+  "checker_unchanged_during_review": true
+}
+{
+  "closure": {
+    "current_project_files": 524,
+    "selected_new_modules": 72,
+    "selected_pins": 952,
+    "total_available_project_modules": 596,
+    "rooted_compile_count": 565,
+    "existing_rooted_count": 495,
+    "complete_selected_rooting": false,
+    "unrooted_selected": [
+      "Selvage.BabyBearFullUD",
+      "Selvage.FullUDSamplingBudget"
+    ],
+    "independent_header_agreement": 596,
+    "external_direct_import_count": 145
+  },
+  "excluded_existing": [
+    "Compiler.BoundedQuantifiedPolicyAdmission",
+    "Compiler.DeclaredActionAir",
+    "Compiler.DeclaredEffectPageMaterializer",
+    "Compiler.DeclaredEffectPageRegistry",
+    "Compiler.DistributiveLaw",
+    "Effects",
+    "Effects.EffectSpec",
+    "Effects.Placeholder",
+    "Kernel",
+    "Kernel.DeclaredActionExecution",
+    "Kernel.DeclaredHyperedgeCost",
+    "Kernel.EventLogMaterializerLimit",
+    "Kernel.FinalityLiveness",
+    "Kernel.Gate",
+    "Kernel.HyperedgeKnowledge",
+    "Kernel.HyperedgeTier",
+    "Kernel.MultiCellHyperedgeWitness",
+    "Kernel.TypedCellHyperedgeWitness",
+    "Minidregg",
+    "Pred",
+    "Pred.BoundedQuantifiedView",
+    "Pred.CoordinationDial",
+    "Pred.Placeholder",
+    "scripts.BoundedPageMaterializerBenchmark",
+    "scripts.CarrierCensus",
+    "scripts.CharTwoVacuityCensus",
+    "scripts.EmitHyperdocumentLinkRecoveryFixture",
+    "scripts.EmitSparseEqualityWorkProfile",
+    "scripts.ForwardLinkSemanticBenchmark"
+  ],
+  "side_effect_tokens": {
+    "Assurance.AirSumcheckCubicConformance": [
+      {
+        "line": 186,
+        "text": "if let some dir := path.parent then IO.FS.createDirAll dir"
+      },
+      {
+        "line": 187,
+        "text": "IO.FS.writeFile path (cubicConformanceJson.pretty ++     )"
+      },
+      {
+        "line": 189,
+        "text": "#eval writeCubicConformance"
+      }
+    ],
+    "Assurance.ZkmlMatmulConformance": [
+      {
+        "line": 228,
+        "text": "if let some dir := path.parent then IO.FS.createDirAll dir"
+      },
+      {
+        "line": 229,
+        "text": "IO.FS.writeFile path (matmulConformanceJson.pretty ++     )"
+      },
+      {
+        "line": 231,
+        "text": "#eval writeMatmulConformance"
+      }
+    ],
+    "Compiler.ArithmeticNativeDeployment": [
+      {
+        "line": 331,
+        "text": "#eval rustBuildTarget.run"
+      }
+    ],
+    "Compiler.BignumKernelABI": [
+      {
+        "line": 223,
+        "text": "if let some dir := path.parent then IO.FS.createDirAll dir"
+      },
+      {
+        "line": 224,
+        "text": "IO.FS.writeFile path ((kernelCallToJson call).pretty ++     )"
+      }
+    ],
+    "Compiler.CommittedTerminalController": [
+      {
+        "line": 788,
+        "text": "#eval exhibit"
+      }
+    ],
+    "Compiler.CommittedTerminalFactored7": [
+      {
+        "line": 592,
+        "text": "#eval exhibit"
+      }
+    ],
+    "Compiler.CommittedTerminalFactoredProver": [
+      {
+        "line": 636,
+        "text": "#eval exhibit"
+      }
+    ],
+    "Compiler.CommittedTerminalFiatShamir": [
+      {
+        "line": 1349,
+        "text": "#eval exhibit"
+      }
+    ],
+    "Compiler.CommittedTerminalRealizer": [
+      {
+        "line": 685,
+        "text": "#eval exhibit"
+      }
+    ],
+    "Compiler.DescriptorEval": [
+      {
+        "line": 418,
+        "text": "if let some dir := path.parent then IO.FS.createDirAll dir"
+      },
+      {
+        "line": 419,
+        "text": "IO.FS.writeFile path ((witnessToJson v c).pretty ++     )"
+      },
+      {
+        "line": 443,
+        "text": "#eval anvilVectors.forM exhibitHonest"
+      },
+      {
+        "line": 458,
+        "text": "#eval exhibitForgery"
+      },
+      {
+        "line": 464,
+        "text": "#eval"
+      },
+      {
+        "line": 515,
+        "text": "#eval census"
+      }
+    ],
+    "Compiler.EmitSerialize": [
+      {
+        "line": 161,
+        "text": "if let some dir := path.parent then IO.FS.createDirAll dir"
+      },
+      {
+        "line": 162,
+        "text": "IO.FS.writeFile path ((descriptorToJson d).pretty ++     )"
+      },
+      {
+        "line": 233,
+        "text": "#eval roundTripDemo"
+      },
+      {
+        "line": 237,
+        "text": "#eval writeDescriptorJson                                        demoDescriptor"
+      },
+      {
+        "line": 318,
+        "text": "if let some dir := path.parent then IO.FS.createDirAll dir"
+      },
+      {
+        "line": 319,
+        "text": "IO.FS.writeFile path (poseidonConformanceJson.pretty ++     )"
+      },
+      {
+        "line": 321,
+        "text": "#eval writePoseidonConformance"
+      }
+    ],
+    "Compiler.EvmAddAir": [
+      {
+        "line": 697,
+        "text": "#eval writeDescriptorJson"
+      }
+    ],
+    "Compiler.EvmStage0NativeDeployment": [
+      {
+        "line": 597,
+        "text": "#eval rustBuildTarget.run"
+      },
+      {
+        "line": 663,
+        "text": "#eval anvilVectors.forM exhibitHonest"
+      },
+      {
+        "line": 667,
+        "text": "#eval expectOutcome                                   \u27e82 ^ 256 - 1, 5, 5\u27e9"
+      },
+      {
+        "line": 672,
+        "text": "#eval do"
+      },
+      {
+        "line": 682,
+        "text": "#eval expectOutcome                           \u27e81, 2, 3\u27e9 ((honestBytes 1 2).drop 4) .malformed"
+      }
+    ],
+    "Compiler.MinidreggV1Artifact": [
+      {
+        "line": 441,
+        "text": "if let some directory := target.path.parent then IO.FS.createDirAll directory"
+      },
+      {
+        "line": 442,
+        "text": "IO.FS.writeFile target.path (artifactPayloadText target.bundle)"
+      },
+      {
+        "line": 444,
+        "text": "#eval writeBuildTarget buildTarget"
+      }
+    ],
+    "Compiler.MinidreggV1NativeGlue": [
+      {
+        "line": 36,
+        "text": "#eval buildTarget.run"
+      }
+    ],
+    "Compiler.NativeGlueGen": [
+      {
+        "line": 493,
+        "text": "if let some directory := path.parent then IO.FS.createDirAll directory"
+      },
+      {
+        "line": 494,
+        "text": "IO.FS.writeFile path (rustSource bundle closed)"
+      }
+    ],
+    "Compiler.SemanticArtifactBundle": [
+      {
+        "line": 691,
+        "text": "if let some directory := path.parent then IO.FS.createDirAll directory"
+      },
+      {
+        "line": 692,
+        "text": "IO.FS.writeFile path (artifactBundleText bundle)"
+      }
+    ],
+    "Compiler.SemanticTurnReceiptDescriptor": [
+      {
+        "line": 413,
+        "text": "if let some dir := path.parent then IO.FS.createDirAll dir"
+      },
+      {
+        "line": 414,
+        "text": "IO.FS.writeFile path ((rustArtifactToJson decl).pretty ++     )"
+      }
+    ],
+    "Compiler.Sp800185Cshake256Conformance": [
+      {
+        "line": 45,
+        "text": "#eval checkNistSample3"
+      },
+      {
+        "line": 64,
+        "text": "#eval checkShake256Empty"
+      }
+    ],
+    "Compiler.SumcheckConformance": [
+      {
+        "line": 156,
+        "text": "if let some dir := path.parent then IO.FS.createDirAll dir"
+      },
+      {
+        "line": 157,
+        "text": "IO.FS.writeFile path (sumcheckConformanceJson.pretty ++     )"
+      },
+      {
+        "line": 159,
+        "text": "#eval writeSumcheckConformance"
+      }
+    ],
+    "Compiler.UwueavePreoProjectionV2": [
+      {
+        "line": 56,
+        "text": "IO.FS.createDirAll directory"
+      },
+      {
+        "line": 57,
+        "text": "IO.FS.writeFile targetPath rustSource"
+      },
+      {
+        "line": 98,
+        "text": "#eval writeGenerated"
+      }
+    ],
+    "Compiler.ZkmlEltwiseAir": [
+      {
+        "line": 274,
+        "text": "#eval writeDescriptorJson"
+      }
+    ],
+    "Compiler.ZkmlTraceCheck": [
+      {
+        "line": 425,
+        "text": "let txt \u2190 IO.FS.readFile path"
+      },
+      {
+        "line": 434,
+        "text": "if let some dir := path.parent then IO.FS.createDirAll dir"
+      },
+      {
+        "line": 435,
+        "text": "IO.FS.writeFile path ((rawTraceToJson r).pretty ++     )"
+      },
+      {
+        "line": 564,
+        "text": "#eval roundTripMnist"
+      },
+      {
+        "line": 567,
+        "text": "#eval writeTraceJson                                            mnistRaw"
+      }
+    ]
+  }
+}

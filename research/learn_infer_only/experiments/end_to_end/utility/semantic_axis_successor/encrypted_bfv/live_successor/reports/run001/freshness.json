@@ -1,0 +1,40 @@
+{
+  "corpora": [
+    {
+      "full_text_disjoint": true,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/text_transfer_records.json",
+      "records": 384,
+      "sha256": "cdd1aad29fed88e1af9d2f5df0bc22655bcad83fdb9f432ef8e303cf6d1e23ea"
+    },
+    {
+      "full_text_disjoint": true,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/representation_records.json",
+      "records": 384,
+      "sha256": "423a0dd83e43d1786b1c649ab6a54aab349de913c531447f2261ef7e5dc9156e"
+    },
+    {
+      "full_text_disjoint": true,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/attribute_calibration/records.json",
+      "records": 384,
+      "sha256": "8690bd0e48901426cfd4ce2748bfacba4638ee3c2fd21e44d436c2fa31e3029d"
+    },
+    {
+      "full_text_disjoint": true,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/e5_successor/records.json",
+      "records": 384,
+      "sha256": "652d6fea9c7709239c6ea852e615d4325f5b4298e41405cbc253722a2cb32e11"
+    },
+    {
+      "full_text_disjoint": true,
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/records.json",
+      "records": 384,
+      "sha256": "dfd0f81f7480cbc7097f9ca84660fb9120bcae5fe4149865096417f369ba0a63"
+    }
+  ],
+  "fresh_texts": 1,
+  "full_text_disjoint": true,
+  "instrument": "Exact Python string equality against all text fields in the five named synthetic corpora",
+  "private_text_and_hash_omitted": true,
+  "scope": "Full-text disjointness only; semantic task, meanings and ordinary words overlap; no training-corpus absence claim.",
+  "unique_prior_texts": 1152
+}

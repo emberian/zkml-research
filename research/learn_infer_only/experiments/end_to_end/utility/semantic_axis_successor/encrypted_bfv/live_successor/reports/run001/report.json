@@ -1,0 +1,98 @@
+{
+  "actual_axis_examples": 2,
+  "actual_model_forward_calls": 1,
+  "all_oracle_matches": true,
+  "authority_outbox_still_pending": true,
+  "baseline_decryptions": 0,
+  "cached_feature_substitution": false,
+  "events": 3,
+  "expiries": 0,
+  "generated_tokens": 0,
+  "infers": 2,
+  "learns": 1,
+  "model_cost": {
+    "cpu_load_process_cpu_seconds": 2.900569,
+    "cpu_load_wall_seconds": 2.8151146250020247,
+    "forward_process_cpu_seconds": 0.5699379999999987,
+    "forward_wall_seconds": 2.1102952910005115,
+    "likelihood_and_transfer_wall_seconds": 0.09537049999926239,
+    "memory_after_load": {
+      "mps_current_allocated_bytes": 6150197504,
+      "mps_driver_allocated_bytes": 6484787200,
+      "mps_recommended_max_bytes": 83494174720,
+      "process_high_water_rss_bytes_macos": 8428748800
+    },
+    "memory_at_end": {
+      "mps_current_allocated_bytes": 6150197504,
+      "mps_driver_allocated_bytes": 6503956480,
+      "mps_recommended_max_bytes": 83494174720,
+      "process_high_water_rss_bytes_macos": 8428748800
+    },
+    "memory_before_load": {
+      "mps_current_allocated_bytes": 0,
+      "mps_driver_allocated_bytes": 393216,
+      "mps_recommended_max_bytes": 83494174720,
+      "process_high_water_rss_bytes_macos": 329924608
+    },
+    "model_parameter_count": 3075098624,
+    "runtime": {
+      "cuda_available": false,
+      "executable": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+      "mps_available": true,
+      "mps_built": true,
+      "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+      "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+      "torch": "2.10.0",
+      "transformers": "4.57.3"
+    },
+    "settings": {
+      "attention": "eager",
+      "batch_size": 8,
+      "device": "mps",
+      "dtype": "float16",
+      "enable_thinking": false,
+      "generation_invoked": false,
+      "inference_mode": true,
+      "interop_threads": 1,
+      "left_padding": true,
+      "likelihood_dtype": "float32 CPU",
+      "logits_to_keep": 1,
+      "model_eval": true,
+      "position_ids": "attention_mask.cumsum(-1)-1; pad positions zero",
+      "seed": 7901,
+      "source_weight_dtype": "bfloat16",
+      "threads": 2,
+      "tie_rule": "bit0",
+      "use_cache": false
+    },
+    "total_process_cpu_seconds_including_imports": 11.382538,
+    "total_wall_seconds_including_imports": 16.64549329201691,
+    "transfer_to_mps_wall_seconds": 2.8527270420163404
+  },
+  "offline_receive_receipts": [
+    {
+      "envelope_sha256": "1d787b11c134942f6d3e5e7ea0c388126dbdc384364a945f46bd9ea929d30382",
+      "nonce": "nonce-before-live-observation",
+      "ok": true,
+      "status": "received"
+    },
+    {
+      "envelope_sha256": "9158417d258c2c167d906d7f1f82b938c2dcba9968fc408410d41433a2873bc6",
+      "nonce": "nonce-after-live-observation",
+      "ok": true,
+      "status": "received"
+    }
+  ],
+  "ok": true,
+  "oracle_comparisons": 2,
+  "output_change_discloses_selected_score_under_fixed_mapping": true,
+  "output_changed_after_learning": true,
+  "private_receive_and_audit_wall_ns": 117279625,
+  "public_phase_decryptions": 0,
+  "public_services_remained_closed": true,
+  "public_verification_sha256": "94881d88c311aad345aa0838563bb45cff3e65d0da614acd3d4d9fed09551395",
+  "same_durable_verified_journal": true,
+  "scope": "One fixed fresh text illustration, no accuracy estimate. Plaintext trusted issuer, full BFV reader key, public routes, rank4 per route, same-account roles; no no-master-read or end-to-end PQ claim.",
+  "verified_decryptions_after_public_verification": 2,
+  "weight_updates": 0
+}

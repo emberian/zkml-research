@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "-o",
+    "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/cse_structure_vzh3kl4b/olean/Compiler/CseStructure.olean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure",
+  "exit_code": 1,
+  "source_sha256": "5a4d721a29e313b5dfad856a14c6b9c5b5eb4422f058f13f08d00b1bb598ba3a",
+  "source_sha256_after": "5a4d721a29e313b5dfad856a14c6b9c5b5eb4422f058f13f08d00b1bb598ba3a",
+  "source_unchanged": true,
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean:45:0: warning: automatically included section variable(s) unused in theorem `Minidregg.Compiler.CseStructure.subst_bounded`:\n  [DecidableEq F]\n  [Hashable F]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [DecidableEq F] [Hashable F] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean:123:22: error(lean.unknownIdentifier): Unknown constant `List.pairwise_nil`\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean:148:49: error: Application type mismatch: The argument\n  g.a\nhas type\n  DWire.{u} F\nof sort `Type u` but is expected to have type\n  DWire.{0} F2\nof sort `Type` in the application\n  EmittedScheduleExecution.bounded_mono g.a\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/cse_structure/Compiler/CseStructure.lean:149:44: error: Application type mismatch: The argument\n  g.b\nhas type\n  DWire.{u} F\nof sort `Type u` but is expected to have type\n  DWire.{0} F2\nof sort `Type` in the application\n  EmittedScheduleExecution.bounded_mono g.b\n",
+  "stderr": "",
+  "seconds": 5.6493611249898095
+}

@@ -1,0 +1,46 @@
+{
+  "verdict": "accepted exact finite semantic theorem; BadRoots remains unpriced; no source correction requested",
+  "frozen_patch_sha256": "449608f151061051d3c2567d86d6b505c86ecf03906f990ffb7a5238995e4756",
+  "files": [
+    {
+      "path": "NEXT.md",
+      "sha256": "aca416a1f1b1092797dc942b38684bcc941dcd5979227cdfc7c6d2d0fe09d982",
+      "bytes": 651
+    },
+    {
+      "path": "REPORT.md",
+      "sha256": "f657d2c8590f9ae53d72b57feaf45375360019f218589e38c1300da756c15698",
+      "bytes": 14301
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "2d9ed8da0d0e57a9a6c8feb3db1a6f149740d3d3002c8a619a7d14afa7a81824",
+      "bytes": 1089
+    },
+    {
+      "path": "check.log",
+      "sha256": "20c03951f3f2bda63f172a59e5dc8d44218979e4ee5a6410fe14a40929b34fb4",
+      "bytes": 8807
+    },
+    {
+      "path": "check.py",
+      "sha256": "321aaba20a87fbf7b90d4ac42e2dc741ae79af1aa30c3dbcc5ddeffb2549d51c",
+      "bytes": 8111
+    },
+    {
+      "path": "results.json",
+      "sha256": "20c03951f3f2bda63f172a59e5dc8d44218979e4ee5a6410fe14a40929b34fb4",
+      "bytes": 8807
+    },
+    {
+      "path": "source_pins.json",
+      "sha256": "e75258b3db63b918146283ac509f2e9e462adb8ba4ec6a412ee462507cde0191",
+      "bytes": 1558
+    },
+    {
+      "path": "verification.json",
+      "sha256": "90d04e838791108cae43ce047c5d939b452dc0788633f9bf80ec52b17ae0796c",
+      "bytes": 556
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "scope": "public parameters only",
+  "kappa": 160,
+  "d": 577,
+  "r": 16,
+  "T": 384,
+  "source_path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/results.json",
+  "source_sha256": "93783ef7735ace3c7f033dfbe58cae60f5f8fbc74b53ed62b7b6729500533138",
+  "profiles": [
+    {
+      "n": 1024,
+      "d": 577,
+      "p": 28439893,
+      "k": 2748,
+      "M": 268435456,
+      "sigma1_pow2": 16942,
+      "sigma2_pow2": 33945,
+      "xi_pow2": 33964,
+      "encryption_error_width_pow2": 33970,
+      "L": 268435456,
+      "name": "original_full",
+      "origin": "copied from pinned public costs/results.json"
+    },
+    {
+      "n": 1024,
+      "d": 577,
+      "p": 28439893,
+      "k": 13,
+      "M": 1048576,
+      "sigma1_pow2": 20,
+      "sigma2_pow2": 83,
+      "xi_pow2": 100,
+      "encryption_error_width_pow2": 172,
+      "L": 1048576,
+      "name": "original_fixed_1024",
+      "origin": "copied from pinned public costs/results.json"
+    },
+    {
+      "n": 4096,
+      "d": 577,
+      "p": 28439893,
+      "k": 15,
+      "M": 4194304,
+      "sigma1_pow2": 24,
+      "sigma2_pow2": 98,
+      "xi_pow2": 120,
+      "encryption_error_width_pow2": 192,
+      "L": 4194304,
+      "name": "original_fixed_4096",
+      "origin": "copied from pinned public costs/results.json"
+    },
+    {
+      "n": 1024,
+      "d": 577,
+      "p": 28439893,
+      "k": 13,
+      "M": 1048576,
+      "sigma1_pow2": 20,
+      "sigma2_pow2": 83,
+      "encryption_error_width_pow2": 172,
+      "L": 1048576,
+      "name": "finite_fixed_1024",
+      "origin": "derived finite-certificate adjustment; not an original cost row"
+    },
+    {
+      "n": 4096,
+      "d": 577,
+      "p": 28439893,
+      "k": 15,
+      "M": 8388608,
+      "sigma1_pow2": 24,
+      "sigma2_pow2": 98,
+      "encryption_error_width_pow2": 192,
+      "L": 8388608,
+      "name": "finite_fixed_4096",
+      "origin": "derived finite-certificate adjustment; not an original cost row"
+    }
+  ],
+  "expected_pass": {
+    "original_full": false,
+    "original_fixed_1024": false,
+    "original_fixed_4096": false,
+    "finite_fixed_1024": true,
+    "finite_fixed_4096": true
+  }
+}

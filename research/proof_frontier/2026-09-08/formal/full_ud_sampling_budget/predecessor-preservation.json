@@ -1,0 +1,11 @@
+{
+  "all_unchanged": true,
+  "source_sha256": {
+    "PolynomialBivariate.lean": "411b3eaa23fd38a9d1165d91de01a3c3e47b108e0b48dfc7d8677197f2b8e5da",
+    "PolynomialGluingStatement.lean": "41eed62b663388fb5b3fb19b069d5dab36d04748610c5216b54b7dfe2f38d11b",
+    "PolynomialGluing.lean": "ce6255d764e4929ac20c794871c3a4170b8efb962ac1ce79fd517fdc9d9f88f3",
+    "universe_successor/PolynomialBivariate.lean": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+    "universe_successor/PolynomialGluingStatement.lean": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+    "universe_successor/PolynomialGluing.lean": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41"
+  }
+}

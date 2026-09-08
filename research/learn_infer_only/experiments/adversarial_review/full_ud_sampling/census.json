@@ -1,0 +1,728 @@
+{
+  "Selvage.FullUDSamplingBudget": {
+    "theorems": [
+      "fullUDSampling_round_conditions",
+      "fullUDSampling_premise_inhabited",
+      "fullUDSampling_satisfiable",
+      "fullUDSampling_teeth",
+      "fullUDSampling_degree_halves",
+      "fullUDSampling_degree_positive",
+      "fullUDSampling_rate",
+      "fullUDSampling_tail_gap_sum",
+      "fullUDSampling_uniform_gap_bounds",
+      "fullUDSampling_3603_suffices",
+      "fullUDSampling_3602_fails",
+      "fullUDSampling_old_4099_suffices",
+      "fullUDSampling_old_limit_4098_fails",
+      "fullUDSampling_budget_mono_queries",
+      "fullUDSampling_budget_mono_gap",
+      "fullUDSampling_3603_minimum",
+      "fullUDSampling_old_minimum_lower_bound",
+      "fullUDSampling_numerical_premise_inhabited",
+      "fullUDSampling_old_schedule_inhabited",
+      "fullUDSampling_transitions",
+      "fullUDSampling_wholeWord_sound",
+      "fullUDSampling_coherent_sound",
+      "fullUDSampling_new_minimum_lower_bound",
+      "fullUDSampling_challenge_blocks100",
+      "fullUDSampling_babyBear_55"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "fullUDSampling_round_conditions",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_round_conditions",
+        "private": false,
+        "line": 33
+      },
+      {
+        "name": "fullUDSampling_premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_premise_inhabited",
+        "private": false,
+        "line": 58
+      },
+      {
+        "name": "fullUDSampling_satisfiable",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_satisfiable",
+        "private": false,
+        "line": 63
+      },
+      {
+        "name": "fullUDSampling_teeth",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_teeth",
+        "private": false,
+        "line": 69
+      },
+      {
+        "name": "fullUDSampling_degree_halves",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_degree_halves",
+        "private": false,
+        "line": 77
+      },
+      {
+        "name": "fullUDSampling_degree_positive",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_degree_positive",
+        "private": false,
+        "line": 84
+      },
+      {
+        "name": "fullUDSampling_rate",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_rate",
+        "private": false,
+        "line": 89
+      },
+      {
+        "name": "fullUDSampling_tail_gap_sum",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_tail_gap_sum",
+        "private": false,
+        "line": 98
+      },
+      {
+        "name": "fullUDSampling_uniform_gap_bounds",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_uniform_gap_bounds",
+        "private": false,
+        "line": 119
+      },
+      {
+        "name": "fullUDSampling_3603_suffices",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_3603_suffices",
+        "private": false,
+        "line": 136
+      },
+      {
+        "name": "fullUDSampling_3602_fails",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_3602_fails",
+        "private": false,
+        "line": 139
+      },
+      {
+        "name": "fullUDSampling_old_4099_suffices",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_old_4099_suffices",
+        "private": false,
+        "line": 142
+      },
+      {
+        "name": "fullUDSampling_old_limit_4098_fails",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_old_limit_4098_fails",
+        "private": false,
+        "line": 146
+      },
+      {
+        "name": "fullUDSampling_budget_mono_queries",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_budget_mono_queries",
+        "private": false,
+        "line": 151
+      },
+      {
+        "name": "fullUDSampling_budget_mono_gap",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_budget_mono_gap",
+        "private": false,
+        "line": 161
+      },
+      {
+        "name": "fullUDSampling_3603_minimum",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_3603_minimum",
+        "private": false,
+        "line": 171
+      },
+      {
+        "name": "fullUDSampling_old_minimum_lower_bound",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_old_minimum_lower_bound",
+        "private": false,
+        "line": 182
+      },
+      {
+        "name": "fullUDSampling_numerical_premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_numerical_premise_inhabited",
+        "private": false,
+        "line": 192
+      },
+      {
+        "name": "fullUDSampling_old_schedule_inhabited",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_old_schedule_inhabited",
+        "private": false,
+        "line": 207
+      },
+      {
+        "name": "fullUDSampling_transitions",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_transitions",
+        "private": false,
+        "line": 240
+      },
+      {
+        "name": "fullUDSampling_wholeWord_sound",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_wholeWord_sound",
+        "private": false,
+        "line": 273
+      },
+      {
+        "name": "fullUDSampling_coherent_sound",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_coherent_sound",
+        "private": false,
+        "line": 290
+      },
+      {
+        "name": "fullUDSampling_new_minimum_lower_bound",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_new_minimum_lower_bound",
+        "private": false,
+        "line": 311
+      },
+      {
+        "name": "fullUDSampling_challenge_blocks100",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_challenge_blocks100",
+        "private": false,
+        "line": 319
+      },
+      {
+        "name": "fullUDSampling_babyBear_55",
+        "qualified_name": "Minidregg.Selvage.fullUDSampling_babyBear_55",
+        "private": false,
+        "line": 333
+      }
+    ],
+    "theorem_count": 25,
+    "pin_count": 25,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_round_conditions",
+        "requested_name": "fullUDSampling_round_conditions",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 357,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_round_conditions' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_round_conditions"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_premise_inhabited",
+        "requested_name": "fullUDSampling_premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 360,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_satisfiable",
+        "requested_name": "fullUDSampling_satisfiable",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 363,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_satisfiable"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_teeth",
+        "requested_name": "fullUDSampling_teeth",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 366,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_teeth"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_degree_halves",
+        "requested_name": "fullUDSampling_degree_halves",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 369,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_degree_halves' depends on axioms: [propext, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_degree_halves"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_degree_positive",
+        "requested_name": "fullUDSampling_degree_positive",
+        "axioms": [
+          "propext"
+        ],
+        "line": 372,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_degree_positive' depends on axioms: [propext]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_degree_positive"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_rate",
+        "requested_name": "fullUDSampling_rate",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 375,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_rate' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_rate"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_tail_gap_sum",
+        "requested_name": "fullUDSampling_tail_gap_sum",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 378,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_tail_gap_sum' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_tail_gap_sum"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_uniform_gap_bounds",
+        "requested_name": "fullUDSampling_uniform_gap_bounds",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 381,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_uniform_gap_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_uniform_gap_bounds"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_3603_suffices",
+        "requested_name": "fullUDSampling_3603_suffices",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 384,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_3603_suffices' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_3603_suffices"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_3602_fails",
+        "requested_name": "fullUDSampling_3602_fails",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 387,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_3602_fails' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_3602_fails"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_old_4099_suffices",
+        "requested_name": "fullUDSampling_old_4099_suffices",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 390,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_old_4099_suffices' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_old_4099_suffices"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_old_limit_4098_fails",
+        "requested_name": "fullUDSampling_old_limit_4098_fails",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 393,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_old_limit_4098_fails' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_old_limit_4098_fails"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_budget_mono_queries",
+        "requested_name": "fullUDSampling_budget_mono_queries",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 396,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_budget_mono_queries' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_budget_mono_queries"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_budget_mono_gap",
+        "requested_name": "fullUDSampling_budget_mono_gap",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 399,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_budget_mono_gap' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_budget_mono_gap"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_3603_minimum",
+        "requested_name": "fullUDSampling_3603_minimum",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 402,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_3603_minimum' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_3603_minimum"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_old_minimum_lower_bound",
+        "requested_name": "fullUDSampling_old_minimum_lower_bound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 405,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_old_minimum_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_old_minimum_lower_bound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_numerical_premise_inhabited",
+        "requested_name": "fullUDSampling_numerical_premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 408,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_numerical_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_numerical_premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_old_schedule_inhabited",
+        "requested_name": "fullUDSampling_old_schedule_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 411,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_old_schedule_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_old_schedule_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_transitions",
+        "requested_name": "fullUDSampling_transitions",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 414,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_transitions' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_transitions"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_wholeWord_sound",
+        "requested_name": "fullUDSampling_wholeWord_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 417,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_wholeWord_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_wholeWord_sound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_coherent_sound",
+        "requested_name": "fullUDSampling_coherent_sound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 420,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_coherent_sound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_coherent_sound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_new_minimum_lower_bound",
+        "requested_name": "fullUDSampling_new_minimum_lower_bound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 423,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_new_minimum_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_new_minimum_lower_bound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_challenge_blocks100",
+        "requested_name": "fullUDSampling_challenge_blocks100",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 426,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_challenge_blocks100' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_challenge_blocks100"
+      },
+      {
+        "theorem": "Minidregg.Selvage.fullUDSampling_babyBear_55",
+        "requested_name": "fullUDSampling_babyBear_55",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 429,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDSampling_babyBear_55' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDSampling_babyBear_55"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage.BabyBearFullUD": {
+    "theorems": [
+      "ext4_card",
+      "base_field_cardinality_falsifier",
+      "x_mem",
+      "one_mem",
+      "line_pr_one",
+      "premise_inhabited",
+      "former_band_falsifier",
+      "isProximityGenerator_fullUD",
+      "rateHalf_probability_bound",
+      "good_line_correlatedAgreement",
+      "bad_pair_not_correlatedAgreement",
+      "bad_pair_probability_bound"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "ext4_card",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.ext4_card",
+        "private": false,
+        "line": 33
+      },
+      {
+        "name": "base_field_cardinality_falsifier",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.base_field_cardinality_falsifier",
+        "private": false,
+        "line": 39
+      },
+      {
+        "name": "x_mem",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.x_mem",
+        "private": false,
+        "line": 72
+      },
+      {
+        "name": "one_mem",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.one_mem",
+        "private": false,
+        "line": 76
+      },
+      {
+        "name": "line_pr_one",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.line_pr_one",
+        "private": false,
+        "line": 81
+      },
+      {
+        "name": "premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.premise_inhabited",
+        "private": false,
+        "line": 99
+      },
+      {
+        "name": "former_band_falsifier",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.former_band_falsifier",
+        "private": false,
+        "line": 105
+      },
+      {
+        "name": "isProximityGenerator_fullUD",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.isProximityGenerator_fullUD",
+        "private": false,
+        "line": 112
+      },
+      {
+        "name": "rateHalf_probability_bound",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.rateHalf_probability_bound",
+        "private": false,
+        "line": 122
+      },
+      {
+        "name": "good_line_correlatedAgreement",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.good_line_correlatedAgreement",
+        "private": false,
+        "line": 136
+      },
+      {
+        "name": "bad_pair_not_correlatedAgreement",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_not_correlatedAgreement",
+        "private": false,
+        "line": 148
+      },
+      {
+        "name": "bad_pair_probability_bound",
+        "qualified_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_probability_bound",
+        "private": false,
+        "line": 176
+      }
+    ],
+    "theorem_count": 12,
+    "pin_count": 12,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.ext4_card",
+        "requested_name": "ext4_card",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 184,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.ext4_card' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.ext4_card"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.base_field_cardinality_falsifier",
+        "requested_name": "base_field_cardinality_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 188,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.base_field_cardinality_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.base_field_cardinality_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.isProximityGenerator_fullUD",
+        "requested_name": "isProximityGenerator_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 192,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.isProximityGenerator_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.isProximityGenerator_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.rateHalf_probability_bound",
+        "requested_name": "rateHalf_probability_bound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 196,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.rateHalf_probability_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.rateHalf_probability_bound"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.x_mem",
+        "requested_name": "FullUDInstantiation.x_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 200,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.x_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.x_mem"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.one_mem",
+        "requested_name": "FullUDInstantiation.one_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 204,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.one_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.one_mem"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.line_pr_one",
+        "requested_name": "FullUDInstantiation.line_pr_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 208,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.line_pr_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.line_pr_one"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.premise_inhabited",
+        "requested_name": "FullUDInstantiation.premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 212,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.former_band_falsifier",
+        "requested_name": "FullUDInstantiation.former_band_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 216,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.former_band_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.former_band_falsifier"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.good_line_correlatedAgreement",
+        "requested_name": "FullUDInstantiation.good_line_correlatedAgreement",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 220,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.good_line_correlatedAgreement' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.good_line_correlatedAgreement"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_not_correlatedAgreement",
+        "requested_name": "FullUDInstantiation.bad_pair_not_correlatedAgreement",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 224,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_not_correlatedAgreement' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_not_correlatedAgreement"
+      },
+      {
+        "theorem": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_probability_bound",
+        "requested_name": "FullUDInstantiation.bad_pair_probability_bound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 228,
+        "expected_message": "info: 'Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_probability_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.BabyBearExt4.FullUDInstantiation.bad_pair_probability_bound"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  }
+}

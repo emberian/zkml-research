@@ -1,0 +1,10 @@
+{
+  "name": "emitted_schedule_execution",
+  "root": "formal/emitted_schedule_execution",
+  "patch": "formal/emitted_schedule_execution/minidregg-emitted-schedule-execution.patch",
+  "expected_pins": 19,
+  "depends_on": [
+    "private_address_ema",
+    "private_address_ema_schedule"
+  ]
+}

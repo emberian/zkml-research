@@ -1,0 +1,49 @@
+{
+  "scope": "reviewable public source/math files; ignored extracted source text excluded",
+  "validation": {
+    "local_markdown_links": "all targets exist",
+    "finite_witness": "exit zero; saved finite_witness.log"
+  },
+  "files": [
+    {
+      "path": "NEXT.md",
+      "sha256": "64537fbaae07827bcc9ddefda87f5e401ceea3dd1a26f81d1f1f2fc38d67df20",
+      "bytes": 1670
+    },
+    {
+      "path": "PROPOSAL.md",
+      "sha256": "ec9af914cb349e0bc6881bd8a5b99fd493e43b106a869a44eb58edf758083ab3",
+      "bytes": 15744
+    },
+    {
+      "path": "SOURCES.md",
+      "sha256": "60f4b7ec4db2343b0bc0b613348880fd826c0092c5a90e723c29248d2e48aafa",
+      "bytes": 5551
+    },
+    {
+      "path": "SOURCE_PINS.json",
+      "sha256": "65f26d9de107baaecc735c4cb42391015654ce346cf69516c18a5f59d114478c",
+      "bytes": 1648
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "32e51c179d08e5860a5a0624d524a09a94d2dcdf08dd32b84b8fbf042b2ad8ba",
+      "bytes": 2172
+    },
+    {
+      "path": "finite_witness.log",
+      "sha256": "24103145e7ca4cfb89173c6d9f0d5afcf53b8977cd3e8709e343c41ef5aaa2e6",
+      "bytes": 1274
+    },
+    {
+      "path": "finite_witness.py",
+      "sha256": "ad8e052cb039ef21f1dc57be526bb63545b837820c1f536d0c0a550029b6a478",
+      "bytes": 4615
+    },
+    {
+      "path": "sources/.gitignore",
+      "sha256": "a41dcbdfa6856c6da8afa74cfe2a98a6234a827494f17cd91b15e5fd93d14ad7",
+      "bytes": 6
+    }
+  ]
+}

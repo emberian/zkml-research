@@ -1,0 +1,19 @@
+{
+  "command": [
+    "research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "-B",
+    "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/live_successor/prepare.py"
+  ],
+  "exit_code": 0,
+  "script_stdout": {
+    "prepared": true,
+    "freeze_sha256": "2e55a1def29dbe624711606d62df9aeb931779d9d4934491ec1406d70379d02f",
+    "public_query_index": 1,
+    "fresh_texts": 1,
+    "model_forwards": 0,
+    "crypto_calls": 0,
+    "private_contents_and_hashes_omitted": true,
+    "prepare_seconds": 10.578305749979336
+  },
+  "scope": "First tokenizer/hash-only preparation; observed stdout retained, not a model or BFV run."
+}

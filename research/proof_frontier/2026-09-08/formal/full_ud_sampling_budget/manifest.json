@@ -1,0 +1,127 @@
+{
+  "module": "Selvage/FullUDSamplingBudget.lean",
+  "source_sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+  "patch_sha256": "589ae51ff846889eb5403b1b415755a06a1fd4865466e22fa63902addd9f8852",
+  "declarations": 25,
+  "pins": 25,
+  "lines": 433,
+  "names": [
+    {
+      "name": "fullUDSampling_round_conditions",
+      "line": 33
+    },
+    {
+      "name": "fullUDSampling_premise_inhabited",
+      "line": 58
+    },
+    {
+      "name": "fullUDSampling_satisfiable",
+      "line": 63
+    },
+    {
+      "name": "fullUDSampling_teeth",
+      "line": 69
+    },
+    {
+      "name": "fullUDSampling_degree_halves",
+      "line": 77
+    },
+    {
+      "name": "fullUDSampling_degree_positive",
+      "line": 84
+    },
+    {
+      "name": "fullUDSampling_rate",
+      "line": 89
+    },
+    {
+      "name": "fullUDSampling_tail_gap_sum",
+      "line": 98
+    },
+    {
+      "name": "fullUDSampling_uniform_gap_bounds",
+      "line": 119
+    },
+    {
+      "name": "fullUDSampling_3603_suffices",
+      "line": 136
+    },
+    {
+      "name": "fullUDSampling_3602_fails",
+      "line": 139
+    },
+    {
+      "name": "fullUDSampling_old_4099_suffices",
+      "line": 142
+    },
+    {
+      "name": "fullUDSampling_old_limit_4098_fails",
+      "line": 146
+    },
+    {
+      "name": "fullUDSampling_budget_mono_queries",
+      "line": 151
+    },
+    {
+      "name": "fullUDSampling_budget_mono_gap",
+      "line": 161
+    },
+    {
+      "name": "fullUDSampling_3603_minimum",
+      "line": 171
+    },
+    {
+      "name": "fullUDSampling_old_minimum_lower_bound",
+      "line": 182
+    },
+    {
+      "name": "fullUDSampling_numerical_premise_inhabited",
+      "line": 192
+    },
+    {
+      "name": "fullUDSampling_old_schedule_inhabited",
+      "line": 207
+    },
+    {
+      "name": "fullUDSampling_transitions",
+      "line": 240
+    },
+    {
+      "name": "fullUDSampling_wholeWord_sound",
+      "line": 273
+    },
+    {
+      "name": "fullUDSampling_coherent_sound",
+      "line": 290
+    },
+    {
+      "name": "fullUDSampling_new_minimum_lower_bound",
+      "line": 311
+    },
+    {
+      "name": "fullUDSampling_challenge_blocks100",
+      "line": 319
+    },
+    {
+      "name": "fullUDSampling_babyBear_55",
+      "line": 333
+    }
+  ],
+  "checked": {
+    "command": [
+      "lean",
+      "-o",
+      "/tmp/minidregg-polynomial-gluing-20260908/.lake/build/lib/lean/Selvage/FullUDSamplingBudget.olean",
+      "Selvage/FullUDSamplingBudget.lean"
+    ],
+    "cwd": "/tmp/minidregg-polynomial-gluing-20260908",
+    "lean_path": "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Cli/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/batteries/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/Qq/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/aesop/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/importGraph/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/ember/dev/breadstuffs/metatheory/.lake/packages/plausible/.lake/build/lib/lean:/Users/ember/dev/breadstuffs-codex/metatheory/.lake/packages/mathlib/.lake/build/lib/lean:/Users/ember/dev/minidregg/.lake/packages/uwueave/.lake/build/lib/lean:/private/tmp/minidregg-polynomial-gluing-20260908/.lake/build/lib/lean:/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/lib/lean",
+    "exit_code": 0,
+    "source_sha256": "a4bd35ea6f1e1ada77a20a3c8634b7dd7ac89aa0231be3a7db464955c5761c04",
+    "source_unchanged": true,
+    "elapsed_s": 11.086201906204224,
+    "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_sampling_budget/logs/final-pinned.log"
+  },
+  "base_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "frozen": true
+}

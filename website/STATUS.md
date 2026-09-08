@@ -1,5 +1,7 @@
 # Research website — published; evidence update prepared
 
+[EXECUTED second deployment] Workflow34190912338 at7e17708 succeeded; root independently verified all six served files against the production build and all19 immutable source blobs. `deployment-update-001.json` retains HTTP/hash evidence. The next small refresh advances the formal card to the separately completed915-pin/70-module run017; source excerpt and limits were reread before locking.
+
 [EXECUTED root publication preparation, 2026-09-08T05:30:48.965405+00:00] Research checkpoint cf0f91f is public. Strict production build and reproducibility check pass:11 cards,25 excerpts,64 references,7 files,68,680bytes. All 19 distinct immutable GitHub source blobs return200 and match complete hashes. Root inspected the new desktop evidence and mobile PQ screenshots. Preview draft markers are absent from the production manifest. The eight reviewed website changes are ready for deployment; the earlier draft-only paragraph below is historical.
 
 [EXECUTED update preparation, 2026-09-08] A new local preview contains eleven

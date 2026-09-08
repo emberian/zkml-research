@@ -40,6 +40,14 @@ def save(path: Path, value) -> None:
     path.write_text(json.dumps(value, indent=2) + '\n')
 
 
+def unified_patch(before: str, after: str, old_name: str, new_name: str) -> str:
+    """Emit valid patch EOF markers without changing source or license bytes."""
+    lines = difflib.unified_diff(before.splitlines(True), after.splitlines(True),
+                                 fromfile=old_name, tofile=new_name)
+    return ''.join(line if line.endswith('\n') else line + '\n\\ No newline at end of file\n'
+                   for line in lines)
+
+
 def stripped_lean(source: str) -> str:
     """Mask nested comments and strings, retaining positions and line numbers.
 
@@ -88,7 +96,17 @@ def stripped_lean(source: str) -> str:
 
 
 def imports(source: str) -> list[str]:
-    return re.findall(r'^\s*import\s+([A-Za-z_][\w.]*)', stripped_lean(source), re.M)
+    result = []
+    clean = stripped_lean(source)
+    for header in re.finditer(r'^[ \t]*(?:(?:public|private|meta)[ \t]+)*import\b[^\n]*', clean, re.M):
+        match = re.fullmatch(r'[ \t]*import[ \t]+([^\n]+)', header.group())
+        if not match:
+            raise ValueError(f'Unsupported import command: {header.group()}')
+        names = match.group(1).split()
+        if not names or any(not re.fullmatch(r'[A-Za-z_][\w.]*', name) for name in names):
+            raise ValueError(f'Unsupported import command: {match.group()}')
+        result.extend(names)
+    return result
 
 
 def qualified_declarations(clean: str) -> list[dict]:
@@ -120,13 +138,15 @@ def qualified_declarations(clean: str) -> list[dict]:
             if not name:
                 raise ValueError('Unnamed theorem is unsupported by census')
             full = name[7:] if name.startswith('_root_.') else '.'.join(x for x in (prefix, name) if x)
-            result.append(dict(name=name, qualified_name=full, line=clean.count('\n', 0, event.start()) + 1))
+            result.append(dict(name=name, qualified_name=full,
+                               private=bool(re.match(r'^[ \t]*private\b', event.group())),
+                               line=clean.count('\n', 0, event.start()) + 1))
     if stack:
         raise ValueError(f'Unclosed source namespace/section in census: {stack}')
     return result
 
 
-def census(source: str) -> dict:
+def census(source: str, module_name: str | None = None) -> dict:
     clean = stripped_lean(source)
     declarations = re.findall(r'\b(?:theorem|lemma)\s+([\w.\'?!]+)', clean)
     qualified = qualified_declarations(clean)
@@ -168,7 +188,23 @@ def census(source: str) -> dict:
     if len(declarations) != len(pins):
         raise ValueError(f'Theorem/pin count differs: {len(declarations)} vs {len(pins)}')
     declared_names = Counter(r['qualified_name'] for r in qualified)
-    printed_names = Counter(p['theorem'] for p in pins)
+    # Lean prints private declarations with a module/counter prefix. Normalize
+    # only a matching private declaration, retaining the exact printed name for
+    # the kernel guard. Public declarations cannot borrow this exception.
+    for pin in pins:
+        matches = []
+        for decl in qualified:
+            if decl['private']:
+                module_pattern = re.escape(module_name) if module_name else r'[A-Za-z_][\w.]*'
+                pattern = r'_private\.' + module_pattern + r'\.\d+\.' + re.escape(decl['qualified_name'])
+                if re.fullmatch(pattern, pin['theorem']):
+                    matches.append(decl['qualified_name'])
+            elif pin['theorem'] == decl['qualified_name']:
+                matches.append(decl['qualified_name'])
+        if len(matches) != 1:
+            raise ValueError(f'Axiom pin has no unique matching declaration: {pin["theorem"]}')
+        pin['declaration_name'] = matches[0]
+    printed_names = Counter(p['declaration_name'] for p in pins)
     if declared_names != printed_names:
         raise ValueError(f'Qualified theorem/pin mismatch: missing {declared_names-printed_names}; extra {printed_names-declared_names}')
     if forbidden:
@@ -224,6 +260,7 @@ class Run:
         self.scratch = HERE / 'build' / self.name
         self.results.mkdir()
         self.scratch.mkdir(parents=True)
+        (self.results / 'check_all_formal.py').write_bytes(Path(__file__).read_bytes())
         self.report = dict(label='EXECUTED integration of selected proposed Lean modules',
                            status='running', started_utc=datetime.now(timezone.utc).isoformat(),
                            command=[sys.executable, *sys.argv], commands=[],
@@ -290,7 +327,8 @@ class Run:
         print(f'{self.name}: {self.report["status"]}; report {self.results / "report.json"}', flush=True)
 
 
-def integrate(run: Run, manifest_path: Path, with_checks: bool):
+def integrate(run: Run, manifest_path: Path, with_checks: bool, rebuild_project: bool = False):
+    (run.results / manifest_path.name).write_bytes(manifest_path.read_bytes())
     manifest = json.loads(manifest_path.read_text())
     run.report['manifest'] = manifest
     for key, cmd in [('companion_head_before', ['git', 'rev-parse', 'HEAD']),
@@ -330,11 +368,15 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
             module = dest[:-5].replace('/', '.')
             if module in modules:
                 raise ValueError(f'Duplicate proposed module {module}')
-            source = RESIDENT / lane['root'] / dest
+            # An explicit mapping lets a separately owned evidence package keep
+            # its canonical source layout without creating a second source copy.
+            source_override = lane.get('source_files', {}).get(dest)
+            source = (RESIDENT / source_override if source_override is not None
+                      else RESIDENT / lane['root'] / dest)
             inputs.append(source)
             run.inputs[str(source)] = sha(source)
             text = source.read_text()
-            inventory = census(text)
+            inventory = census(text, module)
             lane_pins += inventory['pin_count']
             # Verify the lane patch really carries this exact new-file source.
             section = re.split(r'^\+\+\+ b/' + re.escape(dest) + r'\n', patch_text, maxsplit=1, flags=re.M)[1]
@@ -348,6 +390,25 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
             raise ValueError(f'Pin count changed for lane {lane["name"]}: {lane_pins}')
         patch_records.append(dict(path=str(patch_path), sha256=sha(patch_path),
                                   lane=lane['name'], discovered_destinations=destinations))
+    support_files = {}
+    for item in manifest.get('support_files', []):
+        dest = item['destination']
+        parts = Path(dest).parts
+        if (Path(dest).is_absolute() or not parts or '..' in parts
+                or parts[0] != 'LICENSES' or any(p.startswith('.') for p in parts)
+                or dest.endswith('.lean')):
+            raise ValueError(f'Unsafe non-Lean support destination: {dest}')
+        source = RESIDENT / item['source']
+        if source.is_symlink() or sha(source) != item['sha256']:
+            raise ValueError(f'Support source pin mismatch: {source}')
+        text = source.read_text()
+        if dest in support_files and support_files[dest] != text:
+            raise ValueError(f'Conflicting support destination: {dest}')
+        if (COMPANION / dest).exists():
+            raise ValueError(f'Proposed support file already exists in companion: {dest}')
+        support_files[dest] = text
+        inputs.append(source)
+    run.report['support_files'] = manifest.get('support_files', [])
     for rel in manifest.get('checks', []):
         inputs.append(RESIDENT / rel)
     run.inputs = run.snapshot(inputs)
@@ -389,8 +450,7 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
                 existing.add(names[0])
         staged = original.rstrip('\n') + '\n\n' + ''.join(additions)
         staged_umbrellas[umbrella] = staged
-        combined += ''.join(difflib.unified_diff(original.splitlines(True), staged.splitlines(True),
-                                                fromfile='a/' + umbrella + '.lean', tofile='b/' + umbrella + '.lean'))
+        combined += unified_patch(original, staged, 'a/' + umbrella + '.lean', 'b/' + umbrella + '.lean')
     # Every proposed module must be rooted directly or transitively by one of
     # the four staged umbrellas. Check the selected-source dependency graph.
     reachable = set()
@@ -410,8 +470,9 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
         m = modules[name]
         if (source_root / m['dest']).exists():
             raise ValueError(f'Proposed new module already exists in companion: {m["dest"]}')
-        combined += ''.join(difflib.unified_diff([], m['text'].splitlines(True),
-                                                fromfile='/dev/null', tofile='b/' + m['dest']))
+        combined += unified_patch('', m['text'], '/dev/null', 'b/' + m['dest'])
+    for dest, text in sorted(support_files.items()):
+        combined += unified_patch('', text, '/dev/null', 'b/' + dest)
     patch_path = RESIDENT / 'formal/integration/minidregg-combined-resident.patch'
     patch_path.parent.mkdir(parents=True, exist_ok=True)
     patch_path.write_text(combined)
@@ -421,6 +482,7 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
     run.command('combined_patch_check', ['git', 'apply', '--check', str(patch_path)], source_root)
     run.command('combined_patch_apply', ['git', 'apply', str(patch_path)], source_root)
     expected = {m['dest']: m['text'] for m in modules.values()}
+    expected.update(support_files)
     expected.update({u + '.lean': text for u, text in staged_umbrellas.items()})
     for rel, text in expected.items():
         if (source_root / rel).read_text() != text:
@@ -429,6 +491,28 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
     run.report['combined_patch_exact_content_verified'] = True
     run.command('boundary_applied_source', ['bash', str(source_root / 'scripts/check-import-boundary.sh')], source_root)
     run.command('boundary_existing_companion', ['bash', str(COMPANION / 'scripts/check-import-boundary.sh')], COMPANION)
+
+    all_compile = {name: m['imports'] for name, m in modules.items()}
+    all_compile.update({u: imports(text) for u, text in staged_umbrellas.items()})
+    if rebuild_project:
+        # Rebuild the current project source closure, including preexisting dirty
+        # sources. External package/toolchain artifacts remain read-only caches.
+        project_imports = {rel[:-5].replace('/', '.'): imports((source_root / rel).read_text())
+                           for rel in relative_sources}
+        project_imports.update(all_compile)
+        closure = set()
+        pending = list(UMBRELLAS)
+        while pending:
+            name = pending.pop()
+            if name in closure or name not in project_imports:
+                continue
+            closure.add(name)
+            pending.extend(project_imports[name])
+        if not set(modules) <= closure:
+            raise ValueError('Proposed source is outside rebuilt project closure')
+        all_compile = {name: project_imports[name] for name in sorted(closure)}
+    run.report['rebuild_project_source_closure'] = rebuild_project
+    run.report['project_modules_compiled'] = len(all_compile)
 
     # Mirror all companion artifact directories with real local directories and
     # file symlinks. A namespace in the first LEAN_PATH root shadows later roots;
@@ -439,6 +523,9 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
     skip_modules = set(modules) | set(UMBRELLAS)
     artifact_records = []
     for folder, dirs, files in os.walk(artifacts):
+        if rebuild_project:
+            # No original project object may be inherited into this mode.
+            break
         relfolder = Path(folder).relative_to(artifacts)
         targetfolder = overlay / relfolder
         targetfolder.mkdir(parents=True, exist_ok=True)
@@ -454,13 +541,16 @@ def integrate(run: Run, manifest_path: Path, with_checks: bool):
     save(run.results / 'cached_dependency_artifacts.json', artifact_records)
     prior = json.loads(env_record.read_text())
     paths = next(c['stdout'].strip() for c in prior['checks'] if c['command'] == ['lake', 'env', 'printenv', 'LEAN_PATH'])
-    env = dict(os.environ, LEAN_PATH=str(overlay) + ':' + paths)
+    dependency_paths = paths.split(':')
+    if rebuild_project:
+        dependency_paths = [p for p in dependency_paths if Path(p).resolve() != artifacts.resolve()]
+        if any(not Path(p).is_absolute() for p in dependency_paths):
+            raise ValueError('Project-closure rebuild requires absolute external dependency paths')
+    env = dict(os.environ, LEAN_PATH=':'.join([str(overlay), *dependency_paths]))
     run.report['lean_path'] = env['LEAN_PATH']
     run.report['environment_provenance'] = dict(path=str(env_record), sha256=sha(env_record),
                                                 source_command=['lake', 'env', 'printenv', 'LEAN_PATH'],
                                                 reused_dependency_paths=True)
-    all_compile = {name: m['imports'] for name, m in modules.items()}
-    all_compile.update({u: imports(text) for u, text in staged_umbrellas.items()})
     order = topo(all_compile)
     run.report['full_compile_order'] = order
     outputs = {}
@@ -501,10 +591,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest', type=Path, default=HERE / 'modules.json')
     parser.add_argument('--checks', action='store_true', help='Run integer #eval checks in isolated output directories.')
+    parser.add_argument('--rebuild-project', action='store_true',
+                        help='Recompile the entire selected project-source import closure; cache only external packages/toolchain.')
     args = parser.parse_args()
     run = Run()
     try:
-        integrate(run, args.manifest.resolve(), args.checks)
+        integrate(run, args.manifest.resolve(), args.checks, args.rebuild_project)
     except Exception as error:
         run.report['status'] = 'failed'
         run.report['error'] = str(error)

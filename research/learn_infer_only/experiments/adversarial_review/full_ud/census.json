@@ -1,0 +1,2207 @@
+{
+  "Theory.RSInterpolationMatrix": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationMatrix.lean",
+    "sha256": "09768befcc216200aa971fd0653606b8678af5123429e5a8b3e3558b230a0d7f",
+    "theorems": [
+      "BW_homMatrix_entry_natDegree_eq_zero_of_ge",
+      "BW_homMatrix_entry_natDegree_le_one",
+      "BW_homMatrix_map_evalRingHom",
+      "BW_homMatrix_mulVec_eq_zero_iff",
+      "Fin_sum_ite_lt_e_add_one",
+      "BW_homMatrix_det_submatrix_natDegree_le_e_add_one",
+      "RS_isUnit_det_vandermonde_C_of_injective",
+      "RS_mulVec_append_castAdd_natAdd",
+      "RS_natDegree_inv_neg_vandermonde_C_eq_zero"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "BW_homMatrix_entry_natDegree_eq_zero_of_ge",
+        "qualified_name": "Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_eq_zero_of_ge",
+        "private": false,
+        "line": 36
+      },
+      {
+        "name": "BW_homMatrix_entry_natDegree_le_one",
+        "qualified_name": "Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_le_one",
+        "private": false,
+        "line": 50
+      },
+      {
+        "name": "BW_homMatrix_map_evalRingHom",
+        "qualified_name": "Minidregg.RSInterpolation.BW_homMatrix_map_evalRingHom",
+        "private": false,
+        "line": 91
+      },
+      {
+        "name": "BW_homMatrix_mulVec_eq_zero_iff",
+        "qualified_name": "Minidregg.RSInterpolation.BW_homMatrix_mulVec_eq_zero_iff",
+        "private": false,
+        "line": 106
+      },
+      {
+        "name": "Fin_sum_ite_lt_e_add_one",
+        "qualified_name": "Minidregg.RSInterpolation.Fin_sum_ite_lt_e_add_one",
+        "private": false,
+        "line": 174
+      },
+      {
+        "name": "BW_homMatrix_det_submatrix_natDegree_le_e_add_one",
+        "qualified_name": "Minidregg.RSInterpolation.BW_homMatrix_det_submatrix_natDegree_le_e_add_one",
+        "private": false,
+        "line": 186
+      },
+      {
+        "name": "RS_isUnit_det_vandermonde_C_of_injective",
+        "qualified_name": "Minidregg.RSInterpolation.RS_isUnit_det_vandermonde_C_of_injective",
+        "private": false,
+        "line": 280
+      },
+      {
+        "name": "RS_mulVec_append_castAdd_natAdd",
+        "qualified_name": "Minidregg.RSInterpolation.RS_mulVec_append_castAdd_natAdd",
+        "private": false,
+        "line": 309
+      },
+      {
+        "name": "RS_natDegree_inv_neg_vandermonde_C_eq_zero",
+        "qualified_name": "Minidregg.RSInterpolation.RS_natDegree_inv_neg_vandermonde_C_eq_zero",
+        "private": false,
+        "line": 321
+      }
+    ],
+    "theorem_count": 9,
+    "pin_count": 9,
+    "pins": [
+      {
+        "theorem": "Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_eq_zero_of_ge",
+        "requested_name": "BW_homMatrix_entry_natDegree_eq_zero_of_ge",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 354,
+        "expected_message": "info: 'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_eq_zero_of_ge' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_eq_zero_of_ge"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_le_one",
+        "requested_name": "BW_homMatrix_entry_natDegree_le_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 358,
+        "expected_message": "info: 'Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.BW_homMatrix_entry_natDegree_le_one"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.BW_homMatrix_map_evalRingHom",
+        "requested_name": "BW_homMatrix_map_evalRingHom",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 362,
+        "expected_message": "info: 'Minidregg.RSInterpolation.BW_homMatrix_map_evalRingHom' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.BW_homMatrix_map_evalRingHom"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.BW_homMatrix_mulVec_eq_zero_iff",
+        "requested_name": "BW_homMatrix_mulVec_eq_zero_iff",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 366,
+        "expected_message": "info: 'Minidregg.RSInterpolation.BW_homMatrix_mulVec_eq_zero_iff' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.BW_homMatrix_mulVec_eq_zero_iff"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.Fin_sum_ite_lt_e_add_one",
+        "requested_name": "Fin_sum_ite_lt_e_add_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 370,
+        "expected_message": "info: 'Minidregg.RSInterpolation.Fin_sum_ite_lt_e_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.Fin_sum_ite_lt_e_add_one"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.BW_homMatrix_det_submatrix_natDegree_le_e_add_one",
+        "requested_name": "BW_homMatrix_det_submatrix_natDegree_le_e_add_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 374,
+        "expected_message": "info: 'Minidregg.RSInterpolation.BW_homMatrix_det_submatrix_natDegree_le_e_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.BW_homMatrix_det_submatrix_natDegree_le_e_add_one"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.RS_isUnit_det_vandermonde_C_of_injective",
+        "requested_name": "RS_isUnit_det_vandermonde_C_of_injective",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 378,
+        "expected_message": "info: 'Minidregg.RSInterpolation.RS_isUnit_det_vandermonde_C_of_injective' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.RS_isUnit_det_vandermonde_C_of_injective"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.RS_mulVec_append_castAdd_natAdd",
+        "requested_name": "RS_mulVec_append_castAdd_natAdd",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 382,
+        "expected_message": "info: 'Minidregg.RSInterpolation.RS_mulVec_append_castAdd_natAdd' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.RS_mulVec_append_castAdd_natAdd"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.RS_natDegree_inv_neg_vandermonde_C_eq_zero",
+        "requested_name": "RS_natDegree_inv_neg_vandermonde_C_eq_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 386,
+        "expected_message": "info: 'Minidregg.RSInterpolation.RS_natDegree_inv_neg_vandermonde_C_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.RS_natDegree_inv_neg_vandermonde_C_eq_zero"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Theory.RSInterpolationKernel": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Theory/RSInterpolationKernel.lean",
+    "sha256": "cf4a3528d8d0f0058a433fa7867049062a30f8c74ac2fbb77c6959fa442dd329",
+    "theorems": [
+      "det_eq_zero_of_specializations",
+      "bounded_kernel_of_specializations"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "det_eq_zero_of_specializations",
+        "qualified_name": "Minidregg.RSInterpolation.det_eq_zero_of_specializations",
+        "private": false,
+        "line": 27
+      },
+      {
+        "name": "bounded_kernel_of_specializations",
+        "qualified_name": "Minidregg.RSInterpolation.bounded_kernel_of_specializations",
+        "private": false,
+        "line": 107
+      }
+    ],
+    "theorem_count": 2,
+    "pin_count": 2,
+    "pins": [
+      {
+        "theorem": "Minidregg.RSInterpolation.det_eq_zero_of_specializations",
+        "requested_name": "det_eq_zero_of_specializations",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 338,
+        "expected_message": "info: 'Minidregg.RSInterpolation.det_eq_zero_of_specializations' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.det_eq_zero_of_specializations"
+      },
+      {
+        "theorem": "Minidregg.RSInterpolation.bounded_kernel_of_specializations",
+        "requested_name": "bounded_kernel_of_specializations",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 342,
+        "expected_message": "info: 'Minidregg.RSInterpolation.bounded_kernel_of_specializations' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.RSInterpolation.bounded_kernel_of_specializations"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage.FullUDStatement": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDStatement.lean",
+    "sha256": "b55968441083d73bd8b30d6281d4bc6374012ef5b1289900694aaf5c6fbf9f42",
+    "theorems": [
+      "x_mem",
+      "one_mem",
+      "premise_inhabited",
+      "conclusion_inhabited"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "x_mem",
+        "qualified_name": "Minidregg.Selvage.FullUDWitness.x_mem",
+        "private": false,
+        "line": 52
+      },
+      {
+        "name": "one_mem",
+        "qualified_name": "Minidregg.Selvage.FullUDWitness.one_mem",
+        "private": false,
+        "line": 56
+      },
+      {
+        "name": "premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.FullUDWitness.premise_inhabited",
+        "private": false,
+        "line": 62
+      },
+      {
+        "name": "conclusion_inhabited",
+        "qualified_name": "Minidregg.Selvage.FullUDWitness.conclusion_inhabited",
+        "private": false,
+        "line": 70
+      }
+    ],
+    "theorem_count": 4,
+    "pin_count": 4,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.FullUDWitness.x_mem",
+        "requested_name": "x_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 79,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDWitness.x_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDWitness.x_mem"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FullUDWitness.one_mem",
+        "requested_name": "one_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 83,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDWitness.one_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDWitness.one_mem"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FullUDWitness.premise_inhabited",
+        "requested_name": "FullUDWitness.premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 89,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDWitness.premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDWitness.premise_inhabited"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FullUDWitness.conclusion_inhabited",
+        "requested_name": "FullUDWitness.conclusion_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 92,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDWitness.conclusion_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDWitness.conclusion_inhabited"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage.FullUDTeeth": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDTeeth.lean",
+    "sha256": "c4e8a1d0a95fedfe2e8321332916c65b4853f29e442243f392d6faf3e6774fd7",
+    "theorems": [
+      "affine_mem",
+      "codeword_affine",
+      "all_folds_close",
+      "common_affine_card",
+      "no_joint_three",
+      "radius_hypothesis_necessary"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "affine_mem",
+        "qualified_name": "Minidregg.Selvage.FullUDTeeth.affine_mem",
+        "private": true,
+        "line": 31
+      },
+      {
+        "name": "codeword_affine",
+        "qualified_name": "Minidregg.Selvage.FullUDTeeth.codeword_affine",
+        "private": true,
+        "line": 39
+      },
+      {
+        "name": "all_folds_close",
+        "qualified_name": "Minidregg.Selvage.FullUDTeeth.all_folds_close",
+        "private": false,
+        "line": 53
+      },
+      {
+        "name": "common_affine_card",
+        "qualified_name": "Minidregg.Selvage.FullUDTeeth.common_affine_card",
+        "private": true,
+        "line": 62
+      },
+      {
+        "name": "no_joint_three",
+        "qualified_name": "Minidregg.Selvage.FullUDTeeth.no_joint_three",
+        "private": false,
+        "line": 68
+      },
+      {
+        "name": "radius_hypothesis_necessary",
+        "qualified_name": "Minidregg.Selvage.FullUDTeeth.radius_hypothesis_necessary",
+        "private": false,
+        "line": 86
+      }
+    ],
+    "theorem_count": 6,
+    "pin_count": 6,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.FullUDTeeth.radius_hypothesis_necessary",
+        "requested_name": "radius_hypothesis_necessary",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 94,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDTeeth.radius_hypothesis_necessary' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDTeeth.radius_hypothesis_necessary"
+      },
+      {
+        "theorem": "_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.affine_mem",
+        "requested_name": "affine_mem",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 98,
+        "expected_message": "info: '_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.affine_mem' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDTeeth.affine_mem"
+      },
+      {
+        "theorem": "_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.codeword_affine",
+        "requested_name": "codeword_affine",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 102,
+        "expected_message": "info: '_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.codeword_affine' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDTeeth.codeword_affine"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FullUDTeeth.all_folds_close",
+        "requested_name": "all_folds_close",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 106,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDTeeth.all_folds_close' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDTeeth.all_folds_close"
+      },
+      {
+        "theorem": "_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.common_affine_card",
+        "requested_name": "common_affine_card",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 110,
+        "expected_message": "info: '_private.Selvage.FullUDTeeth.0.Minidregg.Selvage.FullUDTeeth.common_affine_card' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDTeeth.common_affine_card"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FullUDTeeth.no_joint_three",
+        "requested_name": "no_joint_three",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 114,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDTeeth.no_joint_three' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDTeeth.no_joint_three"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage.FullUDInterpolation": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDInterpolation.lean",
+    "sha256": "8dea741e27fc99fbbc2fd668dbe43a700e82d323e7550bdbf7a242e1003fc4d8",
+    "theorems": [
+      "bw_specialization_of_close",
+      "bw_bounded_kernel_of_many_close"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "bw_specialization_of_close",
+        "qualified_name": "Minidregg.Selvage.bw_specialization_of_close",
+        "private": false,
+        "line": 21
+      },
+      {
+        "name": "bw_bounded_kernel_of_many_close",
+        "qualified_name": "Minidregg.Selvage.bw_bounded_kernel_of_many_close",
+        "private": false,
+        "line": 154
+      }
+    ],
+    "theorem_count": 2,
+    "pin_count": 2,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.bw_specialization_of_close",
+        "requested_name": "bw_specialization_of_close",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 170,
+        "expected_message": "info: 'Minidregg.Selvage.bw_specialization_of_close' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.bw_specialization_of_close"
+      },
+      {
+        "theorem": "Minidregg.Selvage.bw_bounded_kernel_of_many_close",
+        "requested_name": "bw_bounded_kernel_of_many_close",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 174,
+        "expected_message": "info: 'Minidregg.Selvage.bw_bounded_kernel_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.bw_bounded_kernel_of_many_close"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage.FullUDBivariate": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDBivariate.lean",
+    "sha256": "a4a955fd26559a6d279458aab88716f34a0e6db7c56c21383f752b0ecc15db2c",
+    "theorems": [
+      "bw_bivariate_of_many_close"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "bw_bivariate_of_many_close",
+        "qualified_name": "Minidregg.Selvage.bw_bivariate_of_many_close",
+        "private": false,
+        "line": 20
+      }
+    ],
+    "theorem_count": 1,
+    "pin_count": 1,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.bw_bivariate_of_many_close",
+        "requested_name": "bw_bivariate_of_many_close",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 199,
+        "expected_message": "info: 'Minidregg.Selvage.bw_bivariate_of_many_close' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.bw_bivariate_of_many_close"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage.FullUDCore": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDCore.lean",
+    "sha256": "cdb3ac3526cf97de9c57d03a73a23173f453681d7d00ea6975e8a5eab06f88f3",
+    "theorems": [
+      "rs_nearby_polynomial",
+      "fullUDCardCore"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "rs_nearby_polynomial",
+        "qualified_name": "Minidregg.Selvage.rs_nearby_polynomial",
+        "private": true,
+        "line": 20
+      },
+      {
+        "name": "fullUDCardCore",
+        "qualified_name": "Minidregg.Selvage.fullUDCardCore",
+        "private": false,
+        "line": 38
+      }
+    ],
+    "theorem_count": 2,
+    "pin_count": 2,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.fullUDCardCore",
+        "requested_name": "fullUDCardCore",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 335,
+        "expected_message": "info: 'Minidregg.Selvage.fullUDCardCore' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.fullUDCardCore"
+      },
+      {
+        "theorem": "_private.Selvage.FullUDCore.0.Minidregg.Selvage.rs_nearby_polynomial",
+        "requested_name": "rs_nearby_polynomial",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 339,
+        "expected_message": "info: '_private.Selvage.FullUDCore.0.Minidregg.Selvage.rs_nearby_polynomial' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.rs_nearby_polynomial"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage.ProximityGapFullUD": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/ProximityGapFullUD.lean",
+    "sha256": "1aacc86d5688094c3549a6a0878d6c6856cc1ff93a6f4b37598ed9d94ecfddbf",
+    "theorems": [
+      "correlatedAgreement_of_many_close_fullUD",
+      "reedSolomonCode_isProximityGenerator_fullUD",
+      "hasMutualCorrelatedAgreement_fullUD",
+      "foldDistancePreserving_fullUD"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "correlatedAgreement_of_many_close_fullUD",
+        "qualified_name": "Minidregg.Selvage.correlatedAgreement_of_many_close_fullUD",
+        "private": false,
+        "line": 17
+      },
+      {
+        "name": "reedSolomonCode_isProximityGenerator_fullUD",
+        "qualified_name": "Minidregg.Selvage.reedSolomonCode_isProximityGenerator_fullUD",
+        "private": false,
+        "line": 46
+      },
+      {
+        "name": "hasMutualCorrelatedAgreement_fullUD",
+        "qualified_name": "Minidregg.Selvage.hasMutualCorrelatedAgreement_fullUD",
+        "private": false,
+        "line": 85
+      },
+      {
+        "name": "foldDistancePreserving_fullUD",
+        "qualified_name": "Minidregg.Selvage.foldDistancePreserving_fullUD",
+        "private": false,
+        "line": 105
+      }
+    ],
+    "theorem_count": 4,
+    "pin_count": 4,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.reedSolomonCode_isProximityGenerator_fullUD",
+        "requested_name": "reedSolomonCode_isProximityGenerator_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 116,
+        "expected_message": "info: 'Minidregg.Selvage.reedSolomonCode_isProximityGenerator_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.reedSolomonCode_isProximityGenerator_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.hasMutualCorrelatedAgreement_fullUD",
+        "requested_name": "hasMutualCorrelatedAgreement_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 120,
+        "expected_message": "info: 'Minidregg.Selvage.hasMutualCorrelatedAgreement_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.hasMutualCorrelatedAgreement_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.foldDistancePreserving_fullUD",
+        "requested_name": "foldDistancePreserving_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 124,
+        "expected_message": "info: 'Minidregg.Selvage.foldDistancePreserving_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.foldDistancePreserving_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.correlatedAgreement_of_many_close_fullUD",
+        "requested_name": "correlatedAgreement_of_many_close_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 128,
+        "expected_message": "info: 'Minidregg.Selvage.correlatedAgreement_of_many_close_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.correlatedAgreement_of_many_close_fullUD"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage.FullUDFriConsumer": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDFriConsumer.lean",
+    "sha256": "ef836980566a6c00596cae38e3caa7d5c2b424f64f2dada681ba512c3d9af02b",
+    "theorems": [
+      "proximity_sound_halfThen_fullUD",
+      "proximity_sound_rateHalf_twoFifths_fullUD",
+      "rateHalf_twoFifths_new_band",
+      "committedFri_sound_halfThen_fullUD"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "proximity_sound_halfThen_fullUD",
+        "qualified_name": "Minidregg.Selvage.proximity_sound_halfThen_fullUD",
+        "private": false,
+        "line": 16
+      },
+      {
+        "name": "proximity_sound_rateHalf_twoFifths_fullUD",
+        "qualified_name": "Minidregg.Selvage.proximity_sound_rateHalf_twoFifths_fullUD",
+        "private": false,
+        "line": 49
+      },
+      {
+        "name": "rateHalf_twoFifths_new_band",
+        "qualified_name": "Minidregg.Selvage.rateHalf_twoFifths_new_band",
+        "private": false,
+        "line": 73
+      },
+      {
+        "name": "committedFri_sound_halfThen_fullUD",
+        "qualified_name": "Minidregg.Selvage.committedFri_sound_halfThen_fullUD",
+        "private": false,
+        "line": 82
+      }
+    ],
+    "theorem_count": 4,
+    "pin_count": 4,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.proximity_sound_halfThen_fullUD",
+        "requested_name": "proximity_sound_halfThen_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 99,
+        "expected_message": "info: 'Minidregg.Selvage.proximity_sound_halfThen_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.proximity_sound_halfThen_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.committedFri_sound_halfThen_fullUD",
+        "requested_name": "committedFri_sound_halfThen_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 103,
+        "expected_message": "info: 'Minidregg.Selvage.committedFri_sound_halfThen_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.committedFri_sound_halfThen_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.proximity_sound_rateHalf_twoFifths_fullUD",
+        "requested_name": "proximity_sound_rateHalf_twoFifths_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 107,
+        "expected_message": "info: 'Minidregg.Selvage.proximity_sound_rateHalf_twoFifths_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.proximity_sound_rateHalf_twoFifths_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.rateHalf_twoFifths_new_band",
+        "requested_name": "rateHalf_twoFifths_new_band",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 111,
+        "expected_message": "info: 'Minidregg.Selvage.rateHalf_twoFifths_new_band' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.rateHalf_twoFifths_new_band"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Selvage.FullUDWitnesses": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud/src/Selvage/FullUDWitnesses.lean",
+    "sha256": "07d444e5201a7edc60694f345cc3999c83fd2702d224a4b5540bb4b9f66d2ddf",
+    "theorems": [
+      "line_pr_one_fullUD",
+      "good_line_CA_fullUD",
+      "old_band_rejects_fullUD_witness",
+      "fullUD_generator_premise_inhabited"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "line_pr_one_fullUD",
+        "qualified_name": "Minidregg.Selvage.FullUDWitness.line_pr_one_fullUD",
+        "private": false,
+        "line": 13
+      },
+      {
+        "name": "good_line_CA_fullUD",
+        "qualified_name": "Minidregg.Selvage.FullUDWitness.good_line_CA_fullUD",
+        "private": false,
+        "line": 32
+      },
+      {
+        "name": "old_band_rejects_fullUD_witness",
+        "qualified_name": "Minidregg.Selvage.FullUDWitness.old_band_rejects_fullUD_witness",
+        "private": false,
+        "line": 41
+      },
+      {
+        "name": "fullUD_generator_premise_inhabited",
+        "qualified_name": "Minidregg.Selvage.FullUDWitness.fullUD_generator_premise_inhabited",
+        "private": false,
+        "line": 47
+      }
+    ],
+    "theorem_count": 4,
+    "pin_count": 4,
+    "pins": [
+      {
+        "theorem": "Minidregg.Selvage.FullUDWitness.line_pr_one_fullUD",
+        "requested_name": "line_pr_one_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 58,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDWitness.line_pr_one_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDWitness.line_pr_one_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FullUDWitness.good_line_CA_fullUD",
+        "requested_name": "good_line_CA_fullUD",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 61,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDWitness.good_line_CA_fullUD' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDWitness.good_line_CA_fullUD"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FullUDWitness.old_band_rejects_fullUD_witness",
+        "requested_name": "old_band_rejects_fullUD_witness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 64,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDWitness.old_band_rejects_fullUD_witness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDWitness.old_band_rejects_fullUD_witness"
+      },
+      {
+        "theorem": "Minidregg.Selvage.FullUDWitness.fullUD_generator_premise_inhabited",
+        "requested_name": "fullUD_generator_premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 67,
+        "expected_message": "info: 'Minidregg.Selvage.FullUDWitness.fullUD_generator_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Minidregg.Selvage.FullUDWitness.fullUD_generator_premise_inhabited"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Theory.PolynomialMatrixKernel": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/all_pins_successor/PolynomialMatrixKernel.lean",
+    "sha256": "6c2aa5d0be03d7c00c3aca459eff2532570f205f6af604210f2cf033aaaec5dd",
+    "theorems": [
+      "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+      "RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+      "RS_det_submatrix_eq_zero_of_det_eq_zero",
+      "RS_mulVec_adjugate_col_eq_det",
+      "RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+      "RS_natDegree_det_le_of_entry_natDegree_le_one",
+      "adjugate_updateRow_same_col",
+      "det_updateRow_eq_sum_mul_adjugate_col",
+      "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+      "correctness",
+      "witnessMatrix_premises",
+      "witnessVector_valid",
+      "premises_inhabited",
+      "satisfiable",
+      "determinant_hypothesis_teeth",
+      "degree_bound_teeth"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+        "qualified_name": "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+        "private": false,
+        "line": 54
+      },
+      {
+        "name": "RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+        "qualified_name": "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+        "private": false,
+        "line": 65
+      },
+      {
+        "name": "RS_det_submatrix_eq_zero_of_det_eq_zero",
+        "qualified_name": "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+        "private": false,
+        "line": 76
+      },
+      {
+        "name": "RS_mulVec_adjugate_col_eq_det",
+        "qualified_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+        "private": false,
+        "line": 109
+      },
+      {
+        "name": "RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+        "qualified_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+        "private": false,
+        "line": 126
+      },
+      {
+        "name": "RS_natDegree_det_le_of_entry_natDegree_le_one",
+        "qualified_name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+        "private": false,
+        "line": 141
+      },
+      {
+        "name": "adjugate_updateRow_same_col",
+        "qualified_name": "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+        "private": false,
+        "line": 181
+      },
+      {
+        "name": "det_updateRow_eq_sum_mul_adjugate_col",
+        "qualified_name": "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+        "private": false,
+        "line": 188
+      },
+      {
+        "name": "RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+        "qualified_name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+        "private": false,
+        "line": 199
+      },
+      {
+        "name": "correctness",
+        "qualified_name": "PolynomialMatrixKernel.correctness",
+        "private": false,
+        "line": 422
+      },
+      {
+        "name": "witnessMatrix_premises",
+        "qualified_name": "PolynomialMatrixKernel.witnessMatrix_premises",
+        "private": false,
+        "line": 433
+      },
+      {
+        "name": "witnessVector_valid",
+        "qualified_name": "PolynomialMatrixKernel.witnessVector_valid",
+        "private": false,
+        "line": 440
+      },
+      {
+        "name": "premises_inhabited",
+        "qualified_name": "PolynomialMatrixKernel.premises_inhabited",
+        "private": false,
+        "line": 454
+      },
+      {
+        "name": "satisfiable",
+        "qualified_name": "PolynomialMatrixKernel.satisfiable",
+        "private": false,
+        "line": 462
+      },
+      {
+        "name": "determinant_hypothesis_teeth",
+        "qualified_name": "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+        "private": false,
+        "line": 468
+      },
+      {
+        "name": "degree_bound_teeth",
+        "qualified_name": "PolynomialMatrixKernel.degree_bound_teeth",
+        "private": false,
+        "line": 481
+      }
+    ],
+    "theorem_count": 16,
+    "pin_count": 16,
+    "pins": [
+      {
+        "theorem": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+        "requested_name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 506,
+        "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.correctness",
+        "requested_name": "PolynomialMatrixKernel.correctness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 512,
+        "expected_message": "info: 'PolynomialMatrixKernel.correctness' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.correctness"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.witnessMatrix_premises",
+        "requested_name": "PolynomialMatrixKernel.witnessMatrix_premises",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 516,
+        "expected_message": "info: 'PolynomialMatrixKernel.witnessMatrix_premises' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.witnessMatrix_premises"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.witnessVector_valid",
+        "requested_name": "PolynomialMatrixKernel.witnessVector_valid",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 520,
+        "expected_message": "info: 'PolynomialMatrixKernel.witnessVector_valid' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.witnessVector_valid"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.premises_inhabited",
+        "requested_name": "PolynomialMatrixKernel.premises_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 524,
+        "expected_message": "info: 'PolynomialMatrixKernel.premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.premises_inhabited"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.satisfiable",
+        "requested_name": "PolynomialMatrixKernel.satisfiable",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 528,
+        "expected_message": "info: 'PolynomialMatrixKernel.satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.satisfiable"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+        "requested_name": "PolynomialMatrixKernel.determinant_hypothesis_teeth",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 532,
+        "expected_message": "info: 'PolynomialMatrixKernel.determinant_hypothesis_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.determinant_hypothesis_teeth"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.degree_bound_teeth",
+        "requested_name": "PolynomialMatrixKernel.degree_bound_teeth",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 536,
+        "expected_message": "info: 'PolynomialMatrixKernel.degree_bound_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.degree_bound_teeth"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+        "requested_name": "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 540,
+        "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.Source.RS_adjugate_fin_succ_eq_det_submatrix_last_castSucc"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+        "requested_name": "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 546,
+        "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.Source.RS_adjugate_last_last_eq_det_submatrix_castSucc_castSucc"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+        "requested_name": "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 552,
+        "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.Source.RS_det_submatrix_eq_zero_of_det_eq_zero"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+        "requested_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 558,
+        "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_det"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+        "requested_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 562,
+        "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.Source.RS_mulVec_adjugate_col_eq_zero_of_det_eq_zero"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+        "requested_name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 568,
+        "expected_message": "info: 'PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.Source.RS_natDegree_det_le_of_entry_natDegree_le_one"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+        "requested_name": "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 574,
+        "expected_message": "info: 'PolynomialMatrixKernel.Source.adjugate_updateRow_same_col' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.Source.adjugate_updateRow_same_col"
+      },
+      {
+        "theorem": "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+        "requested_name": "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 578,
+        "expected_message": "info: 'PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "PolynomialMatrixKernel.Source.det_updateRow_eq_sum_mul_adjugate_col"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Theory.PolynomialBivariate": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialBivariate.lean",
+    "sha256": "fef487127bd25f43775a238add6bdb3d7becbdd6745af393fd2bd834daa18dd0",
+    "theorems": [
+      "leadingCoeffY_eq_zero",
+      "leadingCoeffY_ne_zero",
+      "degreeY_mul",
+      "coeff_natDegree_le_degreeX",
+      "evalX_eq_map",
+      "degreeX_swap",
+      "evalY_eq_evalX_swap",
+      "natDegreeY_swap",
+      "degreeX_mul",
+      "evalX_mul"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "leadingCoeffY_eq_zero",
+        "qualified_name": "Polynomial.Bivariate.leadingCoeffY_eq_zero",
+        "private": false,
+        "line": 37
+      },
+      {
+        "name": "leadingCoeffY_ne_zero",
+        "qualified_name": "Polynomial.Bivariate.leadingCoeffY_ne_zero",
+        "private": false,
+        "line": 43
+      },
+      {
+        "name": "degreeY_mul",
+        "qualified_name": "Polynomial.Bivariate.degreeY_mul",
+        "private": false,
+        "line": 58
+      },
+      {
+        "name": "coeff_natDegree_le_degreeX",
+        "qualified_name": "Polynomial.Bivariate.coeff_natDegree_le_degreeX",
+        "private": false,
+        "line": 62
+      },
+      {
+        "name": "evalX_eq_map",
+        "qualified_name": "Polynomial.Bivariate.evalX_eq_map",
+        "private": false,
+        "line": 86
+      },
+      {
+        "name": "degreeX_swap",
+        "qualified_name": "Polynomial.Bivariate.degreeX_swap",
+        "private": false,
+        "line": 100
+      },
+      {
+        "name": "evalY_eq_evalX_swap",
+        "qualified_name": "Polynomial.Bivariate.evalY_eq_evalX_swap",
+        "private": false,
+        "line": 183
+      },
+      {
+        "name": "natDegreeY_swap",
+        "qualified_name": "Polynomial.Bivariate.natDegreeY_swap",
+        "private": false,
+        "line": 207
+      },
+      {
+        "name": "degreeX_mul",
+        "qualified_name": "Polynomial.Bivariate.degreeX_mul",
+        "private": false,
+        "line": 227
+      },
+      {
+        "name": "evalX_mul",
+        "qualified_name": "Polynomial.Bivariate.evalX_mul",
+        "private": false,
+        "line": 235
+      }
+    ],
+    "theorem_count": 10,
+    "pin_count": 10,
+    "pins": [
+      {
+        "theorem": "Polynomial.Bivariate.leadingCoeffY_eq_zero",
+        "requested_name": "Polynomial.Bivariate.leadingCoeffY_eq_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 244,
+        "expected_message": "info: 'Polynomial.Bivariate.leadingCoeffY_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.leadingCoeffY_eq_zero"
+      },
+      {
+        "theorem": "Polynomial.Bivariate.leadingCoeffY_ne_zero",
+        "requested_name": "Polynomial.Bivariate.leadingCoeffY_ne_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 248,
+        "expected_message": "info: 'Polynomial.Bivariate.leadingCoeffY_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.leadingCoeffY_ne_zero"
+      },
+      {
+        "theorem": "Polynomial.Bivariate.degreeY_mul",
+        "requested_name": "Polynomial.Bivariate.degreeY_mul",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 252,
+        "expected_message": "info: 'Polynomial.Bivariate.degreeY_mul' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.degreeY_mul"
+      },
+      {
+        "theorem": "Polynomial.Bivariate.coeff_natDegree_le_degreeX",
+        "requested_name": "Polynomial.Bivariate.coeff_natDegree_le_degreeX",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 256,
+        "expected_message": "info: 'Polynomial.Bivariate.coeff_natDegree_le_degreeX' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.coeff_natDegree_le_degreeX"
+      },
+      {
+        "theorem": "Polynomial.Bivariate.evalX_eq_map",
+        "requested_name": "Polynomial.Bivariate.evalX_eq_map",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 260,
+        "expected_message": "info: 'Polynomial.Bivariate.evalX_eq_map' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.evalX_eq_map"
+      },
+      {
+        "theorem": "Polynomial.Bivariate.degreeX_swap",
+        "requested_name": "Polynomial.Bivariate.degreeX_swap",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 264,
+        "expected_message": "info: 'Polynomial.Bivariate.degreeX_swap' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.degreeX_swap"
+      },
+      {
+        "theorem": "Polynomial.Bivariate.evalY_eq_evalX_swap",
+        "requested_name": "Polynomial.Bivariate.evalY_eq_evalX_swap",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 268,
+        "expected_message": "info: 'Polynomial.Bivariate.evalY_eq_evalX_swap' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.evalY_eq_evalX_swap"
+      },
+      {
+        "theorem": "Polynomial.Bivariate.natDegreeY_swap",
+        "requested_name": "Polynomial.Bivariate.natDegreeY_swap",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 272,
+        "expected_message": "info: 'Polynomial.Bivariate.natDegreeY_swap' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.natDegreeY_swap"
+      },
+      {
+        "theorem": "Polynomial.Bivariate.degreeX_mul",
+        "requested_name": "Polynomial.Bivariate.degreeX_mul",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 276,
+        "expected_message": "info: 'Polynomial.Bivariate.degreeX_mul' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.degreeX_mul"
+      },
+      {
+        "theorem": "Polynomial.Bivariate.evalX_mul",
+        "requested_name": "Polynomial.Bivariate.evalX_mul",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 280,
+        "expected_message": "info: 'Polynomial.Bivariate.evalX_mul' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "Polynomial.Bivariate.evalX_mul"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Theory.PolynomialGluingStatement": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluingStatement.lean",
+    "sha256": "8f7fb82b2d8003cc034ca1a0035495b38a104f4bbb4c91e62b11b962f0ab4cf0",
+    "theorems": [
+      "polynomialGluing_premise_inhabited",
+      "polynomialGluing_satisfiable",
+      "polynomialGluing_teeth"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "polynomialGluing_premise_inhabited",
+        "qualified_name": "polynomialGluing_premise_inhabited",
+        "private": false,
+        "line": 67
+      },
+      {
+        "name": "polynomialGluing_satisfiable",
+        "qualified_name": "polynomialGluing_satisfiable",
+        "private": false,
+        "line": 72
+      },
+      {
+        "name": "polynomialGluing_teeth",
+        "qualified_name": "polynomialGluing_teeth",
+        "private": false,
+        "line": 80
+      }
+    ],
+    "theorem_count": 3,
+    "pin_count": 3,
+    "pins": [
+      {
+        "theorem": "polynomialGluing_premise_inhabited",
+        "requested_name": "polynomialGluing_premise_inhabited",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 85,
+        "expected_message": "info: 'polynomialGluing_premise_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "polynomialGluing_premise_inhabited"
+      },
+      {
+        "theorem": "polynomialGluing_satisfiable",
+        "requested_name": "polynomialGluing_satisfiable",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 88,
+        "expected_message": "info: 'polynomialGluing_satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "polynomialGluing_satisfiable"
+      },
+      {
+        "theorem": "polynomialGluing_teeth",
+        "requested_name": "polynomialGluing_teeth",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 91,
+        "expected_message": "info: 'polynomialGluing_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "polynomialGluing_teeth"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "Theory.PolynomialGluing": {
+    "path": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_gluing/universe_successor/PolynomialGluing.lean",
+    "sha256": "898da7979dd4f3ed387c8a83d9e2a19dd1e70f6dcb82b09098f7c18c7a0b7f41",
+    "theorems": [
+      "ps_bx_lt_nx",
+      "ps_by_lt_ny",
+      "ps_card_eval_x_eq_zero_le_degree_x",
+      "ps_card_eval_y_eq_zero_le_nat_degree_y",
+      "ps_coeff_mul_monomial_ite",
+      "ps_coeff_mul_sum_monomial",
+      "ps_degree_x_swap",
+      "ps_descend_eval_x",
+      "ps_descend_eval_y",
+      "ps_eval_x_eq_map",
+      "ps_eval_y_eq_eval_x_swap",
+      "ps_exists_x_preserve_nat_degree_y",
+      "ps_exists_y_preserve_degree_x",
+      "ps_filter_nonzero_card_y",
+      "ps_filter_nonzero_card_x",
+      "ps_degX_bound",
+      "ps_degY_bound",
+      "ps_degree_bounds_of_mul",
+      "ps_gcd_decompose",
+      "ps_is_rel_prime_swap",
+      "ps_nat_degree_y_swap",
+      "ps_nat_degree_mul_x_pow_le",
+      "ps_nat_degree_resultant_le",
+      "ps_resultant_map",
+      "ps_resultant_eval_x",
+      "ps_sylvester_map",
+      "ps_sylvester_mul_vec_eq_coeff_add",
+      "ps_resultant_dvd_pow_eval_x",
+      "ps_resultant_dvd_pow_eval_y",
+      "ps_resultant_ne_zero_of_is_rel_prime",
+      "ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero",
+      "ps_exists_qx_of_cancel",
+      "ps_exists_qy_of_cancel",
+      "ps_coprime_case_constant",
+      "ps_exists_p_nonzero",
+      "ps_exists_p",
+      "polishchuk_spielman",
+      "polynomialGluing"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "ps_bx_lt_nx",
+        "qualified_name": "ps_bx_lt_nx",
+        "private": false,
+        "line": 49
+      },
+      {
+        "name": "ps_by_lt_ny",
+        "qualified_name": "ps_by_lt_ny",
+        "private": false,
+        "line": 55
+      },
+      {
+        "name": "ps_card_eval_x_eq_zero_le_degree_x",
+        "qualified_name": "ps_card_eval_x_eq_zero_le_degree_x",
+        "private": false,
+        "line": 64
+      },
+      {
+        "name": "ps_card_eval_y_eq_zero_le_nat_degree_y",
+        "qualified_name": "ps_card_eval_y_eq_zero_le_nat_degree_y",
+        "private": false,
+        "line": 86
+      },
+      {
+        "name": "ps_coeff_mul_monomial_ite",
+        "qualified_name": "ps_coeff_mul_monomial_ite",
+        "private": false,
+        "line": 101
+      },
+      {
+        "name": "ps_coeff_mul_sum_monomial",
+        "qualified_name": "ps_coeff_mul_sum_monomial",
+        "private": false,
+        "line": 108
+      },
+      {
+        "name": "ps_degree_x_swap",
+        "qualified_name": "ps_degree_x_swap",
+        "private": false,
+        "line": 120
+      },
+      {
+        "name": "ps_descend_eval_x",
+        "qualified_name": "ps_descend_eval_x",
+        "private": false,
+        "line": 123
+      },
+      {
+        "name": "ps_descend_eval_y",
+        "qualified_name": "ps_descend_eval_y",
+        "private": false,
+        "line": 130
+      },
+      {
+        "name": "ps_eval_x_eq_map",
+        "qualified_name": "ps_eval_x_eq_map",
+        "private": false,
+        "line": 138
+      },
+      {
+        "name": "ps_eval_y_eq_eval_x_swap",
+        "qualified_name": "ps_eval_y_eq_eval_x_swap",
+        "private": false,
+        "line": 141
+      },
+      {
+        "name": "ps_exists_x_preserve_nat_degree_y",
+        "qualified_name": "ps_exists_x_preserve_nat_degree_y",
+        "private": false,
+        "line": 144
+      },
+      {
+        "name": "ps_exists_y_preserve_degree_x",
+        "qualified_name": "ps_exists_y_preserve_degree_x",
+        "private": false,
+        "line": 166
+      },
+      {
+        "name": "ps_filter_nonzero_card_y",
+        "qualified_name": "ps_filter_nonzero_card_y",
+        "private": false,
+        "line": 174
+      },
+      {
+        "name": "ps_filter_nonzero_card_x",
+        "qualified_name": "ps_filter_nonzero_card_x",
+        "private": false,
+        "line": 183
+      },
+      {
+        "name": "ps_degX_bound",
+        "qualified_name": "ps_degX_bound",
+        "private": false,
+        "line": 194
+      },
+      {
+        "name": "ps_degY_bound",
+        "qualified_name": "ps_degY_bound",
+        "private": false,
+        "line": 217
+      },
+      {
+        "name": "ps_degree_bounds_of_mul",
+        "qualified_name": "ps_degree_bounds_of_mul",
+        "private": false,
+        "line": 239
+      },
+      {
+        "name": "ps_gcd_decompose",
+        "qualified_name": "ps_gcd_decompose",
+        "private": false,
+        "line": 266
+      },
+      {
+        "name": "ps_is_rel_prime_swap",
+        "qualified_name": "ps_is_rel_prime_swap",
+        "private": false,
+        "line": 286
+      },
+      {
+        "name": "ps_nat_degree_y_swap",
+        "qualified_name": "ps_nat_degree_y_swap",
+        "private": false,
+        "line": 297
+      },
+      {
+        "name": "ps_nat_degree_mul_x_pow_le",
+        "qualified_name": "ps_nat_degree_mul_x_pow_le",
+        "private": false,
+        "line": 335
+      },
+      {
+        "name": "ps_nat_degree_resultant_le",
+        "qualified_name": "ps_nat_degree_resultant_le",
+        "private": false,
+        "line": 344
+      },
+      {
+        "name": "ps_resultant_map",
+        "qualified_name": "ps_resultant_map",
+        "private": false,
+        "line": 394
+      },
+      {
+        "name": "ps_resultant_eval_x",
+        "qualified_name": "ps_resultant_eval_x",
+        "private": false,
+        "line": 407
+      },
+      {
+        "name": "ps_sylvester_map",
+        "qualified_name": "ps_sylvester_map",
+        "private": false,
+        "line": 414
+      },
+      {
+        "name": "ps_sylvester_mul_vec_eq_coeff_add",
+        "qualified_name": "ps_sylvester_mul_vec_eq_coeff_add",
+        "private": false,
+        "line": 427
+      },
+      {
+        "name": "ps_resultant_dvd_pow_eval_x",
+        "qualified_name": "ps_resultant_dvd_pow_eval_x",
+        "private": false,
+        "line": 442
+      },
+      {
+        "name": "ps_resultant_dvd_pow_eval_y",
+        "qualified_name": "ps_resultant_dvd_pow_eval_y",
+        "private": false,
+        "line": 534
+      },
+      {
+        "name": "ps_resultant_ne_zero_of_is_rel_prime",
+        "qualified_name": "ps_resultant_ne_zero_of_is_rel_prime",
+        "private": false,
+        "line": 550
+      },
+      {
+        "name": "ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero",
+        "qualified_name": "ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero",
+        "private": false,
+        "line": 654
+      },
+      {
+        "name": "ps_exists_qx_of_cancel",
+        "qualified_name": "ps_exists_qx_of_cancel",
+        "private": false,
+        "line": 666
+      },
+      {
+        "name": "ps_exists_qy_of_cancel",
+        "qualified_name": "ps_exists_qy_of_cancel",
+        "private": false,
+        "line": 684
+      },
+      {
+        "name": "ps_coprime_case_constant",
+        "qualified_name": "ps_coprime_case_constant",
+        "private": false,
+        "line": 703
+      },
+      {
+        "name": "ps_exists_p_nonzero",
+        "qualified_name": "ps_exists_p_nonzero",
+        "private": false,
+        "line": 791
+      },
+      {
+        "name": "ps_exists_p",
+        "qualified_name": "ps_exists_p",
+        "private": false,
+        "line": 896
+      },
+      {
+        "name": "polishchuk_spielman",
+        "qualified_name": "polishchuk_spielman",
+        "private": false,
+        "line": 969
+      },
+      {
+        "name": "polynomialGluing",
+        "qualified_name": "polynomialGluing",
+        "private": false,
+        "line": 1029
+      }
+    ],
+    "theorem_count": 38,
+    "pin_count": 38,
+    "pins": [
+      {
+        "theorem": "polishchuk_spielman",
+        "requested_name": "polishchuk_spielman",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1039,
+        "expected_message": "info: 'polishchuk_spielman' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "polishchuk_spielman"
+      },
+      {
+        "theorem": "polynomialGluing",
+        "requested_name": "polynomialGluing",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1042,
+        "expected_message": "info: 'polynomialGluing' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "polynomialGluing"
+      },
+      {
+        "theorem": "ps_bx_lt_nx",
+        "requested_name": "ps_bx_lt_nx",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1048,
+        "expected_message": "info: 'ps_bx_lt_nx' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_bx_lt_nx"
+      },
+      {
+        "theorem": "ps_by_lt_ny",
+        "requested_name": "ps_by_lt_ny",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1052,
+        "expected_message": "info: 'ps_by_lt_ny' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_by_lt_ny"
+      },
+      {
+        "theorem": "ps_card_eval_x_eq_zero_le_degree_x",
+        "requested_name": "ps_card_eval_x_eq_zero_le_degree_x",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1056,
+        "expected_message": "info: 'ps_card_eval_x_eq_zero_le_degree_x' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_card_eval_x_eq_zero_le_degree_x"
+      },
+      {
+        "theorem": "ps_card_eval_y_eq_zero_le_nat_degree_y",
+        "requested_name": "ps_card_eval_y_eq_zero_le_nat_degree_y",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1060,
+        "expected_message": "info: 'ps_card_eval_y_eq_zero_le_nat_degree_y' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_card_eval_y_eq_zero_le_nat_degree_y"
+      },
+      {
+        "theorem": "ps_coeff_mul_monomial_ite",
+        "requested_name": "ps_coeff_mul_monomial_ite",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1064,
+        "expected_message": "info: 'ps_coeff_mul_monomial_ite' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_coeff_mul_monomial_ite"
+      },
+      {
+        "theorem": "ps_coeff_mul_sum_monomial",
+        "requested_name": "ps_coeff_mul_sum_monomial",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1068,
+        "expected_message": "info: 'ps_coeff_mul_sum_monomial' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_coeff_mul_sum_monomial"
+      },
+      {
+        "theorem": "ps_degree_x_swap",
+        "requested_name": "ps_degree_x_swap",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1072,
+        "expected_message": "info: 'ps_degree_x_swap' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_degree_x_swap"
+      },
+      {
+        "theorem": "ps_descend_eval_x",
+        "requested_name": "ps_descend_eval_x",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1076,
+        "expected_message": "info: 'ps_descend_eval_x' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_descend_eval_x"
+      },
+      {
+        "theorem": "ps_descend_eval_y",
+        "requested_name": "ps_descend_eval_y",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1080,
+        "expected_message": "info: 'ps_descend_eval_y' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_descend_eval_y"
+      },
+      {
+        "theorem": "ps_eval_x_eq_map",
+        "requested_name": "ps_eval_x_eq_map",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1084,
+        "expected_message": "info: 'ps_eval_x_eq_map' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_eval_x_eq_map"
+      },
+      {
+        "theorem": "ps_eval_y_eq_eval_x_swap",
+        "requested_name": "ps_eval_y_eq_eval_x_swap",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1088,
+        "expected_message": "info: 'ps_eval_y_eq_eval_x_swap' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_eval_y_eq_eval_x_swap"
+      },
+      {
+        "theorem": "ps_exists_x_preserve_nat_degree_y",
+        "requested_name": "ps_exists_x_preserve_nat_degree_y",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1092,
+        "expected_message": "info: 'ps_exists_x_preserve_nat_degree_y' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_exists_x_preserve_nat_degree_y"
+      },
+      {
+        "theorem": "ps_exists_y_preserve_degree_x",
+        "requested_name": "ps_exists_y_preserve_degree_x",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1096,
+        "expected_message": "info: 'ps_exists_y_preserve_degree_x' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_exists_y_preserve_degree_x"
+      },
+      {
+        "theorem": "ps_filter_nonzero_card_y",
+        "requested_name": "ps_filter_nonzero_card_y",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1100,
+        "expected_message": "info: 'ps_filter_nonzero_card_y' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_filter_nonzero_card_y"
+      },
+      {
+        "theorem": "ps_filter_nonzero_card_x",
+        "requested_name": "ps_filter_nonzero_card_x",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1104,
+        "expected_message": "info: 'ps_filter_nonzero_card_x' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_filter_nonzero_card_x"
+      },
+      {
+        "theorem": "ps_degX_bound",
+        "requested_name": "ps_degX_bound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1108,
+        "expected_message": "info: 'ps_degX_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_degX_bound"
+      },
+      {
+        "theorem": "ps_degY_bound",
+        "requested_name": "ps_degY_bound",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1112,
+        "expected_message": "info: 'ps_degY_bound' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_degY_bound"
+      },
+      {
+        "theorem": "ps_degree_bounds_of_mul",
+        "requested_name": "ps_degree_bounds_of_mul",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1116,
+        "expected_message": "info: 'ps_degree_bounds_of_mul' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_degree_bounds_of_mul"
+      },
+      {
+        "theorem": "ps_gcd_decompose",
+        "requested_name": "ps_gcd_decompose",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1120,
+        "expected_message": "info: 'ps_gcd_decompose' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_gcd_decompose"
+      },
+      {
+        "theorem": "ps_is_rel_prime_swap",
+        "requested_name": "ps_is_rel_prime_swap",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1124,
+        "expected_message": "info: 'ps_is_rel_prime_swap' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_is_rel_prime_swap"
+      },
+      {
+        "theorem": "ps_nat_degree_y_swap",
+        "requested_name": "ps_nat_degree_y_swap",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1128,
+        "expected_message": "info: 'ps_nat_degree_y_swap' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_nat_degree_y_swap"
+      },
+      {
+        "theorem": "ps_nat_degree_mul_x_pow_le",
+        "requested_name": "ps_nat_degree_mul_x_pow_le",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1132,
+        "expected_message": "info: 'ps_nat_degree_mul_x_pow_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_nat_degree_mul_x_pow_le"
+      },
+      {
+        "theorem": "ps_nat_degree_resultant_le",
+        "requested_name": "ps_nat_degree_resultant_le",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1136,
+        "expected_message": "info: 'ps_nat_degree_resultant_le' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_nat_degree_resultant_le"
+      },
+      {
+        "theorem": "ps_resultant_map",
+        "requested_name": "ps_resultant_map",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1140,
+        "expected_message": "info: 'ps_resultant_map' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_resultant_map"
+      },
+      {
+        "theorem": "ps_resultant_eval_x",
+        "requested_name": "ps_resultant_eval_x",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1144,
+        "expected_message": "info: 'ps_resultant_eval_x' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_resultant_eval_x"
+      },
+      {
+        "theorem": "ps_sylvester_map",
+        "requested_name": "ps_sylvester_map",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1148,
+        "expected_message": "info: 'ps_sylvester_map' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_sylvester_map"
+      },
+      {
+        "theorem": "ps_sylvester_mul_vec_eq_coeff_add",
+        "requested_name": "ps_sylvester_mul_vec_eq_coeff_add",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1152,
+        "expected_message": "info: 'ps_sylvester_mul_vec_eq_coeff_add' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_sylvester_mul_vec_eq_coeff_add"
+      },
+      {
+        "theorem": "ps_resultant_dvd_pow_eval_x",
+        "requested_name": "ps_resultant_dvd_pow_eval_x",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1156,
+        "expected_message": "info: 'ps_resultant_dvd_pow_eval_x' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_resultant_dvd_pow_eval_x"
+      },
+      {
+        "theorem": "ps_resultant_dvd_pow_eval_y",
+        "requested_name": "ps_resultant_dvd_pow_eval_y",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1160,
+        "expected_message": "info: 'ps_resultant_dvd_pow_eval_y' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_resultant_dvd_pow_eval_y"
+      },
+      {
+        "theorem": "ps_resultant_ne_zero_of_is_rel_prime",
+        "requested_name": "ps_resultant_ne_zero_of_is_rel_prime",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1164,
+        "expected_message": "info: 'ps_resultant_ne_zero_of_is_rel_prime' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_resultant_ne_zero_of_is_rel_prime"
+      },
+      {
+        "theorem": "ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero",
+        "requested_name": "ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1168,
+        "expected_message": "info: 'ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_exists_p_of_degree_x_eq_zero_nat_degree_y_eq_zero"
+      },
+      {
+        "theorem": "ps_exists_qx_of_cancel",
+        "requested_name": "ps_exists_qx_of_cancel",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1172,
+        "expected_message": "info: 'ps_exists_qx_of_cancel' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_exists_qx_of_cancel"
+      },
+      {
+        "theorem": "ps_exists_qy_of_cancel",
+        "requested_name": "ps_exists_qy_of_cancel",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1176,
+        "expected_message": "info: 'ps_exists_qy_of_cancel' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_exists_qy_of_cancel"
+      },
+      {
+        "theorem": "ps_coprime_case_constant",
+        "requested_name": "ps_coprime_case_constant",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1180,
+        "expected_message": "info: 'ps_coprime_case_constant' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_coprime_case_constant"
+      },
+      {
+        "theorem": "ps_exists_p_nonzero",
+        "requested_name": "ps_exists_p_nonzero",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1184,
+        "expected_message": "info: 'ps_exists_p_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_exists_p_nonzero"
+      },
+      {
+        "theorem": "ps_exists_p",
+        "requested_name": "ps_exists_p",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 1188,
+        "expected_message": "info: 'ps_exists_p' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "declaration_name": "ps_exists_p"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  }
+}

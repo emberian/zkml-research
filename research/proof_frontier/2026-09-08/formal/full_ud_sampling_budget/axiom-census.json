@@ -1,0 +1,199 @@
+[
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_round_conditions",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_premise_inhabited",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_satisfiable",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_teeth",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_degree_halves",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_degree_positive",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_rate",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_tail_gap_sum",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_uniform_gap_bounds",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_3603_suffices",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_3602_fails",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_old_4099_suffices",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_old_limit_4098_fails",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_budget_mono_queries",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_budget_mono_gap",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_3603_minimum",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_old_minimum_lower_bound",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_numerical_premise_inhabited",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_old_schedule_inhabited",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_transitions",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_wholeWord_sound",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_coherent_sound",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_new_minimum_lower_bound",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_challenge_blocks100",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Minidregg.Selvage.fullUDSampling_babyBear_55",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  }
+]

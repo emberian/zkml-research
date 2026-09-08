@@ -1,0 +1,276 @@
+--- frozen_original_live_driver.py
+
++++ deferred_semantic_live_driver.py
+
+@@ -39,95 +39,6 @@
+
+         os.chmod(path, 0o600)
+ 
+ 
+-def stage(args):
+-    runtime, reports = Path(args.runtime).resolve(), Path(args.reports).resolve()
+-    runtime.mkdir(parents=True, exist_ok=False)
+-    os.chmod(runtime, 0o700)
+-    reports.mkdir(parents=True, exist_ok=False)
+-    secret = runtime / '.private'
+-    secret.mkdir(mode=0o700)
+-    data = load(args.input)
+-    if set(data) != {'text', 'route', 'label'} or not isinstance(data['text'], str):
+-        raise ValueError('input requires text, route and label')
+-    if type(data['route']) is not int or data['route'] not in [0, 1]:
+-        raise ValueError('route must be integer zero or one')
+-    if type(data['label']) is not int or data['label'] not in [-1, 1]:
+-        raise ValueError('label must be integer minus or plus one')
+-    dump(secret / 'input.json', data, True)
+-    e2e = runtime / 'e2e'
+-    for name in ['journal', 'verified_reader', 'host_runtime/frozen_core']:
+-        (e2e / name).mkdir(parents=True)
+-    pins = {}
+-    host = HERE.parent / 'host_runtime'
+-    core_pins = load(host / 'source_pins.json')
+-    for name, entry in core_pins['core'].items():
+-        raw = (host / 'frozen_core' / name).read_bytes()
+-        assert sha(raw) == entry['sha256']
+-        assert raw == (HERE.parent / 'journal' / name).read_bytes()
+-        for relative in ['journal/' + name, 'host_runtime/frozen_core/' + name]:
+-            (e2e / relative).write_bytes(raw)
+-            pins[relative] = sha(raw)
+-    for name in ['host.py', 'source_pins.json']:
+-        raw = (host / name).read_bytes()
+-        (e2e / 'host_runtime' / name).write_bytes(raw)
+-        pins['host_runtime/' + name] = sha(raw)
+-    for name in ['service.py', 'live_driver.py']:
+-        raw = (HERE / name).read_bytes()
+-        (e2e / 'verified_reader' / name).write_bytes(raw)
+-        pins['verified_reader/' + name] = sha(raw)
+-    binary = e2e / 'resident-crypto'
+-    shutil.copyfile(Path(args.binary).resolve(), binary)
+-    os.chmod(binary, 0o755)
+-    assert sha(binary.read_bytes()) == core_pins['crypto_binary_sha256']
+-    pins['resident-crypto'] = sha(binary.read_bytes())
+-    utility = HERE.parent / 'utility'
+-    dependencies = [utility / 'live_encoder/issue_text.py', utility / 'issuer_encode_prepared.py',
+-                    utility / 'encoder_policy.json', utility / 'encoder_feasibility.json',
+-                    utility / 'build_mapping.py', utility / 'live_encoder/results/run_001/report.json']
+-    dependencies += [HERE.parent / 'journal' / name for name in core_pins['core']]
+-    dep_pins = {str(path): sha(path.read_bytes()) for path in dependencies}
+-    # The tested frontend uses original absolute evidence keys and model paths.
+-    # Invoke those unchanged files, checking their bytes before and after. The
+-    # public runtime roles instead execute the copied core/service sources.
+-    dump(reports / 'frontend_dependencies.json', dep_pins)
+-    dump(reports / 'source_pins.json', pins)
+-    query_dir = runtime / 'public_query_inputs'
+-    query_dir.mkdir()
+-    query_pins = {}
+-    policy = []
+-    manifest = load(utility / 'materialized_inputs_manifest.json')
+-    for i in range(16):
+-        source = utility / 'public_queries' / f'q{i:02d}.json'
+-        raw = source.read_bytes()
+-        assert sha(raw) == manifest['files_sha256'][str(source)]
+-        dest = query_dir / source.name
+-        dest.write_bytes(raw)
+-        query_pins[source.name] = sha(raw)
+-        policy.append({'route': 0 if i < 8 else 1, 'path': str(dest)})
+-    dump(runtime / 'query_policy.json', policy)
+-    dump(reports / 'public_query_pins.json', query_pins)
+-    metadata = {'frontend_path': str(utility / 'live_encoder/issue_text.py'),
+-                'encoder_inventory': str(utility / 'encoder_feasibility.json'),
+-                'source_snapshot_scope': 'Public roles frozen; original live frontend/encoder sources pinned and checked before and after.',
+-                'input_path_and_input_hash_omitted': True}
+-    dump(reports / 'frontend_metadata.json', metadata)
+-    with tarfile.open(reports / 'source_snapshot.tar.gz', 'w:gz') as archive:
+-        for name in sorted(pins):
+-            if name != 'resident-crypto':
+-                archive.add(e2e / name, arcname=name)
+-        for i, path in enumerate(dependencies):
+-            archive.add(path, arcname=f'original_frontend_dependencies/{i:02d}-{path.name}')
+-    command = [sys.executable, str(e2e / 'verified_reader/live_driver.py'), '--worker',
+-               '--input', str(secret / 'input.json'), '--runtime', str(runtime), '--reports', str(reports),
+-               '--binary', str(binary)]
+-    dump(reports / 'command.json', {'argv': command, 'input_is_ignored_generic_runtime_copy': True})
+-    with (reports / 'execution.log').open('wb') as log:
+-        result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
+-    print(json.dumps({'ok': result.returncode == 0, 'exit_code': result.returncode,
+-                      'report': str(reports / 'report.json')}))
+-    raise SystemExit(result.returncode)
+-
+-
+ def worker(args):
+     sys.path.insert(0, str(HERE.parent / 'journal'))
+     from run import Run
+@@ -215,10 +126,6 @@
+
+             require(first['delivery']['status'] == 'pending', 'publicationWaitsForVerification')
+         synced = vrpc({'op': 'sync', 'envelope': envelope})
+         require(synced['status'] == 'verified', 'independentVerification')
+-        if request['action']['kind'] == 'Infer':
+-            released = run.accepted(request)
+-            require(released['status'] == 'replayed' and released['envelope'] == envelope, 'sameFinalizedRelease')
+-            require(released['delivery']['reader']['status'] == 'received', 'verifiedDelivery')
+         accepted.append(envelope)
+         return envelope
+ 
+@@ -227,7 +134,8 @@
+
+         baseline_cfg = run.rcfg
+         private_reader = run.root / '.private/verified_reader'
+         private_reader.mkdir(mode=0o700)
+-        cfg = {**baseline_cfg, 'db': str(private_reader / 'answers.sqlite3'),
++        cfg = {**baseline_cfg, 'db': str(run.root / 'verified_state.sqlite3'),
++               'socket': baseline_cfg['socket'] + '-verify',
+                'cas': str(run.root / 'verified_cas'),
+                'command_log': str(run.root / 'verified_commands.jsonl'),
+                'verified_reader_source_sha256': sha((HERE / 'service.py').read_bytes())}
+@@ -247,7 +155,8 @@
+
+             put(query, 'query')
+         private_input = load(args.input)
+         route = private_input['route']
+-        query_index = route * 8
++        require(route == 0, 'predeclaredPublicRoute')
++        query_index = 1  # q01 fixed before any text encoding
+ 
+         begin = time.perf_counter_ns()
+         before = run.prepare('Infer', route, 'before-live-observation', query_index=query_index)
+@@ -291,102 +200,65 @@
+
+         after = run.prepare('Infer', route, 'after-live-observation', query_index=query_index)
+         admit(after)
+         phase_costs['after_infer_ns'] = time.perf_counter_ns() - begin
+-        answers = run.answers()
+-        vector = load(private_work / 'vector.json')
+-        query = load(run.root / 'queries' / f'q{query_index:02d}.json')['coefficients']
+-        exact = sum(x * y for x, y in zip(vector, query))
+-        require(set(answers) == {'before-live-observation', 'after-live-observation'}, 'exactAnswerSet')
+-        require(answers['before-live-observation'] == 0 and answers['after-live-observation'] == exact,
+-                'privateDirectIntegerComparison')
+         check_dependencies()
++        replay = run.replay(True)
+         status = vrpc({'op': 'verified_status'})
+         require(status['revision'] == status['verified_records'] == 3, 'threeVerifiedCommands')
+         with sqlite3.connect(cfg['db']) as db:
+             state = json.loads(db.execute('SELECT state FROM verified_head').fetchone()[0])
+             journal = [json.loads(x[0]) for x in db.execute('SELECT envelope FROM verified_journal ORDER BY revision')]
++            received = db.execute('SELECT count(*) FROM received').fetchone()[0]
++            selected = db.execute('SELECT count(*) FROM expected').fetchone()[0]
+         require(journal == accepted and state == run.head()['state'], 'sameActualJournalAndState')
++        require(received == 0 and selected == 2, 'deferredPrivateRelease')
+         with sqlite3.connect(baseline_cfg['db']) as db:
+             require(db.execute('SELECT count(*) FROM received').fetchone()[0] == 0, 'baselineNoDecryptions')
+-        costs = collections.defaultdict(list)
+-        decrypts = 0
+-        for instance, path in [('main_pipeline', run.root / 'commands.jsonl'),
+-                               ('verified_reader', run.root / 'verified_commands.jsonl')]:
++        for path in [run.root / 'commands.jsonl', run.root / 'verified_commands.jsonl']:
+             for line in path.read_bytes().splitlines():
+                 row = json.loads(line)
+-                command = row['command'][1]
+-                require(row['exit_code'] == 0, 'cryptoSucceeded')
+-                if row['role'] in ['host', 'authority', 'public_transport']:
+-                    require(command in ['inspect', 'host-learn', 'host-infer'] and '--sk' not in row['command']
+-                            and '--vector' not in row['command'], 'publicRoleInputs')
+-                if command == 'reader-decrypt':
+-                    require(instance == 'verified_reader' and row['stdout'] is None and row['stderr'] is None
+-                            and row['private_output_omitted'], 'privateVerifiedReaderOnly')
+-                    decrypts += 1
+-                costs[f'{instance}:{row["role"]}:{command}'].append(row['elapsed_ns'])
+-        require(decrypts == 2, 'exactlyTwoVerifiedDecrypts')
+-        inner = load(private_work / 'report.json')['live_encoder_result']
+-        require(inner['cached_quantized_comparison'] is False, 'actualNewTextForward')
++                require(row['exit_code'] == 0 and row['command'][1] != 'reader-decrypt', 'noPublicPhaseDecryptions')
+         host_stats = run.worker_rows[-1]['reply']['cumulative_stats']
+         require(host_stats['requests'] == 3 and host_stats['cas_get_calls'] == host_stats['full_blob_sha256_calls'],
+                 'persistentHostFullReads')
+-        inventory = load(metadata['encoder_inventory'])
+-        report = {'ok': True, 'schema': 'live-text-independent-verified-release-v1',
+-            'live_text_encoder_executed': True, 'cached_feature_substitution': False,
+-            'learns': 1, 'infers': 2, 'verified_revision': 3, 'expiries': 0,
+-            'oracle_comparisons': 2, 'all_oracle_matches': True,
+-            'output_changed_after_learning': exact != 0, 'utility_accuracy_claim': False,
+-            'verified_decrypt_calls': 2, 'baseline_decrypt_calls': 0,
+-            'same_signed_ticket_query_before_after': before['action']['query_ct'] == after['action']['query_ct'],
+-            'independently_registered_tickets': 2, 'only_verified_finalizations_released': True,
+-            'same_actual_authority_and_verified_journal_state': True,
+-            'only_fresh_query_zero_uploaded_to_verifier': True,
+-            'source_pins': load(reports / 'source_pins.json'),
+-            'frontend_dependency_pins_before_after_match': True,
+-            'frontend_dependencies_sha256': sha((reports / 'frontend_dependencies.json').read_bytes()),
+-            'model_revision': inventory['revision'],
+-            'encoder_frontend_wall_ns': encoder_elapsed,
+-            'encoder_subprocess_wall_ns': frontend_result['encoder_wall_ns'],
+-            'encrypted_signed_issuer_subprocess_wall_ns': frontend_result['issuer_wall_ns'],
+-            'encoder_model_load_seconds': inner['load_seconds'], 'encoder_feature_seconds': inner['feature_seconds'],
+-            'whole_path_elapsed_ns': time.perf_counter_ns() - started,
+-            'phase_wall_costs': phase_costs,
+-            'host_worker': {'processes': 1, 'startup_ns': run.worker_startup_ns,
+-                            'cache_entries': run.worker_rows[-1]['reply']['inspection_cache_entries'],
+-                            'stats': host_stats, 'proposal_caller_ns': sum(x['caller_ns'] for x in run.worker_rows)},
+-            'crypto_process_costs': {k: {'count': len(v), 'sum_ns': sum(v)} for k, v in sorted(costs.items())},
+-            'current_state_manifest_bytes': len(canonical(state)),
+-            'genesis_sha256': digest(run.g), 'final_state_digest': status['state_digest'],
+-            'scope': ['One private illustrative text through the already-tested plaintext SmolLM issuer frontend; no new utility estimate.',
+-                      'Same public query policy, source/range attestation, full-key benchmark-R reader and classical role authentication.',
+-                      'Source/policy hashes are public; text/vector/private scalar contents and their hashes are omitted.',
+-                      'Frozen public-role snapshots; unchanged original frontend files checked before and after invocation.',
+-                      'No OS isolation, hidden-encoder provenance proof, master-key-absence or end-to-end post-quantum claim.',
+-                      'Timing subdivisions overlap; whole-path elapsed includes setup, model work, issuance, public verification and release but excludes staging and report packaging.']}
+-        dump(reports / 'report.json', report)
++        public = {'ok': True, 'schema': 'semantic-live-deferred-public-v1', 'learns': 1, 'infers': 2,
++                  'expiries': 0, 'events': 3, 'registered_tickets': selected, 'reader_decryptions': 0,
++                  'received_before_private_phase': received, 'verified_revision': status['revision'],
++                  'same_actual_authority_and_verified_journal_state': True,
++                  'fixed_query_index': query_index,
++                  'same_query_before_after': before['action']['query_ct'] == after['action']['query_ct'],
++                  'authority_outbox_pending_by_deliberate_transport_withholding': True,
++                  'public_replay': replay, 'phase_wall_costs': phase_costs,
++                  'encoder_frontend_wall_ns': encoder_elapsed,
++                  'encoder_subprocess_wall_ns': frontend_result['encoder_wall_ns'],
++                  'issuer_subprocess_wall_ns': frontend_result['issuer_wall_ns'],
++                  'host_worker': {'processes': 1, 'startup_ns': run.worker_startup_ns, 'stats': host_stats},
++                  'services': [{'pid': p.pid, 'role': role} for p, role in
++                               [(run.reader, 'baseline_reader'), (run.authority, 'authority'),
++                                (run.host_worker, 'host'), (verifier, 'verifier')]]}
+         dump(reports / 'accepted_envelopes.json', accepted)
+         dump(reports / 'verified_rpc.json', rpc_rows)
+-        for name in ['commands.jsonl', 'verified_commands.jsonl', 'events.jsonl', 'role_calls.jsonl', 'host_worker.jsonl', 'genesis.json']:
++        dump(reports / 'public_storage.json', {'verified_journal': journal, 'verified_state': state,
++             'verified_records': 3, 'registered_tickets': selected, 'received': received})
++        for name in ['commands.jsonl', 'verified_commands.jsonl', 'events.jsonl', 'role_calls.jsonl',
++                     'host_worker.jsonl', 'genesis.json', 'replay.json']:
+             with gzip.open(reports / (name + '.gz'), 'wb') as sink:
+                 sink.write((run.root / name).read_bytes())
+-        print(json.dumps({'ok': True, 'learns': 1, 'verified_outputs': 2,
+-                          'all_oracle_matches': True, 'output_changed_after_learning': exact != 0}), flush=True)
+     finally:
+         if verifier is not None and verifier.poll() is None:
+             verifier.terminate()
+             verifier.wait(timeout=10)
+         run.close()
+-
++    require(all(p.poll() is not None for p in [run.reader, run.authority, run.host_worker, verifier]), 'allServicesClosed')
++    public['all_services_closed'] = True
++    public['public_phase_wall_ns'] = time.perf_counter_ns() - started
++    dump(reports / 'public_phase.json', public)
++    print(json.dumps({'ok': True, 'events': 3, 'public_replay': True, 'all_services_closed': True,
++                      'reader_decryptions': 0}), flush=True)
+ 
+ def main():
+-    parser = argparse.ArgumentParser()
+-    parser.add_argument('--input', required=True, help='Private JSON containing text, route (0/1) and label (-1/+1).')
+-    parser.add_argument('--worker', action='store_true')
+-    parser.add_argument('--runtime', default=str(HERE / 'runtime/live_001'))
+-    parser.add_argument('--reports', default=str(HERE / 'reports/live_001'))
+-    parser.add_argument('--binary', default=str(HERE.parent / 'crypto/target/release/resident-crypto'))
+-    args = parser.parse_args()
+-    worker(args) if args.worker else stage(args)
+-
+-
+-if __name__ == '__main__':
+-    main()
++    parser=argparse.ArgumentParser()
++    for name in ['input','runtime','reports','binary']:parser.add_argument('--'+name,required=True)
++    parser.add_argument('--worker',action='store_true')
++    args=parser.parse_args();assert args.worker
++    worker(args)
++if __name__=='__main__':main()

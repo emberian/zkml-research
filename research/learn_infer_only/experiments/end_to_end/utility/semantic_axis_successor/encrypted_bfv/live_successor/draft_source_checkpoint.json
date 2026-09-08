@@ -1,0 +1,14 @@
+{
+  "scope": "preparation source only; no model or crypto executed",
+  "source_sha256": {
+    "drain.py": "564fb3573c225476f2abd115e2528d57dc4912d19f6c35feb9a0cf18bd061068",
+    "driver.py": "0842ace416e35ea4e96ef5261e3896e22d01c18614ae44b9c63ea831b1223d9a",
+    "encoder/common.py": "13527d5fcd0ffa444faae29ac5b1f76f5d71f8a0a766d9f43613211674be6546",
+    "encoder/score.py": "b66e4deddfd7ef42c5b1a0aa8976270d53ade73886548239afd2193d2ed1e8f3",
+    "issue_semantic_text.py": "0b07be81604f46d1a6b4dab46f7a4ccb00580cf8156ab49f9290e259317d7b69",
+    "prepare.py": "71b676c93c6811805db81ae9878d29b91ee940f168b78bf91940f31fbd5abd63",
+    "public_verify.py": "d296e54f61925b3e6325076c6c53da2d1e22b440fea96a7ae852be85c69ca76a",
+    "run.py": "b3f7d4771711b14322b3c0f22539ff4445d238a4179fe2e1ee2fd9224e292c72",
+    "validate.py": "dbfe2d4383c1d53fd11e38c13535f5db08bc8eb54f155cd729b9655ae76a946d"
+  }
+}

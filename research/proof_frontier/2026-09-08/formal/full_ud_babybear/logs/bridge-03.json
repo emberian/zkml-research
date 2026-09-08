@@ -1,0 +1,16 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-o",
+    "/tmp/minidregg-full-ud-babybear-20260908/.lake/build/lib/lean/Selvage/BabyBearFullUD.olean",
+    "Selvage/BabyBearFullUD.lean"
+  ],
+  "cwd": "/tmp/minidregg-full-ud-babybear-20260908",
+  "exit_code": 0,
+  "source_sha256": "41727f7a8687f6a8036b241a2ac41bac617371dbbf1b61ae2c22cbe6c4ec8b1f",
+  "source_unchanged": true,
+  "elapsed_s": 23.33401107788086,
+  "log": "/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/full_ud_babybear/logs/bridge-03.log"
+}

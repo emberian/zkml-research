@@ -1,0 +1,10 @@
+{
+  "TFHE_first_infer_block_closed_utc_reported_by_worker": "2026-09-08T05:56:47Z",
+  "TFHE_window_signal_utc_reported_by_worker": "2026-09-08T05:56:13.59Z",
+  "actual_live_start_utc": "2026-09-08T05:56:48Z",
+  "live_outer_wall_ns": 27504062000,
+  "live_start_source": "run_started.json",
+  "live_wall_source": "run.command.json",
+  "scope": "Dispatched on the actual Infer-window signal, but recorded start was after that block closed. Subsequent Learn overlap was explicitly accepted by the worker; no TFHE pause or delay was requested.",
+  "worker_reports_source": "collaboration messages from /root/emitted_runtime in this authorized run"
+}

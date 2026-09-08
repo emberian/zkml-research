@@ -1,0 +1,446 @@
+{
+  "scope": "Heuristic repair candidate; exact finite proof arithmetic, no cryptographic execution.",
+  "rows": [
+    {
+      "n": 8192,
+      "l": 262144,
+      "q_low_exact": "7957171782556586274486115970349133441607298412757563479047423630290551952200534008528909",
+      "q_high_exact": "15914343565113172548972231940698266883214596825515126958094847260581103904401068017057191",
+      "q_selected": "7957171782556586274486115970349133441607298412757563479047423630290551952200534008528909",
+      "q_bits": 293,
+      "sigma_e_width": 1024,
+      "sigma_K_width": 4294967296,
+      "flood_radius_exponent": 248,
+      "BK": 34359738368,
+      "BL": 8192,
+      "scale_denominator": 8204908842,
+      "delta_at_q_low": 969806238653709868296196235832492316872872627675875338999582712279273358464514,
+      "per_coordinate_error_bound": 452312848583266388373324160190187140051835877600158453352918163825748869120,
+      "strict_key_storage_bits": 36,
+      "correctness_2WE_less_delta": true,
+      "regularity_augmented_S_exponent_upper": -5201627,
+      "theorem_statistical_bound_less_2pow_minus163": true,
+      "theorem_LWE_multiplier": 768,
+      "ct_bytes": 9622157,
+      "public_key_bytes": 78824707072,
+      "recipient_key_bytes_on_strict_event": 1179648,
+      "all_16_recipient_keys_bytes": 18874368,
+      "dense_q_matrix_vector_products": 2152210432,
+      "additional_q_message_scale_products": 577,
+      "coordinate_decryption_modular_products": 262144,
+      "scalar_add_modular_additions": 262721,
+      "live_66_ct_bytes": 635062362,
+      "T384_ct_bytes": 3694908288
+    },
+    {
+      "n": 16384,
+      "l": 262144,
+      "q_low_exact": "7957171782556586274486115970349133441607298412757563479047423630290551952200534008528909",
+      "q_high_exact": "15914343565113172548972231940698266883214596825515126958094847260581103904401068017057191",
+      "q_selected": "7957171782556586274486115970349133441607298412757563479047423630290551952200534008528909",
+      "q_bits": 293,
+      "sigma_e_width": 1024,
+      "sigma_K_width": 4294967296,
+      "flood_radius_exponent": 248,
+      "BK": 34359738368,
+      "BL": 8192,
+      "scale_denominator": 8204908842,
+      "delta_at_q_low": 969806238653709868296196235832492316872872627675875338999582712279273358464514,
+      "per_coordinate_error_bound": 452312848583266388373324160190187140051835877600158453352918163825748869120,
+      "strict_key_storage_bits": 36,
+      "correctness_2WE_less_delta": true,
+      "regularity_augmented_S_exponent_upper": -2801371,
+      "theorem_statistical_bound_less_2pow_minus163": true,
+      "theorem_LWE_multiplier": 768,
+      "ct_bytes": 9622157,
+      "public_key_bytes": 157649414144,
+      "recipient_key_bytes_on_strict_event": 1179648,
+      "all_16_recipient_keys_bytes": 18874368,
+      "dense_q_matrix_vector_products": 4304420864,
+      "additional_q_message_scale_products": 577,
+      "coordinate_decryption_modular_products": 262144,
+      "scalar_add_modular_additions": 262721,
+      "live_66_ct_bytes": 635062362,
+      "T384_ct_bytes": 3694908288
+    },
+    {
+      "n": 20480,
+      "l": 262144,
+      "q_low_exact": "7957171782556586274486115970349133441607298412757563479047423630290551952200534008528909",
+      "q_high_exact": "15914343565113172548972231940698266883214596825515126958094847260581103904401068017057191",
+      "q_selected": "7957171782556586274486115970349133441607298412757563479047423630290551952200534008528909",
+      "q_bits": 293,
+      "sigma_e_width": 1024,
+      "sigma_K_width": 4294967296,
+      "flood_radius_exponent": 248,
+      "BK": 34359738368,
+      "BL": 8192,
+      "scale_denominator": 8204908842,
+      "delta_at_q_low": 969806238653709868296196235832492316872872627675875338999582712279273358464514,
+      "per_coordinate_error_bound": 452312848583266388373324160190187140051835877600158453352918163825748869120,
+      "strict_key_storage_bits": 36,
+      "correctness_2WE_less_delta": true,
+      "regularity_augmented_S_exponent_upper": -1601243,
+      "theorem_statistical_bound_less_2pow_minus163": true,
+      "theorem_LWE_multiplier": 768,
+      "ct_bytes": 9622157,
+      "public_key_bytes": 197061767680,
+      "recipient_key_bytes_on_strict_event": 1179648,
+      "all_16_recipient_keys_bytes": 18874368,
+      "dense_q_matrix_vector_products": 5380526080,
+      "additional_q_message_scale_products": 577,
+      "coordinate_decryption_modular_products": 262144,
+      "scalar_add_modular_additions": 262721,
+      "live_66_ct_bytes": 635062362,
+      "T384_ct_bytes": 3694908288
+    },
+    {
+      "n": 24576,
+      "l": 262144,
+      "q_low_exact": "7957171782556586274486115970349133441607298412757563479047423630290551952200534008528909",
+      "q_high_exact": "15914343565113172548972231940698266883214596825515126958094847260581103904401068017057191",
+      "q_selected": "7957171782556586274486115970349133441607298412757563479047423630290551952200534008528909",
+      "q_bits": 293,
+      "sigma_e_width": 1024,
+      "sigma_K_width": 4294967296,
+      "flood_radius_exponent": 248,
+      "BK": 34359738368,
+      "BL": 8192,
+      "scale_denominator": 8204908842,
+      "delta_at_q_low": 969806238653709868296196235832492316872872627675875338999582712279273358464514,
+      "per_coordinate_error_bound": 452312848583266388373324160190187140051835877600158453352918163825748869120,
+      "strict_key_storage_bits": 36,
+      "correctness_2WE_less_delta": true,
+      "regularity_augmented_S_exponent_upper": -401115,
+      "theorem_statistical_bound_less_2pow_minus163": true,
+      "theorem_LWE_multiplier": 768,
+      "ct_bytes": 9622157,
+      "public_key_bytes": 236474121216,
+      "recipient_key_bytes_on_strict_event": 1179648,
+      "all_16_recipient_keys_bytes": 18874368,
+      "dense_q_matrix_vector_products": 6456631296,
+      "additional_q_message_scale_products": 577,
+      "coordinate_decryption_modular_products": 262144,
+      "scalar_add_modular_additions": 262721,
+      "live_66_ct_bytes": 635062362,
+      "T384_ct_bytes": 3694908288
+    }
+  ],
+  "driver_attempt_coverage": {
+    "baseline.jsonl": {
+      "calls": 24,
+      "errors": 0,
+      "timeouts": 0,
+      "nonfinite_rop": 0
+    },
+    "repair_grid.jsonl": {
+      "calls": 24,
+      "errors": 0,
+      "timeouts": 0,
+      "nonfinite_rop": 4
+    },
+    "repair_validation.jsonl": {
+      "calls": 12,
+      "errors": 0,
+      "timeouts": 0,
+      "nonfinite_rop": 0
+    },
+    "baseline_beta2.jsonl": {
+      "calls": 4,
+      "errors": 4,
+      "timeouts": 0,
+      "nonfinite_rop": 0
+    },
+    "normalized_dual_low.jsonl": {
+      "calls": 4,
+      "errors": 4,
+      "timeouts": 0,
+      "nonfinite_rop": 0
+    },
+    "normalized_dual_high.jsonl": {
+      "calls": 2,
+      "errors": 2,
+      "timeouts": 0,
+      "nonfinite_rop": 0
+    },
+    "normalized_dual_final_low.jsonl": {
+      "calls": 4,
+      "errors": 0,
+      "timeouts": 0,
+      "nonfinite_rop": 0
+    },
+    "normalized_dual_final_high.jsonl": {
+      "calls": 2,
+      "errors": 0,
+      "timeouts": 0,
+      "nonfinite_rop": 0
+    }
+  },
+  "total_driver_attempts": 76,
+  "pre_estimator_assertion_failures": 6,
+  "total_estimator_entries": 70,
+  "raw_dual_excluded": [
+    {
+      "source_file": "baseline.jsonl",
+      "n": 1024,
+      "q_label": "low",
+      "model": "MATZOV_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "baseline.jsonl",
+      "n": 1024,
+      "q_label": "low",
+      "model": "ADPS16_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "baseline.jsonl",
+      "n": 1024,
+      "q_label": "low",
+      "model": "ADPS16_quantum_core_svp",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "baseline.jsonl",
+      "n": 1024,
+      "q_label": "low",
+      "model": "MATZOV_quantum_depth_width",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "baseline.jsonl",
+      "n": 1024,
+      "q_label": "high",
+      "model": "MATZOV_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "baseline.jsonl",
+      "n": 1024,
+      "q_label": "high",
+      "model": "ADPS16_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "baseline.jsonl",
+      "n": 1024,
+      "q_label": "high",
+      "model": "ADPS16_quantum_core_svp",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "baseline.jsonl",
+      "n": 1024,
+      "q_label": "high",
+      "model": "MATZOV_quantum_depth_width",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_grid.jsonl",
+      "n": 8192,
+      "q_label": "low",
+      "model": "MATZOV_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_grid.jsonl",
+      "n": 8192,
+      "q_label": "low",
+      "model": "ADPS16_quantum_core_svp",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_grid.jsonl",
+      "n": 16384,
+      "q_label": "low",
+      "model": "MATZOV_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_grid.jsonl",
+      "n": 16384,
+      "q_label": "low",
+      "model": "ADPS16_quantum_core_svp",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_grid.jsonl",
+      "n": 20480,
+      "q_label": "low",
+      "model": "MATZOV_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_grid.jsonl",
+      "n": 20480,
+      "q_label": "low",
+      "model": "ADPS16_quantum_core_svp",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_grid.jsonl",
+      "n": 24576,
+      "q_label": "low",
+      "model": "MATZOV_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_grid.jsonl",
+      "n": 24576,
+      "q_label": "low",
+      "model": "ADPS16_quantum_core_svp",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_validation.jsonl",
+      "n": 16384,
+      "q_label": "low",
+      "model": "ADPS16_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_validation.jsonl",
+      "n": 16384,
+      "q_label": "low",
+      "model": "MATZOV_quantum_depth_width",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_validation.jsonl",
+      "n": 16384,
+      "q_label": "high",
+      "model": "ADPS16_classical",
+      "reason": "raw dual API precondition requires normalized input"
+    },
+    {
+      "source_file": "repair_validation.jsonl",
+      "n": 16384,
+      "q_label": "high",
+      "model": "MATZOV_quantum_depth_width",
+      "reason": "raw dual API precondition requires normalized input"
+    }
+  ],
+  "finite_named_model_minima": {
+    "n1024_m16384_low_MATZOV_classical": {
+      "log2_rop": 43.20544910217558,
+      "attack": "usvp",
+      "beta": "40",
+      "log2_rop_minus_log2_768": 33.620486601454424
+    },
+    "n1024_m16384_low_ADPS16_classical": {
+      "log2_rop": 11.68,
+      "attack": "usvp",
+      "beta": "40",
+      "log2_rop_minus_log2_768": 2.0950374992788436
+    },
+    "n1024_m16384_low_ADPS16_quantum_core_svp": {
+      "log2_rop": 10.600000000000001,
+      "attack": "usvp",
+      "beta": "40",
+      "log2_rop_minus_log2_768": 1.0150374992788453
+    },
+    "n1024_m16384_low_MATZOV_quantum_depth_width": {
+      "log2_rop": 47.60559110576705,
+      "attack": "usvp",
+      "beta": "40",
+      "log2_rop_minus_log2_768": 38.02062860504589
+    },
+    "n1024_m16384_high_MATZOV_classical": {
+      "log2_rop": 43.20544910217558,
+      "attack": "usvp",
+      "beta": "40",
+      "log2_rop_minus_log2_768": 33.620486601454424
+    },
+    "n1024_m16384_high_ADPS16_classical": {
+      "log2_rop": 11.68,
+      "attack": "usvp",
+      "beta": "40",
+      "log2_rop_minus_log2_768": 2.0950374992788436
+    },
+    "n1024_m16384_high_ADPS16_quantum_core_svp": {
+      "log2_rop": 10.600000000000001,
+      "attack": "usvp",
+      "beta": "40",
+      "log2_rop_minus_log2_768": 1.0150374992788453
+    },
+    "n1024_m16384_high_MATZOV_quantum_depth_width": {
+      "log2_rop": 47.60559110576705,
+      "attack": "usvp",
+      "beta": "40",
+      "log2_rop_minus_log2_768": 38.02062860504589
+    },
+    "n8192_m262144_low_MATZOV_classical": {
+      "log2_rop": 98.51109813005105,
+      "attack": "bdd",
+      "beta": "225",
+      "log2_rop_minus_log2_768": 88.92613562932989
+    },
+    "n8192_m262144_low_ADPS16_quantum_core_svp": {
+      "log2_rop": 59.89,
+      "attack": "usvp",
+      "beta": "226",
+      "log2_rop_minus_log2_768": 50.305037499278846
+    },
+    "n16384_m262144_low_MATZOV_classical": {
+      "log2_rop": 208.3278215718408,
+      "attack": "bdd",
+      "beta": "617",
+      "log2_rop_minus_log2_768": 198.74285907111963
+    },
+    "n16384_m262144_low_ADPS16_quantum_core_svp": {
+      "log2_rop": 163.77,
+      "attack": "usvp",
+      "beta": "618",
+      "log2_rop_minus_log2_768": 154.18503749927885
+    },
+    "n20480_m262144_low_MATZOV_classical": {
+      "log2_rop": 269.2674065018267,
+      "attack": "bdd",
+      "beta": "834",
+      "log2_rop_minus_log2_768": 259.6824440011056
+    },
+    "n20480_m262144_low_ADPS16_quantum_core_svp": {
+      "log2_rop": 221.275,
+      "attack": "usvp",
+      "beta": "835",
+      "log2_rop_minus_log2_768": 211.69003749927884
+    },
+    "n24576_m262144_low_MATZOV_classical": {
+      "log2_rop": 332.9019180830996,
+      "attack": "bdd",
+      "beta": "1060",
+      "log2_rop_minus_log2_768": 323.31695558237845
+    },
+    "n24576_m262144_low_ADPS16_quantum_core_svp": {
+      "log2_rop": 281.43,
+      "attack": "usvp",
+      "beta": "1062",
+      "log2_rop_minus_log2_768": 271.8450374992789
+    },
+    "n16384_m262144_low_ADPS16_classical": {
+      "log2_rop": 180.456,
+      "attack": "usvp",
+      "beta": "618",
+      "log2_rop_minus_log2_768": 170.87103749927883
+    },
+    "n16384_m262144_low_MATZOV_quantum_depth_width": {
+      "log2_rop": 196.61497775690782,
+      "attack": "bdd",
+      "beta": "617",
+      "log2_rop_minus_log2_768": 187.03001525618666
+    },
+    "n16384_m262144_high_ADPS16_classical": {
+      "log2_rop": 179.57999999999998,
+      "attack": "usvp",
+      "beta": "615",
+      "log2_rop_minus_log2_768": 169.99503749927882
+    },
+    "n16384_m262144_high_MATZOV_quantum_depth_width": {
+      "log2_rop": 195.86391431949147,
+      "attack": "bdd",
+      "beta": "614",
+      "log2_rop_minus_log2_768": 186.2789518187703
+    }
+  }
+}

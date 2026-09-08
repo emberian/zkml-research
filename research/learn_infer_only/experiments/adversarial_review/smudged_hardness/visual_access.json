@@ -1,0 +1,18 @@
+{
+  "scope": "Primary HYL Theorem2 p26 independently rendered and visually read; prior HYL/MP/GPV reads reused.",
+  "HYL_PDF": {
+    "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/1613.pdf",
+    "bytes": 724624,
+    "sha256": "3d5d47484e6e8b75c7d747eeb654559093cf06f7680ba1253a8a4958e6ccdc2e"
+  },
+  "HYL_page26": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/smudged_hardness/renders/hyl26.png",
+    "bytes": 404384,
+    "sha256": "6558a3cadd19efb9b638dbc48f0a9888e9960a6b70ba770cac30e23fed0f89e1"
+  },
+  "prior_HYL_MP_GPV_access": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/smudged_fixed_coordinate/visual_access.json",
+    "bytes": 3066,
+    "sha256": "eb4f7aa2beafb1f465ee95cdf2dd4efd53cbb341ac969fa66b4992e0627100b3"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "all_services_closed": true,
+  "authority_outbox_pending_by_deliberate_transport_withholding": true,
+  "encoder_frontend_wall_ns": 17645567667,
+  "encoder_subprocess_wall_ns": 17385018833,
+  "events": 3,
+  "expiries": 0,
+  "fixed_query_index": 1,
+  "host_worker": {
+    "processes": 1,
+    "startup_ns": 76042000,
+    "stats": {
+      "cas_get_calls": 26,
+      "crypto_calls": {
+        "host-infer": 2,
+        "host-learn": 1,
+        "inspect": 3
+      },
+      "full_blob_sha256_bytes": 1877422,
+      "full_blob_sha256_calls": 26,
+      "requests": 3
+    }
+  },
+  "infers": 2,
+  "issuer_subprocess_wall_ns": 185453791,
+  "learns": 1,
+  "ok": true,
+  "phase_wall_costs": {
+    "after_infer_ns": 308680041,
+    "before_infer_ns": 190510083,
+    "live_encoder_and_learn_ns": 17877192166
+  },
+  "public_phase_wall_ns": 19486414625,
+  "public_replay": {
+    "admissions": {
+      "0": 1,
+      "1": 0
+    },
+    "ok": true,
+    "public_recomputation": true,
+    "queue_lengths": {
+      "0": 1,
+      "1": 0
+    },
+    "revision": 3,
+    "state_digest": "b73362bf2d3548eb809270c9ae64952f59b0b825b36c63a6278dd9b4d767e857"
+  },
+  "reader_decryptions": 0,
+  "received_before_private_phase": 0,
+  "registered_tickets": 2,
+  "same_actual_authority_and_verified_journal_state": true,
+  "same_query_before_after": true,
+  "schema": "semantic-live-deferred-public-v1",
+  "services": [
+    {
+      "pid": 72160,
+      "role": "baseline_reader"
+    },
+    {
+      "pid": 72161,
+      "role": "authority"
+    },
+    {
+      "pid": 72167,
+      "role": "host"
+    },
+    {
+      "pid": 72178,
+      "role": "verifier"
+    }
+  ],
+  "verified_revision": 3
+}

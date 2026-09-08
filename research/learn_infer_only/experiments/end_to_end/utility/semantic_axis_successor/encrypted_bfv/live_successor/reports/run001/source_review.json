@@ -1,0 +1,16 @@
+{
+  "accepted": true,
+  "allowed_attempts": 1,
+  "allowed_infers": 2,
+  "allowed_learns": 1,
+  "freeze_sha256": "a9f07b896f637f553819d4e0a2d6db78a443cb0194d1c4f4f54f41ec27eca882",
+  "model_preflight_sha256": "97d4a27c32d572329c5db47b093e03acb705b8e45fe3438d2748ae431af17030",
+  "private_text_freshness_reviewer_recomputed": false,
+  "requires_existing_TFHE_window_coordination": true,
+  "reviewer_model_or_crypto_imports": 0,
+  "reviewer_private_file_reads": 0,
+  "schema": "live-semantic-independent-prelaunch-review-v1",
+  "scope": "Exact frozen ordinary path only. Full-key recipient and trusted plaintext issuer; selected-score disclosure explicit. Runtime results remain pending.",
+  "source_preflight_sha256": "66166ffc2cec558996f4f61a104b29f916c9fb1a18b83a11b896e2238139857c",
+  "source_review_sha256": "512f96bc85337f91f264b4d4975406594f719c667b975bbb14a6ece05d967a52"
+}

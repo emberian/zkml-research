@@ -1,0 +1,65 @@
+{
+  "accepted_identity_probability": "1/3",
+  "accepted_joint_atoms_each_model": 54,
+  "complete_tape_simulator_random_choices": 55296,
+  "distinct_real_complete_tape_transcripts": 3072,
+  "falsified_shortcuts": [
+    "canonical root without sign is uniform",
+    "selected seed retains unselected uniform law"
+  ],
+  "identity_probability_after_two_candidate_selection": "5/9",
+  "nonvacuous_pair": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      2
+    ]
+  ],
+  "parameters": {
+    "Y": [
+      [
+        1,
+        1
+      ]
+    ],
+    "cap": 2,
+    "g": 2,
+    "p": 7,
+    "q": 3
+  },
+  "roots": {
+    "1": [
+      1,
+      6
+    ],
+    "2": [
+      3,
+      4
+    ],
+    "4": [
+      2,
+      5
+    ]
+  },
+  "samplers": {
+    "tau": {
+      "failure_tapes": 1,
+      "raw_tapes": 16,
+      "replacement_preimages_per_tape": 3,
+      "tapes_per_accepted_value": 5
+    },
+    "u": {
+      "failure_tapes": 4,
+      "raw_tapes": 64,
+      "replacement_preimages_per_tape": 6,
+      "tapes_per_accepted_value": 10
+    }
+  },
+  "scope": "finite probability/field witness only; no cryptographic security experiment",
+  "simulator_preimages_per_transcript": 18,
+  "single_candidate_failure_probability": "31/256",
+  "status": "all exact public arithmetic checks passed"
+}

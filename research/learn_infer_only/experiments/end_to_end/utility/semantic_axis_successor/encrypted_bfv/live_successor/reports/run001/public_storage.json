@@ -1,0 +1,238 @@
+{
+  "received": 0,
+  "registered_tickets": 2,
+  "verified_journal": [
+    {
+      "domain": "resident-authority-finalization-v1",
+      "payload": {
+        "delta": {
+          "kind": "Infer",
+          "output_ct": "6cd2a071f771117d01f3ac7eac415f669feec376901d16c3eeb903a0abee2cb7",
+          "query_ct": "e0bcc84453da8753229bdc56c02efe18d149d15f0deea81c15b7c5d56cd6de2b",
+          "route": 0
+        },
+        "next_state": "a2e5d5d9403b30f0e82745743211496141a85b3fd72a4fe3fef8367223d513f7",
+        "output_ct": "6cd2a071f771117d01f3ac7eac415f669feec376901d16c3eeb903a0abee2cb7",
+        "parent_state": "a2e5d5d9403b30f0e82745743211496141a85b3fd72a4fe3fef8367223d513f7",
+        "request": {
+          "action": {
+            "genesis": "af305953a4b3b2292bea7ee1a36dcb93a16fad2b498ca1496dacff2a22b19272",
+            "key_id": "6031fd1b063e3ef089fad60bb64e3d65b5997cf1e9aacf75cc56e9ce23d5c375",
+            "kind": "Infer",
+            "nonce": "nonce-before-live-observation",
+            "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+            "parent_revision": 0,
+            "parent_state": "a2e5d5d9403b30f0e82745743211496141a85b3fd72a4fe3fef8367223d513f7",
+            "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+            "program_version": 1,
+            "public_key_sha256": "2111bb8a48610e8c7b0ac160f983acbfcc75cfa527676c2fd46ef970c9081e60",
+            "query_ct": "e0bcc84453da8753229bdc56c02efe18d149d15f0deea81c15b7c5d56cd6de2b",
+            "recipient": "benchmark-recipient-R",
+            "request_id": "before-live-observation",
+            "route": 0,
+            "schema": "resident-action-v1"
+          },
+          "authorization": {
+            "domain": "resident-query-authorization-v1",
+            "payload": {
+              "genesis": "af305953a4b3b2292bea7ee1a36dcb93a16fad2b498ca1496dacff2a22b19272",
+              "key_id": "6031fd1b063e3ef089fad60bb64e3d65b5997cf1e9aacf75cc56e9ce23d5c375",
+              "kind": "Infer",
+              "nonce": "nonce-before-live-observation",
+              "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+              "parent_revision": 0,
+              "parent_state": "a2e5d5d9403b30f0e82745743211496141a85b3fd72a4fe3fef8367223d513f7",
+              "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+              "program_version": 1,
+              "public_key_sha256": "2111bb8a48610e8c7b0ac160f983acbfcc75cfa527676c2fd46ef970c9081e60",
+              "query_ct": "e0bcc84453da8753229bdc56c02efe18d149d15f0deea81c15b7c5d56cd6de2b",
+              "recipient": "benchmark-recipient-R",
+              "request_id": "before-live-observation",
+              "route": 0,
+              "schema": "resident-action-v1"
+            },
+            "signature": "pongCKOpNvEnlEVhhWA3ZCDsXth5GjF/lLfl7Jht6+xeNBtP+DMCQxp6AWp93Rl/ZShs0jguR4yikWDQciMGDw=="
+          },
+          "proposal": {
+            "expired_ct": null,
+            "next_state": "a2e5d5d9403b30f0e82745743211496141a85b3fd72a4fe3fef8367223d513f7",
+            "result_ct": "6cd2a071f771117d01f3ac7eac415f669feec376901d16c3eeb903a0abee2cb7"
+          },
+          "schema": "resident-request-v1"
+        },
+        "request_sha256": "9d49c4f36869a5014a83bb7a01591094e00ae2db3c421709cf9ec6db08ec60ae",
+        "revision": 1,
+        "schema": "resident-finalized-v1"
+      },
+      "signature": "29FNbq0UH33O9q26xSYEH7Efpp4dXTPQyrvxmttXZY5DeWCtpa/xmyRmVaEb7Vu6RimledzH50CKAlIYVzoLAQ=="
+    },
+    {
+      "domain": "resident-authority-finalization-v1",
+      "payload": {
+        "delta": {
+          "acc_ct": "aa5b805a2d15d1d1d65f7e1470fd5179b1fd46e734a8f5090517da0abfa90c95",
+          "expired": null,
+          "fresh": {
+            "ct_sha256": "aa5b805a2d15d1d1d65f7e1470fd5179b1fd46e734a8f5090517da0abfa90c95",
+            "record_id": "opaque-live-observation-1"
+          },
+          "kind": "Learn",
+          "route": 0
+        },
+        "next_state": "b73362bf2d3548eb809270c9ae64952f59b0b825b36c63a6278dd9b4d767e857",
+        "output_ct": null,
+        "parent_state": "a2e5d5d9403b30f0e82745743211496141a85b3fd72a4fe3fef8367223d513f7",
+        "request": {
+          "action": {
+            "feature_policy": "trusted-issuer-signed577-int8-bound127-v1",
+            "fresh_ct": "aa5b805a2d15d1d1d65f7e1470fd5179b1fd46e734a8f5090517da0abfa90c95",
+            "genesis": "af305953a4b3b2292bea7ee1a36dcb93a16fad2b498ca1496dacff2a22b19272",
+            "key_id": "6031fd1b063e3ef089fad60bb64e3d65b5997cf1e9aacf75cc56e9ce23d5c375",
+            "kind": "Learn",
+            "nonce": "nonce-live-learn",
+            "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+            "parent_revision": 1,
+            "parent_state": "a2e5d5d9403b30f0e82745743211496141a85b3fd72a4fe3fef8367223d513f7",
+            "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+            "program_version": 1,
+            "public_key_sha256": "2111bb8a48610e8c7b0ac160f983acbfcc75cfa527676c2fd46ef970c9081e60",
+            "range_assertion": [
+              -127,
+              127
+            ],
+            "recipient": "benchmark-recipient-R",
+            "record_id": "opaque-live-observation-1",
+            "request_id": "live-learn",
+            "route": 0,
+            "schema": "resident-action-v1"
+          },
+          "authorization": {
+            "domain": "resident-issuer-v1",
+            "payload": {
+              "feature_policy": "trusted-issuer-signed577-int8-bound127-v1",
+              "fresh_ct": "aa5b805a2d15d1d1d65f7e1470fd5179b1fd46e734a8f5090517da0abfa90c95",
+              "genesis": "af305953a4b3b2292bea7ee1a36dcb93a16fad2b498ca1496dacff2a22b19272",
+              "key_id": "6031fd1b063e3ef089fad60bb64e3d65b5997cf1e9aacf75cc56e9ce23d5c375",
+              "kind": "Learn",
+              "nonce": "nonce-live-learn",
+              "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+              "parent_revision": 1,
+              "parent_state": "a2e5d5d9403b30f0e82745743211496141a85b3fd72a4fe3fef8367223d513f7",
+              "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+              "program_version": 1,
+              "public_key_sha256": "2111bb8a48610e8c7b0ac160f983acbfcc75cfa527676c2fd46ef970c9081e60",
+              "range_assertion": [
+                -127,
+                127
+              ],
+              "recipient": "benchmark-recipient-R",
+              "record_id": "opaque-live-observation-1",
+              "request_id": "live-learn",
+              "route": 0,
+              "schema": "resident-action-v1"
+            },
+            "signature": "bYsCbOOGYWirC4Cdr6IlSBQbAnXZw9NhStOX62UshcR6+K5GN70q7bLLWgrrcnOcsqtvGeU9HWE3t6p4WzqYBg=="
+          },
+          "proposal": {
+            "expired_ct": null,
+            "next_state": "b73362bf2d3548eb809270c9ae64952f59b0b825b36c63a6278dd9b4d767e857",
+            "result_ct": "aa5b805a2d15d1d1d65f7e1470fd5179b1fd46e734a8f5090517da0abfa90c95"
+          },
+          "schema": "resident-request-v1"
+        },
+        "request_sha256": "1178ea518ff074f9d2219f0a8aa487fa19093f7a5db8497249112e83493edb9e",
+        "revision": 2,
+        "schema": "resident-finalized-v1"
+      },
+      "signature": "TZ9K1F1E+XD6T8RDdNZ1JUFRpuoXfdVBsnkdi4RqXXAoD42UC68/dgNjuB96EoNRkaXgAEAlaFAEQrQiD9vtDg=="
+    },
+    {
+      "domain": "resident-authority-finalization-v1",
+      "payload": {
+        "delta": {
+          "kind": "Infer",
+          "output_ct": "bc874b0903441def07f3cbb64850682c9aac4737d123fde5ad28f20239dcae98",
+          "query_ct": "e0bcc84453da8753229bdc56c02efe18d149d15f0deea81c15b7c5d56cd6de2b",
+          "route": 0
+        },
+        "next_state": "b73362bf2d3548eb809270c9ae64952f59b0b825b36c63a6278dd9b4d767e857",
+        "output_ct": "bc874b0903441def07f3cbb64850682c9aac4737d123fde5ad28f20239dcae98",
+        "parent_state": "b73362bf2d3548eb809270c9ae64952f59b0b825b36c63a6278dd9b4d767e857",
+        "request": {
+          "action": {
+            "genesis": "af305953a4b3b2292bea7ee1a36dcb93a16fad2b498ca1496dacff2a22b19272",
+            "key_id": "6031fd1b063e3ef089fad60bb64e3d65b5997cf1e9aacf75cc56e9ce23d5c375",
+            "kind": "Infer",
+            "nonce": "nonce-after-live-observation",
+            "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+            "parent_revision": 2,
+            "parent_state": "b73362bf2d3548eb809270c9ae64952f59b0b825b36c63a6278dd9b4d767e857",
+            "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+            "program_version": 1,
+            "public_key_sha256": "2111bb8a48610e8c7b0ac160f983acbfcc75cfa527676c2fd46ef970c9081e60",
+            "query_ct": "e0bcc84453da8753229bdc56c02efe18d149d15f0deea81c15b7c5d56cd6de2b",
+            "recipient": "benchmark-recipient-R",
+            "request_id": "after-live-observation",
+            "route": 0,
+            "schema": "resident-action-v1"
+          },
+          "authorization": {
+            "domain": "resident-query-authorization-v1",
+            "payload": {
+              "genesis": "af305953a4b3b2292bea7ee1a36dcb93a16fad2b498ca1496dacff2a22b19272",
+              "key_id": "6031fd1b063e3ef089fad60bb64e3d65b5997cf1e9aacf75cc56e9ce23d5c375",
+              "kind": "Infer",
+              "nonce": "nonce-after-live-observation",
+              "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+              "parent_revision": 2,
+              "parent_state": "b73362bf2d3548eb809270c9ae64952f59b0b825b36c63a6278dd9b4d767e857",
+              "program_id": "d2f792688173ba70426b999497e3f1b92ec2f9428e9df562d0cead55eea89862",
+              "program_version": 1,
+              "public_key_sha256": "2111bb8a48610e8c7b0ac160f983acbfcc75cfa527676c2fd46ef970c9081e60",
+              "query_ct": "e0bcc84453da8753229bdc56c02efe18d149d15f0deea81c15b7c5d56cd6de2b",
+              "recipient": "benchmark-recipient-R",
+              "request_id": "after-live-observation",
+              "route": 0,
+              "schema": "resident-action-v1"
+            },
+            "signature": "ju2AF8CX6/x6UYJHltnnlibMqgWjw+8FzQlSrZLPHKN4tG3naZr3e1WSsXEvq+Za4h8ATPk+uGAn44ql/ixlAQ=="
+          },
+          "proposal": {
+            "expired_ct": null,
+            "next_state": "b73362bf2d3548eb809270c9ae64952f59b0b825b36c63a6278dd9b4d767e857",
+            "result_ct": "bc874b0903441def07f3cbb64850682c9aac4737d123fde5ad28f20239dcae98"
+          },
+          "schema": "resident-request-v1"
+        },
+        "request_sha256": "a1e61af8cca7bd53b1d9d8e2a1d704c5fb2da095392a1ff4d8d156706c99e68e",
+        "revision": 3,
+        "schema": "resident-finalized-v1"
+      },
+      "signature": "qfKmFJwsX6BNNTy/iNTTpUjNizpvd//N8Tn2OwNmPzu525iU++vxa9Cfa6GKMUqyfrxujlu2HOLA9NgjMV55Bw=="
+    }
+  ],
+  "verified_records": 3,
+  "verified_state": {
+    "genesis": "af305953a4b3b2292bea7ee1a36dcb93a16fad2b498ca1496dacff2a22b19272",
+    "key_id": "6031fd1b063e3ef089fad60bb64e3d65b5997cf1e9aacf75cc56e9ce23d5c375",
+    "params_id": "fb16ccd74dd4b7bedb6673b369b56475af06f9415a4faf4645d411d3c7d0cda3",
+    "routes": {
+      "0": {
+        "acc_ct": "aa5b805a2d15d1d1d65f7e1470fd5179b1fd46e734a8f5090517da0abfa90c95",
+        "admissions": 1,
+        "queue": [
+          {
+            "ct_sha256": "aa5b805a2d15d1d1d65f7e1470fd5179b1fd46e734a8f5090517da0abfa90c95",
+            "record_id": "opaque-live-observation-1"
+          }
+        ]
+      },
+      "1": {
+        "acc_ct": "6cd2a071f771117d01f3ac7eac415f669feec376901d16c3eeb903a0abee2cb7",
+        "admissions": 0,
+        "queue": []
+      }
+    },
+    "schema": "resident-window-state-v1"
+  }
+}

@@ -1,0 +1,3 @@
+[OPEN] Root may integrate REPORT.md against its pinned author theorem and manifest. No source repair remains requested by this review. Retain the new-derived-repair attribution and every explicit finite-sampler/resource/LWE/correctness limitation; do not promote the statistical ledger to a cryptographic security label.
+
+[OPEN] A future implementation-bound reduction needs a finite-bit sampler of the whole final classical tuple with per-world total variation and polynomial resource bounds. This review authorizes or performs no such implementation, cryptographic/estimator run, or private runtime inspection.

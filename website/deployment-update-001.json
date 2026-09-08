@@ -1,0 +1,193 @@
+{
+  "scope": "Second public evidence-index deployment; historical initial deployment.json retained.",
+  "utc": "2026-09-08T05:35:56.428112+00:00",
+  "url": "https://emberian.github.io/zkml-research/",
+  "revision": "7e177089daaec5d275e7899a29b9d28b1817a8e9",
+  "workflow_id": 34190912338,
+  "workflow_url": "https://github.com/emberian/zkml-research/actions/runs/34190912338",
+  "workflow_conclusion": "success",
+  "checks": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 32098,
+      "sha256": "73c55857aff770d0c267edc6e3b6a7934efbca777975b7acae20804853c0bfac",
+      "matches_local": true
+    },
+    {
+      "path": "assets/style.css",
+      "status": 200,
+      "bytes": 15612,
+      "sha256": "c795e452f94cafe661b42c75d14c6ac174602767dc960ea4f5c5fea6709726ef",
+      "matches_local": true
+    },
+    {
+      "path": "assets/app.js",
+      "status": 200,
+      "bytes": 2697,
+      "sha256": "b0985c343ac9e78676ec457be04109fc22fd6add69cadf0bfa16a66f0ed5b4f9",
+      "matches_local": true
+    },
+    {
+      "path": "assets/favicon.svg",
+      "status": 200,
+      "bytes": 246,
+      "sha256": "7dbd4b9d5e0e5b2358a6ad669fc45e34e7892b7c79e8babf1953124bc6449486",
+      "matches_local": true
+    },
+    {
+      "path": "source-manifest.json",
+      "status": 200,
+      "bytes": 17450,
+      "sha256": "5f9c2885ceab6e2454c55e70f53e73e4f7211a7888a2ce6ecfd2a95c8e0ed283",
+      "matches_local": true
+    },
+    {
+      "path": "build-manifest.json",
+      "status": 200,
+      "bytes": 577,
+      "sha256": "ab8b41561a8b97edca1fbc6c3ca9cda45b11b81ad54646ec0ade79e1625067ab",
+      "matches_local": true
+    }
+  ],
+  "source_blob_checks": {
+    "ok": true,
+    "checks": [
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/encrypted_bfv/REPORT.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/SECURITY_GAME.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/reports/full_003/report.json",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/designated_span/full_utility/README.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/formal/integration/README.md",
+        "revision": "8659c3a6285c837af4279c1f502a84d87e794a1f",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "README.md",
+        "revision": "d434f5ebc7473dd3efd3a70eb09f0adb9d4000af",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/FINITE_LADDER.md",
+        "revision": "aa1aff67cf437c551b50415608c9ded30976d068",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "notes/README.md",
+        "revision": "c7b08e5a8ecb2544801e2bb079930b976dd55513",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/public_setup_pq/costs/FEASIBILITY.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/PQ_COMPOSITION.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/FIXED_COORDINATE_QPT.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/adversarial_review/public_setup_pq/REVIEW.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/utility/semantic_axis_successor/REPORT.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/review/REVIEW.md",
+        "revision": "357b437856c9f48bb4b7dfa3af18bfdcb4ea3617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/private_construction/designated_span/public_coin_setup/journal/README.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_runtime/REPORT.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/private_ema/emitted_fixed_fft/REPORT.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "research/learn_infer_only/experiments/end_to_end/private_ema/encrypted_successor/REPORT.md",
+        "revision": "cf0f91fc8165d0800b3ccc9e4f8ee2bcca0105db",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      },
+      {
+        "path": "docs/VERDICTS.md",
+        "revision": "f2c3163413b4975153f763ddc745880308837617",
+        "status": 200,
+        "sha256_matches": true,
+        "ok": true
+      }
+    ]
+  },
+  "local_visual_review": "Agent Playwright desktop/mobile/filters/noJS/keyboard; root inspected update desktop evidence and mobile PQ images.",
+  "root_live_browser_review": false
+}

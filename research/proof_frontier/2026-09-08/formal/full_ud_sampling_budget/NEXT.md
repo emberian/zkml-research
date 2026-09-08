@@ -1,0 +1,5 @@
+[OPEN] Root: consume integration_entry.json after the frozen full-UD package with universe successor and the frozen BabyBearFullUD bridge. Run normal combined import, declaration census and umbrella integration checks. Independent reviewer polynomial_kernel owns adversarial_review/full_ud_sampling/.
+
+[OPEN] The remaining application work is to exhibit the actual multiplicative FoldingTower over BabyBearExt4 at these dimensions, connect the deployed commitment/oracle execution to the existing ideal BindingCommitment and FriAdaptiveTranscript, and establish the initial 2/5-farness reduction and actual coherent sampling/Fiat–Shamir execution. Do not discount or omit unrelated ErrorBudget terms, and do not relabel a deployed certificate from the conditional ideal 55-bit head.
+
+[DERIVED] The old 4099 comparison currently proves arithmetic and an admissible old schedule. An exported old coherent probability theorem could instantiate the existing foldDistancePreserving_UD with that sequence if needed; it is not required to consume the new actual coherent head. No edits to frozen source bytes are planned.

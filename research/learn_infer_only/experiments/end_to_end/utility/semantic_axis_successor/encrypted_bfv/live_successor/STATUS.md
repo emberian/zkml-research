@@ -1,0 +1,3 @@
+[EXECUTED] Complete: one frozen actual model forward (two axes), one Learn/two Infer, three public/verified transitions, service closure and independent keyless replay/storage checks before two private decryptions, both exact integer matches, and final independent public-evidence check. The selected output changed; its disclosure is explicit. Source/model/query/parent pins hold. See REPORT.md and manifest.json.
+
+[OPEN] Root owns collection and independent-review final seal. Full key, plaintext issuer, four bins per public route, same-account roles and pending authority outbox remain; this is no new utility estimate or no-master-read result.

@@ -1,0 +1,69 @@
+{
+  "scope": "Local primary PDF text and rendered pages read by reviewer; previous MP/GPV page reads reused.",
+  "HYL_PDF": {
+    "path": "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2025/1613.pdf",
+    "bytes": 724624,
+    "sha256": "3d5d47484e6e8b75c7d747eeb654559093cf06f7680ba1253a8a4958e6ccdc2e"
+  },
+  "HYL_text": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/smudged_fixed_coordinate/extracts/2025-1613.txt",
+    "bytes": 420847,
+    "sha256": "6c1db068b603d3b27e332bfaae1cc22ea4aa442b691a9acd0ce27ba8f557ae9d"
+  },
+  "HYL_pages_visually_read": [
+    {
+      "printed_page": 24,
+      "render": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/smudged_fixed_coordinate/renders/hyl-24.png",
+        "bytes": 361297,
+        "sha256": "1bd748d04855141efa7c043be7330322ba787142c8cfe2a4252ac07eb3f9e1de"
+      }
+    },
+    {
+      "printed_page": 27,
+      "render": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/smudged_fixed_coordinate/renders/hyl-27.png",
+        "bytes": 351652,
+        "sha256": "b9eb6e14d94e4ac1f387b055ff1ec0c953e3c9abfba1b317736a38fa893948b2"
+      }
+    },
+    {
+      "printed_page": 28,
+      "render": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/smudged_fixed_coordinate/renders/hyl-28.png",
+        "bytes": 323285,
+        "sha256": "0ad67e9f8c0e8e111112f3e0b66b18a3ed87de3b95e5bd2f2d6b84ca27ea7c27"
+      }
+    },
+    {
+      "printed_page": 29,
+      "render": {
+        "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/smudged_fixed_coordinate/renders/hyl-29.png",
+        "bytes": 319507,
+        "sha256": "33c34ee652db3fcc83420e407981f61afb97311e500e56be508bc42cff8035d6"
+      }
+    }
+  ],
+  "prior_MP_GPV_visual_record": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/visual_access.json",
+    "bytes": 1584,
+    "sha256": "f2e0cf07c6b74ab031354f62a906b605c6a54ff8d1947001b3e23f4389815386"
+  },
+  "prior_MP_GPV_review": {
+    "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/pq_finite_costs/REPORT.md",
+    "bytes": 14334,
+    "sha256": "9912a9c60d6ded755de96baf893f1fbf17f4d5b264d0623f3c895f9323d8b51c"
+  },
+  "reused_MP_GPV_extracts": [
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/2011-501.txt",
+      "bytes": 172542,
+      "sha256": "cbedb5cfdbb8b00d5900705a3e0887c465668efbb9f140c5632a314a0c7918ea"
+    },
+    {
+      "path": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adversarial_review/public_setup_pq/quantitative_regularity/extracts/2007-432.txt",
+      "bytes": 152444,
+      "sha256": "7417aac227d904ba206575968120f4ab701aa75af5627f49eff17a134479d646"
+    }
+  ]
+}

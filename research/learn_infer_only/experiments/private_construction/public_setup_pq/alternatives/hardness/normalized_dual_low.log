@@ -1,0 +1,8 @@
+START 16384 10 low MATZOV_classical dual
+RESULT ERROR None None
+START 16384 10 low ADPS16_classical dual
+RESULT ERROR None None
+START 16384 10 low ADPS16_quantum_core_svp dual
+RESULT ERROR None None
+START 16384 10 low MATZOV_quantum_depth_width dual
+RESULT ERROR None None
