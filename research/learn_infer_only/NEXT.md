@@ -15,6 +15,17 @@ paragraphs below are historical recovery records, not the current goal state.
 | independent_review | Complete independent direct-GKP-vector and compact-TMRE proof/parameter reviews. |
 | research_site | Reproducible static GitHub Pages site, evidence links/status labels, mobile/accessibility and build checks. Root owns publication. |
 
+[EXECUTED first-checkpoint handoff] Site construction is complete; root owns
+publication from website/NEXT.md. Independent PQ review is complete and that
+reviewer now checks the public-coin journal join. The source lane now examines
+transparent/registered LWE setup under experiments/private_construction/public_setup_pq/.
+The polynomial kernel is checked and handed to the full-UD lane; its author
+independently reviews the frozen private-address arithmetic patch. Polynomial
+gluing has a separate isolated lane. Formal/runtime emission shares the schema
+in formal/private_address_ema/emitted_schedule/SCHEMA.md with emitted_runtime.
+The nonlinear utility owner also proves fixed-law adaptation dynamics while
+the unchanged encrypted workload runs; do not launch a second copy.
+
 [OPEN root] Verify integrated source/data flow; collect proofs into an isolated
 full build when ready; maintain source-query counts and credential/cost ledgers;
 inspect the site visually and validate the deployment before publication.

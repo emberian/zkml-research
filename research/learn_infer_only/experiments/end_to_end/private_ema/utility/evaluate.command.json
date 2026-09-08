@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/adaptation_utility/.venv/bin/python",
+    "-B",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/utility/evaluate.py"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/experiments/end_to_end/private_ema/utility",
+  "exit_code": 0,
+  "started_utc": "2026-09-08T04:02:44.306729+00:00",
+  "wall_seconds": 0.7702099579910282
+}

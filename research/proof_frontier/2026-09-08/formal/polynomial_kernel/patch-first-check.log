@@ -1,0 +1,6 @@
+COMMAND: ['git', 'apply', '--check', '--whitespace=error-all', '/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/polynomial-kernel.patch']
+CWD: /var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/polynomial-kernel-apply-dt_7qxoe
+EXIT: 128
+/Users/ember/dev/zkml-research/research/proof_frontier/2026-09-08/formal/polynomial_kernel/polynomial-kernel.patch:545: new blank line at EOF.
++
+error: 1 line adds whitespace errors.

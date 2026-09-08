@@ -1,0 +1,44 @@
+[
+  {
+    "anchor": "Efficiency. This property intuitively",
+    "pdf_page_one_based": 45,
+    "extract_line": 2527,
+    "argv": [
+      "pdftoppm",
+      "-f",
+      "45",
+      "-l",
+      "45",
+      "-scale-to",
+      "1800",
+      "-png",
+      "-singlefile",
+      "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2015/173.pdf",
+      "research/learn_infer_only/experiments/adversarial_review/compact_tmre/renders/2015_173"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "anchor": "Efficiency We require that Mc.enc",
+    "pdf_page_one_based": 37,
+    "extract_line": 1909,
+    "argv": [
+      "pdftoppm",
+      "-f",
+      "37",
+      "-l",
+      "37",
+      "-scale-to",
+      "1800",
+      "-png",
+      "-singlefile",
+      "/Users/ember/dev/gh/forks/IACR-eprint-mirror/2014/925.pdf",
+      "research/learn_infer_only/experiments/adversarial_review/compact_tmre/renders/2014_925"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

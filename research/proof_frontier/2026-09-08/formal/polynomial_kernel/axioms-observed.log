@@ -1,0 +1,13 @@
+COMMAND: lake env lean Theory/PolynomialMatrixKernel.lean
+EXIT: 0
+SECONDS: 20.379
+'PolynomialMatrixKernel.Source.RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'PolynomialMatrixKernel.correctness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PolynomialMatrixKernel.witnessMatrix_premises' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PolynomialMatrixKernel.witnessVector_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PolynomialMatrixKernel.premises_inhabited' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PolynomialMatrixKernel.satisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PolynomialMatrixKernel.determinant_hypothesis_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PolynomialMatrixKernel.degree_bound_teeth' depends on axioms: [propext, Classical.choice, Quot.sound]

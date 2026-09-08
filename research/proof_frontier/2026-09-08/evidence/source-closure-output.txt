@@ -1,0 +1,17 @@
+ArkLib source import closure: 38 modules; 14715 lines
+external non-Mathlib imports: ['Batteries.Data.Fin.Fold', 'CompPoly.Data.Classes.DCast', 'CompPoly.Data.Fin.BigOperators', 'CompPoly.Data.MvPolynomial.Notation', 'CompPoly.Data.Nat.Bitwise', 'CompPoly.Data.Polynomial.MonomialBasis', 'CompPoly.ToMathlib.Polynomial.BivariateMultiplicity', 'CompPoly.ToMathlib.Polynomial.BivariateWeightedDegree', 'Init.Data.List.FinRange']
+48 ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding
+147 ArkLib.Data.CodingTheory.BerlekampWelch.BerlekampWelch
+513 ArkLib.Data.CodingTheory.BerlekampWelch.Condition
+192 ArkLib.Data.CodingTheory.BerlekampWelch.ElocPoly
+91 ArkLib.Data.CodingTheory.BerlekampWelch.Sorries
+161 ArkLib.Data.CodingTheory.BerlekampWelch.Existence
+409 ArkLib.Data.CodingTheory.PolishchukSpielman.Degrees
+547 ArkLib.Data.Polynomial.Bivariate
+7 ArkLib.Data.CodingTheory.PolishchukSpielman
+102 ArkLib.Data.CodingTheory.PolishchukSpielman.PolishchukSpielman
+303 ArkLib.Data.CodingTheory.PolishchukSpielman.Existence
+317 ArkLib.Data.CodingTheory.PolishchukSpielman.Resultant
+790 ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.JointAgreement
+753 ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.GoodCoeffs
+1397 ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.BWMatrix

@@ -1,0 +1,550 @@
+{
+  "scope": "Single Mathlib-only module; 28 exact pins; source-only patch and import checks. Cached dependency oleans reused; no full umbrella build or Rust/TFHE execution.",
+  "checks": [
+    {
+      "command": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/private_address_ema_b3uk5ebm",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/minidregg-private-address-ema.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/private_address_ema_b3uk5ebm",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/minidregg-private-address-ema.patch"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/private_address_ema_b3uk5ebm",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/private_address_ema_b3uk5ebm/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/var/folders/r8/kfrtq04d5dq_f50zm3tx3phw0000gn/T/private_address_ema_b3uk5ebm",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "bash",
+        "/Users/ember/dev/minidregg/scripts/check-import-boundary.sh"
+      ],
+      "cwd": "/Users/ember/dev/minidregg",
+      "exit_code": 0,
+      "stdout": "OK: Theory: all imports within {Mathlib|Minidregg\\.Theory|Theory}\nOK: Selvage: all imports within {Mathlib|Minidregg\\.Theory|Minidregg\\.Selvage|Theory|Selvage}\n",
+      "stderr": ""
+    }
+  ],
+  "census": {
+    "theorems": [
+      "byte_range",
+      "numerator_integer_range",
+      "eight_s_encoding",
+      "extract_signed_floor",
+      "numerator_eq",
+      "numerator_exact",
+      "candidate_exact",
+      "selected_exact",
+      "learn_selected",
+      "learn_untouched",
+      "infer_selected",
+      "infer_negative",
+      "private_address_correctness",
+      "invariant_correctness",
+      "full_adder_identity",
+      "ripple_correctness",
+      "ripple_modular",
+      "ripple_bitvec",
+      "ripple_premises_inhabited",
+      "carry_falsifier",
+      "selected_unique",
+      "infer_untouched",
+      "history_invariant",
+      "premises_inhabited",
+      "satisfying_subject",
+      "truncation_falsifier",
+      "ten_bit_falsifier",
+      "unselected_falsifier"
+    ],
+    "qualified_declarations": [
+      {
+        "name": "byte_range",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.byte_range",
+        "line": 83
+      },
+      {
+        "name": "numerator_integer_range",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.numerator_integer_range",
+        "line": 89
+      },
+      {
+        "name": "eight_s_encoding",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.eight_s_encoding",
+        "line": 96
+      },
+      {
+        "name": "extract_signed_floor",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.extract_signed_floor",
+        "line": 108
+      },
+      {
+        "name": "numerator_eq",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.numerator_eq",
+        "line": 115
+      },
+      {
+        "name": "numerator_exact",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.numerator_exact",
+        "line": 129
+      },
+      {
+        "name": "candidate_exact",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.candidate_exact",
+        "line": 142
+      },
+      {
+        "name": "selected_exact",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.selected_exact",
+        "line": 146
+      },
+      {
+        "name": "learn_selected",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.learn_selected",
+        "line": 149
+      },
+      {
+        "name": "learn_untouched",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.learn_untouched",
+        "line": 153
+      },
+      {
+        "name": "infer_selected",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.infer_selected",
+        "line": 157
+      },
+      {
+        "name": "infer_negative",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.infer_negative",
+        "line": 163
+      },
+      {
+        "name": "private_address_correctness",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.private_address_correctness",
+        "line": 167
+      },
+      {
+        "name": "invariant_correctness",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.invariant_correctness",
+        "line": 172
+      },
+      {
+        "name": "full_adder_identity",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.full_adder_identity",
+        "line": 183
+      },
+      {
+        "name": "ripple_correctness",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.ripple_correctness",
+        "line": 188
+      },
+      {
+        "name": "ripple_modular",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.ripple_modular",
+        "line": 200
+      },
+      {
+        "name": "ripple_bitvec",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.ripple_bitvec",
+        "line": 207
+      },
+      {
+        "name": "ripple_premises_inhabited",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.ripple_premises_inhabited",
+        "line": 215
+      },
+      {
+        "name": "carry_falsifier",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.carry_falsifier",
+        "line": 221
+      },
+      {
+        "name": "selected_unique",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.selected_unique",
+        "line": 233
+      },
+      {
+        "name": "infer_untouched",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.infer_untouched",
+        "line": 236
+      },
+      {
+        "name": "history_invariant",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.history_invariant",
+        "line": 246
+      },
+      {
+        "name": "premises_inhabited",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.premises_inhabited",
+        "line": 258
+      },
+      {
+        "name": "satisfying_subject",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.satisfying_subject",
+        "line": 267
+      },
+      {
+        "name": "truncation_falsifier",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.truncation_falsifier",
+        "line": 279
+      },
+      {
+        "name": "ten_bit_falsifier",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.ten_bit_falsifier",
+        "line": 284
+      },
+      {
+        "name": "unselected_falsifier",
+        "qualified_name": "Minidregg.Theory.PrivateAddressEma.unselected_falsifier",
+        "line": 291
+      }
+    ],
+    "theorem_count": 28,
+    "pin_count": 28,
+    "pins": [
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.byte_range",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.byte_range",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 299,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.byte_range' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.numerator_integer_range",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.numerator_integer_range",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 302,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.numerator_integer_range' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.eight_s_encoding",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.eight_s_encoding",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 305,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.eight_s_encoding' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.extract_signed_floor",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.extract_signed_floor",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 308,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.extract_signed_floor' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.numerator_eq",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.numerator_eq",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 311,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.numerator_eq' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.numerator_exact",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.numerator_exact",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 314,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.numerator_exact' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.candidate_exact",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.candidate_exact",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 317,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.candidate_exact' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.selected_exact",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.selected_exact",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 320,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.selected_exact' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.learn_selected",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.learn_selected",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 323,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.learn_selected' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.learn_untouched",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.learn_untouched",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 326,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.learn_untouched' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.infer_selected",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.infer_selected",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 329,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.infer_selected' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.infer_negative",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.infer_negative",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 332,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.infer_negative' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.private_address_correctness",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.private_address_correctness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 335,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.private_address_correctness' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.invariant_correctness",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.invariant_correctness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 338,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.invariant_correctness' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.full_adder_identity",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.full_adder_identity",
+        "axioms": [],
+        "line": 341,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.full_adder_identity' does not depend on any axioms"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.ripple_correctness",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.ripple_correctness",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 344,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.ripple_correctness' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.ripple_modular",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.ripple_modular",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 347,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.ripple_modular' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.ripple_bitvec",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.ripple_bitvec",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 350,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.ripple_bitvec' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.ripple_premises_inhabited",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.ripple_premises_inhabited",
+        "axioms": [],
+        "line": 353,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.ripple_premises_inhabited' does not depend on any axioms"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.carry_falsifier",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.carry_falsifier",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 356,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.carry_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.selected_unique",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.selected_unique",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 359,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.selected_unique' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.infer_untouched",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.infer_untouched",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 362,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.infer_untouched' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.history_invariant",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.history_invariant",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 365,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.history_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.premises_inhabited",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.premises_inhabited",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 368,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.premises_inhabited' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.satisfying_subject",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.satisfying_subject",
+        "axioms": [
+          "propext",
+          "Classical.choice",
+          "Quot.sound"
+        ],
+        "line": 371,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.satisfying_subject' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.truncation_falsifier",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.truncation_falsifier",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 374,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.truncation_falsifier' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.ten_bit_falsifier",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.ten_bit_falsifier",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 377,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.ten_bit_falsifier' depends on axioms: [propext, Quot.sound]"
+      },
+      {
+        "theorem": "Minidregg.Theory.PrivateAddressEma.unselected_falsifier",
+        "requested_name": "Minidregg.Theory.PrivateAddressEma.unselected_falsifier",
+        "axioms": [
+          "propext",
+          "Quot.sound"
+        ],
+        "line": 380,
+        "expected_message": "info: 'Minidregg.Theory.PrivateAddressEma.unselected_falsifier' depends on axioms: [propext, Quot.sound]"
+      }
+    ],
+    "forbidden_constructs": [],
+    "admit_identifier_tokens": [],
+    "lexical_scope": "Comments and strings masked; Lean elaboration checks exact guard messages."
+  },
+  "companion_before": {
+    "head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+    "status": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n"
+  },
+  "companion_after": {
+    "head": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd\n",
+    "status": " M Compiler.lean\n M README.md\n M native/hyperdocument-link-sqlite-store/Cargo.toml\n M native/hyperdocument-link-store/Cargo.toml\n M prover/Cargo.toml\n M prover/src/lib.rs\n?? Compiler/UwueavePreoProjectionV2.lean\n?? LICENSE\n?? LICENSING.md\n?? NOTICE\n?? docs/FORMAL_STATUS_AND_NEXT_PROOFS.md\n?? prover/generated/uwueave_preo_projection_v2.rs\n?? prover/tests/uwueave_preo_projection_v2.rs\n"
+  },
+  "lean_check": "results/lean_010.json",
+  "source_sha256": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+  "patch_sha256": "9fabd5d64ab3280dde1bbb1affab9ced9d5835f248f984dd4bb9d0488622ebae",
+  "inputs": {
+    "research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean": "0b148bff8a53447bc9f30950948771a4b0f53edeb1110cc78f44e85a960d562d",
+    "research/learn_infer_only/formal/private_address_ema/minidregg-private-address-ema.patch": "9fabd5d64ab3280dde1bbb1affab9ced9d5835f248f984dd4bb9d0488622ebae",
+    "research/learn_infer_only/formal/private_address_ema/check.py": "74f3eed7eb1e193f7cf821ee7c7d1e30af864a2d92c8c9525ab457aca958af73",
+    "research/learn_infer_only/formal/private_address_ema/package.py": "19b734c4cd8beaa9dda0065dbf1675c1b9787d74f5b7300feb9ca8ef51f4fa43",
+    "research/learn_infer_only/formal/integration/minidregg-combined-resident-708.patch": "a290120197d9679d9d59060121b7a7b7dc17dc3ccbbef263ac8eac057d77f2c2",
+    "research/learn_infer_only/experiments/end_to_end/private_ema/src/lib.rs": "fad1864642ff6c0036cdfed66b93bc7e21bb2720572d0ddd30b6effa2c65c880",
+    "research/learn_infer_only/experiments/end_to_end/private_ema/review/IMPLEMENTATION_REVIEW.md": "3c90ca9f6a54b651a5232c76032bdb5a007df9437f2da7948dc70a6edb054394"
+  },
+  "all_passed": true
+}

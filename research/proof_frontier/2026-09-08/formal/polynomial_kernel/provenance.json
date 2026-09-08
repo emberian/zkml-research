@@ -1,0 +1,21 @@
+{
+  "checkout": "/tmp/minidregg-polynomial-kernel-20260908",
+  "minidregg_commit": "6937394e1dc2c2aaff986c7d4b3a258aca5d16fd",
+  "arklib_commit": "22dbd4e836c15a21f68889afa69b7130da04abbb",
+  "mathlib_commit": "1c2b90b13009c65b090d95a83c98e248deafb6f1",
+  "source_path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/BWMatrix.lean",
+  "source_sha256": "845e10843bc1e84c36cafbc293365e565c9559870a682b4bde770499ad40fbfb",
+  "files_sha256": {
+    "Theory/PolynomialMatrixKernel.lean": "aa04f65f81689b1a70dd897177623f3f6f25705b36043ad5ae6d138d220cd3ac",
+    "LICENSES/ArkLib-Apache-2.0.txt": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851"
+  },
+  "patch_sha256": "d1f1a5a025ace7edc410af8f53209a2e43627e16a612658dcc63396eede594a1",
+  "lean_version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+  "validation": "lean-final.log; import-boundary.log; patch-check.log",
+  "query_counts": {
+    "web_search": 0,
+    "scry_sql": 0,
+    "scry_schema": 0,
+    "kagi": 0
+  }
+}

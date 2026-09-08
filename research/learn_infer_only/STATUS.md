@@ -15,6 +15,38 @@ and interrupted PQ proof reviews; and a public research site. Root integrates,
 reviews and checkpoints named artifacts. No prior completed384/96 workload is
 rerun merely to restart, and prior safety-stopped tasks remain stopped.
 
+## Third-run first checkpoint — 2026-09-08 04:21 UTC
+
+[EXECUTED] `experiments/end_to_end/overnight_checkpoint_001.py` verified 122
+saved file hashes, including both independent PQ reviews, the fixed EMA utility
+package, five capsule source pairs, the new arithmetic patch and the polynomial
+matrix patch. Both companion HEAD/status records and every preexisting dirty
+file's recorded bytes still match the starting baseline.
+
+- [EXECUTED] Fixed EMA utility is 7,486/8,192 (91.3818%) on reused semantic
+  data; no improvement claim over W32. Hard/wet labels regress to65.6250%.
+  The unchanged384 Learn/96 Infer encrypted successor is running, with public
+  verification before deferred decoding; this is not a completed run result.
+- [EXECUTED] Private-address signed-byte arithmetic now has28 checked pins;
+  a separate polynomial-matrix kernel module has8. Both are proposed patches,
+  awaiting root integration. A Lean-emitted Boolean schedule and generic Rust
+  interpreter are in progress to replace the handwritten learner routine.
+- [DERIVED independent review] Direct vector GKP is accepted under its
+  stated primitive interfaces, retaining M*L public encryption components.
+  Compact TMRE needs the declared-clock versus actual-runtime qualification;
+  its indexed privacy/correctness proof survives at the narrower clock scope.
+- [SOURCE/DERIVED] The receipt-key capsule audit confirms the exact public-slot
+  compatibility and joint-auxiliary gaps. Selective witness encryption releases
+  fixed capabilities under strong puncturing; the evolving restricted FHE
+  decryptor remains open. Root's bounded source/math review is retained.
+- [SOURCE/OPEN] The proof-frontier note maps a full unique-decoding improvement
+  into existing consumers. Matrix, interpolation and polynomial gluing lanes
+  pursue it. New near-capacity literature has unpriced constants; no deployed
+  security figure is changed.
+- [EXECUTED/OPEN] The static website builds and passes desktop/mobile and
+  source-link checks. Root reviewed its desktop preview. Publication is next;
+  no live-site result is claimed at this checkpoint.
+
 ## Second-run recovery (completed collection)
 
 [REPORTED interruption; EXECUTED recovery, 2026-09-07] The user reports an

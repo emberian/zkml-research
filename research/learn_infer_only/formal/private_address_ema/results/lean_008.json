@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema",
+  "exit_code": 0,
+  "elapsed_seconds": 18.58749600002193,
+  "source_sha256": "8854ad5081d41bbe506ceee5d12ae2629177866ce605b8a46b7709974662e31e",
+  "stdout": "",
+  "stderr": ""
+}

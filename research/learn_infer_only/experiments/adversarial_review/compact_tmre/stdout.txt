@@ -1,0 +1,8 @@
+{
+  "output_lengths": 64,
+  "adjacent_index_hybrids": 2080,
+  "off_point_equalities": 111634,
+  "out_of_range_encoding_negative_controls": 58,
+  "author_files_unchanged": true,
+  "author_file_count": 12
+}

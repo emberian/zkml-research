@@ -1,0 +1,381 @@
+/-
+[DERIVED statement-first target] The exact word-level seam of private_ema:
+sign-extend signed bytes to eleven bits, form 8s + ~s + 1 + u, then take
+bits 3..10. Address bits are low-bit first. This is a semantic specification
+using Lean's standard BitVec operations, NOT a second Boolean executor.
+
+Keystone Prop: PrivateAddressCorrectness below. Satisfying subject: an arbitrary
+state and input, since BitVec typing supplies all full-byte bounds. Strict
+±120 subrange premise is inhabited at the zero state and either endpoint label.
+Teeth: ten-bit narrowing changes the (-128, -128) answer, truncation towards zero
+changes (15, -120), and unconditional update changes an unselected register.
+
+The theorem does not claim that TFHE gates decrypt correctly, that Rust's
+ripple adder refines BitVec addition, or that the live host consumes emitted
+Lean code. Those remain explicit runtime/compiler obligations.
+-/
+import Mathlib.Tactic
+
+namespace Minidregg.Theory.PrivateAddressEma
+
+set_option autoImplicit false
+set_option maxRecDepth 10000
+set_option maxHeartbeats 1000000
+
+abbrev Byte := BitVec 8
+abbrev Address := BitVec 2
+abbrev State := Fin 4 → Byte
+
+/-- This is the word-level obligation for the existing gate circuit. -/
+def numerator (s u : Byte) : BitVec 11 :=
+  ((s.signExtend 11 <<< 3) + ~~~(s.signExtend 11) + 1) + u.signExtend 11
+
+def candidate (s u : Byte) : Byte := (numerator s u).extractLsb' 3 8
+
+def addressIndex (a : Address) : Fin 4 := ⟨a.toNat, a.isLt⟩
+
+/-- Four fixed public gates; no secret address is used to index the source state. -/
+def selected (a : Address) (j : Fin 4) : Bool :=
+  (a.getLsbD 0 == (BitVec.ofNat 2 j.val).getLsbD 0) &&
+  (a.getLsbD 1 == (BitVec.ofNat 2 j.val).getLsbD 1)
+
+def learn (s : State) (a : Address) (u : Byte) : State :=
+  fun j => if selected a j then candidate (s j) u else s j
+
+def infer (s : State) (q : Address) : Bool :=
+  if q.getLsbD 1 then
+    (if q.getLsbD 0 then (s 3).msb else (s 2).msb)
+  else (if q.getLsbD 0 then (s 1).msb else (s 0).msb)
+
+def PrivateAddressCorrectness : Prop :=
+  ∀ (s : State) (a q : Address) (u : Byte),
+    (numerator (s (addressIndex a)) u).toInt =
+      7 * (s (addressIndex a)).toInt + u.toInt ∧
+    (learn s a u (addressIndex a)).toInt =
+      (7 * (s (addressIndex a)).toInt + u.toInt) / 8 ∧
+    (∀ j, j ≠ addressIndex a → learn s a u j = s j) ∧
+    (infer (learn s a u) q = true ↔ (learn s a u (addressIndex q)).toInt < 0)
+
+def Within120 (s : State) : Prop := ∀ j, -120 ≤ (s j).toInt ∧ (s j).toInt ≤ 120
+def AllowedLabel (u : Byte) : Prop := u.toInt = -120 ∨ u.toInt = 120
+
+/-- A full execution history is typed and can start from the strict invariant. -/
+def InvariantCorrectness : Prop :=
+  ∀ (s : State) (a : Address) (u : Byte),
+    Within120 s → AllowedLabel u → Within120 (learn s a u)
+
+/-- A relational trace obligation, not a separately implemented ripple executor. -/
+def RippleTrace (n : Nat) (a b out carry : Nat → Bool) : Prop :=
+  ∀ i, i < n →
+    out i = xor (xor (a i) (b i)) (carry i) ∧
+    carry (i + 1) = xor (a i && b i) (xor (a i) (b i) && carry i)
+
+def bitsValue (n : Nat) (bits : Nat → Bool) : Nat :=
+  ∑ i ∈ Finset.range n, 2 ^ i * (bits i).toNat
+
+/-- Satisfying trace: all zero bits at any width; carry tooth: one plus one at
+width one has a nonzero discarded carry and therefore is only modular addition. -/
+def RippleCorrectness : Prop :=
+  ∀ (n : Nat) (a b out carry : Nat → Bool), RippleTrace n a b out carry →
+    bitsValue n out + 2 ^ n * (carry n).toNat =
+      bitsValue n a + bitsValue n b + (carry 0).toNat
+
+theorem byte_range (s : Byte) : -128 ≤ s.toInt ∧ s.toInt ≤ 127 := by
+  have lo := BitVec.le_toInt (x := s)
+  have hi := BitVec.toInt_le (x := s)
+  norm_num at lo hi
+  exact ⟨lo, hi⟩
+
+theorem numerator_integer_range (s u : Byte) :
+    -1024 ≤ 7 * s.toInt + u.toInt ∧ 7 * s.toInt + u.toInt ≤ 1016 := by
+  have hs := byte_range s
+  have hu := byte_range u
+  omega
+
+/-- The runtime's three low zero bits followed by the original byte. -/
+theorem eight_s_encoding (s : Byte) :
+    s.signExtend 11 <<< 3 = s ++ (0 : BitVec 3) := by
+  apply BitVec.eq_of_toNat_eq
+  have hs := s.isLt
+  simp only [BitVec.toNat_shiftLeft, BitVec.toNat_append, BitVec.toNat_signExtend,
+    Nat.shiftLeft_eq]
+  have hz : (0 : BitVec 3).toNat = 0 := rfl
+  rw [hz, Nat.or_zero]
+  norm_num at hs ⊢
+  split_ifs <;> omega
+
+/-- Taking the high eight bits is signed floor division even for negative words. -/
+theorem extract_signed_floor (n : BitVec 11) :
+    (n.extractLsb' 3 8).toInt = n.toInt / 8 := by
+  have hn := n.isLt
+  simp only [BitVec.toInt, BitVec.extractLsb'_toNat, Nat.shiftRight_eq_div_pow]
+  norm_num at hn ⊢
+  split_ifs <;> omega
+
+theorem numerator_eq (s u : Byte) :
+    numerator s u = s.signExtend 11 * 7 + u.signExtend 11 := by
+  unfold numerator
+  have hneg : ~~~(s.signExtend 11) + (1 : BitVec 11) = -(s.signExtend 11) :=
+    (BitVec.neg_eq_not_add _).symm
+  rw [BitVec.add_assoc _ (~~~s.signExtend 11) 1, hneg]
+  rw [BitVec.shiftLeft_eq_mul_twoPow]
+  change (s.signExtend 11 * 8 + -(s.signExtend 11)) + u.signExtend 11 = _
+  congr 1
+  rw [← BitVec.sub_eq_add_neg]
+  have h : (8 : BitVec 11) = 7 + 1 := rfl
+  have hm : s.signExtend 11 * (1 : BitVec 11) = s.signExtend 11 := BitVec.mul_one _
+  rw [h, BitVec.mul_add, hm, BitVec.add_sub_cancel]
+
+theorem numerator_exact (s u : Byte) :
+    (numerator s u).toInt = 7 * s.toInt + u.toInt := by
+  have hs := byte_range s
+  have hu := byte_range u
+  have hn := numerator_integer_range s u
+  rw [numerator_eq, BitVec.toInt_add, BitVec.toInt_mul]
+  rw [BitVec.toInt_signExtend_of_le (by decide), BitVec.toInt_signExtend_of_le (by decide)]
+  change ((s.toInt * 7).bmod 2048 + u.toInt).bmod 2048 = _
+  have hm : (s.toInt * 7).bmod 2048 = s.toInt * 7 :=
+    Int.bmod_eq_of_le (by omega) (by omega)
+  rw [hm, Int.bmod_eq_of_le (by omega) (by omega)]
+  omega
+
+theorem candidate_exact (s u : Byte) :
+    (candidate s u).toInt = (7 * s.toInt + u.toInt) / 8 := by
+  rw [candidate, extract_signed_floor, numerator_exact]
+
+theorem selected_exact : ∀ (a : Address) (j : Fin 4),
+    selected a j = true ↔ j = addressIndex a := by decide +kernel
+
+theorem learn_selected (s : State) (a : Address) (u : Byte) :
+    learn s a u (addressIndex a) = candidate (s (addressIndex a)) u := by
+  simp [learn, (selected_exact a (addressIndex a)).mpr rfl]
+
+theorem learn_untouched (s : State) (a : Address) (u : Byte)
+    (j : Fin 4) (hj : j ≠ addressIndex a) : learn s a u j = s j := by
+  simp [learn, selected_exact, hj]
+
+theorem infer_selected (s : State) (q : Address) :
+    infer s q = (s (addressIndex q)).msb := by
+  obtain ⟨q, hq⟩ := q
+  interval_cases q <;> norm_num [infer, addressIndex, BitVec.getLsbD,
+    Nat.testBit_eq_decide_div_mod_eq] <;> congr 2
+
+theorem infer_negative (s : State) (q : Address) :
+    infer s q = true ↔ (s (addressIndex q)).toInt < 0 := by
+  rw [infer_selected, BitVec.msb_eq_toInt, decide_eq_true_eq]
+
+theorem private_address_correctness : PrivateAddressCorrectness := by
+  intro s a q u
+  refine ⟨numerator_exact _ _, ?_, learn_untouched s a u, infer_negative _ _⟩
+  rw [learn_selected, candidate_exact]
+
+theorem invariant_correctness : InvariantCorrectness := by
+  intro s a u hs hu j
+  by_cases hj : j = addressIndex a
+  · subst j
+    rw [learn_selected, candidate_exact]
+    have hold := hs (addressIndex a)
+    rcases hu with hu | hu <;> omega
+  · rw [learn_untouched s a u j hj]
+    exact hs j
+
+/-- The exact full-adder identity used by lib.rs; XOR carry terms are disjoint. -/
+theorem full_adder_identity (x y c : Bool) :
+    (xor (xor x y) c).toNat + 2 * (xor (x && y) ((xor x y) && c)).toNat =
+      x.toNat + y.toNat + c.toNat := by
+  cases x <;> cases y <;> cases c <;> decide +kernel
+
+theorem ripple_correctness : RippleCorrectness := by
+  intro n a b out carry ht
+  induction n with
+  | zero => simp [bitsValue]
+  | succ n ih =>
+    have hprev := ih (fun i hi => ht i (by omega))
+    have hlast := ht n (by omega)
+    have hlocal := full_adder_identity (a n) (b n) (carry n)
+    rw [← hlast.1, ← hlast.2] at hlocal
+    simp only [bitsValue, Finset.sum_range_succ, pow_succ] at hprev ⊢
+    nlinarith [congrArg (fun z => 2 ^ n * z) hlocal]
+
+theorem ripple_modular (n : Nat) (a b out carry : Nat → Bool)
+    (ht : RippleTrace n a b out carry) :
+    bitsValue n out % 2 ^ n =
+      (bitsValue n a + bitsValue n b + (carry 0).toNat) % 2 ^ n := by
+  have h := congrArg (fun v => v % 2 ^ n) (ripple_correctness n a b out carry ht)
+  simpa only [Nat.add_mod, Nat.mul_mod_right, Nat.add_zero, Nat.mod_mod] using h
+
+theorem ripple_bitvec (n : Nat) (a b out carry : Nat → Bool)
+    (ht : RippleTrace n a b out carry) :
+    BitVec.ofNat n (bitsValue n out) =
+      BitVec.ofNat n (bitsValue n a) + BitVec.ofNat n (bitsValue n b) +
+        BitVec.ofNat n (carry 0).toNat := by
+  apply BitVec.eq_of_toNat_eq
+  simpa [BitVec.toNat_add, Nat.add_mod] using ripple_modular n a b out carry ht
+
+theorem ripple_premises_inhabited (n : Nat) :
+    ∃ a b out carry, RippleTrace n a b out carry := by
+  refine ⟨fun _ => false, fun _ => false, fun _ => false, fun _ => false, ?_⟩
+  intro i hi
+  exact ⟨rfl, rfl⟩
+
+theorem carry_falsifier :
+    RippleTrace 1 (fun _ => true) (fun _ => true) (fun _ => false)
+      (fun i => decide (i = 1)) ∧
+    bitsValue 1 (fun _ => false) ≠
+      bitsValue 1 (fun _ => true) + bitsValue 1 (fun _ => true) := by
+  constructor
+  · intro i hi
+    have h : i = 0 := by omega
+    subst i
+    exact ⟨rfl, rfl⟩
+  · decide +kernel
+
+theorem selected_unique (a : Address) : ∃! j, selected a j = true := by
+  exact ⟨addressIndex a, (selected_exact a _).mpr rfl, fun j h => (selected_exact a j).mp h⟩
+
+theorem infer_untouched (s : State) (a q : Address) (u : Byte)
+    (haq : addressIndex q ≠ addressIndex a) : infer (learn s a u) q = infer s q := by
+  rw [infer_selected, infer_selected, learn_untouched s a u _ haq]
+
+def history (s : State) (events : List (Address × Byte)) : State :=
+  events.foldl (fun st e => learn st e.1 e.2) s
+
+def AllowedHistory (events : List (Address × Byte)) : Prop :=
+  ∀ e ∈ events, AllowedLabel e.2
+
+theorem history_invariant (s : State) (events : List (Address × Byte))
+    (hs : Within120 s) (he : AllowedHistory events) : Within120 (history s events) := by
+  induction events generalizing s with
+  | nil => exact hs
+  | cons e es ih =>
+    apply ih (learn s e.1 e.2)
+    · exact invariant_correctness s e.1 e.2 hs (he e (List.mem_cons_self ..))
+    · intro e' h
+      exact he e' (List.mem_cons_of_mem e h)
+
+def zeroState : State := fun _ => 0
+
+theorem premises_inhabited :
+    ∃ (s : State) (a : Address) (u : Byte),
+      Within120 s ∧ AllowedLabel u ∧ learn s a u (addressIndex a) ≠ s (addressIndex a) := by
+  refine ⟨zeroState, 3, BitVec.ofInt 8 120, ?_, ?_, ?_⟩
+  · intro j; change -120 ≤ (0 : Byte).toInt ∧ (0 : Byte).toInt ≤ 120; decide +kernel
+  · unfold AllowedLabel; decide +kernel
+  · decide +kernel
+
+/-- A changed register, another untouched register, and a negative sign all coexist. -/
+theorem satisfying_subject :
+    ∃ (s : State) (a q : Address) (u : Byte),
+      (learn s a u (addressIndex a)).toInt = (7 * (s (addressIndex a)).toInt + u.toInt) / 8 ∧
+      learn s a u (addressIndex a) ≠ s (addressIndex a) ∧
+      (∀ j, j ≠ addressIndex a → learn s a u j = s j) ∧
+      infer (learn s a u) q = true := by
+  refine ⟨zeroState, 3, 3, BitVec.ofInt 8 (-120), ?_, ?_, learn_untouched _ _ _, ?_⟩
+  · rw [learn_selected, candidate_exact]
+  · decide +kernel
+  · decide +kernel
+
+/-- A strict floor witness, chosen independently of the saved two-step fixture. -/
+theorem truncation_falsifier :
+    (candidate (BitVec.ofInt 8 1) (BitVec.ofInt 8 (-8))).toInt = -1 ∧
+    Int.tdiv (7 * 1 + (-8)) 8 = 0 := by decide +kernel
+
+/-- Ten signed bits cannot represent the actual minimum numerator -1024. -/
+theorem ten_bit_falsifier :
+    (numerator (BitVec.ofInt 8 (-128)) (BitVec.ofInt 8 (-128))).toInt = -1024 ∧
+    ((numerator (BitVec.ofInt 8 (-128)) (BitVec.ofInt 8 (-128))).setWidth 10).toInt = 0 ∧
+    (candidate (BitVec.ofInt 8 (-128)) (BitVec.ofInt 8 (-128))).toInt = -128 := by
+  decide +kernel
+
+/-- Ignoring the address would change a register that the law forces to remain zero. -/
+theorem unselected_falsifier :
+    learn zeroState 3 (BitVec.ofInt 8 120) 0 = 0 ∧
+    candidate (zeroState 0) (BitVec.ofInt 8 120) ≠ 0 := by decide +kernel
+
+end Minidregg.Theory.PrivateAddressEma
+
+/- Exact axiom dependencies observed in results/lean_009.json. -/
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.byte_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.byte_range
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.numerator_integer_range' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.numerator_integer_range
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.eight_s_encoding' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.eight_s_encoding
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.extract_signed_floor' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.extract_signed_floor
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.numerator_eq' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.numerator_eq
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.numerator_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.numerator_exact
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.candidate_exact' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.candidate_exact
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.selected_exact' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.selected_exact
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.learn_selected' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.learn_selected
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.learn_untouched' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.learn_untouched
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.infer_selected' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.infer_selected
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.infer_negative' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.infer_negative
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.private_address_correctness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.private_address_correctness
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.invariant_correctness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.invariant_correctness
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.full_adder_identity' does not depend on any axioms -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.full_adder_identity
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.ripple_correctness' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.ripple_correctness
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.ripple_modular' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.ripple_modular
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.ripple_bitvec' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.ripple_bitvec
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.ripple_premises_inhabited' does not depend on any axioms -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.ripple_premises_inhabited
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.carry_falsifier' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.carry_falsifier
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.selected_unique' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.selected_unique
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.infer_untouched' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.infer_untouched
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.history_invariant' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.history_invariant
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.premises_inhabited' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.premises_inhabited
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.satisfying_subject' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.satisfying_subject
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.truncation_falsifier' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.truncation_falsifier
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.ten_bit_falsifier' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.ten_bit_falsifier
+
+/-- info: 'Minidregg.Theory.PrivateAddressEma.unselected_falsifier' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs (whitespace := lax) in #print axioms Minidregg.Theory.PrivateAddressEma.unselected_falsifier

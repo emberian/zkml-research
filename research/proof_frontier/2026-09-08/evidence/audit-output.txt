@@ -1,0 +1,8 @@
+RS_correlatedAgreement_affineLines_uniqueDecodingRegime sorry []
+RS_correlatedAgreement_affineLines_uniqueDecodingRegime nonstandard []
+RS_jointAgreement_of_goodCoeffs_card_gt sorry []
+RS_jointAgreement_of_goodCoeffs_card_gt nonstandard []
+RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one sorry []
+RS_exists_nonzero_kernelVec_of_det_submatrix_eq_zero_natDegree_le_one nonstandard []
+pinned current JointAgreement equals local source: True
+source evidence note lines: 246

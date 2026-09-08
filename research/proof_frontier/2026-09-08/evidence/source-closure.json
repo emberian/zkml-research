@@ -1,0 +1,592 @@
+{
+  "root": "/Users/ember/src/ArkLib-2026-09",
+  "start": "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding",
+  "modules": {
+    "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.UniqueDecoding": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/UniqueDecoding.lean",
+      "lines": 48,
+      "sha256": "aa6630d81efc5acc213e2dd4ba7ff76707b1bf07d8e58524637219459259f073",
+      "imports": [
+        "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude",
+        "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound",
+        "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.JointAgreement"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/Prelude.lean",
+      "lines": 54,
+      "sha256": "f93206abd9e0291e739ca9ce14d6b868946b4af85445372fb65efbbe9ccacee8",
+      "imports": [
+        "ArkLib.Data.CodingTheory.ProximityGap.Basic",
+        "Mathlib.Algebra.Polynomial.Degree.Operations",
+        "Mathlib.Tactic.ComputeDegree",
+        "Mathlib.Data.Matrix.Basic",
+        "Mathlib.Data.Matrix.Mul",
+        "Mathlib.Algebra.BigOperators.Fin",
+        "Mathlib.Data.Fin.Tuple.Basic",
+        "Mathlib.Data.Fintype.BigOperators",
+        "Mathlib.Data.Fintype.Fin",
+        "Mathlib.Data.Fintype.Card",
+        "Mathlib.Data.Finset.Card",
+        "Mathlib.Data.Finset.Preimage",
+        "Mathlib.Algebra.Polynomial.BigOperators",
+        "Mathlib.LinearAlgebra.Matrix.Determinant.Basic",
+        "Mathlib.LinearAlgebra.Matrix.RowCol",
+        "Mathlib.LinearAlgebra.Matrix.Adjugate",
+        "Mathlib.Data.Fin.SuccPred",
+        "Mathlib.Data.Fintype.EquivFin",
+        "Mathlib.LinearAlgebra.Matrix.ToLinearEquiv",
+        "Mathlib.Algebra.Polynomial.Basic",
+        "Mathlib.Algebra.Polynomial.Roots",
+        "Mathlib.LinearAlgebra.Vandermonde",
+        "Mathlib.Algebra.Polynomial.Degree.Units",
+        "Mathlib.Algebra.Polynomial.Coeff",
+        "Mathlib.LinearAlgebra.Matrix.Polynomial",
+        "Mathlib.Algebra.Polynomial.Degree.SmallDegree",
+        "Mathlib.LinearAlgebra.Matrix.NonsingularInverse",
+        "Mathlib.Algebra.GroupWithZero.Units.Basic",
+        "Mathlib.Algebra.Polynomial.Degree.Lemmas",
+        "ArkLib.Data.Probability.Instances",
+        "Mathlib.Probability.ProbabilityMassFunction.Monad",
+        "Mathlib.Topology.Algebra.InfiniteSum.ENNReal",
+        "ArkLib.Data.CodingTheory.InterleavedCode",
+        "Mathlib.Algebra.Order.BigOperators.Expect",
+        "Mathlib.Data.Nat.Find",
+        "Mathlib.Data.Fin.Tuple.Embedding",
+        "Mathlib.Logic.Function.Basic",
+        "Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+        "ArkLib.Data.CodingTheory.BerlekampWelch.BerlekampWelch",
+        "Mathlib.Data.Matrix.Block",
+        "Mathlib.LinearAlgebra.Matrix.SchurComplement",
+        "Mathlib.LinearAlgebra.Matrix.Rank",
+        "Mathlib.LinearAlgebra.Matrix.Determinant.Misc",
+        "Mathlib.Logic.Equiv.Fin.Basic",
+        "ArkLib.Data.CodingTheory.PolishchukSpielman.Degrees",
+        "ArkLib.Data.CodingTheory.PolishchukSpielman",
+        "ArkLib.Data.Polynomial.Trivariate"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.ProximityGap.Basic": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ProximityGap/Basic.lean",
+      "lines": 213,
+      "sha256": "e251b498063fe841d5770168baf9a6f0f59cc90a60e55d0c9281648c2fd307e3",
+      "imports": [
+        "ArkLib.Data.CodingTheory.InterleavedCode",
+        "ArkLib.Data.Probability.Notation",
+        "Mathlib.Probability.Distributions.Uniform"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.InterleavedCode": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/InterleavedCode.lean",
+      "lines": 1020,
+      "sha256": "3fbe344831fca65c76e6d68f9b07acde914426bd9fc9e07e434166697a4617cc",
+      "imports": [
+        "ArkLib.Data.CodingTheory.Basic.DecodingRadius",
+        "ArkLib.Data.CodingTheory.Basic.Distance",
+        "ArkLib.Data.CodingTheory.Basic.LinearCode",
+        "ArkLib.Data.CodingTheory.Basic.RelativeDistance",
+        "ArkLib.Data.CodingTheory.ReedSolomon",
+        "Mathlib.Logic.Equiv.Fin.Basic",
+        "Mathlib.Order.CompletePartialOrder",
+        "Mathlib.Probability.Distributions.Uniform",
+        "Mathlib.Data.Real.Basic",
+        "Mathlib.Analysis.Real.Sqrt",
+        "ArkLib.Data.Fin.Basic",
+        "ArkLib.Data.CodingTheory.Prelims",
+        "Mathlib.Algebra.Polynomial.Roots",
+        "Mathlib.Analysis.InnerProductSpace.PiL2",
+        "Mathlib.Data.ENat.Lattice",
+        "Mathlib.InformationTheory.Hamming",
+        "Mathlib.Tactic.Qify",
+        "Mathlib.Topology.MetricSpace.Infsep",
+        "Mathlib.Data.NNReal.Defs"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.Basic.DecodingRadius": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/Basic/DecodingRadius.lean",
+      "lines": 225,
+      "sha256": "0c14743d40d7b30a041e7dba77ef72ca0dbfd29fbbdfb174aa59e7ba0e39831d",
+      "imports": [
+        "ArkLib.Data.CodingTheory.Basic.RelativeDistance"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.Basic.RelativeDistance": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/Basic/RelativeDistance.lean",
+      "lines": 843,
+      "sha256": "0662e6c85e3dc8b9528926c7001d652587422d4c45381ce051c761aacc6013e5",
+      "imports": [
+        "ArkLib.Data.CodingTheory.Basic.Distance"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.Basic.Distance": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/Basic/Distance.lean",
+      "lines": 1070,
+      "sha256": "207d64f58a3228740101cf45eeb932fa3b1e96f90f893f6f2619c252fbed0024",
+      "imports": [
+        "ArkLib.Data.Fin.Basic",
+        "ArkLib.Data.CodingTheory.Prelims",
+        "Mathlib.Algebra.Polynomial.Roots",
+        "Mathlib.Algebra.Order.Floor.Semifield",
+        "Mathlib.Analysis.InnerProductSpace.PiL2",
+        "Mathlib.Data.ENat.Lattice",
+        "Mathlib.InformationTheory.Hamming",
+        "Mathlib.Tactic.Qify",
+        "Mathlib.Topology.MetricSpace.Infsep",
+        "Mathlib.Data.Real.ENatENNReal",
+        "Mathlib.Algebra.Order.Chebyshev",
+        "CompPoly.Data.Nat.Bitwise"
+      ]
+    },
+    "ArkLib.Data.Fin.Basic": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/Fin/Basic.lean",
+      "lines": 351,
+      "sha256": "ac597208a43fbf6decd31ddddb6c6fcf463c2dcd2e7428251b6774a5054d2ab8",
+      "imports": [
+        "Mathlib.Algebra.BigOperators.Fin",
+        "Mathlib.Algebra.Order.Ring.Nat",
+        "Mathlib.Algebra.Order.Sub.Basic",
+        "Mathlib.Algebra.Polynomial.Eval.Defs",
+        "Mathlib.Data.Fin.Tuple.Take",
+        "Mathlib.Tactic.FinCases",
+        "Batteries.Data.Fin.Fold",
+        "CompPoly.Data.Classes.DCast"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.Prelims": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/Prelims.lean",
+      "lines": 482,
+      "sha256": "7f43ee067adb10e3ac9dda2ec3a54c0c3a7c2622a010314a36b409fabef52748",
+      "imports": [
+        "Mathlib.Algebra.Lie.OfAssociative",
+        "Mathlib.LinearAlgebra.Matrix.Rank",
+        "Mathlib.LinearAlgebra.AffineSpace.Pointwise",
+        "Mathlib.LinearAlgebra.AffineSpace.Combination",
+        "Mathlib.RingTheory.Henselian"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.Basic.LinearCode": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/Basic/LinearCode.lean",
+      "lines": 781,
+      "sha256": "19c960abc7c98ef9ef55f1f258353066ee189a1c603705a916131188d167977b",
+      "imports": [
+        "ArkLib.Data.CodingTheory.Basic.DecodingRadius",
+        "ArkLib.Data.CodingTheory.Prelims",
+        "ArkLib.Data.CodingTheory.Basic.Distance",
+        "Mathlib.FieldTheory.Finiteness",
+        "Mathlib.LinearAlgebra.FreeModule.PID",
+        "Mathlib.RingTheory.PicardGroup",
+        "Mathlib.RingTheory.RegularLocalRing.Defs",
+        "Mathlib.RingTheory.SimpleRing.Principal",
+        "CompPoly.Data.Nat.Bitwise"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.ReedSolomon": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ReedSolomon.lean",
+      "lines": 819,
+      "sha256": "988f1c468383e51a7758271e547a82d5da5d026476cac855df8dd42e128a77bf",
+      "imports": [
+        "ArkLib.Data.Matrix.Vandermonde",
+        "ArkLib.Data.MvPolynomial.LinearMvExtension",
+        "ArkLib.Data.Polynomial.Interface",
+        "ArkLib.ToMathlib.Polynomial.DegreeLT",
+        "CompPoly.Data.Polynomial.MonomialBasis",
+        "Mathlib.LinearAlgebra.Lagrange",
+        "Mathlib.RingTheory.Henselian",
+        "Mathlib.Data.NNReal.Defs",
+        "Mathlib.Data.NNReal.Basic"
+      ]
+    },
+    "ArkLib.Data.Matrix.Vandermonde": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/Matrix/Vandermonde.lean",
+      "lines": 125,
+      "sha256": "adec93c41b90c0c88777136d9b430a3cd031ada122d077bf08c40cbd1067a941",
+      "imports": [
+        "ArkLib.Data.CodingTheory.Basic.LinearCode",
+        "ArkLib.Data.Polynomial.Interface",
+        "CompPoly.Data.Polynomial.MonomialBasis",
+        "Mathlib.LinearAlgebra.Lagrange",
+        "Mathlib.RingTheory.Henselian",
+        "Mathlib.Data.NNReal.Defs",
+        "Mathlib.Data.NNReal.Basic"
+      ]
+    },
+    "ArkLib.Data.Polynomial.Interface": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/Polynomial/Interface.lean",
+      "lines": 105,
+      "sha256": "bf1a57f1d8e015ebac1bd4b04611c892539bfbd7ed09a411a7e9606bdfd1edd8",
+      "imports": [
+        "ArkLib.Data.Fin.Lift",
+        "Mathlib.RingTheory.Polynomial.Basic"
+      ]
+    },
+    "ArkLib.Data.Fin.Lift": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/Fin/Lift.lean",
+      "lines": 119,
+      "sha256": "1a26db03831eb18b59ae5cafa037f63ef43dbf7bf4a438b5702a3aaf443d921e",
+      "imports": [
+        "ArkLib.Data.Fin.Basic"
+      ]
+    },
+    "ArkLib.Data.MvPolynomial.LinearMvExtension": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/MvPolynomial/LinearMvExtension.lean",
+      "lines": 255,
+      "sha256": "7d461499f33e3f7a08314d002c17ce446344ea1af991940b1f1941a262edec9f",
+      "imports": [
+        "ArkLib.Data.MvPolynomial.Multilinear",
+        "Mathlib.Algebra.MvPolynomial.Eval",
+        "Mathlib.Algebra.Polynomial.Eval.Defs"
+      ]
+    },
+    "ArkLib.Data.MvPolynomial.Multilinear": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/MvPolynomial/Multilinear.lean",
+      "lines": 320,
+      "sha256": "80c9bf9511667a3d9e88cf721043377bb234f086d8509871c1d763e34c04b939",
+      "imports": [
+        "CompPoly.Data.MvPolynomial.Notation",
+        "ArkLib.Data.MvPolynomial.Interpolation"
+      ]
+    },
+    "ArkLib.Data.MvPolynomial.Interpolation": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/MvPolynomial/Interpolation.lean",
+      "lines": 254,
+      "sha256": "31fde0e36c830585381a53e5f7b52ead69099e7169360dd3251ee352c087de33",
+      "imports": [
+        "Mathlib.LinearAlgebra.Lagrange",
+        "Mathlib.Algebra.MvPolynomial.SchwartzZippel",
+        "ArkLib.Data.MvPolynomial.Degrees",
+        "Mathlib.Data.FinEnum"
+      ]
+    },
+    "ArkLib.Data.MvPolynomial.Degrees": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/MvPolynomial/Degrees.lean",
+      "lines": 317,
+      "sha256": "08efc379468fb0a8b7c8e575a046d90055a430de66e12cce870c0dbba1c61570",
+      "imports": [
+        "Mathlib.Algebra.MvPolynomial.Degrees",
+        "Mathlib.Algebra.MvPolynomial.Equiv",
+        "Mathlib.Algebra.Polynomial.Roots",
+        "Mathlib.Algebra.Group.Action.Pointwise.Finset",
+        "CompPoly.Data.MvPolynomial.Notation"
+      ]
+    },
+    "ArkLib.ToMathlib.Polynomial.DegreeLT": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/ToMathlib/Polynomial/DegreeLT.lean",
+      "lines": 35,
+      "sha256": "e2cefab2ace7874cdaad05d32631fa68052403065212a390662fb88befeead4a",
+      "imports": [
+        "Mathlib.RingTheory.Polynomial.Basic"
+      ]
+    },
+    "ArkLib.Data.Probability.Notation": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/Probability/Notation.lean",
+      "lines": 154,
+      "sha256": "ef33c49d2b6e267b202fd476538293f8e82fae8e2809a11abe298014f8b77d9f",
+      "imports": [
+        "Mathlib.Probability.Notation",
+        "Mathlib.Probability.Distributions.Uniform"
+      ]
+    },
+    "ArkLib.Data.Probability.Instances": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/Probability/Instances.lean",
+      "lines": 844,
+      "sha256": "6f2cded6ef079d25fef9eac228703f359149f8e38cbfd29c2431394dd735f621",
+      "imports": [
+        "Mathlib.Probability.ProbabilityMassFunction.Monad",
+        "ArkLib.Data.Probability.Notation",
+        "ArkLib.Data.MvPolynomial.Degrees",
+        "ArkLib.Data.MvPolynomial.SchwartzZippelCounting",
+        "CompPoly.Data.Fin.BigOperators",
+        "CompPoly.Data.Nat.Bitwise",
+        "Mathlib.Algebra.MvPolynomial.SchwartzZippel"
+      ]
+    },
+    "ArkLib.Data.MvPolynomial.SchwartzZippelCounting": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/MvPolynomial/SchwartzZippelCounting.lean",
+      "lines": 211,
+      "sha256": "3169c37ff0eed972df230d6e893b3912b5d8cbed5c992b065fea1c3e6883e7d5",
+      "imports": [
+        "ArkLib.Data.Probability.Notation",
+        "Mathlib.Algebra.MvPolynomial.SchwartzZippel",
+        "Mathlib.Data.Rat.Star",
+        "Mathlib.Probability.Distributions.Uniform",
+        "Mathlib.RingTheory.SimpleRing.Principal"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.BerlekampWelch.BerlekampWelch": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/BerlekampWelch/BerlekampWelch.lean",
+      "lines": 147,
+      "sha256": "65610dd270b4d14d760c2991edb8cf2c17db84118b1dfe7eb1801832fd7a2051",
+      "imports": [
+        "Mathlib.Algebra.Field.Basic",
+        "Mathlib.Algebra.Polynomial.Basic",
+        "ArkLib.Data.CodingTheory.Basic.DecodingRadius",
+        "ArkLib.Data.CodingTheory.Basic.Distance",
+        "ArkLib.Data.CodingTheory.Basic.LinearCode",
+        "ArkLib.Data.CodingTheory.Basic.RelativeDistance",
+        "ArkLib.Data.CodingTheory.BerlekampWelch.Condition",
+        "ArkLib.Data.CodingTheory.BerlekampWelch.Existence",
+        "ArkLib.Data.CodingTheory.BerlekampWelch.Sorries"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.BerlekampWelch.Condition": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/BerlekampWelch/Condition.lean",
+      "lines": 513,
+      "sha256": "0f0eaf97089622ade328dcf837947073a388332a2e17ec4f773f21834ebfe3c2",
+      "imports": [
+        "Init.Data.List.FinRange",
+        "Mathlib.Algebra.Field.Basic",
+        "Mathlib.Algebra.Polynomial.Basic",
+        "Mathlib.Algebra.Polynomial.Degree.Defs",
+        "Mathlib.Algebra.Polynomial.FieldDivision",
+        "Mathlib.Data.Finset.Insert",
+        "Mathlib.Data.Fintype.Card",
+        "Mathlib.Data.Matrix.Mul",
+        "Mathlib.Data.Matrix.Reflection",
+        "ArkLib.Data.CodingTheory.Basic.DecodingRadius",
+        "ArkLib.Data.CodingTheory.Basic.Distance",
+        "ArkLib.Data.CodingTheory.Basic.LinearCode",
+        "ArkLib.Data.CodingTheory.Basic.RelativeDistance",
+        "ArkLib.Data.Polynomial.Interface",
+        "ArkLib.Data.CodingTheory.BerlekampWelch.ElocPoly",
+        "ArkLib.Data.CodingTheory.BerlekampWelch.Sorries"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.BerlekampWelch.ElocPoly": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/BerlekampWelch/ElocPoly.lean",
+      "lines": 192,
+      "sha256": "b61fbe56f30c435e75c31edf9079a460ad52b6b0f71d9d20603292f3c0a21dd2",
+      "imports": [
+        "Init.Data.List.FinRange",
+        "Mathlib.Algebra.Field.Basic",
+        "Mathlib.Algebra.Polynomial.Basic",
+        "Mathlib.Algebra.Polynomial.Degree.Defs",
+        "Mathlib.Algebra.Polynomial.FieldDivision",
+        "Mathlib.Data.Finset.Insert",
+        "Mathlib.Data.Fintype.Card",
+        "Mathlib.Data.Matrix.Mul",
+        "ArkLib.Data.CodingTheory.Basic.DecodingRadius",
+        "ArkLib.Data.CodingTheory.Basic.Distance",
+        "ArkLib.Data.CodingTheory.Basic.LinearCode",
+        "ArkLib.Data.CodingTheory.Basic.RelativeDistance",
+        "ArkLib.Data.Fin.Lift"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.BerlekampWelch.Sorries": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/BerlekampWelch/Sorries.lean",
+      "lines": 91,
+      "sha256": "5440ca3c6b7bb489b2232f9119fd2e975d512e9e62a39a3d086347f1f3c9dcbe",
+      "imports": [
+        "Mathlib.Algebra.Field.Basic",
+        "Mathlib.Data.Matrix.Mul"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.BerlekampWelch.Existence": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/BerlekampWelch/Existence.lean",
+      "lines": 161,
+      "sha256": "f02bff5bb16b972a39b5ec90b41b9f1346d28e226f07e0dd19711c0aff8483d5",
+      "imports": [
+        "ArkLib.Data.CodingTheory.BerlekampWelch.Condition"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.PolishchukSpielman.Degrees": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/PolishchukSpielman/Degrees.lean",
+      "lines": 409,
+      "sha256": "9b5180f1ac78235a56c71ffde28f2b9d704d22ab0858cb7404993ef54e9aeb92",
+      "imports": [
+        "ArkLib.Data.Polynomial.Bivariate",
+        "Mathlib.Analysis.Normed.Field.Lemmas",
+        "Mathlib.LinearAlgebra.Lagrange",
+        "Mathlib.RingTheory.Polynomial.UniqueFactorization"
+      ]
+    },
+    "ArkLib.Data.Polynomial.Bivariate": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/Polynomial/Bivariate.lean",
+      "lines": 547,
+      "sha256": "0747175efeb99a8837ffc06fbd9bd566b8696d75fd9e7e17df171520ce3bda0e",
+      "imports": [
+        "CompPoly.ToMathlib.Polynomial.BivariateWeightedDegree",
+        "CompPoly.ToMathlib.Polynomial.BivariateMultiplicity",
+        "Mathlib.Algebra.Polynomial.BigOperators",
+        "Mathlib.Algebra.BigOperators.Group.Finset.Basic"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.PolishchukSpielman": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/PolishchukSpielman.lean",
+      "lines": 7,
+      "sha256": "c33ca4defc28ee3f271577f5c8cbd849c18b105e23d1f328143c75ba3150d5a0",
+      "imports": [
+        "ArkLib.Data.CodingTheory.PolishchukSpielman.PolishchukSpielman"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.PolishchukSpielman.PolishchukSpielman": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/PolishchukSpielman/PolishchukSpielman.lean",
+      "lines": 102,
+      "sha256": "c66b559d66c252b21df5dede22eea927e218c31297d5d46f2e6884b2d2fb8650",
+      "imports": [
+        "ArkLib.Data.CodingTheory.PolishchukSpielman.Existence"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.PolishchukSpielman.Existence": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/PolishchukSpielman/Existence.lean",
+      "lines": 303,
+      "sha256": "c742b45ae452424eb2accce60fd154b37a25eca5ba43918849da935389bc0e5d",
+      "imports": [
+        "ArkLib.Data.CodingTheory.PolishchukSpielman.Resultant"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.PolishchukSpielman.Resultant": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/PolishchukSpielman/Resultant.lean",
+      "lines": 317,
+      "sha256": "7c9afd3d24dfb9fad71d5aa264d8c31158da7af65b518fa3050fdbdab9c739ed",
+      "imports": [
+        "ArkLib.Data.CodingTheory.PolishchukSpielman.Degrees",
+        "Mathlib.Algebra.Polynomial.OfFn"
+      ]
+    },
+    "ArkLib.Data.Polynomial.Trivariate": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/Polynomial/Trivariate.lean",
+      "lines": 219,
+      "sha256": "5f7166d110572f79afa218803e4dab75de34cf58a1611ac8bf5f301b3db86e43",
+      "imports": [
+        "ArkLib.Data.Polynomial.Bivariate",
+        "Mathlib.FieldTheory.RatFunc.AsPolynomial"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ErrorBound": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/ErrorBound.lean",
+      "lines": 122,
+      "sha256": "bd26142125aac8ab3e512a73e0ee5abf49223627978ee09660586176bef99420",
+      "imports": [
+        "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude",
+        "ArkLib.Data.CodingTheory.ReedSolomon"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.JointAgreement": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/JointAgreement.lean",
+      "lines": 790,
+      "sha256": "0462c8bd84dba845f887d159aaf180b8f7b78d2c7022f62d697209ff1782ddea",
+      "imports": [
+        "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude",
+        "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.GoodCoeffs",
+        "ArkLib.Data.CodingTheory.ReedSolomon"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.GoodCoeffs": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/GoodCoeffs.lean",
+      "lines": 753,
+      "sha256": "664398ce4f46a103647ab89735631142e9d50bd5651f09e67e4033239e39cbed",
+      "imports": [
+        "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude",
+        "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.BWMatrix",
+        "ArkLib.Data.CodingTheory.ReedSolomon"
+      ]
+    },
+    "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.BWMatrix": {
+      "path": "/Users/ember/src/ArkLib-2026-09/ArkLib/Data/CodingTheory/ProximityGap/BCIKS20/AffineLines/BWMatrix.lean",
+      "lines": 1397,
+      "sha256": "845e10843bc1e84c36cafbc293365e565c9559870a682b4bde770499ad40fbfb",
+      "imports": [
+        "ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.Prelude",
+        "ArkLib.Data.CodingTheory.ReedSolomon"
+      ]
+    }
+  },
+  "external_imports": [
+    "Batteries.Data.Fin.Fold",
+    "CompPoly.Data.Classes.DCast",
+    "CompPoly.Data.Fin.BigOperators",
+    "CompPoly.Data.MvPolynomial.Notation",
+    "CompPoly.Data.Nat.Bitwise",
+    "CompPoly.Data.Polynomial.MonomialBasis",
+    "CompPoly.ToMathlib.Polynomial.BivariateMultiplicity",
+    "CompPoly.ToMathlib.Polynomial.BivariateWeightedDegree",
+    "Init.Data.List.FinRange",
+    "Mathlib.Algebra.BigOperators.Fin",
+    "Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+    "Mathlib.Algebra.Field.Basic",
+    "Mathlib.Algebra.Group.Action.Pointwise.Finset",
+    "Mathlib.Algebra.GroupWithZero.Units.Basic",
+    "Mathlib.Algebra.Lie.OfAssociative",
+    "Mathlib.Algebra.MvPolynomial.Degrees",
+    "Mathlib.Algebra.MvPolynomial.Equiv",
+    "Mathlib.Algebra.MvPolynomial.Eval",
+    "Mathlib.Algebra.MvPolynomial.SchwartzZippel",
+    "Mathlib.Algebra.Order.BigOperators.Expect",
+    "Mathlib.Algebra.Order.Chebyshev",
+    "Mathlib.Algebra.Order.Floor.Semifield",
+    "Mathlib.Algebra.Order.Ring.Nat",
+    "Mathlib.Algebra.Order.Sub.Basic",
+    "Mathlib.Algebra.Polynomial.Basic",
+    "Mathlib.Algebra.Polynomial.BigOperators",
+    "Mathlib.Algebra.Polynomial.Coeff",
+    "Mathlib.Algebra.Polynomial.Degree.Defs",
+    "Mathlib.Algebra.Polynomial.Degree.Lemmas",
+    "Mathlib.Algebra.Polynomial.Degree.Operations",
+    "Mathlib.Algebra.Polynomial.Degree.SmallDegree",
+    "Mathlib.Algebra.Polynomial.Degree.Units",
+    "Mathlib.Algebra.Polynomial.Eval.Defs",
+    "Mathlib.Algebra.Polynomial.FieldDivision",
+    "Mathlib.Algebra.Polynomial.OfFn",
+    "Mathlib.Algebra.Polynomial.Roots",
+    "Mathlib.Analysis.InnerProductSpace.PiL2",
+    "Mathlib.Analysis.Normed.Field.Lemmas",
+    "Mathlib.Analysis.Real.Sqrt",
+    "Mathlib.Data.ENat.Lattice",
+    "Mathlib.Data.Fin.SuccPred",
+    "Mathlib.Data.Fin.Tuple.Basic",
+    "Mathlib.Data.Fin.Tuple.Embedding",
+    "Mathlib.Data.Fin.Tuple.Take",
+    "Mathlib.Data.FinEnum",
+    "Mathlib.Data.Finset.Card",
+    "Mathlib.Data.Finset.Insert",
+    "Mathlib.Data.Finset.Preimage",
+    "Mathlib.Data.Fintype.BigOperators",
+    "Mathlib.Data.Fintype.Card",
+    "Mathlib.Data.Fintype.EquivFin",
+    "Mathlib.Data.Fintype.Fin",
+    "Mathlib.Data.Matrix.Basic",
+    "Mathlib.Data.Matrix.Block",
+    "Mathlib.Data.Matrix.Mul",
+    "Mathlib.Data.Matrix.Reflection",
+    "Mathlib.Data.NNReal.Basic",
+    "Mathlib.Data.NNReal.Defs",
+    "Mathlib.Data.Nat.Find",
+    "Mathlib.Data.Rat.Star",
+    "Mathlib.Data.Real.Basic",
+    "Mathlib.Data.Real.ENatENNReal",
+    "Mathlib.FieldTheory.Finiteness",
+    "Mathlib.FieldTheory.RatFunc.AsPolynomial",
+    "Mathlib.InformationTheory.Hamming",
+    "Mathlib.LinearAlgebra.AffineSpace.Combination",
+    "Mathlib.LinearAlgebra.AffineSpace.Pointwise",
+    "Mathlib.LinearAlgebra.FreeModule.PID",
+    "Mathlib.LinearAlgebra.Lagrange",
+    "Mathlib.LinearAlgebra.Matrix.Adjugate",
+    "Mathlib.LinearAlgebra.Matrix.Determinant.Basic",
+    "Mathlib.LinearAlgebra.Matrix.Determinant.Misc",
+    "Mathlib.LinearAlgebra.Matrix.NonsingularInverse",
+    "Mathlib.LinearAlgebra.Matrix.Polynomial",
+    "Mathlib.LinearAlgebra.Matrix.Rank",
+    "Mathlib.LinearAlgebra.Matrix.RowCol",
+    "Mathlib.LinearAlgebra.Matrix.SchurComplement",
+    "Mathlib.LinearAlgebra.Matrix.ToLinearEquiv",
+    "Mathlib.LinearAlgebra.Vandermonde",
+    "Mathlib.Logic.Equiv.Fin.Basic",
+    "Mathlib.Logic.Function.Basic",
+    "Mathlib.Order.CompletePartialOrder",
+    "Mathlib.Probability.Distributions.Uniform",
+    "Mathlib.Probability.Notation",
+    "Mathlib.Probability.ProbabilityMassFunction.Monad",
+    "Mathlib.RingTheory.Henselian",
+    "Mathlib.RingTheory.PicardGroup",
+    "Mathlib.RingTheory.Polynomial.Basic",
+    "Mathlib.RingTheory.Polynomial.UniqueFactorization",
+    "Mathlib.RingTheory.RegularLocalRing.Defs",
+    "Mathlib.RingTheory.SimpleRing.Principal",
+    "Mathlib.Tactic.ComputeDegree",
+    "Mathlib.Tactic.FinCases",
+    "Mathlib.Tactic.Qify",
+    "Mathlib.Topology.Algebra.InfiniteSum.ENNReal",
+    "Mathlib.Topology.MetricSpace.Infsep"
+  ]
+}

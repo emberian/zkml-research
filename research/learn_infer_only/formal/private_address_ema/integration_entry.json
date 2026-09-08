@@ -1,0 +1,6 @@
+{
+  "name": "private_address_ema",
+  "root": "formal/private_address_ema",
+  "patch": "formal/private_address_ema/minidregg-private-address-ema.patch",
+  "expected_pins": 28
+}

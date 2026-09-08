@@ -1,0 +1,3 @@
+COMMAND: lake env lean Theory/PolynomialMatrixKernel.lean
+EXIT: 0
+SECONDS: 21.872

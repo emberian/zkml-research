@@ -1,0 +1,2043 @@
+{
+  "controls": {
+    "maximum_state": 111,
+    "minimum_state": -118,
+    "semantic_window_scores_recomputed": 24576,
+    "source_feature_rows_checked": 256,
+    "untouched_route_score_and_sign_checks": 8192,
+    "untouched_route_state_checks": 128
+  },
+  "denominators": {
+    "EMA_query_scores": 24576,
+    "Learn": 12288,
+    "checkpoints": 3,
+    "final_queries": 8192,
+    "histories": 64,
+    "reused_query_texts": 128,
+    "reused_teacher_texts": 128
+  },
+  "encrypted_operations": 0,
+  "evaluation_wall_seconds": 0.5315659590123687,
+  "execution_passed": true,
+  "files": {
+    "checkpoint_states.json": {
+      "bytes": 37213,
+      "sha256": "d0d62e893ffd58cde062db01c78318250ba190e199f77576ba557cad1548c9fb"
+    },
+    "materialized_fixture.json": {
+      "bytes": 208728,
+      "sha256": "76d084577179f90c311549eb931fe8cd312b18099e6063cdb6a5493df4257a62"
+    },
+    "query_scores.json": {
+      "bytes": 11196565,
+      "sha256": "9709ddcefde502d7f0e9e5e0c103bf5f4d8338ce954d38eb0c053dd92ab67724"
+    },
+    "transitions.json": {
+      "bytes": 5727903,
+      "sha256": "fdde63b18452fbebf55bb01828982bca41eff567c96c73c041420268d064487a"
+    }
+  },
+  "final": {
+    "ema": {
+      "accuracy": 0.913818359375,
+      "correct": 7486,
+      "queries": 8192
+    },
+    "gold_window": {
+      "accuracy": 1.0,
+      "correct": 8192,
+      "queries": 8192
+    },
+    "original": {
+      "accuracy": 0.510009765625,
+      "correct": 4178,
+      "queries": 8192
+    },
+    "window": {
+      "accuracy": 0.910888671875,
+      "correct": 7462,
+      "queries": 8192
+    }
+  },
+  "freeze_sha256": "63b798b519cbc5e7a8218a0e7811274f397cfb015e5c8f1f8c6364df8bf1e369",
+  "frozen_source_files_verified": 96,
+  "materialized_counts": {
+    "Infer": 96,
+    "Learn": 384,
+    "expiry": 0
+  },
+  "materialized_final": {
+    "ema": {
+      "accuracy": 0.875,
+      "correct": 28,
+      "queries": 32
+    },
+    "window": {
+      "accuracy": 0.875,
+      "correct": 28,
+      "queries": 32
+    }
+  },
+  "new_model_calls": 0,
+  "paired_ema_minus": {
+    "gold_window": {
+      "max": 0.0,
+      "mean": -0.086181640625,
+      "min": -0.1796875,
+      "n_histories": 64,
+      "normal95_half_width": 0.013577230459386507,
+      "sd": 0.05541726718116942
+    },
+    "original": {
+      "max": 0.5390625,
+      "mean": 0.40380859375,
+      "min": 0.28125,
+      "n_histories": 64,
+      "normal95_half_width": 0.01404008298370578,
+      "sd": 0.057306461157982776
+    },
+    "window": {
+      "max": 0.0625,
+      "mean": 0.0029296875,
+      "min": -0.0625,
+      "n_histories": 64,
+      "normal95_half_width": 0.004252712605782158,
+      "sd": 0.017358010635845543
+    }
+  },
+  "paired_label_changes_vs_window": {
+    "all_checkpoints": 216,
+    "final": 120,
+    "final_improved": 72,
+    "final_regressed": 48
+  },
+  "per_history": [
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67000,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.53125,
+        "correct": 68,
+        "queries": 128
+      },
+      "seed": 67001,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.53125,
+        "correct": 68,
+        "queries": 128
+      },
+      "seed": 67002,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.515625,
+        "correct": 66,
+        "queries": 128
+      },
+      "seed": 67003,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8203125,
+        "correct": 105,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5390625,
+        "correct": 69,
+        "queries": 128
+      },
+      "seed": 67004,
+      "window": {
+        "accuracy": 0.8203125,
+        "correct": 105,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5390625,
+        "correct": 69,
+        "queries": 128
+      },
+      "seed": 67005,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.53125,
+        "correct": 68,
+        "queries": 128
+      },
+      "seed": 67006,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67007,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5390625,
+        "correct": 69,
+        "queries": 128
+      },
+      "seed": 67008,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4609375,
+        "correct": 59,
+        "queries": 128
+      },
+      "seed": 67009,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5703125,
+        "correct": 73,
+        "queries": 128
+      },
+      "seed": 67010,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5390625,
+        "correct": 69,
+        "queries": 128
+      },
+      "seed": 67011,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4765625,
+        "correct": 61,
+        "queries": 128
+      },
+      "seed": 67012,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5390625,
+        "correct": 69,
+        "queries": 128
+      },
+      "seed": 67013,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67014,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67015,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67016,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.515625,
+        "correct": 66,
+        "queries": 128
+      },
+      "seed": 67017,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.515625,
+        "correct": 66,
+        "queries": 128
+      },
+      "seed": 67018,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67019,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67020,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8203125,
+        "correct": 105,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67021,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.546875,
+        "correct": 70,
+        "queries": 128
+      },
+      "seed": 67022,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5390625,
+        "correct": 69,
+        "queries": 128
+      },
+      "seed": 67023,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67024,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67025,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67026,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.515625,
+        "correct": 66,
+        "queries": 128
+      },
+      "seed": 67027,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67028,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67029,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67030,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.515625,
+        "correct": 66,
+        "queries": 128
+      },
+      "seed": 67031,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67032,
+      "window": {
+        "accuracy": 0.8203125,
+        "correct": 105,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67033,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67034,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67035,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67036,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.59375,
+        "correct": 76,
+        "queries": 128
+      },
+      "seed": 67037,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67038,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4609375,
+        "correct": 59,
+        "queries": 128
+      },
+      "seed": 67039,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67040,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67041,
+      "window": {
+        "accuracy": 0.8203125,
+        "correct": 105,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.515625,
+        "correct": 66,
+        "queries": 128
+      },
+      "seed": 67042,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67043,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.53125,
+        "correct": 68,
+        "queries": 128
+      },
+      "seed": 67044,
+      "window": {
+        "accuracy": 0.8203125,
+        "correct": 105,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67045,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5390625,
+        "correct": 69,
+        "queries": 128
+      },
+      "seed": 67046,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67047,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67048,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 63,
+        "queries": 128
+      },
+      "seed": 67049,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.59375,
+        "correct": 76,
+        "queries": 128
+      },
+      "seed": 67050,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.46875,
+        "correct": 60,
+        "queries": 128
+      },
+      "seed": 67051,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.484375,
+        "correct": 62,
+        "queries": 128
+      },
+      "seed": 67052,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5078125,
+        "correct": 65,
+        "queries": 128
+      },
+      "seed": 67053,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.515625,
+        "correct": 66,
+        "queries": 128
+      },
+      "seed": 67054,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5078125,
+        "correct": 65,
+        "queries": 128
+      },
+      "seed": 67055,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67056,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.53125,
+        "correct": 68,
+        "queries": 128
+      },
+      "seed": 67057,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.484375,
+        "correct": 62,
+        "queries": 128
+      },
+      "seed": 67058,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67059,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.484375,
+        "correct": 62,
+        "queries": 128
+      },
+      "seed": 67060,
+      "window": {
+        "accuracy": 0.8203125,
+        "correct": 105,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 64,
+        "queries": 128
+      },
+      "seed": 67061,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5390625,
+        "correct": 69,
+        "queries": 128
+      },
+      "seed": 67062,
+      "window": {
+        "accuracy": 0.8828125,
+        "correct": 113,
+        "queries": 128
+      }
+    },
+    {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      },
+      "original": {
+        "accuracy": 0.5234375,
+        "correct": 67,
+        "queries": 128
+      },
+      "seed": 67063,
+      "window": {
+        "accuracy": 1.0,
+        "correct": 128,
+        "queries": 128
+      }
+    }
+  ],
+  "phase_route": {
+    "phase1.route0": {
+      "ema": {
+        "accuracy": 0.82568359375,
+        "correct": 3382,
+        "queries": 4096
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 4096,
+        "queries": 4096
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 2016,
+        "queries": 4096
+      },
+      "window": {
+        "accuracy": 0.82958984375,
+        "correct": 3398,
+        "queries": 4096
+      }
+    },
+    "phase1.route1": {
+      "ema": {
+        "accuracy": 0.5,
+        "correct": 2048,
+        "queries": 4096
+      },
+      "gold_window": {
+        "accuracy": 0.5,
+        "correct": 2048,
+        "queries": 4096
+      },
+      "original": {
+        "accuracy": 0.5,
+        "correct": 2048,
+        "queries": 4096
+      },
+      "window": {
+        "accuracy": 0.5,
+        "correct": 2048,
+        "queries": 4096
+      }
+    },
+    "phase2.route0": {
+      "ema": {
+        "accuracy": 0.82568359375,
+        "correct": 3382,
+        "queries": 4096
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 4096,
+        "queries": 4096
+      },
+      "original": {
+        "accuracy": 0.4921875,
+        "correct": 2016,
+        "queries": 4096
+      },
+      "window": {
+        "accuracy": 0.82958984375,
+        "correct": 3398,
+        "queries": 4096
+      }
+    },
+    "phase2.route1": {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 4096,
+        "queries": 4096
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 4096,
+        "queries": 4096
+      },
+      "original": {
+        "accuracy": 0.523681640625,
+        "correct": 2145,
+        "queries": 4096
+      },
+      "window": {
+        "accuracy": 1.0,
+        "correct": 4096,
+        "queries": 4096
+      }
+    },
+    "phase3.route0": {
+      "ema": {
+        "accuracy": 0.82763671875,
+        "correct": 3390,
+        "queries": 4096
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 4096,
+        "queries": 4096
+      },
+      "original": {
+        "accuracy": 0.496337890625,
+        "correct": 2033,
+        "queries": 4096
+      },
+      "window": {
+        "accuracy": 0.82177734375,
+        "correct": 3366,
+        "queries": 4096
+      }
+    },
+    "phase3.route1": {
+      "ema": {
+        "accuracy": 1.0,
+        "correct": 4096,
+        "queries": 4096
+      },
+      "gold_window": {
+        "accuracy": 1.0,
+        "correct": 4096,
+        "queries": 4096
+      },
+      "original": {
+        "accuracy": 0.523681640625,
+        "correct": 2145,
+        "queries": 4096
+      },
+      "window": {
+        "accuracy": 1.0,
+        "correct": 4096,
+        "queries": 4096
+      }
+    }
+  },
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "scope": "reused-data exploratory, not a new heldout estimate",
+  "scry_schema": 0,
+  "scry_sql": 0,
+  "strata": {
+    "joint_rule_stratum": {
+      "linear/linear": {
+        "ema": {
+          "accuracy": 0.9325810185185185,
+          "correct": 3223,
+          "queries": 3456
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 3456,
+          "queries": 3456
+        },
+        "original": {
+          "accuracy": 0.5150462962962963,
+          "correct": 1780,
+          "queries": 3456
+        },
+        "window": {
+          "accuracy": 0.9279513888888888,
+          "correct": 3207,
+          "queries": 3456
+        }
+      },
+      "linear/nonlinear": {
+        "ema": {
+          "accuracy": 0.94140625,
+          "correct": 1446,
+          "queries": 1536
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 1536,
+          "queries": 1536
+        },
+        "original": {
+          "accuracy": 0.4928385416666667,
+          "correct": 757,
+          "queries": 1536
+        },
+        "window": {
+          "accuracy": 0.94140625,
+          "correct": 1446,
+          "queries": 1536
+        }
+      },
+      "nonlinear/linear": {
+        "ema": {
+          "accuracy": 0.8796875,
+          "correct": 2252,
+          "queries": 2560
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 2560,
+          "queries": 2560
+        },
+        "original": {
+          "accuracy": 0.515234375,
+          "correct": 1319,
+          "queries": 2560
+        },
+        "window": {
+          "accuracy": 0.8796875,
+          "correct": 2252,
+          "queries": 2560
+        }
+      },
+      "nonlinear/nonlinear": {
+        "ema": {
+          "accuracy": 0.8828125,
+          "correct": 565,
+          "queries": 640
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 640,
+          "queries": 640
+        },
+        "original": {
+          "accuracy": 0.503125,
+          "correct": 322,
+          "queries": 640
+        },
+        "window": {
+          "accuracy": 0.8703125,
+          "correct": 557,
+          "queries": 640
+        }
+      }
+    },
+    "rule_type": {
+      "linear": {
+        "ema": {
+          "accuracy": 0.9413154069767442,
+          "correct": 5181,
+          "queries": 5504
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 5504,
+          "queries": 5504
+        },
+        "original": {
+          "accuracy": 0.514171511627907,
+          "correct": 2830,
+          "queries": 5504
+        },
+        "window": {
+          "accuracy": 0.9384084302325582,
+          "correct": 5165,
+          "queries": 5504
+        }
+      },
+      "nonlinear": {
+        "ema": {
+          "accuracy": 0.8575148809523809,
+          "correct": 2305,
+          "queries": 2688
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 2688,
+          "queries": 2688
+        },
+        "original": {
+          "accuracy": 0.5014880952380952,
+          "correct": 1348,
+          "queries": 2688
+        },
+        "window": {
+          "accuracy": 0.8545386904761905,
+          "correct": 2297,
+          "queries": 2688
+        }
+      }
+    },
+    "task_attribute": {
+      "route0.00": {
+        "ema": {
+          "accuracy": 0.685546875,
+          "correct": 702,
+          "queries": 1024
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "original": {
+          "accuracy": 0.490234375,
+          "correct": 502,
+          "queries": 1024
+        },
+        "window": {
+          "accuracy": 0.685546875,
+          "correct": 702,
+          "queries": 1024
+        }
+      },
+      "route0.01": {
+        "ema": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "original": {
+          "accuracy": 0.474609375,
+          "correct": 486,
+          "queries": 1024
+        },
+        "window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        }
+      },
+      "route0.10": {
+        "ema": {
+          "accuracy": 0.65625,
+          "correct": 672,
+          "queries": 1024
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "original": {
+          "accuracy": 0.6201171875,
+          "correct": 635,
+          "queries": 1024
+        },
+        "window": {
+          "accuracy": 0.6796875,
+          "correct": 696,
+          "queries": 1024
+        }
+      },
+      "route0.11": {
+        "ema": {
+          "accuracy": 0.96875,
+          "correct": 992,
+          "queries": 1024
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "original": {
+          "accuracy": 0.400390625,
+          "correct": 410,
+          "queries": 1024
+        },
+        "window": {
+          "accuracy": 0.921875,
+          "correct": 944,
+          "queries": 1024
+        }
+      },
+      "route1.00": {
+        "ema": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "original": {
+          "accuracy": 0.4248046875,
+          "correct": 435,
+          "queries": 1024
+        },
+        "window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        }
+      },
+      "route1.01": {
+        "ema": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "original": {
+          "accuracy": 0.2900390625,
+          "correct": 297,
+          "queries": 1024
+        },
+        "window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        }
+      },
+      "route1.10": {
+        "ema": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "original": {
+          "accuracy": 0.8125,
+          "correct": 832,
+          "queries": 1024
+        },
+        "window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        }
+      },
+      "route1.11": {
+        "ema": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "gold_window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        },
+        "original": {
+          "accuracy": 0.5673828125,
+          "correct": 581,
+          "queries": 1024
+        },
+        "window": {
+          "accuracy": 1.0,
+          "correct": 1024,
+          "queries": 1024
+        }
+      }
+    }
+  },
+  "web_searches": 0
+}

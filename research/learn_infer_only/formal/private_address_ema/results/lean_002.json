@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/ember/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+    "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean"
+  ],
+  "cwd": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema",
+  "exit_code": 1,
+  "elapsed_seconds": 28.61890770899481,
+  "source_sha256": "53d72674ff348abb115044ec761eb066649c6869fd8527d19276eccb4adc194d",
+  "stdout": "/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:90:49: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern\n  ~~~?x + 1#?m.30\nin the target expression\n  BitVec.signExtend 11 s <<< 3 + (~~~BitVec.signExtend 11 s + 1) + BitVec.signExtend 11 u =\n    BitVec.signExtend 11 s * 7 + BitVec.signExtend 11 u\n\ns u : Byte\n\u22a2 BitVec.signExtend 11 s <<< 3 + (~~~BitVec.signExtend 11 s + 1) + BitVec.signExtend 11 u =\n    BitVec.signExtend 11 s * 7 + BitVec.signExtend 11 u\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:106:28: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  -128 \u2264 b \u2264 127\n  b + c \u2264 -1025\n  -128 \u2264 a \u2264 127\n  -1024 \u2264 7*a + b \u2264 1016\nwhere\n a := BitVec.toInt s\n b := BitVec.toInt u\n c := (BitVec.toInt s * 7).bmod 2048\n/Users/ember/dev/zkml-research/research/learn_infer_only/formal/private_address_ema/Theory/PrivateAddressEma.lean:106:39: error: omega could not prove the goal:\na possible counterexample may satisfy the constraints\n  -128 \u2264 b \u2264 127\n  b + c \u2265 1024\n  -128 \u2264 a \u2264 127\n  -1024 \u2264 7*a + b \u2264 1016\nwhere\n a := BitVec.toInt s\n b := BitVec.toInt u\n c := (BitVec.toInt s * 7).bmod 2048\n",
+  "stderr": ""
+}

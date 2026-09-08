@@ -1,0 +1,46 @@
+{
+  "schema": "independent-source-construction-review-v1",
+  "claim_kind": "EXECUTED",
+  "reviewer": "/root/independent_review",
+  "as_of_date_utc": "2026-09-08",
+  "subject_sha256": "af5e6acb0feb544b739c08838dcc8c88dff63244d33c16e18792d992e662a445",
+  "verdict": "qualified acceptance: conditional privacy/correctness and fixed-clock compact encoding; original actual-runtime decoding remains unproved",
+  "checks": {
+    "author_files_still_unchanged": true,
+    "python_compile": "passed",
+    "stderr_empty": true,
+    "report_under_400_lines": true,
+    "whitespace": "passed",
+    "source_text_and_render_ignores": "passed"
+  },
+  "artifacts": [
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/compact_tmre/.gitignore",
+      "sha256": "370556de5c5438de785e6a5c78e03e5dd1201ce86d77dbc8ba61b0a0c2a6ecaf"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/compact_tmre/REPORT.md",
+      "sha256": "f8d1165f7d9a02128122cc9437f3f7230571f7e1051423e9956e1f8664983b68"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/compact_tmre/results.json",
+      "sha256": "6ec0bc3878a3dbea282944c7acff5564037f14d92694d4b5cb36acc5ac6f73cb"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/compact_tmre/review.py",
+      "sha256": "104e9ff2b0350277b0fd8b7be7389d0f5f0d637277cd262ffa22fb579bb8b7c1"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/compact_tmre/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/compact_tmre/stdout.txt",
+      "sha256": "46e27ee7a3407b21beacaf7ac22ebc9711a4c2f10f02081a24ebc0490d4bad83"
+    },
+    {
+      "path": "research/learn_infer_only/experiments/adversarial_review/compact_tmre/visual_access.json",
+      "sha256": "925697e14d288cb7c77968916c89cd184865680a11ba1bbba9abc579e70d22bd"
+    }
+  ]
+}
